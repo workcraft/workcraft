@@ -15,10 +15,8 @@ public class Console {
 				silent = true;
 		}
 
-		if (!silent) {
+		if (!silent)
 			System.out.println ("Workcraft 2 (Metastability strikes back) dev version\n");
-			System.out.println ("kokkojo");
-		}
 
 		if (!silent)
 			System.out.println ("Initialising framework...");
