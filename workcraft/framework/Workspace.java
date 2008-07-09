@@ -11,13 +11,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.WorkDocument;
 import org.workcraft.framework.exceptions.DocumentOpenFailedException;
 import org.workcraft.util.XmlUtil;
 
 
 public class Workspace {
-	LinkedList<WorkspaceEntry> entries = new LinkedList<WorkspaceEntry>();
-	LinkedList<Document> openDocs = new LinkedList<Document>();
+	LinkedList<Document> entries = new LinkedList<Document>();
+	LinkedList<WorkDocument> openDocs = new LinkedList<WorkDocument>();
 	LinkedList<WorkspaceEventListener> eventListeners = new LinkedList<WorkspaceEventListener>();
 	Framework framework;
 
@@ -31,7 +32,7 @@ public class Workspace {
 	 */
 
 	public boolean isAlreadyOpen (File file) {
-		for (Document doc : openDocs ) {
+		for (WorkDocument doc : openDocs ) {
 			if (doc.getSourcePath() != null)
 				if (doc.getSourcePath().equals(file.getPath()))
 					return true;
@@ -39,7 +40,7 @@ public class Workspace {
 		return false;
 	}
 
-	void fireDocumentOpened(Document doc) {
+	void fireDocumentOpened(WorkDocument doc) {
 		for (WorkspaceEventListener listener : eventListeners)
 			listener.documentOpened(doc);
 	}
@@ -53,13 +54,13 @@ public class Workspace {
 		this.framework = framework;
 	}
 
-	public WorkspaceEntry add(String path) {
-		for(WorkspaceEntry we : entries) {
+	public Document add(String path) {
+		for(Document we : entries) {
 			if(we.getPath().equals(path))
 				return we;
 		}
-		WorkspaceEntry we = new WorkspaceEntry(path);
-		if(we.isDocument()) {
+		Document we = new Document(path);
+		if(we.isWorkDocument()) {
 //			TODO we = new WorkpaceDocumentEntry(path);
 		}
 		entries.add(we);
@@ -68,13 +69,13 @@ public class Workspace {
 		return we;
 	}
 
-	public void remove(WorkspaceEntry we) {
+	public void remove(Document we) {
 		entries.remove(we);
 		isChanged = true;
 		fireWorkspaceUpdated();
 	}
 
-	public List<WorkspaceEntry> entries() {
+	public List<Document> entries() {
 		return Collections.unmodifiableList(entries);
 	}
 
@@ -85,7 +86,7 @@ public class Workspace {
 	 * @return
 	 * @throws DocumentOpenFailedException
 	 */
-	public Document openDocument(String path) throws DocumentOpenFailedException {
+	public WorkDocument openDocument(String path) throws DocumentOpenFailedException {
 		return null;
 	/*	File f = new File(path);
 
@@ -189,7 +190,7 @@ public class Workspace {
 			}*/
 	}
 
-	public void closeDocument (Document doc) {
+	public void closeDocument (WorkDocument doc) {
 
 	}
 
@@ -233,7 +234,7 @@ public class Workspace {
 
 		Element works = doc.createElement("workspace");
 		root.appendChild(works);
-		for(WorkspaceEntry we : entries) {
+		for(Document we : entries) {
 			Element e = doc.createElement("entity");
 			we.toXml(e);
 			works.appendChild(e);

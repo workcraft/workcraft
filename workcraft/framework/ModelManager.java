@@ -4,6 +4,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import org.workcraft.dom.WorkDocument;
+
 
 
 public class ModelManager {
@@ -50,7 +52,7 @@ public class ModelManager {
 	}
 
 	public static boolean isValidModelClass(Class cls) {
-		boolean if_ok = Document.class.isAssignableFrom(cls);
+		boolean if_ok = WorkDocument.class.isAssignableFrom(cls);
 
 		try
 		{

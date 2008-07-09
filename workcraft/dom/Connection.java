@@ -1,4 +1,5 @@
-package org.workcraft.framework;
+package org.workcraft.dom;
+
 
 public class Connection {
 	protected Component first;

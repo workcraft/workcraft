@@ -7,9 +7,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.workcraft.framework.Document;
+import org.workcraft.dom.WorkDocument;
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.WorkspaceEntry;
+import org.workcraft.framework.Document;
 import org.workcraft.framework.WorkspaceEventListener;
 import org.workcraft.gui.MDIDocumentFrame;
 
@@ -22,7 +22,7 @@ public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventLis
 	private Framework framework;
 	private DefaultMutableTreeNode workspaceRoot;  //  @jve:decl-index=0:
 	private HashMap<String, DefaultMutableTreeNode> folders = new HashMap<String, DefaultMutableTreeNode>();
-	private HashMap<WorkspaceEntry, DefaultMutableTreeNode> entries = new HashMap<WorkspaceEntry, DefaultMutableTreeNode>();
+	private HashMap<Document, DefaultMutableTreeNode> entries = new HashMap<Document, DefaultMutableTreeNode>();
 
 	public WorkspaceView(Framework framework) {
 		super("Workspace");
@@ -49,7 +49,7 @@ public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventLis
 		workspaceUpdated();
 	}
 
-	public void documentOpened(Document doc) {
+	public void documentOpened(WorkDocument doc) {
 /*		Class<?> model = doc.getClass();
 		DefaultMutableTreeNode folder, docNode;
 
@@ -79,9 +79,9 @@ public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventLis
 	public void workspaceUpdated() {
 		workspaceRoot.setUserObject(framework.getWorkspace().getTitle());
 
-		HashMap<WorkspaceEntry, DefaultMutableTreeNode> newEntries =
-			new HashMap<WorkspaceEntry, DefaultMutableTreeNode>();
-		for(WorkspaceEntry we : framework.getWorkspace().entries()) {
+		HashMap<Document, DefaultMutableTreeNode> newEntries =
+			new HashMap<Document, DefaultMutableTreeNode>();
+		for(Document we : framework.getWorkspace().entries()) {
 			DefaultMutableTreeNode node;
 			if(entries.containsKey(we)) {
 				node = entries.get(we);

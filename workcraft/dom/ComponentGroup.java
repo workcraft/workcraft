@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.dom;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

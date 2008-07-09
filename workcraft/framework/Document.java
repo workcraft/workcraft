@@ -1,95 +1,65 @@
 package org.workcraft.framework;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.File;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.DocumentOpenFailedException;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.DocumentFormatException;
+import org.workcraft.gui.workspace.FileFilters;
+import org.workcraft.util.XmlUtil;
 
 
-public abstract class Document {
-	protected int idCounter = 0;
-	protected Hashtable<Integer, Component> idMap = new Hashtable<Integer, Component>();
+public class Document {
+	private String path;
+	private String extension = null;
+	private boolean exists = false;
 
-	protected ComponentGroup root = new ComponentGroup();
-	protected LinkedList<Connection> connections = new LinkedList<Connection>();
-
-	protected Framework framework = null;
-	protected String sourcePath = null;
-	protected String title = null;
-
-	public Document (Framework framework) throws DocumentOpenFailedException {
-		this.framework = framework;
+	public Document(String path) {
+		this.path = path;
+		checkFile();
 	}
 
-	public Document (Framework framework, Element xmlRootElement) {
-
+	public Document(Element element) throws DocumentFormatException {
+		path = XmlUtil.readStringAttr(element, "path");
+		if(path.isEmpty())
+			throw(new DocumentFormatException());
+		checkFile();
 	}
 
-
-	public List<Component> getTopLevelComponents() {
-		LinkedList<Component> result = new LinkedList<Component>();
-		for (Component c : root.getChildren()) {
-			result.add(c);
-		}
-		return result;
+	public String getPath() {
+		return path;
 	}
 
-	public List<Connection> getConnections() {
-		return (List<Connection>)connections.clone();
+	public String getName() {
+		return (new File(path)).getName();
 	}
 
-	public Component getComponentById(int id) {
-		return idMap.get(id);
+	public String toString() {
+		return getName(); // TODO more options?
 	}
 
-	public int getNextId() {
-		return idCounter++;
+	public boolean checkFile() {
+		File file = new File(path);
+		path = file.getPath();
+		exists = file.exists() && file.isFile();
+		if(!exists)
+			return false;
+		extension = path.substring(path.lastIndexOf('.')+1);
+		return true;
 	}
 
-	public ComponentGroup getRootGroup() {
-		return root;
+	public boolean exists() {
+		return exists;
 	}
 
-
-	public String getSourcePath() {
-		return sourcePath;
+	public String getExtension() {
+		return extension;
 	}
 
-	public void renameComponent(Component component, int newId) {
-		idMap.remove(component.getId());
-		idMap.put(newId, component);
+	public boolean isWorkDocument() {
+		return extension.equalsIgnoreCase(FileFilters.DOCUMENT_EXTENSION);
 	}
 
-	public void setSourcePath(String sourcePath) {
-		this.sourcePath = sourcePath;
+	public void toXml(Element element) {
+		XmlUtil.writeStringAttr(element, "path", path);
 	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Connection createConnection(Component first, Component second) throws InvalidConnectionException {
-		if (first.getPostset().contains(second) && second.getPreset().contains(first))
-			throw new InvalidConnectionException ("Connection already exists");
-		Connection connection = new Connection (first, second);
-		connections.add(connection);
-		return connection;
-	}
-
-	public void removeConnection (Connection connection) {
-		connection.getFirst().removeFromPostset(connection.getSecond());
-		connection.getSecond().removeFromPreset(connection.getFirst());
-		connections.remove(connection);
-	}
-
-	 abstract public void validate() throws ModelValidationException;
 }

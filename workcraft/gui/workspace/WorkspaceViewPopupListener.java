@@ -11,7 +11,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.WorkspaceEntry;
+import org.workcraft.framework.Document;
 
 
 class WorkspaceViewPopupListener extends MouseAdapter {
@@ -38,9 +38,9 @@ class WorkspaceViewPopupListener extends MouseAdapter {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 
 			JPopupMenu popup = new JPopupMenu();
-			if (node.getUserObject()!=null && node.getUserObject() instanceof WorkspaceEntry)
+			if (node.getUserObject()!=null && node.getUserObject() instanceof Document)
 			{
-				final WorkspaceEntry we = (WorkspaceEntry) node.getUserObject();
+				final Document we = (Document) node.getUserObject();
 				// add WorkspaceEntry menu items
 				//popup.addSeparator();
 

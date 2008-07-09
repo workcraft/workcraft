@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.dom;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -10,7 +10,7 @@ import org.workcraft.util.XmlUtil;
 
 public class Component {
 	protected Component parent = null;
-	protected Document ownerDocument = null;
+	protected WorkDocument ownerDocument = null;
 	protected HashSet<Component> children = new HashSet<Component>();
 	protected HashSet<Component> preset = new HashSet<Component>();
 	protected HashSet<Component> postset = new HashSet<Component>();
