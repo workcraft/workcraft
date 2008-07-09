@@ -1,4 +1,4 @@
-package org.workcraft.editor;
+package org.workcraft.gui.xwdeditor;
 import java.awt.Component;
 import java.util.List;
 
