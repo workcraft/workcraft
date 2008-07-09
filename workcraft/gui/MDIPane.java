@@ -41,8 +41,8 @@ import org.workcraft.gui.tabs.TabClosingListener;
 public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeListener {
 	private static final long serialVersionUID = 1L;
 
-	protected LinkedList<MDIDocumentFrame> documentFrames = new LinkedList<MDIDocumentFrame>();
-	protected LinkedList<MDIFloaterFrame> floaterFrames = new LinkedList<MDIFloaterFrame>();
+	protected LinkedList<InternalWindow> documentFrames = new LinkedList<InternalWindow>();
+	protected LinkedList<InternalFloaterWindow> floaterFrames = new LinkedList<InternalFloaterWindow>();
 
 	JDesktopPane desktop;
 	JTabbedPane tabs;
@@ -78,7 +78,7 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 
 		menuClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				handleClosing(((MDIDocumentFrame) ((DocumentTab)tabs.getTabComponentAt(popupOriginIndex)).getDocumentFrame()), popupOriginIndex);
+				handleClosing(((InternalWindow) ((DocumentTab)tabs.getTabComponentAt(popupOriginIndex)).getDocumentFrame()), popupOriginIndex);
 			}
 		});
 
@@ -131,22 +131,22 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 		});
 	}
 
-	public void addFrame(MDIDocumentFrame f) {
+	public void addFrame(InternalWindow f) {
 		documentFrames.add(f);
 		f.setLayer(2);
 		desktop.add(f);
 		f.addPropertyChangeListener("maximum", this);
-		f.ownerMDIPane = this;
+		//f.ownerMDIPane = this;
 
 	}
 
-	public void addFrame(MDIFloaterFrame f) {
+	public void addFrame(InternalFloaterWindow f) {
 		floaterFrames.add(f);
 		f.setLayer(3);
 		desktop.add(f);
 	}
 
-	protected void handleMax(MDIDocumentFrame frame) {
+	protected void handleMax(InternalWindow frame) {
 		if (tabs.getTabCount() == 0) {
 			this.remove(desktop);
 			this.add(tabs, BorderLayout.CENTER);
@@ -164,7 +164,7 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 
 		docTab.addTabClosingListener(new TabClosingListener() {
 			public void tabClosing(DocumentTab tab) {
-				handleClosing ((MDIDocumentFrame)tab.getDocumentFrame(), -1);
+				handleClosing ((InternalWindow)tab.getDocumentFrame(), -1);
 			}
 		});
 
@@ -179,12 +179,12 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 		frame.setVisible(true);
 	}
 
-	protected void handleClosing(MDIDocumentFrame frame, int tabIndex) {
+	protected void handleClosing(InternalWindow frame, int tabIndex) {
 		JOptionPane.showMessageDialog(MDIPane.this, "No. \"" + frame.getTitle() + "\" will stay open.");
 	}
 
 	protected void handleMin(int tabIndex) {
-		MDIDocumentFrame frame = (MDIDocumentFrame)((DocumentTab)tabs.getTabComponentAt(tabIndex)).getDocumentFrame();
+		InternalWindow frame = (InternalWindow)((DocumentTab)tabs.getTabComponentAt(tabIndex)).getDocumentFrame();
 
 		frame.showBorder();
 		frame.showTitle();
@@ -207,7 +207,7 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getNewValue() != null && evt.getNewValue().equals(Boolean.TRUE)) {
-			handleMax((MDIDocumentFrame)evt.getSource());
+			handleMax((InternalWindow)evt.getSource());
 		}
 	}
 
@@ -221,7 +221,7 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 
 		((JPanel)tabs.getSelectedComponent()).add(desktop);
 
-		for (MDIDocumentFrame f : documentFrames) {
+		for (InternalWindow f : documentFrames) {
 			if (f.isMaximum()) {
 
 				if (f == tab.getDocumentFrame())

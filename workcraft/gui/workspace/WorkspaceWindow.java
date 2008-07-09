@@ -11,11 +11,11 @@ import org.workcraft.dom.WorkDocument;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.Document;
 import org.workcraft.framework.WorkspaceEventListener;
-import org.workcraft.gui.MDIDocumentFrame;
+import org.workcraft.gui.InternalWindow;
 
 
 @SuppressWarnings("serial")
-public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventListener {
+public class WorkspaceWindow extends InternalWindow implements WorkspaceEventListener {
 	private JScrollPane scrollPane = null;
 	private JTree workspaceTree = null;
 
@@ -24,7 +24,7 @@ public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventLis
 	private HashMap<String, DefaultMutableTreeNode> folders = new HashMap<String, DefaultMutableTreeNode>();
 	private HashMap<Document, DefaultMutableTreeNode> entries = new HashMap<Document, DefaultMutableTreeNode>();
 
-	public WorkspaceView(Framework framework) {
+	public WorkspaceWindow(Framework framework) {
 		super("Workspace");
 		this.framework = framework;
 	}
@@ -36,7 +36,7 @@ public class WorkspaceView extends MDIDocumentFrame implements WorkspaceEventLis
 
 		workspaceTree = new JTree();
 		workspaceTree.setModel(new DefaultTreeModel(workspaceRoot));
-		workspaceTree.addMouseListener(new WorkspaceViewPopupListener(framework));
+		workspaceTree.addMouseListener(new WorkspaceWindowPopupListener(framework));
 
 		scrollPane.setViewportView(workspaceTree);
 

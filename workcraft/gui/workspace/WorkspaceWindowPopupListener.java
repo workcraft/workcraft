@@ -14,10 +14,10 @@ import org.workcraft.framework.Framework;
 import org.workcraft.framework.Document;
 
 
-class WorkspaceViewPopupListener extends MouseAdapter {
+class WorkspaceWindowPopupListener extends MouseAdapter {
 	private Framework framework;
 
-	public WorkspaceViewPopupListener(Framework framework) {
+	public WorkspaceWindowPopupListener(Framework framework) {
 		this.framework = framework;
 	}
 

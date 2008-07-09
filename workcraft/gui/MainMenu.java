@@ -25,7 +25,7 @@ public class MainMenu extends JMenuBar {
 			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel"
 		};
 
-	MainMenu(final MainFrame frame) {
+	MainMenu(final MainWindow frame) {
 		// File
 		JMenu mnFile = new JMenu();
 		mnFile.setText("File");

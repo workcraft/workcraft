@@ -14,33 +14,35 @@ import javax.swing.UIManager;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.framework.Framework;
+import org.workcraft.gui.edit.text.TextEditorWindow;
+import org.workcraft.gui.edit.work.WorkEditorWindow;
 import org.workcraft.gui.workspace.FileFilters;
-import org.workcraft.gui.workspace.WorkspaceView;
+import org.workcraft.gui.workspace.WorkspaceWindow;
 
 
-public class MainFrame extends JFrame {
+public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JDesktopPane jDesktopPane = null;
 
 	Framework framework;
-	WorkspaceView workspaceView;
-	ConsoleView consoleView;
+	WorkspaceWindow workspaceView;
+	ConsoleWindow consoleView;
 	MDIPane content;
 
-	MDIDocumentFrame testDoc;
+	InternalWindow testDoc;
 
 	private JMenuBar menuBar;
 
 	public void createViews() {
-		workspaceView  = new WorkspaceView(framework);
+		workspaceView  = new WorkspaceWindow(framework);
 		framework.getWorkspace().addEventListener(workspaceView);
 		workspaceView.setVisible(true);
 
-		consoleView = new ConsoleView(framework);
+		consoleView = new ConsoleWindow(framework);
 		consoleView.setVisible(true);
 	}
 
-	public MainFrame(Framework framework) {
+	public MainWindow(Framework framework) {
 		super();
 		this.framework = framework;
 	}
@@ -57,18 +59,18 @@ public class MainFrame extends JFrame {
 		framework.startGUI();
 	}
 
-	public ConsoleView getConsoleView() {
+	public ConsoleWindow getConsoleView() {
 		return consoleView;
 	}
 
 	public void startup() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
-		SwingUtilities.updateComponentTreeUI(MainFrame.this);
+		SwingUtilities.updateComponentTreeUI(MainWindow.this);
 
 		String laf = framework.getConfigVar("gui.lookandfeel");
 		if (laf == null)
-			laf = UIManager.getSystemLookAndFeelClassName();
+			laf = UIManager.getCrossPlatformLookAndFeelClassName();
 		LAF.setLAF(laf);
 
 		content = new MDIPane();
@@ -95,9 +97,9 @@ public class MainFrame extends JFrame {
 		content.addFrame(consoleView);
 		content.addFrame(workspaceView);
 
-		MDIDocumentFrame doc1 = new MDIDocumentFrame("Document 1");
-		MDIDocumentFrame doc2 = new MDIDocumentFrame("Document 2");
-		MDIDocumentFrame doc3 = new MDIDocumentFrame("Document 3");
+		InternalWindow doc1 = new WorkEditorWindow("Document 1");
+		InternalWindow doc2 = new WorkEditorWindow("Document 2");
+		InternalWindow doc3 = new TextEditorWindow("Document 3");
 
 		doc1.setVisible(true);
 		doc2.setVisible(true);

@@ -2,10 +2,10 @@ package org.workcraft.gui;
 
 import javax.swing.JInternalFrame;
 
-public class MDIFloaterFrame extends JInternalFrame {
+public class InternalFloaterWindow extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
-	public MDIFloaterFrame(String title) {
+	public InternalFloaterWindow(String title) {
 		super (title, false, false, false, true);
 		this.putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 	}

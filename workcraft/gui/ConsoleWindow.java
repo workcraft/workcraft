@@ -36,7 +36,7 @@ import org.workcraft.framework.Framework;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-public class ConsoleView extends MDIDocumentFrame {
+public class ConsoleWindow extends InternalWindow {
 	private static final long serialVersionUID = 1L;
 	protected PrintStream systemOut, systemErr;
 	protected boolean streamsCaptured = false;
@@ -103,7 +103,7 @@ public class ConsoleView extends MDIDocumentFrame {
 	private JScrollPane scrollActions = null;
 	private JTextArea txtActions = null;
 
-	public ConsoleView(Framework framework) {
+	public ConsoleWindow(Framework framework) {
 		super("Console");
 		this.framework = framework;
 	}

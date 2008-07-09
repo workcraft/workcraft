@@ -21,8 +21,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.workcraft.framework.exceptions.DocumentOpenFailedException;
 import org.workcraft.gui.LAF;
-import org.workcraft.gui.MainFrame;
-import org.workcraft.gui.workspace.WorkspaceView;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.workspace.WorkspaceWindow;
 
 
 public class Framework {
@@ -107,7 +107,7 @@ public class Framework {
 
 	private Stack <HistoryEvent> undoStack = new Stack<HistoryEvent>();
 	private Stack <HistoryEvent> redoStack = new Stack<HistoryEvent>();
-	private MainFrame mainFrame;
+	private MainWindow mainFrame;
 
 /*	public void loadPlugins(String directory) {
 		System.out.println("Loading plugin class manifest from \""+directory+"\"\t ...");
@@ -276,7 +276,7 @@ public class Framework {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				mainFrame = new MainFrame(Framework.this);
+				mainFrame = new MainWindow(Framework.this);
 				mainFrame.startup();
 				System.out.println ("Now in GUI mode.");
 			}
@@ -303,7 +303,7 @@ public class Framework {
 		return shutdownRequested;
 	}
 
-	public MainFrame getMainFrame() {
+	public MainWindow getMainFrame() {
 		return mainFrame;
 	}
 

@@ -12,27 +12,15 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-public class MDIDocumentFrame extends JInternalFrame implements InternalFrameListener {
+public abstract class InternalWindow extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
-
-	protected MDIPane ownerMDIPane = null;
-	protected JTextArea content = null;
 
 	protected Dimension titleRestore = null;
 	protected Border borderRestore = null;
 
-	public MDIDocumentFrame(String title) {
+	public InternalWindow(String title) {
 		super(title, true, true, true, true);
-		content = new JTextArea();
-		content.setWrapStyleWord(true);
-		content.setLineWrap(true);
-		this.setLayout(new BorderLayout());
-		this.add(content, BorderLayout.CENTER);
-
-
-
 		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-		this.addInternalFrameListener(this);
 	}
 
 	public void hideTitle() {
@@ -61,31 +49,5 @@ public class MDIDocumentFrame extends JInternalFrame implements InternalFrameLis
 			setBorder(borderRestore);
 			borderRestore = null;
 		}
-	}
-
-
-	public void internalFrameActivated(InternalFrameEvent e) {
-	}
-
-	public void internalFrameClosed(InternalFrameEvent e) {
-	}
-
-	public void internalFrameClosing(InternalFrameEvent e) {
-		if (ownerMDIPane != null)
-			ownerMDIPane.handleClosing(this, -1);
-		else
-			this.dispose();
-	}
-
-	public void internalFrameDeactivated(InternalFrameEvent e) {
-	}
-
-	public void internalFrameDeiconified(InternalFrameEvent e) {
-	}
-
-	public void internalFrameIconified(InternalFrameEvent e) {
-	}
-
-	public void internalFrameOpened(InternalFrameEvent e) {
 	}
 }
