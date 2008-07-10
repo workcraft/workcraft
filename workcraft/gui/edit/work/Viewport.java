@@ -1,9 +1,11 @@
 package org.workcraft.gui.edit.work;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
 
 /**
  * The <code>Viewport</code> class represents a document viewport. It is used to map the
@@ -66,8 +68,21 @@ public class Viewport {
 	AffineTransform finalInverseTransform;
 
 	/**
+	 * The current viewport shape.
+	 */
+	protected Rectangle shape;
+
+
+	/**
+	 * The list of listeners to be notified in case of viewport parameters change.
+	 */
+	protected LinkedList<ViewportListener> listeners;
+
+
+
+	/**
 	 * Called when the viewport parameters such as pan and zoom are changed. Updates the corresponding
-	 * transforms.
+	 * transforms, and notifies the change listeners.
 	 */
 	protected void viewChanged() {
 		viewTransform.setToIdentity();
@@ -75,6 +90,26 @@ public class Viewport {
 		viewTransform.translate(tx, ty);
 
 		updateFinalTransform();
+
+		// notify listeners
+		for (ViewportListener l : listeners)
+			l.viewChanged(this);
+	}
+
+	/**
+	 * Called when the viewport parameters such as size and position are changed. Updates the corresponding
+	 * transforms, and notifies the change listeners.
+	 */
+	protected void shapeChanged() {
+		userToScreenTransform.setToIdentity();
+		userToScreenTransform.translate(shape.width/2, shape.height/2);
+		userToScreenTransform.scale(shape.height/2, shape.height/2);
+
+		updateFinalTransform();
+
+		// notify listeners
+		for (ViewportListener l: listeners)
+			l.shapeChanged(this);
 	}
 
 	/**
@@ -91,7 +126,7 @@ public class Viewport {
 	}
 
 	/**
-	 * The primary constructor. Initialises the user-to-screen transform according to the viewport parameters,
+	 * Initialises the user-to-screen transform according to the viewport parameters,
 	 * and the view transform with the default values.
 	 * @param x
 	 * 	The x-coordinate of the top-left corner of the viewport (in pixels).
@@ -107,10 +142,22 @@ public class Viewport {
 		userToScreenTransform = new AffineTransform();
 		finalTransform = new AffineTransform();
 		finalInverseTransform = new AffineTransform();
+		shape = new Rectangle();
+		listeners = new LinkedList<ViewportListener>();
 
 		viewChanged();
 
-		reshape (x,y,w,h);
+		setShape (x,y,w,h);
+	}
+
+	/**
+	 * Initialises the user-to-screen transform according to the viewport parameters,
+	 * and the view transform with the default values.
+	 * @param shape
+	 * The shape of the viewport (all values in pixels).
+	 */
+	public Viewport(Rectangle shape) {
+		this(shape.x, shape.y, shape.width, shape.height);
 	}
 
 	/**
@@ -153,6 +200,13 @@ public class Viewport {
 		Point2D result = new Point2D.Double();
 		finalInverseTransform.transform(pointInScreenSpace, result);
 		return result;
+	}
+
+	public Point2D distInUserSpace (Point distInScreenSpace) {
+		Point originInScreenSpace = userToScreen (ORIGIN);
+		originInScreenSpace.x += distInScreenSpace.x;
+		originInScreenSpace.y += distInScreenSpace.y;
+		return screenToUser (originInScreenSpace);
 	}
 
 	/**
@@ -228,16 +282,49 @@ public class Viewport {
 	 * 	The x-coordinate of the top-left corner of the new viewport (in pixels).
 	 * @param y
 	 * The y-coordinate of the top-left corner of the new viewport (in pixels).
-	 * @param w
+	 * @param width
 	 * The width of the new viewport (in pixels).
-	 * @param h
+	 * @param height
 	 * The height of the new viewport (in pixels)
 	 */
-	public void reshape (int x, int y, int w, int h) {
-		userToScreenTransform.setToIdentity();
-		userToScreenTransform.translate(w/2, h/2);
-		userToScreenTransform.scale(h/2, h/2);
+	public void setShape (int x, int y, int width, int height) {
+		shape.setBounds(x, y, width, height);
+		shapeChanged();
+	}
 
-		updateFinalTransform();
+
+	/**
+	 * Changes the shape of the viewport.
+	 * @param shape
+	 * 	The new shape of the viewport as Rectangle (in pixels).
+	 */
+	public void setShape (Rectangle shape) {
+		setShape(shape.x, shape.y, shape.width, shape.height);
+		shapeChanged();
+	}
+
+	/**
+	 * @return The current viewport shape.
+	 */
+	public Rectangle getShape() {
+		return new Rectangle(shape);
+	}
+
+	/**
+	 * Registers a new viewport listener that will be notified if viewport parameters change.
+	 * @param listener
+	 * The new listener.
+	 */
+	public void addListener (ViewportListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+	 * Removes a listener.
+	 * @param listener
+	 * The listener to remove.
+	 */
+	public void removeListener (ViewportListener listener) {
+		listeners.remove(listener);
 	}
 }
