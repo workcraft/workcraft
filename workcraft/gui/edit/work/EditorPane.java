@@ -46,7 +46,7 @@ public class EditorPane extends JPanel implements ComponentListener, MouseMotion
 
 		g2d.transform(view.getTransform());
 
-		grid.draw(g2d, view);
+		//grid.draw(g2d, view);
 
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -57,7 +57,7 @@ public class EditorPane extends JPanel implements ComponentListener, MouseMotion
 		g2d.setStroke(new BasicStroke(0.05f));
 
 
-		for (int i=0; i<100; i++) {
+		for (int i=0; i<10; i++) {
 			g2d.translate(0, 1.2);
 			for (int j=0; j<100; j++) {
 				g2d.translate(1.2, 0);

@@ -98,26 +98,26 @@ public class MainWindow extends JFrame {
 		content.addFrame(workspaceView);
 
 		InternalWindow doc1 = new WorkEditorWindow("Document 1");
-		InternalWindow doc2 = new WorkEditorWindow("Document 2");
-		InternalWindow doc3 = new TextEditorWindow("Document 3");
+		//InternalWindow doc2 = new WorkEditorWindow("Document 2");
+		//InternalWindow doc3 = new TextEditorWindow("Document 3");
 
 
 
 		doc1.setSize(500, 300);
-		doc2.setSize(500, 300);
-		doc3.setSize(500, 300);
+		//doc2.setSize(500, 300);
+		//doc3.setSize(500, 300);
 
 		doc1.setLocation(10, 10);
-		doc2.setLocation(20, 20);
-		doc3.setLocation(30, 30);
+		//doc2.setLocation(20, 20);
+		//doc3.setLocation(30, 30);
 
 		content.addFrame(doc1);
-		content.addFrame(doc2);
-		content.addFrame(doc3);
+		//content.addFrame(doc2);
+		//content.addFrame(doc3);
 
 		doc1.setVisible(true);
-		doc2.setVisible(true);
-		doc3.setVisible(true);
+		//doc2.setVisible(true);
+		//doc3.setVisible(true);
 
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
