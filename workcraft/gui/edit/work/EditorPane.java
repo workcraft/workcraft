@@ -1,20 +1,137 @@
 package org.workcraft.gui.edit.work;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
-public class EditorPane extends JPanel {
+public class EditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
 	private static final long serialVersionUID = 1L;
+
+	protected Viewport view;
+	protected boolean panDrag = false;
+	protected Point lastMouseCoords = new Point();
+
+
+
+	public EditorPane() {
+		view = new Viewport(0, 0, this.getWidth(), this.getHeight());
+		this.addComponentListener(this);
+		this.addMouseMotionListener(this);
+		this.addMouseListener(this);
+		this.addMouseWheelListener(this);
+	}
+
 
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
+		g2d.clearRect(0, 0, getWidth(), getHeight());
+
+		AffineTransform rest = g2d.getTransform();
+		g2d.transform(view.getTransform());
+
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		super.paint(g);
-		g.drawOval(0, 0, 100, 100);
+
+		Shape qw = new java.awt.geom.Rectangle2D.Double( -0.5, -0.5, 1.0,1.0);
+		g2d.setStroke(new BasicStroke(0.05f));
+		g2d.draw(qw);
+
+		g2d.setTransform(rest);
+	}
+
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+	}
+
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		view.reshape(0, 0,getWidth(), getHeight());
+	}
+
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		mouseMoved(e);
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		Point currentMouseCoords = e.getPoint();
+
+		if (panDrag) {
+
+			view.pan(currentMouseCoords.x - lastMouseCoords.x, currentMouseCoords.y - lastMouseCoords.y);
+			repaint();
+		}
+
+		lastMouseCoords = currentMouseCoords;
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			panDrag = true;
+		}
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			panDrag = false;
+		}
+	}
+
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		view.zoom(-e.getWheelRotation(), e.getPoint());
+		repaint();
+
 	}
 
 }

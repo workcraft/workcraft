@@ -101,9 +101,7 @@ public class MainWindow extends JFrame {
 		InternalWindow doc2 = new WorkEditorWindow("Document 2");
 		InternalWindow doc3 = new TextEditorWindow("Document 3");
 
-		doc1.setVisible(true);
-		doc2.setVisible(true);
-		doc3.setVisible(true);
+
 
 		doc1.setSize(500, 300);
 		doc2.setSize(500, 300);
@@ -117,6 +115,9 @@ public class MainWindow extends JFrame {
 		content.addFrame(doc2);
 		content.addFrame(doc3);
 
+		doc1.setVisible(true);
+		doc2.setVisible(true);
+		doc3.setVisible(true);
 
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 

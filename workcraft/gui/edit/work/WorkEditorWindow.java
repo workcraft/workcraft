@@ -11,4 +11,5 @@ public class WorkEditorWindow extends EditorWindow {
 		editorPane = new EditorPane();
 		this.setContentPane(editorPane);
 	}
+
 }
