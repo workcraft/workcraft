@@ -45,7 +45,6 @@ public class EditorPane extends JPanel implements ComponentListener, MouseMotion
 
 	@Override
 	public void paint(Graphics g) {
-		System.out.println ("Painting.. " + this.getWidth() + " " + this.getHeight());
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setBackground(background);
 
