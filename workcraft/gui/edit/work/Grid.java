@@ -20,11 +20,11 @@ import java.util.LinkedList;
  */
 public class Grid implements ViewportListener {
 	protected double majorInterval = 5.0;
-	protected double minorIntervalFactor = 0.2;
-	protected double intervalScaleFactor = 2.0;
+	protected double minorIntervalFactor = 0.1;
+	protected double intervalScaleFactor = 5;
 
-	protected double magThreshold = 5.0;
-	protected double minThreshold = 2.5;
+	protected double magThreshold = 5;
+	protected double minThreshold = 2;
 
 	protected Path2D minorLinesPath;
 	protected Path2D majorLinesPath;
@@ -76,11 +76,12 @@ public class Grid implements ViewportListener {
 
 		double visibleHeight = visibleUL.getY() - visibleLR.getY();
 
-		while (visibleHeight > majorInterval * magThreshold) {
+		while (visibleHeight / majorInterval > magThreshold) {
+			System.out.println("H: " + visibleHeight +"I: " + majorInterval + "T:" + magThreshold);
 			majorInterval *= intervalScaleFactor;
 		}
 
-		while (visibleHeight < majorInterval * minThreshold) {
+		while (visibleHeight / majorInterval < minThreshold) {
 			majorInterval /= intervalScaleFactor;
 		}
 

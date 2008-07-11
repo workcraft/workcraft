@@ -247,8 +247,8 @@ public class Viewport {
 
 		if (scale < 0.01f)
 				scale = 0.01f;
-		if (scale > 1000.0f)
-				scale = 1000.0f;
+		if (scale > 1.0f)
+				scale = 1.0f;
 
 		viewChanged();
 	}
