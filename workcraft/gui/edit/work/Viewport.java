@@ -20,7 +20,7 @@ public class Viewport {
 	 * The scaling factor per zoom level. Increasing the zoom level by 1 will effectively magnify all
 	 * objects by this factor, while decreasing it by 1 will shrink all objects by the same factor.
 	 */
-	protected static final double SCALE_FACTOR = Math.pow(2, 0.25);
+	protected static final double SCALE_FACTOR = Math.pow(2, 0.125);
 
 	/**
 	 * The origin point in user space.
