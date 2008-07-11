@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -19,7 +18,6 @@ import java.util.LinkedList;
  *
  */
 public class Grid implements ViewportListener {
-	protected double majorInterval = 10.0;
 	protected double minorIntervalFactor = 0.1;
 	protected double intervalScaleFactor = 2;
 
@@ -41,11 +39,123 @@ public class Grid implements ViewportListener {
 	protected Color minorLinesColor = new Color (240,240,240);
 	protected Color guideLinesColor = Color.RED;
 
+
+	protected double majorInterval = 10.0;
+	public double getMajorInterval() {
+		return majorInterval;
+	}
+
 	/**
-	 * The list of listeners to be notified in case of viewport parameters change.
+	 * Set the interval of major grid lines in user-space units.
+	 * @param majorInterval
+	 * The new interval of major grid lines
+	 */
+	public void setMajorInterval(double majorInterval) {
+		this.majorInterval = majorInterval;
+	}
+
+	/**
+	 * @return
+	 * Dynamic interval scaling factor
+	 */
+	public double getIntervalScaleFactor() {
+		return intervalScaleFactor;
+	}
+
+	/**
+	 * Set the dynamic interval scale factor. The major grid line interval will be multiplied or divided by this amount
+	 * when applying dynamic grid scaling.
+	 * @param intervalScaleFactor
+	 */
+	public void setIntervalScaleFactor(double intervalScaleFactor) {
+		this.intervalScaleFactor = intervalScaleFactor;
+	}
+
+	/**
+	 * @return
+	 * The interval magnification threshold
+	 */
+	public double getMagThreshold() {
+		return magThreshold;
+	}
+
+	/**
+	 * Set the interval magnification threshold. The grid interval will be increased by <code>intervalScaleFactor</code>  if more than <code>magThreshold</code>
+	 * major grid intervals become visible across the vertical dimension of the viewport.
+	 * @param magThreshold
+	 * The new interval magnification threshold.
+	 */
+	public void setMagThreshold(double magThreshold) {
+		this.magThreshold = magThreshold;
+	}
+
+	/**
+	 * @return
+	 * The interval minimisation threshold.
+	 */
+	public double getMinThreshold() {
+		return minThreshold;
+	}
+
+	/**
+	 * Set the interval minimisation threshold. The grid interval will be decreased by <code>intervalScaleFactor</code> if less than <i>minThreshold</i>
+	 * major grid intervals become visible across the vertical dimension of the viewport.
+	 * major grid intervals become visible.
+	 * @param minThreshold
+	 */
+	public void setMinThreshold(double minThreshold) {
+		this.minThreshold = minThreshold;
+	}
+
+	/**
+	 * @return
+	 * The major grid lines drawing color.
+	 */
+	public Color getMajorLinesColor() {
+		return majorLinesColor;
+	}
+
+	/**
+	 * Set the major grid lines drawing color.
+	 * @param majorLinesColor
+	 * The new color
+	 */
+	public void setMajorLinesColor(Color majorLinesColor) {
+		this.majorLinesColor = majorLinesColor;
+	}
+
+	/**
+	 * @return
+	 * The minor grid lines drawing color.
+	 */
+	public Color getMinorLinesColor() {
+		return minorLinesColor;
+	}
+
+	/**
+	 *  Set the minor grid lines drawing color.
+	 * @param minorLinesColor
+	 *  The new color
+	 */
+	public void setMinorLinesColor(Color minorLinesColor) {
+		this.minorLinesColor = minorLinesColor;
+	}
+
+	/**
+	 * The list of listeners to be notified in case of grid parameters change.
 	 */
 	protected LinkedList<GridListener> listeners;
 
+	/**
+	 * Constructs a grid with default parameters:
+	 * <ul>
+	 * <li> Major grid lines interval = 10 units
+	 * <li> Minor grid lines frequency = 10 per major line interval
+	 * <li> Dynamic scaling factor = 2
+	 * <li> Dynamic magnification threshold = 5 (see <code>setMagThreshold</code>)
+	 * <li> Dynamic minimisation threshold = 2.5 ( see <code>setMinThreshold</code>)
+	 * </ul>
+	 **/
 	public Grid() {
 		minorLinesPath = new Path2D.Double();
 		majorLinesPath = new Path2D.Double();
@@ -61,31 +171,37 @@ public class Grid implements ViewportListener {
 		stroke = new BasicStroke();
 	}
 
+	/**
+	 * Recalculates visible grid lines based on the viewport parameters.
+	 * @param viewport
+	 * The viewport to calculate gridlines for.
+	 */
 	protected void updateGrid(Viewport viewport) {
 		Rectangle view = viewport.getShape();
 
-		Point viewLL = new Point (view.x, view.height+view.y);
-		Point viewUR = new Point (view.width+view.x, view.y);
+
+		// Compute the visible user space area from the viewport
 
 		Point2D visibleUL = new Point2D.Double();
 		Point2D visibleLR = new Point2D.Double();
-
+		Point viewLL = new Point (view.x, view.height+view.y);
+		Point viewUR = new Point (view.width+view.x, view.y);
 		viewport.getInverseTransform().transform(viewLL, visibleUL);
 		viewport.getInverseTransform().transform(viewUR, visibleLR);
 
 
+		// Dynamic line interval scaling
+
 		double visibleHeight = visibleUL.getY() - visibleLR.getY();
-
-		System.out.println(String.format("h:%.3f  i:%.3f   t:   %.3f    %.3f blocks visible",visibleHeight, majorInterval, magThreshold, (visibleHeight/majorInterval)));
-
 		while (visibleHeight / majorInterval > magThreshold) {
-
 			majorInterval *= intervalScaleFactor;
 		}
-
 		while (visibleHeight / majorInterval < minThreshold) {
 			majorInterval /= intervalScaleFactor;
 		}
+
+
+		// Compute the leftmost, rightmost, topmost and bottom visible grid lines
 
 		int majorBottom  = (int)Math.ceil(visibleLR.getY()/majorInterval);
 		int majorTop = (int)Math.floor(visibleUL.getY()/majorInterval);
@@ -100,6 +216,11 @@ public class Grid implements ViewportListener {
 
 		int minorBottom = (int)Math.ceil(visibleLR.getY()/minorInterval);
 		int minorTop = (int)Math.floor(visibleUL.getY()/minorInterval);
+
+
+
+		// Build the gridlines positions, store them as user-space coordinates, screen-space coordinates,
+		// and as a drawable path (in screen-space)
 
 		minorLinesPath = new Path2D.Double();
 		majorLinesPath = new Path2D.Double();
@@ -162,11 +283,18 @@ public class Grid implements ViewportListener {
 			majorLinesPath.lineTo(viewUR.getX(), p2.getY());
 		}
 
+
 		for (GridListener l : listeners) {
 			l.gridChanged(this);
 		}
 	}
 
+	/**
+	 * Draws the grid. <i>Note that this drawing procedure assumes that the Graphics2D object will draw in screen coordinates.</i>
+	 * Please restore the graphics transform object to the original state before calling this method.
+	 * @param g
+	 * Graphics2D object for the component the viewport is drawn onto.
+	 */
 	public void draw (Graphics2D g) {
 		g.setStroke(stroke);
 		g.setColor(minorLinesColor);
@@ -175,18 +303,54 @@ public class Grid implements ViewportListener {
 		g.draw(majorLinesPath);
 	}
 
+	/**
+	 * Returns minor grid lines positions <i>in user space, double precision</i> as a 2-dimensional array. First row of the array contains x-coordinates of the vertical grid lines,
+	 * second row contains y-coordinates of the horizontal grid lines.
+	 *
+	 * @return
+	 * getMinorLinePositions()[0] - the array containing vertical grid lines positions
+	 * getMinorLinePositions()[1] - the array containing horizontal grid lines positions
+	 *
+	 */
 	public double[][] getMinorLinePositions() {
 		return minorLinePositions;
 	}
 
+	/**
+	 * Returns major grid lines positions <i>in user space, double precision</i> as a 2-dimensional array. First row of the array contains x-coordinates of the vertical grid lines,
+	 * second row contains y-coordinates of the horizontal grid lines.
+	 *
+	 * @return
+	 * getMajorLinePositions()[0] - the array containing vertical grid lines positions
+	 * getMajorLinePositions()[1] - the array containing horizontal grid lines positions
+	 *
+	 */
 	public double[][] getMajorLinePositions() {
 		return majorLinePositions;
 	}
 
+	/**
+	 * Returns minor grid lines positions <i>in screen space space, integer precision</i> as a 2-dimensional array.
+	 * First row of the array contains x-coordinates of the vertical grid lines, second row contains y-coordinates of the horizontal grid lines,
+	 * @return
+	 * getMinorLinePositionsScreen()[0] - the array containing vertical grid lines positions
+	 * getMinorLinePositionsScreen()[1] - the array containing horizontal grid lines positions
+	 *
+	 */
 	public int[][] getMinorLinePositionsScreen() {
 		return minorLinePositionsScreen;
 	}
 
+
+	/**
+	 * Returns major grid lines positions <i>in screen space space, integer precision</i> as a 2-dimensional array. First row of the array contains Y-coordinates of the horizontal grid lines,
+	 * second row contains X-coordinates of the vertical grid lines.
+	 *
+	 * @return
+	 * getMajorLinePositionsScreen()[0] - the array containing vertical grid lines positions
+	 * getMajorLinePositionsScreen()[1] - the array containing horizontal grid lines positions
+	 *
+	 */
 	public int[][] getMajorLinePositionsScreen() {
 		return majorLinePositionsScreen;
 	}
@@ -202,7 +366,7 @@ public class Grid implements ViewportListener {
 	}
 
 	/**
-	 * Registers a new viewport listener that will be notified if viewport parameters change.
+	 * Registers a new grid listener that will be notified if grid parameters change.
 	 * @param listener
 	 * The new listener.
 	 */

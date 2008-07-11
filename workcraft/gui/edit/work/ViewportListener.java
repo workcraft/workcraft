@@ -8,7 +8,7 @@ package org.workcraft.gui.edit.work;
  */
 public interface ViewportListener {
 	/**
-	 * Called when viewport parameters such as size and position change.
+	 * Called when viewport parameters (width, height or position) change.
 	 * @param sender
 	 * The viewport that has sent the notification.
 	 */
@@ -16,7 +16,7 @@ public interface ViewportListener {
 
 
 	/**
-	 * Called when viewport parameters such as pan and zoom change.
+	 * Called when viewport parameters (pan or zoom) change.
 	 * @param sender
 	 * The viewport that has sent the notification
 	 */
