@@ -41,7 +41,7 @@ public class Viewport {
 	 * Current view scale factor. The default value is such that there are 16 user space units visible
 	 *  across the vertical axis of the viewport.
 	 */
-	protected double scale = 0.125;
+	protected double scale = 0.0625;
 
 	/**
 	 * The transformation from user space to screen space such that the point (0,0) in user space is
@@ -102,7 +102,7 @@ public class Viewport {
 	 */
 	protected void shapeChanged() {
 		userToScreenTransform.setToIdentity();
-		userToScreenTransform.translate(shape.width/2, shape.height/2);
+		userToScreenTransform.translate(shape.width/2 + shape.x, shape.height/2 + shape.y);
 		userToScreenTransform.scale(shape.height/2, shape.height/2);
 
 		updateFinalTransform();
@@ -202,10 +202,17 @@ public class Viewport {
 		return result;
 	}
 
-	public Point2D distInUserSpace (Point distInScreenSpace) {
+	/**
+	 * Calculates the size of one screen pixel in user space.
+	 * @return
+	 * X value of the returned point contains the horizontal pixel size,
+	 * Y value contains the vertical pixel size.
+	 * With the default user-to-screen transform these values are equal.
+	 */
+	public Point2D pixelSizeInUserSpace () {
 		Point originInScreenSpace = userToScreen (ORIGIN);
-		originInScreenSpace.x += distInScreenSpace.x;
-		originInScreenSpace.y += distInScreenSpace.y;
+		originInScreenSpace.x += 1;
+		originInScreenSpace.y += 1;
 		return screenToUser (originInScreenSpace);
 	}
 
