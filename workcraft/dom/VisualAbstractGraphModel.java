@@ -4,4 +4,6 @@ public class VisualAbstractGraphModel {
 	protected AbstractGraphModel model;
 
 
+
+
 }

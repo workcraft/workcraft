@@ -1,14 +1,19 @@
 package org.workcraft.dom;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 
 public abstract class AbstractGraphModel {
@@ -29,9 +34,82 @@ public abstract class AbstractGraphModel {
 		this.title = "Untitled";
 	}
 
-	public AbstractGraphModel (Framework framework, Element xmlRootElement, String sourcePath) {
+	public AbstractGraphModel (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
 		this.framework = framework;
 		this.sourcePath = sourcePath;
+
+		NodeList componentNodes = xmlModelElement.getElementsByTagName("component");
+		for (int i = 0; i < componentNodes.getLength(); i++) {
+			Element e  = (Element)componentNodes.item(i);
+
+			String className = e.getAttribute("class");
+
+			try {
+				Class<?> elementClass = Class.forName(className);
+				Constructor<?> ctor = elementClass.getConstructor(Element.class);
+				Component component = (Component)ctor.newInstance(e);
+
+				addComponent(component, false);
+
+			} catch (ClassCastException ex) {
+				throw new ModelLoadFailedException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Component: " + ex.getMessage());
+			}	catch (ClassNotFoundException ex) {
+				throw new ModelLoadFailedException ("Cannot load component class: " + ex.getMessage());
+			} catch (SecurityException ex) {
+				throw new ModelLoadFailedException ("Security exception: " + ex.getMessage());
+			} catch (NoSuchMethodException ex) {
+				throw new ModelLoadFailedException ("Component class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element element)");
+			} catch (IllegalArgumentException ex) {
+				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
+			} catch (InstantiationException ex) {
+				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
+			} catch (IllegalAccessException ex) {
+				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
+			} catch (InvocationTargetException ex) {
+				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getTargetException().getMessage());
+			} catch (InvalidComponentException ex) {
+				throw new ModelLoadFailedException ("Failed to add component: " + ex.getMessage());
+			} catch (DuplicateIDException ex) {
+				throw new ModelLoadFailedException ("Failed to add component: duplicate ID " + ex.getMessage() + "encountered");
+			}
+		}
+
+		NodeList connectionNodes = xmlModelElement.getElementsByTagName("connection");
+
+		for (int i = 0; i < connectionNodes.getLength(); i++) {
+			Element e  = (Element)connectionNodes.item(i);
+
+			String className = e.getAttribute("class");
+
+			try {
+				Class<?> elementClass = Class.forName(className);
+				Constructor<?> ctor = elementClass.getConstructor(Element.class, AbstractGraphModel.class);
+				Connection connection = (Connection)ctor.newInstance(e, this);
+
+				addConnection(connection);
+
+			} catch (ClassCastException ex) {
+				throw new ModelLoadFailedException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Connection: " + ex.getMessage());
+			}	catch (ClassNotFoundException ex) {
+				throw new ModelLoadFailedException ("Cannot load connection class: " + ex.getMessage());
+			} catch (SecurityException ex) {
+				throw new ModelLoadFailedException ("Security exception: " + ex.getMessage());
+			} catch (NoSuchMethodException ex) {
+				throw new ModelLoadFailedException ("Connection class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element, org.workcraft.dom.AbstractGraphModel)");
+			} catch (IllegalArgumentException ex) {
+				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
+			} catch (InstantiationException ex) {
+				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
+			} catch (IllegalAccessException ex) {
+				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
+			} catch (InvocationTargetException ex) {
+				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getTargetException().getMessage());
+			} catch (DuplicateIDException ex) {
+				throw new ModelLoadFailedException ("Failed to add connection: duplicate ID " + ex.getMessage() + "encountered");
+			} catch (InvalidConnectionException ex) {
+				throw new ModelLoadFailedException ("Failed to add connection: " + ex.getMessage());
+			}
+		}
 	}
 
 	public Collection<Component> getComponents() {
@@ -77,7 +155,10 @@ public abstract class AbstractGraphModel {
 
 	public int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
 		if (!getSupportedComponents().contains(component.getClass()))
-			throw new InvalidComponentException ("Unsupported component");
+			if (autoAssignID)
+				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
+			else
+				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
 
 		if (autoAssignID)
 			component.setID(generateComponentID());

@@ -1,5 +1,6 @@
 package org.workcraft.dom;
 
+import org.w3c.dom.Element;
 
 public class Connection {
 	protected Component first;
@@ -16,7 +17,7 @@ public class Connection {
 
 	public Component getFirst() {
 		return first;
-			}
+	}
 
 	public Component getSecond() {
 		return second;
@@ -25,6 +26,10 @@ public class Connection {
 	public Connection (Component first, Component second) {
 		this.first = first;
 		this.second = second;
+	}
+
+	public Connection (Element xmlElement, AbstractGraphModel model) {
+
 	}
 
 }
