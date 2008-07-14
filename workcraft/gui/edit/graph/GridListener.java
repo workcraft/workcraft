@@ -1,4 +1,4 @@
-package org.workcraft.gui.edit.work;
+package org.workcraft.gui.edit.graph;
 
 /**
  * The <code>GridListener</code> interface defines methods for classes that wish

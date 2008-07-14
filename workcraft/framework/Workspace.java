@@ -11,14 +11,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.WorkDocument;
+import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.framework.exceptions.DocumentOpenFailedException;
 import org.workcraft.util.XmlUtil;
 
 
 public class Workspace {
 	LinkedList<Document> entries = new LinkedList<Document>();
-	LinkedList<WorkDocument> openDocs = new LinkedList<WorkDocument>();
+	LinkedList<AbstractGraphModel> openDocs = new LinkedList<AbstractGraphModel>();
 	LinkedList<WorkspaceEventListener> eventListeners = new LinkedList<WorkspaceEventListener>();
 	Framework framework;
 
@@ -32,7 +32,7 @@ public class Workspace {
 	 */
 
 	public boolean isAlreadyOpen (File file) {
-		for (WorkDocument doc : openDocs ) {
+		for (AbstractGraphModel doc : openDocs ) {
 			if (doc.getSourcePath() != null)
 				if (doc.getSourcePath().equals(file.getPath()))
 					return true;
@@ -40,7 +40,7 @@ public class Workspace {
 		return false;
 	}
 
-	void fireDocumentOpened(WorkDocument doc) {
+	void fireDocumentOpened(AbstractGraphModel doc) {
 		for (WorkspaceEventListener listener : eventListeners)
 			listener.documentOpened(doc);
 	}
@@ -86,7 +86,7 @@ public class Workspace {
 	 * @return
 	 * @throws DocumentOpenFailedException
 	 */
-	public WorkDocument openDocument(String path) throws DocumentOpenFailedException {
+	public AbstractGraphModel openDocument(String path) throws DocumentOpenFailedException {
 		return null;
 	/*	File f = new File(path);
 
@@ -190,7 +190,7 @@ public class Workspace {
 			}*/
 	}
 
-	public void closeDocument (WorkDocument doc) {
+	public void closeDocument (AbstractGraphModel doc) {
 
 	}
 

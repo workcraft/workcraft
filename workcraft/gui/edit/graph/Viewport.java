@@ -1,4 +1,4 @@
-package org.workcraft.gui.edit.work;
+package org.workcraft.gui.edit.graph;
 
 import java.awt.Point;
 import java.awt.Rectangle;

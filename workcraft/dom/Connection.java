@@ -4,6 +4,15 @@ package org.workcraft.dom;
 public class Connection {
 	protected Component first;
 	protected Component second;
+	protected int ID;
+
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int id) {
+		ID = id;
+	}
 
 	public Component getFirst() {
 		return first;
@@ -17,4 +26,5 @@ public class Connection {
 		this.first = first;
 		this.second = second;
 	}
+
 }

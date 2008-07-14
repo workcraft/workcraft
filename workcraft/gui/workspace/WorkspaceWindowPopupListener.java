@@ -10,8 +10,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.workcraft.framework.Framework;
 import org.workcraft.framework.Document;
+import org.workcraft.framework.Framework;
 
 
 class WorkspaceWindowPopupListener extends MouseAdapter {

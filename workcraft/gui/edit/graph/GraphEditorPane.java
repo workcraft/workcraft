@@ -1,4 +1,4 @@
-package org.workcraft.gui.edit.work;
+package org.workcraft.gui.edit.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -18,7 +18,7 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
-public class EditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
+public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
 	private static final long serialVersionUID = 1L;
 
 	protected Viewport view;
@@ -30,7 +30,7 @@ public class EditorPane extends JPanel implements ComponentListener, MouseMotion
 
 	protected Color background = Color.WHITE;
 
-	public EditorPane() {
+	public GraphEditorPane() {
 		view = new Viewport(0, 0, this.getWidth(), this.getHeight());
 		grid = new Grid();
 		ruler = new Ruler();

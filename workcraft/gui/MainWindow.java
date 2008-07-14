@@ -14,8 +14,8 @@ import javax.swing.UIManager;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.framework.Framework;
+import org.workcraft.gui.edit.graph.GraphEditorWindow;
 import org.workcraft.gui.edit.text.TextEditorWindow;
-import org.workcraft.gui.edit.work.WorkEditorWindow;
 import org.workcraft.gui.workspace.FileFilters;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
@@ -97,7 +97,7 @@ public class MainWindow extends JFrame {
 		content.addFrame(consoleView);
 		content.addFrame(workspaceView);
 
-		InternalWindow doc1 = new WorkEditorWindow("Document 1");
+		InternalWindow doc1 = new GraphEditorWindow("Document 1");
 		//InternalWindow doc2 = new WorkEditorWindow("Document 2");
 		//InternalWindow doc3 = new TextEditorWindow("Document 3");
 

@@ -1,4 +1,4 @@
-package org.workcraft.gui.edit.work;
+package org.workcraft.gui.edit.graph;
 
 /**
  * Utility class that represents a horizontal or vertical guideline that facilitates editing by allowing

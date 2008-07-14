@@ -7,17 +7,14 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
-
-public class Component {
-	protected Component parent = null;
-	protected WorkDocument ownerDocument = null;
-	protected HashSet<Component> children = new HashSet<Component>();
-	protected HashSet<Component> preset = new HashSet<Component>();
-	protected HashSet<Component> postset = new HashSet<Component>();
-
+public abstract class Component {
 	protected int id = -1;
 	protected String label = "";
+
 	protected Hashtable<String, String> customProperties = new Hashtable<String, String>();
+
+	protected HashSet<Component> preset = new HashSet<Component>();
+	protected HashSet<Component> postset = new HashSet<Component>();
 
 	public Component() {
 	}
@@ -27,11 +24,11 @@ public class Component {
 		label = XmlUtil.readStringAttr(xmlElement, "label");
 	}
 
-	public void setId(Integer id) {
+	public void setID(Integer id) {
 		this.id = id;
 	}
 
-	public Integer getId() {
+	public Integer getID() {
 		return id;
 	}
 
@@ -43,6 +40,7 @@ public class Component {
 		preset.remove(component);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Component> getPreset() {
 		return (Set<Component>)preset.clone();
 	}
@@ -55,16 +53,9 @@ public class Component {
 		preset.remove(component);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Component> getPostset() {
 		return (Set<Component>)postset.clone();
-	}
-
-	public void addChild (Component component) {
-		children.add(component);
-	}
-
-	public HashSet<Component> getChildren() {
-		return (HashSet<Component>)children.clone();
 	}
 
 	public void toXml (Element componentElement) {

@@ -7,9 +7,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.workcraft.dom.WorkDocument;
-import org.workcraft.framework.Framework;
+import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.framework.Document;
+import org.workcraft.framework.Framework;
 import org.workcraft.framework.WorkspaceEventListener;
 import org.workcraft.gui.InternalWindow;
 
@@ -49,7 +49,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 		workspaceUpdated();
 	}
 
-	public void documentOpened(WorkDocument doc) {
+	public void documentOpened(AbstractGraphModel doc) {
 /*		Class<?> model = doc.getClass();
 		DefaultMutableTreeNode folder, docNode;
 

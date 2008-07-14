@@ -1,9 +1,10 @@
-package org.workcraft.dom;
+package org.workcraft.gui.edit.graph;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.dom.Component;
 
 public class ComponentGroup extends Component {
 	public ComponentGroup() {
@@ -16,10 +17,10 @@ public class ComponentGroup extends Component {
 			Element e = (Element)nl.item(i);
 			String class_name = e.getAttribute("class");
 			try {
-				Class cls = ClassLoader.getSystemClassLoader().loadClass(class_name);
-				Constructor ctor = cls.getConstructor(new Class[] {Element.class});
+				Class<?> cls = ClassLoader.getSystemClassLoader().loadClass(class_name);
+				Constructor<?> ctor = cls.getConstructor(new Class[] {Element.class});
 				Component n = (Component)ctor.newInstance();
-				addChild(n);
+				//addChild(n);
 			} catch (ClassNotFoundException ex) {
 				System.err.println("Failed to load class: "+ex.getMessage());
 				ex.printStackTrace();
@@ -42,10 +43,10 @@ public class ComponentGroup extends Component {
 
 	public void toXml(Element componentElement) {
 		super.toXml(componentElement);
-		for (Component c: children) {
-			Element childElement = componentElement.getOwnerDocument().createElement("component");
-			c.toXml(childElement);
-			componentElement.appendChild(childElement);
-		}
+//		for (Component c: children) {
+//			Element childElement = componentElement.getOwnerDocument().createElement("component");
+//			c.toXml(childElement);
+//			componentElement.appendChild(childElement);
+//		}
 	}
 }
