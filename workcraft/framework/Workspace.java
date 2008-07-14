@@ -12,7 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.AbstractGraphModel;
-import org.workcraft.framework.exceptions.DocumentOpenFailedException;
+import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.util.XmlUtil;
 
 
@@ -84,9 +84,9 @@ public class Workspace {
 	 * @param framework
 	 * @param path
 	 * @return
-	 * @throws DocumentOpenFailedException
+	 * @throws ModelLoadFailedException
 	 */
-	public AbstractGraphModel openDocument(String path) throws DocumentOpenFailedException {
+	public AbstractGraphModel openDocument(String path) throws ModelLoadFailedException {
 		return null;
 	/*	File f = new File(path);
 

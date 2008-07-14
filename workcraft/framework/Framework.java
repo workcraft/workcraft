@@ -19,7 +19,7 @@ import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.workcraft.framework.exceptions.DocumentOpenFailedException;
+import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.gui.LAF;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
