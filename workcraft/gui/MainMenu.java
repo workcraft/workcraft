@@ -15,14 +15,16 @@ public class MainMenu extends JMenuBar {
 			"Substance: Moderate",
 			"Substance: Mist Silver",
 			"Substance: Raven",
-			"Substance: Business"
+			"Substance: Business",
+			"Substance: Creme"
 		};
 	private String[] lafClasses = new String[] {
 			"javax.swing.plaf.metal.MetalLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceModerateLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel"
+			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
+			"org.jvnet.substance.skin.SubstanceFieldOfWheatLookAndFeel"
 		};
 
 	MainMenu(final MainWindow frame) {

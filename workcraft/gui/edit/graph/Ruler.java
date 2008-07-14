@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
  *
  */
 public class Ruler implements GridListener {
-	protected Color background = new Color(220, 235, 235);
+	protected Color background = new Color(0xE0f0e0);
 	protected Font font;
 	protected Color foreground = new Color(0, 0, 0);
 	protected String horizontalMajorCaptions[];
