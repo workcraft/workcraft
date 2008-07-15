@@ -79,6 +79,6 @@ public class XmlUtil {
 	}
 
 	public static void writeStringAttr (Element element, String attributeName, String value) {
-		element.setAttribute(attributeName, value);
+		element.setAttribute(attributeName, (value==null)?"":value);
 	}
 }

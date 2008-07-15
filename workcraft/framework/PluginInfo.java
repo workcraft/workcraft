@@ -3,7 +3,9 @@ package org.workcraft.framework;
 import java.lang.reflect.Field;
 
 import org.w3c.dom.Element;
+import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidPluginException;
+import org.workcraft.util.XmlUtil;
 
 
 public class PluginInfo {
@@ -24,8 +26,8 @@ public class PluginInfo {
 		try {
 			Field srcCaption = cls.getField("CAPTION");
 			caption = (String) srcCaption.get(null);
-			Field srcAppliedTo = cls.getField("APPLIED_TO");
-			appliedTo = (String[]) srcAppliedTo.get(null);
+//			Field srcAppliedTo = cls.getField("APPLIED_TO");
+			appliedTo = null; //(String[]) srcAppliedTo.get(null);
 		} catch(Exception e) {
 			throw(new InvalidPluginException(cls));
 		}
@@ -34,12 +36,18 @@ public class PluginInfo {
 		}
 	}
 
-	public PluginInfo(Element element) throws InvalidPluginException {
-		// TODO
+	public PluginInfo(Element element) throws InvalidPluginException, DocumentFormatException {
+		className = XmlUtil.readStringAttr(element, "className");
+		if(className==null || className.isEmpty())
+			throw new DocumentFormatException();
+		caption = XmlUtil.readStringAttr(element, "caption");
+//		type = Type.valueOf(XmlUtil.readStringAttr(element, "type"));
 	}
 
 	public void toXml(Element element) {
-		// TODO
+		XmlUtil.writeStringAttr(element, "className", className);
+		XmlUtil.writeStringAttr(element, "caption", caption);
+//		XmlUtil.writeStringAttr(element, "type", type.toString());
 	}
 
 	/**
