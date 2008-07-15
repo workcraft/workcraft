@@ -1,6 +1,7 @@
 package org.workcraft.dom;
 
 import org.w3c.dom.Element;
+import org.workcraft.util.XmlUtil;
 
 public class Connection {
 	protected Component first;
@@ -28,8 +29,19 @@ public class Connection {
 		this.second = second;
 	}
 
-	public Connection (Element xmlElement, AbstractGraphModel model) {
-
+	public void toXml (Element connectionElement) {
+		XmlUtil.writeIntAttr(connectionElement, "first", first.getID());
+		XmlUtil.writeIntAttr(connectionElement, "second", second.getID());
+		XmlUtil.writeIntAttr(connectionElement, "ID", this.getID());
 	}
 
+	public Connection (Element xmlElement, AbstractGraphModel model) {
+		ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
+
+		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);
+		int secondID = XmlUtil.readIntAttr(xmlElement, "first", -1);
+
+		first = model.getComponentByID(firstID);
+		second = model.getComponentByID(secondID);
+	}
 }

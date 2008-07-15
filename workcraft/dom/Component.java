@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
 public abstract class Component {
-	protected int id = -1;
+	protected int ID = -1;
 	protected String label = "";
 
 	protected Hashtable<String, String> customProperties = new Hashtable<String, String>();
@@ -20,16 +20,16 @@ public abstract class Component {
 	}
 
 	public Component (Element xmlElement) {
-		id = XmlUtil.readIntAttr(xmlElement, "id", id);
+		ID = XmlUtil.readIntAttr(xmlElement, "ID", ID);
 		label = XmlUtil.readStringAttr(xmlElement, "label");
 	}
 
 	public void setID(Integer id) {
-		this.id = id;
+		this.ID = id;
 	}
 
 	public Integer getID() {
-		return id;
+		return ID;
 	}
 
 	public void addToPreset (Component component) {
@@ -59,7 +59,7 @@ public abstract class Component {
 	}
 
 	public void toXml (Element componentElement) {
-		XmlUtil.writeIntAttr(componentElement, "id", id);
+		XmlUtil.writeIntAttr(componentElement, "ID", ID);
 		XmlUtil.writeStringAttr(componentElement, "label", label);
 		XmlUtil.writeStringAttr(componentElement, "class", this.getClass().getName());
 	}
