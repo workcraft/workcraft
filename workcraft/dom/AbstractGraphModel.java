@@ -4,10 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;
@@ -15,6 +13,7 @@ import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.util.XmlUtil;
 
 public abstract class AbstractGraphModel {
 	protected int componentIDCounter = 1;
@@ -35,8 +34,11 @@ public abstract class AbstractGraphModel {
 	}
 
 	public AbstractGraphModel (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
-		this.framework = framework;
+		this(framework);
+
 		this.sourcePath = sourcePath;
+
+		title = XmlUtil.readStringAttr(xmlModelElement, "title");
 
 		NodeList componentNodes = xmlModelElement.getElementsByTagName("component");
 		for (int i = 0; i < componentNodes.getLength(); i++) {
@@ -112,6 +114,24 @@ public abstract class AbstractGraphModel {
 		}
 	}
 
+	public void toXML (Element modelElement) {
+		XmlUtil.writeStringAttr(modelElement, "title", title);
+
+		for (Component c: components.values()) {
+			Element componentElement = modelElement.getOwnerDocument().createElement("component");
+			componentElement.setAttribute("class", c.getClass().getName());
+			c.toXML(componentElement);
+			modelElement.appendChild(componentElement);
+		}
+
+		for (Connection c: connections.values()) {
+			Element connectionElement = modelElement.getOwnerDocument().createElement("connection");
+			connectionElement.setAttribute("class", c.getClass().getName());
+			c.toXML(connectionElement);
+			modelElement.appendChild(connectionElement);
+		}
+	}
+
 	public Collection<Component> getComponents() {
 		return components.values();
 	}
@@ -154,11 +174,11 @@ public abstract class AbstractGraphModel {
 	}
 
 	public int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
-		if (!getSupportedComponents().contains(component.getClass()))
-			if (autoAssignID)
-				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
-			else
-				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
+//		if (getSupportedComponents() == null || !getSupportedComponents().contains(component.getClass()))
+//			if (autoAssignID)
+//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
+//			else
+//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
 
 		if (autoAssignID)
 			component.setID(generateComponentID());
@@ -183,7 +203,7 @@ public abstract class AbstractGraphModel {
 		validateConnection (connection);
 
 		if (autoAssignID)
-			connection.setID(generateComponentID());
+			connection.setID(generateConnectionID());
 		else {
 			if (connections.get(connection.getID()) != null)
 				throw new DuplicateIDException (connection.getID());
@@ -197,13 +217,32 @@ public abstract class AbstractGraphModel {
 		return connection.getID();
 	}
 
+	public Connection createConnection (Component first, Component second) throws InvalidConnectionException {
+		Connection con = new Connection(first, second);
+		try {
+			addConnection(con);
+		} catch (DuplicateIDException e) {
+			// Should never happen
+			e.printStackTrace();
+		}
+		return con;
+	}
+
+	public Connection connect (Component first, Component second) throws InvalidConnectionException {
+		return createConnection (first, second);
+	}
+
 	public void removeConnection (Connection connection) {
 		connection.getFirst().removeFromPostset(connection.getSecond());
 		connection.getSecond().removeFromPreset(connection.getFirst());
 		connections.remove(connection);
 	}
 
-	abstract public Set<Class<?>> getSupportedComponents();
+	abstract public Class<?>[] getSupportedComponents();
 	abstract protected void validateConnection(Connection connection) throws InvalidConnectionException;
 	abstract public void validate() throws ModelValidationException;
+
+	public Connection getConnectionByID(int ID) {
+		return connections.get(ID);
+	}
 }

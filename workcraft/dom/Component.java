@@ -11,6 +11,14 @@ public abstract class Component {
 	protected int ID = -1;
 	protected String label = "";
 
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 	protected Hashtable<String, String> customProperties = new Hashtable<String, String>();
 
 	protected HashSet<Component> preset = new HashSet<Component>();
@@ -58,7 +66,7 @@ public abstract class Component {
 		return (Set<Component>)postset.clone();
 	}
 
-	public void toXml (Element componentElement) {
+	public void toXML (Element componentElement) {
 		XmlUtil.writeIntAttr(componentElement, "ID", ID);
 		XmlUtil.writeStringAttr(componentElement, "label", label);
 		XmlUtil.writeStringAttr(componentElement, "class", this.getClass().getName());

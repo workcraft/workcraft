@@ -1,6 +1,7 @@
 package org.workcraft;
 
 import java.io.*;
+import java.util.LinkedList;
 
 import org.mozilla.javascript.*;
 import org.workcraft.framework.*;
@@ -9,10 +10,19 @@ import org.workcraft.framework.*;
 public class Console {
 
 	public static void main(String[] args) {
-		boolean silent = false;
+		LinkedList<String> arglist = new LinkedList<String>();
+
 		for (String s: args) {
-			if (s.equals("-silent"))
+			arglist.push(s);
+		}
+
+		boolean silent = false;
+
+		for (String s: args) {
+			if (s.equals("-silent")) {
 				silent = true;
+				arglist.remove(s);
+			}
 		}
 
 		if (!silent)
@@ -44,16 +54,29 @@ public class Console {
 			System.out.println("Startup complete.\n\n");
 
 		for (String arg: args) {
-			if (arg.equals("-gui"))
+			if (arg.equals("-gui")) {
 				framework.startGUI();
-			if (arg.startsWith("-exec:"))
+				arglist.remove(arg);
+			}
+			if (arg.startsWith("-exec:")) {
+				arglist.remove(arg);
+
+				framework.setArgs(arglist);
+
 				try {
 					if (!silent)
 						System.out.println ("Executing "+ arg.substring(6) + "...");
 					framework.execJavaScript(new File (arg.substring(6)));
 				} catch (FileNotFoundException e) {
 					System.err.println ("Script specified from command line not found: "+arg);
+				} catch (org.mozilla.javascript.WrappedException e) {
+					e.getWrappedException().printStackTrace();
+					System.exit(1);
+				} catch (org.mozilla.javascript.RhinoException e) {
+					System.err.println(e.getMessage());
+					System.exit(1);
 				}
+			}
 		}
 
 
@@ -93,7 +116,7 @@ public class Console {
 					}
 					catch (org.mozilla.javascript.WrappedException e) {
 
-						System.err.println(e.getWrappedException().getClass().getName()+" "+e.getWrappedException().getMessage());
+						System.err.println(e.getWrappedException().getMessage());
 					}
 					catch (org.mozilla.javascript.RhinoException e) {
 						System.err.println(e.getMessage());

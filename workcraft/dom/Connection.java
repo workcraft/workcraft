@@ -29,7 +29,7 @@ public class Connection {
 		this.second = second;
 	}
 
-	public void toXml (Element connectionElement) {
+	public void toXML (Element connectionElement) {
 		XmlUtil.writeIntAttr(connectionElement, "first", first.getID());
 		XmlUtil.writeIntAttr(connectionElement, "second", second.getID());
 		XmlUtil.writeIntAttr(connectionElement, "ID", this.getID());
