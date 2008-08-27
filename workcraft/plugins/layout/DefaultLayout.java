@@ -1,4 +1,4 @@
-package org.workcraft.framework.plugins.layout;
+package org.workcraft.plugins.layout;
 
 import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.dom.visual.VisualAbstractGraphModel;

@@ -1,4 +1,4 @@
-package org.workcraft.framework.plugins.graph;
+package org.workcraft.plugins.graph;
 
 import org.workcraft.dom.visual.VisualAbstractGraphModel;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
