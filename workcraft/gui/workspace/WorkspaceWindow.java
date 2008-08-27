@@ -20,7 +20,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 	private JTree workspaceTree = null;
 
 	private Framework framework;
-	private DefaultMutableTreeNode workspaceRoot;  //  @jve:decl-index=0:
+	private DefaultMutableTreeNode workspaceRoot;
 	private HashMap<String, DefaultMutableTreeNode> folders = new HashMap<String, DefaultMutableTreeNode>();
 	private HashMap<Document, DefaultMutableTreeNode> entries = new HashMap<Document, DefaultMutableTreeNode>();
 

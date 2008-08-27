@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.framework.plugins;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,7 @@ public class PluginManager {
 	public static final String DEFAULT_MANIFEST = "plugins.xml";
 	public static final String INTERNAL_PLUGINS_PATH = "org" + File.separator + "workcraft"
 			+ File.separator + "plugins";
-	public static final String EXTERNAL_PLUGINS_PATH = "contrib";
+	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
 
 	private class ClassFileFilter implements FilenameFilter {
 		@Override
@@ -88,7 +88,6 @@ public class PluginManager {
 
 	public void loadManifest() throws IOException, DocumentFormatException {
 		loadManifest(DEFAULT_MANIFEST);
-
 	}
 
 	public void loadManifest(String path) throws IOException, DocumentFormatException {

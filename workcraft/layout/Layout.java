@@ -1,4 +1,4 @@
-package org.workcraft.plugins.layout;
+package org.workcraft.layout;
 
 import org.workcraft.dom.visual.VisualAbstractGraphModel;
 import org.workcraft.framework.exceptions.LayoutFailedException;

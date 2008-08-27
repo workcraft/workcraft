@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.framework.plugins;
 
 public abstract class Plugin {
 

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.layout;
+package org.workcraft.layout;
 
 public @interface LayoutMeta {
 	String displayName();

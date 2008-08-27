@@ -36,6 +36,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.MainWindow;
 import org.xml.sax.SAXException;
 

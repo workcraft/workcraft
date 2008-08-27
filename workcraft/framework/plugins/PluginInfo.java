@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.framework.plugins;
 
 import java.lang.reflect.Field;
 

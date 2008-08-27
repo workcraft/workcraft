@@ -228,16 +228,13 @@ public class Workspace {
 			return;
 		}
 
-		Element root = doc.createElement("workcraft");
+		Element root = doc.createElement("workcraft-workspace");
 		doc.appendChild(root);
-		root = doc.getDocumentElement();
 
-		Element works = doc.createElement("workspace");
-		root.appendChild(works);
 		for(Document we : entries) {
-			Element e = doc.createElement("entity");
+			Element e = doc.createElement("item");
 			we.toXml(e);
-			works.appendChild(e);
+			root.appendChild(e);
 		}
 
 		try {

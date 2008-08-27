@@ -1,4 +1,4 @@
-package org.workcraft.plugins.graph;
+package org.workcraft.framework.plugins.graph;
 
 import java.util.Set;
 

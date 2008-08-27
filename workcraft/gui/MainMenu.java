@@ -24,7 +24,7 @@ public class MainMenu extends JMenuBar {
 			"org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceFieldOfWheatLookAndFeel"
+			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
 		};
 
 	MainMenu(final MainWindow frame) {

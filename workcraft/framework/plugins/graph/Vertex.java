@@ -1,4 +1,4 @@
-package org.workcraft.plugins.graph;
+package org.workcraft.framework.plugins.graph;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
