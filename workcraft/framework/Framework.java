@@ -35,8 +35,10 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
 import org.xml.sax.SAXException;
 
@@ -123,11 +125,10 @@ public class Framework {
 		}
 	}
 
-	private PluginManager pluginManager = new PluginManager();
-	private ModelManager modelManager = new ModelManager();
-	private Config config = new Config();
-	private Workspace workspace = new Workspace(this);
-	private HashMap <String, Tool> toolInstances = new HashMap <String, Tool>();
+	private PluginManager pluginManager;
+	private ModelManager modelManager;
+	private Config config ;
+	private Workspace workspace;
 
 	private ScriptableObject systemScope;
 	private Scriptable globalScope;
@@ -139,9 +140,17 @@ public class Framework {
 	private boolean shutdownRequested = false;
 	private boolean silent = false;
 
-	private Stack <HistoryEvent> undoStack = new Stack<HistoryEvent>();
-	private Stack <HistoryEvent> redoStack = new Stack<HistoryEvent>();
 	private MainWindow mainFrame;
+
+	public Framework() {
+		pluginManager = new PluginManager(this);
+		modelManager = new ModelManager();
+		config = new Config();
+		workspace = new Workspace(this);
+		javaScriptExecution = new JavaScriptExecution();
+		javaScriptCompilation = new JavaScriptCompilation();
+	}
+
 
 	/*	public void loadPlugins(String directory) {
 		System.out.println("Loading plugin class manifest from \""+directory+"\"\t ...");
@@ -214,20 +223,6 @@ public class Framework {
 		else
 			return Boolean.parseBoolean(s);
 	}
-
-
-	public void registerToolInstance (Tool tool) {
-		toolInstances.put(tool.getClass().getName(), tool);
-	}
-
-	public Tool getToolInstance (String className) {
-		return (Tool) toolInstances.get(className);
-	}
-
-	public Tool getToolInstance (Class cls) {
-		return getToolInstance (cls.getName());
-	}
-
 
 	public String[] getModelNames() {
 		LinkedList<Class> list = modelManager.getModelList();
@@ -479,5 +474,19 @@ public class Framework {
 		} catch (IOException e) {
 			throw new ModelSaveFailedException("IO error: "+ e.getMessage());
 		}
+	}
+
+	public void initPlugins() {
+		if (!silent)
+			System.out.println ("Loading plugins configuration...");
+
+		try {
+			pluginManager.loadManifest();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DocumentFormatException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

@@ -7,7 +7,10 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,18 +20,23 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidPluginException;
+import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 // TODO check for all documents to be closed before loadManifest or reconfigure
 
 public class PluginManager {
-	public static final String DEFAULT_MANIFEST = "plugins.xml";
+	public static final String DEFAULT_MANIFEST = "config"+File.separator+"plugins.xml";
 	public static final String INTERNAL_PLUGINS_PATH = "org" + File.separator + "workcraft"
-			+ File.separator + "plugins";
+	+ File.separator + "plugins";
 	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
+
+	private Framework framework;
+	private HashMap <String, Plugin> singletons;
 
 	private class ClassFileFilter implements FilenameFilter {
 		@Override
@@ -45,7 +53,7 @@ public class PluginManager {
 
 	private class PluginClassLoader extends ClassLoader {
 		protected Class<?> findClass(File f) throws ClassNotFoundException, ClassFormatError,
-				IOException {
+		IOException {
 			InputStream in = null;
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
 
@@ -70,12 +78,9 @@ public class PluginManager {
 	private LinkedList<PluginInfo> plugins = new LinkedList<PluginInfo>();
 	private PluginClassLoader activeLoader = null;
 
-	public PluginManager() {
-		try {
-			loadManifest();
-		} catch(Exception e) {
-			System.err.println(e.getMessage());
-		}
+	public PluginManager(Framework framework) {
+		this.framework = framework;
+		singletons = new HashMap<String, Plugin>();
 	}
 
 	public void printPluginList() {
@@ -114,23 +119,14 @@ public class PluginManager {
 		}
 
 		Element xmlroot = doc.getDocumentElement();
-		if(!xmlroot.getNodeName().equals("workcraft")) {
-			throw(new DocumentFormatException());
-		}
-		NodeList nl = xmlroot.getElementsByTagName("pluginManifest");
-		Element d = (Element) nl.item(0);
-		if(d == null)
+		if (!xmlroot.getNodeName().equals("workcraft-plugins"))
 			throw(new DocumentFormatException());
 
-		nl = d.getElementsByTagName("plugin");
+		NodeList nl = xmlroot.getElementsByTagName("plugin");
 		plugins.clear();
 		for(int i = 0; i < nl.getLength(); i++) {
-			try {
-				PluginInfo info = new PluginInfo((Element) nl.item(i));
-				plugins.add(info);
-			} catch(InvalidPluginException e) {
-				throw new DocumentFormatException();
-			}
+			PluginInfo info = new PluginInfo((Element) nl.item(i));
+			plugins.add(info);
 		}
 	}
 
@@ -150,16 +146,14 @@ public class PluginManager {
 			return;
 		}
 
-		Element root = doc.createElement("workcraft");
+		Element root = doc.createElement("workcraft-plugins");
 		doc.appendChild(root);
 		root = doc.getDocumentElement();
 
-		Element man = doc.createElement("pluginManifest");
-		root.appendChild(man);
 		for(PluginInfo info : plugins) {
 			Element e = doc.createElement("plugin");
 			info.toXml(e);
-			man.appendChild(e);
+			root.appendChild(e);
 		}
 
 		XmlUtil.saveDocument(doc, path);
@@ -183,13 +177,9 @@ public class PluginManager {
 						cls = activeLoader.findClass(f);
 
 						if(Plugin.class.isAssignableFrom(cls)) {
-							try {
-								PluginInfo info = new PluginInfo(cls);
-								plugins.add(info);
-								System.out.println("  plugin found: " + cls.getName());
-							} catch(InvalidPluginException e) {
-								System.out.println("  invalid plugin: " + e.getMessage());
-							}
+							PluginInfo info = new PluginInfo(cls);
+							plugins.add(info);
+							System.out.println("  plugin found: " + cls.getName());
 						} else
 							System.out.println("  not a plugin class, ignored");
 
@@ -227,42 +217,73 @@ public class PluginManager {
 		}
 	}
 
-	public PluginInfo[] getPlugins(PluginInfo.Type type, String appliedTo) {
+	public PluginInfo[] getPluginInfo(String interfaceName) {
 		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
-		for(PluginInfo info : plugins) {
-			if(info.getType() != type)
-				continue;
-			if(appliedTo == null) {
-				list.add(info);
-			} else if(info.getAppliedTo() != null) {
-				for(String s : info.getAppliedTo()) {
-					if(appliedTo.equals(s)) {
-						list.add(info);
-						break;
-					}
-				}
+		for(PluginInfo info : plugins)
+			for (String s: info.getInterfaces())
+				if (s.equals(interfaceName))
+					list.add(info);
+		return list.toArray(new PluginInfo[0]);
+	}
+
+	public Plugin getInstance(PluginInfo info) throws PluginInstantiationException {
+		boolean useFramework = true;
+		Class<?> cls;
+
+		try {
+			cls = info.loadClass();
+		} catch (ClassNotFoundException e) {
+			throw new PluginInstantiationException ("Class not found: " + info.getClassName() + "(" + e.getMessage()+ ")");
+		}
+
+		Constructor<?> ctor = null;
+
+		try {
+			ctor = cls.getConstructor(new Class<?>[] { Framework.class });
+		} catch (SecurityException e) {
+		} catch (NoSuchMethodException e) {
+		}
+
+		if (ctor == null) {
+			try {
+				useFramework = false;
+				ctor = cls.getConstructor(new Class<?>[] { });
+			} catch (SecurityException e) {
+			} catch (NoSuchMethodException e) {
 			}
 		}
-		return (PluginInfo[]) list.toArray();
-	}
 
-	@SuppressWarnings("unchecked")
-	public Plugin getPluginInstance(Class<?> cls) {
+
+		if (ctor == null)
+			throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" does not define an appropriate constructor or the constructor is inaccessible. " +
+			"A constructor which takes a Framework argument, or a constructor without agruments must be accessible.");
+
 		try {
-			Class<Plugin> plugin = (Class<Plugin>) cls;
-			Method getInstance = plugin.getMethod("getInstance");
-			return (Plugin) getInstance.invoke(null);
-		} catch(ClassCastException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch(NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch(Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Plugin ret;
+
+			if (useFramework)
+				ret = (Plugin) ctor.newInstance(framework);
+			else
+				ret = (Plugin) ctor.newInstance();
+
+			return ret;
+		} catch (IllegalArgumentException e) {
+			throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
 		}
-		return null;
 	}
 
+	public Plugin getSingleton(PluginInfo info) throws PluginInstantiationException {
+		Plugin ret = singletons.get(info.getClassName());
+		if (ret == null) {
+			ret = getInstance(info);
+			singletons.put(info.getClassName(), ret);
+		}
+		return ret;
+	}
 }

@@ -3,76 +3,80 @@ package org.workcraft.framework.plugins;
 import java.lang.reflect.Field;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.workcraft.dom.DisplayName;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidPluginException;
 import org.workcraft.util.XmlUtil;
 
 
 public class PluginInfo {
-	public enum Type {
-		MODEL,
-		COMPONENT,
-		DOCUMENT_TOOL,
-		FILE_TOOL
-	}
+	private String displayName;
 
-	private String caption;
 	private String className;
-	private String[] appliedTo;
-	private Type type;
+	private String[] interfaceNames;
 
-	public PluginInfo(Class<?> cls) throws InvalidPluginException {
+	public PluginInfo(Class<?> cls) {
 		className = cls.getName();
-		try {
-			Field srcCaption = cls.getField("CAPTION");
-			caption = (String) srcCaption.get(null);
-//			Field srcAppliedTo = cls.getField("APPLIED_TO");
-			appliedTo = null; //(String[]) srcAppliedTo.get(null);
-		} catch(Exception e) {
-			throw(new InvalidPluginException(cls));
-		}
-		if(caption==null) {
-			caption = className.substring(className.lastIndexOf('.')+1);
+
+		DisplayName name = cls.getAnnotation(DisplayName.class);
+
+		if(name==null)
+			displayName = className.substring(className.lastIndexOf('.')+1);
+		else
+			displayName = name.value();
+
+		Class<?>[] interfaces = cls.getInterfaces();
+		interfaceNames = new String[interfaces.length];
+		int j = 0;
+
+		for (Class<?> i : interfaces) {
+			interfaceNames[j++] = i.getName();
 		}
 	}
 
-	public PluginInfo(Element element) throws InvalidPluginException, DocumentFormatException {
-		className = XmlUtil.readStringAttr(element, "className");
+	public PluginInfo(Element element) throws DocumentFormatException {
+		className = XmlUtil.readStringAttr(element, "class");
 		if(className==null || className.isEmpty())
 			throw new DocumentFormatException();
-		caption = XmlUtil.readStringAttr(element, "caption");
-//		type = Type.valueOf(XmlUtil.readStringAttr(element, "type"));
+
+		displayName = XmlUtil.readStringAttr(element, "displayName");
+		if (displayName.isEmpty())
+			displayName = className.substring(className.lastIndexOf('.')+1);
+
+		NodeList nl = element.getElementsByTagName("interface");
+		interfaceNames = new String[nl.getLength()];
+
+		for (int i=0; i<nl.getLength(); i++) {
+			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("class");
+		}
 	}
 
 	public void toXml(Element element) {
-		XmlUtil.writeStringAttr(element, "className", className);
-		XmlUtil.writeStringAttr(element, "caption", caption);
-//		XmlUtil.writeStringAttr(element, "type", type.toString());
+		XmlUtil.writeStringAttr(element, "class", className);
+		XmlUtil.writeStringAttr(element, "displayName", displayName);
+
+		for (String i : interfaceNames) {
+			Element e = element.getOwnerDocument().createElement("interface");
+			e.setAttribute("class", i);
+			element.appendChild(e);
+		}
 	}
 
-	/**
-	 * @return the menu caption
-	 */
-	public String getCaption() {
-		return caption;
+	public Class<?> loadClass() throws ClassNotFoundException {
+		return Class.forName(className);
 	}
-	/**
-	 * @return the plugin class name
-	 */
+
+	public String[] getInterfaces() {
+		return interfaceNames.clone();
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
 	public String getClassName() {
 		return className;
-	}
-	/**
-	 * @return the array of file extensions or plugin class names to which this plugin is applied to
-	 */
-	public String[] getAppliedTo() {
-		return appliedTo;
-	}
-	/**
-	 * @return the plugin type
-	 */
-	public Type getType() {
-		return type;
 	}
 
 }

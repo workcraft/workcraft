@@ -35,7 +35,7 @@ public class MainWindow extends JFrame {
 
 	public void createViews() {
 		workspaceView  = new WorkspaceWindow(framework);
-		framework.getWorkspace().addEventListener(workspaceView);
+		framework.getWorkspace().addListener(workspaceView);
 		workspaceView.setVisible(true);
 
 		consoleView = new ConsoleWindow(framework);

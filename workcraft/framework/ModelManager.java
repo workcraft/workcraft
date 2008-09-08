@@ -220,46 +220,5 @@ public class ModelManager {
 		}
 	}
 
-	public void addTool (Class cls, Framework server) {
-		try
-		{
-			String model_uuid = (String)cls.getField("_modeluuid").get(null);
-			String component_name = (String)cls.getField("_displayname").get(null);
 
-			Tool tool =(Tool) cls.newInstance();
-			tool.init(null);
-			server.registerToolInstance(tool);
-
-			if (model_uuid.equals("*")) {
-				multi_tool_list.add(tool);
-			} else {
-				UUID uuid = UUID.fromString(model_uuid);
-
-				if (uuid_model_map.get(uuid)==null) {
-					System.err.println ("Tool "+component_name+"(class "+cls.getName()+") refers to unknown model (id "+uuid.toString()+"), skipping");
-					return;
-				}
-
-				LinkedList<Class> list = uuid_tool_list_map.get(uuid);
-
-				if (list == null)
-				{
-					list = new LinkedList<Class>();
-					uuid_tool_list_map.put(uuid, list);
-				}
-
-				list.add(cls);
-			}
-
-			System.out.println("\t"+component_name+"\t OK");
-		}
-		catch (NoSuchFieldException e) {
-			System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
-		}
-		catch (IllegalAccessException e) {
-			System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-	}
 }

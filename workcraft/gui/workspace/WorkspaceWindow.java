@@ -1,5 +1,6 @@
 package org.workcraft.gui.workspace;
 
+import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.JScrollPane;
@@ -8,21 +9,21 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.workcraft.dom.AbstractGraphModel;
-import org.workcraft.framework.Document;
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.WorkspaceEventListener;
+import org.workcraft.framework.workspace.WorkspaceListener;
 import org.workcraft.gui.InternalWindow;
 
 
 @SuppressWarnings("serial")
-public class WorkspaceWindow extends InternalWindow implements WorkspaceEventListener {
+public class WorkspaceWindow extends InternalWindow implements WorkspaceListener {
 	private JScrollPane scrollPane = null;
 	private JTree workspaceTree = null;
 
 	private Framework framework;
+
 	private DefaultMutableTreeNode workspaceRoot;
 	private HashMap<String, DefaultMutableTreeNode> folders = new HashMap<String, DefaultMutableTreeNode>();
-	private HashMap<Document, DefaultMutableTreeNode> entries = new HashMap<Document, DefaultMutableTreeNode>();
+	private HashMap<File, DefaultMutableTreeNode> entries = new HashMap<File, DefaultMutableTreeNode>();
 
 	public WorkspaceWindow(Framework framework) {
 		super("Workspace");
@@ -32,7 +33,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 	public void startup() {
 		scrollPane = new JScrollPane();
 
-		workspaceRoot = new DefaultMutableTreeNode("(unnamed)");
+		workspaceRoot = new DefaultMutableTreeNode("[new workspace]");
 
 		workspaceTree = new JTree();
 		workspaceTree.setModel(new DefaultTreeModel(workspaceRoot));
@@ -46,7 +47,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 		this.setLocation(framework.getConfigVarAsInt("gui.workspace.x", 0), framework.getConfigVarAsInt("gui.workspace.y", 0));
 		this.setSize(framework.getConfigVarAsInt("gui.workspace.width", 500), framework.getConfigVarAsInt("gui.workspace.height", 300));
 
-		workspaceUpdated();
+		workspaceChanged();
 	}
 
 	public void documentOpened(AbstractGraphModel doc) {
@@ -76,20 +77,32 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 	}
 
 	@Override
-	public void workspaceUpdated() {
-		workspaceRoot.setUserObject(framework.getWorkspace().getTitle());
+	public void workspaceChanged() {
+		String title = framework.getWorkspace().getFilePath();
+		if (title.isEmpty())
+			title = "new workspace";
+		title = "[" + title + "]";
+		if (framework.getWorkspace().isChanged())
+			title = "*" + title;
 
-		HashMap<Document, DefaultMutableTreeNode> newEntries =
-			new HashMap<Document, DefaultMutableTreeNode>();
-		for(Document we : framework.getWorkspace().entries()) {
+		workspaceRoot.setUserObject(title);
+
+		HashMap<File, DefaultMutableTreeNode> newEntries =
+			new HashMap<File, DefaultMutableTreeNode>();
+
+		for(File we : framework.getWorkspace().entries()) {
 			DefaultMutableTreeNode node;
 			if(entries.containsKey(we)) {
 				node = entries.get(we);
 			}
 			else {
-				String folderName;
-	//			TODO if(we.isDocument())
-				folderName = we.getExtension().toUpperCase();
+				String folderName = "";
+		        String s = we.getName();
+		        int i = s.lastIndexOf('.');
+
+		        if (i > 0 &&  i < s.length() - 1) {
+		            folderName = s.substring(i+1).toLowerCase();
+		        }
 				DefaultMutableTreeNode folderNode = folders.get(folderName);
 				if(folderNode==null) {
 					folderNode = new DefaultMutableTreeNode(folderName) ;
@@ -97,10 +110,11 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 					folders.put(folderName, folderNode);
 				}
 				node = new DefaultMutableTreeNode();
-				node.setUserObject(we);
+				node.setUserObject(new WorkspaceEntry(we));
 				folderNode.add(node);
 			}
 			newEntries.put(we, node);
+
 			if(entries!=null)
 				entries.remove(we);
 		}
@@ -116,6 +130,18 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceEventLis
 		}
 		workspaceTree.updateUI();
 		entries = newEntries;
+	}
+
+	@Override
+	public void workspaceSaved() {
+		String title = framework.getWorkspace().getFilePath();
+		if (title.isEmpty())
+			title = "new workspace";
+		title = "[" + title + "]";
+		if (framework.getWorkspace().isChanged())
+			title = "*" + title;
+
+		workspaceRoot.setUserObject(title);
 	}
 
 }

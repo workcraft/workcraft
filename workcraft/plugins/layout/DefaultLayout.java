@@ -1,11 +1,12 @@
 package org.workcraft.plugins.layout;
 
 import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.VisualAbstractGraphModel;
 import org.workcraft.layout.Layout;
-import org.workcraft.layout.LayoutMeta;
 
-@LayoutMeta(displayName="Default")
+
+@DisplayName("Default")
 public class DefaultLayout implements Layout {
 	@Override
 	public void doLayout(VisualAbstractGraphModel model) {

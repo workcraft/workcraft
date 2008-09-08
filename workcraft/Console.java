@@ -38,6 +38,7 @@ public class Console {
 		BufferedReader in = new BufferedReader (new InputStreamReader (System.in));
 
 		framework.initJavaScript();
+		framework.initPlugins();
 
 		if (!silent)
 			System.out.println ("Running startup scripts...");
