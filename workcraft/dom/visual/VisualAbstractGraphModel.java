@@ -142,4 +142,8 @@ public class VisualAbstractGraphModel {
 		root.toXML(rootGroupElement);
 		xmlVisualElement.appendChild(rootGroupElement);
 	}
+
+	public VisualComponentGroup getRoot() {
+		return root;
+	}
 }

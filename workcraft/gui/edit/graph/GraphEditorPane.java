@@ -18,8 +18,12 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
+import org.workcraft.dom.visual.VisualAbstractGraphModel;
+
 public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
 	private static final long serialVersionUID = 1L;
+
+	protected VisualAbstractGraphModel document;
 
 	protected Viewport view;
 	protected Grid grid;
@@ -30,7 +34,8 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 	protected Color background = Color.WHITE;
 
-	public GraphEditorPane() {
+	public GraphEditorPane(VisualAbstractGraphModel document) {
+		this.document = document;
 		view = new Viewport(0, 0, this.getWidth(), this.getHeight());
 		grid = new Grid();
 		ruler = new Ruler();
@@ -48,42 +53,16 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setBackground(background);
 
-		//g2d.clipRect(20, 20, this.getWidth()-20, this.getHeight()-20);
-
-	//	g2d.setColor(Color.RED);
 		g2d.clearRect(0, 0, getWidth(), getHeight());
 
 		grid.draw(g2d);
-		//g2d.drawRect(100, 100, this.getWidth()-200, this.getHeight()-200);
 
-
-
-	//	g2d.setClip(0, 0, getWidth(), getHeight());
 		AffineTransform rest = g2d.getTransform();
 
-
 		g2d.transform(view.getTransform());
-
-
-
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		Shape qw = new java.awt.geom.Rectangle2D.Double( 0, 0, 1, 1);
-
-
-
-		g2d.setStroke(new BasicStroke(0.05f));
-	//	g2d.draw(qw);
-
-		for (int i=0; i<10; i++) {
-			g2d.translate(0, 1.2);
-			for (int j=0; j<100; j++) {
-				g2d.translate(1.2, 0);
-				g2d.draw(qw);
-			}
-
-			g2d.translate (-120, 0);
-		}
+		document.getRoot().draw(g2d);
 
 		g2d.setTransform(rest);
 		ruler.draw(g2d);
@@ -170,4 +149,9 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		repaint();
 
 	}
+
+	public void setDocument(VisualAbstractGraphModel document) {
+
+	}
+
 }

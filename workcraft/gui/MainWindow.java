@@ -14,10 +14,13 @@ import javax.swing.UIManager;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.framework.Framework;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.gui.edit.graph.GraphEditorWindow;
 import org.workcraft.gui.edit.text.TextEditorWindow;
 import org.workcraft.gui.workspace.FileFilters;
 import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.VisualPetriNet;
 
 
 public class MainWindow extends JFrame {
@@ -97,27 +100,18 @@ public class MainWindow extends JFrame {
 		content.addFrame(consoleView);
 		content.addFrame(workspaceView);
 
-		InternalWindow doc1 = new GraphEditorWindow("Document 1");
-		//InternalWindow doc2 = new WorkEditorWindow("Document 2");
-		//InternalWindow doc3 = new TextEditorWindow("Document 3");
 
-
-
-		doc1.setSize(500, 300);
-		//doc2.setSize(500, 300);
-		//doc3.setSize(500, 300);
-
-		doc1.setLocation(10, 10);
-		//doc2.setLocation(20, 20);
-		//doc3.setLocation(30, 30);
-
-		content.addFrame(doc1);
-		//content.addFrame(doc2);
-		//content.addFrame(doc3);
-
-		doc1.setVisible(true);
-		//doc2.setVisible(true);
-		//doc3.setVisible(true);
+		VisualPetriNet vpn;
+		try {
+			vpn = new VisualPetriNet(new PetriNet(framework));
+			InternalWindow doc1 = new GraphEditorWindow("Document 1", vpn);
+			doc1.setSize(500, 300);
+			doc1.setLocation(10, 10);
+			content.addFrame(doc1);
+			doc1.setVisible(true);
+		} catch (VisualModelConstructionException e) {
+			e.printStackTrace();
+		}
 
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
