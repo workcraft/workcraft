@@ -1,8 +1,10 @@
 package org.workcraft.gui.workspace;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.util.HashMap;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -11,11 +13,10 @@ import javax.swing.tree.DefaultTreeModel;
 import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.workspace.WorkspaceListener;
-import org.workcraft.gui.InternalWindow;
 
 
 @SuppressWarnings("serial")
-public class WorkspaceWindow extends InternalWindow implements WorkspaceListener {
+public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 	private JScrollPane scrollPane = null;
 	private JTree workspaceTree = null;
 
@@ -26,7 +27,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceListener
 	private HashMap<File, DefaultMutableTreeNode> entries = new HashMap<File, DefaultMutableTreeNode>();
 
 	public WorkspaceWindow(Framework framework) {
-		super("Workspace");
+		super();
 		this.framework = framework;
 	}
 
@@ -41,10 +42,13 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceListener
 
 		scrollPane.setViewportView(workspaceTree);
 
-		this.setContentPane(scrollPane);
-		this.setTitle("Workspace");
+		this.setLayout( new BorderLayout(0,0));
+		this.add(scrollPane, BorderLayout.CENTER);
 
-		this.setLocation(framework.getConfigVarAsInt("gui.workspace.x", 0), framework.getConfigVarAsInt("gui.workspace.y", 0));
+//		this.setContentPane(scrollPane);
+//		this.setTitle("Workspace");
+
+	//	this.setLocation(framework.getConfigVarAsInt("gui.workspace.x", 0), framework.getConfigVarAsInt("gui.workspace.y", 0));
 		this.setSize(framework.getConfigVarAsInt("gui.workspace.width", 500), framework.getConfigVarAsInt("gui.workspace.height", 300));
 
 		workspaceChanged();
@@ -81,7 +85,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceListener
 		String title = framework.getWorkspace().getFilePath();
 		if (title.isEmpty())
 			title = "new workspace";
-		title = "[" + title + "]";
+		title = "(" + title + ")";
 		if (framework.getWorkspace().isChanged())
 			title = "*" + title;
 
@@ -137,7 +141,7 @@ public class WorkspaceWindow extends InternalWindow implements WorkspaceListener
 		String title = framework.getWorkspace().getFilePath();
 		if (title.isEmpty())
 			title = "new workspace";
-		title = "[" + title + "]";
+		title = "(" + title + ")";
 		if (framework.getWorkspace().isChanged())
 			title = "*" + title;
 
