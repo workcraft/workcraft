@@ -1,15 +1,23 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.workcraft.framework.Framework;
 
@@ -31,12 +39,12 @@ public class OutputView extends JPanel {
 
 		public void write(byte b[]) throws IOException {
 			String s = new String(b);
-			target.append(s);
+			txtStdOut.append(s);
 		}
 
 		public void write(byte b[], int off, int len) throws IOException {
 			String s = new String(b , off , len);
-			target.append(s);
+			txtStdOut.append(s);
 		}
 	}
 
@@ -67,10 +75,12 @@ public class OutputView extends JPanel {
 	public OutputView (Framework framework) {
 		this.framework = framework;
 
+
 		txtStdOut = new JTextArea();
 		txtStdOut.setLineWrap(true);
 		txtStdOut.setEditable(false);
 		txtStdOut.setWrapStyleWord(true);
+		txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
 		scrollStdOut = new JScrollPane();
 		scrollStdOut.setViewportView(txtStdOut);

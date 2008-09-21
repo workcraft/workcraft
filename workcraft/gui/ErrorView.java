@@ -2,6 +2,7 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -77,6 +78,7 @@ public class ErrorView extends JPanel {
 		txtStdErr.setEditable(false);
 		txtStdErr.setWrapStyleWord(true);
 		txtStdErr.setForeground(Color.RED);
+		txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
 		scrollStdErr = new JScrollPane();
 		scrollStdErr.setViewportView(txtStdErr);
