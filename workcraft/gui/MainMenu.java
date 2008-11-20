@@ -51,38 +51,10 @@ public class MainMenu extends JMenuBar {
 		JMenuItem miOpenDocument = new JMenuItem();
 		miOpenDocument.setText("Open document...");
 
-		JMenuItem miAddToWorkspace = new JMenuItem("Add to workspace...");
-		miAddToWorkspace.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.addToWorkspace();
-			}
-		});
-
-		JMenuItem miSaveWorkspace = new JMenuItem("Save workspace");
-		miSaveWorkspace.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(frame.framework.getWorkspace().getFilePath().isEmpty())
-					frame.saveWorkspaceAs();
-				else
-					frame.framework.getWorkspace().save();
-			}
-		});
-
-		JMenuItem miSaveWorkspaceAs = new JMenuItem("Save workspace as...");
-		miSaveWorkspaceAs.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.saveWorkspaceAs();
-			}
-		});
 
 		mnFile.add(miOpenDocument);
 		mnFile.addSeparator();
-		mnFile.add(miAddToWorkspace);
-		mnFile.add(miSaveWorkspace);
-		mnFile.add(miSaveWorkspaceAs);
+
 		mnFile.addSeparator();
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);

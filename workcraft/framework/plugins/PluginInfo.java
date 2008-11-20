@@ -1,6 +1,7 @@
 package org.workcraft.framework.plugins;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -15,6 +16,7 @@ public class PluginInfo {
 
 	private String className;
 	private String[] interfaceNames;
+	private String[] superclassNames;
 
 	public PluginInfo(Class<?> cls) {
 		className = cls.getName();
@@ -33,6 +35,18 @@ public class PluginInfo {
 		for (Class<?> i : interfaces) {
 			interfaceNames[j++] = i.getName();
 		}
+
+		LinkedList<String> list = new LinkedList<String>();
+		addSuperclass(cls, list);
+		superclassNames = list.toArray(new String[0]);
+	}
+
+	protected void addSuperclass(Class<?> cls, LinkedList<String> list) {
+		Class<?> scls = cls.getSuperclass();
+		if (scls != null && !scls.equals(Object.class)) {
+			list.add(scls.getName());
+			addSuperclass(scls, list);
+		}
 	}
 
 	public PluginInfo(Element element) throws DocumentFormatException {
@@ -48,7 +62,14 @@ public class PluginInfo {
 		interfaceNames = new String[nl.getLength()];
 
 		for (int i=0; i<nl.getLength(); i++) {
-			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("class");
+			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
+		}
+
+		nl = element.getElementsByTagName("superclass");
+		superclassNames = new String[nl.getLength()];
+
+		for (int i=0; i<nl.getLength(); i++) {
+			superclassNames[i] = ((Element)nl.item(i)).getAttribute("name");
 		}
 	}
 
@@ -58,7 +79,13 @@ public class PluginInfo {
 
 		for (String i : interfaceNames) {
 			Element e = element.getOwnerDocument().createElement("interface");
-			e.setAttribute("class", i);
+			e.setAttribute("name", i);
+			element.appendChild(e);
+		}
+
+		for (String i : superclassNames) {
+			Element e = element.getOwnerDocument().createElement("superclass");
+			e.setAttribute("name", i);
 			element.appendChild(e);
 		}
 	}
@@ -69,6 +96,10 @@ public class PluginInfo {
 
 	public String[] getInterfaces() {
 		return interfaceNames.clone();
+	}
+
+	public String[] getSuperclasses() {
+		return superclassNames.clone();
 	}
 
 	public String getDisplayName() {

@@ -1,5 +1,6 @@
 package org.workcraft.gui.workspace;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -7,30 +8,36 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import org.workcraft.dom.DisplayName;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.workspace.FileHandler;
-
+import org.workcraft.framework.workspace.WorkspaceEntry;
 
 class WorkspaceWindowPopupListener extends MouseAdapter {
 	private Framework framework;
+	private WorkspaceWindow wsWindow;
 	private HashMap<JMenuItem, FileHandler> handlers;
+	private HashMap<JMenuItem, PluginInfo> models;
 
-	public WorkspaceWindowPopupListener(Framework framework) {
+	public WorkspaceWindowPopupListener(Framework framework, WorkspaceWindow wsWindow) {
 		this.framework = framework;
+		this.wsWindow = wsWindow;
 		handlers = new HashMap<JMenuItem, FileHandler>();
 	}
 
 	public void mousePressed(MouseEvent e) {
-		JTree tree = (JTree)e.getComponent();
-		tree.setSelectionPath(tree.getClosestPathForLocation(e.getX(), e.getY()));
+		JTree tree = (JTree) e.getComponent();
+		tree.setSelectionPath(tree
+				.getClosestPathForLocation(e.getX(), e.getY()));
 
 		maybeShowPopup(e);
 	}
@@ -41,61 +48,66 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 	private void maybeShowPopup(MouseEvent e) {
 		if (e.isPopupTrigger()) {
-			JTree tree = (JTree)e.getComponent();
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
-
 			JPopupMenu popup = new JPopupMenu();
-			if (node.getUserObject()!=null && node.getUserObject() instanceof WorkspaceEntry)
-			{
-				final WorkspaceEntry we = (WorkspaceEntry) node.getUserObject();
-				// add WorkspaceEntry menu items
 
-				PluginInfo[] handlersInfo = framework.getPluginManager().getPluginInfo("org.workcraft.framework.workspace.FileHandler");
+			JTree tree = (JTree) e.getComponent();
+			TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+			DefaultMutableTreeNode node = null;
 
-				for (PluginInfo info :handlersInfo) {
-					try {
-						FileHandler handler = (FileHandler)framework.getPluginManager().getSingleton(info);
-						if (!handler.accept(we.file()))
-							continue;
-						DisplayName name = handler.getClass().getAnnotation(DisplayName.class);
-						JMenuItem mi = new JMenuItem ( (name==null)?handler.getClass().getSimpleName():name.value() );
-						handlers.put(mi, handler);
-						mi.addActionListener( new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								handlers.get(e.getSource()).execute(we.file());
-							}
-						});
-						popup.add(mi);
-					} catch (PluginInstantiationException e1) {
-						System.err.println (e1.getMessage());
+			boolean showWorkspaceItems = true;
+
+			if (path != null) {
+				node = (DefaultMutableTreeNode) path.getLastPathComponent();
+				if (node.getUserObject() != null
+						&& node.getUserObject() instanceof WorkspaceEntry) {
+					showWorkspaceItems = false;
+					final WorkspaceEntry we = (WorkspaceEntry) node.getUserObject();
+
+					// add WorkspaceEntry menu items
+					PluginInfo[] handlersInfo = framework.getPluginManager()
+					.getPlugins(FileHandler.class);
+
+					for (PluginInfo info : handlersInfo) {
+						try {
+							FileHandler handler = (FileHandler) framework
+							.getPluginManager().getSingleton(info);
+							if (!handler.accept(we.getFile()))
+								continue;
+							JMenuItem mi = new JMenuItem(info.getDisplayName());
+							handlers.put(mi, handler);
+							mi.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									handlers.get(e.getSource()).execute(we.getFile());
+								}
+							});
+							popup.add(mi);
+						} catch (PluginInstantiationException e1) {
+							System.err.println(e1.getMessage());
+						}
 					}
+
+					JMenuItem miRemove = new JMenuItem("Remove");
+					miRemove.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							framework.getWorkspace().remove(we);
+						}
+					});
+					popup.add(miRemove);
 				}
-
-				popup.addSeparator();
-
-				JMenuItem miRemove = new JMenuItem("Remove");
-				miRemove.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						framework.getWorkspace().remove(we.file());
-					}
-				});
-				popup.add(miRemove);
 			}
 
-			JMenuItem miAdd = new JMenuItem("Add items...");
-			miAdd.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					framework.getMainFrame().addToWorkspace();
-				}
-			});
+			if (showWorkspaceItems) {
+				for (Component c : wsWindow.createMenu().getMenuComponents())
+				popup.add(c);
+			}
 
-			popup.add(miAdd);
 
-			popup.show(e.getComponent(),
-					e.getX(), e.getY());
+
+
+
+			popup.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
 }

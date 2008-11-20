@@ -140,7 +140,7 @@ public class Framework {
 	private boolean shutdownRequested = false;
 	private boolean silent = false;
 
-	private MainWindow mainFrame;
+	private MainWindow mainWindow;
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
@@ -311,20 +311,38 @@ public class Framework {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				mainFrame = new MainWindow(Framework.this);
-				mainFrame.startup();
-				System.out.println ("Now in GUI mode.");
+				mainWindow = new MainWindow(Framework.this);
+				mainWindow.startup();
+
+				Context.call(new ContextAction() {
+					public Object run(Context cx) {
+						Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
+						ScriptableObject.putProperty(systemScope, "gui", guiScriptable);
+						systemScope.setAttributes("gui", ScriptableObject.READONLY);
+
+						return null;
+
+					}
+				});
+
+
 			}
+
+
 		});
 
+
+
+
+		System.out.println ("Now in GUI mode.");
 		inGUIMode = true;
 	}
 
 	public void shutdownGUI() {
 		if (inGUIMode) {
-			mainFrame.shutdown();
-			mainFrame.dispose();
-			mainFrame = null;
+			mainWindow.shutdown();
+			mainWindow.dispose();
+			mainWindow = null;
 			inGUIMode = false;
 			System.out.println ("Now in console mode.");
 		}
@@ -338,8 +356,8 @@ public class Framework {
 		return shutdownRequested;
 	}
 
-	public MainWindow getMainFrame() {
-		return mainFrame;
+	public MainWindow getMainWindow() {
+		return mainWindow;
 	}
 
 	public ModelManager getModelManager() {

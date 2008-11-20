@@ -13,9 +13,10 @@ import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
-public abstract class AbstractGraphModel {
+public abstract class AbstractGraphModel implements Plugin {
 	protected int componentIDCounter = 1;
 	protected int connectionIDCounter = 1;
 
