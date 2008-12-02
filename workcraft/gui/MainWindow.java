@@ -46,6 +46,9 @@ import org.workcraft.gui.edit.graph.GraphEditorWindow;
 import org.workcraft.gui.edit.text.TextEditorWindow;
 import org.workcraft.gui.workspace.FileFilters;
 import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.plugins.graph.Graph;
+import org.workcraft.plugins.graph.Vertex;
+import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
@@ -244,11 +247,6 @@ public class MainWindow extends JFrame implements DockingConstants{
 		VisualPetriNet vpn = null;
 		try {
 			vpn = new VisualPetriNet(new PetriNet(framework));
-			InternalWindow doc1 = new GraphEditorWindow("Document 1", vpn);
-			doc1.setSize(500, 300);
-			doc1.setLocation(10, 10);
-			//content.addFrame(doc1);
-			doc1.setVisible(true);
 		} catch (VisualModelConstructionException e) {
 			e.printStackTrace();
 		}
@@ -257,6 +255,15 @@ public class MainWindow extends JFrame implements DockingConstants{
 		addView (new GraphEditorPane(vpn), "Document 1", DockingManager.CENTER_REGION, 0.5f);
 		addView (new GraphEditorPane(vpn), "Document 2", DockingManager.CENTER_REGION, 0.5f);
 
+		VisualGraph gr = null;
+		try {
+			Graph g = new Graph(framework);
+			g.addComponent(new Vertex());
+			gr = new VisualGraph(g);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		addView (new GraphEditorPane(gr), "Graph", DockingManager.CENTER_REGION, 0.5f);
 
 		Dockable output = addView (outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
 		addView (errorView, "Problems", output);
