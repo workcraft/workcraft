@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.util.XmlUtil;
 
-public abstract class VisualNode {
+public abstract class VisualNode implements Selectable {
 	protected AffineTransform transform;
 
 	public VisualNode() {

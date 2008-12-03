@@ -2,7 +2,10 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -79,6 +82,10 @@ public class VisualComponentGroup extends VisualNode {
 		// Apply group transform
 		g.transform(transform);
 
+		for (VisualConnection connection : connections) {
+			connection.draw();
+		}
+
 		for (VisualComponentGroup group : childGroups) {
 			AffineTransform rest2 = g.getTransform();
 			group.draw(g);
@@ -91,10 +98,6 @@ public class VisualComponentGroup extends VisualNode {
 			component.draw(g);
 			// Restore group transform
 			g.setTransform(rest2);
-		}
-
-		for (VisualConnection connection : connections) {
-			connection.draw();
 		}
 
 		// Restore original transform
@@ -145,5 +148,74 @@ public class VisualComponentGroup extends VisualNode {
 			Element childGroupElement = groupElement.getOwnerDocument().createElement("group");
 			group.toXML(childGroupElement);
 		}
+	}
+
+	public Selectable hitObject(Point2D point) {
+		Selectable hit = null;
+		for(VisualComponent comp : components) {
+			if(comp.hitTest(point))
+				hit = comp;
+		}
+		for(VisualComponentGroup grp : childGroups) {
+			if(grp.hitTest(point))
+				hit = grp;
+		}
+		for(VisualConnection conn : connections) {
+			if(conn.hitTest(point))
+				hit = conn;
+		}
+		return hit; // have to return the last encountered hit since it is the uppermost in z-order
+	}
+
+	public LinkedList<Selectable> hitObjects(Rectangle2D rect) {
+		LinkedList<Selectable> hit = new LinkedList<Selectable>();
+		for(VisualComponent comp : components) {
+			if(rect.contains(comp.getBoundingBox()))
+				hit.add(comp);
+		}
+		for(VisualConnection conn : connections) {
+			if(rect.contains(conn.getBoundingBox()))
+				hit.add(conn);
+		}
+		for(VisualComponentGroup grp : childGroups) {
+			if(rect.contains(grp.getBoundingBox()))
+				hit.add(grp);
+		}
+		return hit;
+	}
+
+	@Override
+	public boolean hitTest(Point2D point) {
+		return hitObject(point)!=null;
+	}
+
+	@Override
+	public Rectangle2D getBoundingBox() {
+		Rectangle2D.Double rect = null;
+		for(VisualComponent comp : components) {
+			if(rect==null) {
+				rect = new Rectangle2D.Double();
+				rect.setRect(comp.getBoundingBox());
+			}
+			else
+				rect.add(comp.getBoundingBox());
+		}
+		for(VisualConnection conn : connections) {
+			if(rect==null) {
+				rect = new Rectangle2D.Double();
+				rect.setRect(conn.getBoundingBox());
+			}
+			else
+				rect.add(conn.getBoundingBox());
+		}
+		for(VisualComponentGroup grp : childGroups) {
+			if(rect==null) {
+				rect = new Rectangle2D.Double();
+				rect.setRect(grp.getBoundingBox());
+			}
+			else
+				rect.add(grp.getBoundingBox());
+		}
+		return rect;
 	}
 }

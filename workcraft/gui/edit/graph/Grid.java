@@ -382,4 +382,14 @@ public class Grid implements ViewportListener {
 	public void removeListener (GridListener listener) {
 		listeners.remove(listener);
 	}
+
+	/**
+	 * Snap coordinate to the closest minor grid line.
+	 * @param x coordinate value
+	 * @return snapped coordinate value
+	 */
+	public double snapCoordinate(double x) {
+		double m = majorInterval*minorIntervalFactor;
+		return Math.floor(x/m+0.5)*m;
+	}
 }

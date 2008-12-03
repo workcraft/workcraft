@@ -3,17 +3,15 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,25 +24,16 @@ import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
-import org.flexdock.docking.drag.effects.DefaultPreview;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.AlphaPreview;
-import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.event.DockingEvent;
-import org.flexdock.docking.event.DockingEventHandler;
 import org.flexdock.docking.event.DockingListener;
-import org.flexdock.docking.props.DockablePropertySet;
-import org.flexdock.docking.props.DockingPortPropertySet;
-import org.flexdock.docking.props.PropertyManager;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
-import org.workcraft.gui.edit.graph.GraphEditorWindow;
-import org.workcraft.gui.edit.text.TextEditorWindow;
-import org.workcraft.gui.workspace.FileFilters;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
@@ -92,9 +81,16 @@ public class MainWindow extends JFrame implements DockingConstants{
 		jsView = new JavaScriptView(framework);
 	}
 
-	public MainWindow(Framework framework) {
+	public MainWindow(final Framework framework) {
 		super();
 		this.framework = framework;
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				framework.shutdown();
+			}
+		});
 	}
 
 	public void setLAF(String laf) {
@@ -258,6 +254,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 		VisualGraph gr = null;
 		try {
 			Graph g = new Graph(framework);
+			g.addComponent(new Vertex());
+			g.addComponent(new Vertex());
+			g.addComponent(new Vertex());
 			g.addComponent(new Vertex());
 			gr = new VisualGraph(g);
 		} catch (Exception e) {
