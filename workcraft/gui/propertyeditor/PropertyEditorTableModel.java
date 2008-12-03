@@ -9,9 +9,6 @@ import java.util.LinkedList;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.workcraft.dom.HiddenProperty;
-import org.workcraft.dom.PropertyName;
-
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 	static final String [] columnNames = { "property", "value" };
