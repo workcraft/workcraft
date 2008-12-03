@@ -42,6 +42,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		setDocument(document);
 		view = new Viewport(0, 0, this.getWidth(), this.getHeight());
 		grid = new Grid();
+
 		ruler = new Ruler();
 		view.addListener(grid);
 		grid.addListener(ruler);

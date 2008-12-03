@@ -38,6 +38,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
@@ -62,6 +63,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	OutputView outputView;
 	ErrorView errorView;
 	JavaScriptView jsView;
+	PropertyView propertyView;
 	// MDIPane content;
 
 	JPanel content;
@@ -75,6 +77,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		workspaceView  = new WorkspaceWindow(framework);
 		framework.getWorkspace().addListener(workspaceView);
 		workspaceView.setVisible(true);
+		propertyView = new PropertyView(framework);
 
 		outputView = new OutputView(framework);
 		errorView = new ErrorView(framework);
@@ -84,6 +87,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public MainWindow(final Framework framework) {
 		super();
 		this.framework = framework;
+
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -91,6 +95,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 				framework.shutdown();
 			}
 		});
+
 	}
 
 	public void setLAF(String laf) {
@@ -202,6 +207,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void startup() {
+
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 		SwingUtilities.updateComponentTreeUI(MainWindow.this);
@@ -238,6 +244,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		createViews();
 
+		outputView.captureStream();
+		errorView.captureStream();
+
+
 		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
 		VisualPetriNet vpn = null;
@@ -268,20 +278,24 @@ public class MainWindow extends JFrame implements DockingConstants{
 		addView (errorView, "Problems", output);
 		addView (jsView, "JavaScript", output);
 
-		addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
+		Dockable wsvd = addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
+		addView (propertyView, "Properties", wsvd, DockingManager.NORTH_REGION);
+
+
+
+		propertyView.setObject(new VisualVertex(new Vertex()));
 
 
 
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.BLUE, 0.5f));
 
-		//		consoleView.startup();
+		//consoleView.startup();
 		workspaceView.startup();
 
 //		DockingManager.getLayoutManager().store();
 
 
-		outputView.captureStream();
-		errorView.captureStream();
+
 
 		//		content.addFrame(consoleView);
 		//		content.addFrame(workspaceView);
