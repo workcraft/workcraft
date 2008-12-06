@@ -6,24 +6,26 @@ import java.util.LinkedList;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidPluginException;
 import org.workcraft.util.XmlUtil;
 
 
-public class PluginInfo {
+public class PluginInfo implements Comparable<PluginInfo> {
 	private String displayName;
 
 	private String className;
 	private String[] interfaceNames;
 	private String[] superclassNames;
 
+
 	public PluginInfo(Class<?> cls) {
 		className = cls.getName();
 
 		DisplayName name = cls.getAnnotation(DisplayName.class);
 
-		if(name==null)
+		if(name == null)
 			displayName = className.substring(className.lastIndexOf('.')+1);
 		else
 			displayName = name.value();
@@ -110,4 +112,12 @@ public class PluginInfo {
 		return className;
 	}
 
+	public String toString() {
+		return displayName;
+	}
+
+	@Override
+	public int compareTo(PluginInfo o) {
+		return toString().compareTo(o.toString());
+	}
 }

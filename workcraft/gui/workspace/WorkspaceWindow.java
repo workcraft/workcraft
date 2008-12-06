@@ -82,18 +82,19 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 			node.setUserObject(we);
 			entryNodes.put(we, node);
 
-			String folderName = "";
+			String folderName = "work";
 
-	        String s = we.getFile().getName();
-	        int i = s.lastIndexOf('.');
+			if (we.getFile() != null) {
+				String s = we.getFile().getName();
+				int i = s.lastIndexOf('.');
 
-	        if (i > 0 &&  i < s.length() - 1) {
-	            folderName = s.substring(i+1).toLowerCase();
-	        }
+				if (i > 0 &&  i < s.length() - 1) {
+					folderName = s.substring(i+1).toLowerCase();
+				}
+			}
 
-	        DefaultTreeModel treeModel = (DefaultTreeModel)workspaceTree.getModel();
-	        DefaultMutableTreeNode folderNode = folderNodes.get(folderName);
-
+			DefaultTreeModel treeModel = (DefaultTreeModel)workspaceTree.getModel();
+			DefaultMutableTreeNode folderNode = folderNodes.get(folderName);
 
 			if(folderNode==null) {
 				folderNode = new DefaultMutableTreeNode(folderName) ;
@@ -105,21 +106,20 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 			String modelType = we.getModelType();
 
 			if (modelType != null) {
-		        DefaultMutableTreeNode modelTypeNode = modelTypeNodes.get(modelType);
-		        if (modelTypeNode == null) {
-		        	modelTypeNode = new DefaultMutableTreeNode(modelType);
-		    		treeModel.insertNodeInto(modelTypeNode, folderNode, getInsertPoint(folderNode, modelType));
-		        	//folderNode.add(modelTypeNode);
-		        	modelTypeNodes.put(modelType, modelTypeNode);
-		        }
+				DefaultMutableTreeNode modelTypeNode = modelTypeNodes.get(modelType);
+				if (modelTypeNode == null) {
+					modelTypeNode = new DefaultMutableTreeNode(modelType);
+					treeModel.insertNodeInto(modelTypeNode, folderNode, getInsertPoint(folderNode, modelType));
+					//folderNode.add(modelTypeNode);
+					modelTypeNodes.put(modelType, modelTypeNode);
+				}
 				treeModel.insertNodeInto(node, modelTypeNode, getInsertPoint(modelTypeNode, node.toString()));
-		        //modelTypeNode.add(node);
+				//modelTypeNode.add(node);
 			}
 			else
 				treeModel.insertNodeInto(node, folderNode, getInsertPoint(folderNode, node.toString()));
-				//folderNode.add(node);
+			//folderNode.add(node);
 			workspaceTree.makeVisible(new TreePath(node.getPath()));
-
 		}
 	}
 
@@ -163,18 +163,11 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 	public JMenu createMenu() {
 		JMenu menu = new JMenu("Workspace");
-		JMenu modelsMenu = new JMenu("Create new model");
-		PluginInfo[] modelsInfo = framework.getPluginManager().getModels();
 
-		for (PluginInfo info : modelsInfo) {
-			JMenuItem modelItem = new JMenuItem(info.getDisplayName());
-			modelItem.addActionListener(framework.getMainWindow().getDefaultActionListener());
-			modelItem.setActionCommand("create " + info.getClassName());
-			modelsMenu.add(modelItem);
-		}
 
-		menu.add(modelsMenu);
-		menu.addSeparator();
+		JMenuItem miNewModel = new JMenuItem("Create new model...");
+		miNewModel.addActionListener(framework.getMainWindow().getDefaultActionListener());
+		miNewModel.setActionCommand("gui.createWork()");
 
 		JMenuItem miAdd = new JMenuItem("Add files to workspace...");
 		miAdd.addActionListener(framework.getMainWindow().getDefaultActionListener());
@@ -188,6 +181,8 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		miSaveAs.addActionListener(framework.getMainWindow().getDefaultActionListener());
 		miSaveAs.setActionCommand("gui.getWorkspaceView().saveWorkspaceAs()");
 
+		menu.add(miNewModel);
+		menu.addSeparator();
 		menu.add(miAdd);
 		menu.add(miSave);
 		menu.add(miSaveAs);

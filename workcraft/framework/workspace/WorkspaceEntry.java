@@ -53,15 +53,22 @@ public class WorkspaceEntry {
 
 	public String toString() {
 		if (model != null) {
-			if (model.getTitle().length()>0)
-				return ">" + model.getTitle();
-			else
-				if (file != null)
-					return ">"+file.getName();
+			// is a workcraft model
+			if (file != null) {
+				// has a an associated file
+				if (model.getTitle().length()>0)
+					return model.getTitle();
 				else
-					return ">(unnamed)";
-		}
-		else
+					return file.getName();
+			} else {
+				// does not have a file
+				if (model.getTitle().length()>0)
+					return model.getTitle() + " - unsaved";
+				else
+					return "(unnamed) - unsaved";
+			}
+		} 	else
+		// not a workcraft model
 			if (file != null)
 				return file.getName();
 			else

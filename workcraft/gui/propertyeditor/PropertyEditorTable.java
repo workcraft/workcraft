@@ -25,6 +25,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 		propertyClasses = new HashMap<Class<?>, PropertyClass>();
 		propertyClasses.put(Integer.class, new IntegerProperty());
+		propertyClasses.put(Double.class, new DoubleProperty());
 	}
 
 	public void setRowClass (int row, Class<?> cls, String[] data) {

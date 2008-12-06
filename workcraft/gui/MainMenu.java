@@ -2,10 +2,12 @@ package org.workcraft.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 public class MainMenu extends JMenuBar {
 	private static final long serialVersionUID = 1L;
@@ -32,28 +34,34 @@ public class MainMenu extends JMenuBar {
 		JMenu mnFile = new JMenu();
 		mnFile.setText("File");
 
+		JMenuItem miNewModel = new JMenuItem();
+		miNewModel.setText("New work...");
+		miNewModel.setMnemonic(KeyEvent.VK_N);
+		miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		miNewModel.addActionListener(frame.getDefaultActionListener());
+		miNewModel.setActionCommand("gui.createWork()");
+
 		JMenuItem miExit = new JMenuItem();
 		miExit.setText("Exit");
-		miExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.framework.shutdown();
-			}
-		});
+		//smiExit.setMnemonic(KeyEvent.VK_O);
+		miExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+		miExit.addActionListener(frame.getDefaultActionListener());
+		miExit.setActionCommand("shutdown()");
 
 		JMenuItem miShutdownGUI = new JMenuItem();
-		miShutdownGUI.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.framework.shutdownGUI();
-			}
-		});
 		miShutdownGUI.setText("Shutdown GUI");
+		miShutdownGUI.addActionListener(frame.getDefaultActionListener());
+		miShutdownGUI.setActionCommand("shutdowngui()");
 
-		JMenuItem miOpenDocument = new JMenuItem();
-		miOpenDocument.setText("Open document...");
+		JMenuItem miOpenModel = new JMenuItem();
+		miOpenModel.setText("Open work...");
+		miOpenModel.setMnemonic(KeyEvent.VK_O);
+		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		miOpenModel.addActionListener(frame.getDefaultActionListener());
+		miOpenModel.setActionCommand("gui.openWork()");
 
-
-		mnFile.add(miOpenDocument);
-		mnFile.addSeparator();
+		mnFile.add(miNewModel);
+		mnFile.add(miOpenModel);
 
 		mnFile.addSeparator();
 		mnFile.add(miShutdownGUI);

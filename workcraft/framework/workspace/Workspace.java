@@ -71,6 +71,15 @@ public class Workspace {
 		return we;
 	}
 
+	public WorkspaceEntry add(AbstractGraphModel model) {
+		WorkspaceEntry we = new WorkspaceEntry();
+		we.setModel(model);
+		fillInfo (we, model);
+		workspace.add(we);
+		fireEntryAdded(we);
+		return we;
+	}
+
 	public void remove(WorkspaceEntry we) {
 		workspace.remove(we);
 		fireEntryRemoved(we);

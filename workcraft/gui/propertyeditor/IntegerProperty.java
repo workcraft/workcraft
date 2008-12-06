@@ -87,4 +87,14 @@ public class IntegerProperty implements PropertyClass {
 		return new DefaultTableCellRenderer();
 
 	}
+
+	@Override
+	public Object fromComponentValue(Object editorComponentValue) {
+		return Integer.parseInt((String)editorComponentValue);
+	}
+
+	@Override
+	public Object toComponentValue(Object value) {
+		return value.toString();
+	}
 }

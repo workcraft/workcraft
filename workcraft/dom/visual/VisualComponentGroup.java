@@ -13,7 +13,8 @@ import org.w3c.dom.NodeList;
 import org.workcraft.dom.AbstractGraphModel;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualClassConstructionException;
+import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.util.XmlUtil;
 
 
@@ -31,7 +32,7 @@ public class VisualComponentGroup extends VisualNode {
 		connections = new HashSet<VisualConnection>();
 	}
 
-	public VisualComponentGroup (Element element, AbstractGraphModel refModel) throws VisualModelConstructionException {
+	public VisualComponentGroup (Element element, AbstractGraphModel refModel) throws VisualClassConstructionException {
 		this();
 
 		NodeList nodes = element.getElementsByTagName("component");
@@ -41,11 +42,11 @@ public class VisualComponentGroup extends VisualNode {
 			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
 			Component refComponent = refModel.getComponentByID(ref);
 			if (refComponent == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualClassConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which was not found");
-			VisualComponent visualComponent = (VisualComponent)VisualAbstractGraphModel.createVisualClassFor(refComponent, VisualComponent.class, vcompElement);
+			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualClassFor(refComponent, VisualComponent.class, vcompElement);
 			if (visualComponent == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualClassConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which does not declare a visual represenation class");
 			add(visualComponent);
 		}
@@ -57,11 +58,11 @@ public class VisualComponentGroup extends VisualNode {
 			int ref = XmlUtil.readIntAttr(vconElement, "ref", -1);
 			Connection refConnection = refModel.getConnectionByID(ref);
 			if (refConnection == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualClassConstructionException ("a visual component references to the model component with ID=" +
 						vconElement.getAttribute("ref")+", which was not found");
-			VisualConnection visualConnection = (VisualConnection)VisualAbstractGraphModel.createVisualClassFor(refConnection, VisualConnection.class, vconElement);
+			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualClassFor(refConnection, VisualConnection.class, vconElement);
 			if (visualConnection == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualClassConstructionException ("a visual component references to the model component with ID=" +
 						vconElement.getAttribute("ref")+", which does not declare a visual represenation class");
 			add(visualConnection);
 		}

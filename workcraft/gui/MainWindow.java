@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,8 +32,13 @@ import org.flexdock.docking.event.DockingListener;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
+import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.visual.VisualAbstractGraphModel;
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.PluginInstantiationException;
+import org.workcraft.framework.exceptions.VisualClassConstructionException;
+import org.workcraft.framework.plugins.PluginInfo;
+import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.plugins.graph.Graph;
@@ -50,6 +56,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public ActionListener defaultActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			System.out.println (e.getActionCommand());
 			framework.execJavaScript(e.getActionCommand());
 		}
 	};
@@ -253,37 +260,42 @@ public class MainWindow extends JFrame implements DockingConstants{
 		VisualPetriNet vpn = null;
 		try {
 			vpn = new VisualPetriNet(new PetriNet(framework));
-		} catch (VisualModelConstructionException e) {
+		} catch (VisualClassConstructionException e) {
 			e.printStackTrace();
 		}
 
 
-		addView (new GraphEditorPane(vpn), "Document 1", DockingManager.CENTER_REGION, 0.5f);
-		addView (new GraphEditorPane(vpn), "Document 2", DockingManager.CENTER_REGION, 0.5f);
+		//addView (new GraphEditorPane(vpn), "Document 1", DockingManager.CENTER_REGION, 0.5f);
+		//addView (new GraphEditorPane(vpn), "Document 2", DockingManager.CENTER_REGION, 0.5f);
 
 		VisualGraph gr = null;
 		try {
 			Graph g = new Graph(framework);
-			g.addComponent(new Vertex());
-			g.addComponent(new Vertex());
+
 			g.addComponent(new Vertex());
 			g.addComponent(new Vertex());
 			gr = new VisualGraph(g);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		addView (new GraphEditorPane(gr), "Graph", DockingManager.CENTER_REGION, 0.5f);
+		//addView (new GraphEditorPane(gr), "Graph", DockingManager.CENTER_REGION, 0.5f);
+
+		//addView (new JPanel(), "No open documents", DockingManager.CENTER_REGION, 0.5f);
 
 		Dockable output = addView (outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
 		addView (errorView, "Problems", output);
 		addView (jsView, "JavaScript", output);
 
 		Dockable wsvd = addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
-		addView (propertyView, "Properties", wsvd, DockingManager.NORTH_REGION);
+		addView (propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION);
 
+		VisualVertex vv = new VisualVertex(new Vertex());
+		gr.getRoot().add(vv);
 
+		DockingManager.display(output);
 
-		propertyView.setObject(new VisualVertex(new Vertex()));
+		//propertyView.setObject(vv);
+
 
 
 
@@ -342,4 +354,29 @@ public class MainWindow extends JFrame implements DockingConstants{
 		setVisible(false);
 	}
 
+	public void createWork() {
+		CreateWorkDialog dialog = new CreateWorkDialog(this);
+		dialog.setVisible(true);
+		if (dialog.getModalResult() == 1) {
+			PluginInfo info = dialog.getSelectedModel();
+			try {
+				AbstractGraphModel work = (AbstractGraphModel)framework.getPluginManager().getInstance(info, AbstractGraphModel.class);
+				work.setTitle(dialog.getModelTitle());
+
+				framework.getWorkspace().add(work);
+
+				if (dialog.createVisualSelected()) {
+					VisualAbstractGraphModel visual = (VisualAbstractGraphModel)PluginManager.createVisualClassFor(work, VisualAbstractGraphModel.class);
+					if (dialog.openInEditorSelected()) {
+						// open in editor
+					}
+				}
+
+			} catch (PluginInstantiationException e) {
+				System.err.println(e.getMessage());
+			} catch (VisualClassConstructionException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+	}
 }

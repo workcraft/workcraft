@@ -2,10 +2,6 @@ package org.workcraft.gui.propertyeditor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -17,7 +13,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
 	Object object = null;
 
-/*	HashMap<String, Property> propertyMap = new HashMap<String, Property>();
+	/*	HashMap<String, Property> propertyMap = new HashMap<String, Property>();
 	LinkedList<String> propertyNames = new LinkedList<String>();*/
 
 	public String getColumnName(int col) {
@@ -83,58 +79,67 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
 	Collections.sort(propertyNames);*/
 
-	fireTableDataChanged();
-}
+		fireTableDataChanged();
+	}
 
-public void clearObject() {
-	object = null;
-	declarations = null;
-	fireTableDataChanged();
-}
+	public void clearObject() {
+		object = null;
+		declarations = null;
+		fireTableDataChanged();
+	}
 
-public int getColumnCount() {
-	return 2;
-}
+	public int getColumnCount() {
+		if (object == null)
+			return 0;
+		else
+			return 2;
+	}
 
-public int getRowCount() {
-	return declarations.length;
-}
+	public int getRowCount() {
+		if (object == null)
+			return 0;
+		else
+			return declarations.length;
+	}
 
-public Class<?> getRowClass(int row) {
-	return declarations[row].cls;
-}
+	public Class<?> getRowClass(int row) {
+		if (object == null)
+			return null;
+		else
+			return declarations[row].cls;
+	}
 
 
-public boolean isCellEditable(int row, int col) {
-	if (col < 1)
-		return false;
-	else
-		return (declarations[row].setter != null);
-}
+	public boolean isCellEditable(int row, int col) {
+		if (col < 1)
+			return false;
+		else
+			return (declarations[row].setter != null);
+	}
 
-public Object getValueAt(int row, int col) {
-	if (col==0)
-		return declarations[row].name;
-	else {
-		try {
-			Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null );
-			Object o = m.invoke(object, (Object[])null);
-			return o;
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			return "#NO SUCH METHOD";
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-			return "#EXCEPTION";
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return "#UNACCESIBLE";
+	public Object getValueAt(int row, int col) {
+		if (col==0)
+			return declarations[row].name;
+		else {
+			try {
+				Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null );
+				Object o = m.invoke(object, (Object[])null);
+				return o;
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+				return "#NO SUCH METHOD";
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				return "#EXCEPTION";
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				return "#UNACCESIBLE";
+			}
 		}
 	}
-}
 
-public void setValueAt(Object value, int row, int col) {
-	/*if (col==1) {
+	public void setValueAt(Object value, int row, int col) {
+		/*if (col==1) {
 			Property p = propertyMap.get(propertyNames.get(row));
 			}
 			else {
@@ -159,5 +164,5 @@ public void setValueAt(Object value, int row, int col) {
 				}
 			}
 		}*/
-}
+	}
 }

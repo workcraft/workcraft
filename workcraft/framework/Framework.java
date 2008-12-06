@@ -447,8 +447,6 @@ public class Framework {
 		}
 	}
 
-
-
 	public void save(AbstractGraphModel model, String path) throws ModelSaveFailedException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;

@@ -15,6 +15,7 @@ import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 
 @DisplayName ("Directed Graph")
+@VisualClass("org.workcraft.plugins.graph.VisualGraph")
 public class Graph extends AbstractGraphModel {
 	protected static final Class<?>[] supportedComponents = new Class<?>[] { Vertex.class };
 
