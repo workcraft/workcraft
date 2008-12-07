@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.LinkedList;
 
 import org.workcraft.dom.visual.Selectable;
@@ -58,7 +59,6 @@ public class SelectionTool implements GraphEditorTool {
 
 
 	public void mouseExited(GraphEditorMouseEvent e) {
-		// TODO very important! cancel selection upon changing document
 		//		if(this.drag!=DRAG_NONE)
 		//		cancelDrag(e); // TODO pan is better
 	}
@@ -176,4 +176,7 @@ public class SelectionTool implements GraphEditorTool {
 		}
 	}
 
+	public String getIconPath() {
+		return "org" + File.pathSeparator + "workcraft" + File.pathSeparator + "gui" + File.pathSeparator + "icons" + File.pathSeparator + "select.png";
+	}
 }

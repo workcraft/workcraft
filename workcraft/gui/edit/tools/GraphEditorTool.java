@@ -16,4 +16,5 @@ public interface GraphEditorTool {
 
 	public void draw(GraphEditorPane editor, Graphics2D g);
 
+	public String getIconPath();
 }
