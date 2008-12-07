@@ -32,8 +32,11 @@ import org.xml.sax.SAXException;
 
 public class PluginManager {
 	public static final String DEFAULT_MANIFEST = "config"+File.separator+"plugins.xml";
-	public static final String INTERNAL_PLUGINS_PATH = "bin"+ File.separator + "org" + File.separator + "workcraft"
-	+ File.separator + "plugins";
+	public static final String INTERNAL_PLUGINS_PATH[] = {
+		"bin"+ File.separator + "org" + File.separator + "workcraft" + File.separator + "plugins",
+		"org" + File.separator + "workcraft" + File.separator + "plugins",
+	};
+
 	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
 
 	private Framework framework;
@@ -200,7 +203,9 @@ public class PluginManager {
 		System.out.println("Reconfiguring plugins...");
 		this.plugins.clear();
 		this.activeLoader = new PluginClassLoader();
-		search(new File(INTERNAL_PLUGINS_PATH));
+		for (String path : INTERNAL_PLUGINS_PATH) {
+			search(new File(path));
+		}
 		search(new File(EXTERNAL_PLUGINS_PATH));
 		this.activeLoader = null;
 

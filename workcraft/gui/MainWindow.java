@@ -359,7 +359,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
 					this.framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
-						addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
+						rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
+						//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
 					this.framework.getWorkspace().add(mathModel);
 			} catch (PluginInstantiationException e) {
