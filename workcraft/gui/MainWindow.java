@@ -71,8 +71,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 	JPanel content;
 
 	DefaultDockingPort rootDockingPort;
-	Dockable lastEditorView;
-
+	Dockable outputDockable;
+	Dockable lastEditorDockable;
 
 	InternalWindow testDoc;
 
@@ -88,7 +88,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		this.errorView = new ErrorView(this.framework);
 		this.jsView = new JavaScriptView(this.framework);
 
-		this.lastEditorView = null;
+		this.lastEditorDockable = null;
+		this.outputDockable = null;
 	}
 
 	public MainWindow(final Framework framework) {
@@ -189,16 +190,16 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public Dockable addView(JComponent view, String name, Dockable neighbour) {
-		return addView (view, name, neighbour, DockingManager.CENTER_REGION);
+		return addView (view, name, neighbour, DockingManager.CENTER_REGION, 0.5f);
 
 	}
 
-	public Dockable addView(JComponent view, String name, Dockable neighbour, String relativeRegion) {
+	public Dockable addView(JComponent view, String name, Dockable neighbour, String relativeRegion, float split) {
 		DockableView dock = new DockableView(name, view);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
 		//attachDockableListener(dock);
-		DockingManager.dock(dockable, neighbour, relativeRegion);
+		DockingManager.dock(dockable, neighbour, relativeRegion, split);
 
 		for (Object d: neighbour.getDockingPort().getDockables()) {
 			Component comp = ((Dockable)d).getComponent();
@@ -215,15 +216,17 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void addEditorView(VisualModel visualModel) {
-		DockableView dockableView = new DockableView (visualModel.getTitle() + " - " + visualModel.getDisplayName(), new GraphEditorPane(visualModel));
-		Dockable dockable = DockingManager.registerDockable(dockableView);
-		if (lastEditorView == null) {
-			rootDockingPort.dock(dockable, CENTER_REGION);
+		GraphEditorPane editor = new GraphEditorPane(visualModel);
+		String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
+		Dockable dockable;
+
+		if (lastEditorDockable == null) {
+			dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.7f);
 		} else {
-			lastEditorView.dock(dockable);
+			dockable = addView (editor, dockableTitle, lastEditorDockable);
 		}
 
-		lastEditorView = dockable;
+		lastEditorDockable = dockable;
 	}
 
 	public void startup() {
@@ -292,17 +295,17 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		//addView (new JPanel(), "No open documents", DockingManager.CENTER_REGION, 0.5f);
 
-		Dockable output = addView (this.outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
-		addView (this.errorView, "Problems", output);
-		addView (this.jsView, "JavaScript", output);
+		outputDockable = addView (this.outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
+		addView (this.errorView, "Problems", outputDockable);
+		addView (this.jsView, "JavaScript", outputDockable);
 
 		Dockable wsvd = addView (this.workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
-		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION);
+		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.8f);
 
 		VisualVertex vv = new VisualVertex(new Vertex());
 		gr.getRoot().add(vv);
 
-		DockingManager.display(output);
+		DockingManager.display(outputDockable);
 
 		//propertyView.setObject(vv);
 
