@@ -14,7 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
@@ -34,7 +34,7 @@ public class Workspace {
 		this.framework = framework;
 	}
 
-	public void fillInfo (WorkspaceEntry we, Model model) {
+	public void fillInfo (WorkspaceEntry we, MathModel model) {
 		Class<?> modelClass = model.getClass();
 
 		we.setModelClassName(modelClass.getName());
@@ -61,7 +61,7 @@ public class Workspace {
 			we = new WorkspaceEntry();
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
-				Model model = framework.load(f.getPath());
+				MathModel model = framework.load(f.getPath());
 				fillInfo (we, model);
 			}
 			workspace.add(we);
@@ -71,7 +71,7 @@ public class Workspace {
 		return we;
 	}
 
-	public WorkspaceEntry add(Model model) {
+	public WorkspaceEntry add(MathModel model) {
 		WorkspaceEntry we = new WorkspaceEntry();
 		we.setModel(model);
 		fillInfo (we, model);
@@ -89,8 +89,8 @@ public class Workspace {
 		return Collections.unmodifiableList(workspace);
 	}
 
-	public Model loadModel(WorkspaceEntry we) throws ModelLoadFailedException {
-		Model model = framework.load(we.getFile().getPath());
+	public MathModel loadModel(WorkspaceEntry we) throws ModelLoadFailedException {
+		MathModel model = framework.load(we.getFile().getPath());
 		fillInfo(we, model);
 		fireModelLoaded(we);
 		return model;

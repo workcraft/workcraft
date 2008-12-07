@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.framework.exceptions.VisualClassConstructionException;
@@ -32,7 +32,7 @@ public class VisualComponentGroup extends VisualNode {
 		connections = new HashSet<VisualConnection>();
 	}
 
-	public VisualComponentGroup (Element element, Model refModel) throws VisualClassConstructionException {
+	public VisualComponentGroup (Element element, MathModel refModel) throws VisualClassConstructionException {
 		this();
 
 		NodeList nodes = element.getElementsByTagName("component");

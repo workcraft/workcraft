@@ -1,7 +1,7 @@
 package org.workcraft.plugins.graph;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.VisualClassConstructionException;
 

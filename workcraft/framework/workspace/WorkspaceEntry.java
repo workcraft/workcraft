@@ -1,12 +1,12 @@
 package org.workcraft.framework.workspace;
 
 import java.io.File;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceEntry {
 	protected File file;
-	protected Model model;
+	protected MathModel model;
 	protected VisualModel visualModel;
 	protected String modelTitle;
 	protected String modelType;
@@ -38,7 +38,7 @@ public class WorkspaceEntry {
 		return file;
 	}
 
-	public Model getModel() {
+	public MathModel getModel() {
 		return model;
 	}
 
@@ -50,7 +50,7 @@ public class WorkspaceEntry {
 		this.file = file;
 	}
 
-	public void setModel(Model model) {
+	public void setModel(MathModel model) {
 		this.model = model;
 	}
 

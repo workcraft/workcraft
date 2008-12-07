@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.plugins.PluginInfo;

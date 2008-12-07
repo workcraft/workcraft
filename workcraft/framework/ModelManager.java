@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 
 
 
@@ -52,7 +52,7 @@ public class ModelManager {
 	}
 
 	public static boolean isValidModelClass(Class cls) {
-		boolean if_ok = Model.class.isAssignableFrom(cls);
+		boolean if_ok = MathModel.class.isAssignableFrom(cls);
 
 		try
 		{

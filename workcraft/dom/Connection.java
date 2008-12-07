@@ -35,7 +35,7 @@ public class Connection {
 		XmlUtil.writeIntAttr(connectionElement, "ID", this.getID());
 	}
 
-	public Connection (Element xmlElement, Model model) {
+	public Connection (Element xmlElement, MathModel model) {
 		ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
 
 		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);

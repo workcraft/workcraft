@@ -32,7 +32,7 @@ import org.flexdock.docking.event.DockingListener;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
@@ -360,7 +360,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				Model work = (Model)framework.getPluginManager().getInstance(info, Model.class);
+				MathModel work = (MathModel)framework.getPluginManager().getInstance(info, MathModel.class);
 				work.setTitle(dialog.getModelTitle());
 
 				framework.getWorkspace().add(work);

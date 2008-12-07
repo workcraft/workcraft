@@ -1,7 +1,7 @@
 package org.workcraft.framework.workspace;
 import java.util.EventListener;
 
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 
 
 public interface WorkspaceListener extends EventListener {

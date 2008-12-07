@@ -16,7 +16,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
-public abstract class Model implements Plugin {
+public abstract class MathModel implements Plugin {
 	protected int componentIDCounter = 1;
 	protected int connectionIDCounter = 1;
 
@@ -27,14 +27,14 @@ public abstract class Model implements Plugin {
 	protected String sourcePath = null;
 	protected String title = null;
 
-	public Model (Framework framework) {
+	public MathModel (Framework framework) {
 		components = new Hashtable<Integer, Component>();
 		connections = new Hashtable<Integer, Connection>();
 		this.framework = framework;
 		this.title = "Untitled";
 	}
 
-	public Model (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
+	public MathModel (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
 		this(framework);
 
 		this.sourcePath = sourcePath;
@@ -86,7 +86,7 @@ public abstract class Model implements Plugin {
 
 			try {
 				Class<?> elementClass = Class.forName(className);
-				Constructor<?> ctor = elementClass.getConstructor(Element.class, Model.class);
+				Constructor<?> ctor = elementClass.getConstructor(Element.class, MathModel.class);
 				Connection connection = (Connection)ctor.newInstance(e, this);
 
 				addConnection(connection);

@@ -34,7 +34,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.MathModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.plugins.PluginManager;
@@ -406,11 +406,11 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public Model load(String path) throws ModelLoadFailedException {
+	public MathModel load(String path) throws ModelLoadFailedException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			org.w3c.dom.Document xmldoc;
-			Model model;
+			MathModel model;
 			DocumentBuilder db;
 
 			db = dbf.newDocumentBuilder();
@@ -436,7 +436,7 @@ public class Framework {
 
 			Class<?> modelClass = Class.forName(modelClassName);
 			Constructor<?> ctor = modelClass.getConstructor(Framework.class, Element.class, String.class);
-			model = (Model)ctor.newInstance(this, modelElement, path);
+			model = (MathModel)ctor.newInstance(this, modelElement, path);
 
 			return model;
 
@@ -465,7 +465,7 @@ public class Framework {
 
 //	public VisualAbstractModel loadVisual
 
-	public void save(Model model, String path) throws ModelSaveFailedException {
+	public void save(MathModel model, String path) throws ModelSaveFailedException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
