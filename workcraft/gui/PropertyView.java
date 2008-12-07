@@ -15,17 +15,17 @@ public class PropertyView extends JPanel {
 	private JScrollPane scrollProperties;
 
 	public PropertyView (Framework framework) {
-		propertyTable = new PropertyEditorTable();
+		this.propertyTable = new PropertyEditorTable();
 
-		scrollProperties = new JScrollPane();
-		scrollProperties.setViewportView(propertyTable);
+		this.scrollProperties = new JScrollPane();
+		this.scrollProperties.setViewportView(this.propertyTable);
 
-		this.setLayout(new BorderLayout(0,0));
-		this.add(scrollProperties, BorderLayout.CENTER);
+		setLayout(new BorderLayout(0,0));
+		this.add(this.scrollProperties, BorderLayout.CENTER);
 	}
 
 	public void setObject (PropertyEditable o) {
-		propertyTable.setObject(o);
+		this.propertyTable.setObject(o);
 
 	}
 }

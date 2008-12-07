@@ -1,10 +1,14 @@
 package org.workcraft;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 
-import org.mozilla.javascript.*;
-import org.workcraft.framework.*;
+import org.mozilla.javascript.Context;
+import org.workcraft.framework.Framework;
 
 
 public class Console {
@@ -12,18 +16,16 @@ public class Console {
 	public static void main(String[] args) {
 		LinkedList<String> arglist = new LinkedList<String>();
 
-		for (String s: args) {
+		for (String s: args)
 			arglist.push(s);
-		}
 
 		boolean silent = false;
 
-		for (String s: args) {
+		for (String s: args)
 			if (s.equals("-silent")) {
 				silent = true;
 				arglist.remove(s);
 			}
-		}
 
 		if (!silent)
 			System.out.println ("Workcraft 2 (Metastability strikes back) dev version\n");
@@ -94,13 +96,12 @@ public class Console {
 				System.exit(0);
 			}
 
-			if (framework.isInGUIMode()) {
+			if (framework.isInGUIMode())
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
 				}
-			} else {
-				if (framework.isGUIRestartRequested())
+				else if (framework.isGUIRestartRequested())
 					framework.startGUI();
 				else {
 					System.out.print ("js>");
@@ -126,7 +127,6 @@ public class Console {
 						break;
 					}
 				}
-			}
 		}
 	}
 }

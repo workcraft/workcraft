@@ -7,13 +7,13 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 public class VisualGraph extends VisualModel {
 
 	public VisualGraph(Graph model)
-			throws VisualModelConstructionException {
+	throws VisualModelConstructionException {
 		super(model);
 		// TODO Auto-generated constructor stub
 	}
 
 	public VisualGraph(Graph model, Element visualElement)
-			throws VisualModelConstructionException {
+	throws VisualModelConstructionException {
 		super(model, visualElement);
 		// TODO Auto-generated constructor stub
 	}

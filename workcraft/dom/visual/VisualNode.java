@@ -19,14 +19,14 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	protected int qwe = 0;
 
 	public VisualNode() {
-		transform = new AffineTransform();
-		transform.setToIdentity();
+		this.transform = new AffineTransform();
+		this.transform.setToIdentity();
 
-		propertyDeclarations = new LinkedList<PropertyDeclaration>();
+		this.propertyDeclarations = new LinkedList<PropertyDeclaration>();
 
-		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", Double.class));
-		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", Double.class));
-		propertyDeclarations.add(new PropertyDeclaration("qwe", "getQwe", "setQwe", Integer.class));
+		this.propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", Double.class));
+		this.propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", Double.class));
+		this.propertyDeclarations.add(new PropertyDeclaration("qwe", "getQwe", "setQwe", Integer.class));
 	}
 
 	public VisualNode (Element xmlElement) {
@@ -37,7 +37,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	}
 
 	public int getQwe() {
-		return qwe;
+		return this.qwe;
 	}
 
 	public void setQwe(int qwe) {
@@ -46,19 +46,19 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	}
 
 	public double getX() {
-		return transform.getTranslateX();
+		return this.transform.getTranslateX();
 	}
 
 	public double getY() {
-		return transform.getTranslateY();
+		return this.transform.getTranslateY();
 	}
 
 	public void setX(double x) {
-		transform.translate(x-transform.getTranslateX(), 0);
+		this.transform.translate(x-this.transform.getTranslateX(), 0);
 	}
 
 	public void setY(double y) {
-		transform.translate(0, y - transform.getTranslateY());
+		this.transform.translate(0, y - this.transform.getTranslateY());
 	}
 
 	public abstract void draw (Graphics2D g);
@@ -72,6 +72,6 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 
 
 	public List<PropertyDeclaration> getPropertyDeclarations() {
-		return propertyDeclarations;
+		return this.propertyDeclarations;
 	}
 }

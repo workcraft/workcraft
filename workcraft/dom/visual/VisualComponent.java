@@ -12,7 +12,7 @@ public abstract class VisualComponent extends VisualNode {
 	}
 
 	public Component getReferencedComponent() {
-		return refComponent;
+		return this.refComponent;
 	}
 
 

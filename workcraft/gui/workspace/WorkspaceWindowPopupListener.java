@@ -26,9 +26,10 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 	public WorkspaceWindowPopupListener(Framework framework, WorkspaceWindow wsWindow) {
 		this.framework = framework;
 		this.wsWindow = wsWindow;
-		handlers = new HashMap<JMenuItem, FileHandler>();
+		this.handlers = new HashMap<JMenuItem, FileHandler>();
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		JTree tree = (JTree) e.getComponent();
 		tree.setSelectionPath(tree
@@ -37,6 +38,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 		maybeShowPopup(e);
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		maybeShowPopup(e);
 	}
@@ -60,46 +62,44 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 					if (we.getFile() != null) {
 						// add WorkspaceEntry menu items
-						PluginInfo[] handlersInfo = framework.getPluginManager()
+						PluginInfo[] handlersInfo = this.framework.getPluginManager()
 						.getPlugins(FileHandler.class);
 
-						for (PluginInfo info : handlersInfo) {
+						for (PluginInfo info : handlersInfo)
 							try {
-								FileHandler handler = (FileHandler) framework
+								FileHandler handler = (FileHandler) this.framework
 								.getPluginManager().getSingleton(info, FileHandler.class);
 
 								if (!handler.accept(we.getFile()))
 									continue;
 								JMenuItem mi = new JMenuItem(info.getDisplayName());
-								handlers.put(mi, handler);
+								this.handlers.put(mi, handler);
 								mi.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent e) {
-										handlers.get(e.getSource()).execute(we.getFile());
+										WorkspaceWindowPopupListener.this.handlers.get(e.getSource()).execute(we.getFile());
 									}
 								});
 								popup.add(mi);
 							} catch (PluginInstantiationException e1) {
 								System.err.println(e1.getMessage());
 							}
-						}
 					}
 
 					JMenuItem miRemove = new JMenuItem("Remove");
 					miRemove.addActionListener(new ActionListener() {
 
 						public void actionPerformed(ActionEvent e) {
-							framework.getWorkspace().remove(we);
+							WorkspaceWindowPopupListener.this.framework.getWorkspace().remove(we);
 						}
 					});
 					popup.add(miRemove);
 				}
 			}
 
-			if (showWorkspaceItems) {
-				for (Component c : wsWindow.createMenu().getMenuComponents())
+			if (showWorkspaceItems)
+				for (Component c : this.wsWindow.createMenu().getMenuComponents())
 					popup.add(c);
-			}
 
 			popup.show(e.getComponent(), e.getX(), e.getY());
 		}

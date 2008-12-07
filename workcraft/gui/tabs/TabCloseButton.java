@@ -16,15 +16,15 @@ public class TabCloseButton extends JLabel implements MouseListener {
 
 	public TabCloseButton() {
 		super("X");
-		this.setVerticalAlignment(JLabel.CENTER);
-		this.setFont(this.getFont().deriveFont(Font.BOLD));
-		this.setOpaque(false);
-		this.setForeground(Color.GRAY);
-		this.addMouseListener(this);
-		this.setToolTipText("Close window");
+		setVerticalAlignment(JLabel.CENTER);
+		setFont(getFont().deriveFont(Font.BOLD));
+		setOpaque(false);
+		setForeground(Color.GRAY);
+		addMouseListener(this);
+		setToolTipText("Close window");
 
-		mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
-		mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
+		this.mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
+		this.mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
 
 		//this.setBorder(mouseOutBorder);
 	}
@@ -33,8 +33,8 @@ public class TabCloseButton extends JLabel implements MouseListener {
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		this.setForeground(new Color(200,0,0));
-	//	this.setBorder(mouseOverBorder);
+		setForeground(new Color(200,0,0));
+		//	this.setBorder(mouseOverBorder);
 	}
 
 	public void mouseExited(MouseEvent e) {

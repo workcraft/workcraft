@@ -26,17 +26,20 @@ public class Graph extends MathModel {
 	}
 
 
+	@Override
 	public Class<?>[] getSupportedComponents() {
 		return supportedComponents;
 	}
 
 
+	@Override
 	public void validate() throws ModelValidationException {
 	}
 
 
+	@Override
 	protected void validateConnection(Connection connection)
-			throws InvalidConnectionException {
+	throws InvalidConnectionException {
 	}
 
 	public Vertex createVertex(String label) {

@@ -18,6 +18,7 @@ public class VisualVertex extends VisualComponent {
 	}
 
 
+	@Override
 	public void draw(Graphics2D g) {
 		Shape shape = new Ellipse2D.Double(getX()-size/2+strokeWidth/2, getY()-size/2+strokeWidth/2,
 				size-strokeWidth, size-strokeWidth);

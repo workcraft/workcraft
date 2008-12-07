@@ -22,10 +22,10 @@ public class Guideline {
 	}
 
 	public double getPosition() {
-		return position;
+		return this.position;
 	}
 
 	public GuidelineType getType() {
-		return type;
+		return this.type;
 	}
 }

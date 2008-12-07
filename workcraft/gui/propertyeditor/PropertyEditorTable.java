@@ -58,6 +58,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	}
 
 
+	@Override
 	public TableCellEditor getCellEditor(int row, int col) {
 		if (col == 0)
 			return super.getCellEditor(row, col);
@@ -66,6 +67,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	}
 
 
+	@Override
 	public TableCellRenderer getCellRenderer(int row, int col) {
 		if (col == 0)
 			return super.getCellRenderer(row, col);
@@ -89,9 +91,9 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 			if (cls == null) {
 				System.err
-						.println("Data class \""
-								+ this.model.getRowClass(i).getName()
-								+ "\" is not supported by the Property Editor. Default cell editor will be used, which may or may not work.");
+				.println("Data class \""
+						+ this.model.getRowClass(i).getName()
+						+ "\" is not supported by the Property Editor. Default cell editor will be used, which may or may not work.");
 				this.cellRenderers[i] = new DefaultTableCellRenderer();
 				this.cellEditors[i] = new DefaultCellEditor(new JTextField());
 			} else {

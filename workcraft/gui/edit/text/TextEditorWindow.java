@@ -13,10 +13,10 @@ public class TextEditorWindow extends EditorWindow {
 	public TextEditorWindow(String title) {
 		super(title);
 
-		content = new JTextArea();
-		content.setWrapStyleWord(true);
-		content.setLineWrap(true);
-		this.setLayout(new BorderLayout());
-		this.add(content, BorderLayout.CENTER);
+		this.content = new JTextArea();
+		this.content.setWrapStyleWord(true);
+		this.content.setLineWrap(true);
+		setLayout(new BorderLayout());
+		this.add(this.content, BorderLayout.CENTER);
 	}
 }

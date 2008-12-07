@@ -10,6 +10,7 @@ public class FileFilters {
 
 	private static class DocumentFilesFilter extends FileFilter {
 
+		@Override
 		public boolean accept(File f) {
 			if (f.isDirectory())
 				return true;
@@ -18,6 +19,7 @@ public class FileFilters {
 			return false;
 		}
 
+		@Override
 		public String getDescription() {
 			return "Workcraft documents (*"+DOCUMENT_EXTENSION+")";
 		}
@@ -25,6 +27,7 @@ public class FileFilters {
 
 	private static class WorkspaceFilesFilter extends FileFilter {
 
+		@Override
 		public boolean accept(File f) {
 			if (f.isDirectory())
 				return true;
@@ -33,6 +36,7 @@ public class FileFilters {
 			return false;
 		}
 
+		@Override
 		public String getDescription() {
 			return "Workcraft workspace (*"+WORKSPACE_EXTENSION+")";
 		}

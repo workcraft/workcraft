@@ -16,11 +16,11 @@ public class WorkspaceEntry {
 	}
 
 	public File getFile() {
-		return file;
+		return this.file;
 	}
 
 	public Model getModel() {
-		return model;
+		return this.model;
 	}
 
 	public void setFile(File file) {
@@ -40,26 +40,26 @@ public class WorkspaceEntry {
 	}
 
 	public boolean isWork() {
-		return (model != null || file.getName().endsWith(".work"));
+		return (this.model != null || this.file.getName().endsWith(".work"));
 	}
 
+	@Override
 	public String toString() {
 		String res = "";
 
 		if (isWork()) {
-			res = model.getTitle();
+			res = this.model.getTitle();
 			if (res.isEmpty())
-				if (file != null)
-					res = file.getName();
+				if (this.file != null)
+					res = this.file.getName();
 				else
 					res = "unnamed";
-			if (model.getVisualModel() != null)
+			if (this.model.getVisualModel() != null)
 				res = res + " [V]";
-		} else {
-			res = file.getName();
-		}
+		} else
+			res = this.file.getName();
 
-		if (unsaved || file == null)
+		if (this.unsaved || this.file == null)
 			res = "* " + res;
 
 		return res;

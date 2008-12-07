@@ -1,24 +1,22 @@
 package org.workcraft.gui.history;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
-
+import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
-import java.awt.GridBagLayout;
-import java.awt.Dimension;
-import javax.swing.JButton;
 
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.HistoryEvent;
 import org.workcraft.framework.HistoryListener;
 import org.workcraft.framework.HistoryProvider;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 @SuppressWarnings("serial")
 public class HistoryView extends JInternalFrame implements HistoryListener {
@@ -49,9 +47,9 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 */
 	private void initialize() {
 		this.setSize(300, 200);
-		this.setResizable(true);
-		this.setTitle("History");
-		this.setContentPane(getJContentPane());
+		setResizable(true);
+		setTitle("History");
+		setContentPane(getJContentPane());
 	}
 
 	/**
@@ -60,13 +58,13 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
-		if (jContentPane == null) {
-			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout());
-			jContentPane.add(getListHistory(), BorderLayout.CENTER);
-			jContentPane.add(getPanelHistoryButtons(), BorderLayout.NORTH);
+		if (this.jContentPane == null) {
+			this.jContentPane = new JPanel();
+			this.jContentPane.setLayout(new BorderLayout());
+			this.jContentPane.add(getListHistory(), BorderLayout.CENTER);
+			this.jContentPane.add(getPanelHistoryButtons(), BorderLayout.NORTH);
 		}
-		return jContentPane;
+		return this.jContentPane;
 	}
 
 	/**
@@ -75,11 +73,11 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 * @return javax.swing.JList
 	 */
 	private JList getListHistory() {
-		if (listHistory == null) {
-			listHistory = new JList();
-			listHistory.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		if (this.listHistory == null) {
+			this.listHistory = new JList();
+			this.listHistory.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
-		return listHistory;
+		return this.listHistory;
 	}
 
 	public void setProvider(HistoryProvider provider) {
@@ -89,8 +87,8 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 
 		// populate list of existing events
 		List <HistoryEvent> events = provider.getHistory();
-		listModel = new HistoryListModel (events);
-		getListHistory().setModel(listModel);
+		this.listModel = new HistoryListModel (events);
+		getListHistory().setModel(this.listModel);
 
 		// attach to new provider
 		this.provider = provider;
@@ -98,12 +96,12 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	}
 
 	public HistoryProvider getProvider() {
-		return provider;
+		return this.provider;
 	}
 
 	public void eventAdded(HistoryEvent event) {
-		listModel.events.add(event);
-		getListHistory().setSelectedIndex(listModel.events.size()-1);
+		this.listModel.events.add(event);
+		getListHistory().setSelectedIndex(this.listModel.events.size()-1);
 	}
 
 	public void movedToState(int index) {
@@ -120,7 +118,7 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getPanelHistoryButtons() {
-		if (panelHistoryButtons == null) {
+		if (this.panelHistoryButtons == null) {
 			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 			gridBagConstraints1.gridx = 1;
 			gridBagConstraints1.insets = new Insets(0, 10, 0, 0);
@@ -131,13 +129,13 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 			gridBagConstraints.anchor = GridBagConstraints.EAST;
 			gridBagConstraints.weightx = 0.0;
 			gridBagConstraints.gridy = 0;
-			panelHistoryButtons = new JPanel();
-			panelHistoryButtons.setLayout(new GridBagLayout());
-			panelHistoryButtons.setPreferredSize(new Dimension(0, 25));
-			panelHistoryButtons.add(getBtnUndo(), gridBagConstraints);
-			panelHistoryButtons.add(getBtnRedo(), gridBagConstraints1);
+			this.panelHistoryButtons = new JPanel();
+			this.panelHistoryButtons.setLayout(new GridBagLayout());
+			this.panelHistoryButtons.setPreferredSize(new Dimension(0, 25));
+			this.panelHistoryButtons.add(getBtnUndo(), gridBagConstraints);
+			this.panelHistoryButtons.add(getBtnRedo(), gridBagConstraints1);
 		}
-		return panelHistoryButtons;
+		return this.panelHistoryButtons;
 	}
 
 	/**
@@ -146,12 +144,12 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 * @return javax.swing.JButton
 	 */
 	private JButton getBtnUndo() {
-		if (btnUndo == null) {
-			btnUndo = new JButton();
-			btnUndo.setText("< Undo");
-			btnUndo.setPreferredSize(new Dimension(80, 18));
+		if (this.btnUndo == null) {
+			this.btnUndo = new JButton();
+			this.btnUndo.setText("< Undo");
+			this.btnUndo.setPreferredSize(new Dimension(80, 18));
 		}
-		return btnUndo;
+		return this.btnUndo;
 	}
 
 	/**
@@ -160,13 +158,13 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	 * @return javax.swing.JButton
 	 */
 	private JButton getBtnRedo() {
-		if (btnRedo == null) {
-			btnRedo = new JButton();
-			btnRedo.setText("Redo >");
-			btnRedo.setActionCommand("Redo >");
-			btnRedo.setPreferredSize(new Dimension(80, 18));
+		if (this.btnRedo == null) {
+			this.btnRedo = new JButton();
+			this.btnRedo.setText("Redo >");
+			this.btnRedo.setActionCommand("Redo >");
+			this.btnRedo.setPreferredSize(new Dimension(80, 18));
 		}
-		return btnRedo;
+		return this.btnRedo;
 	}
 
 }

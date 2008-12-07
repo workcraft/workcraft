@@ -26,19 +26,19 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualModel(MathModel model) throws VisualModelConstructionException {
 		this.mathModel = model;
-		root = new VisualComponentGroup();
+		this.root = new VisualComponentGroup();
 
 		// create a default flat structure
 		for (Component component : model.getComponents()) {
 			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualClassFor(component, VisualComponent.class);
 			if (visualComponent != null)
-				root.add(visualComponent);
+				this.root.add(visualComponent);
 		}
 
 		for (Connection connection : model.getConnections()) {
 			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualClassFor(connection, VisualConnection.class);
 			if (visualConnection != null)
-				root.add(visualConnection);
+				this.root.add(visualConnection);
 		}
 	}
 
@@ -51,20 +51,20 @@ public class VisualModel implements Plugin, Model {
 		if (nodes.getLength() != 1)
 			throw new VisualModelConstructionException ("<visual-model> section of the document must contain one, and only one root group");
 
-		root = new VisualComponentGroup ((Element)nodes.item(0), mathModel);
+		this.root = new VisualComponentGroup ((Element)nodes.item(0), mathModel);
 	}
 
 	public void toXML(Element xmlVisualElement) {
 		// create root group element
 		Element rootGroupElement = xmlVisualElement.getOwnerDocument().createElement("group");
-		root.toXML(rootGroupElement);
+		this.root.toXML(rootGroupElement);
 		xmlVisualElement.appendChild(rootGroupElement);
 	}
 
 	private void drawSelection(Graphics2D g) {
-		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
+		g.setStroke(new BasicStroke((float) this.editor.getViewport().pixelSizeInUserSpace().getX()));
 		Rectangle2D.Double rect = null;
-		for(Selectable vo : selection) {
+		for(Selectable vo : this.selection) {
 			if(vo==null)
 				continue;
 			Rectangle2D bb = vo.getBoundingBox();
@@ -88,23 +88,22 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public void draw (Graphics2D g) {
-		root.draw(g);
+		this.root.draw(g);
 		drawSelection(g);
 	}
 
 	public VisualComponentGroup getRoot() {
-		return root;
+		return this.root;
 	}
 
 	public void setEditorPane(GraphEditorPane editor) {
 		this.editor = editor;
-		if(editor.getDocument()!=this) {
+		if(editor.getDocument()!=this)
 			editor.setDocument(this);
-		}
 	}
 
 	public GraphEditorPane getEditorPane() {
-		return editor;
+		return this.editor;
 	}
 
 	/**
@@ -112,24 +111,24 @@ public class VisualModel implements Plugin, Model {
 	 * @return the selection.
 	 */
 	public LinkedList<Selectable> selection() {
-		return selection;
+		return this.selection;
 	}
 
 	/**
 	 * Select all components, connections and groups from the <code>root</code> group.
 	 */
 	public void selectAll() {
-		selection.clear();
-		selection.addAll(root.components);
-		selection.addAll(root.connections);
-		selection.addAll(root.childGroups);
+		this.selection.clear();
+		this.selection.addAll(this.root.components);
+		this.selection.addAll(this.root.connections);
+		this.selection.addAll(this.root.childGroups);
 	}
 
 	/**
 	 * Clear selection.
 	 */
 	public void selectNone() {
-		selection.clear();
+		this.selection.clear();
 	}
 
 	/**
@@ -140,7 +139,7 @@ public class VisualModel implements Plugin, Model {
 	 * @return if <code>so</code> is selected
 	 */
 	public boolean isObjectSelected(Selectable so) {
-		return selection.contains(so);
+		return this.selection.contains(so);
 	}
 
 	/**
@@ -149,7 +148,7 @@ public class VisualModel implements Plugin, Model {
 	 */
 	public void addToSelection(Selectable so) {
 		if(!isObjectSelected(so))
-			selection.add(so);
+			this.selection.add(so);
 	}
 
 	/**
@@ -157,7 +156,7 @@ public class VisualModel implements Plugin, Model {
 	 * @param so an object to deselect.
 	 */
 	public void removeFromSelection(Selectable so) {
-		selection.remove(so);
+		this.selection.remove(so);
 	}
 
 

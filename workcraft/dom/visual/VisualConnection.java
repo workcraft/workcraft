@@ -17,6 +17,6 @@ public abstract class VisualConnection implements Selectable {
 	}
 
 	public Connection getReferencedConnection() {
-		return refConnection;
+		return this.refConnection;
 	}
 }

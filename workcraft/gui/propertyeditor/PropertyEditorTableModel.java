@@ -16,13 +16,14 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	/*	HashMap<String, Property> propertyMap = new HashMap<String, Property>();
 	LinkedList<String> propertyNames = new LinkedList<String>();*/
 
+	@Override
 	public String getColumnName(int col) {
 		return columnNames[col];
 	}
 
 	public void setObject(PropertyEditable object) {
 		this.object = object;
-		declarations =  object.getPropertyDeclarations().toArray(new PropertyDeclaration[0]);
+		this.declarations =  object.getPropertyDeclarations().toArray(new PropertyDeclaration[0]);
 
 
 		/*
@@ -83,47 +84,48 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public void clearObject() {
-		object = null;
-		declarations = null;
+		this.object = null;
+		this.declarations = null;
 		fireTableDataChanged();
 	}
 
 	public int getColumnCount() {
-		if (object == null)
+		if (this.object == null)
 			return 0;
 		else
 			return 2;
 	}
 
 	public int getRowCount() {
-		if (object == null)
+		if (this.object == null)
 			return 0;
 		else
-			return declarations.length;
+			return this.declarations.length;
 	}
 
 	public Class<?> getRowClass(int row) {
-		if (object == null)
+		if (this.object == null)
 			return null;
 		else
-			return declarations[row].cls;
+			return this.declarations[row].cls;
 	}
 
 
+	@Override
 	public boolean isCellEditable(int row, int col) {
 		if (col < 1)
 			return false;
 		else
-			return (declarations[row].setter != null);
+			return (this.declarations[row].setter != null);
 	}
 
 	public Object getValueAt(int row, int col) {
 		if (col==0)
-			return declarations[row].name;
-		else {
+			return this.declarations[row].name;
+		else
 			try {
-				Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null );
-				Object o = m.invoke(object, (Object[])null);
+				Method m = this.object.getClass().getMethod(this.declarations[row].getter,  (Class[])null );
+				Object o = m.invoke(this.object, (Object[])null);
 				return o;
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
@@ -135,9 +137,9 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 				e.printStackTrace();
 				return "#UNACCESIBLE";
 			}
-		}
 	}
 
+	@Override
 	public void setValueAt(Object value, int row, int col) {
 		/*if (col==1) {
 			Property p = propertyMap.get(propertyNames.get(row));

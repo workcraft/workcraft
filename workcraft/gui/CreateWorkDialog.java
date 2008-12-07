@@ -52,9 +52,9 @@ public class CreateWorkDialog extends JDialog {
 
 		this.framework = owner.framework;
 
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		this.setModal(true);
-		this.setTitle("New work");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setModal(true);
+		setTitle("New work");
 
 		Dimension parentSize = owner.getSize();
 		this.setSize(parentSize.width / 2, parentSize.height / 2);
@@ -67,31 +67,31 @@ public class CreateWorkDialog extends JDialog {
 	}
 
 	private void initComponents() {
-		contentPane = new JPanel(new BorderLayout());
-		this.setContentPane(contentPane);
+		this.contentPane = new JPanel(new BorderLayout());
+		setContentPane(this.contentPane);
 
-		modelScroll = new JScrollPane();
+		this.modelScroll = new JScrollPane();
 		DefaultListModel listModel = new DefaultListModel();
 
 
-		modelList = new JList(listModel);
-		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
+		this.modelList = new JList(listModel);
+		this.modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 
-		modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+		this.modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-				if (modelList.getSelectedIndex() == -1) {
-					okButton.setEnabled(false);
-				} else
-					okButton.setEnabled(true);
+				if (CreateWorkDialog.this.modelList.getSelectedIndex() == -1)
+					CreateWorkDialog.this.okButton.setEnabled(false);
+				else
+					CreateWorkDialog.this.okButton.setEnabled(true);
 			}
 		}
 		);
 
-		modelList.addMouseListener(new MouseListener() {
+		this.modelList.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount()==2)
-					if (modelList.getSelectedIndex() != -1)
+					if (CreateWorkDialog.this.modelList.getSelectedIndex() != -1)
 						ok();
 			}
 			public void mouseEntered(MouseEvent e) {
@@ -104,71 +104,72 @@ public class CreateWorkDialog extends JDialog {
 			}
 		});
 
-		PluginInfo[] modelsInfo = framework.getPluginManager().getModels();
+		PluginInfo[] modelsInfo = this.framework.getPluginManager().getModels();
 		Arrays.sort(modelsInfo);
 		for (PluginInfo info : modelsInfo)
 			listModel.addElement(info);
 
-		modelScroll.setViewportView(modelList);
-		modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
+		this.modelScroll.setViewportView(this.modelList);
+		this.modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
 
-		optionsPane = new JPanel();
-		optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
-		optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
+		this.optionsPane = new JPanel();
+		this.optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
+		this.optionsPane.setLayout(new BoxLayout(this.optionsPane, BoxLayout.Y_AXIS));
 
-		chkVisual = new JCheckBox("create visual model");
+		this.chkVisual = new JCheckBox("create visual model");
 
-		chkVisual.setSelected(true);
+		this.chkVisual.setSelected(true);
 
-		chkOpen = new JCheckBox("open in editor");
-		chkOpen.setSelected(true);
+		this.chkOpen = new JCheckBox("open in editor");
+		this.chkOpen.setSelected(true);
 
-		optionsPane.add(chkVisual);
-		optionsPane.add(chkOpen);
-		optionsPane.add(new JLabel("Title: "));
-		txtTitle = new JTextField();
+		this.optionsPane.add(this.chkVisual);
+		this.optionsPane.add(this.chkOpen);
+		this.optionsPane.add(new JLabel("Title: "));
+		this.txtTitle = new JTextField();
 		//txtTitle.setMaximumSize(new Dimension(1000,20));
-		optionsPane.add(txtTitle);
+		this.optionsPane.add(this.txtTitle);
 
 		JPanel dummy = new JPanel();
 		dummy.setPreferredSize(new Dimension(200,1000));
 		dummy.setMaximumSize(new Dimension(200,1000));
 
-		optionsPane.add(dummy);
+		this.optionsPane.add(dummy);
 
 
-		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		this.buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
 
-		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 20));
-		okButton.setEnabled(false);
-		okButton.setText("OK");
-		okButton.addActionListener(new java.awt.event.ActionListener() {
+		this.okButton = new JButton();
+		this.okButton.setPreferredSize(new Dimension(100, 20));
+		this.okButton.setEnabled(false);
+		this.okButton.setText("OK");
+		this.okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				ok();
 			}
 		});
 
-		cancelButton = new JButton();
-		cancelButton.setPreferredSize(new Dimension(100, 20));
-		cancelButton.setText("Cancel");
-		cancelButton.addActionListener(new java.awt.event.ActionListener() {
+		this.cancelButton = new JButton();
+		this.cancelButton.setPreferredSize(new Dimension(100, 20));
+		this.cancelButton.setText("Cancel");
+		this.cancelButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				cancel();
 			}
 		});
 
-		buttonsPane.add(okButton);
-		buttonsPane.add(cancelButton);
+		this.buttonsPane.add(this.okButton);
+		this.buttonsPane.add(this.cancelButton);
 
 
-		contentPane.add(modelScroll, BorderLayout.CENTER);
-		contentPane.add(optionsPane, BorderLayout.WEST);
-		contentPane.add(buttonsPane, BorderLayout.SOUTH);
+		this.contentPane.add(this.modelScroll, BorderLayout.CENTER);
+		this.contentPane.add(this.optionsPane, BorderLayout.WEST);
+		this.contentPane.add(this.buttonsPane, BorderLayout.SOUTH);
 
 
-		txtTitle.addKeyListener(new java.awt.event.KeyAdapter() {
+		this.txtTitle.addKeyListener(new java.awt.event.KeyAdapter() {
+			@Override
 			public void keyPressed(java.awt.event.KeyEvent e) {
 				if (e.getKeyCode()==KeyEvent.VK_ENTER)
 					ok();
@@ -178,32 +179,32 @@ public class CreateWorkDialog extends JDialog {
 	}
 
 	private void cancel() {
-		modalResult = 0;
+		this.modalResult = 0;
 		setVisible(false);
 	}
 
 	private void ok() {
-		modalResult = 1;
+		this.modalResult = 1;
 		setVisible(false);
 	}
 
 	public PluginInfo getSelectedModel() {
-		return (PluginInfo)modelList.getSelectedValue();
+		return (PluginInfo)this.modelList.getSelectedValue();
 	}
 
 	public int getModalResult() {
-		return modalResult;
+		return this.modalResult;
 	}
 
 	public boolean createVisualSelected(){
-		return chkVisual.isSelected();
+		return this.chkVisual.isSelected();
 	}
 
 	public boolean openInEditorSelected() {
-		return chkOpen.isSelected();
+		return this.chkOpen.isSelected();
 	}
 
 	public String getModelTitle() {
-		return txtTitle.getText();
+		return this.txtTitle.getText();
 	}
 }

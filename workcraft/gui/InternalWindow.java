@@ -15,34 +15,34 @@ public abstract class InternalWindow extends JInternalFrame {
 
 	public InternalWindow(String title) {
 		super(title, true, true, true, true);
-		this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 	}
 
 	public void hideTitle() {
-	//	System.out.println ("hiding title " +this.getTitle());
+		//	System.out.println ("hiding title " +this.getTitle());
 		JComponent titlePane = ((BasicInternalFrameUI)getUI()).getNorthPane();
-		titleRestore =  titlePane.getPreferredSize();
+		this.titleRestore =  titlePane.getPreferredSize();
 		titlePane.setPreferredSize(new Dimension(0,0));
 	}
 
 	public void hideBorder() {
-	//	System.out.println ("hiding border " +this.getTitle());
-		borderRestore = getBorder();
+		//	System.out.println ("hiding border " +this.getTitle());
+		this.borderRestore = getBorder();
 		setBorder(null);
 	}
 
 	public void showTitle() {
-		if (titleRestore != null) {
+		if (this.titleRestore != null) {
 			JComponent titlePane = ((BasicInternalFrameUI)getUI()).getNorthPane();
-			titlePane.setPreferredSize(titleRestore);
-			titleRestore = null;
+			titlePane.setPreferredSize(this.titleRestore);
+			this.titleRestore = null;
 		}
 	}
 
 	public void showBorder() {
-		if (borderRestore != null) {
-			setBorder(borderRestore);
-			borderRestore = null;
+		if (this.borderRestore != null) {
+			setBorder(this.borderRestore);
+			this.borderRestore = null;
 		}
 	}
 }

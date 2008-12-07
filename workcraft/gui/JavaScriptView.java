@@ -23,18 +23,19 @@ public class JavaScriptView extends JPanel {
 	public JavaScriptView (Framework framework) {
 		this.framework = framework;
 
-		btnExecute = new JButton();
-		btnExecute.setText("Execute [ctrl-Enter]");
+		this.btnExecute = new JButton();
+		this.btnExecute.setText("Execute [ctrl-Enter]");
 
-		btnExecute.addActionListener(new java.awt.event.ActionListener() {
+		this.btnExecute.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				execScript();
 			}
 		});
 
-		txtScript = new JEditTextArea();
-		txtScript.setTokenMarker(new JavaScriptTokenMarker());
-		txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
+		this.txtScript = new JEditTextArea();
+		this.txtScript.setTokenMarker(new JavaScriptTokenMarker());
+		this.txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
+			@Override
 			public void keyReleased(java.awt.event.KeyEvent e)
 			{
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && e.isControlDown() == true)
@@ -42,36 +43,35 @@ public class JavaScriptView extends JPanel {
 			}
 		});
 
-		panelInput = new JPanel();
-		panelInput.setLayout(new BorderLayout());
-		panelInput.add(txtScript, BorderLayout.CENTER);
+		this.panelInput = new JPanel();
+		this.panelInput.setLayout(new BorderLayout());
+		this.panelInput.add(this.txtScript, BorderLayout.CENTER);
 		//panelInput.add(btnExecute, BorderLayout.SOUTH);
-		panelInput.setMinimumSize(new Dimension(100,100));
+		this.panelInput.setMinimumSize(new Dimension(100,100));
 
-		this.setLayout(new BorderLayout());
-		this.add(panelInput, BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		this.add(this.panelInput, BorderLayout.CENTER);
 
 	}
 
 
 	public void execScript() {
-		if (txtScript.getText().length()>0) {
+		if (this.txtScript.getText().length()>0)
 			try {
-				Object result = framework.execJavaScript(txtScript.getText());
+				Object result = this.framework.execJavaScript(this.txtScript.getText());
 
 				Context.enter();
 				String out = Context.toString(result);
 				Context.exit();
 				if (!out.equals("undefined"))
 					System.out.println (out);
-				txtScript.setText("");
+				this.txtScript.setText("");
 			}
-			catch (org.mozilla.javascript.WrappedException e) {
-				System.err.println(e.getWrappedException().getClass().getName()+" "+e.getWrappedException().getMessage());
-			}
-			catch (org.mozilla.javascript.RhinoException e) {
-				System.err.println(e.getMessage());
-			}
+		catch (org.mozilla.javascript.WrappedException e) {
+			System.err.println(e.getWrappedException().getClass().getName()+" "+e.getWrappedException().getMessage());
+		}
+		catch (org.mozilla.javascript.RhinoException e) {
+			System.err.println(e.getMessage());
 		}
 	}
 

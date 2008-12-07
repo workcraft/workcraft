@@ -31,7 +31,7 @@ public class SelectionTool implements GraphEditorTool {
 
 	public void mouseClicked(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			if(drag!=DRAG_NONE)
+			if(this.drag!=DRAG_NONE)
 				cancelDrag(e);
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0)
 				e.getModel().selection().clear();
@@ -55,123 +55,116 @@ public class SelectionTool implements GraphEditorTool {
 
 	public void mouseExited(GraphEditorMouseEvent e) {
 		// TODO very important! cancel selection upon changing document
-		if(drag!=DRAG_NONE)
+		if(this.drag!=DRAG_NONE)
 			cancelDrag(e); // TODO pan is better
 	}
 
 
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		if(drag==DRAG_MOVE) {
-			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
+		if(this.drag==DRAG_MOVE) {
+			Point2D pos = new Point2D.Double(e.getX()+this.snapOffset.getX(), e.getY()+this.snapOffset.getY());
 			e.getModel().getEditorPane().snap(pos);
-			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
+			offsetSelection(e, pos.getX()-this.prevPosition.getX(), pos.getY()-this.prevPosition.getY());
 			e.getModel().getEditorPane().repaint();
-			prevPosition = pos;
+			this.prevPosition = pos;
 		}
-		else if(drag==DRAG_SELECT) {
+		else if(this.drag==DRAG_SELECT) {
 			LinkedList<Selectable> hit = e.getModel().getRoot().hitObjects(selectionRect(e.getPosition()));
 			e.getModel().selectNone();
-			e.getModel().selection().addAll(savedSelection);
-			for(Selectable so : hit) {
-				if(selectionMode==SELECTION_ADD) {
+			e.getModel().selection().addAll(this.savedSelection);
+			for(Selectable so : hit)
+				if(this.selectionMode==SELECTION_ADD)
 					e.getModel().addToSelection(so);
-				}
-				else if(selectionMode==SELECTION_REMOVE) {
+				else if(this.selectionMode==SELECTION_REMOVE)
 					e.getModel().removeFromSelection(so);
-				}
-			}
 			e.getModel().getEditorPane().repaint();
-			prevPosition = e.getPosition();
+			this.prevPosition = e.getPosition();
 		}
 		else
-			prevPosition = e.getPosition();
+			this.prevPosition = e.getPosition();
 	}
 
 
 	public void mousePressed(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			startPosition = e.getPosition();
-			prevPosition = e.getPosition();
+			this.startPosition = e.getPosition();
+			this.prevPosition = e.getPosition();
 			Selectable so = e.getModel().getRoot().hitObject(e.getPosition());
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!e.getModel().isObjectSelected(so)) {
 					e.getModel().selectNone();
 					e.getModel().addToSelection(so);
 				}
-				drag = DRAG_MOVE;
+				this.drag = DRAG_MOVE;
 				if(so instanceof VisualNode) {
 					VisualNode node = (VisualNode) so;
-					snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
-					prevPosition = new Point2D.Double(node.getX(), node.getY());
+					this.snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
+					this.prevPosition = new Point2D.Double(node.getX(), node.getY());
 				}
 				else
-					snapOffset = new Point2D.Double(0, 0);
+					this.snapOffset = new Point2D.Double(0, 0);
 			}
 			else {
-				savedSelection.clear();
-				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so==null) {
+				this.savedSelection.clear();
+				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so==null)
 					e.getModel().selectNone();
-				}
 				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
-					selectionMode = SELECTION_REMOVE;
+					this.selectionMode = SELECTION_REMOVE;
 				else
-					selectionMode = SELECTION_ADD;
-				savedSelection.addAll(e.getModel().selection());
-				drag = DRAG_SELECT;
+					this.selectionMode = SELECTION_ADD;
+				this.savedSelection.addAll(e.getModel().selection());
+				this.drag = DRAG_SELECT;
 			}
 			e.getModel().getEditorPane().repaint();
 		}
-		else if(e.getButton()==MouseEvent.BUTTON3) {
-			if(drag!=DRAG_NONE)
+		else if(e.getButton()==MouseEvent.BUTTON3)
+			if(this.drag!=DRAG_NONE)
 				cancelDrag(e);
-		}
 	}
 
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			drag = DRAG_NONE;
+			this.drag = DRAG_NONE;
 			e.getModel().getEditorPane().repaint();
 		}
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
-		for(Selectable so : e.getModel().selection()) {
+		for(Selectable so : e.getModel().selection())
 			if(so instanceof VisualNode) {
 				VisualNode node = (VisualNode) so;
 				node.setX(node.getX()+dx);
 				node.setY(node.getY()+dy);
 			}
-		}
 	}
 
 	private void cancelDrag(GraphEditorMouseEvent e) {
-		if(drag==DRAG_MOVE) {
-			offsetSelection(e, startPosition.getX()-e.getX(), startPosition.getY()-e.getY());
-		}
-		else if(drag == DRAG_SELECT) {
+		if(this.drag==DRAG_MOVE)
+			offsetSelection(e, this.startPosition.getX()-e.getX(), this.startPosition.getY()-e.getY());
+		else if(this.drag == DRAG_SELECT) {
 			e.getModel().selectNone();
-			e.getModel().selection().addAll(savedSelection);
-			savedSelection.clear();
+			e.getModel().selection().addAll(this.savedSelection);
+			this.savedSelection.clear();
 		}
-		drag = DRAG_NONE;
+		this.drag = DRAG_NONE;
 		e.getModel().getEditorPane().repaint();
 	}
 
 	private Rectangle2D selectionRect(Point2D currentPosition) {
 		return new Rectangle2D.Double(
-				Math.min(startPosition.getX(), currentPosition.getX()),
-				Math.min(startPosition.getY(), currentPosition.getY()),
-				Math.abs(startPosition.getX()-currentPosition.getX()),
-				Math.abs(startPosition.getY()-currentPosition.getY())
-			);
+				Math.min(this.startPosition.getX(), currentPosition.getX()),
+				Math.min(this.startPosition.getY(), currentPosition.getY()),
+				Math.abs(this.startPosition.getX()-currentPosition.getX()),
+				Math.abs(this.startPosition.getY()-currentPosition.getY())
+		);
 	}
 
 
 	public void draw(GraphEditorPane editor, Graphics2D g) {
-		if(drag==DRAG_SELECT) {
+		if(this.drag==DRAG_SELECT) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
-			Rectangle2D bb = selectionRect(prevPosition);
+			Rectangle2D bb = selectionRect(this.prevPosition);
 			g.setColor(new Color(128, 128, 128, 32));
 			g.fill(bb);
 			g.setColor(new Color(128, 128, 128));

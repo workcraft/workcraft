@@ -65,13 +65,13 @@ public class Framework {
 
 		public Object run(Context cx) {
 			Object ret;
-			if (script != null)
-				ret = script.exec(cx, scope);
+			if (this.script != null)
+				ret = this.script.exec(cx, this.scope);
 			else
-				ret = cx.evaluateString(scope, strScript, "<string>", 1, null);
-			script = null;
-			scope = null;
-			strScript = null;
+				ret = cx.evaluateString(this.scope, this.strScript, "<string>", 1, null);
+			this.script = null;
+			this.scope = null;
+			this.strScript = null;
 			return ret;
 		}
 	}
@@ -94,17 +94,17 @@ public class Framework {
 
 		public Object run(Context cx) {
 			Object ret;
-			if (source!=null)
-				ret = cx.compileString(source, sourceName, 1, null);
+			if (this.source!=null)
+				ret = cx.compileString(this.source, this.sourceName, 1, null);
 			else
 				try {
-					ret = cx.compileReader(reader, sourceName, 1, null);
+					ret = cx.compileReader(this.reader, this.sourceName, 1, null);
 				} catch (IOException e) {
 					e.printStackTrace();
 					ret = null;
 				}
-				source = null;
-				sourceName = null;
+				this.source = null;
+				this.sourceName = null;
 				return ret;
 		}
 	}
@@ -117,9 +117,9 @@ public class Framework {
 		}
 
 		public Object run(Context cx) {
-			Object scriptable = Context.javaToJS(args, systemScope);
-			ScriptableObject.putProperty(systemScope, "args", scriptable);
-			systemScope.setAttributes("args", ScriptableObject.READONLY);
+			Object scriptable = Context.javaToJS(this.args, Framework.this.systemScope);
+			ScriptableObject.putProperty(Framework.this.systemScope, "args", scriptable);
+			Framework.this.systemScope.setAttributes("args", ScriptableObject.READONLY);
 			return null;
 
 		}
@@ -146,12 +146,12 @@ public class Framework {
 	private MainWindow mainWindow;
 
 	public Framework() {
-		pluginManager = new PluginManager(this);
-		modelManager = new ModelManager();
-		config = new Config();
-		workspace = new Workspace(this);
-		javaScriptExecution = new JavaScriptExecution();
-		javaScriptCompilation = new JavaScriptCompilation();
+		this.pluginManager = new PluginManager(this);
+		this.modelManager = new ModelManager();
+		this.config = new Config();
+		this.workspace = new Workspace(this);
+		this.javaScriptExecution = new JavaScriptExecution();
+		this.javaScriptCompilation = new JavaScriptCompilation();
 	}
 
 
@@ -184,31 +184,31 @@ public class Framework {
 	}*/
 
 	public void loadConfig(String fileName) {
-		config.load(fileName);
+		this.config.load(fileName);
 	}
 
 	public void saveConfig(String fileName) {
-		config.save(fileName);
+		this.config.save(fileName);
 	}
 
 	public void setConfigVar (String key, String value) {
-		config.set(key, value);
+		this.config.set(key, value);
 	}
 
 	public void setConfigVar (String key, int value) {
-		config.set(key, Integer.toString(value));
+		this.config.set(key, Integer.toString(value));
 	}
 
 	public void setConfigVar (String key, boolean value) {
-		config.set(key, Boolean.toString(value));
+		this.config.set(key, Boolean.toString(value));
 	}
 
 	public String getConfigVar (String key) {
-		return config.get(key);
+		return this.config.get(key);
 	}
 
 	public int getConfigVarAsInt (String key, int defaultValue)  {
-		String s = config.get(key);
+		String s = this.config.get(key);
 
 		try {
 			return Integer.parseInt(s);
@@ -219,7 +219,7 @@ public class Framework {
 	}
 
 	public boolean getConfigVarAsBool (String key, boolean defaultValue)  {
-		String s = config.get(key);
+		String s = this.config.get(key);
 
 		if (s == null)
 			return defaultValue;
@@ -228,7 +228,7 @@ public class Framework {
 	}
 
 	public String[] getModelNames() {
-		LinkedList<Class<?>> list = modelManager.getModelList();
+		LinkedList<Class<?>> list = this.modelManager.getModelList();
 		String a[] = new String[list.size()];
 		int i=0;
 		for (Class<?> cls : list)
@@ -237,25 +237,25 @@ public class Framework {
 	}
 
 	public void initJavaScript() {
-		if (!silent)
+		if (!this.silent)
 			System.out.println ("Initialising javascript...");
 		Context.call(new ContextAction() {
 			public Object run(Context cx) {
 				ImporterTopLevel importer = new ImporterTopLevel();
 				importer.initStandardObjects(cx, false);
-				systemScope = importer;
+				Framework.this.systemScope = importer;
 
 				//systemScope.initStandardObjects();
 				//systemScope.setParentScope(
 
-				Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
-				ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
+				Object frameworkScriptable = Context.javaToJS(Framework.this, Framework.this.systemScope);
+				ScriptableObject.putProperty(Framework.this.systemScope, "framework", frameworkScriptable);
 				//ScriptableObject.putProperty(systemScope, "importer", );
-				systemScope.setAttributes("framework", ScriptableObject.READONLY);
+				Framework.this.systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
-				globalScope = cx.newObject(systemScope);
-				globalScope.setPrototype(systemScope);
-				globalScope.setParentScope(null);
+				Framework.this.globalScope = cx.newObject(Framework.this.systemScope);
+				Framework.this.globalScope.setPrototype(Framework.this.systemScope);
+				Framework.this.globalScope.setParentScope(null);
 
 				return null;
 
@@ -264,7 +264,7 @@ public class Framework {
 	}
 
 	public Scriptable getJavaScriptGlobalScope() {
-		return globalScope;
+		return this.globalScope;
 	}
 
 	public Object execJavaScript(File file) throws FileNotFoundException {
@@ -273,89 +273,89 @@ public class Framework {
 	}
 
 	public Object execJavaScript(Script script) {
-		return execJavaScript (script, globalScope);
+		return execJavaScript (script, this.globalScope);
 	}
 
 	public Object execJavaScript(Script script, Scriptable scope) {
-		javaScriptExecution.setScript(script);
-		javaScriptExecution.setScope(scope);
-		return Context.call(javaScriptExecution);
+		this.javaScriptExecution.setScript(script);
+		this.javaScriptExecution.setScope(scope);
+		return Context.call(this.javaScriptExecution);
 	}
 
 	public Object execJavaScript(String script, Scriptable scope) {
-		javaScriptExecution.setScript(script);
-		javaScriptExecution.setScope(scope);
-		return Context.call(javaScriptExecution);
+		this.javaScriptExecution.setScript(script);
+		this.javaScriptExecution.setScope(scope);
+		return Context.call(this.javaScriptExecution);
 	}
 
 	public Object execJavaScript (String script) {
-		return execJavaScript(script, globalScope);
+		return execJavaScript(script, this.globalScope);
 	}
 
 	public Script compileJavaScript (String source, String sourceName) {
-		javaScriptCompilation.setSource(source);
-		javaScriptCompilation.setSourceName(sourceName);
-		return (Script) Context.call(javaScriptCompilation);
+		this.javaScriptCompilation.setSource(source);
+		this.javaScriptCompilation.setSourceName(sourceName);
+		return (Script) Context.call(this.javaScriptCompilation);
 	}
 
 	public Script compileJavaScript (BufferedReader source, String sourceName) {
-		javaScriptCompilation.setSource(source);
-		javaScriptCompilation.setSourceName(sourceName);
-		return (Script) Context.call(javaScriptCompilation);
+		this.javaScriptCompilation.setSource(source);
+		this.javaScriptCompilation.setSourceName(sourceName);
+		return (Script) Context.call(this.javaScriptCompilation);
 	}
 
 	public void startGUI() {
-		if (inGUIMode) {
+		if (this.inGUIMode) {
 			System.out.println ("Already in GUI mode");
 			return;
 		}
 
-		GUIRestartRequested = false;
+		this.GUIRestartRequested = false;
 
 		System.out.println ("Switching to GUI mode...");
 
 
 		if (SwingUtilities.isEventDispatchThread()) {
-			mainWindow = new MainWindow(Framework.this);
-			mainWindow.startup();
+			this.mainWindow = new MainWindow(Framework.this);
+			this.mainWindow.startup();
 		} else
 			try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					mainWindow = new MainWindow(Framework.this);
-					mainWindow.startup();
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						Framework.this.mainWindow = new MainWindow(Framework.this);
+						Framework.this.mainWindow.startup();
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+
+			Context.call(new ContextAction() {
+				public Object run(Context cx) {
+					Object guiScriptable = Context.javaToJS(Framework.this.mainWindow, Framework.this.systemScope);
+					ScriptableObject.putProperty(Framework.this.systemScope, "gui", guiScriptable);
+					Framework.this.systemScope.setAttributes("gui", ScriptableObject.READONLY);
+					return null;
+
 				}
 			});
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
 
-		Context.call(new ContextAction() {
-			public Object run(Context cx) {
-				Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
-				ScriptableObject.putProperty(systemScope, "gui", guiScriptable);
-				systemScope.setAttributes("gui", ScriptableObject.READONLY);
-				return null;
-
-			}
-		});
-
-		System.out.println ("Now in GUI mode.");
-		inGUIMode = true;
+			System.out.println ("Now in GUI mode.");
+			this.inGUIMode = true;
 
 	}
 
 	public void shutdownGUI() {
-		if (inGUIMode) {
-			mainWindow.shutdown();
-			mainWindow = null;
-			inGUIMode = false;
+		if (this.inGUIMode) {
+			this.mainWindow.shutdown();
+			this.mainWindow = null;
+			this.inGUIMode = false;
 
 			Context.call(new ContextAction() {
 				public Object run(Context cx) {
-					ScriptableObject.deleteProperty(systemScope, "gui");
+					ScriptableObject.deleteProperty(Framework.this.systemScope, "gui");
 					return null;
 				}
 			});
@@ -365,35 +365,35 @@ public class Framework {
 	}
 
 	public void shutdown() {
-		shutdownRequested = true;
+		this.shutdownRequested = true;
 	}
 
 	public boolean shutdownRequested() {
-		return shutdownRequested;
+		return this.shutdownRequested;
 	}
 
 	public MainWindow getMainWindow() {
-		return mainWindow;
+		return this.mainWindow;
 	}
 
 	public ModelManager getModelManager() {
-		return modelManager;
+		return this.modelManager;
 	}
 
 	public PluginManager getPluginManager() {
-		return pluginManager;
+		return this.pluginManager;
 	}
 
 	public Workspace getWorkspace() {
-		return workspace;
+		return this.workspace;
 	}
 
 	public boolean isInGUIMode() {
-		return inGUIMode;
+		return this.inGUIMode;
 	}
 
 	public boolean isSilent() {
-		return silent;
+		return this.silent;
 	}
 
 	public void setSilent(boolean silent) {
@@ -531,11 +531,11 @@ public class Framework {
 	}
 
 	public void initPlugins() {
-		if (!silent)
+		if (!this.silent)
 			System.out.println ("Loading plugins configuration...");
 
 		try {
-			pluginManager.loadManifest();
+			this.pluginManager.loadManifest();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DocumentFormatException e) {
@@ -545,11 +545,11 @@ public class Framework {
 	}
 
 	public void restartGUI() {
-		GUIRestartRequested = true;
+		this.GUIRestartRequested = true;
 		shutdownGUI();
 	}
 
 	public boolean isGUIRestartRequested() {
-		return GUIRestartRequested;
+		return this.GUIRestartRequested;
 	}
 }

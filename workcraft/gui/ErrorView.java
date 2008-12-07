@@ -31,14 +31,16 @@ public class ErrorView extends JPanel {
 		}
 
 		public void puts(String s) {
-			target.append(s);
+			this.target.append(s);
 		}
 
+		@Override
 		public void write(byte b[]) throws IOException {
 			String s = new String(b);
 			puts(s);
 		}
 
+		@Override
 		public void write(byte b[], int off, int len) throws IOException {
 			String s = new String(b , off , len);
 			puts(s);
@@ -46,41 +48,41 @@ public class ErrorView extends JPanel {
 	}
 
 	public void captureStream() {
-		if (streamCaptured)
+		if (this.streamCaptured)
 			return;
 
 		PrintStream errPrintStream = new PrintStream(
 				new ErrorStreamView(
-						new ByteArrayOutputStream(), txtStdErr));
+						new ByteArrayOutputStream(), this.txtStdErr));
 
-		systemErr = System.err;
+		this.systemErr = System.err;
 
 		System.setErr(errPrintStream);
 
-		streamCaptured = true;
+		this.streamCaptured = true;
 	}
 
 	public void releaseStream() {
-		if (!streamCaptured)
+		if (!this.streamCaptured)
 			return;
 
-		System.setErr(systemErr);
-		systemErr = null;
-		streamCaptured = false;
+		System.setErr(this.systemErr);
+		this.systemErr = null;
+		this.streamCaptured = false;
 	}
 
 	public ErrorView (Framework framework) {
-		txtStdErr = new JTextArea();
-		txtStdErr.setLineWrap(true);
-		txtStdErr.setEditable(false);
-		txtStdErr.setWrapStyleWord(true);
-		txtStdErr.setForeground(Color.RED);
-		txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		this.txtStdErr = new JTextArea();
+		this.txtStdErr.setLineWrap(true);
+		this.txtStdErr.setEditable(false);
+		this.txtStdErr.setWrapStyleWord(true);
+		this.txtStdErr.setForeground(Color.RED);
+		this.txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-		scrollStdErr = new JScrollPane();
-		scrollStdErr.setViewportView(txtStdErr);
+		this.scrollStdErr = new JScrollPane();
+		this.scrollStdErr.setViewportView(this.txtStdErr);
 
-		this.setLayout(new BorderLayout(0,0));
-		this.add(scrollStdErr, BorderLayout.CENTER);
+		setLayout(new BorderLayout(0,0));
+		this.add(this.scrollStdErr, BorderLayout.CENTER);
 	}
 }

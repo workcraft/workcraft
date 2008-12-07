@@ -11,17 +11,18 @@ public class ModelValidationException extends Exception {
 	}
 
 	public void addError(String message) {
-		errors.add(message);
+		this.errors.add(message);
 	}
 
 	public LinkedList<String> getErrors() {
-		return errors;
+		return this.errors;
 	}
 
 
+	@Override
 	public String getMessage() {
 		String r = "Model contains following errors:\n";
-		for (String e: errors)
+		for (String e: this.errors)
 			r += e+"\n";
 		return r;
 	}

@@ -8,6 +8,6 @@ public class Event {
 	}
 
 	public Object getSender() {
-		return sender;
+		return this.sender;
 	}
 }

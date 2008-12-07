@@ -13,15 +13,15 @@ public class HistoryEvent extends Event {
 	}
 
 	public String getEventDescription() {
-		return eventDescription;
+		return this.eventDescription;
 	}
 
 	public String getRedoScript() {
-		return redoScript;
+		return this.redoScript;
 	}
 
 	public String getUndoScript() {
-		return undoScript;
+		return this.undoScript;
 	}
 
 }

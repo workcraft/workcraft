@@ -7,7 +7,7 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 public class VisualPetriNet extends VisualModel {
 
 	public VisualPetriNet(PetriNet model)
-			throws VisualModelConstructionException {
+	throws VisualModelConstructionException {
 		super(model);
 	}
 

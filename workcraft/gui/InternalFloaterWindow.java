@@ -7,7 +7,7 @@ public class InternalFloaterWindow extends JInternalFrame {
 
 	public InternalFloaterWindow(String title) {
 		super (title, false, false, false, true);
-		this.putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+		putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 	}
 
 }

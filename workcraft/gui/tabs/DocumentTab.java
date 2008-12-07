@@ -19,8 +19,8 @@ public class DocumentTab extends JPanel {
 
 	public DocumentTab(String title, int tabIndex) {
 		super();
-		this.setOpaque(false);
-		this.setLayout(new BorderLayout());
+		setOpaque(false);
+		setLayout(new BorderLayout());
 
 		String trimmedTitle;
 
@@ -43,8 +43,8 @@ public class DocumentTab extends JPanel {
 		close.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1)
-				for (TabClosingListener l : closingListeners)
-					l.tabClosing(DocumentTab.this);
+					for (TabClosingListener l : DocumentTab.this.closingListeners)
+						l.tabClosing(DocumentTab.this);
 			}
 
 			public void mouseEntered(MouseEvent e) {
@@ -65,7 +65,7 @@ public class DocumentTab extends JPanel {
 
 
 
-		this.setPreferredSize(new Dimension(x.width + y.width + 30, x.height));
+		setPreferredSize(new Dimension(x.width + y.width + 30, x.height));
 	}
 
 	public void setDocumentFrame(Object documentFrame) {
@@ -74,22 +74,22 @@ public class DocumentTab extends JPanel {
 
 
 	public Object getDocumentFrame() {
-		return documentFrame;
+		return this.documentFrame;
 	}
 
 	public void addTabClosingListener(TabClosingListener listener) {
-		closingListeners.add(listener);
+		this.closingListeners.add(listener);
 	}
 
 	public void removeTabClosingListener(TabClosingListener listener) {
-		closingListeners.remove(listener);
+		this.closingListeners.remove(listener);
 	}
 
 	public void clearTabClosingListeners() {
-		closingListeners.clear();
+		this.closingListeners.clear();
 	}
 
 	public int getTabIndex() {
-		return tabIndex;
+		return this.tabIndex;
 	}
 }

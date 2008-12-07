@@ -29,8 +29,8 @@ public abstract class MathModel implements Plugin, Model {
 	protected String title = null;
 
 	public MathModel (Framework framework) {
-		components = new Hashtable<Integer, Component>();
-		connections = new Hashtable<Integer, Connection>();
+		this.components = new Hashtable<Integer, Component>();
+		this.connections = new Hashtable<Integer, Connection>();
 		this.framework = framework;
 		this.title = "Untitled";
 	}
@@ -40,7 +40,7 @@ public abstract class MathModel implements Plugin, Model {
 
 		this.sourcePath = sourcePath;
 
-		title = XmlUtil.readStringAttr(xmlModelElement, "title");
+		this.title = XmlUtil.readStringAttr(xmlModelElement, "title");
 
 		NodeList componentNodes = xmlModelElement.getElementsByTagName("component");
 		for (int i = 0; i < componentNodes.getLength(); i++) {
@@ -117,16 +117,16 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public void toXML (Element modelElement) {
-		XmlUtil.writeStringAttr(modelElement, "title", title);
+		XmlUtil.writeStringAttr(modelElement, "title", this.title);
 
-		for (Component c: components.values()) {
+		for (Component c: this.components.values()) {
 			Element componentElement = modelElement.getOwnerDocument().createElement("component");
 			componentElement.setAttribute("class", c.getClass().getName());
 			c.toXML(componentElement);
 			modelElement.appendChild(componentElement);
 		}
 
-		for (Connection c: connections.values()) {
+		for (Connection c: this.connections.values()) {
 			Element connectionElement = modelElement.getOwnerDocument().createElement("connection");
 			connectionElement.setAttribute("class", c.getClass().getName());
 			c.toXML(connectionElement);
@@ -135,37 +135,37 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public Collection<Component> getComponents() {
-		return components.values();
+		return this.components.values();
 	}
 
 	public Collection<Connection> getConnections() {
-		return connections.values();
+		return this.connections.values();
 	}
 
 	public Component getComponentByID(int ID) {
-		return components.get(ID);
+		return this.components.get(ID);
 	}
 
 	protected int generateComponentID() {
-		return componentIDCounter++;
+		return this.componentIDCounter++;
 	}
 
 	protected int generateConnectionID() {
-		return connectionIDCounter++;
+		return this.connectionIDCounter++;
 	}
 
 	public String getSourcePath() {
-		return sourcePath;
+		return this.sourcePath;
 	}
 
 	public void renameComponent(Component component, int newID) {
-		components.remove(component.getID());
-		components.put(newID, component);
+		this.components.remove(component.getID());
+		this.components.put(newID, component);
 	}
 
 	public String getTitle() {
-		if (title != null)
-			return title;
+		if (this.title != null)
+			return this.title;
 		else
 			return "unnamed";
 	}
@@ -179,22 +179,22 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
-//		if (getSupportedComponents() == null || !getSupportedComponents().contains(component.getClass()))
-//			if (autoAssignID)
-//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
-//			else
-//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
+		//		if (getSupportedComponents() == null || !getSupportedComponents().contains(component.getClass()))
+		//			if (autoAssignID)
+		//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
+		//			else
+		//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
 
 		if (autoAssignID)
 			component.setID(generateComponentID());
 		else {
-			if (components.get(component.getID()) != null)
-					throw new DuplicateIDException (component.getID());
-			if (component.getID() >= componentIDCounter)
-				componentIDCounter = component.getID()+1;
+			if (this.components.get(component.getID()) != null)
+				throw new DuplicateIDException (component.getID());
+			if (component.getID() >= this.componentIDCounter)
+				this.componentIDCounter = component.getID()+1;
 		}
 
-		components.put(component.getID(), component);
+		this.components.put(component.getID(), component);
 		return component.getID();
 	}
 
@@ -210,15 +210,15 @@ public abstract class MathModel implements Plugin, Model {
 		if (autoAssignID)
 			connection.setID(generateConnectionID());
 		else {
-			if (connections.get(connection.getID()) != null)
+			if (this.connections.get(connection.getID()) != null)
 				throw new DuplicateIDException (connection.getID());
 
 			// ensure that the provided ID will not get generated automatically for another object
-			if (connection.getID() >= connectionIDCounter)
-				connectionIDCounter = connection.getID()+1;
+			if (connection.getID() >= this.connectionIDCounter)
+				this.connectionIDCounter = connection.getID()+1;
 		}
 
-		connections.put(connection.getID(), connection);
+		this.connections.put(connection.getID(), connection);
 		return connection.getID();
 	}
 
@@ -240,7 +240,7 @@ public abstract class MathModel implements Plugin, Model {
 	public void removeConnection (Connection connection) {
 		connection.getFirst().removeFromPostset(connection.getSecond());
 		connection.getSecond().removeFromPreset(connection.getFirst());
-		connections.remove(connection);
+		this.connections.remove(connection);
 	}
 
 	abstract public Class<?>[] getSupportedComponents();
@@ -248,7 +248,7 @@ public abstract class MathModel implements Plugin, Model {
 	abstract public void validate() throws ModelValidationException;
 
 	public Connection getConnectionByID(int ID) {
-		return connections.get(ID);
+		return this.connections.get(ID);
 	}
 
 

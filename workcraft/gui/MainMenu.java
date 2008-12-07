@@ -19,7 +19,7 @@ public class MainMenu extends JMenuBar {
 			"Substance: Raven",
 			"Substance: Business",
 			"Substance: Creme"
-		};
+	};
 	private String[] lafClasses = new String[] {
 			"javax.swing.plaf.metal.MetalLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceModerateLookAndFeel",
@@ -27,7 +27,7 @@ public class MainMenu extends JMenuBar {
 			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
-		};
+	};
 
 	MainMenu(final MainWindow frame) {
 		// File
@@ -74,10 +74,10 @@ public class MainMenu extends JMenuBar {
 		JMenu mnLAF = new JMenu();
 		mnLAF.setText("Look and Feel");
 
-		for(int i=0; i<lafClasses.length; i++) {
+		for(int i=0; i<this.lafClasses.length; i++) {
 			JMenuItem miLAFItem = new JMenuItem();
-			miLAFItem.setText(lafCaptions[i]);
-			final String lafClass = lafClasses[i];
+			miLAFItem.setText(this.lafCaptions[i]);
+			final String lafClass = this.lafClasses[i];
 			miLAFItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					frame.setLAF(lafClass);

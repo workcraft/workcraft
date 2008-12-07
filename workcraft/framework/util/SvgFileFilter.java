@@ -7,6 +7,7 @@ import javax.swing.filechooser.FileFilter;
 public class SvgFileFilter extends FileFilter {
 
 
+	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory())
 			return true;
@@ -16,6 +17,7 @@ public class SvgFileFilter extends FileFilter {
 	}
 
 
+	@Override
 	public String getDescription() {
 		return "Scalable Vector Graphics (*.svg)";
 	}

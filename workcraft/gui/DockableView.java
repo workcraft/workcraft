@@ -16,32 +16,32 @@ public class DockableView extends JPanel {
 	public DockableView (String title, JComponent content) {
 		super();
 		this.title = title;
-		contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0,0));
-		this.setLayout(new BorderLayout(0, 0));
-		add(contentPane, BorderLayout.CENTER);
-		contentPane.add(content,BorderLayout.CENTER);
+		this.contentPane = new JPanel();
+		this.contentPane.setLayout(new BorderLayout(0,0));
+		setLayout(new BorderLayout(0, 0));
+		add(this.contentPane, BorderLayout.CENTER);
+		this.contentPane.add(content,BorderLayout.CENTER);
 
-		contentPane.setBorder(BorderFactory.createTitledBorder(title));
+		this.contentPane.setBorder(BorderFactory.createTitledBorder(title));
 	}
 
 	public void setStandalone(boolean standalone) {
 		this.standalone = standalone;
 
 		if (standalone)
-			contentPane.setBorder(BorderFactory.createTitledBorder(title));
+			this.contentPane.setBorder(BorderFactory.createTitledBorder(this.title));
 		else
-			contentPane.setBorder(null);
+			this.contentPane.setBorder(null);
 	}
 
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	public JComponent getContent() {
-		return content;
+		return this.content;
 	}
-/*
+	/*
 
 	public boolean dock(Dockable dockable) {
 		return DockingManager.dock(dockable, this);
@@ -129,5 +129,5 @@ public class DockableView extends JPanel {
 	public void removeDockingListener(DockingListener listener) {
 		DockingEventHandler.removeDockingListener(this, listener);
 	}
-*/
+	 */
 }
