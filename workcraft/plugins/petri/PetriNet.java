@@ -47,8 +47,10 @@ public class PetriNet extends MathModel {
 
 	@Override
 	public Class<?>[] getSupportedComponents() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Class<?>[] {
+				Place.class,
+				Transition.class
+		};
 	}
 
 
@@ -91,6 +93,12 @@ public class PetriNet extends MathModel {
 		}
 
 		return newTransition;
+	}
+
+	@Override
+	public Class<?>[] getComponentClasses() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -21,11 +21,17 @@ public class PropertyView extends JPanel {
 		this.scrollProperties.setViewportView(this.propertyTable);
 
 		setLayout(new BorderLayout(0,0));
-		this.add(this.scrollProperties, BorderLayout.CENTER);
+		this.add(new DisabledPanel());
 	}
 
 	public void setObject (PropertyEditable o) {
 		this.propertyTable.setObject(o);
+		this.removeAll();
+		this.add(scrollProperties);
+	}
 
+	public void clearObject () {
+		this.propertyTable.clearObject();
+		this.removeAll();
 	}
 }

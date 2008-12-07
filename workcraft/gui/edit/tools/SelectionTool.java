@@ -2,6 +2,7 @@ package org.workcraft.gui.edit.tools;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -165,7 +166,7 @@ public class SelectionTool implements GraphEditorTool {
 	}
 
 
-	public void draw(GraphEditorPane editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditorPane editor, Graphics2D g) {
 		if(this.drag==DRAG_SELECT) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 			Rectangle2D bb = selectionRect(this.prevPosition);
@@ -173,10 +174,20 @@ public class SelectionTool implements GraphEditorTool {
 			g.fill(bb);
 			g.setColor(selectionBorderColor);
 			g.draw(bb);
+
 		}
 	}
 
-	public String getIconPath() {
-		return "org" + File.pathSeparator + "workcraft" + File.pathSeparator + "gui" + File.pathSeparator + "icons" + File.pathSeparator + "select.png";
+	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g) {
+
 	}
+
+	public String getIconPath() {
+		return "org" + File.separator + "workcraft" + File.separator + "gui" + File.separator + "icons" + File.separator + "select.png";
+	}
+
+	public String getName() {
+		return "Selection Tool";
+	}
+
 }

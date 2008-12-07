@@ -11,6 +11,7 @@ import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.plugins.petri.Place;
 
 @DisplayName ("Directed Graph")
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
@@ -53,5 +54,11 @@ public class Graph extends MathModel {
 			e.printStackTrace();
 		}
 		return v;
+	}
+
+	public Class<?>[] getComponentClasses() {
+		return new Class<?>[] {
+				Vertex.class
+		};
 	}
 }

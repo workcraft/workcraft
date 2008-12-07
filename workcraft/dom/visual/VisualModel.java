@@ -98,8 +98,8 @@ public class VisualModel implements Plugin, Model {
 
 	public void setEditorPane(GraphEditorPane editor) {
 		this.editor = editor;
-		if(editor.getDocument()!=this)
-			editor.setDocument(this);
+		if(editor.getModel()!=this)
+			editor.setModel(this);
 	}
 
 	public GraphEditorPane getEditorPane() {

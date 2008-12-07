@@ -76,6 +76,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	InternalWindow testDoc;
 
+	GraphEditorPane editorInFocus;
+
 	private JMenuBar menuBar;
 
 	protected void createViews() {
@@ -92,6 +94,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		this.lastEditorDockable = null;
 		this.outputDockable = null;
+		this.editorInFocus = null;
 	}
 
 	public MainWindow(final Framework framework) {
@@ -192,7 +195,23 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public Dockable addView(JComponent view, String name, Dockable neighbour) {
-		return addView (view, name, neighbour, DockingManager.CENTER_REGION, 0.5f);
+		DockableView dock = new DockableView(name, view);
+		Dockable dockable = DockingManager.registerDockable(dock, name);
+
+		neighbour.dock(dockable, DockingManager.CENTER_REGION);
+
+		for (Object d: dockable.getDockingPort().getDockables()) {
+			Component comp = ((Dockable)d).getComponent();
+			if ( comp instanceof DockableView) {
+				DockableView wnd = (DockableView)comp;
+				boolean inTab = comp.getParent() instanceof JTabbedPane;
+				//	System.out.println(inTab);
+				wnd.setStandalone(!inTab);
+			}
+		}
+
+		attachDockableListener(dockable);
+		return dockable;
 
 	}
 
@@ -219,7 +238,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void addEditorView(VisualModel visualModel) {
-		GraphEditorPane editor = new GraphEditorPane(visualModel);
+		GraphEditorPane editor = new GraphEditorPane(this, visualModel);
 		String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
 		Dockable dockable;
 
@@ -228,6 +247,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		} else {
 			dockable = addView (editor, dockableTitle, lastEditorDockable);
 		}
+
+		requestFocus(editor);
 
 		lastEditorDockable = dockable;
 	}
@@ -304,7 +325,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		Dockable wsvd = addView (this.workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
 		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
-		addView (this.toolboxView, "Toolbox", wsvd, DockingManager.NORTH_REGION, 0.5f);
+		addView (this.toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
 
 		VisualVertex vv = new VisualVertex(new Vertex());
 		gr.getRoot().add(vv);
@@ -396,5 +417,14 @@ public class MainWindow extends JFrame implements DockingConstants{
 				System.err.println(e.getMessage());
 			}
 		}
+	}
+
+	public void requestFocus (GraphEditorPane sender) {
+		if (editorInFocus != null)
+			editorInFocus.removeFocus();
+
+		sender.grantFocus();
+		editorInFocus = sender;
+		toolboxView.setToolsForModel(editorInFocus.getModel());
 	}
 }

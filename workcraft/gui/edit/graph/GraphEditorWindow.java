@@ -10,7 +10,7 @@ public class GraphEditorWindow extends EditorWindow {
 
 	public GraphEditorWindow(String title, VisualModel document) {
 		super(title);
-		this.editorPane = new GraphEditorPane(document);
+	//	this.editorPane = new GraphEditorPane(document);
 		setContentPane(this.editorPane);
 	}
 

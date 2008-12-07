@@ -1,5 +1,6 @@
 package org.workcraft.gui.edit.tools;
 
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 
 import org.workcraft.gui.edit.graph.GraphEditorPane;
@@ -14,7 +15,9 @@ public interface GraphEditorTool {
 	public void mousePressed(GraphEditorMouseEvent e);
 	public void mouseReleased(GraphEditorMouseEvent e);
 
-	public void draw(GraphEditorPane editor, Graphics2D g);
+	public void drawInUserSpace(GraphEditorPane editor, Graphics2D g);
+	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g);
 
+	public String getName();
 	public String getIconPath();
 }
