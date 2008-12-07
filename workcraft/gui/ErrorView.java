@@ -65,7 +65,7 @@ public class ErrorView extends JPanel {
 		if (!streamCaptured)
 			return;
 
-		System.setOut(systemErr);
+		System.setErr(systemErr);
 		systemErr = null;
 		streamCaptured = false;
 	}

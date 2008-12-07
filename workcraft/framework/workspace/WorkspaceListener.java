@@ -1,7 +1,7 @@
 package org.workcraft.framework.workspace;
 import java.util.EventListener;
 
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
 
 
 public interface WorkspaceListener extends EventListener {

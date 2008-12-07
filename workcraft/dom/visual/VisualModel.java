@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.VisualClass;
@@ -18,16 +18,14 @@ import org.workcraft.framework.exceptions.VisualClassConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 
-public class VisualAbstractGraphModel {
-	protected AbstractGraphModel model;
+public class VisualModel {
+	protected Model model;
 	protected VisualComponentGroup root;
 	protected GraphEditorPane editor = null;
 
 	protected LinkedList<Selectable> selection = new LinkedList<Selectable>();
 
-
-
-	public VisualAbstractGraphModel(AbstractGraphModel model) throws VisualClassConstructionException {
+	public VisualModel(Model model) throws VisualClassConstructionException {
 		this.model = model;
 		root = new VisualComponentGroup();
 
@@ -45,7 +43,7 @@ public class VisualAbstractGraphModel {
 		}
 	}
 
-	public VisualAbstractGraphModel(AbstractGraphModel model, Element visualElement) throws VisualClassConstructionException {
+	public VisualModel(Model model, Element visualElement) throws VisualClassConstructionException {
 		this.model = model;
 
 		// load structure from XML

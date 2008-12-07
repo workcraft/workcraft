@@ -3,7 +3,7 @@ package org.workcraft.plugins.petri;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
@@ -18,7 +18,7 @@ import org.workcraft.framework.plugins.Plugin;
 
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
-public class PetriNet extends AbstractGraphModel {
+public class PetriNet extends Model {
 	protected LinkedList<Place> places = new LinkedList<Place>();
 	protected LinkedList<Transition> transitions = new LinkedList<Transition>();
 

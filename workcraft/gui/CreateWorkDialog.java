@@ -15,6 +15,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -55,7 +56,7 @@ public class CreateWorkDialog extends JDialog {
 
 		this.framework = owner.framework;
 
-		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.setModal(true);
 		this.setTitle("New work");
 
@@ -64,7 +65,7 @@ public class CreateWorkDialog extends JDialog {
 		Dimension mySize = getSize();
 		java.awt.Point topLeft = owner.getLocationOnScreen();
 
-		this.setLocation (((parentSize.width - mySize.width)/2) + topLeft.x, ((parentSize.height - mySize.height)/2) + topLeft.y);
+		this.setLocation (((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
 
 		initComponents();
 	}
@@ -130,8 +131,15 @@ public class CreateWorkDialog extends JDialog {
 		optionsPane.add(chkOpen);
 		optionsPane.add(new JLabel("Title: "));
 		txtTitle = new JTextField();
-		txtTitle.setMaximumSize(new Dimension(1000,20));
+		//txtTitle.setMaximumSize(new Dimension(1000,20));
 		optionsPane.add(txtTitle);
+
+		JPanel dummy = new JPanel();
+		dummy.setPreferredSize(new Dimension(200,1000));
+		dummy.setMaximumSize(new Dimension(200,1000));
+
+		optionsPane.add(dummy);
+
 
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 

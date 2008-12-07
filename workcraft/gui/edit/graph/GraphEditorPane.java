@@ -17,7 +17,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
-import org.workcraft.dom.visual.VisualAbstractGraphModel;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -25,7 +25,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
 	private static final long serialVersionUID = 1L;
 
-	protected VisualAbstractGraphModel document;
+	protected VisualModel document;
 
 	protected Viewport view;
 	protected Grid grid;
@@ -38,7 +38,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 	protected Color background = Color.WHITE;
 
-	public GraphEditorPane(VisualAbstractGraphModel document) {
+	public GraphEditorPane(VisualModel document) {
 		setDocument(document);
 		view = new Viewport(0, 0, this.getWidth(), this.getHeight());
 		grid = new Grid();
@@ -164,14 +164,14 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		repaint();
 	}
 
-	public void setDocument(VisualAbstractGraphModel document) {
+	public void setDocument(VisualModel document) {
 		this.document = document;
 		if(document.getEditorPane()!=this) {
 			document.setEditorPane(this);
 		}
 	}
 
-	public VisualAbstractGraphModel getDocument() {
+	public VisualModel getDocument() {
 		return document;
 	}
 

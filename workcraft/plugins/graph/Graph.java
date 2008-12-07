@@ -3,7 +3,7 @@ package org.workcraft.plugins.graph;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
@@ -16,7 +16,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 
 @DisplayName ("Directed Graph")
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
-public class Graph extends AbstractGraphModel {
+public class Graph extends Model {
 	protected static final Class<?>[] supportedComponents = new Class<?>[] { Vertex.class };
 
 	public Graph(Framework framework) {

@@ -1,14 +1,26 @@
 package org.workcraft.framework.workspace;
 
 import java.io.File;
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceEntry {
 	protected File file;
-	protected AbstractGraphModel model;
+	protected Model model;
+	protected VisualModel visualModel;
 	protected String modelTitle;
 	protected String modelType;
 	protected String modelClassName;
+
+
+	public WorkspaceEntry() {
+		this.file = null;
+		this.model = null;
+		this.visualModel = null;
+		this.modelTitle = null;
+		this.modelType = null;
+		this.modelClassName = null;
+	}
 
 	public void setModelTitle(String modelTitle) {
 		this.modelTitle = modelTitle;
@@ -26,16 +38,24 @@ public class WorkspaceEntry {
 		return file;
 	}
 
-	public AbstractGraphModel getModel() {
+	public Model getModel() {
 		return model;
+	}
+
+	public VisualModel getVisualModel() {
+		return visualModel;
 	}
 
 	public void setFile(File file) {
 		this.file = file;
 	}
 
-	public void setModel(AbstractGraphModel model) {
+	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public void setVisualModel(VisualModel model) {
+		this.visualModel = model;
 	}
 
 	public String getModelTitle() {
@@ -50,8 +70,23 @@ public class WorkspaceEntry {
 		return modelClassName;
 	}
 
+	public boolean isWork() {
+		return (model!=null || (file!= null && modelType != null));
+	}
+
+//	public boolean isVisualWork() {
+	//	return (visualModel != null) ||
+	//}
+
+
+//	public boolean
 
 	public String toString() {
+		if (model == null & visualModel == null) {
+			// not a workcraft model
+		}
+
+
 		if (model != null) {
 			// is a workcraft model
 			if (file != null) {

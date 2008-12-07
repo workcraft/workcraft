@@ -20,7 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.AbstractGraphModel;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DocumentFormatException;
@@ -220,7 +220,7 @@ public class PluginManager {
 	}
 
 	public PluginInfo[] getModels() {
-		return getPlugins (AbstractGraphModel.class);
+		return getPlugins (Model.class);
 	}
 
 	public PluginInfo[] getPluginsByInterface(String interfaceName) {

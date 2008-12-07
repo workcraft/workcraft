@@ -80,8 +80,6 @@ public class Console {
 			}
 		}
 
-
-
 		while (true) {
 			if (framework.shutdownRequested()) {
 				framework.shutdownGUI();
@@ -101,9 +99,10 @@ public class Console {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
 				}
-			}
-
-			else {
+			} else {
+				if (framework.isGUIRestartRequested())
+					framework.startGUI();
+				else {
 					System.out.print ("js>");
 					try {
 						String line = in.readLine();
@@ -127,6 +126,7 @@ public class Console {
 						break;
 					}
 				}
+			}
 		}
 	}
 }

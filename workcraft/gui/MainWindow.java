@@ -32,8 +32,8 @@ import org.flexdock.docking.event.DockingListener;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
-import org.workcraft.dom.AbstractGraphModel;
-import org.workcraft.dom.visual.VisualAbstractGraphModel;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualClassConstructionException;
@@ -112,9 +112,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 			return;
 		if (laf == null)
 			laf = UIManager.getSystemLookAndFeelClassName();
-		framework.shutdownGUI();
+
 		framework.setConfigVar("gui.lookandfeel", laf);
-		framework.startGUI();
+		framework.restartGUI();
 	}
 
 
@@ -214,10 +214,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void startup() {
-
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
-		SwingUtilities.updateComponentTreeUI(MainWindow.this);
+		//SwingUtilities.updateComponentTreeUI(MainWindow.this);
 
 		String laf = framework.getConfigVar("gui.lookandfeel");
 		if (laf == null)
@@ -247,7 +246,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		menuBar = new MainMenu(this);
 		this.setJMenuBar(menuBar);
 
-		this.setTitle("Workcraft 2dev");
+		this.setTitle("Workcraft " + Framework.FRAMEWORK_VERSION_MAJOR+"."+Framework.FRAMEWORK_VERSION_MINOR);
 
 		createViews();
 
@@ -304,7 +303,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		//consoleView.startup();
 		workspaceView.startup();
 
-//		DockingManager.getLayoutManager().store();
+		//		DockingManager.getLayoutManager().store();
 
 
 
@@ -334,7 +333,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 
 		 */
-		this.setVisible(true);
+		setVisible(true);
 
 	}
 
@@ -343,30 +342,31 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void shutdown() {
-		framework.setConfigVar("gui.lookandfeel", LAF.getCurrentLAF());
 		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
 
-		//		consoleView.releaseStreams();
-		//consoleView.shutdown();
+		outputView.releaseStream();
+		errorView.releaseStream();
+
 		workspaceView.shutdown();
+
 		setVisible(false);
 	}
 
 	public void createWork() {
-		CreateWorkDialog dialog = new CreateWorkDialog(this);
+		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				AbstractGraphModel work = (AbstractGraphModel)framework.getPluginManager().getInstance(info, AbstractGraphModel.class);
+				Model work = (Model)framework.getPluginManager().getInstance(info, Model.class);
 				work.setTitle(dialog.getModelTitle());
 
 				framework.getWorkspace().add(work);
 
 				if (dialog.createVisualSelected()) {
-					VisualAbstractGraphModel visual = (VisualAbstractGraphModel)PluginManager.createVisualClassFor(work, VisualAbstractGraphModel.class);
+					VisualModel visual = (VisualModel)PluginManager.createVisualClassFor(work, VisualModel.class);
 					if (dialog.openInEditorSelected()) {
 						// open in editor
 					}
@@ -378,5 +378,6 @@ public class MainWindow extends JFrame implements DockingConstants{
 				System.err.println(e.getMessage());
 			}
 		}
+
 	}
 }
