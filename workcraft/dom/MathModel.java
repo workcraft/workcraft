@@ -164,7 +164,10 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public String getTitle() {
-		return title;
+		if (title != null)
+			return title;
+		else
+			return "unnamed";
 	}
 
 	public void setTitle(String title) {

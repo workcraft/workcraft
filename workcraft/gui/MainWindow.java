@@ -296,9 +296,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		//propertyView.setObject(vv);
 
 
-
-
-		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.BLUE, 0.5f));
+		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
 		//consoleView.startup();
 		workspaceView.startup();
@@ -366,20 +364,18 @@ public class MainWindow extends JFrame implements DockingConstants{
 				if (dialog.createVisualSelected()) {
 					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
 					framework.getWorkspace().add(visualModel);
-
 					if (dialog.openInEditorSelected()) {
-						// open in editor
+						addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
+
 					}
 				} else {
 					framework.getWorkspace().add(mathModel);
 				}
-
 			} catch (PluginInstantiationException e) {
 				System.err.println(e.getMessage());
 			} catch (VisualModelConstructionException e) {
 				System.err.println(e.getMessage());
 			}
 		}
-
 	}
 }
