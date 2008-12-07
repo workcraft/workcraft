@@ -19,7 +19,6 @@ import org.workcraft.framework.Framework;
 public class ErrorView extends JPanel {
 	protected PrintStream systemErr;
 	protected boolean streamCaptured = false;
-	private Framework framework;
 	private JScrollPane scrollStdErr;
 	private JTextArea txtStdErr;
 
@@ -71,8 +70,6 @@ public class ErrorView extends JPanel {
 	}
 
 	public ErrorView (Framework framework) {
-		this.framework = framework;
-
 		txtStdErr = new JTextArea();
 		txtStdErr.setLineWrap(true);
 		txtStdErr.setEditable(false);

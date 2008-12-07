@@ -1,10 +1,9 @@
 package org.workcraft.gui;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
 import org.jvnet.substance.SubstanceLookAndFeel;
-//import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 
 public class LAF {

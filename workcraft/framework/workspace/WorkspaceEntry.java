@@ -1,9 +1,8 @@
 package org.workcraft.framework.workspace;
 
 import java.io.File;
-import org.workcraft.dom.MathModel;
+
 import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceEntry {
 	protected File file;

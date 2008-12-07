@@ -20,6 +20,7 @@ import org.workcraft.framework.HistoryProvider;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
+@SuppressWarnings("serial")
 public class HistoryView extends JInternalFrame implements HistoryListener {
 	Framework framework;
 	HistoryProvider provider = null;

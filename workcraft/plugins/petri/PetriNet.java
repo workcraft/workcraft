@@ -3,10 +3,10 @@ package org.workcraft.plugins.petri;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;
@@ -14,7 +14,6 @@ import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.plugins.Plugin;
 
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")

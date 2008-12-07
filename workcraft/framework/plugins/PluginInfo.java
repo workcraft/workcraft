@@ -1,14 +1,11 @@
 package org.workcraft.framework.plugins;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.InvalidPluginException;
 import org.workcraft.util.XmlUtil;
 
 

@@ -5,17 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.HashMap;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.workcraft.dom.DisplayName;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
@@ -26,8 +23,6 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 	private Framework framework;
 	private WorkspaceWindow wsWindow;
 	private HashMap<JMenuItem, FileHandler> handlers;
-	private HashMap<JMenuItem, PluginInfo> models;
-
 	public WorkspaceWindowPopupListener(Framework framework, WorkspaceWindow wsWindow) {
 		this.framework = framework;
 		this.wsWindow = wsWindow;

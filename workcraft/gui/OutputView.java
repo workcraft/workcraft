@@ -8,16 +8,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 
 import org.workcraft.framework.Framework;
 
@@ -25,7 +18,6 @@ import org.workcraft.framework.Framework;
 public class OutputView extends JPanel {
 	protected PrintStream systemOut;
 	protected boolean streamCaptured = false;
-	private Framework framework;
 	private JScrollPane scrollStdOut;
 	private JTextArea txtStdOut;
 
@@ -73,9 +65,6 @@ public class OutputView extends JPanel {
 	}
 
 	public OutputView (Framework framework) {
-		this.framework = framework;
-
-
 		txtStdOut = new JTextArea();
 		txtStdOut.setLineWrap(true);
 		txtStdOut.setEditable(false);

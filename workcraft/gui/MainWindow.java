@@ -9,15 +9,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.flexdock.docking.Dockable;
@@ -51,8 +48,6 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 
 public class MainWindow extends JFrame implements DockingConstants{
 	private static final long serialVersionUID = 1L;
-	private JDesktopPane jDesktopPane = null;
-
 	public ActionListener defaultActionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -256,9 +251,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
-		VisualPetriNet vpn = null;
 		try {
-			vpn = new VisualPetriNet(new PetriNet(framework));
+			new VisualPetriNet(new PetriNet(framework));
 		} catch (VisualModelConstructionException e) {
 			e.printStackTrace();
 		}

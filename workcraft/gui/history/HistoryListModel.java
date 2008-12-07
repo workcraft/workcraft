@@ -7,6 +7,7 @@ import javax.swing.AbstractListModel;
 import org.workcraft.framework.HistoryEvent;
 
 
+@SuppressWarnings("serial")
 public class HistoryListModel extends AbstractListModel {
 	List <HistoryEvent> events;
 

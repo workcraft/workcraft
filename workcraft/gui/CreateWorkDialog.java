@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
-import java.util.Comparator;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -18,13 +17,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
 
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.plugins.PluginInfo;
@@ -63,7 +59,7 @@ public class CreateWorkDialog extends JDialog {
 		Dimension parentSize = owner.getSize();
 		this.setSize(parentSize.width / 2, parentSize.height / 2);
 		Dimension mySize = getSize();
-		java.awt.Point topLeft = owner.getLocationOnScreen();
+		owner.getLocationOnScreen();
 
 		this.setLocation (((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
 

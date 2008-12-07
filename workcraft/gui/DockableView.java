@@ -1,26 +1,10 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.flexdock.docking.Dockable;
-import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.DockingPort;
-import org.flexdock.docking.DockingStub;
-import org.flexdock.docking.event.DockingEvent;
-import org.flexdock.docking.event.DockingEventHandler;
-import org.flexdock.docking.event.DockingListener;
-import org.flexdock.docking.props.DockablePropertySet;
-import org.flexdock.docking.props.PropertyManager;
 
 @SuppressWarnings("serial")
 public class DockableView extends JPanel {

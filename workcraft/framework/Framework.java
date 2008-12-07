@@ -8,11 +8,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
-import java.util.UUID;
 
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
@@ -231,10 +228,10 @@ public class Framework {
 	}
 
 	public String[] getModelNames() {
-		LinkedList<Class> list = modelManager.getModelList();
+		LinkedList<Class<?>> list = modelManager.getModelList();
 		String a[] = new String[list.size()];
 		int i=0;
-		for (Class cls : list)
+		for (Class<?> cls : list)
 			a[i++] = cls.getName();
 		return a;
 	}

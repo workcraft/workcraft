@@ -1,15 +1,10 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.border.Border;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public abstract class InternalWindow extends JInternalFrame {

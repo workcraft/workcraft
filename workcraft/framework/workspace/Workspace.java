@@ -5,22 +5,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.MathModel;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
-import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.util.XmlUtil;
 
 public class Workspace {

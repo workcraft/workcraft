@@ -6,6 +6,7 @@ import javax.swing.JTextArea;
 
 import org.workcraft.gui.edit.EditorWindow;
 
+@SuppressWarnings("serial")
 public class TextEditorWindow extends EditorWindow {
 	protected JTextArea content = null;
 
