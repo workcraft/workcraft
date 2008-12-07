@@ -21,6 +21,10 @@ public class SelectionTool implements GraphEditorTool {
 	private static final int SELECTION_ADD = 0;
 	private static final int SELECTION_REMOVE = 1;
 
+	protected Color selectionBorderColor = new Color(200, 200, 200);
+//	protected Color selectionFillColor = new Color(200, 200, 200, 32);
+	protected Color selectionFillColor = new Color(99, 130, 191, 32);
+
 	private int drag = DRAG_NONE;
 	private Point2D prevPosition;
 	private Point2D startPosition;
@@ -55,8 +59,8 @@ public class SelectionTool implements GraphEditorTool {
 
 	public void mouseExited(GraphEditorMouseEvent e) {
 		// TODO very important! cancel selection upon changing document
-		if(this.drag!=DRAG_NONE)
-			cancelDrag(e); // TODO pan is better
+		//		if(this.drag!=DRAG_NONE)
+		//		cancelDrag(e); // TODO pan is better
 	}
 
 
@@ -165,9 +169,9 @@ public class SelectionTool implements GraphEditorTool {
 		if(this.drag==DRAG_SELECT) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 			Rectangle2D bb = selectionRect(this.prevPosition);
-			g.setColor(new Color(128, 128, 128, 32));
+			g.setColor(selectionFillColor);
 			g.fill(bb);
-			g.setColor(new Color(128, 128, 128));
+			g.setColor(selectionBorderColor);
 			g.draw(bb);
 		}
 	}
