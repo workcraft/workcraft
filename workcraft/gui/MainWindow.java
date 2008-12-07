@@ -68,6 +68,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 	ToolboxView toolboxView;
 	// MDIPane content;
 
+
+
 	JPanel content;
 
 	DefaultDockingPort rootDockingPort;
@@ -426,5 +428,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 		sender.grantFocus();
 		editorInFocus = sender;
 		toolboxView.setToolsForModel(editorInFocus.getModel());
+	}
+
+	public ToolboxView getToolboxView() {
+		return toolboxView;
 	}
 }

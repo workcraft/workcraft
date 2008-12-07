@@ -36,8 +36,6 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	protected Grid grid;
 	protected Ruler ruler;
 
-	protected GraphEditorTool currentTool = new SelectionTool(); // TODO shound not be here
-
 	protected boolean panDrag = false;
 	protected boolean hasFocus = false;
 	protected Point lastMouseCoords = new Point();
@@ -78,11 +76,11 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		this.visualModel.draw(g2d);
-		this.currentTool.drawInUserSpace(this, g2d);
+		parent.getToolboxView().getSelectedTool().drawInUserSpace(this, g2d);
 		g2d.setTransform(rest);
 
 		this.ruler.draw(g2d);
-		this.currentTool.drawInScreenSpace(this, g2d);
+		parent.getToolboxView().getSelectedTool().drawInScreenSpace(this, g2d);
 
 		if (hasFocus) {
 			g2d.setStroke(borderStroke);
@@ -126,7 +124,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 			this.view.pan(currentMouseCoords.x - this.lastMouseCoords.x, currentMouseCoords.y - this.lastMouseCoords.y);
 			repaint();
 		} else
-			this.currentTool.mouseMoved(new GraphEditorMouseEvent(this.visualModel, e));
+			parent.getToolboxView().getSelectedTool().mouseMoved(new GraphEditorMouseEvent(this, e));
 		this.lastMouseCoords = currentMouseCoords;
 	}
 
@@ -135,7 +133,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	public void mouseClicked(MouseEvent e) {
 		if (hasFocus) {
 			if(e.getButton()!=MouseEvent.BUTTON2)
-				this.currentTool.mouseClicked(new GraphEditorMouseEvent(this.visualModel, e));
+				parent.getToolboxView().getSelectedTool().mouseClicked(new GraphEditorMouseEvent(this, e));
 		}	else
 			if (e.getButton() == MouseEvent.BUTTON1)
 				parent.requestFocus(this);
@@ -145,14 +143,14 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 	public void mouseEntered(MouseEvent e) {
 		if (hasFocus)
-			this.currentTool.mouseEntered(new GraphEditorMouseEvent(this.visualModel, e));
+			parent.getToolboxView().getSelectedTool().mouseEntered(new GraphEditorMouseEvent(this, e));
 	}
 
 
 
 	public void mouseExited(MouseEvent e) {
 		if (hasFocus)
-			this.currentTool.mouseExited(new GraphEditorMouseEvent(this.visualModel, e));
+			parent.getToolboxView().getSelectedTool().mouseExited(new GraphEditorMouseEvent(this, e));
 	}
 
 
@@ -162,7 +160,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 			if (e.getButton() == MouseEvent.BUTTON2)
 				this.panDrag = true;
 			else
-				this.currentTool.mousePressed(new GraphEditorMouseEvent(this.visualModel, e));
+				parent.getToolboxView().getSelectedTool().mousePressed(new GraphEditorMouseEvent(this, e));
 		}
 	}
 
@@ -172,7 +170,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		if (e.getButton() == MouseEvent.BUTTON2)
 			this.panDrag = false;
 		else
-			this.currentTool.mouseReleased(new GraphEditorMouseEvent(this.visualModel, e));
+			parent.getToolboxView().getSelectedTool().mouseReleased(new GraphEditorMouseEvent(this, e));
 	}
 
 
