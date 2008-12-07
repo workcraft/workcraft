@@ -51,7 +51,6 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public ActionListener defaultActionListener = new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
-			System.out.println (e.getActionCommand());
 			MainWindow.this.framework.execJavaScript(e.getActionCommand());
 		}
 	};
@@ -66,6 +65,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	ErrorView errorView;
 	JavaScriptView jsView;
 	PropertyView propertyView;
+	ToolboxView toolboxView;
 	// MDIPane content;
 
 	JPanel content;
@@ -87,6 +87,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		this.outputView = new OutputView(this.framework);
 		this.errorView = new ErrorView(this.framework);
 		this.jsView = new JavaScriptView(this.framework);
+
+		this.toolboxView = new ToolboxView(this.framework);
 
 		this.lastEditorDockable = null;
 		this.outputDockable = null;
@@ -302,6 +304,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		Dockable wsvd = addView (this.workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
 		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
+		addView (this.toolboxView, "Toolbox", wsvd, DockingManager.NORTH_REGION, 0.5f);
 
 		VisualVertex vv = new VisualVertex(new Vertex());
 		gr.getRoot().add(vv);
