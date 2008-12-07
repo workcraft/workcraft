@@ -35,8 +35,11 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
@@ -406,7 +409,7 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public MathModel load(String path) throws ModelLoadFailedException {
+	public Model load(String path) throws ModelLoadFailedException, VisualModelConstructionException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			org.w3c.dom.Document xmldoc;
@@ -424,7 +427,7 @@ public class Framework {
 			String[] ver = xmlroot.getAttribute("version").split("\\.", 2);
 
 			if (ver.length<2 || !ver[0].equals(FRAMEWORK_VERSION_MAJOR))
-				throw new ModelLoadFailedException("document was created by an incompatible version of Workcraft");
+				throw new ModelLoadFailedException("document was created by another version of Workcraft");
 
 			NodeList elements;
 			elements =  xmlroot.getElementsByTagName("model");
@@ -438,7 +441,22 @@ public class Framework {
 			Constructor<?> ctor = modelClass.getConstructor(Framework.class, Element.class, String.class);
 			model = (MathModel)ctor.newInstance(this, modelElement, path);
 
-			return model;
+
+			elements =  xmlroot.getElementsByTagName("visual-model");
+			if (elements.getLength() > 1)
+				throw new ModelLoadFailedException("<visual-model> section duplicated");
+
+			if (elements.getLength() == 0)
+				return model;
+
+			Element visualModelElement = (Element)elements.item(0);
+			String visualModelClassName = modelElement.getAttribute("class");
+
+			Class<?> visualModelClass = Class.forName(visualModelClassName);
+			ctor = visualModelClass.getConstructor(MathModel.class, Element.class);
+			VisualModel visualModel = (VisualModel)ctor.newInstance(model, visualModelElement, path);
+
+			return visualModel;
 
 		} catch (ParserConfigurationException e) {
 			throw new ModelLoadFailedException("XML Parser configuration error: "+ e.getMessage());
@@ -463,9 +481,7 @@ public class Framework {
 		}
 	}
 
-//	public VisualAbstractModel loadVisual
-
-	public void save(MathModel model, String path) throws ModelSaveFailedException {
+	public void save(Model model, String path) throws ModelSaveFailedException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
@@ -480,10 +496,17 @@ public class Framework {
 
 			Element modelElement = doc.createElement("model");
 			modelElement.setAttribute("class", model.getClass().getName());
-
-			model.toXML(modelElement);
-
+			model.getMathModel().toXML(modelElement);
 			root.appendChild(modelElement);
+
+			VisualModel visualModel = model.getVisualModel();
+
+			if (visualModel != null) {
+				Element visualModelElement = doc.createElement("visual-model");
+				visualModelElement.setAttribute("class", visualModel.getClass().getName());
+				visualModel.toXML(visualModelElement);
+				root.appendChild(visualModelElement);
+			}
 
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			tFactory.setAttribute("indent-number", new Integer(2));

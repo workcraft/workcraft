@@ -13,20 +13,22 @@ import org.w3c.dom.NodeList;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.framework.exceptions.VisualClassConstructionException;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 
-public class VisualModel {
-	protected MathModel model;
+public class VisualModel implements Plugin, Model {
+	protected MathModel mathModel;
 	protected VisualComponentGroup root;
 	protected GraphEditorPane editor = null;
 
 	protected LinkedList<Selectable> selection = new LinkedList<Selectable>();
 
-	public VisualModel(MathModel model) throws VisualClassConstructionException {
-		this.model = model;
+	public VisualModel(MathModel model) throws VisualModelConstructionException {
+		this.mathModel = model;
 		root = new VisualComponentGroup();
 
 		// create a default flat structure
@@ -43,16 +45,16 @@ public class VisualModel {
 		}
 	}
 
-	public VisualModel(MathModel model, Element visualElement) throws VisualClassConstructionException {
-		this.model = model;
+	public VisualModel(MathModel mathModel, Element visualElement) throws VisualModelConstructionException {
+		this.mathModel = mathModel;
 
 		// load structure from XML
 		NodeList nodes = visualElement.getElementsByTagName("group");
 
 		if (nodes.getLength() != 1)
-			throw new VisualClassConstructionException ("<visual> section of the document must contain one, and only one root group");
+			throw new VisualModelConstructionException ("<visual-model> section of the document must contain one, and only one root group");
 
-		root = new VisualComponentGroup ((Element)nodes.item(0), model);
+		root = new VisualComponentGroup ((Element)nodes.item(0), mathModel);
 	}
 
 	public void toXML(Element xmlVisualElement) {
@@ -159,5 +161,25 @@ public class VisualModel {
 	 */
 	public void removeFromSelection(Selectable so) {
 		selection.remove(so);
+	}
+
+	@Override
+	public MathModel getMathModel() {
+		return this.mathModel;
+	}
+
+	@Override
+	public VisualModel getVisualModel() {
+		return this;
+	}
+
+	@Override
+	public String getTitle() {
+		return this.mathModel.getTitle();
+	}
+
+	@Override
+	public String getDisplayName() {
+		return this.mathModel.getDisplayName();
 	}
 }

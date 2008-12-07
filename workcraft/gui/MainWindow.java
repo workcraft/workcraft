@@ -36,7 +36,7 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.exceptions.VisualClassConstructionException;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
@@ -259,7 +259,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		VisualPetriNet vpn = null;
 		try {
 			vpn = new VisualPetriNet(new PetriNet(framework));
-		} catch (VisualClassConstructionException e) {
+		} catch (VisualModelConstructionException e) {
 			e.printStackTrace();
 		}
 
@@ -360,21 +360,23 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				MathModel work = (MathModel)framework.getPluginManager().getInstance(info, MathModel.class);
-				work.setTitle(dialog.getModelTitle());
-
-				framework.getWorkspace().add(work);
+				MathModel mathModel = (MathModel)framework.getPluginManager().getInstance(info, MathModel.class);
+				mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
-					VisualModel visual = (VisualModel)PluginManager.createVisualClassFor(work, VisualModel.class);
+					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
+					framework.getWorkspace().add(visualModel);
+
 					if (dialog.openInEditorSelected()) {
 						// open in editor
 					}
+				} else {
+					framework.getWorkspace().add(mathModel);
 				}
 
 			} catch (PluginInstantiationException e) {
 				System.err.println(e.getMessage());
-			} catch (VisualClassConstructionException e) {
+			} catch (VisualModelConstructionException e) {
 				System.err.println(e.getMessage());
 			}
 		}

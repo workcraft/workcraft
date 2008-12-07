@@ -16,8 +16,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Element;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.util.XmlUtil;
 
@@ -34,21 +36,7 @@ public class Workspace {
 		this.framework = framework;
 	}
 
-	public void fillInfo (WorkspaceEntry we, MathModel model) {
-		Class<?> modelClass = model.getClass();
-
-		we.setModelClassName(modelClass.getName());
-
-		DisplayName displayName = modelClass.getAnnotation(DisplayName.class);
-		if (displayName != null)
-			we.setModelType(displayName.value());
-		else
-			we.setModelType(modelClass.getSimpleName());
-
-		we.setModelTitle(model.getTitle());
-	}
-
-	public WorkspaceEntry add(String path) throws ModelLoadFailedException {
+	public WorkspaceEntry add(String path) throws ModelLoadFailedException, VisualModelConstructionException {
 		for(WorkspaceEntry we : workspace)
 			if(we.getFile() != null && we.getFile().getPath().equals(path))
 				return we;
@@ -61,8 +49,8 @@ public class Workspace {
 			we = new WorkspaceEntry();
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
-				MathModel model = framework.load(f.getPath());
-				fillInfo (we, model);
+				Model model = framework.load(f.getPath());
+				we.setModel(model);
 			}
 			workspace.add(we);
 			fireEntryAdded(we);
@@ -71,10 +59,9 @@ public class Workspace {
 		return we;
 	}
 
-	public WorkspaceEntry add(MathModel model) {
+	public WorkspaceEntry add(Model model) {
 		WorkspaceEntry we = new WorkspaceEntry();
 		we.setModel(model);
-		fillInfo (we, model);
 		workspace.add(we);
 		fireEntryAdded(we);
 		return we;
@@ -89,9 +76,8 @@ public class Workspace {
 		return Collections.unmodifiableList(workspace);
 	}
 
-	public MathModel loadModel(WorkspaceEntry we) throws ModelLoadFailedException {
-		MathModel model = framework.load(we.getFile().getPath());
-		fillInfo(we, model);
+	public Model loadModel(WorkspaceEntry we) throws ModelLoadFailedException, VisualModelConstructionException {
+		Model model = framework.load(we.getFile().getPath());
 		fireModelLoaded(we);
 		return model;
 	}
@@ -128,12 +114,9 @@ public class Workspace {
 				continue;
 			Element e = doc.createElement("entry");
 			e.setAttribute("path", we.getFile().getPath());
-			if (we.getModelTitle() != null)
-				e.setAttribute("title", we.getModelTitle());
-			if (we.getModelType() != null)
-				e.setAttribute("type", we.getModelType());
-			if (we.getModelClassName() != null)
-				e.setAttribute("class", we.getModelClassName());
+			if (we.getModel().getTitle() != null)
+				e.setAttribute("title", we.getModel().getTitle());
+			e.setAttribute("folder", we.getModel().getDisplayName());
 			root.appendChild(e);
 		}
 

@@ -1,11 +1,9 @@
 package org.workcraft.plugins.graph;
 
-import java.util.Set;
-
 import org.w3c.dom.Element;
-import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;

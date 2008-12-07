@@ -7,6 +7,7 @@ import java.util.Hashtable;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
@@ -16,7 +17,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
-public abstract class MathModel implements Plugin {
+public abstract class MathModel implements Plugin, Model {
 	protected int componentIDCounter = 1;
 	protected int connectionIDCounter = 1;
 
@@ -245,5 +246,24 @@ public abstract class MathModel implements Plugin {
 
 	public Connection getConnectionByID(int ID) {
 		return connections.get(ID);
+	}
+
+	@Override
+	public MathModel getMathModel() {
+		return this;
+	}
+
+	@Override
+	public VisualModel getVisualModel() {
+		return null;
+	}
+
+	@Override
+	public String getDisplayName() {
+		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
+		if (name == null)
+			return this.getClass().getSimpleName();
+		else
+			return name.value();
 	}
 }

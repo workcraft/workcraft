@@ -18,6 +18,7 @@ import javax.swing.tree.TreePath;
 import org.workcraft.dom.MathModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.framework.workspace.WorkspaceListener;
@@ -103,15 +104,15 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				folderNodes.put(folderName, folderNode);
 			}
 
-			String modelType = we.getModelType();
+			String folder = we.getModel().getDisplayName();
 
-			if (modelType != null) {
-				DefaultMutableTreeNode modelTypeNode = modelTypeNodes.get(modelType);
+			if (folder != null) {
+				DefaultMutableTreeNode modelTypeNode = modelTypeNodes.get(folder);
 				if (modelTypeNode == null) {
-					modelTypeNode = new DefaultMutableTreeNode(modelType);
-					treeModel.insertNodeInto(modelTypeNode, folderNode, getInsertPoint(folderNode, modelType));
+					modelTypeNode = new DefaultMutableTreeNode(folder);
+					treeModel.insertNodeInto(modelTypeNode, folderNode, getInsertPoint(folderNode, folder));
 					//folderNode.add(modelTypeNode);
-					modelTypeNodes.put(modelType, modelTypeNode);
+					modelTypeNodes.put(folder, modelTypeNode);
 				}
 				treeModel.insertNodeInto(node, modelTypeNode, getInsertPoint(modelTypeNode, node.toString()));
 				//modelTypeNode.add(node);
@@ -200,7 +201,9 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				try {
 					framework.getWorkspace().add(file.getPath());
 				} catch (ModelLoadFailedException e) {
-					JOptionPane.showMessageDialog(null, "The .work file could not be loaded. The file may be corrupted or in wrong format.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "The .work file could not be loaded. The file may be corrupted or in wrong format.\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				} catch (VisualModelConstructionException e) {
+					JOptionPane.showMessageDialog(null, "The .work file could not be loaded. The file may be corrupted or in wrong format.\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
