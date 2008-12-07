@@ -69,7 +69,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 	// MDIPane content;
 
 	JPanel content;
+
 	DefaultDockingPort rootDockingPort;
+	Dockable lastEditorView;
+
 
 	InternalWindow testDoc;
 
@@ -84,6 +87,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		this.outputView = new OutputView(this.framework);
 		this.errorView = new ErrorView(this.framework);
 		this.jsView = new JavaScriptView(this.framework);
+
+		this.lastEditorView = null;
 	}
 
 	public MainWindow(final Framework framework) {
@@ -207,6 +212,18 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		attachDockableListener(dockable);
 		return dockable;
+	}
+
+	public void addEditorView(VisualModel visualModel) {
+		DockableView dockableView = new DockableView (visualModel.getTitle() + " - " + visualModel.getDisplayName(), new GraphEditorPane(visualModel));
+		Dockable dockable = DockingManager.registerDockable(dockableView);
+		if (lastEditorView == null) {
+			rootDockingPort.dock(dockable, CENTER_REGION);
+		} else {
+			lastEditorView.dock(dockable);
+		}
+
+		lastEditorView = dockable;
 	}
 
 	public void startup() {
@@ -353,13 +370,16 @@ public class MainWindow extends JFrame implements DockingConstants{
 			PluginInfo info = dialog.getSelectedModel();
 			try {
 				MathModel mathModel = (MathModel)this.framework.getPluginManager().getInstance(info, MathModel.class);
-				mathModel.setTitle(dialog.getModelTitle());
+
+				if (!dialog.getModelTitle().isEmpty())
+					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
 					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
 					this.framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
-						rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
+						addEditorView (visualModel);
+						//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 						//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
 					this.framework.getWorkspace().add(mathModel);
