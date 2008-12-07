@@ -28,7 +28,7 @@ public class SelectionTool implements GraphEditorTool {
 	private LinkedList<Selectable> savedSelection = new LinkedList<Selectable>();
 	private int selectionMode;
 
-	@Override
+
 	public void mouseClicked(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			if(drag!=DRAG_NONE)
@@ -48,18 +48,18 @@ public class SelectionTool implements GraphEditorTool {
 		}
 	}
 
-	@Override
+
 	public void mouseEntered(GraphEditorMouseEvent e) {
 	}
 
-	@Override
+
 	public void mouseExited(GraphEditorMouseEvent e) {
 		// TODO very important! cancel selection upon changing document
 		if(drag!=DRAG_NONE)
 			cancelDrag(e); // TODO pan is better
 	}
 
-	@Override
+
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		if(drag==DRAG_MOVE) {
 			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
@@ -87,7 +87,7 @@ public class SelectionTool implements GraphEditorTool {
 			prevPosition = e.getPosition();
 	}
 
-	@Override
+
 	public void mousePressed(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
@@ -127,7 +127,7 @@ public class SelectionTool implements GraphEditorTool {
 		}
 	}
 
-	@Override
+
 	public void mouseReleased(GraphEditorMouseEvent e) {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			drag = DRAG_NONE;
@@ -167,7 +167,7 @@ public class SelectionTool implements GraphEditorTool {
 			);
 	}
 
-	@Override
+
 	public void draw(GraphEditorPane editor, Graphics2D g) {
 		if(drag==DRAG_SELECT) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));

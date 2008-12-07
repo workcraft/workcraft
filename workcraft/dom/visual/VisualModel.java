@@ -160,22 +160,22 @@ public class VisualModel implements Plugin, Model {
 		selection.remove(so);
 	}
 
-	@Override
+
 	public MathModel getMathModel() {
 		return this.mathModel;
 	}
 
-	@Override
+
 	public VisualModel getVisualModel() {
 		return this;
 	}
 
-	@Override
+
 	public String getTitle() {
 		return this.mathModel.getTitle();
 	}
 
-	@Override
+
 	public String getDisplayName() {
 		return this.mathModel.getDisplayName();
 	}

@@ -15,7 +15,7 @@ public abstract class VisualComponent extends VisualNode {
 		return refComponent;
 	}
 
-	@Override
+
 	public boolean hitTest(Point2D point) {
 		return getBoundingBox().contains(point);
 	}

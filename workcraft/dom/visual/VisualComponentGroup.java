@@ -185,12 +185,12 @@ public class VisualComponentGroup extends VisualNode {
 		return hit;
 	}
 
-	@Override
+
 	public boolean hitTest(Point2D point) {
 		return hitObject(point)!=null;
 	}
 
-	@Override
+
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D.Double rect = null;
 		for(VisualComponent comp : components) {

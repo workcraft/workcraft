@@ -49,7 +49,7 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 public class MainWindow extends JFrame implements DockingConstants{
 	private static final long serialVersionUID = 1L;
 	public ActionListener defaultActionListener = new ActionListener() {
-		@Override
+
 		public void actionPerformed(ActionEvent e) {
 			System.out.println (e.getActionCommand());
 			framework.execJavaScript(e.getActionCommand());
@@ -92,7 +92,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			@Override
+
 			public void windowClosing(WindowEvent e) {
 				framework.shutdown();
 			}
@@ -115,7 +115,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	protected void attachDockableListener(Dockable dock) {
 		dock.addDockingListener( new DockingListener() {
-			@Override
+
 			public void dockingComplete(DockingEvent arg0) {
 				for (Object d: arg0.getNewDockingPort().getDockables()) {
 					Component comp = ((Dockable)d).getComponent();
@@ -138,23 +138,23 @@ public class MainWindow extends JFrame implements DockingConstants{
 				}
 			}
 
-			@Override
+
 			public void dragStarted(DockingEvent arg0) {
 			}
 
-			@Override
+
 			public void dropStarted(DockingEvent arg0) {
 			}
 
-			@Override
+
 			public void undockingComplete(DockingEvent arg0) {
 			}
 
-			@Override
+
 			public void undockingStarted(DockingEvent arg0) {
 			}
 
-			@Override
+
 			public void dockingCanceled(DockingEvent evt) {
 			}
 		});

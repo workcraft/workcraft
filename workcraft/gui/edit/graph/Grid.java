@@ -355,12 +355,12 @@ public class Grid implements ViewportListener {
 		return majorLinePositionsScreen;
 	}
 
-	@Override
+
 	public void shapeChanged(Viewport sender) {
 		updateGrid(sender);
 	}
 
-	@Override
+
 	public void viewChanged(Viewport sender) {
 		updateGrid(sender);
 	}

@@ -73,7 +73,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 								JMenuItem mi = new JMenuItem(info.getDisplayName());
 								handlers.put(mi, handler);
 								mi.addActionListener(new ActionListener() {
-									@Override
+
 									public void actionPerformed(ActionEvent e) {
 										handlers.get(e.getSource()).execute(we.getFile());
 									}
@@ -87,7 +87,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 					JMenuItem miRemove = new JMenuItem("Remove");
 					miRemove.addActionListener(new ActionListener() {
-						@Override
+
 						public void actionPerformed(ActionEvent e) {
 							framework.getWorkspace().remove(we);
 						}

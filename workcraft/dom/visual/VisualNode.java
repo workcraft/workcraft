@@ -70,7 +70,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 		xmlElement.appendChild(vnodeElement);
 	}
 
-	@Override
+
 	public List<PropertyDeclaration> getPropertyDeclarations() {
 		return propertyDeclarations;
 	}

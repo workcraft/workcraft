@@ -66,7 +66,7 @@ public class Java2DCanvas extends JPanel {
 	}
 
 
-	@Override
+
 	public void paint(Graphics g) {
 		super.paint(g);
 

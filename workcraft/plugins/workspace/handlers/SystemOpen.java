@@ -10,7 +10,7 @@ import org.workcraft.framework.workspace.FileHandler;
 @DisplayName("Open")
 public class SystemOpen implements FileHandler {
 
-	@Override
+
 	public boolean accept(File f) {
 		if (!f.getName().endsWith(".work"))
 			return true;
@@ -18,7 +18,7 @@ public class SystemOpen implements FileHandler {
 			return false;
 	}
 
-	@Override
+
 	public void execute(File f) {
 		try {
 			if (System.getProperty ("os.name").contains("Windows"))

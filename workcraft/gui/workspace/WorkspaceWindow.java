@@ -72,7 +72,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 	}
 
-	@Override
+
 	public void entryAdded(WorkspaceEntry we) {
 		DefaultMutableTreeNode node;
 
@@ -122,7 +122,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		}
 	}
 
-	@Override
+
 	public void entryRemoved(WorkspaceEntry we) {
 		if (entryNodes.containsKey(we)) {
 			DefaultTreeModel treeModel = (DefaultTreeModel)workspaceTree.getModel();
@@ -148,7 +148,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 	}
 
-	@Override
+
 	public void workspaceSaved() {
 		String title = framework.getWorkspace().getFilePath();
 		if (title.isEmpty())
@@ -215,7 +215,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		}
 	}
 
-	@Override
+
 	public void modelLoaded(WorkspaceEntry we) {
 		// TODO Auto-generated method stub
 

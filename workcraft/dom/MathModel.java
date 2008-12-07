@@ -251,17 +251,17 @@ public abstract class MathModel implements Plugin, Model {
 		return connections.get(ID);
 	}
 
-	@Override
+
 	public MathModel getMathModel() {
 		return this;
 	}
 
-	@Override
+
 	public VisualModel getVisualModel() {
 		return null;
 	}
 
-	@Override
+
 	public String getDisplayName() {
 		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
 		if (name == null)

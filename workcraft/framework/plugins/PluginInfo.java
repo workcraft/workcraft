@@ -113,7 +113,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
 		return displayName;
 	}
 
-	@Override
+
 	public int compareTo(PluginInfo o) {
 		return toString().compareTo(o.toString());
 	}

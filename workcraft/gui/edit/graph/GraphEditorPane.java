@@ -53,7 +53,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setBackground(background);
@@ -75,16 +75,16 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void componentHidden(ComponentEvent e) {
 	}
 
-	@Override
+
 	public void componentMoved(ComponentEvent e) {
 	}
 
 
-	@Override
+
 	public void componentResized(ComponentEvent e) {
 		view.setShape(15, 15, this.getWidth()-15, this.getHeight()-15);
 		ruler.setShape(0, 0, this.getWidth(), this.getHeight());
@@ -92,17 +92,17 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void componentShown(ComponentEvent e) {
 	}
 
-	@Override
+
 	public void mouseDragged(MouseEvent e) {
 		mouseMoved(e);
 	}
 
 
-	@Override
+
 	public void mouseMoved(MouseEvent e) {
 		Point currentMouseCoords = e.getPoint();
 		if (panDrag) {
@@ -116,7 +116,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton()!=MouseEvent.BUTTON2) {
 			currentTool.mouseClicked(new GraphEditorMouseEvent(document, e));
@@ -124,19 +124,19 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void mouseEntered(MouseEvent e) {
 		currentTool.mouseEntered(new GraphEditorMouseEvent(document, e));
 	}
 
 
-	@Override
+
 	public void mouseExited(MouseEvent e) {
 		currentTool.mouseExited(new GraphEditorMouseEvent(document, e));
 	}
 
 
-	@Override
+
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2) {
 			panDrag = true;
@@ -147,7 +147,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2) {
 			panDrag = false;
@@ -158,7 +158,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	}
 
 
-	@Override
+
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		view.zoom(-e.getWheelRotation(), e.getPoint());
 		repaint();

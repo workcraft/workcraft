@@ -30,7 +30,7 @@ public class PetriNet extends MathModel {
 	}
 
 
-	@Override
+
 	public int addComponent(Component component, boolean autoAssignID)
 			throws InvalidComponentException, DuplicateIDException {
 		int id = super.addComponent(component, autoAssignID);
@@ -43,19 +43,19 @@ public class PetriNet extends MathModel {
 		return id;
 	}
 
-	@Override
+
 	public Class<?>[] getSupportedComponents() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
+
 	public void validate() throws ModelValidationException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
+
 	protected void validateConnection(Connection connection)
 			throws InvalidConnectionException {
 		// TODO Auto-generated method stub

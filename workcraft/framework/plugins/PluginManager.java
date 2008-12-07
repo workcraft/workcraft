@@ -40,7 +40,7 @@ public class PluginManager {
 	private HashMap <String, Object> singletons;
 
 	private class ClassFileFilter implements FilenameFilter {
-		@Override
+
 		public boolean accept(File dir, String name) {
 			File f = new File(dir.getPath() + File.separator + name);
 			if(f.isDirectory()) {

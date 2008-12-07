@@ -17,7 +17,7 @@ public class VisualVertex extends VisualComponent {
 		super(vertex);
 	}
 
-	@Override
+
 	public void draw(Graphics2D g) {
 		Shape shape = new Ellipse2D.Double(getX()-size/2+strokeWidth/2, getY()-size/2+strokeWidth/2,
 				size-strokeWidth, size-strokeWidth);
@@ -28,7 +28,7 @@ public class VisualVertex extends VisualComponent {
 		g.draw(shape);
 	}
 
-	@Override
+
 	public Rectangle2D getBoundingBox() {
 		return new Rectangle2D.Double(getX()-size/2, getY()-size/2, size, size);
 	}

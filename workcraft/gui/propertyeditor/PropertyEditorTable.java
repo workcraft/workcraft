@@ -57,7 +57,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		 */
 	}
 
-	@Override
+
 	public TableCellEditor getCellEditor(int row, int col) {
 		if (col == 0)
 			return super.getCellEditor(row, col);
@@ -65,7 +65,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 			return this.cellEditors[row];
 	}
 
-	@Override
+
 	public TableCellRenderer getCellRenderer(int row, int col) {
 		if (col == 0)
 			return super.getCellRenderer(row, col);

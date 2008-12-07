@@ -25,16 +25,16 @@ public class Graph extends MathModel {
 		super(framework, xmlElement, sourcePath);
 	}
 
-	@Override
+
 	public Class<?>[] getSupportedComponents() {
 		return supportedComponents;
 	}
 
-	@Override
+
 	public void validate() throws ModelValidationException {
 	}
 
-	@Override
+
 	protected void validateConnection(Connection connection)
 			throws InvalidConnectionException {
 	}

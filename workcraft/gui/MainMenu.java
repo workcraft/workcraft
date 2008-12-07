@@ -88,7 +88,7 @@ public class MainMenu extends JMenuBar {
 
 		JMenuItem miReconfigure = new JMenuItem("Reconfigure plugins");
 		miReconfigure.addActionListener(new ActionListener() {
-			@Override
+
 			public void actionPerformed(ActionEvent e) {
 				frame.framework.getPluginManager().reconfigure();
 			}
