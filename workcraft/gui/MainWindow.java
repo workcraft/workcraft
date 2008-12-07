@@ -199,7 +199,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
 		//attachDockableListener(dock);
-		DockingManager.dock(dockable, neighbour, relativeRegion, split);
+		DockingManager.dock(dockable, neighbour, relativeRegion);
+		DockingManager.setSplitProportion(dockable, split);
 
 		for (Object d: neighbour.getDockingPort().getDockables()) {
 			Component comp = ((Dockable)d).getComponent();
@@ -221,7 +222,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		Dockable dockable;
 
 		if (lastEditorDockable == null) {
-			dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.7f);
+			dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.8f);
 		} else {
 			dockable = addView (editor, dockableTitle, lastEditorDockable);
 		}
@@ -300,7 +301,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		addView (this.jsView, "JavaScript", outputDockable);
 
 		Dockable wsvd = addView (this.workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
-		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.8f);
+		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
 
 		VisualVertex vv = new VisualVertex(new Vertex());
 		gr.getRoot().add(vv);
