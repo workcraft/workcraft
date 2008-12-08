@@ -8,4 +8,5 @@ public interface WorkspaceListener extends EventListener {
 	public void entryAdded(WorkspaceEntry we);
 	public void entryRemoved(WorkspaceEntry we);
 	public void modelLoaded(WorkspaceEntry we);
+	public void entryChanged(WorkspaceEntry we);
 }

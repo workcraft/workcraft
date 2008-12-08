@@ -8,11 +8,13 @@ public class WorkspaceEntry {
 	protected File file;
 	protected Model model;
 	protected boolean unsaved;
+	protected Workspace workspace;
 
-	public WorkspaceEntry() {
+	public WorkspaceEntry(Workspace workspace) {
 		this.file = null;
 		this.model = null;
 		this.unsaved = false;
+		this.workspace = workspace;
 	}
 
 	public File getFile() {
@@ -29,6 +31,11 @@ public class WorkspaceEntry {
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public void renameModel(String title) {
+		this.model.getMathModel().setTitle(title);
+		this.workspace.fireEntryChanged(this);
 	}
 
 	public void setUnsaved(boolean unsaved) {

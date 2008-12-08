@@ -19,13 +19,17 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
+import org.workcraft.dom.Component;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualModelListener;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener{
+public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -41,13 +45,14 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	protected Point lastMouseCoords = new Point();
 
 	protected Color background = Color.WHITE;
-	protected Color focusBorderColor = Color.GRAY;
+	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
 	public GraphEditorPane(MainWindow parent, VisualModel visualModel) {
-		setModel(visualModel);
-
 		this.parent = parent;
+
+		this.visualModel = visualModel;
+		visualModel.addListener(this);
 
 		this.view = new Viewport(0, 0, getWidth(), getHeight());
 		this.grid = new Grid();
@@ -76,11 +81,15 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		this.visualModel.draw(g2d);
-		parent.getToolboxView().getSelectedTool().drawInUserSpace(this, g2d);
+
+		if (hasFocus)
+			parent.getToolboxView().getSelectedTool().drawInUserSpace(this, g2d);
 		g2d.setTransform(rest);
 
 		this.ruler.draw(g2d);
-		parent.getToolboxView().getSelectedTool().drawInScreenSpace(this, g2d);
+
+		if (hasFocus)
+			parent.getToolboxView().getSelectedTool().drawInScreenSpace(this, g2d);
 
 		if (hasFocus) {
 			g2d.setStroke(borderStroke);
@@ -180,12 +189,6 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		repaint();
 	}
 
-	public void setModel(VisualModel document) {
-		this.visualModel = document;
-		if(document.getEditorPane()!=this)
-			document.setEditorPane(this);
-	}
-
 	public VisualModel getModel() {
 		return this.visualModel;
 	}
@@ -206,5 +209,25 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	public void removeFocus() {
 		this.hasFocus = false;
 		this.repaint();
+	}
+
+	public void visualNodePropertyChanged(VisualNode n) {
+		repaint();
+	}
+
+	public void componentPropertyChanged(Component c) {
+		repaint();
+	}
+
+	public void connectionPropertyChanged(Connection c) {
+		repaint();
+	}
+
+	public void modelStructureChanged() {
+		repaint();
+	}
+
+	public void layoutChanged() {
+		repaint();
 	}
 }

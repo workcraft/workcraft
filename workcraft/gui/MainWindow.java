@@ -30,12 +30,14 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.plugins.graph.Graph;
@@ -239,7 +241,28 @@ public class MainWindow extends JFrame implements DockingConstants{
 		return dockable;
 	}
 
-	public void addEditorView(VisualModel visualModel) {
+	public void addEditorView(WorkspaceEntry we) {
+		if (we.getModel() == null) {
+			JOptionPane.showMessageDialog(this, "The selected entry is not a Workcraft model, and cannot be edited.", "Cannot open editor", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		VisualModel visualModel = we.getModel().getVisualModel();
+
+		if (visualModel == null) {
+			if (JOptionPane.showConfirmDialog(this, "The selected model does not have visual layout information. Do you want to create a default layout?",
+					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION) {
+				try {
+					visualModel = (VisualModel)PluginManager.createVisualClassFor(we.getModel().getMathModel(), VisualModel.class);
+					we.setModel(visualModel);
+
+				} catch (VisualModelConstructionException e) {
+					JOptionPane.showMessageDialog(this, e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+			}
+		}
+
 		GraphEditorPane editor = new GraphEditorPane(this, visualModel);
 		String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
 		Dockable dockable;
@@ -406,9 +429,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 				if (dialog.createVisualSelected()) {
 					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
-					this.framework.getWorkspace().add(visualModel);
+					WorkspaceEntry we = this.framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
-						addEditorView (visualModel);
+						addEditorView (we);
 						//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 						//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
@@ -420,6 +443,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 			}
 		}
 	}
+
 
 	public void requestFocus (GraphEditorPane sender) {
 		if (editorInFocus != null)

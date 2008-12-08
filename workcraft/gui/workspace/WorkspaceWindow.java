@@ -100,7 +100,9 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				this.folderNodes.put(folderName, folderNode);
 			}
 
-			String folder = we.getModel().getDisplayName();
+			String folder = null;
+			if (we.getModel() != null)
+				folder = we.getModel().getDisplayName();
 
 			if (folder != null) {
 				DefaultMutableTreeNode modelTypeNode = this.modelTypeNodes.get(folder);
@@ -212,7 +214,9 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 
 	public void modelLoaded(WorkspaceEntry we) {
-		// TODO Auto-generated method stub
+	}
 
+	public void entryChanged(WorkspaceEntry we) {
+		repaint();
 	}
 }

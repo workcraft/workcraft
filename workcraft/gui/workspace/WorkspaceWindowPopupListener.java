@@ -86,7 +86,26 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 							}
 					}
 
-					JMenuItem miRemove = new JMenuItem("Remove");
+					if (we.getModel()!=null) {
+						JMenuItem miOpenView = new JMenuItem("Open editor view");
+						miOpenView.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								WorkspaceWindowPopupListener.this.framework.getMainWindow().addEditorView(we);
+							}
+						});
+
+						JMenuItem miSave = new JMenuItem("Save");
+						JMenuItem miSaveAs = new JMenuItem("Save as...");
+
+
+						popup.add(miSave);
+						popup.add(miSaveAs);
+						popup.add(miOpenView);
+					}
+
+					popup.addSeparator();
+
+					JMenuItem miRemove = new JMenuItem("Remove from workspace");
 					miRemove.addActionListener(new ActionListener() {
 
 						public void actionPerformed(ActionEvent e) {

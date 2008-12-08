@@ -40,7 +40,7 @@ public class Workspace {
 		WorkspaceEntry we = null;
 
 		if (f.exists()) {
-			we = new WorkspaceEntry();
+			we = new WorkspaceEntry(this);
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
 				Model model = this.framework.load(f.getPath());
@@ -54,7 +54,7 @@ public class Workspace {
 	}
 
 	public WorkspaceEntry add(Model model) {
-		WorkspaceEntry we = new WorkspaceEntry();
+		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setModel(model);
 		this.workspace.add(we);
 		fireEntryAdded(we);
@@ -142,6 +142,11 @@ public class Workspace {
 	void fireEntryRemoved(WorkspaceEntry we) {
 		for (WorkspaceListener listener : this.workspaceListeners)
 			listener.entryRemoved(we);
+	}
+
+	void fireEntryChanged(WorkspaceEntry we) {
+		for (WorkspaceListener listener : this.workspaceListeners)
+			listener.entryChanged(we);
 	}
 
 	public void save() {

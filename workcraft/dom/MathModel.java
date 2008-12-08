@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -26,6 +27,8 @@ public abstract class MathModel implements Plugin, Model {
 	protected Hashtable<Integer, Component> components;
 	protected Hashtable<Integer, Connection> connections;
 
+	protected LinkedList<MathModelListener> listeners;
+
 	protected Framework framework = null;
 	protected String sourcePath = null;
 	protected String title = null;
@@ -33,6 +36,7 @@ public abstract class MathModel implements Plugin, Model {
 	public MathModel (Framework framework) {
 		this.components = new Hashtable<Integer, Component>();
 		this.connections = new Hashtable<Integer, Connection>();
+		this.listeners = new LinkedList<MathModelListener>();
 		this.framework = framework;
 		this.title = "Untitled";
 	}
@@ -268,5 +272,28 @@ public abstract class MathModel implements Plugin, Model {
 			return this.getClass().getSimpleName();
 		else
 			return name.value();
+	}
+
+	public void addListener(MathModelListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeListener(MathModelListener listener) {
+		listeners.remove(listener);
+	}
+
+	public void fireModelStructureChanged() {
+		for (MathModelListener l : listeners)
+			l.modelStructureChanged();
+	}
+
+	public void fireComponentPropertyChanged(Component c) {
+		for (MathModelListener l : listeners)
+			l.componentPropertyChanged(c);
+	}
+
+	public void fireConnectionPropertyChanged(Connection c) {
+		for (MathModelListener l : listeners)
+			l.connectionPropertyChanged(c);
 	}
 }
