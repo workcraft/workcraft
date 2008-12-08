@@ -110,7 +110,6 @@ public class ComponentCreationTool implements GraphEditorTool {
 
 	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

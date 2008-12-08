@@ -4,26 +4,15 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import javax.swing.JOptionPane;
 
-import org.workcraft.dom.Component;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.DuplicateIDException;
-import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
-import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
