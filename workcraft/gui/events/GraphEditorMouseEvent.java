@@ -3,19 +3,24 @@ package org.workcraft.gui.events;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 
 public class GraphEditorMouseEvent {
 
-	private GraphEditorPane editor;
-	private int event;
-	private Point2D position;
-	private int button;
-	private int clickCount;
-	private int modifiers;
+	GraphEditorPane editor;
+	VisualModel model;
+
+	int event;
+	Point2D position;
+	int button;
+	int clickCount;
+	int modifiers;
 
 	public GraphEditorMouseEvent(GraphEditorPane editor, MouseEvent e) {
 		this.editor = editor;
+		this.model = editor.getModel();
+
 		this.event = e.getID();
 		if(editor!=null)
 			this.position = editor.getViewport().screenToUser(e.getPoint());
@@ -37,6 +42,10 @@ public class GraphEditorMouseEvent {
 
 	public GraphEditorPane getEditor() {
 		return this.editor;
+	}
+
+	public VisualModel getModel() {
+		return this.model;
 	}
 
 	public int getEvent() {

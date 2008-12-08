@@ -7,6 +7,7 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
+import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 
 public class VisualVertex extends VisualComponent {
@@ -15,6 +16,10 @@ public class VisualVertex extends VisualComponent {
 
 	public VisualVertex(Vertex vertex) {
 		super(vertex);
+	}
+
+	public VisualVertex(Vertex vertex, Element xmlElement) {
+		super(vertex, xmlElement);
 	}
 
 

@@ -13,13 +13,16 @@ import javax.swing.JToggleButton;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.gui.edit.tools.ComponentCreationTool;
+import org.workcraft.gui.edit.tools.ConnectionTool;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
 
 @SuppressWarnings("serial")
 public class ToolboxView extends JPanel {
 	Framework framework;
+
 	SelectionTool selectionTool;
+	ConnectionTool connectionTool;
 
 	GraphEditorTool selectedTool;
 
@@ -58,10 +61,12 @@ public class ToolboxView extends JPanel {
 			reverseMap.get(selectedTool).setSelected(false);
 		reverseMap.get(tool).setSelected(true);
 		selectedTool = tool;
+		framework.getMainWindow().repaintCurrentEditor();
 	}
 
 	public void addCommonTools() {
 		addTool(selectionTool, true);
+		addTool(connectionTool, false);
 	}
 
 	public void setToolsForModel (Model model) {
@@ -98,6 +103,8 @@ public class ToolboxView extends JPanel {
 		this.framework = framework;
 
 		selectionTool = new SelectionTool();
+		connectionTool = new ConnectionTool();
+
 		selectedTool = null;
 
 		clearTools();

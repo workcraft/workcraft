@@ -1,16 +1,34 @@
 package org.workcraft.dom.visual;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 
-public abstract class VisualConnection implements Selectable {
-	protected Connection refConnection;
+public class VisualConnection implements Selectable {
+	Connection refConnection;
+	VisualComponent first;
+	VisualComponent second;
 
-	public VisualConnection(Connection refConnection) {
+
+	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
+		this.first = first;
+		this.second = second;
 	}
 
-	public abstract void draw();
+	public void draw(Graphics2D g) {
+		Line2D line = new Line2D.Double(first.getX(), first.getY(), second.getX(), second.getY());
+		g.setColor(Color.BLUE);
+		g.setStroke(new BasicStroke(0.1f));
+		g.draw(line);
+
+	}
 
 	public void toXML(Element vconElement) {
 
@@ -18,5 +36,13 @@ public abstract class VisualConnection implements Selectable {
 
 	public Connection getReferencedConnection() {
 		return this.refConnection;
+	}
+
+	public Rectangle2D getBoundingBox() {
+		return null;
+	}
+
+	public boolean hitTest(Point2D point) {
+		return false;
 	}
 }

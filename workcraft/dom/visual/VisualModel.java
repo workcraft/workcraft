@@ -9,6 +9,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.Model;
+import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
@@ -41,7 +42,7 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public VisualModel(MathModel mathModel, Element visualElement) throws VisualModelConstructionException {
-		this.mathModel = mathModel;
+		this(mathModel);
 
 		// load structure from XML
 		NodeList nodes = visualElement.getElementsByTagName("group");
@@ -188,6 +189,16 @@ public class VisualModel implements Plugin, Model {
 
 	public Selectable[] getSelection() {
 		return selection.toArray(new Selectable[0]);
+	}
+
+	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
+		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
+		VisualConnection ret = new VisualConnection(con, first, second);
+		root.add(ret);
+
+		fireModelStructureChanged();
+
+		return ret;
 	}
 
 }

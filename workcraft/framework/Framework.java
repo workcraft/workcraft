@@ -465,34 +465,34 @@ public class Framework {
 				return model;
 
 			Element visualModelElement = (Element)elements.item(0);
-			String visualModelClassName = modelElement.getAttribute("class");
+			String visualModelClassName = visualModelElement.getAttribute("class");
 
 			Class<?> visualModelClass = Class.forName(visualModelClassName);
-			ctor = visualModelClass.getConstructor(MathModel.class, Element.class);
-			VisualModel visualModel = (VisualModel)ctor.newInstance(model, visualModelElement, path);
+			ctor = visualModelClass.getConstructor(modelClass, Element.class);
+			VisualModel visualModel = (VisualModel)ctor.newInstance(model, visualModelElement);
 
 			return visualModel;
 
 		} catch (ParserConfigurationException e) {
-			throw new ModelLoadFailedException("XML Parser configuration error: "+ e.getMessage());
+			throw new ModelLoadFailedException("XML Parser configuration error: \n"+ e.getMessage());
 		} catch (IOException e) {
 			throw new ModelLoadFailedException("IO error: "+ e.getMessage());
 		} catch (SAXException e) {
 			throw new ModelLoadFailedException("Parse error: " + e.getMessage());
 		} catch (IllegalArgumentException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (SecurityException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (InstantiationException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (IllegalAccessException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (InvocationTargetException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getTargetException().getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getTargetException().getMessage());
 		} catch (NoSuchMethodException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (ClassNotFoundException e) {
-			throw new ModelLoadFailedException("Cannot instatniate model: " + e.getMessage());
+			throw new ModelLoadFailedException("Cannot instatniate model: \n" + e.getMessage());
 		}
 	}
 
@@ -510,7 +510,7 @@ public class Framework {
 			doc.appendChild(root);
 
 			Element modelElement = doc.createElement("model");
-			modelElement.setAttribute("class", model.getClass().getName());
+			modelElement.setAttribute("class", model.getMathModel().getClass().getName());
 			model.getMathModel().toXML(modelElement);
 			root.appendChild(modelElement);
 

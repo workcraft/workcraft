@@ -102,7 +102,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						});
 
 						JMenuItem miSaveAs = new JMenuItem("Save as...");
-						miSave.addActionListener(new ActionListener() {
+						miSaveAs.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								WorkspaceWindowPopupListener.this.framework.getMainWindow().saveAs(we);
 							}

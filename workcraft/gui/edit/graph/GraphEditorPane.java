@@ -24,6 +24,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -31,6 +32,8 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
+	protected WorkspaceEntry workspaceEntry;
+
 
 	protected MainWindow parent;
 
@@ -46,10 +49,12 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
-	public GraphEditorPane(MainWindow parent, VisualModel visualModel) {
+	public GraphEditorPane(MainWindow parent, WorkspaceEntry workspaceEntry) {
 		this.parent = parent;
 
-		this.visualModel = visualModel;
+		this.workspaceEntry = workspaceEntry;
+		this.visualModel = workspaceEntry.getModel().getVisualModel();
+
 		visualModel.addListener(this);
 
 		this.view = new Viewport(0, 0, getWidth(), getHeight());
@@ -207,6 +212,11 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	public void removeFocus() {
 		this.hasFocus = false;
 		this.repaint();
+	}
+
+
+	public WorkspaceEntry getWorkspaceEntry() {
+		return workspaceEntry;
 	}
 
 	public void visualNodePropertyChanged(VisualNode n) {

@@ -30,6 +30,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	}
 
 	public VisualNode (Element xmlElement) {
+		this();
 		NodeList nodes = xmlElement.getElementsByTagName("node");
 		Element vnodeElement = (Element)nodes.item(0);
 		setX (XmlUtil.readDoubleAttr(vnodeElement, "x", 0));

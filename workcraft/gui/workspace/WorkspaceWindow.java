@@ -20,6 +20,7 @@ import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.framework.workspace.WorkspaceListener;
+import org.workcraft.gui.FileFilters;
 
 
 @SuppressWarnings("serial")
@@ -199,9 +200,9 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				try {
 					this.framework.getWorkspace().add(file.getPath());
 				} catch (ModelLoadFailedException e) {
-					JOptionPane.showMessageDialog(null, "The .work file could not be loaded. The file may be corrupted or in wrong format.\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
 				} catch (VisualModelConstructionException e) {
-					JOptionPane.showMessageDialog(null, "The .work file could not be loaded. The file may be corrupted or in wrong format.\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
 				}
 	}
 

@@ -295,13 +295,13 @@ public class PluginManager {
 
 				return ret;
 			} catch (IllegalArgumentException e) {
-				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: \n" + e.getMessage());
 			} catch (InstantiationException e) {
-				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: \n" + e.getMessage());
 			} catch (IllegalAccessException e) {
-				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: \n" + e.getMessage());
 			} catch (InvocationTargetException e) {
-				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: " + e.getMessage());
+				throw new PluginInstantiationException ("Plugin class \"" + cls.getName() + "\" could not be instantiated: \n" + e.getMessage());
 			}
 	}
 
@@ -339,20 +339,20 @@ public class PluginManager {
 					" could not be loaded for class " + object.getClass().getName());
 		} catch (SecurityException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception: " + e.getMessage());
+					" could not be instantiated due to security exception:\n" + e.getMessage());
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
-					" does not declare the required constructor " + vcat.value() +
+					" does not declare the required constructor: \n" + vcat.value() +
 					"(" + object.getClass().getName() +")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: " + e.getMessage());
+					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
 		} catch (InstantiationException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getMessage());
+					" could not be instantiated: \n" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: " + e.getMessage());
+					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
 		} catch (InvocationTargetException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated: " + e.getTargetException().getMessage());
@@ -384,23 +384,23 @@ public class PluginManager {
 					" could not be loaded for class " + object.getClass().getName());
 		} catch (SecurityException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception: " + e.getMessage());
+					" could not be instantiated due to security exception: \n " + e.getMessage());
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
-					" does not declare the required constructor " + vcat.value() +
+					" does not declare the required constructor \n" + vcat.value() +
 					"(" + object.getClass().getName() + ", " + Element.class.getName()+")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: " + e.getMessage());
+					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
 		} catch (InstantiationException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getMessage());
+					" could not be instantiated: \n" + e.getMessage());
 		} catch (IllegalAccessException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: " + e.getMessage());
+					" could not be instantiated due to inaccesibility of the constructor: \n " + e.getMessage());
 		} catch (InvocationTargetException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getTargetException().getMessage());
+					" could not be instantiated: \n" + e.getTargetException().getMessage());
 		}
 	}
 }

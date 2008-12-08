@@ -85,7 +85,7 @@ public class VisualComponentGroup extends VisualNode {
 		g.transform(this.transform);
 
 		for (VisualConnection connection : this.connections)
-			connection.draw();
+			connection.draw(g);
 
 		for (VisualComponentGroup group : this.childGroups) {
 			AffineTransform rest2 = g.getTransform();
@@ -138,17 +138,20 @@ public class VisualComponentGroup extends VisualNode {
 			Element vcompElement = groupElement.getOwnerDocument().createElement("component");
 			XmlUtil.writeIntAttr(vcompElement, "ref", vcomp.getReferencedComponent().getID());
 			vcomp.toXML(vcompElement);
+			groupElement.appendChild(vcompElement);
 		}
 
 		for (VisualConnection vcon : this.connections) {
 			Element vconElement = groupElement.getOwnerDocument().createElement("connection");
 			XmlUtil.writeIntAttr(vconElement, "ref", vcon.getReferencedConnection().getID());
 			vcon.toXML(vconElement);
+			groupElement.appendChild(vconElement);
 		}
 
 		for (VisualComponentGroup group : this.childGroups) {
 			Element childGroupElement = groupElement.getOwnerDocument().createElement("group");
 			group.toXML(childGroupElement);
+			groupElement.appendChild(childGroupElement);
 		}
 	}
 
@@ -171,9 +174,9 @@ public class VisualComponentGroup extends VisualNode {
 		for(VisualComponent comp : this.components)
 			if(rect.contains(comp.getBoundingBox()))
 				hit.add(comp);
-		for(VisualConnection conn : this.connections)
+	/*	for(VisualConnection conn : this.connections)
 			if(rect.contains(conn.getBoundingBox()))
-				hit.add(conn);
+				hit.add(conn);*/
 		for(VisualComponentGroup grp : this.childGroups)
 			if(rect.contains(grp.getBoundingBox()))
 				hit.add(grp);

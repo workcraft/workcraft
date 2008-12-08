@@ -1,4 +1,4 @@
-package org.workcraft.gui.workspace;
+package org.workcraft.gui;
 
 import java.io.File;
 
