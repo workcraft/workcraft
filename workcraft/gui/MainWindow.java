@@ -444,7 +444,6 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
-
 	public void requestFocus (GraphEditorPane sender) {
 		if (editorInFocus != null)
 			editorInFocus.removeFocus();
@@ -452,9 +451,19 @@ public class MainWindow extends JFrame implements DockingConstants{
 		sender.grantFocus();
 		editorInFocus = sender;
 		toolboxView.setToolsForModel(editorInFocus.getModel());
+		framework.deleteJavaScriptProperty("_vmodel", framework.getJavaScriptGlobalScope());
+		framework.setJavaScriptProperty("_vmodel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
 	}
 
 	public ToolboxView getToolboxView() {
 		return toolboxView;
+	}
+
+	public void save(WorkspaceEntry we) {
+
+	}
+
+	public void saveAs(WorkspaceEntry we) {
+
 	}
 }

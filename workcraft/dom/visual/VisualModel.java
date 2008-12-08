@@ -192,8 +192,8 @@ public class VisualModel implements Plugin, Model {
 		mathModel.removeListener(listener);
 	}
 
-	public List<Selectable> getSelection() {
-		return selection;
+	public Selectable[] getSelection() {
+		return selection.toArray(new Selectable[0]);
 	}
 
 }

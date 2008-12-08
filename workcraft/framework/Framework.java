@@ -131,7 +131,7 @@ public class Framework {
 	private Workspace workspace;
 
 	private ScriptableObject systemScope;
-	private Scriptable globalScope;
+	private ScriptableObject globalScope;
 
 	private JavaScriptExecution javaScriptExecution = new JavaScriptExecution();
 	private JavaScriptCompilation javaScriptCompilation = new JavaScriptCompilation();
@@ -253,7 +253,7 @@ public class Framework {
 				//ScriptableObject.putProperty(systemScope, "importer", );
 				Framework.this.systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
-				Framework.this.globalScope = cx.newObject(Framework.this.systemScope);
+				Framework.this.globalScope =(ScriptableObject) cx.newObject(Framework.this.systemScope);
 				Framework.this.globalScope.setPrototype(Framework.this.systemScope);
 				Framework.this.globalScope.setParentScope(null);
 
@@ -263,8 +263,20 @@ public class Framework {
 		});
 	}
 
-	public Scriptable getJavaScriptGlobalScope() {
+	public ScriptableObject getJavaScriptGlobalScope() {
 		return this.globalScope;
+	}
+
+	public void setJavaScriptProperty (String name, Object object, ScriptableObject scope, boolean readOnly) {
+		Object scriptable = Context.javaToJS(object, scope);
+		ScriptableObject.putProperty(scope, name, scriptable);
+
+		if (readOnly)
+			scope.setAttributes(name, ScriptableObject.READONLY);
+	}
+
+	public void deleteJavaScriptProperty (String name, ScriptableObject scope) {
+		ScriptableObject.deleteProperty(scope, name);
 	}
 
 	public Object execJavaScript(File file) throws FileNotFoundException {
