@@ -2,7 +2,10 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -11,18 +14,23 @@ import java.io.PrintStream;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.workcraft.framework.Framework;
 
 @SuppressWarnings("serial")
-public class ErrorView extends JPanel {
+public class ErrorView extends JPanel implements ComponentListener {
 	protected PrintStream systemErr;
 	protected boolean streamCaptured = false;
 	private JScrollPane scrollStdErr;
 	private JTextArea txtStdErr;
 
-	class ErrorStreamView extends FilterOutputStream {
+	private Color colorBack = null;
+
+	class ErrorStreamView extends FilterOutputStream implements ChangeListener {
 		JTextArea target;
 
 		public ErrorStreamView(OutputStream aStream, JTextArea target) {
@@ -32,6 +40,22 @@ public class ErrorView extends JPanel {
 
 		public void puts(String s) {
 			this.target.append(s);
+
+			Container parent = 	ErrorView.this.getParent().getParent().getParent();
+			if (parent instanceof JTabbedPane) {
+				JTabbedPane tab = (JTabbedPane) parent;
+				for (int i=0; i<tab.getComponentCount(); i++) {
+					if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+						if (tab.getForegroundAt(i) != Color.RED) {
+							colorBack = tab.getForegroundAt(i);
+							tab.setForegroundAt(i, Color.RED);
+							tab.removeChangeListener(this);
+							tab.addChangeListener(this);
+						}
+					}
+				}
+				//tab.getTabComponentAt(index)setForeground(Color.RED);
+			}
 		}
 
 		@Override
@@ -44,6 +68,25 @@ public class ErrorView extends JPanel {
 		public void write(byte b[], int off, int len) throws IOException {
 			String s = new String(b , off , len);
 			puts(s);
+		}
+
+		public void stateChanged(ChangeEvent e) {
+			if (colorBack == null)
+				return;
+
+			Container parent = 	ErrorView.this.getParent().getParent().getParent();
+			if (parent instanceof JTabbedPane) {
+				JTabbedPane tab = (JTabbedPane) parent;
+				for (int i=0; i<tab.getComponentCount(); i++) {
+					if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+						if (tab.getSelectedComponent() == tab.getComponentAt(i)) {
+							tab.setForegroundAt(i, colorBack);
+							colorBack = null;
+						}
+					}
+				}
+				//tab.getTabComponentAt(index)setForeground(Color.RED);
+			}
 		}
 	}
 
@@ -84,5 +127,33 @@ public class ErrorView extends JPanel {
 
 		setLayout(new BorderLayout(0,0));
 		this.add(this.scrollStdErr, BorderLayout.CENTER);
+
+		this.addComponentListener(this);
+	}
+
+	public void componentHidden(ComponentEvent e) {
+	}
+
+	public void componentMoved(ComponentEvent e) {
+	}
+
+	public void componentResized(ComponentEvent e) {
+	}
+
+	public void componentShown(ComponentEvent e) {
+		if (colorBack==null)
+			return;
+
+		Container parent = 	this.getParent().getParent().getParent();
+		if (parent instanceof JTabbedPane) {
+			JTabbedPane tab = (JTabbedPane) parent;
+			for (int i=0; i<tab.getComponentCount(); i++) {
+				if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+					tab.setForegroundAt(i, colorBack);
+					colorBack = null;
+				}
+			}
+			//tab.getTabComponentAt(index)setForeground(Color.RED);
+		}
 	}
 }
