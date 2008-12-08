@@ -60,6 +60,14 @@ public class MainMenu extends JMenuBar {
 		miOpenModel.addActionListener(frame.getDefaultActionListener());
 		miOpenModel.setActionCommand("gui.openWork()");
 
+
+		JMenuItem miSaveWorkspace = new JMenuItem();
+		miSaveWorkspace.setText("Open work...");
+		miSaveWorkspace.setMnemonic(KeyEvent.VK_O);
+		miSaveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		miSaveWorkspace.addActionListener(frame.getDefaultActionListener());
+		miSaveWorkspace.setActionCommand("gui.openWork()");
+
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
 

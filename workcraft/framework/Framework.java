@@ -267,12 +267,18 @@ public class Framework {
 		return this.globalScope;
 	}
 
-	public void setJavaScriptProperty (String name, Object object, ScriptableObject scope, boolean readOnly) {
-		Object scriptable = Context.javaToJS(object, scope);
-		ScriptableObject.putProperty(scope, name, scriptable);
+	public void setJavaScriptProperty (final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
+		Context.call(new ContextAction(){
+			public Object run(Context arg0) {
+				Object scriptable = Context.javaToJS(object, scope);
+				ScriptableObject.putProperty(scope, name, scriptable);
 
-		if (readOnly)
-			scope.setAttributes(name, ScriptableObject.READONLY);
+				if (readOnly)
+					scope.setAttributes(name, ScriptableObject.READONLY);
+
+				return scriptable;
+			}
+		});
 	}
 
 	public void deleteJavaScriptProperty (String name, ScriptableObject scope) {
