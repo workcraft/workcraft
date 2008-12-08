@@ -3,7 +3,6 @@ package org.workcraft.gui.events;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 
 public class GraphEditorMouseEvent {

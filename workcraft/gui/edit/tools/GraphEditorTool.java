@@ -1,6 +1,5 @@
 package org.workcraft.gui.edit.tools;
 
-import java.awt.Cursor;
 import java.awt.Graphics2D;
 
 import org.workcraft.gui.edit.graph.GraphEditorPane;

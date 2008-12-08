@@ -1,12 +1,7 @@
 package org.workcraft.dom.visual;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
-import java.util.List;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
@@ -17,7 +12,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.gui.edit.graph.GraphEditorPane;
 
 public class VisualModel implements Plugin, Model {
 	protected MathModel mathModel;

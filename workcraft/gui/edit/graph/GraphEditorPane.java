@@ -25,8 +25,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.gui.edit.tools.SelectionTool;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener{
