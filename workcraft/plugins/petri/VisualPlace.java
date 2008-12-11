@@ -2,8 +2,10 @@ package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.LineMetrics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
@@ -80,7 +82,14 @@ public class VisualPlace extends VisualComponent {
 		}
 		else if (p.tokens > 7)
 		{
-	//		g.drawString(Integer.toString(p.tokens), (float)getX(), (float)getY());
+			String out = Integer.toString(p.tokens);
+			Font superFont = g.getFont().deriveFont( (float)(size - multipleTokenSeparation - strokeWidth*2));
+
+			Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
+			g.setFont(superFont);
+
+
+			g.drawString(Integer.toString(p.tokens), (float)(getX() - rect.getCenterX()), (float)(getY() - rect.getCenterY()));
 		}
 	}
 
