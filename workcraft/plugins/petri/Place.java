@@ -14,7 +14,7 @@ public class Place extends Component {
 
 	public Place() {
 		super();
-		tokens = (counter++) % 10;
+		tokens = (counter++) % 20;
 	}
 
 	public Place(Element xmlElement) {

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.graph;
+package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -9,23 +9,24 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.plugins.graph.Vertex;
 
-public class VisualVertex extends VisualComponent {
+public class VisualTransition extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
 
-	public VisualVertex(Vertex vertex) {
-		super(vertex);
+	public VisualTransition(Transition transition) {
+		super(transition);
 	}
 
-	public VisualVertex(Vertex vertex, Element xmlElement) {
-		super(vertex, xmlElement);
+	public VisualTransition(Transition transition, Element xmlElement) {
+		super(transition, xmlElement);
 	}
 
 
 	@Override
 	public void draw(Graphics2D g) {
-		Shape shape = new Ellipse2D.Double(
+		Shape shape = new Rectangle2D.Double(
 				-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
@@ -39,6 +40,6 @@ public class VisualVertex extends VisualComponent {
 
 
 	public Rectangle2D getBoundingBox() {
-		return new Rectangle2D.Double(getX()-size/2, getY()-size/2, size, size);
+		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 }
