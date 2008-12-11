@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.VisualComponent;
 public class VisualPlace extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
-	private static double singleTokenSize = size / 2;
+	private static double singleTokenSize = size / 1.9;
 	private static double multipleTokenSeparation = strokeWidth / 8;
 
 	public VisualPlace(Place place) {
