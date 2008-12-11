@@ -89,6 +89,7 @@ public class VisualComponentGroup extends VisualNode {
 
 		for (VisualComponentGroup group : this.childGroups) {
 			AffineTransform rest2 = g.getTransform();
+			g.transform(group.transform);
 			group.draw(g);
 			// Restore group transform
 			g.setTransform(rest2);
@@ -96,6 +97,7 @@ public class VisualComponentGroup extends VisualNode {
 
 		for (VisualComponent component : this.components) {
 			AffineTransform rest2 = g.getTransform();
+			g.transform(component.transform);
 			component.draw(g);
 			// Restore group transform
 			g.setTransform(rest2);
@@ -104,6 +106,8 @@ public class VisualComponentGroup extends VisualNode {
 		// Restore original transform
 		g.setTransform(rest1);
 	}
+
+
 
 	public void add (VisualComponentGroup group) {
 		this.childGroups.add(group);
