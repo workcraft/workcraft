@@ -30,8 +30,8 @@ public class VisualPlace extends VisualComponent {
 	public void draw(Graphics2D g)
 	{
 		Shape shape = new Ellipse2D.Double(
-				getX() - size / 2 + strokeWidth / 2,
-				getY() - size / 2 + strokeWidth / 2,
+				- size / 2 + strokeWidth / 2,
+				- size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
 
@@ -46,8 +46,8 @@ public class VisualPlace extends VisualComponent {
 		if (p.tokens == 1)
 		{
 			shape = new Ellipse2D.Double(
-					getX() - singleTokenSize / 2,
-					getY() - singleTokenSize / 2,
+					- singleTokenSize / 2,
+					- singleTokenSize / 2,
 					singleTokenSize,
 					singleTokenSize);
 
@@ -68,11 +68,11 @@ public class VisualPlace extends VisualComponent {
 			for(int i = 0; i < p.tokens; i++)
 			{
 				if (i == 6)
-					shape = new Ellipse2D.Double(getX() - r, getY() - r, r * 2, r * 2);
+					shape = new Ellipse2D.Double( - r, - r, r * 2, r * 2);
 				else
 					shape = new Ellipse2D.Double(
-							getX() - R * Math.sin(i * al * 2) - r,
-							getY() - R * Math.cos(i * al * 2) - r,
+							- R * Math.sin(i * al * 2) - r,
+							- R * Math.cos(i * al * 2) - r,
 							r * 2,
 							r * 2);
 
@@ -89,12 +89,12 @@ public class VisualPlace extends VisualComponent {
 			g.setFont(superFont);
 
 
-			g.drawString(Integer.toString(p.tokens), (float)(getX() - rect.getCenterX()), (float)(getY() - rect.getCenterY()));
+			g.drawString(Integer.toString(p.tokens), (float) - rect.getCenterX(), (float)- rect.getCenterY());
 		}
 	}
 
 
 	public Rectangle2D getBoundingBox() {
-		return new Rectangle2D.Double(getX()-size/2, getY()-size/2, size, size);
+		return new Rectangle2D.Double(size/2, size/2, size, size);
 	}
 }
