@@ -19,16 +19,16 @@ public class GraphEditorMouseEvent {
 
 	public GraphEditorMouseEvent(GraphEditorPane editor, MouseEvent e) {
 		this.editor = editor;
-		this.model = editor.getModel();
+		model = editor.getModel();
 
-		this.event = e.getID();
+		event = e.getID();
 		if(editor!=null)
-			this.position = editor.getViewport().screenToUser(e.getPoint());
+			position = editor.getViewport().screenToUser(e.getPoint());
 		else
-			this.position = new Point2D.Double(0, 0);
-		this.button = e.getButton();
-		this.clickCount = e.getClickCount();
-		this.modifiers = e.getModifiersEx();
+			position = new Point2D.Double(0, 0);
+		button = e.getButton();
+		clickCount = e.getClickCount();
+		modifiers = e.getModifiersEx();
 	}
 
 	public GraphEditorMouseEvent(GraphEditorPane editor, int event, Point2D position, int button, int clickCount, int modifiers) {
@@ -41,39 +41,39 @@ public class GraphEditorMouseEvent {
 	}
 
 	public GraphEditorPane getEditor() {
-		return this.editor;
+		return editor;
 	}
 
 	public VisualModel getModel() {
-		return this.model;
+		return model;
 	}
 
 	public int getEvent() {
-		return this.event;
+		return event;
 	}
 
 	public Point2D getPosition() {
-		return this.position;
+		return position;
 	}
 
 	public double getX() {
-		return this.position.getX();
+		return position.getX();
 	}
 
 	public double getY() {
-		return this.position.getY();
+		return position.getY();
 	}
 
 	public int getButton() {
-		return this.button;
+		return button;
 	}
 
 	public int getClickCount() {
-		return this.clickCount;
+		return clickCount;
 	}
 
 	public int getModifiers() {
-		return this.modifiers;
+		return modifiers;
 	}
 
 }

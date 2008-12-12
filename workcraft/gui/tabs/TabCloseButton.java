@@ -23,8 +23,8 @@ public class TabCloseButton extends JLabel implements MouseListener {
 		addMouseListener(this);
 		setToolTipText("Close window");
 
-		this.mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
-		this.mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
+		mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
+		mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
 
 		//this.setBorder(mouseOutBorder);
 	}

@@ -41,57 +41,57 @@ public class Ruler implements GridListener {
 	 * </ul>
 	 */
 	public Ruler() {
-		this.shape = new Rectangle();
-		this.horizontalMinorTicks = new int[0];
-		this.horizontalMajorTicks = new int[0];
-		this.verticalMinorTicks = new int[0];
-		this.verticalMajorTicks = new int[0];
+		shape = new Rectangle();
+		horizontalMinorTicks = new int[0];
+		horizontalMajorTicks = new int[0];
+		verticalMinorTicks = new int[0];
+		verticalMajorTicks = new int[0];
 
-		this.font = new Font(Font.SANS_SERIF, 0, 10);
+		font = new Font(Font.SANS_SERIF, 0, 10);
 	}
 
 	public void draw(Graphics2D g) {
-		g.setBackground(this.background);
-		g.clearRect(this.shape.x, this.shape.y, this.shape.width, this.size);
-		g.clearRect(this.shape.x, this.shape.y + this.size, this.size, this.shape.height - this.size);
+		g.setBackground(background);
+		g.clearRect(shape.x, shape.y, shape.width, size);
+		g.clearRect(shape.x, shape.y + size, size, shape.height - size);
 
-		g.setColor(this.foreground);
-		g.drawLine(this.shape.x, this.size, this.shape.width, this.size);
-		g.drawLine(this.size, this.shape.y, this.size, this.shape.height);
+		g.setColor(foreground);
+		g.drawLine(shape.x, size, shape.width, size);
+		g.drawLine(size, shape.y, size, shape.height);
 
 		g.setStroke(new BasicStroke(1f));
 
-		if (this.minorTickSize > 0) {
-			for (int t : this.horizontalMinorTicks)
-				g.drawLine(t + this.shape.x, this.size + this.shape.y, t + this.shape.x, this.size + this.shape.y
-						- this.minorTickSize);
+		if (minorTickSize > 0) {
+			for (int t : horizontalMinorTicks)
+				g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y
+						- minorTickSize);
 
-			for (int t : this.verticalMinorTicks)
-				g.drawLine(this.shape.x + this.size, t + this.shape.y, this.shape.x + this.size
-						- this.minorTickSize, t + this.shape.y);
+			for (int t : verticalMinorTicks)
+				g.drawLine(shape.x + size, t + shape.y, shape.x + size
+						- minorTickSize, t + shape.y);
 		}
 
-		for (int i = 0; i < this.horizontalMajorTicks.length; i++) {
-			int t = this.horizontalMajorTicks[i];
-			g.drawLine(t + this.shape.x, this.size + this.shape.y, t + this.shape.x, this.size + this.shape.y
-					- this.majorTickSize);
-			g.setColor(this.foreground);
-			g.setFont(this.font);
-			g.drawString(this.horizontalMajorCaptions[i], t + this.shape.x + 2, this.size
-					+ this.shape.y - 2);
+		for (int i = 0; i < horizontalMajorTicks.length; i++) {
+			int t = horizontalMajorTicks[i];
+			g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y
+					- majorTickSize);
+			g.setColor(foreground);
+			g.setFont(font);
+			g.drawString(horizontalMajorCaptions[i], t + shape.x + 2, size
+					+ shape.y - 2);
 		}
 
-		for (int i = 0; i < this.verticalMajorTicks.length; i++) {
-			int t = this.verticalMajorTicks[i];
-			g.drawLine(this.shape.x + this.size, t + this.shape.y, this.shape.x + this.size
-					- this.majorTickSize, t + this.shape.y);
-			g.setColor(this.foreground);
-			g.setFont(this.font);
+		for (int i = 0; i < verticalMajorTicks.length; i++) {
+			int t = verticalMajorTicks[i];
+			g.drawLine(shape.x + size, t + shape.y, shape.x + size
+					- majorTickSize, t + shape.y);
+			g.setColor(foreground);
+			g.setFont(font);
 			AffineTransform re = g.getTransform();
 
-			g.translate(this.shape.x + this.size - 2, this.shape.y + t - 2);
+			g.translate(shape.x + size - 2, shape.y + t - 2);
 			g.rotate(-Math.PI / 2);
-			g.drawString(this.verticalMajorCaptions[i], 0, 0);
+			g.drawString(verticalMajorCaptions[i], 0, 0);
 			g.setTransform(re);
 
 		}
@@ -101,66 +101,66 @@ public class Ruler implements GridListener {
 	 * @return The current background color of the ruler area
 	 */
 	public Color getBackground() {
-		return this.background;
+		return background;
 	}
 
 	/**
 	 * @return The font that is currently used to display coordinates
 	 */
 	public Font getFont() {
-		return this.font;
+		return font;
 	}
 
 	/**
 	 * @return The current foreground color of the ruler
 	 */
 	public Color getForeground() {
-		return this.foreground;
+		return foreground;
 	}
 
 	/**
 	 * @return The current major tick size, in pixels
 	 */
 	public int getMajorTickSize() {
-		return this.majorTickSize;
+		return majorTickSize;
 	}
 
 	/**
 	 * @return The current minor tick size, in pixels
 	 */
 	public int getMinorTickSize() {
-		return this.minorTickSize;
+		return minorTickSize;
 	}
 
 	public Rectangle getShape() {
-		return new Rectangle(this.shape);
+		return new Rectangle(shape);
 	}
 
 	/**
 	 * @return The size, in pixels, of the painted ruler area
 	 */
 	public int getSize() {
-		return this.size;
+		return size;
 	}
 
 
 	public void gridChanged(Grid grid) {
 		int[][] minorLinesScreen = grid.getMinorLinePositionsScreen();
-		this.horizontalMinorTicks = minorLinesScreen[0];
-		this.verticalMinorTicks = minorLinesScreen[1];
+		horizontalMinorTicks = minorLinesScreen[0];
+		verticalMinorTicks = minorLinesScreen[1];
 		int[][] majorLinesScreen = grid.getMajorLinePositionsScreen();
-		this.horizontalMajorTicks = majorLinesScreen[0];
-		this.verticalMajorTicks = majorLinesScreen[1];
+		horizontalMajorTicks = majorLinesScreen[0];
+		verticalMajorTicks = majorLinesScreen[1];
 
 		double[][] majorLines = grid.getMajorLinePositions();
-		this.horizontalMajorCaptions = new String[majorLines[0].length];
-		this.verticalMajorCaptions = new String[majorLines[1].length];
+		horizontalMajorCaptions = new String[majorLines[0].length];
+		verticalMajorCaptions = new String[majorLines[1].length];
 
 		for (int i = 0; i < majorLines[0].length; i++)
-			this.horizontalMajorCaptions[i] = String
+			horizontalMajorCaptions[i] = String
 			.format("%.2f", majorLines[0][i]);
 		for (int i = 0; i < majorLines[1].length; i++)
-			this.verticalMajorCaptions[i] = String.format("%.2f", majorLines[1][i]);
+			verticalMajorCaptions[i] = String.format("%.2f", majorLines[1][i]);
 
 	}
 
@@ -212,7 +212,7 @@ public class Ruler implements GridListener {
 	}
 
 	public void setShape(int x, int y, int width, int height) {
-		this.shape.setBounds(x, y, width, height);
+		shape.setBounds(x, y, width, height);
 	}
 
 	public void setShape(Rectangle shape) {

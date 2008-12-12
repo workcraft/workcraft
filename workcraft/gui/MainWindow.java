@@ -42,12 +42,6 @@ import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.edit.graph.GraphEditorPane;
 import org.workcraft.gui.workspace.WorkspaceWindow;
-import org.workcraft.plugins.graph.Graph;
-import org.workcraft.plugins.graph.Vertex;
-import org.workcraft.plugins.graph.VisualGraph;
-import org.workcraft.plugins.graph.VisualVertex;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.VisualPetriNet;
 
 
 public class MainWindow extends JFrame implements DockingConstants{
@@ -55,13 +49,13 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public ActionListener defaultActionListener = new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
-			MainWindow.this.framework.execJavaScript(e.getActionCommand());
+			framework.execJavaScript(e.getActionCommand());
 		}
 	};
 
 	Framework framework;
 	public WorkspaceWindow getWorkspaceView() {
-		return this.workspaceView;
+		return workspaceView;
 	}
 
 	WorkspaceWindow workspaceView;
@@ -87,20 +81,20 @@ public class MainWindow extends JFrame implements DockingConstants{
 	private JMenuBar menuBar;
 
 	protected void createViews() {
-		this.workspaceView  = new WorkspaceWindow(this.framework);
-		this.framework.getWorkspace().addListener(this.workspaceView);
-		this.workspaceView.setVisible(true);
-		this.propertyView = new PropertyView(this.framework);
+		workspaceView  = new WorkspaceWindow(framework);
+		framework.getWorkspace().addListener(workspaceView);
+		workspaceView.setVisible(true);
+		propertyView = new PropertyView(framework);
 
-		this.outputView = new OutputView(this.framework);
-		this.errorView = new ErrorView(this.framework);
-		this.jsView = new JavaScriptView(this.framework);
+		outputView = new OutputView(framework);
+		errorView = new ErrorView(framework);
+		jsView = new JavaScriptView(framework);
 
-		this.toolboxView = new ToolboxView(this.framework);
+		toolboxView = new ToolboxView(framework);
 
-		this.lastEditorDockable = null;
-		this.outputDockable = null;
-		this.editorInFocus = null;
+		lastEditorDockable = null;
+		outputDockable = null;
+		editorInFocus = null;
 	}
 
 	public MainWindow(final Framework framework) {
@@ -126,8 +120,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (laf == null)
 			laf = UIManager.getSystemLookAndFeelClassName();
 
-		this.framework.setConfigVar("gui.lookandfeel", laf);
-		this.framework.restartGUI();
+		framework.setConfigVar("gui.lookandfeel", laf);
+		framework.restartGUI();
 	}
 
 
@@ -183,7 +177,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		DockableView dock = new DockableView(name, view);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
-		this.rootDockingPort.dock(dockable, region);
+		rootDockingPort.dock(dockable, region);
 		DockingManager.setSplitProportion(dockable, split);
 
 		for (Object d: dockable.getDockingPort().getDockables()) {
@@ -251,33 +245,30 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		VisualModel visualModel = we.getModel().getVisualModel();
 
-		if (visualModel == null) {
+		if (visualModel == null)
 			if (JOptionPane.showConfirmDialog(this, "The selected model does not have visual layout information. Do you want to create a default layout?",
-					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION) {
+					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				try {
-					visualModel = (VisualModel)PluginManager.createVisualModel(we.getModel().getMathModel());
+					visualModel = PluginManager.createVisualModel(we.getModel().getMathModel());
 					we.setModel(visualModel);
 
 				} catch (VisualModelConstructionException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-			}
-		}
 
-		GraphEditorPane editor = new GraphEditorPane(this, we);
-		String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
-		Dockable dockable;
+				GraphEditorPane editor = new GraphEditorPane(this, we);
+				String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
+				Dockable dockable;
 
-		if (lastEditorDockable == null) {
-			dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.8f);
-		} else {
-			dockable = addView (editor, dockableTitle, lastEditorDockable);
-		}
+				if (lastEditorDockable == null)
+					dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.8f);
+				else
+					dockable = addView (editor, dockableTitle, lastEditorDockable);
 
-		requestFocus(editor);
+				requestFocus(editor);
 
-		lastEditorDockable = dockable;
+				lastEditorDockable = dockable;
 	}
 
 	public void startup() {
@@ -285,23 +276,23 @@ public class MainWindow extends JFrame implements DockingConstants{
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 		//SwingUtilities.updateComponentTreeUI(MainWindow.this);
 
-		String laf = this.framework.getConfigVar("gui.lookandfeel");
+		String laf = framework.getConfigVar("gui.lookandfeel");
 		if (laf == null)
 			laf = UIManager.getCrossPlatformLookAndFeelClassName();
 		LAF.setLAF(laf);
 
-		this.content = new JPanel(new BorderLayout(0,0));
+		content = new JPanel(new BorderLayout(0,0));
 
-		this.rootDockingPort = new DefaultDockingPort();
+		rootDockingPort = new DefaultDockingPort();
 		// rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 		//this.rootDockingPort.setSingleTabAllowed(true);
-		this.content.add(this.rootDockingPort, BorderLayout.CENTER);
+		content.add(rootDockingPort, BorderLayout.CENTER);
 
-		setContentPane(this.content);
+		setContentPane(content);
 
-		boolean maximised = Boolean.parseBoolean(this.framework.getConfigVar("gui.main.maximised"));
-		String w = this.framework.getConfigVar("gui.main.width");
-		String h = this.framework.getConfigVar("gui.main.height");
+		boolean maximised = Boolean.parseBoolean(framework.getConfigVar("gui.main.maximised"));
+		String w = framework.getConfigVar("gui.main.width");
+		String h = framework.getConfigVar("gui.main.height");
 		int width = (w==null)?800:Integer.parseInt(w);
 		int height = (h==null)?600:Integer.parseInt(h);
 
@@ -310,25 +301,25 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (maximised)
 			setExtendedState(MAXIMIZED_BOTH);
 
-		this.menuBar = new MainMenu(this);
-		setJMenuBar(this.menuBar);
+		menuBar = new MainMenu(this);
+		setJMenuBar(menuBar);
 
 		setTitle("Workcraft " + Framework.FRAMEWORK_VERSION_MAJOR+"."+Framework.FRAMEWORK_VERSION_MINOR);
 
 		createViews();
 
-		this.outputView.captureStream();
-		this.errorView.captureStream();
+		outputView.captureStream();
+		errorView.captureStream();
 
-		this.rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
+		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
-		outputDockable = addView (this.outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
-		addView (this.errorView, "Problems", outputDockable);
-		addView (this.jsView, "JavaScript", outputDockable);
+		outputDockable = addView (outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
+		addView (errorView, "Problems", outputDockable);
+		addView (jsView, "JavaScript", outputDockable);
 
-		Dockable wsvd = addView (this.workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
-		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
-		addView (this.toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
+		Dockable wsvd = addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
+		addView (propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
+		addView (toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
 
 		DockingManager.display(outputDockable);
 		DockingManager.setFloatingEnabled(true);
@@ -337,25 +328,25 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
-		this.workspaceView.startup();
+		workspaceView.startup();
 
 		setVisible(true);
 
 	}
 
 	public ActionListener getDefaultActionListener() {
-		return this.defaultActionListener;
+		return defaultActionListener;
 	}
 
 	public void shutdown() {
-		this.framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
-		this.framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
-		this.framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
+		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
+		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
+		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
 
-		this.outputView.releaseStream();
-		this.errorView.releaseStream();
+		outputView.releaseStream();
+		errorView.releaseStream();
 
-		this.workspaceView.shutdown();
+		workspaceView.shutdown();
 
 		setVisible(false);
 	}
@@ -366,20 +357,20 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				MathModel mathModel = (MathModel)this.framework.getPluginManager().getInstance(info, MathModel.class);
+				MathModel mathModel = (MathModel)framework.getPluginManager().getInstance(info, MathModel.class);
 
 				if (!dialog.getModelTitle().isEmpty())
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
-					VisualModel visualModel = (VisualModel)PluginManager.createVisualModel(mathModel);
-					WorkspaceEntry we = this.framework.getWorkspace().add(visualModel);
+					VisualModel visualModel = PluginManager.createVisualModel(mathModel);
+					WorkspaceEntry we = framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
 						addEditorView (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
-					this.framework.getWorkspace().add(mathModel);
+					framework.getWorkspace().add(mathModel);
 			} catch (PluginInstantiationException e) {
 				System.err.println(e.getMessage());
 			} catch (VisualModelConstructionException e) {
@@ -410,7 +401,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 
 		try {
-			this.framework.save(we.getModel(), we.getFile().getPath());
+			framework.save(we.getModel(), we.getFile().getPath());
 			we.setUnsaved(false);
 		} catch (ModelSaveFailedException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Save error", JOptionPane.ERROR_MESSAGE);
@@ -428,11 +419,11 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 			File f = new File(path);
 			if (f.exists());
-				if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()+"\" already exists. Do you want to overwrite it?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
-					return;
+			if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()+"\" already exists. Do you want to overwrite it?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
+				return;
 			try {
 
-				this.framework.save(we.getModel(), path);
+				framework.save(we.getModel(), path);
 				we.setFile(fc.getSelectedFile());
 				we.setUnsaved(false);
 			} catch (ModelSaveFailedException e) {

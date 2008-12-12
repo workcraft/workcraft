@@ -89,10 +89,10 @@ public class MainMenu extends JMenuBar {
 		JMenu mnLAF = new JMenu();
 		mnLAF.setText("Look and Feel");
 
-		for(int i=0; i<this.lafClasses.length; i++) {
+		for(int i=0; i<lafClasses.length; i++) {
 			JMenuItem miLAFItem = new JMenuItem();
-			miLAFItem.setText(this.lafCaptions[i]);
-			final String lafClass = this.lafClasses[i];
+			miLAFItem.setText(lafCaptions[i]);
+			final String lafClass = lafClasses[i];
 			miLAFItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					frame.setLAF(lafClass);

@@ -32,51 +32,51 @@ public class OutputView extends JPanel {
 		@Override
 		public void write(byte b[]) throws IOException {
 			String s = new String(b);
-			OutputView.this.txtStdOut.append(s);
+			txtStdOut.append(s);
 		}
 
 		@Override
 		public void write(byte b[], int off, int len) throws IOException {
 			String s = new String(b , off , len);
-			OutputView.this.txtStdOut.append(s);
+			txtStdOut.append(s);
 		}
 	}
 
 	public void captureStream() {
-		if (this.streamCaptured)
+		if (streamCaptured)
 			return;
 
 		PrintStream outPrintStream = new PrintStream(
 				new OutputStreamView(
-						new ByteArrayOutputStream(), this.txtStdOut));
+						new ByteArrayOutputStream(), txtStdOut));
 
-		this.systemOut = System.out;
+		systemOut = System.out;
 
 		System.setOut(outPrintStream);
 
-		this.streamCaptured = true;
+		streamCaptured = true;
 	}
 
 	public void releaseStream() {
-		if (!this.streamCaptured)
+		if (!streamCaptured)
 			return;
 
-		System.setOut(this.systemOut);
-		this.systemOut = null;
-		this.streamCaptured = false;
+		System.setOut(systemOut);
+		systemOut = null;
+		streamCaptured = false;
 	}
 
 	public OutputView (Framework framework) {
-		this.txtStdOut = new JTextArea();
-		this.txtStdOut.setLineWrap(true);
-		this.txtStdOut.setEditable(false);
-		this.txtStdOut.setWrapStyleWord(true);
-		this.txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		txtStdOut = new JTextArea();
+		txtStdOut.setLineWrap(true);
+		txtStdOut.setEditable(false);
+		txtStdOut.setWrapStyleWord(true);
+		txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-		this.scrollStdOut = new JScrollPane();
-		this.scrollStdOut.setViewportView(this.txtStdOut);
+		scrollStdOut = new JScrollPane();
+		scrollStdOut.setViewportView(txtStdOut);
 
 		setLayout(new BorderLayout(0,0));
-		this.add(this.scrollStdOut, BorderLayout.CENTER);
+		this.add(scrollStdOut, BorderLayout.CENTER);
 	}
 }

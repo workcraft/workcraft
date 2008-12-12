@@ -3,8 +3,6 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -18,8 +16,8 @@ public class DockableView extends JPanel {
 
 		public DockableViewHeader(String title) {
 			super();
-			this.setLayout(new BorderLayout());
-			this.setBorder(null);
+			setLayout(new BorderLayout());
+			setBorder(null);
 			btnMin = new JButton();
 			btnMin.setPreferredSize(new Dimension(16,16));
 			btnMin.setSize(10,10);
@@ -30,7 +28,7 @@ public class DockableView extends JPanel {
 			this.add(new JLabel(title), BorderLayout.WEST);
 			this.add(btnMin, BorderLayout.EAST);
 			//this.add(btnMax, BorderLayout.EAST);
-		//	this.add(btnDetach, BorderLayout.EAST);
+			//	this.add(btnDetach, BorderLayout.EAST);
 		}
 
 	}
@@ -46,14 +44,14 @@ public class DockableView extends JPanel {
 
 		this.title = title;
 
-		this.header = new DockableViewHeader(title);
+		header = new DockableViewHeader(title);
 
-		this.contentPane = new JPanel();
-		this.contentPane.setLayout(new BorderLayout(0,0));
-		this.contentPane.add(content,BorderLayout.CENTER);
-		this.contentPane.add(header, BorderLayout.NORTH);
+		contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout(0,0));
+		contentPane.add(content,BorderLayout.CENTER);
+		contentPane.add(header, BorderLayout.NORTH);
 
-		add(this.contentPane, BorderLayout.CENTER);
+		add(contentPane, BorderLayout.CENTER);
 	}
 
 	public void setStandalone(boolean standalone) {
@@ -62,11 +60,11 @@ public class DockableView extends JPanel {
 	}
 
 	public String getTitle() {
-		return this.title;
+		return title;
 	}
 
 	public JComponent getContent() {
-		return this.content;
+		return content;
 	}
 	/*
 

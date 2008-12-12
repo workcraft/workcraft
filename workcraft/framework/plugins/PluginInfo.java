@@ -18,25 +18,25 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
 
 	public PluginInfo(Class<?> cls) {
-		this.className = cls.getName();
+		className = cls.getName();
 
 		DisplayName name = cls.getAnnotation(DisplayName.class);
 
 		if(name == null)
-			this.displayName = this.className.substring(this.className.lastIndexOf('.')+1);
+			displayName = className.substring(className.lastIndexOf('.')+1);
 		else
-			this.displayName = name.value();
+			displayName = name.value();
 
 		Class<?>[] interfaces = cls.getInterfaces();
-		this.interfaceNames = new String[interfaces.length];
+		interfaceNames = new String[interfaces.length];
 		int j = 0;
 
 		for (Class<?> i : interfaces)
-			this.interfaceNames[j++] = i.getName();
+			interfaceNames[j++] = i.getName();
 
 		LinkedList<String> list = new LinkedList<String>();
 		addSuperclass(cls, list);
-		this.superclassNames = list.toArray(new String[0]);
+		superclassNames = list.toArray(new String[0]);
 	}
 
 	protected void addSuperclass(Class<?> cls, LinkedList<String> list) {
@@ -48,38 +48,38 @@ public class PluginInfo implements Comparable<PluginInfo> {
 	}
 
 	public PluginInfo(Element element) throws DocumentFormatException {
-		this.className = XmlUtil.readStringAttr(element, "class");
-		if(this.className==null || this.className.isEmpty())
+		className = XmlUtil.readStringAttr(element, "class");
+		if(className==null || className.isEmpty())
 			throw new DocumentFormatException();
 
-		this.displayName = XmlUtil.readStringAttr(element, "displayName");
-		if (this.displayName.isEmpty())
-			this.displayName = this.className.substring(this.className.lastIndexOf('.')+1);
+		displayName = XmlUtil.readStringAttr(element, "displayName");
+		if (displayName.isEmpty())
+			displayName = className.substring(className.lastIndexOf('.')+1);
 
 		NodeList nl = element.getElementsByTagName("interface");
-		this.interfaceNames = new String[nl.getLength()];
+		interfaceNames = new String[nl.getLength()];
 
 		for (int i=0; i<nl.getLength(); i++)
-			this.interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
+			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
 
 		nl = element.getElementsByTagName("superclass");
-		this.superclassNames = new String[nl.getLength()];
+		superclassNames = new String[nl.getLength()];
 
 		for (int i=0; i<nl.getLength(); i++)
-			this.superclassNames[i] = ((Element)nl.item(i)).getAttribute("name");
+			superclassNames[i] = ((Element)nl.item(i)).getAttribute("name");
 	}
 
 	public void toXml(Element element) {
-		XmlUtil.writeStringAttr(element, "class", this.className);
-		XmlUtil.writeStringAttr(element, "displayName", this.displayName);
+		XmlUtil.writeStringAttr(element, "class", className);
+		XmlUtil.writeStringAttr(element, "displayName", displayName);
 
-		for (String i : this.interfaceNames) {
+		for (String i : interfaceNames) {
 			Element e = element.getOwnerDocument().createElement("interface");
 			e.setAttribute("name", i);
 			element.appendChild(e);
 		}
 
-		for (String i : this.superclassNames) {
+		for (String i : superclassNames) {
 			Element e = element.getOwnerDocument().createElement("superclass");
 			e.setAttribute("name", i);
 			element.appendChild(e);
@@ -87,28 +87,28 @@ public class PluginInfo implements Comparable<PluginInfo> {
 	}
 
 	public Class<?> loadClass() throws ClassNotFoundException {
-		return Class.forName(this.className);
+		return Class.forName(className);
 	}
 
 	public String[] getInterfaces() {
-		return this.interfaceNames.clone();
+		return interfaceNames.clone();
 	}
 
 	public String[] getSuperclasses() {
-		return this.superclassNames.clone();
+		return superclassNames.clone();
 	}
 
 	public String getDisplayName() {
-		return this.displayName;
+		return displayName;
 	}
 
 	public String getClassName() {
-		return this.className;
+		return className;
 	}
 
 	@Override
 	public String toString() {
-		return this.displayName;
+		return displayName;
 	}
 
 

@@ -53,16 +53,16 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		this.parent = parent;
 
 		this.workspaceEntry = workspaceEntry;
-		this.visualModel = workspaceEntry.getModel().getVisualModel();
+		visualModel = workspaceEntry.getModel().getVisualModel();
 
 		visualModel.addListener(this);
 
-		this.view = new Viewport(0, 0, getWidth(), getHeight());
-		this.grid = new Grid();
+		view = new Viewport(0, 0, getWidth(), getHeight());
+		grid = new Grid();
 
-		this.ruler = new Ruler();
-		this.view.addListener(this.grid);
-		this.grid.addListener(this.ruler);
+		ruler = new Ruler();
+		view.addListener(grid);
+		grid.addListener(ruler);
 		addComponentListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -72,24 +72,24 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
-		g2d.setBackground(this.background);
+		g2d.setBackground(background);
 
 		g2d.clearRect(0, 0, getWidth(), getHeight());
 
-		this.grid.draw(g2d);
+		grid.draw(g2d);
 
 		AffineTransform rest = g2d.getTransform();
 
-		g2d.transform(this.view.getTransform());
+		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		this.visualModel.draw(g2d);
+		visualModel.draw(g2d);
 
 		if (hasFocus)
 			parent.getToolboxView().getSelectedTool().drawInUserSpace(this, g2d);
 		g2d.setTransform(rest);
 
-		this.ruler.draw(g2d);
+		ruler.draw(g2d);
 
 		if (hasFocus)
 			parent.getToolboxView().getSelectedTool().drawInScreenSpace(this, g2d);
@@ -97,7 +97,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 		if (hasFocus) {
 			g2d.setStroke(borderStroke);
 			g2d.setColor(focusBorderColor);
-			g2d.drawRect(0, 0, this.getWidth()-1, this.getHeight()-1);
+			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
 	}
 
@@ -113,8 +113,8 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 
 	public void componentResized(ComponentEvent e) {
-		this.view.setShape(15, 15, getWidth()-15, getHeight()-15);
-		this.ruler.setShape(0, 0, getWidth(), getHeight());
+		view.setShape(15, 15, getWidth()-15, getHeight()-15);
+		ruler.setShape(0, 0, getWidth(), getHeight());
 		repaint();
 	}
 
@@ -132,12 +132,12 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 	public void mouseMoved(MouseEvent e) {
 		Point currentMouseCoords = e.getPoint();
-		if (this.panDrag) {
-			this.view.pan(currentMouseCoords.x - this.lastMouseCoords.x, currentMouseCoords.y - this.lastMouseCoords.y);
+		if (panDrag) {
+			view.pan(currentMouseCoords.x - lastMouseCoords.x, currentMouseCoords.y - lastMouseCoords.y);
 			repaint();
 		} else
 			parent.getToolboxView().getSelectedTool().mouseMoved(new GraphEditorMouseEvent(this, e));
-		this.lastMouseCoords = currentMouseCoords;
+		lastMouseCoords = currentMouseCoords;
 	}
 
 
@@ -168,19 +168,18 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 
 	public void mousePressed(MouseEvent e) {
-		if (hasFocus) {
+		if (hasFocus)
 			if (e.getButton() == MouseEvent.BUTTON2)
-				this.panDrag = true;
+				panDrag = true;
 			else
 				parent.getToolboxView().getSelectedTool().mousePressed(new GraphEditorMouseEvent(this, e));
-		}
 	}
 
 
 
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2)
-			this.panDrag = false;
+			panDrag = false;
 		else
 			parent.getToolboxView().getSelectedTool().mouseReleased(new GraphEditorMouseEvent(this, e));
 	}
@@ -188,29 +187,29 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		this.view.zoom(-e.getWheelRotation(), e.getPoint());
+		view.zoom(-e.getWheelRotation(), e.getPoint());
 		repaint();
 	}
 
 	public VisualModel getModel() {
-		return this.visualModel;
+		return visualModel;
 	}
 
 	public Viewport getViewport() {
-		return this.view;
+		return view;
 	}
 
 	public void snap(Point2D point) {
-		point.setLocation(this.grid.snapCoordinate(point.getX()), this.grid.snapCoordinate(point.getY()));
+		point.setLocation(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
 	}
 
 	public void grantFocus() {
-		this.hasFocus = true;
+		hasFocus = true;
 		this.repaint();
 	}
 
 	public void removeFocus() {
-		this.hasFocus = false;
+		hasFocus = false;
 		this.repaint();
 	}
 

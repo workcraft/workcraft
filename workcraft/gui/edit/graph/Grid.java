@@ -42,7 +42,7 @@ public class Grid implements ViewportListener {
 
 	protected double majorInterval = 10.0;
 	public double getMajorInterval() {
-		return this.majorInterval;
+		return majorInterval;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Grid implements ViewportListener {
 	 * Dynamic interval scaling factor
 	 */
 	public double getIntervalScaleFactor() {
-		return this.intervalScaleFactor;
+		return intervalScaleFactor;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Grid implements ViewportListener {
 	 * The interval magnification threshold
 	 */
 	public double getMagThreshold() {
-		return this.magThreshold;
+		return magThreshold;
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class Grid implements ViewportListener {
 	 * The interval minimisation threshold.
 	 */
 	public double getMinThreshold() {
-		return this.minThreshold;
+		return minThreshold;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class Grid implements ViewportListener {
 	 * The major grid lines drawing color.
 	 */
 	public Color getMajorLinesColor() {
-		return this.majorLinesColor;
+		return majorLinesColor;
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class Grid implements ViewportListener {
 	 * The minor grid lines drawing color.
 	 */
 	public Color getMinorLinesColor() {
-		return this.minorLinesColor;
+		return minorLinesColor;
 	}
 
 	/**
@@ -157,18 +157,18 @@ public class Grid implements ViewportListener {
 	 * </ul>
 	 **/
 	public Grid() {
-		this.minorLinesPath = new Path2D.Double();
-		this.majorLinesPath = new Path2D.Double();
+		minorLinesPath = new Path2D.Double();
+		majorLinesPath = new Path2D.Double();
 
-		this.minorLinePositions = new double[2][];
-		this.majorLinePositions = new double[2][];
+		minorLinePositions = new double[2][];
+		majorLinePositions = new double[2][];
 
-		this.minorLinePositionsScreen = new int[2][];
-		this.majorLinePositionsScreen = new int[2][];
+		minorLinePositionsScreen = new int[2][];
+		majorLinePositionsScreen = new int[2][];
 
-		this.listeners = new LinkedList<GridListener>();
+		listeners = new LinkedList<GridListener>();
 
-		this.stroke = new BasicStroke();
+		stroke = new BasicStroke();
 	}
 
 	/**
@@ -193,21 +193,21 @@ public class Grid implements ViewportListener {
 		// Dynamic line interval scaling
 
 		double visibleHeight = visibleUL.getY() - visibleLR.getY();
-		while (visibleHeight / this.majorInterval > this.magThreshold)
-			this.majorInterval *= this.intervalScaleFactor;
-		while (visibleHeight / this.majorInterval < this.minThreshold)
-			this.majorInterval /= this.intervalScaleFactor;
+		while (visibleHeight / majorInterval > magThreshold)
+			majorInterval *= intervalScaleFactor;
+		while (visibleHeight / majorInterval < minThreshold)
+			majorInterval /= intervalScaleFactor;
 
 
 		// Compute the leftmost, rightmost, topmost and bottom visible grid lines
 
-		int majorBottom  = (int)Math.ceil(visibleLR.getY()/this.majorInterval);
-		int majorTop = (int)Math.floor(visibleUL.getY()/this.majorInterval);
+		int majorBottom  = (int)Math.ceil(visibleLR.getY()/majorInterval);
+		int majorTop = (int)Math.floor(visibleUL.getY()/majorInterval);
 
-		int majorLeft = (int)Math.ceil(visibleUL.getX()/this.majorInterval);
-		int majorRight = (int)Math.floor(visibleLR.getX()/this.majorInterval);
+		int majorLeft = (int)Math.ceil(visibleUL.getX()/majorInterval);
+		int majorRight = (int)Math.floor(visibleLR.getX()/majorInterval);
 
-		double minorInterval = this.majorInterval * this.minorIntervalFactor;
+		double minorInterval = majorInterval * minorIntervalFactor;
 
 		int minorLeft = (int)Math.ceil(visibleUL.getX()/minorInterval);
 		int minorRight = (int)Math.floor(visibleLR.getX()/minorInterval);
@@ -220,69 +220,69 @@ public class Grid implements ViewportListener {
 		// Build the gridlines positions, store them as user-space coordinates, screen-space coordinates,
 		// and as a drawable path (in screen-space)
 
-		this.minorLinesPath = new Path2D.Double();
-		this.majorLinesPath = new Path2D.Double();
+		minorLinesPath = new Path2D.Double();
+		majorLinesPath = new Path2D.Double();
 
-		this.minorLinePositions[0] = new double[minorRight-minorLeft+1];
-		this.minorLinePositionsScreen[0] = new int[minorRight-minorLeft+1];
+		minorLinePositions[0] = new double[minorRight-minorLeft+1];
+		minorLinePositionsScreen[0] = new int[minorRight-minorLeft+1];
 
 		Point2D p1 = new Point2D.Double(), p2 = new Point();
 
 		for (int x=minorLeft; x<=minorRight; x++) {
-			this.minorLinePositions[0][x-minorLeft] = x*minorInterval;
+			minorLinePositions[0][x-minorLeft] = x*minorInterval;
 			p1.setLocation(x*minorInterval, 0);
 			viewport.getTransform().transform(p1, p2);
-			this.minorLinePositionsScreen[0][x-minorLeft] = (int)p2.getX();
+			minorLinePositionsScreen[0][x-minorLeft] = (int)p2.getX();
 
-			this.minorLinesPath.moveTo(p2.getX(), viewLL.getY());
-			this.minorLinesPath.lineTo(p2.getX(), viewUR.getY());
+			minorLinesPath.moveTo(p2.getX(), viewLL.getY());
+			minorLinesPath.lineTo(p2.getX(), viewUR.getY());
 		}
 
-		this.minorLinePositions[1] = new double[minorTop-minorBottom+1];
-		this.minorLinePositionsScreen[1] = new int[minorTop-minorBottom+1];
+		minorLinePositions[1] = new double[minorTop-minorBottom+1];
+		minorLinePositionsScreen[1] = new int[minorTop-minorBottom+1];
 
 
 		for (int y=minorBottom; y<=minorTop; y++) {
-			this.minorLinePositions[1][y-minorBottom] = y*minorInterval;
+			minorLinePositions[1][y-minorBottom] = y*minorInterval;
 			p1.setLocation(0, y*minorInterval);
 			viewport.getTransform().transform(p1, p2);
-			this.minorLinePositionsScreen[1][y-minorBottom] = (int)p2.getY();
+			minorLinePositionsScreen[1][y-minorBottom] = (int)p2.getY();
 
-			this.minorLinesPath.moveTo(viewLL.getX(), p2.getY());
-			this.minorLinesPath.lineTo(viewUR.getX(), p2.getY());
+			minorLinesPath.moveTo(viewLL.getX(), p2.getY());
+			minorLinesPath.lineTo(viewUR.getX(), p2.getY());
 		}
 
-		this.majorLinePositions[0] = new double[majorRight-majorLeft+1];
-		this.majorLinePositionsScreen[0] = new int[majorRight-majorLeft+1];
+		majorLinePositions[0] = new double[majorRight-majorLeft+1];
+		majorLinePositionsScreen[0] = new int[majorRight-majorLeft+1];
 
 		for (int x=majorLeft; x<=majorRight; x++) {
-			this.majorLinePositions[0][x-majorLeft] = x*this.majorInterval;
-			p1.setLocation(x*this.majorInterval, 0);
+			majorLinePositions[0][x-majorLeft] = x*majorInterval;
+			p1.setLocation(x*majorInterval, 0);
 			viewport.getTransform().transform(p1, p2);
 
 
-			this.majorLinePositionsScreen[0][x-majorLeft] = (int)p2.getX();
+			majorLinePositionsScreen[0][x-majorLeft] = (int)p2.getX();
 
 
-			this.majorLinesPath.moveTo((int)p2.getX(), viewLL.getY());
-			this.majorLinesPath.lineTo((int)p2.getX(), viewUR.getY());
+			majorLinesPath.moveTo((int)p2.getX(), viewLL.getY());
+			majorLinesPath.lineTo((int)p2.getX(), viewUR.getY());
 		}
 
-		this.majorLinePositions[1] = new double[majorTop-majorBottom+1];
-		this.majorLinePositionsScreen[1] = new int[majorTop-majorBottom+1];
+		majorLinePositions[1] = new double[majorTop-majorBottom+1];
+		majorLinePositionsScreen[1] = new int[majorTop-majorBottom+1];
 
 		for (int y=majorBottom; y<=majorTop; y++) {
-			this.majorLinePositions[1][y-majorBottom] = y*this.majorInterval;
-			p1.setLocation(0, y*this.majorInterval);
+			majorLinePositions[1][y-majorBottom] = y*majorInterval;
+			p1.setLocation(0, y*majorInterval);
 			viewport.getTransform().transform(p1, p2);
-			this.majorLinePositionsScreen[1][y-majorBottom] = (int)p2.getY();
+			majorLinePositionsScreen[1][y-majorBottom] = (int)p2.getY();
 
-			this.majorLinesPath.moveTo(viewLL.getX(), p2.getY());
-			this.majorLinesPath.lineTo(viewUR.getX(), p2.getY());
+			majorLinesPath.moveTo(viewLL.getX(), p2.getY());
+			majorLinesPath.lineTo(viewUR.getX(), p2.getY());
 		}
 
 
-		for (GridListener l : this.listeners)
+		for (GridListener l : listeners)
 			l.gridChanged(this);
 	}
 
@@ -293,11 +293,11 @@ public class Grid implements ViewportListener {
 	 * Graphics2D object for the component the viewport is drawn onto.
 	 */
 	public void draw (Graphics2D g) {
-		g.setStroke(this.stroke);
-		g.setColor(this.minorLinesColor);
-		g.draw(this.minorLinesPath);
-		g.setColor(this.majorLinesColor);
-		g.draw(this.majorLinesPath);
+		g.setStroke(stroke);
+		g.setColor(minorLinesColor);
+		g.draw(minorLinesPath);
+		g.setColor(majorLinesColor);
+		g.draw(majorLinesPath);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class Grid implements ViewportListener {
 	 *
 	 */
 	public double[][] getMinorLinePositions() {
-		return this.minorLinePositions;
+		return minorLinePositions;
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class Grid implements ViewportListener {
 	 *
 	 */
 	public double[][] getMajorLinePositions() {
-		return this.majorLinePositions;
+		return majorLinePositions;
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class Grid implements ViewportListener {
 	 *
 	 */
 	public int[][] getMinorLinePositionsScreen() {
-		return this.minorLinePositionsScreen;
+		return minorLinePositionsScreen;
 	}
 
 
@@ -349,7 +349,7 @@ public class Grid implements ViewportListener {
 	 *
 	 */
 	public int[][] getMajorLinePositionsScreen() {
-		return this.majorLinePositionsScreen;
+		return majorLinePositionsScreen;
 	}
 
 
@@ -368,7 +368,7 @@ public class Grid implements ViewportListener {
 	 * The new listener.
 	 */
 	public void addListener (GridListener listener) {
-		this.listeners.add(listener);
+		listeners.add(listener);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class Grid implements ViewportListener {
 	 * The listener to remove.
 	 */
 	public void removeListener (GridListener listener) {
-		this.listeners.remove(listener);
+		listeners.remove(listener);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class Grid implements ViewportListener {
 	 * @return snapped coordinate value
 	 */
 	public double snapCoordinate(double x) {
-		double m = this.majorInterval*this.minorIntervalFactor;
+		double m = majorInterval*minorIntervalFactor;
 		return Math.floor(x/m+0.5)*m;
 	}
 }

@@ -43,7 +43,7 @@ public class DocumentTab extends JPanel {
 		close.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1)
-					for (TabClosingListener l : DocumentTab.this.closingListeners)
+					for (TabClosingListener l : closingListeners)
 						l.tabClosing(DocumentTab.this);
 			}
 
@@ -74,22 +74,22 @@ public class DocumentTab extends JPanel {
 
 
 	public Object getDocumentFrame() {
-		return this.documentFrame;
+		return documentFrame;
 	}
 
 	public void addTabClosingListener(TabClosingListener listener) {
-		this.closingListeners.add(listener);
+		closingListeners.add(listener);
 	}
 
 	public void removeTabClosingListener(TabClosingListener listener) {
-		this.closingListeners.remove(listener);
+		closingListeners.remove(listener);
 	}
 
 	public void clearTabClosingListeners() {
-		this.closingListeners.clear();
+		closingListeners.clear();
 	}
 
 	public int getTabIndex() {
-		return this.tabIndex;
+		return tabIndex;
 	}
 }

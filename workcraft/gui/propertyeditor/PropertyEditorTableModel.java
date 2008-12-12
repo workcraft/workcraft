@@ -23,7 +23,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
 	public void setObject(PropertyEditable object) {
 		this.object = object;
-		this.declarations =  object.getPropertyDeclarations().toArray(new PropertyDeclaration[0]);
+		declarations =  object.getPropertyDeclarations().toArray(new PropertyDeclaration[0]);
 
 
 		/*
@@ -84,30 +84,30 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public void clearObject() {
-		this.object = null;
-		this.declarations = null;
+		object = null;
+		declarations = null;
 		fireTableDataChanged();
 	}
 
 	public int getColumnCount() {
-		if (this.object == null)
+		if (object == null)
 			return 0;
 		else
 			return 2;
 	}
 
 	public int getRowCount() {
-		if (this.object == null)
+		if (object == null)
 			return 0;
 		else
-			return this.declarations.length;
+			return declarations.length;
 	}
 
 	public Class<?> getRowClass(int row) {
-		if (this.object == null)
+		if (object == null)
 			return null;
 		else
-			return this.declarations[row].cls;
+			return declarations[row].cls;
 	}
 
 
@@ -116,16 +116,16 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 		if (col < 1)
 			return false;
 		else
-			return (this.declarations[row].setter != null);
+			return (declarations[row].setter != null);
 	}
 
 	public Object getValueAt(int row, int col) {
 		if (col==0)
-			return this.declarations[row].name;
+			return declarations[row].name;
 		else
 			try {
-				Method m = this.object.getClass().getMethod(this.declarations[row].getter,  (Class[])null );
-				Object o = m.invoke(this.object, (Object[])null);
+				Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null );
+				Object o = m.invoke(object, (Object[])null);
 				return o;
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();

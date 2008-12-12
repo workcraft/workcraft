@@ -27,9 +27,9 @@ public class VisualComponentGroup extends VisualNode {
 
 	public VisualComponentGroup (VisualComponentGroup parent) {
 		super(parent);
-		this.childGroups = new HashSet<VisualComponentGroup>();
-		this.components = new HashSet<VisualComponent>();
-		this.connections = new HashSet<VisualConnection>();
+		childGroups = new HashSet<VisualComponentGroup>();
+		components = new HashSet<VisualComponent>();
+		connections = new HashSet<VisualConnection>();
 	}
 
 	public VisualComponentGroup (Element element, MathModel refModel, VisualComponentGroup parent) throws VisualModelConstructionException {
@@ -80,12 +80,12 @@ public class VisualComponentGroup extends VisualNode {
 		AffineTransform rest1 = g.getTransform();
 
 		// Apply group transform
-		g.transform(this.transform);
+		g.transform(transform);
 
-		for (VisualConnection connection : this.connections)
+		for (VisualConnection connection : connections)
 			connection.draw(g);
 
-		for (VisualComponentGroup group : this.childGroups) {
+		for (VisualComponentGroup group : childGroups) {
 			AffineTransform rest2 = g.getTransform();
 			g.transform(group.transform);
 			group.draw(g);
@@ -93,7 +93,7 @@ public class VisualComponentGroup extends VisualNode {
 			g.setTransform(rest2);
 		}
 
-		for (VisualComponent component : this.components) {
+		for (VisualComponent component : components) {
 			AffineTransform rest2 = g.getTransform();
 			g.transform(component.transform);
 			component.draw(g);
@@ -106,49 +106,49 @@ public class VisualComponentGroup extends VisualNode {
 	}
 
 	public void add (VisualComponentGroup group) {
-		this.childGroups.add(group);
+		childGroups.add(group);
 		group.parent = this;
 	}
 
 	public void add (VisualComponent component) {
-		this.components.add(component);
+		components.add(component);
 	}
 
 	public void add (VisualConnection connection) {
-		this.connections.add(connection);
+		connections.add(connection);
 	}
 
 	public void remove (VisualComponentGroup group) {
-		this.childGroups.remove(group);
+		childGroups.remove(group);
 	}
 
 	public void remove (VisualComponent component) {
-		this.components.remove(component);
+		components.remove(component);
 	}
 
 	public void remove (VisualConnection connection) {
-		this.connections.remove(this.connections);
+		connections.remove(connections);
 	}
 
 	@Override
 	public void toXML(Element groupElement) {
 		super.toXML(groupElement);
 
-		for (VisualComponent vcomp : this.components) {
+		for (VisualComponent vcomp : components) {
 			Element vcompElement = groupElement.getOwnerDocument().createElement("component");
 			XmlUtil.writeIntAttr(vcompElement, "ref", vcomp.getReferencedComponent().getID());
 			vcomp.toXML(vcompElement);
 			groupElement.appendChild(vcompElement);
 		}
 
-		for (VisualConnection vcon : this.connections) {
+		for (VisualConnection vcon : connections) {
 			Element vconElement = groupElement.getOwnerDocument().createElement("connection");
 			XmlUtil.writeIntAttr(vconElement, "ref", vcon.getReferencedConnection().getID());
 			vcon.toXML(vconElement);
 			groupElement.appendChild(vconElement);
 		}
 
-		for (VisualComponentGroup group : this.childGroups) {
+		for (VisualComponentGroup group : childGroups) {
 			Element childGroupElement = groupElement.getOwnerDocument().createElement("group");
 			group.toXML(childGroupElement);
 			groupElement.appendChild(childGroupElement);
@@ -157,13 +157,13 @@ public class VisualComponentGroup extends VisualNode {
 
 	public LinkedList<Selectable> hitObjects(Rectangle2D rectInLocalSpace) {
 		LinkedList<Selectable> hit = new LinkedList<Selectable>();
-		for(VisualComponent comp : this.components)
+		for(VisualComponent comp : components)
 			if(rectInLocalSpace.contains(comp.getBoundingBoxInParentSpace()))
 				hit.add(comp);
 		/*for(VisualConnection conn : this.connections)
 			if(rectInLocalSpace.intersects(conn.getBoundingBoxInParentSpace()))
 				hit.add(conn);*/
-		for(VisualComponentGroup grp : this.childGroups)
+		for(VisualComponentGroup grp : childGroups)
 			if(rectInLocalSpace.contains(grp.getBoundingBoxInParentSpace()))
 				hit.add(grp);
 		return hit;
@@ -174,7 +174,7 @@ public class VisualComponentGroup extends VisualNode {
 	}
 
 	public Selectable hitObject(Point2D pointInLocalSpace) {
-		for (VisualComponent comp : this.components)
+		for (VisualComponent comp : components)
 			if (comp.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
 				if (comp.hitTestInParentSpace(pointInLocalSpace))
 					return comp;
@@ -182,7 +182,7 @@ public class VisualComponentGroup extends VisualNode {
 			if (conn.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
 				if (conn.hitTestInParentSpace(pointInLocalSpace))
 					return conn;*/
-		for(VisualComponentGroup grp : this.childGroups)
+		for(VisualComponentGroup grp : childGroups)
 			if(grp.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
 				if (grp.hitTestInParentSpace(pointInLocalSpace))
 					return grp;
@@ -191,14 +191,14 @@ public class VisualComponentGroup extends VisualNode {
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D.Double rect = null;
-		for(VisualComponent comp : this.components)
+		for(VisualComponent comp : components)
 			if(rect==null) {
 				rect = new Rectangle2D.Double();
 				rect.setRect(comp.getBoundingBoxInParentSpace());
 			}
 			else
 				rect.add(comp.getBoundingBoxInParentSpace());
-		for(VisualComponentGroup grp : this.childGroups)
+		for(VisualComponentGroup grp : childGroups)
 			if(rect==null) {
 				rect = new Rectangle2D.Double();
 				rect.setRect(grp.getBoundingBoxInParentSpace());

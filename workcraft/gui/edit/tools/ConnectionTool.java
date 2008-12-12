@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.Selectable;
@@ -121,8 +122,7 @@ public class ConnectionTool implements GraphEditorTool {
 				}
 				break;
 			case FIRST_SELECTED:
-				if (vc!=null & vc!=first) {
-
+				if (vc!=null & vc!=first)
 					try {
 						e.getModel().connect(first, vc);
 
@@ -138,11 +138,9 @@ public class ConnectionTool implements GraphEditorTool {
 						first = null;
 						state = ConnectionState.NOTHING_SELECTED;
 					}
-
-				}
-				break;
+					break;
 			}
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
+		} else if (e.getButton() == MouseEvent.BUTTON3)
 			switch (state) {
 			case FIRST_SELECTED:
 				state = ConnectionState.NOTHING_SELECTED;
@@ -150,7 +148,6 @@ public class ConnectionTool implements GraphEditorTool {
 				highlight = null;
 				break;
 			}
-		}
 
 
 		e.getEditor().repaint();

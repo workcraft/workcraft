@@ -12,7 +12,7 @@ public abstract class Component {
 	protected String label = "";
 
 	public String getLabel() {
-		return this.label;
+		return label;
 	}
 
 	public void setLabel(String label) {
@@ -28,47 +28,47 @@ public abstract class Component {
 	}
 
 	public Component (Element xmlElement) {
-		this.ID = XmlUtil.readIntAttr(xmlElement, "ID", this.ID);
-		this.label = XmlUtil.readStringAttr(xmlElement, "label");
+		ID = XmlUtil.readIntAttr(xmlElement, "ID", ID);
+		label = XmlUtil.readStringAttr(xmlElement, "label");
 	}
 
 	public void setID(Integer id) {
-		this.ID = id;
+		ID = id;
 	}
 
 	public Integer getID() {
-		return this.ID;
+		return ID;
 	}
 
 	public void addToPreset (Component component) {
-		this.preset.add(component);
+		preset.add(component);
 	}
 
 	public void removeFromPreset(Component component) {
-		this.preset.remove(component);
+		preset.remove(component);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Set<Component> getPreset() {
-		return (Set<Component>)this.preset.clone();
+		return (Set<Component>)preset.clone();
 	}
 
 	public void addToPostset (Component component) {
-		this.preset.add(component);
+		preset.add(component);
 	}
 
 	public void removeFromPostset(Component component) {
-		this.preset.remove(component);
+		preset.remove(component);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Set<Component> getPostset() {
-		return (Set<Component>)this.postset.clone();
+		return (Set<Component>)postset.clone();
 	}
 
 	public void toXML (Element componentElement) {
-		XmlUtil.writeIntAttr(componentElement, "ID", this.ID);
-		XmlUtil.writeStringAttr(componentElement, "label", this.label);
+		XmlUtil.writeIntAttr(componentElement, "ID", ID);
+		XmlUtil.writeStringAttr(componentElement, "label", label);
 		XmlUtil.writeStringAttr(componentElement, "class", this.getClass().getName());
 	}
 }

@@ -35,7 +35,7 @@ public class VisualConnection implements Selectable {
 	}
 
 	public Connection getReferencedConnection() {
-		return this.refConnection;
+		return refConnection;
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {

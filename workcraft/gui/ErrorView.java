@@ -39,22 +39,19 @@ public class ErrorView extends JPanel implements ComponentListener {
 		}
 
 		public void puts(String s) {
-			this.target.append(s);
+			target.append(s);
 
-			Container parent = 	ErrorView.this.getParent().getParent().getParent();
+			Container parent = 	getParent().getParent().getParent();
 			if (parent instanceof JTabbedPane) {
 				JTabbedPane tab = (JTabbedPane) parent;
-				for (int i=0; i<tab.getComponentCount(); i++) {
-					if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+				for (int i=0; i<tab.getComponentCount(); i++)
+					if (tab.getComponentAt(i) == getParent().getParent())
 						if (tab.getForegroundAt(i) != Color.RED) {
 							colorBack = tab.getForegroundAt(i);
 							tab.setForegroundAt(i, Color.RED);
 							tab.removeChangeListener(this);
 							tab.addChangeListener(this);
 						}
-					}
-				}
-				//tab.getTabComponentAt(index)setForeground(Color.RED);
 			}
 		}
 
@@ -74,61 +71,58 @@ public class ErrorView extends JPanel implements ComponentListener {
 			if (colorBack == null)
 				return;
 
-			Container parent = 	ErrorView.this.getParent().getParent().getParent();
+			Container parent = 	getParent().getParent().getParent();
 			if (parent instanceof JTabbedPane) {
 				JTabbedPane tab = (JTabbedPane) parent;
-				for (int i=0; i<tab.getComponentCount(); i++) {
-					if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+				for (int i=0; i<tab.getComponentCount(); i++)
+					if (tab.getComponentAt(i) == getParent().getParent())
 						if (tab.getSelectedComponent() == tab.getComponentAt(i)) {
 							tab.setForegroundAt(i, colorBack);
 							colorBack = null;
 						}
-					}
-				}
-				//tab.getTabComponentAt(index)setForeground(Color.RED);
 			}
 		}
 	}
 
 	public void captureStream() {
-		if (this.streamCaptured)
+		if (streamCaptured)
 			return;
 
 		PrintStream errPrintStream = new PrintStream(
 				new ErrorStreamView(
-						new ByteArrayOutputStream(), this.txtStdErr));
+						new ByteArrayOutputStream(), txtStdErr));
 
-		this.systemErr = System.err;
+		systemErr = System.err;
 
 		System.setErr(errPrintStream);
 
-		this.streamCaptured = true;
+		streamCaptured = true;
 	}
 
 	public void releaseStream() {
-		if (!this.streamCaptured)
+		if (!streamCaptured)
 			return;
 
-		System.setErr(this.systemErr);
-		this.systemErr = null;
-		this.streamCaptured = false;
+		System.setErr(systemErr);
+		systemErr = null;
+		streamCaptured = false;
 	}
 
 	public ErrorView (Framework framework) {
-		this.txtStdErr = new JTextArea();
-		this.txtStdErr.setLineWrap(true);
-		this.txtStdErr.setEditable(false);
-		this.txtStdErr.setWrapStyleWord(true);
-		this.txtStdErr.setForeground(Color.RED);
-		this.txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		txtStdErr = new JTextArea();
+		txtStdErr.setLineWrap(true);
+		txtStdErr.setEditable(false);
+		txtStdErr.setWrapStyleWord(true);
+		txtStdErr.setForeground(Color.RED);
+		txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-		this.scrollStdErr = new JScrollPane();
-		this.scrollStdErr.setViewportView(this.txtStdErr);
+		scrollStdErr = new JScrollPane();
+		scrollStdErr.setViewportView(txtStdErr);
 
 		setLayout(new BorderLayout(0,0));
-		this.add(this.scrollStdErr, BorderLayout.CENTER);
+		this.add(scrollStdErr, BorderLayout.CENTER);
 
-		this.addComponentListener(this);
+		addComponentListener(this);
 	}
 
 	public void componentHidden(ComponentEvent e) {
@@ -144,16 +138,14 @@ public class ErrorView extends JPanel implements ComponentListener {
 		if (colorBack==null)
 			return;
 
-		Container parent = 	this.getParent().getParent().getParent();
+		Container parent = 	getParent().getParent().getParent();
 		if (parent instanceof JTabbedPane) {
 			JTabbedPane tab = (JTabbedPane) parent;
-			for (int i=0; i<tab.getComponentCount(); i++) {
+			for (int i=0; i<tab.getComponentCount(); i++)
 				if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
 					tab.setForegroundAt(i, colorBack);
 					colorBack = null;
 				}
-			}
-			//tab.getTabComponentAt(index)setForeground(Color.RED);
 		}
 	}
 }

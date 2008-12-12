@@ -85,14 +85,14 @@ public class Viewport {
 	 * transforms, and notifies the change listeners.
 	 */
 	protected void viewChanged() {
-		this.viewTransform.setToIdentity();
-		this.viewTransform.scale(this.scale, this.scale);
-		this.viewTransform.translate(this.tx, this.ty);
+		viewTransform.setToIdentity();
+		viewTransform.scale(scale, scale);
+		viewTransform.translate(tx, ty);
 
 		updateFinalTransform();
 
 		// notify listeners
-		for (ViewportListener l : this.listeners)
+		for (ViewportListener l : listeners)
 			l.viewChanged(this);
 	}
 
@@ -101,14 +101,14 @@ public class Viewport {
 	 * transforms, and notifies the change listeners.
 	 */
 	protected void shapeChanged() {
-		this.userToScreenTransform.setToIdentity();
-		this.userToScreenTransform.translate(this.shape.width/2 + this.shape.x, this.shape.height/2 + this.shape.y);
-		this.userToScreenTransform.scale(this.shape.height/2, this.shape.height/2);
+		userToScreenTransform.setToIdentity();
+		userToScreenTransform.translate(shape.width/2 + shape.x, shape.height/2 + shape.y);
+		userToScreenTransform.scale(shape.height/2, shape.height/2);
 
 		updateFinalTransform();
 
 		// notify listeners
-		for (ViewportListener l: this.listeners)
+		for (ViewportListener l: listeners)
 			l.shapeChanged(this);
 	}
 
@@ -116,12 +116,12 @@ public class Viewport {
 	 * Recalculates the final transform by concatenating the user-to-screen transform and the view transform.
 	 */
 	protected void updateFinalTransform() {
-		this.finalTransform.setTransform(this.userToScreenTransform);
-		this.finalTransform.concatenate(this.viewTransform);
+		finalTransform.setTransform(userToScreenTransform);
+		finalTransform.concatenate(viewTransform);
 		try {
-			this.finalInverseTransform.setTransform(this.finalTransform.createInverse());
+			finalInverseTransform.setTransform(finalTransform.createInverse());
 		} catch (NoninvertibleTransformException e) {
-			this.finalInverseTransform.setToIdentity();
+			finalInverseTransform.setToIdentity();
 		}
 	}
 
@@ -138,12 +138,12 @@ public class Viewport {
 	 * The height of the viewport (in pixels)
 	 */
 	public Viewport(int x, int y, int w, int h) {
-		this.viewTransform = new AffineTransform();
-		this.userToScreenTransform = new AffineTransform();
-		this.finalTransform = new AffineTransform();
-		this.finalInverseTransform = new AffineTransform();
-		this.shape = new Rectangle();
-		this.listeners = new LinkedList<ViewportListener>();
+		viewTransform = new AffineTransform();
+		userToScreenTransform = new AffineTransform();
+		finalTransform = new AffineTransform();
+		finalInverseTransform = new AffineTransform();
+		shape = new Rectangle();
+		listeners = new LinkedList<ViewportListener>();
 
 		viewChanged();
 
@@ -165,7 +165,7 @@ public class Viewport {
 	 * The final transform as an AffineTransform object.
 	 */
 	public AffineTransform getTransform() {
-		return this.finalTransform;
+		return finalTransform;
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class Viewport {
 	 * The inverse of the final transform as an AffineTransform object.
 	 */
 	public AffineTransform getInverseTransform() {
-		return this.finalInverseTransform;
+		return finalInverseTransform;
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class Viewport {
 	 */
 	public Point userToScreen (Point2D pointInUserSpace) {
 		Point result = new Point();
-		this.finalTransform.transform(pointInUserSpace, result);
+		finalTransform.transform(pointInUserSpace, result);
 		return result;
 	}
 
@@ -198,7 +198,7 @@ public class Viewport {
 	 */
 	public Point2D screenToUser (Point pointInScreenSpace) {
 		Point2D result = new Point2D.Double();
-		this.finalInverseTransform.transform(pointInScreenSpace, result);
+		finalInverseTransform.transform(pointInScreenSpace, result);
 		return result;
 	}
 
@@ -229,8 +229,8 @@ public class Viewport {
 		originInScreenSpace.y += dy;
 		Point2D panInUserSpace = screenToUser (originInScreenSpace);
 
-		this.tx += panInUserSpace.getX();
-		this.ty += panInUserSpace.getY();
+		tx += panInUserSpace.getX();
+		ty += panInUserSpace.getY();
 
 		viewChanged();
 	}
@@ -243,12 +243,12 @@ public class Viewport {
 	 * The required change of the zoom level. Use positive value to zoom in, negative value to zoom out.
 	 */
 	public void zoom (int levels) {
-		this.scale *= Math.pow(SCALE_FACTOR, levels);
+		scale *= Math.pow(SCALE_FACTOR, levels);
 
-		if (this.scale < 0.01f)
-			this.scale = 0.01f;
-		if (this.scale > 1.0f)
-			this.scale = 1.0f;
+		if (scale < 0.01f)
+			scale = 0.01f;
+		if (scale > 1.0f)
+			scale = 1.0f;
 
 		viewChanged();
 	}
@@ -275,8 +275,8 @@ public class Viewport {
 
 		Point2D anchorInNewSpace = screenToUser(anchor);
 
-		this.tx += anchorInNewSpace.getX() - anchorInUserSpace.getX();
-		this.ty += anchorInNewSpace.getY() - anchorInUserSpace.getY();
+		tx += anchorInNewSpace.getX() - anchorInUserSpace.getX();
+		ty += anchorInNewSpace.getY() - anchorInUserSpace.getY();
 
 		viewChanged();
 	}
@@ -295,7 +295,7 @@ public class Viewport {
 	 * The height of the new viewport (in pixels)
 	 */
 	public void setShape (int x, int y, int width, int height) {
-		this.shape.setBounds(x, y, width, height);
+		shape.setBounds(x, y, width, height);
 		shapeChanged();
 	}
 
@@ -314,7 +314,7 @@ public class Viewport {
 	 * @return The current viewport shape.
 	 */
 	public Rectangle getShape() {
-		return new Rectangle(this.shape);
+		return new Rectangle(shape);
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class Viewport {
 	 * The new listener.
 	 */
 	public void addListener (ViewportListener listener) {
-		this.listeners.add(listener);
+		listeners.add(listener);
 	}
 
 	/**
@@ -332,6 +332,6 @@ public class Viewport {
 	 * The listener to remove.
 	 */
 	public void removeListener (ViewportListener listener) {
-		this.listeners.remove(listener);
+		listeners.remove(listener);
 	}
 }

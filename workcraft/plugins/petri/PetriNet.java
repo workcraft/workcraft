@@ -37,9 +37,9 @@ public class PetriNet extends MathModel {
 		int id = super.addComponent(component, autoAssignID);
 
 		if (component instanceof Place)
-			this.places.add((Place)component);
+			places.add((Place)component);
 		else if (component instanceof Transition)
-			this.transitions.add((Transition)component);
+			transitions.add((Transition)component);
 
 		return id;
 	}

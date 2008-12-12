@@ -10,7 +10,7 @@ public class DoubleProperty implements PropertyClass {
 	JTextField edit = new JTextField();
 
 	public TableCellEditor getCellEditor() {
-		DefaultCellEditor dce = new DefaultCellEditor(this.edit);
+		DefaultCellEditor dce = new DefaultCellEditor(edit);
 		dce.setClickCountToStart(0);
 		return dce;
 

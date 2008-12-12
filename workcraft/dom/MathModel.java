@@ -32,11 +32,11 @@ public abstract class MathModel implements Plugin, Model {
 	protected String title = null;
 
 	public MathModel (Framework framework) {
-		this.components = new Hashtable<Integer, Component>();
-		this.connections = new Hashtable<Integer, Connection>();
-		this.listeners = new LinkedList<MathModelListener>();
+		components = new Hashtable<Integer, Component>();
+		connections = new Hashtable<Integer, Connection>();
+		listeners = new LinkedList<MathModelListener>();
 		this.framework = framework;
-		this.title = "Untitled";
+		title = "Untitled";
 	}
 
 	public MathModel (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
@@ -44,7 +44,7 @@ public abstract class MathModel implements Plugin, Model {
 
 		this.sourcePath = sourcePath;
 
-		this.title = XmlUtil.readStringAttr(xmlModelElement, "title");
+		title = XmlUtil.readStringAttr(xmlModelElement, "title");
 
 		NodeList componentNodes = xmlModelElement.getElementsByTagName("component");
 		for (int i = 0; i < componentNodes.getLength(); i++) {
@@ -121,16 +121,16 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public void toXML (Element modelElement) {
-		XmlUtil.writeStringAttr(modelElement, "title", this.title);
+		XmlUtil.writeStringAttr(modelElement, "title", title);
 
-		for (Component c: this.components.values()) {
+		for (Component c: components.values()) {
 			Element componentElement = modelElement.getOwnerDocument().createElement("component");
 			componentElement.setAttribute("class", c.getClass().getName());
 			c.toXML(componentElement);
 			modelElement.appendChild(componentElement);
 		}
 
-		for (Connection c: this.connections.values()) {
+		for (Connection c: connections.values()) {
 			Element connectionElement = modelElement.getOwnerDocument().createElement("connection");
 			connectionElement.setAttribute("class", c.getClass().getName());
 			c.toXML(connectionElement);
@@ -139,36 +139,36 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public Collection<Component> getComponents() {
-		return this.components.values();
+		return components.values();
 	}
 
 	public Collection<Connection> getConnections() {
-		return this.connections.values();
+		return connections.values();
 	}
 
 	public Component getComponentByID(int ID) {
-		return this.components.get(ID);
+		return components.get(ID);
 	}
 
 	protected int generateComponentID() {
-		return this.componentIDCounter++;
+		return componentIDCounter++;
 	}
 
 	protected int generateConnectionID() {
-		return this.connectionIDCounter++;
+		return connectionIDCounter++;
 	}
 
 	public String getSourcePath() {
-		return this.sourcePath;
+		return sourcePath;
 	}
 
 	public void renameComponent(Component component, int newID) {
-		this.components.remove(component.getID());
-		this.components.put(newID, component);
+		components.remove(component.getID());
+		components.put(newID, component);
 	}
 
 	public String getTitle() {
-		return this.title;
+		return title;
 	}
 
 	public void setTitle(String title) {
@@ -189,13 +189,13 @@ public abstract class MathModel implements Plugin, Model {
 		if (autoAssignID)
 			component.setID(generateComponentID());
 		else {
-			if (this.components.get(component.getID()) != null)
+			if (components.get(component.getID()) != null)
 				throw new DuplicateIDException (component.getID());
-			if (component.getID() >= this.componentIDCounter)
-				this.componentIDCounter = component.getID()+1;
+			if (component.getID() >= componentIDCounter)
+				componentIDCounter = component.getID()+1;
 		}
 
-		this.components.put(component.getID(), component);
+		components.put(component.getID(), component);
 		return component.getID();
 	}
 
@@ -211,15 +211,15 @@ public abstract class MathModel implements Plugin, Model {
 		if (autoAssignID)
 			connection.setID(generateConnectionID());
 		else {
-			if (this.connections.get(connection.getID()) != null)
+			if (connections.get(connection.getID()) != null)
 				throw new DuplicateIDException (connection.getID());
 
 			// ensure that the provided ID will not get generated automatically for another object
-			if (connection.getID() >= this.connectionIDCounter)
-				this.connectionIDCounter = connection.getID()+1;
+			if (connection.getID() >= connectionIDCounter)
+				connectionIDCounter = connection.getID()+1;
 		}
 
-		this.connections.put(connection.getID(), connection);
+		connections.put(connection.getID(), connection);
 		return connection.getID();
 	}
 
@@ -241,7 +241,7 @@ public abstract class MathModel implements Plugin, Model {
 	public void removeConnection (Connection connection) {
 		connection.getFirst().removeFromPostset(connection.getSecond());
 		connection.getSecond().removeFromPreset(connection.getFirst());
-		this.connections.remove(connection);
+		connections.remove(connection);
 	}
 
 	abstract public Class<?>[] getSupportedComponents();
@@ -249,7 +249,7 @@ public abstract class MathModel implements Plugin, Model {
 	abstract public void validate() throws ModelValidationException;
 
 	public Connection getConnectionByID(int ID) {
-		return this.connections.get(ID);
+		return connections.get(ID);
 	}
 
 

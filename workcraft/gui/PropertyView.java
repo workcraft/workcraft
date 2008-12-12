@@ -15,23 +15,23 @@ public class PropertyView extends JPanel {
 	private JScrollPane scrollProperties;
 
 	public PropertyView (Framework framework) {
-		this.propertyTable = new PropertyEditorTable();
+		propertyTable = new PropertyEditorTable();
 
-		this.scrollProperties = new JScrollPane();
-		this.scrollProperties.setViewportView(this.propertyTable);
+		scrollProperties = new JScrollPane();
+		scrollProperties.setViewportView(propertyTable);
 
 		setLayout(new BorderLayout(0,0));
 		this.add(new DisabledPanel());
 	}
 
 	public void setObject (PropertyEditable o) {
-		this.propertyTable.setObject(o);
-		this.removeAll();
+		propertyTable.setObject(o);
+		removeAll();
 		this.add(scrollProperties);
 	}
 
 	public void clearObject () {
-		this.propertyTable.clearObject();
-		this.removeAll();
+		propertyTable.clearObject();
+		removeAll();
 	}
 }

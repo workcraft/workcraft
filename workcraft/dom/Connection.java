@@ -9,19 +9,19 @@ public class Connection {
 	protected int ID;
 
 	public int getID() {
-		return this.ID;
+		return ID;
 	}
 
 	public void setID(int id) {
-		this.ID = id;
+		ID = id;
 	}
 
 	public Component getFirst() {
-		return this.first;
+		return first;
 	}
 
 	public Component getSecond() {
-		return this.second;
+		return second;
 	}
 
 	public Connection (Component first, Component second) {
@@ -30,18 +30,18 @@ public class Connection {
 	}
 
 	public void toXML (Element connectionElement) {
-		XmlUtil.writeIntAttr(connectionElement, "first", this.first.getID());
-		XmlUtil.writeIntAttr(connectionElement, "second", this.second.getID());
+		XmlUtil.writeIntAttr(connectionElement, "first", first.getID());
+		XmlUtil.writeIntAttr(connectionElement, "second", second.getID());
 		XmlUtil.writeIntAttr(connectionElement, "ID", getID());
 	}
 
 	public Connection (Element xmlElement, MathModel model) {
-		this.ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
+		ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
 
 		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);
 		int secondID = XmlUtil.readIntAttr(xmlElement, "first", -1);
 
-		this.first = model.getComponentByID(firstID);
-		this.second = model.getComponentByID(secondID);
+		first = model.getComponentByID(firstID);
+		second = model.getComponentByID(secondID);
 	}
 }

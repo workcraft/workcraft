@@ -23,18 +23,18 @@ public class JavaScriptView extends JPanel {
 	public JavaScriptView (Framework framework) {
 		this.framework = framework;
 
-		this.btnExecute = new JButton();
-		this.btnExecute.setText("Execute [ctrl-Enter]");
+		btnExecute = new JButton();
+		btnExecute.setText("Execute [ctrl-Enter]");
 
-		this.btnExecute.addActionListener(new java.awt.event.ActionListener() {
+		btnExecute.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				execScript();
 			}
 		});
 
-		this.txtScript = new JEditTextArea();
-		this.txtScript.setTokenMarker(new JavaScriptTokenMarker());
-		this.txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
+		txtScript = new JEditTextArea();
+		txtScript.setTokenMarker(new JavaScriptTokenMarker());
+		txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
 			@Override
 			public void keyReleased(java.awt.event.KeyEvent e)
 			{
@@ -43,29 +43,29 @@ public class JavaScriptView extends JPanel {
 			}
 		});
 
-		this.panelInput = new JPanel();
-		this.panelInput.setLayout(new BorderLayout());
-		this.panelInput.add(this.txtScript, BorderLayout.CENTER);
+		panelInput = new JPanel();
+		panelInput.setLayout(new BorderLayout());
+		panelInput.add(txtScript, BorderLayout.CENTER);
 		//panelInput.add(btnExecute, BorderLayout.SOUTH);
-		this.panelInput.setMinimumSize(new Dimension(100,100));
+		panelInput.setMinimumSize(new Dimension(100,100));
 
 		setLayout(new BorderLayout());
-		this.add(this.panelInput, BorderLayout.CENTER);
+		this.add(panelInput, BorderLayout.CENTER);
 
 	}
 
 
 	public void execScript() {
-		if (this.txtScript.getText().length()>0)
+		if (txtScript.getText().length()>0)
 			try {
-				Object result = this.framework.execJavaScript(this.txtScript.getText());
+				Object result = framework.execJavaScript(txtScript.getText());
 
 				Context.enter();
 				String out = Context.toString(result);
 				Context.exit();
 				if (!out.equals("undefined"))
 					System.out.println (out);
-				this.txtScript.setText("");
+				txtScript.setText("");
 			}
 		catch (org.mozilla.javascript.WrappedException e) {
 			System.err.println(e.getWrappedException().getClass().getName()+" "+e.getWrappedException().getMessage());

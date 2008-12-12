@@ -31,7 +31,7 @@ public class Workspace {
 	}
 
 	public WorkspaceEntry add(String path) throws ModelLoadFailedException, VisualModelConstructionException {
-		for(WorkspaceEntry we : this.workspace)
+		for(WorkspaceEntry we : workspace)
 			if(we.getFile() != null && we.getFile().getPath().equals(path))
 				return we;
 
@@ -43,10 +43,10 @@ public class Workspace {
 			we = new WorkspaceEntry(this);
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
-				Model model = this.framework.load(f.getPath());
+				Model model = framework.load(f.getPath());
 				we.setModel(model);
 			}
-			this.workspace.add(we);
+			workspace.add(we);
 			fireEntryAdded(we);
 		}
 
@@ -56,36 +56,36 @@ public class Workspace {
 	public WorkspaceEntry add(Model model) {
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setModel(model);
-		this.workspace.add(we);
+		workspace.add(we);
 		fireEntryAdded(we);
 		return we;
 	}
 
 	public void remove(WorkspaceEntry we) {
-		this.workspace.remove(we);
+		workspace.remove(we);
 		fireEntryRemoved(we);
 	}
 
 	public List<WorkspaceEntry> entries() {
-		return Collections.unmodifiableList(this.workspace);
+		return Collections.unmodifiableList(workspace);
 	}
 
 	public Model loadModel(WorkspaceEntry we) throws ModelLoadFailedException, VisualModelConstructionException {
-		Model model = this.framework.load(we.getFile().getPath());
+		Model model = framework.load(we.getFile().getPath());
 		fireModelLoaded(we);
 		return model;
 	}
 
 	public void addListener (WorkspaceListener l) {
-		this.workspaceListeners.add(l);
+		workspaceListeners.add(l);
 	}
 
 	public String getFilePath() {
-		return this.filePath;
+		return filePath;
 	}
 
 	public boolean isChanged() {
-		return this.changed;
+		return changed;
 	}
 
 	public void save(String path) {
@@ -103,7 +103,7 @@ public class Workspace {
 		Element root = doc.createElement("workcraft-workspace");
 		doc.appendChild(root);
 
-		for(WorkspaceEntry we : this.workspace) {
+		for(WorkspaceEntry we : workspace) {
 			if (we.getFile() == null)
 				continue;
 			Element e = doc.createElement("entry");
@@ -116,8 +116,8 @@ public class Workspace {
 
 		try {
 			XmlUtil.saveDocument(doc, path);
-			this.filePath = path;
-			this.changed = false;
+			filePath = path;
+			changed = false;
 			fireWorkspaceSaved();
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
@@ -125,34 +125,34 @@ public class Workspace {
 	}
 
 	private void fireWorkspaceSaved() {
-		for (WorkspaceListener listener : this.workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners)
 			listener.workspaceSaved();
 	}
 
 	void fireModelLoaded(WorkspaceEntry we) {
-		for (WorkspaceListener listener : this.workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners)
 			listener.modelLoaded(we);
 	}
 
 	void fireEntryAdded(WorkspaceEntry we) {
-		for (WorkspaceListener listener : this.workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryAdded(we);
 	}
 
 	void fireEntryRemoved(WorkspaceEntry we) {
-		for (WorkspaceListener listener : this.workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryRemoved(we);
 	}
 
 	void fireEntryChanged(WorkspaceEntry we) {
-		for (WorkspaceListener listener : this.workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryChanged(we);
 	}
 
 	public void save() {
-		if(this.filePath.isEmpty())
+		if(filePath.isEmpty())
 			System.err.println("File name undefined.");
 		else
-			save(this.filePath);
+			save(filePath);
 	}
 }

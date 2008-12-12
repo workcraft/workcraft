@@ -26,7 +26,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 	public WorkspaceWindowPopupListener(Framework framework, WorkspaceWindow wsWindow) {
 		this.framework = framework;
 		this.wsWindow = wsWindow;
-		this.handlers = new HashMap<JMenuItem, FileHandler>();
+		handlers = new HashMap<JMenuItem, FileHandler>();
 	}
 
 	@Override
@@ -62,22 +62,22 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 					if (we.getFile() != null) {
 						// add WorkspaceEntry menu items
-						PluginInfo[] handlersInfo = this.framework.getPluginManager()
+						PluginInfo[] handlersInfo = framework.getPluginManager()
 						.getPlugins(FileHandler.class);
 
 						for (PluginInfo info : handlersInfo)
 							try {
-								FileHandler handler = (FileHandler) this.framework
+								FileHandler handler = (FileHandler) framework
 								.getPluginManager().getSingleton(info, FileHandler.class);
 
 								if (!handler.accept(we.getFile()))
 									continue;
 								JMenuItem mi = new JMenuItem(info.getDisplayName());
-								this.handlers.put(mi, handler);
+								handlers.put(mi, handler);
 								mi.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent e) {
-										WorkspaceWindowPopupListener.this.handlers.get(e.getSource()).execute(we.getFile());
+										handlers.get(e.getSource()).execute(we.getFile());
 									}
 								});
 								popup.add(mi);
@@ -90,21 +90,21 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						JMenuItem miOpenView = new JMenuItem("Open editor view");
 						miOpenView.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								WorkspaceWindowPopupListener.this.framework.getMainWindow().addEditorView(we);
+								framework.getMainWindow().addEditorView(we);
 							}
 						});
 
 						JMenuItem miSave = new JMenuItem("Save");
 						miSave.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								WorkspaceWindowPopupListener.this.framework.getMainWindow().save(we);
+								framework.getMainWindow().save(we);
 							}
 						});
 
 						JMenuItem miSaveAs = new JMenuItem("Save as...");
 						miSaveAs.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								WorkspaceWindowPopupListener.this.framework.getMainWindow().saveAs(we);
+								framework.getMainWindow().saveAs(we);
 							}
 						});
 
@@ -119,7 +119,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 					miRemove.addActionListener(new ActionListener() {
 
 						public void actionPerformed(ActionEvent e) {
-							WorkspaceWindowPopupListener.this.framework.getWorkspace().remove(we);
+							framework.getWorkspace().remove(we);
 						}
 					});
 					popup.add(miRemove);
@@ -127,7 +127,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 			}
 
 			if (showWorkspaceItems)
-				for (Component c : this.wsWindow.createMenu().getMenuComponents())
+				for (Component c : wsWindow.createMenu().getMenuComponents())
 					popup.add(c);
 
 			popup.show(e.getComponent(), e.getX(), e.getY());

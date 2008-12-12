@@ -16,10 +16,10 @@ public class HistoryListModel extends AbstractListModel {
 	}
 
 	public Object getElementAt(int index) {
-		return this.events.get(index).getEventDescription();
+		return events.get(index).getEventDescription();
 	}
 
 	public int getSize() {
-		return this.events.size();
+		return events.size();
 	}
 }

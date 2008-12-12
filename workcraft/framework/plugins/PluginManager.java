@@ -86,14 +86,14 @@ public class PluginManager {
 
 	public PluginManager(Framework framework) {
 		this.framework = framework;
-		this.singletons = new HashMap<String, Object>();
+		singletons = new HashMap<String, Object>();
 	}
 
 	public void printPluginList() {
 		System.out.println("Registered plugins:");
-		for(PluginInfo info : this.plugins)
+		for(PluginInfo info : plugins)
 			System.out.println(" "+info.getClassName());
-		System.out.println(""+this.plugins.size()+" plugin(s) total");
+		System.out.println(""+plugins.size()+" plugin(s) total");
 	}
 
 	public void loadManifest() throws IOException, DocumentFormatException {
@@ -128,10 +128,10 @@ public class PluginManager {
 			throw(new DocumentFormatException());
 
 		NodeList nl = xmlroot.getElementsByTagName("plugin");
-		this.plugins.clear();
+		plugins.clear();
 		for(int i = 0; i < nl.getLength(); i++) {
 			PluginInfo info = new PluginInfo((Element) nl.item(i));
-			this.plugins.add(info);
+			plugins.add(info);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class PluginManager {
 		doc.appendChild(root);
 		root = doc.getDocumentElement();
 
-		for(PluginInfo info : this.plugins) {
+		for(PluginInfo info : plugins) {
 			Element e = doc.createElement("plugin");
 			info.toXml(e);
 			root.appendChild(e);
@@ -169,7 +169,7 @@ public class PluginManager {
 			return;
 
 		if(root.isDirectory()) {
-			File[] list = root.listFiles(this.classFilter);
+			File[] list = root.listFiles(classFilter);
 
 			for(File f : list)
 				if(f.isDirectory())
@@ -178,11 +178,11 @@ public class PluginManager {
 					System.out.println("Class file found: " + f.getPath());
 					Class<?> cls;
 					try {
-						cls = this.activeLoader.findClass(f);
+						cls = activeLoader.findClass(f);
 
 						if(Plugin.class.isAssignableFrom(cls)) {
 							PluginInfo info = new PluginInfo(cls);
-							this.plugins.add(info);
+							plugins.add(info);
 							System.out.println("  plugin found: " + cls.getName());
 						} else
 							System.out.println("  not a plugin class, ignored");
@@ -204,15 +204,14 @@ public class PluginManager {
 
 	public void reconfigure() {
 		System.out.println("Reconfiguring plugins...");
-		this.plugins.clear();
-		this.activeLoader = new PluginClassLoader();
-		for (String path : INTERNAL_PLUGINS_PATH) {
+		plugins.clear();
+		activeLoader = new PluginClassLoader();
+		for (String path : INTERNAL_PLUGINS_PATH)
 			search(new File(path));
-		}
 		search(new File(EXTERNAL_PLUGINS_PATH));
-		this.activeLoader = null;
+		activeLoader = null;
 
-		System.out.println("" + this.plugins.size() + " plugin(s) found");
+		System.out.println("" + plugins.size() + " plugin(s) found");
 
 		try {
 			saveManifest();
@@ -228,7 +227,7 @@ public class PluginManager {
 
 	public PluginInfo[] getPluginsByInterface(String interfaceName) {
 		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
-		for(PluginInfo info : this.plugins)
+		for(PluginInfo info : plugins)
 			for (String s: info.getInterfaces())
 				if (s.equals(interfaceName))
 					list.add(info);
@@ -237,7 +236,7 @@ public class PluginManager {
 
 	public PluginInfo[] getPluginsBySuperclass(String superclassName) {
 		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
-		for(PluginInfo info : this.plugins)
+		for(PluginInfo info : plugins)
 			for (String s: info.getSuperclasses())
 				if (s.equals(superclassName))
 					list.add(info);
@@ -292,7 +291,7 @@ public class PluginManager {
 				Object ret;
 
 				if (useFramework)
-					ret = ctor.newInstance(this.framework);
+					ret = ctor.newInstance(framework);
 				else
 					ret = ctor.newInstance();
 
@@ -309,10 +308,10 @@ public class PluginManager {
 	}
 
 	public Object getSingleton(PluginInfo info, Class<?> expectedClass) throws PluginInstantiationException {
-		Object ret = this.singletons.get(info.getClassName());
+		Object ret = singletons.get(info.getClassName());
 		if (ret == null) {
 			ret = getInstance(info, expectedClass);
-			this.singletons.put(info.getClassName(), ret);
+			singletons.put(info.getClassName(), ret);
 		}
 		return ret;
 	}

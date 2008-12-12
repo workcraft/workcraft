@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.font.LineMetrics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -57,42 +56,42 @@ public class VisualPlace extends VisualComponent {
 			g.fill(shape);
 		}
 		else
-		if (p.tokens > 1 && p.tokens < 8)
-		{
-			double al = Math.PI / p.tokens;
-			if (p.tokens == 7) al = Math.PI / 6;
-
-			double r = (size / 2 - strokeWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
-			double R = r / Math.sin(al);
-
-			r -= multipleTokenSeparation;
-
-			for(int i = 0; i < p.tokens; i++)
+			if (p.tokens > 1 && p.tokens < 8)
 			{
-				if (i == 6)
-					shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
-				else
-					shape = new Ellipse2D.Double(
-							-R * Math.sin(i * al * 2) - r,
-							-R * Math.cos(i * al * 2) - r,
-							r * 2,
-							r * 2);
+				double al = Math.PI / p.tokens;
+				if (p.tokens == 7) al = Math.PI / 6;
 
-				g.setColor(Color.BLACK);
-				g.fill(shape);
+				double r = (size / 2 - strokeWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
+				double R = r / Math.sin(al);
+
+				r -= multipleTokenSeparation;
+
+				for(int i = 0; i < p.tokens; i++)
+				{
+					if (i == 6)
+						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
+					else
+						shape = new Ellipse2D.Double(
+								-R * Math.sin(i * al * 2) - r,
+								-R * Math.cos(i * al * 2) - r,
+								r * 2,
+								r * 2);
+
+					g.setColor(Color.BLACK);
+					g.fill(shape);
+				}
 			}
-		}
-		else if (p.tokens > 7)
-		{
-			String out = Integer.toString(p.tokens);
-			Font superFont = g.getFont().deriveFont((float)size/2);
+			else if (p.tokens > 7)
+			{
+				String out = Integer.toString(p.tokens);
+				Font superFont = g.getFont().deriveFont((float)size/2);
 
-			Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
-			g.setFont(superFont);
+				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
+				g.setFont(superFont);
 
 
-			g.drawString(Integer.toString(p.tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
-		}
+				g.drawString(Integer.toString(p.tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+			}
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {

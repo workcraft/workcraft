@@ -41,40 +41,40 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 	public MDIPane() {
 		super();
 
-		this.desktop = new JDesktopPane();
-		this.desktop.setLayout(null);
+		desktop = new JDesktopPane();
+		desktop.setLayout(null);
 
 		setLayout(new BorderLayout());
-		this.add(this.desktop, BorderLayout.CENTER);
+		this.add(desktop, BorderLayout.CENTER);
 
-		this.tabs = new JTabbedPane();
-		this.tabs.addChangeListener(this);
+		tabs = new JTabbedPane();
+		tabs.addChangeListener(this);
 
-		this.tabPopupMenu = new JPopupMenu();
-		this.menuRestore = new JMenuItem ("Restore");
-		this.menuRestore.addActionListener(new ActionListener() {
+		tabPopupMenu = new JPopupMenu();
+		menuRestore = new JMenuItem ("Restore");
+		menuRestore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				handleMin (MDIPane.this.popupOriginIndex);
+				handleMin (popupOriginIndex);
 			}
 		});
-		this.tabPopupMenu.add(this.menuRestore);
-		this.tabPopupMenu.addSeparator();
+		tabPopupMenu.add(menuRestore);
+		tabPopupMenu.addSeparator();
 
-		this.menuClose = new JMenuItem("Close");
+		menuClose = new JMenuItem("Close");
 
-		this.menuClose.addActionListener(new ActionListener() {
+		menuClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				handleClosing(((InternalWindow) ((DocumentTab)MDIPane.this.tabs.getTabComponentAt(MDIPane.this.popupOriginIndex)).getDocumentFrame()), MDIPane.this.popupOriginIndex);
+				handleClosing(((InternalWindow) ((DocumentTab)tabs.getTabComponentAt(popupOriginIndex)).getDocumentFrame()), popupOriginIndex);
 			}
 		});
 
 
-		this.tabPopupMenu.add(this.menuClose);
+		tabPopupMenu.add(menuClose);
 
-		this.tabs.addMouseListener(new MouseListener() {
+		tabs.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent e) {
-				int tabIndex = MDIPane.this.tabs.indexAtLocation(e.getX(), e.getY());
+				int tabIndex = tabs.indexAtLocation(e.getX(), e.getY());
 				if (tabIndex == -1)
 					return;
 
@@ -85,11 +85,11 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 
 			public void checkPopup(MouseEvent e) {
 				if (e.isPopupTrigger()) {
-					int tabIndex = MDIPane.this.tabs.indexAtLocation(e.getX(), e.getY());
+					int tabIndex = tabs.indexAtLocation(e.getX(), e.getY());
 					if (tabIndex == -1)
 						return;
-					MDIPane.this.popupOriginIndex = tabIndex;
-					MDIPane.this.tabPopupMenu.show(MDIPane.this, e.getX(), e.getY());
+					popupOriginIndex = tabIndex;
+					tabPopupMenu.show(MDIPane.this, e.getX(), e.getY());
 				}
 			}
 
@@ -117,32 +117,32 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 	}
 
 	public void addFrame(InternalWindow f) {
-		this.documentFrames.add(f);
+		documentFrames.add(f);
 		f.setLayer(2);
-		this.desktop.add(f);
+		desktop.add(f);
 		f.addPropertyChangeListener("maximum", this);
 		//f.ownerMDIPane = this;
 
 	}
 
 	public void addFrame(InternalFloaterWindow f) {
-		this.floaterFrames.add(f);
+		floaterFrames.add(f);
 		f.setLayer(3);
-		this.desktop.add(f);
+		desktop.add(f);
 	}
 
 	protected void handleMax(InternalWindow frame) {
-		if (this.tabs.getTabCount() == 0) {
-			this.remove(this.desktop);
-			this.add(this.tabs, BorderLayout.CENTER);
+		if (tabs.getTabCount() == 0) {
+			this.remove(desktop);
+			this.add(tabs, BorderLayout.CENTER);
 		}
 
 		JPanel p = new JPanel(new BorderLayout());
-		p.add(this.desktop, BorderLayout.CENTER);
+		p.add(desktop, BorderLayout.CENTER);
 		p.setBorder(null);
 
-		this.tabs.addTab("?", p);
-		int tabIndex = this.tabs.getTabCount()-1;
+		tabs.addTab("?", p);
+		int tabIndex = tabs.getTabCount()-1;
 
 		DocumentTab docTab = new DocumentTab(frame.getTitle(), tabIndex);
 		docTab.setDocumentFrame(frame);
@@ -153,13 +153,13 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 			}
 		});
 
-		this.tabs.setTabComponentAt(tabIndex, docTab);
+		tabs.setTabComponentAt(tabIndex, docTab);
 
 		frame.setLayer(1);
 		frame.hideTitle();
 		frame.hideBorder();
 
-		this.tabs.setSelectedIndex(this.tabs.getTabCount()-1);
+		tabs.setSelectedIndex(tabs.getTabCount()-1);
 
 		frame.setVisible(true);
 	}
@@ -169,7 +169,7 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 	}
 
 	protected void handleMin(int tabIndex) {
-		InternalWindow frame = (InternalWindow)((DocumentTab)this.tabs.getTabComponentAt(tabIndex)).getDocumentFrame();
+		InternalWindow frame = (InternalWindow)((DocumentTab)tabs.getTabComponentAt(tabIndex)).getDocumentFrame();
 
 		frame.showBorder();
 		frame.showTitle();
@@ -181,12 +181,12 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 			e.printStackTrace();
 		}
 
-		this.tabs.removeTabAt(tabIndex);
+		tabs.removeTabAt(tabIndex);
 
 
-		if (this.tabs.getTabCount() == 0) {
-			this.remove(this.tabs);
-			this.add(this.desktop, BorderLayout.CENTER);
+		if (tabs.getTabCount() == 0) {
+			this.remove(tabs);
+			this.add(desktop, BorderLayout.CENTER);
 		}
 	}
 
@@ -196,16 +196,16 @@ public class MDIPane extends JPanel implements  PropertyChangeListener, ChangeLi
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		if (this.tabs.getSelectedIndex() == -1)
+		if (tabs.getSelectedIndex() == -1)
 			return;
 
-		DocumentTab tab = (DocumentTab)(this.tabs.getTabComponentAt(this.tabs.getSelectedIndex()));
+		DocumentTab tab = (DocumentTab)(tabs.getTabComponentAt(tabs.getSelectedIndex()));
 		if (tab == null)
 			return;
 
-		((JPanel)this.tabs.getSelectedComponent()).add(this.desktop);
+		((JPanel)tabs.getSelectedComponent()).add(desktop);
 
-		for (InternalWindow f : this.documentFrames)
+		for (InternalWindow f : documentFrames)
 			if (f.isMaximum())
 				if (f == tab.getDocumentFrame())
 					f.setVisible(true);

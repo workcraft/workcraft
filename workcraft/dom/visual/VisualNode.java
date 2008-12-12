@@ -2,7 +2,6 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
@@ -24,15 +23,15 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	VisualComponentGroup parent;
 
 	public VisualNode(VisualComponentGroup parent) {
-		this.transform = new AffineTransform();
-		this.transform.setToIdentity();
+		transform = new AffineTransform();
+		transform.setToIdentity();
 
 		this.parent = parent;
 
-		this.propertyDeclarations = new LinkedList<PropertyDeclaration>();
+		propertyDeclarations = new LinkedList<PropertyDeclaration>();
 
-		this.propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", Double.class));
-		this.propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", Double.class));
+		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", Double.class));
+		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", Double.class));
 
 		_tmp = new double[8];
 
@@ -47,19 +46,19 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	}
 
 	public double getX() {
-		return this.transform.getTranslateX();
+		return transform.getTranslateX();
 	}
 
 	public double getY() {
-		return this.transform.getTranslateY();
+		return transform.getTranslateY();
 	}
 
 	public void setX(double x) {
-		this.transform.translate(x-this.transform.getTranslateX(), 0);
+		transform.translate(x-transform.getTranslateX(), 0);
 	}
 
 	public void setY(double y) {
-		this.transform.translate(0, y - this.transform.getTranslateY());
+		transform.translate(0, y - transform.getTranslateY());
 	}
 
 	public Point2D getPositionInParentSpace() {
@@ -109,7 +108,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 		return new Rectangle2D.Double (
 				_tmp[0], _tmp[1],
 				_tmp[2]-_tmp[0], _tmp[3]-_tmp[1]
-			);
+		);
 	}
 
 	public boolean hitTestInParentSpace(Point2D pointInParentSpace) {
@@ -140,7 +139,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	}
 
 	public List<PropertyDeclaration> getPropertyDeclarations() {
-		return this.propertyDeclarations;
+		return propertyDeclarations;
 	}
 
 	public AffineTransform getTransform() {

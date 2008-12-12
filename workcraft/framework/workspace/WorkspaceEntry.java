@@ -11,18 +11,18 @@ public class WorkspaceEntry {
 	protected Workspace workspace;
 
 	public WorkspaceEntry(Workspace workspace) {
-		this.file = null;
-		this.model = null;
-		this.unsaved = false;
+		file = null;
+		model = null;
+		unsaved = false;
 		this.workspace = workspace;
 	}
 
 	public File getFile() {
-		return this.file;
+		return file;
 	}
 
 	public Model getModel() {
-		return this.model;
+		return model;
 	}
 
 	public void setFile(File file) {
@@ -34,8 +34,8 @@ public class WorkspaceEntry {
 	}
 
 	public void renameModel(String title) {
-		this.model.getMathModel().setTitle(title);
-		this.workspace.fireEntryChanged(this);
+		model.getMathModel().setTitle(title);
+		workspace.fireEntryChanged(this);
 	}
 
 	public void setUnsaved(boolean unsaved) {
@@ -43,11 +43,11 @@ public class WorkspaceEntry {
 	}
 
 	public boolean isUnsaved() {
-		return this.unsaved;
+		return unsaved;
 	}
 
 	public boolean isWork() {
-		return (this.model != null || this.file.getName().endsWith(".work"));
+		return (model != null || file.getName().endsWith(".work"));
 	}
 
 	@Override
@@ -55,18 +55,18 @@ public class WorkspaceEntry {
 		String res = "";
 
 		if (isWork()) {
-			res = this.model.getTitle();
+			res = model.getTitle();
 			if (res.isEmpty())
-				if (this.file != null)
-					res = this.file.getName();
+				if (file != null)
+					res = file.getName();
 				else
 					res = "unnamed";
-			if (this.model.getVisualModel() != null)
+			if (model.getVisualModel() != null)
 				res = res + " [V]";
 		} else
-			res = this.file.getName();
+			res = file.getName();
 
-		if (this.unsaved || this.file == null)
+		if (unsaved || file == null)
 			res = "* " + res;
 
 		return res;

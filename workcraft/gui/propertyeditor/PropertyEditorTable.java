@@ -20,12 +20,12 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	public PropertyEditorTable() {
 		super();
 
-		this.model = new PropertyEditorTableModel();
-		setModel(this.model);
+		model = new PropertyEditorTableModel();
+		setModel(model);
 
-		this.propertyClasses = new HashMap<Class<?>, PropertyClass>();
-		this.propertyClasses.put(Integer.class, new IntegerProperty());
-		this.propertyClasses.put(Double.class, new DoubleProperty());
+		propertyClasses = new HashMap<Class<?>, PropertyClass>();
+		propertyClasses.put(Integer.class, new IntegerProperty());
+		propertyClasses.put(Double.class, new DoubleProperty());
 	}
 
 	public void setRowClass(int row, Class<?> cls, String[] data) {
@@ -63,7 +63,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		if (col == 0)
 			return super.getCellEditor(row, col);
 		else
-			return this.cellEditors[row];
+			return cellEditors[row];
 	}
 
 
@@ -72,33 +72,33 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		if (col == 0)
 			return super.getCellRenderer(row, col);
 		else
-			return this.cellRenderers[row];
+			return cellRenderers[row];
 	}
 
 	public void clearObject() {
-		this.model.clearObject();
+		model.clearObject();
 	}
 
 	public void setObject(PropertyEditable o) {
-		this.model.setObject(o);
+		model.setObject(o);
 
-		this.cellRenderers = new TableCellRenderer[this.model.getRowCount()];
-		this.cellEditors = new TableCellEditor[this.model.getRowCount()];
+		cellRenderers = new TableCellRenderer[model.getRowCount()];
+		cellEditors = new TableCellEditor[model.getRowCount()];
 
-		for (int i = 0; i < this.model.getRowCount(); i++) {
-			PropertyClass cls = this.propertyClasses.get(this.model
+		for (int i = 0; i < model.getRowCount(); i++) {
+			PropertyClass cls = propertyClasses.get(model
 					.getRowClass(i));
 
 			if (cls == null) {
 				System.err
 				.println("Data class \""
-						+ this.model.getRowClass(i).getName()
+						+ model.getRowClass(i).getName()
 						+ "\" is not supported by the Property Editor. Default cell editor will be used, which may or may not work.");
-				this.cellRenderers[i] = new DefaultTableCellRenderer();
-				this.cellEditors[i] = new DefaultCellEditor(new JTextField());
+				cellRenderers[i] = new DefaultTableCellRenderer();
+				cellEditors[i] = new DefaultCellEditor(new JTextField());
 			} else {
-				this.cellRenderers[i] = cls.getCellRenderer();
-				this.cellEditors[i] = cls.getCellEditor();
+				cellRenderers[i] = cls.getCellRenderer();
+				cellEditors[i] = cls.getCellEditor();
 
 			}
 		}

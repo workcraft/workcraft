@@ -72,8 +72,8 @@ public class ToolboxView extends JPanel {
 	public void setToolsForModel (Model model) {
 		map.clear();
 		reverseMap.clear();
-		this.removeAll();
-		this.setLayout(new FlowLayout (FlowLayout.LEFT, 5, 5));
+		removeAll();
+		setLayout(new FlowLayout (FlowLayout.LEFT, 5, 5));
 		addCommonTools();
 
 		for (Class<?> cls : model.getMathModel().getSupportedComponents()) {
@@ -83,7 +83,7 @@ public class ToolboxView extends JPanel {
 
 		selectedTool = selectionTool;
 
-		this.doLayout();
+		doLayout();
 		this.repaint();
 	}
 
@@ -92,8 +92,8 @@ public class ToolboxView extends JPanel {
 	}
 
 	public void clearTools() {
-		this.removeAll();
-		this.setLayout(new BorderLayout());
+		removeAll();
+		setLayout(new BorderLayout());
 		this.add(new DisabledPanel(), BorderLayout.CENTER);
 		this.repaint();
 	}

@@ -31,9 +31,9 @@ public class Config {
 		HashMap<String, String> group;
 
 		if (k.length == 1)
-			return this.rootGroup.get(k[0]);
+			return rootGroup.get(k[0]);
 		else {
-			group = this.groups.get(k[0]);
+			group = groups.get(k[0]);
 			if (group == null)
 				return null;
 			return group.get(k[1]);
@@ -46,12 +46,12 @@ public class Config {
 		HashMap<String, String> group;
 
 		if (k.length == 1)
-			this.rootGroup.put(k[0], value);
+			rootGroup.put(k[0], value);
 		else {
-			group = this.groups.get(k[0]);
+			group = groups.get(k[0]);
 			if (group == null) {
 				group = new HashMap<String, String>();
-				this.groups.put(k[0], group);
+				groups.put(k[0], group);
 			}
 			group.put(k[1], value);
 		}
@@ -119,18 +119,18 @@ public class Config {
 		Element xmlroot = xmldoc.createElement("workcraft-config"), var, group;
 		xmldoc.appendChild(xmlroot);
 
-		for (String k : this.rootGroup.keySet()) {
+		for (String k : rootGroup.keySet()) {
 			var = xmldoc.createElement("var");
 			var.setAttribute("name", k);
-			var.setAttribute("value", this.rootGroup.get(k));
+			var.setAttribute("value", rootGroup.get(k));
 			xmlroot.appendChild(var);
 		}
 
-		for (String k : this.groups.keySet()) {
+		for (String k : groups.keySet()) {
 			group = xmldoc.createElement("group");
 			group.setAttribute("name", k);
 
-			HashMap<String, String> g = this.groups.get(k);
+			HashMap<String, String> g = groups.get(k);
 
 			for (String l : g.keySet()) {
 				var = xmldoc.createElement("var");

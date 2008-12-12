@@ -21,28 +21,28 @@ public abstract class InternalWindow extends JInternalFrame {
 	public void hideTitle() {
 		//	System.out.println ("hiding title " +this.getTitle());
 		JComponent titlePane = ((BasicInternalFrameUI)getUI()).getNorthPane();
-		this.titleRestore =  titlePane.getPreferredSize();
+		titleRestore =  titlePane.getPreferredSize();
 		titlePane.setPreferredSize(new Dimension(0,0));
 	}
 
 	public void hideBorder() {
 		//	System.out.println ("hiding border " +this.getTitle());
-		this.borderRestore = getBorder();
+		borderRestore = getBorder();
 		setBorder(null);
 	}
 
 	public void showTitle() {
-		if (this.titleRestore != null) {
+		if (titleRestore != null) {
 			JComponent titlePane = ((BasicInternalFrameUI)getUI()).getNorthPane();
-			titlePane.setPreferredSize(this.titleRestore);
-			this.titleRestore = null;
+			titlePane.setPreferredSize(titleRestore);
+			titleRestore = null;
 		}
 	}
 
 	public void showBorder() {
-		if (this.borderRestore != null) {
-			setBorder(this.borderRestore);
-			this.borderRestore = null;
+		if (borderRestore != null) {
+			setBorder(borderRestore);
+			borderRestore = null;
 		}
 	}
 }
