@@ -63,7 +63,7 @@ public class ComponentCreationTool implements GraphEditorTool {
 		try {
 			ctor = componentClass.getConstructor();
 			Component comp = (Component)ctor.newInstance();
-			VisualComponent vComp = (VisualComponent)PluginManager.createVisualClassFor(comp, VisualComponent.class);
+			VisualComponent vComp = (VisualComponent)PluginManager.createVisualComponent(comp, e.getModel().getRoot());
 
 			vComp.setX(e.getX());
 			vComp.setY(e.getY());

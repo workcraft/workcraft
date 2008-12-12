@@ -24,18 +24,18 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualModel(MathModel model) throws VisualModelConstructionException {
 		this.mathModel = model;
-		this.root = new VisualComponentGroup();
+		this.root = new VisualComponentGroup(null);
 		this.listeners = new LinkedList<VisualModelListener>();
 
 		// create a default flat structure
 		for (Component component : model.getComponents()) {
-			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualClassFor(component, VisualComponent.class);
+			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualComponent(component, root);
 			if (visualComponent != null)
 				this.root.add(visualComponent);
 		}
 
 		for (Connection connection : model.getConnections()) {
-			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualClassFor(connection, VisualConnection.class);
+			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualComponent(connection, root);
 			if (visualConnection != null)
 				this.root.add(visualConnection);
 		}
@@ -50,7 +50,7 @@ public class VisualModel implements Plugin, Model {
 		if (nodes.getLength() != 1)
 			throw new VisualModelConstructionException ("<visual-model> section of the document must contain one, and only one root group");
 
-		this.root = new VisualComponentGroup ((Element)nodes.item(0), mathModel);
+		this.root = new VisualComponentGroup ((Element)nodes.item(0), mathModel, null);
 	}
 
 	public void toXML(Element xmlVisualElement) {

@@ -186,9 +186,18 @@ public class SelectionTool implements GraphEditorTool {
 
 			Rectangle2D.Double rect = null;
 			for(Selectable vo : model.getSelection()) {
+
 				if(vo==null)
 					continue;
-				Rectangle2D bb = vo.getBoundingBox();
+
+
+				Rectangle2D bb = vo.getBoundingBoxInUserSpace();
+
+				if (bb == null) {
+					System.err.println (vo.getClass().getName());
+				return;
+				}
+
 				if(rect==null) {
 					rect = new Rectangle2D.Double();
 					rect.setRect(bb);

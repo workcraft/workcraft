@@ -1,34 +1,26 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.Point2D;
-
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 
 public abstract class VisualComponent extends VisualNode {
 	Component refComponent = null;
-	VisualNode parent;
+	VisualComponentGroup parent;
 
-	public VisualComponent(Component refComponent) {
+	public VisualComponent(Component refComponent, VisualComponentGroup parent) {
+		super(parent);
 		this.refComponent = refComponent;
+		this.parent = parent;
 	}
 
-	public VisualComponent(Component refComponent, Element xmlElement) {
-		super(xmlElement);
+	public VisualComponent(Component refComponent, Element xmlElement, VisualComponentGroup parent) {
+		super(xmlElement, parent);
 		this.refComponent = refComponent;
+		this.parent = parent;
 	}
 
 	public Component getReferencedComponent() {
 		return this.refComponent;
-	}
-
-
-	public boolean hitTest(Point2D point) {
-		return getBoundingBox().contains(point);
-	}
-
-	public VisualNode getParent() {
-		return parent;
 	}
 
 }

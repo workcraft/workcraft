@@ -1,37 +1,64 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 @SuppressWarnings("serial")
 public class DockableView extends JPanel {
+	class DockableViewHeader extends JPanel {
+		JButton btnMin, btnMax, btnDetach;
+
+		public DockableViewHeader(String title) {
+			super();
+			this.setLayout(new BorderLayout());
+			this.setBorder(null);
+			btnMin = new JButton();
+			btnMin.setPreferredSize(new Dimension(16,16));
+			btnMin.setSize(10,10);
+
+			btnMin.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
+			btnMax = new JButton("max");
+			btnDetach = new JButton("dtch");
+			this.add(new JLabel(title), BorderLayout.WEST);
+			this.add(btnMin, BorderLayout.EAST);
+			//this.add(btnMax, BorderLayout.EAST);
+		//	this.add(btnDetach, BorderLayout.EAST);
+		}
+
+	}
 	String title;
 	JComponent content;
 	JPanel contentPane;
+	DockableViewHeader header;
 	boolean standalone = true;
 
 	public DockableView (String title, JComponent content) {
 		super();
+		setLayout(new BorderLayout(0, 0));
+
 		this.title = title;
+
+		this.header = new DockableViewHeader(title);
+
 		this.contentPane = new JPanel();
 		this.contentPane.setLayout(new BorderLayout(0,0));
-		setLayout(new BorderLayout(0, 0));
-		add(this.contentPane, BorderLayout.CENTER);
 		this.contentPane.add(content,BorderLayout.CENTER);
+		this.contentPane.add(header, BorderLayout.NORTH);
 
-		this.contentPane.setBorder(BorderFactory.createTitledBorder(title));
+		add(this.contentPane, BorderLayout.CENTER);
 	}
 
 	public void setStandalone(boolean standalone) {
 		this.standalone = standalone;
 
-		if (standalone)
-			this.contentPane.setBorder(BorderFactory.createTitledBorder(this.title));
-		else
-			this.contentPane.setBorder(null);
 	}
 
 	public String getTitle() {

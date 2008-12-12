@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -11,6 +12,11 @@ import javax.swing.KeyStroke;
 
 public class MainMenu extends JMenuBar {
 	private static final long serialVersionUID = 1L;
+
+	JMenu mnFile, mnView, mnSettings;
+	JMenuItem miShowPropertyEditor;
+
+
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -31,7 +37,7 @@ public class MainMenu extends JMenuBar {
 
 	MainMenu(final MainWindow frame) {
 		// File
-		JMenu mnFile = new JMenu();
+		mnFile = new JMenu();
 		mnFile.setText("File");
 
 		JMenuItem miNewModel = new JMenuItem();
@@ -62,11 +68,11 @@ public class MainMenu extends JMenuBar {
 
 
 		JMenuItem miSaveWorkspace = new JMenuItem();
-		miSaveWorkspace.setText("Open work...");
+		miSaveWorkspace.setText("Save workspace");
 		miSaveWorkspace.setMnemonic(KeyEvent.VK_O);
 		miSaveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miSaveWorkspace.addActionListener(frame.getDefaultActionListener());
-		miSaveWorkspace.setActionCommand("gui.openWork()");
+		miSaveWorkspace.setActionCommand("gui.saveWorkspace()");
 
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
@@ -75,9 +81,10 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);
 
-		// Preferences
-		JMenu mnPreferences = new JMenu();
-		mnPreferences.setText("Preferences");
+
+		// View
+		mnView = new JMenu();
+		mnView.setText ("View");
 
 		JMenu mnLAF = new JMenu();
 		mnLAF.setText("Look and Feel");
@@ -94,20 +101,31 @@ public class MainMenu extends JMenuBar {
 			mnLAF.add(miLAFItem);
 		}
 
+		JMenu mnWindows = new JMenu();
+		mnWindows.setText("Windows");
+
+		JMenuItem miShowPropertyEditor = new JCheckBoxMenuItem();
+		miShowPropertyEditor.setText("Property editor");
+		miSaveWorkspace.setActionCommand("gui.togglePropertyEditorVisible()");
+
+		mnWindows.add(miShowPropertyEditor);
+
+		mnView.add(mnWindows);
+		mnView.addSeparator();
+		mnView.add(mnLAF);
+
+		// Settings
+		mnSettings = new JMenu();
+		mnSettings.setText("Settings");
+
 		JMenuItem miReconfigure = new JMenuItem("Reconfigure plugins");
-		miReconfigure.addActionListener(new ActionListener() {
+		miReconfigure.addActionListener(frame.getDefaultActionListener());
+		miReconfigure.setActionCommand("framework.getPluginManager().reconfigure()");
 
-			public void actionPerformed(ActionEvent e) {
-				frame.framework.getPluginManager().reconfigure();
-			}
-		});
-
-		mnPreferences.add(mnLAF);
-		mnPreferences.addSeparator();
-		mnPreferences.add(miReconfigure);
+		mnSettings.add(miReconfigure);
 
 		add(mnFile);
-		add(mnPreferences);
+		add(mnView);
+		add(mnSettings);
 	}
-
 }

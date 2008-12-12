@@ -25,15 +25,15 @@ public class VisualComponentGroup extends VisualNode {
 	protected Set<VisualComponent> components;
 	protected Set<VisualConnection> connections;
 
-	public VisualComponentGroup () {
-		super();
+	public VisualComponentGroup (VisualComponentGroup parent) {
+		super(parent);
 		this.childGroups = new HashSet<VisualComponentGroup>();
 		this.components = new HashSet<VisualComponent>();
 		this.connections = new HashSet<VisualConnection>();
 	}
 
-	public VisualComponentGroup (Element element, MathModel refModel) throws VisualModelConstructionException {
-		this();
+	public VisualComponentGroup (Element element, MathModel refModel, VisualComponentGroup parent) throws VisualModelConstructionException {
+		this(parent);
 
 		NodeList nodes = element.getElementsByTagName("component");
 
@@ -44,7 +44,7 @@ public class VisualComponentGroup extends VisualNode {
 			if (refComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which was not found");
-			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualClassFor(refComponent, VisualComponent.class, vcompElement);
+			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualComponent(refComponent, vcompElement, parent);
 			if (visualComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which does not declare a visual represenation class");
@@ -60,7 +60,7 @@ public class VisualComponentGroup extends VisualNode {
 			if (refConnection == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vconElement.getAttribute("ref")+", which was not found");
-			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualClassFor(refConnection, VisualConnection.class, vconElement);
+			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualComponent(refConnection, vconElement, parent);
 			if (visualConnection == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vconElement.getAttribute("ref")+", which does not declare a visual represenation class");
@@ -71,11 +71,9 @@ public class VisualComponentGroup extends VisualNode {
 
 		for (int i=0; i<nodes.getLength(); i++) {
 			Element groupElement = (Element)nodes.item(i);
-			add (new VisualComponentGroup (groupElement, refModel));
+			add (new VisualComponentGroup (groupElement, refModel, this));
 		}
 	}
-
-
 
 	@Override
 	public void draw(Graphics2D g) {
@@ -106,8 +104,6 @@ public class VisualComponentGroup extends VisualNode {
 		// Restore original transform
 		g.setTransform(rest1);
 	}
-
-
 
 	public void add (VisualComponentGroup group) {
 		this.childGroups.add(group);
@@ -159,63 +155,57 @@ public class VisualComponentGroup extends VisualNode {
 		}
 	}
 
-	public Selectable hitObject(Point2D point) {
-		Selectable hit = null;
-		for(VisualComponent comp : this.components)
-			if(comp.hitTest(point))
-				hit = comp;
-		for(VisualComponentGroup grp : this.childGroups)
-			if(grp.hitTest(point))
-				hit = grp;
-		for(VisualConnection conn : this.connections)
-			if(conn.hitTest(point))
-				hit = conn;
-		return hit; // have to return the last encountered hit since it is the uppermost in z-order
-	}
-
-	public LinkedList<Selectable> hitObjects(Rectangle2D rect) {
+	public LinkedList<Selectable> hitObjects(Rectangle2D rectInLocalSpace) {
 		LinkedList<Selectable> hit = new LinkedList<Selectable>();
 		for(VisualComponent comp : this.components)
-			if(rect.contains(comp.getBoundingBox()))
+			if(rectInLocalSpace.contains(comp.getBoundingBoxInParentSpace()))
 				hit.add(comp);
-	/*	for(VisualConnection conn : this.connections)
-			if(rect.contains(conn.getBoundingBox()))
+		/*for(VisualConnection conn : this.connections)
+			if(rectInLocalSpace.intersects(conn.getBoundingBoxInParentSpace()))
 				hit.add(conn);*/
 		for(VisualComponentGroup grp : this.childGroups)
-			if(rect.contains(grp.getBoundingBox()))
+			if(rectInLocalSpace.contains(grp.getBoundingBoxInParentSpace()))
 				hit.add(grp);
 		return hit;
 	}
 
-
-	public boolean hitTest(Point2D point) {
-		return hitObject(point)!=null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return hitObject(pointInLocalSpace)!=null;
 	}
 
+	public Selectable hitObject(Point2D pointInLocalSpace) {
+		for (VisualComponent comp : this.components)
+			if (comp.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
+				if (comp.hitTestInParentSpace(pointInLocalSpace))
+					return comp;
+		/*for (VisualConnection conn : this.connections)
+			if (conn.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
+				if (conn.hitTestInParentSpace(pointInLocalSpace))
+					return conn;*/
+		for(VisualComponentGroup grp : this.childGroups)
+			if(grp.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
+				if (grp.hitTestInParentSpace(pointInLocalSpace))
+					return grp;
+		return null;
+	}
 
-	public Rectangle2D getBoundingBox() {
+	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D.Double rect = null;
 		for(VisualComponent comp : this.components)
 			if(rect==null) {
 				rect = new Rectangle2D.Double();
-				rect.setRect(comp.getBoundingBox());
+				rect.setRect(comp.getBoundingBoxInParentSpace());
 			}
 			else
-				rect.add(comp.getBoundingBox());
-		for(VisualConnection conn : this.connections)
-			if(rect==null) {
-				rect = new Rectangle2D.Double();
-				rect.setRect(conn.getBoundingBox());
-			}
-			else
-				rect.add(conn.getBoundingBox());
+				rect.add(comp.getBoundingBoxInParentSpace());
 		for(VisualComponentGroup grp : this.childGroups)
 			if(rect==null) {
 				rect = new Rectangle2D.Double();
-				rect.setRect(grp.getBoundingBox());
+				rect.setRect(grp.getBoundingBoxInParentSpace());
 			}
 			else
-				rect.add(grp.getBoundingBox());
+				rect.add(grp.getBoundingBoxInParentSpace());
 		return rect;
 	}
+
 }

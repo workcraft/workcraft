@@ -38,11 +38,28 @@ public class VisualConnection implements Selectable {
 		return this.refConnection;
 	}
 
-	public Rectangle2D getBoundingBox() {
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return false;
+	}
+
+	public boolean hitTestInParentSpace(Point2D pointInParentSpace) {
+		return false;
+	}
+
+	public boolean hitTestInUserSpace(Point2D pointInUserSpace) {
+		return false;
+	}
+
+	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return null;
 	}
 
-	public boolean hitTest(Point2D point) {
-		return false;
+	public Rectangle2D getBoundingBoxInParentSpace() {
+		return null;
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInUserSpace() {
+		return null;
 	}
 }

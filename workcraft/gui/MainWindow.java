@@ -255,7 +255,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 			if (JOptionPane.showConfirmDialog(this, "The selected model does not have visual layout information. Do you want to create a default layout?",
 					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION) {
 				try {
-					visualModel = (VisualModel)PluginManager.createVisualClassFor(we.getModel().getMathModel(), VisualModel.class);
+					visualModel = (VisualModel)PluginManager.createVisualModel(we.getModel().getMathModel());
 					we.setModel(visualModel);
 
 				} catch (VisualModelConstructionException e) {
@@ -294,6 +294,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		this.rootDockingPort = new DefaultDockingPort();
 		// rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
+		//this.rootDockingPort.setSingleTabAllowed(true);
 		this.content.add(this.rootDockingPort, BorderLayout.CENTER);
 
 		setContentPane(this.content);
@@ -319,29 +320,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		this.outputView.captureStream();
 		this.errorView.captureStream();
 
-
 		this.rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
-
-		try {
-			new VisualPetriNet(new PetriNet(this.framework));
-		} catch (VisualModelConstructionException e) {
-			e.printStackTrace();
-		}
-
-
-		//addView (new GraphEditorPane(vpn), "Document 1", DockingManager.CENTER_REGION, 0.5f);
-		//addView (new GraphEditorPane(vpn), "Document 2", DockingManager.CENTER_REGION, 0.5f);
-
-		VisualGraph gr = null;
-		try {
-			Graph g = new Graph(this.framework);
-
-			g.addComponent(new Vertex());
-			g.addComponent(new Vertex());
-			gr = new VisualGraph(g);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		outputDockable = addView (this.outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
 		addView (this.errorView, "Problems", outputDockable);
@@ -351,10 +330,11 @@ public class MainWindow extends JFrame implements DockingConstants{
 		addView (this.propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
 		addView (this.toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
 
-		VisualVertex vv = new VisualVertex(new Vertex());
-		gr.getRoot().add(vv);
-
 		DockingManager.display(outputDockable);
+		DockingManager.setFloatingEnabled(true);
+
+		DockingManager.setFloatingEnabled(true);
+
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
 		this.workspaceView.startup();
@@ -392,7 +372,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
-					VisualModel visualModel = (VisualModel)PluginManager.createVisualClassFor(mathModel, VisualModel.class);
+					VisualModel visualModel = (VisualModel)PluginManager.createVisualModel(mathModel);
 					WorkspaceEntry we = this.framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
 						addEditorView (we);
@@ -464,7 +444,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public void repaintCurrentEditor() {
 		if (editorInFocus != null)
 			editorInFocus.repaint();
+	}
 
+	public void togglePropertyEditor() {
 
 	}
 }

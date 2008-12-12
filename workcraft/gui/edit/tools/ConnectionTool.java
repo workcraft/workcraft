@@ -53,12 +53,12 @@ public class ConnectionTool implements GraphEditorTool {
 
 		if (highlight!=null) {
 			g.setColor(Color.RED);
-			g.draw(highlight.getBoundingBox());
+			g.draw(highlight.getBoundingBoxInUserSpace());
 		}
 
 		if (first!=null) {
 			g.setColor(Color.RED);
-			g.draw(first.getBoundingBox());
+			g.draw(first.getBoundingBoxInUserSpace());
 		}
 
 	}
