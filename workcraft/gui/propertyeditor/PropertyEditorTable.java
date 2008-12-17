@@ -2,9 +2,7 @@ package org.workcraft.gui.propertyeditor;
 
 import java.util.HashMap;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;

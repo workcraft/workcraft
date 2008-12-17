@@ -32,7 +32,6 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.dom.MathModel;
-import org.workcraft.dom.visual.VisualComponentGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
@@ -43,8 +42,6 @@ import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.workspace.WorkspaceWindow;
-import org.workcraft.plugins.graph.Vertex;
-import org.workcraft.plugins.graph.VisualVertex;
 
 
 public class MainWindow extends JFrame implements DockingConstants{
