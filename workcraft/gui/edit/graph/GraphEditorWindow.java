@@ -6,7 +6,7 @@ import org.workcraft.gui.edit.EditorWindow;
 
 @SuppressWarnings("serial")
 public class GraphEditorWindow extends EditorWindow {
-	protected GraphEditorPane editorPane;
+	protected GraphEditor editorPane;
 
 	public GraphEditorWindow(String title, VisualModel document) {
 		super(title);

@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.gui.propertyeditor.PropertyEditableListener;
 import org.workcraft.util.XmlUtil;
 
 
@@ -19,6 +20,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 
 	protected AffineTransform transform;
 	protected LinkedList<PropertyDeclaration> propertyDeclarations;
+	protected LinkedList<PropertyEditableListener> propertyEditableListeners;
 
 	VisualComponentGroup parent;
 
@@ -28,10 +30,12 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 
 		this.parent = parent;
 
+		propertyEditableListeners = new LinkedList<PropertyEditableListener>();
+
 		propertyDeclarations = new LinkedList<PropertyDeclaration>();
 
-		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", Double.class));
-		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", Double.class));
+		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", double.class));
+		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
 
 		_tmp = new double[8];
 
@@ -144,5 +148,19 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 
 	public AffineTransform getTransform() {
 		return transform;
+	}
+
+	public void addListener(PropertyEditableListener listener) {
+		propertyEditableListeners.add(listener);
+
+	}
+
+	public void removeListener(PropertyEditableListener listener) {
+		propertyEditableListeners.remove(listener);
+	}
+
+	public void firePropertyChanged(String propertyName) {
+		for (PropertyEditableListener l : propertyEditableListeners)
+			l.propertyChanged(propertyName, this);
 	}
 }

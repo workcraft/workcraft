@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.gui.edit.graph.GraphEditorPane;
+import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ConnectionTool implements GraphEditorTool {
@@ -38,7 +38,7 @@ public class ConnectionTool implements GraphEditorTool {
 		lastMouseCoords = new Point2D.Double();
 	}
 
-	public void drawInUserSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		switch (state) {
 		case NOTHING_SELECTED:
 			break;
@@ -159,7 +159,7 @@ public class ConnectionTool implements GraphEditorTool {
 
 	}
 
-	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "";
 		switch (state) {

@@ -21,14 +21,17 @@ import javax.swing.JPanel;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.gui.propertyeditor.PropertyEditableListener;
 
-public class GraphEditorPane extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener{
+public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyEditableListener{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -49,7 +52,7 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
-	public GraphEditorPane(MainWindow parent, WorkspaceEntry workspaceEntry) {
+	public GraphEditor(MainWindow parent, WorkspaceEntry workspaceEntry) {
 		this.parent = parent;
 
 		this.workspaceEntry = workspaceEntry;
@@ -220,21 +223,49 @@ public class GraphEditorPane extends JPanel implements ComponentListener, MouseM
 
 	public void visualNodePropertyChanged(VisualNode n) {
 		repaint();
+		parent.getPropertyView().repaint();
 	}
 
 	public void componentPropertyChanged(Component c) {
 		repaint();
+		parent.getPropertyView().repaint();
 	}
 
 	public void connectionPropertyChanged(Connection c) {
 		repaint();
+		parent.getPropertyView().repaint();
 	}
 
 	public void modelStructureChanged() {
 		repaint();
+		parent.getPropertyView().repaint();
 	}
 
 	public void layoutChanged() {
 		repaint();
+		parent.getPropertyView().repaint();
+	}
+
+	public void selectionChanged() {
+		repaint();
+
+		Selectable selection[] = visualModel.getSelection();
+		if (selection.length == 1 && selection[0] instanceof PropertyEditable) {
+
+			PropertyEditable p = parent.getPropertyView().getObject();
+
+			if (p!=null)
+				p.removeListener(this);
+
+			((PropertyEditable)selection[0]).addListener(this);
+			parent.getPropertyView().setObject((PropertyEditable)selection[0]);
+
+		} else {
+			parent.getPropertyView().clearObject();
+		}
+	}
+
+	public void propertyChanged(String propertyName, Object sender) {
+		visualModel.fireLayoutChanged();
 	}
 }

@@ -87,7 +87,7 @@ public class DoubleProperty implements PropertyClass {
 
 
 	public Object toComponentValue(Object value) {
-		return value.toString();
+		return String.format("%.2f", value);
 	}
 
 }

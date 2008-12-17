@@ -13,7 +13,7 @@ import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.edit.graph.GraphEditorPane;
+import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class SelectionTool implements GraphEditorTool {
@@ -50,7 +50,7 @@ public class SelectionTool implements GraphEditorTool {
 					model.removeFromSelection(so);
 				else
 					model.addToSelection(so);
-			model.fireLayoutChanged();
+			model.fireSelectionChanged();
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3) {
 			// TODO show tool popup
@@ -75,6 +75,7 @@ public class SelectionTool implements GraphEditorTool {
 			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
 			e.getEditor().snap(pos);
 			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
+			model.fireLayoutChanged();
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
@@ -86,8 +87,8 @@ public class SelectionTool implements GraphEditorTool {
 					model.addToSelection(so);
 				else if(selectionMode==SELECTION_REMOVE)
 					model.removeFromSelection(so);
-			model.fireLayoutChanged();
 			prevPosition = e.getPosition();
+			e.getEditor().repaint();
 		}
 		else
 			prevPosition = e.getPosition();
@@ -105,6 +106,7 @@ public class SelectionTool implements GraphEditorTool {
 				if(!model.isObjectSelected(so)) {
 					model.selectNone();
 					model.addToSelection(so);
+					model.fireSelectionChanged();
 				}
 				drag = DRAG_MOVE;
 				if(so instanceof VisualNode) {
@@ -126,7 +128,6 @@ public class SelectionTool implements GraphEditorTool {
 				savedSelection.addAll(model.selection());
 				drag = DRAG_SELECT;
 			}
-			model.fireLayoutChanged();
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3)
 			if(drag!=DRAG_NONE)
@@ -135,11 +136,13 @@ public class SelectionTool implements GraphEditorTool {
 
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
+		VisualModel model = e.getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
+			if (drag == DRAG_SELECT)
+				model.fireSelectionChanged();
+
 			drag = DRAG_NONE;
-			model.fireLayoutChanged();
 		}
 	}
 
@@ -159,15 +162,17 @@ public class SelectionTool implements GraphEditorTool {
 	private void cancelDrag(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
-		if(drag==DRAG_MOVE)
+		if(drag==DRAG_MOVE) {
 			offsetSelection(e, startPosition.getX()-e.getX(), startPosition.getY()-e.getY());
+		}
 		else if(drag == DRAG_SELECT) {
 			model.selectNone();
 			model.selection().addAll(savedSelection);
 			savedSelection.clear();
+			model.fireSelectionChanged();
 		}
 		drag = DRAG_NONE;
-		model.fireLayoutChanged();
+
 	}
 
 	private Rectangle2D selectionRect(Point2D currentPosition) {
@@ -180,7 +185,7 @@ public class SelectionTool implements GraphEditorTool {
 	}
 
 
-	public void drawInUserSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		VisualModel model = editor.getModel();
 		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
@@ -226,7 +231,7 @@ public class SelectionTool implements GraphEditorTool {
 		}
 	}
 
-	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 
 	}
 

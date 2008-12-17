@@ -2,6 +2,7 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -21,17 +22,26 @@ public class PropertyView extends JPanel {
 		scrollProperties.setViewportView(propertyTable);
 
 		setLayout(new BorderLayout(0,0));
-		this.add(new DisabledPanel());
+		this.add(new DisabledPanel(), BorderLayout.CENTER);
+
+	}
+
+	public PropertyEditable getObject () {
+		return propertyTable.getObject();
 	}
 
 	public void setObject (PropertyEditable o) {
-		propertyTable.setObject(o);
 		removeAll();
-		this.add(scrollProperties);
+		propertyTable.setObject(o);
+		this.add(scrollProperties, BorderLayout.CENTER);
+		this.validate();
 	}
 
 	public void clearObject () {
-		propertyTable.clearObject();
 		removeAll();
+		propertyTable.clearObject();
+
+		this.add(new DisabledPanel(), BorderLayout.CENTER);
+		this.validate();
 	}
 }

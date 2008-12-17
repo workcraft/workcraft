@@ -25,7 +25,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 		propertyClasses = new HashMap<Class<?>, PropertyClass>();
 		propertyClasses.put(Integer.class, new IntegerProperty());
-		propertyClasses.put(Double.class, new DoubleProperty());
+		propertyClasses.put(double.class, new DoubleProperty());
 	}
 
 	public void setRowClass(int row, Class<?> cls, String[] data) {
@@ -85,23 +85,43 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		cellRenderers = new TableCellRenderer[model.getRowCount()];
 		cellEditors = new TableCellEditor[model.getRowCount()];
 
-		for (int i = 0; i < model.getRowCount(); i++) {
-			PropertyClass cls = propertyClasses.get(model
-					.getRowClass(i));
 
-			if (cls == null) {
-				System.err
-				.println("Data class \""
-						+ model.getRowClass(i).getName()
-						+ "\" is not supported by the Property Editor. Default cell editor will be used, which may or may not work.");
-				cellRenderers[i] = new DefaultTableCellRenderer();
-				cellEditors[i] = new DefaultCellEditor(new JTextField());
+		for (int i = 0; i < model.getRowCount(); i++) {
+			PropertyDeclaration decl = model.getRowDeclaration(i);
+
+
+			// If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
+			if (decl.predefinedValues != null) {
+
+
 			} else {
-				cellRenderers[i] = cls.getCellRenderer();
-				cellEditors[i] = cls.getCellEditor();
+				// otherwise, try to get a corresponding PropertyClass object, that knows how to edit a property of this class
+				PropertyClass cls = propertyClasses.get(decl.cls);
+				model.setRowClass(i, cls);
+
+				if (cls == null) {
+					// no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
+
+					System.err
+					.println("Data class \""
+							+ decl.cls.getName()
+							+ "\" is not supported by the Property Editor.");
+
+					cellRenderers[i] = new DefaultTableCellRenderer();
+					cellEditors[i] = null;
+				} else {
+					cellRenderers[i] = cls.getCellRenderer();
+					cellEditors[i] = cls.getCellEditor();
+				}
+
 
 			}
+
 		}
+	}
+
+	public PropertyEditable getObject() {
+		return model.getObject();
 	}
 
 }

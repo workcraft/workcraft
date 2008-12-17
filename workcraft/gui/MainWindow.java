@@ -32,6 +32,7 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.dom.MathModel;
+import org.workcraft.dom.visual.VisualComponentGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
@@ -40,8 +41,10 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
-import org.workcraft.gui.edit.graph.GraphEditorPane;
+import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.plugins.graph.Vertex;
+import org.workcraft.plugins.graph.VisualVertex;
 
 
 public class MainWindow extends JFrame implements DockingConstants{
@@ -63,6 +66,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	ErrorView errorView;
 	JavaScriptView jsView;
 	PropertyView propertyView;
+
 	ToolboxView toolboxView;
 	// MDIPane content;
 
@@ -76,7 +80,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	InternalWindow testDoc;
 
-	GraphEditorPane editorInFocus;
+	GraphEditor editorInFocus;
 
 	private JMenuBar menuBar;
 
@@ -257,7 +261,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					return;
 				}
 
-				GraphEditorPane editor = new GraphEditorPane(this, we);
+				GraphEditor editor = new GraphEditor(this, we);
 				String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
 				Dockable dockable;
 
@@ -379,7 +383,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
-	public void requestFocus (GraphEditorPane sender) {
+	public void requestFocus (GraphEditor sender) {
 		if (editorInFocus != null)
 			editorInFocus.removeFocus();
 
@@ -440,4 +444,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 	public void togglePropertyEditor() {
 
 	}
+
+	public PropertyView getPropertyView() {
+		return propertyView;
+	}
+
 }

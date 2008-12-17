@@ -3,11 +3,13 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
 @SuppressWarnings("serial")
 public class DockableView extends JPanel {
@@ -49,13 +51,20 @@ public class DockableView extends JPanel {
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout(0,0));
 		contentPane.add(content,BorderLayout.CENTER);
-		contentPane.add(header, BorderLayout.NORTH);
+		contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(this.getForeground()), title, TitledBorder.CENTER, TitledBorder.TOP));
+
+		//contentPane.add(header, BorderLayout.NORTH);
 
 		add(contentPane, BorderLayout.CENTER);
 	}
 
 	public void setStandalone(boolean standalone) {
 		this.standalone = standalone;
+
+		if (standalone)
+			contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(this.getForeground()), title, TitledBorder.CENTER, TitledBorder.TOP, this.getFont().deriveFont(8)));
+		else
+			contentPane.setBorder(null);
 
 	}
 

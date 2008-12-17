@@ -11,7 +11,7 @@ import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.gui.edit.graph.GraphEditorPane;
+import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ComponentCreationTool implements GraphEditorTool {
@@ -21,7 +21,7 @@ public class ComponentCreationTool implements GraphEditorTool {
 		this.componentClass = componentClass;
 	}
 
-	public void drawInUserSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		// TODO Auto-generated method stub
 
 	}
@@ -108,7 +108,7 @@ public class ComponentCreationTool implements GraphEditorTool {
 
 	}
 
-	public void drawInScreenSpace(GraphEditorPane editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		// TODO Auto-generated method stub
 	}
 

@@ -207,5 +207,4 @@ public class VisualComponentGroup extends VisualNode {
 				rect.add(grp.getBoundingBoxInParentSpace());
 		return rect;
 	}
-
 }
