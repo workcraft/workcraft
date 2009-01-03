@@ -43,7 +43,6 @@ import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
-
 public class MainWindow extends JFrame implements DockingConstants{
 	private static final long serialVersionUID = 1L;
 	public ActionListener defaultActionListener = new ActionListener() {
@@ -135,7 +134,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					if ( comp instanceof DockableView) {
 						DockableView wnd = (DockableView)comp;
 						boolean inTab = arg0.getDockable().getComponent().getParent() instanceof JTabbedPane;
-						System.out.println(inTab);
+					//	System.out.println(inTab);
 						wnd.setStandalone(!inTab);
 					}
 				}

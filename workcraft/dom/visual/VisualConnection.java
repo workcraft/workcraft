@@ -15,6 +15,8 @@ public class VisualConnection implements Selectable {
 	VisualComponent first;
 	VisualComponent second;
 
+	float width = 0.05f;
+
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
@@ -25,7 +27,7 @@ public class VisualConnection implements Selectable {
 	public void draw(Graphics2D g) {
 		Line2D line = new Line2D.Double(first.getX(), first.getY(), second.getX(), second.getY());
 		g.setColor(Color.BLUE);
-		g.setStroke(new BasicStroke(0.1f));
+		g.setStroke(new BasicStroke(width));
 		g.draw(line);
 
 	}
