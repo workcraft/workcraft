@@ -1,6 +1,9 @@
 package org.workcraft.gui.edit.tools;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -109,7 +112,12 @@ public class ComponentCreationTool implements GraphEditorTool {
 	}
 
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		// TODO Auto-generated method stub
+		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+		String message = "Click to create a " + componentClass.getSimpleName();
+		Rectangle2D r = g.getFont().getStringBounds(message, g.getFontRenderContext());
+		g.setColor(Color.BLUE);
+		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
+
 	}
 
 }
