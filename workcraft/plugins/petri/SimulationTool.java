@@ -20,6 +20,7 @@ public class SimulationTool implements GraphEditorTool {
 	}
 
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+
 	}
 
 	public String getIconPath() {
