@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.edit.graph;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -12,13 +12,14 @@ import javax.swing.JToggleButton;
 
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
+import org.workcraft.gui.DisabledPanel;
 import org.workcraft.gui.edit.tools.ComponentCreationTool;
 import org.workcraft.gui.edit.tools.ConnectionTool;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
 
 @SuppressWarnings("serial")
-public class ToolboxView extends JPanel {
+public class EditorToolboxView extends JPanel {
 	Framework framework;
 
 	SelectionTool selectionTool;
@@ -74,11 +75,24 @@ public class ToolboxView extends JPanel {
 		reverseMap.clear();
 		removeAll();
 		setLayout(new FlowLayout (FlowLayout.LEFT, 5, 5));
+
 		addCommonTools();
 
 		for (Class<?> cls : model.getMathModel().getSupportedComponents()) {
 			ComponentCreationTool tool = new ComponentCreationTool(cls);
 			addTool(tool, false);
+		}
+
+		for (Class<?> cls : model.getVisualModel().getAdditionalToolClasses()) {
+			if (GraphEditorTool.class.isAssignableFrom(cls)) {
+				try {
+					addTool((GraphEditorTool)cls.newInstance(), false);
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		selectedTool = selectionTool;
@@ -98,7 +112,7 @@ public class ToolboxView extends JPanel {
 		this.repaint();
 	}
 
-	public ToolboxView(Framework framework) {
+	public EditorToolboxView(Framework framework) {
 		super();
 		this.framework = framework;
 

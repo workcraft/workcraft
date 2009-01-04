@@ -14,6 +14,7 @@ import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.gui.edit.tools.GraphEditorTool;
 
 public class VisualModel implements Plugin, Model {
 	protected MathModel mathModel;
@@ -207,4 +208,7 @@ public class VisualModel implements Plugin, Model {
 		return ret;
 	}
 
+	public Class<?>[] getAdditionalToolClasses() {
+		return null;
+	}
 }
