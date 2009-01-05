@@ -36,7 +36,7 @@ public class VisualTransition extends VisualComponent {
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
-		g.setColor(userFillColor);
+		g.setColor(Coloriser.colorise(userFillColor, colorisation));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(userBorderColor, colorisation));
 		g.setStroke(new BasicStroke(strokeWidth));
