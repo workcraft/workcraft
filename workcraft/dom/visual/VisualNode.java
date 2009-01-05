@@ -1,5 +1,6 @@
 package org.workcraft.dom.visual;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -22,6 +23,8 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	protected LinkedList<PropertyDeclaration> propertyDeclarations;
 	protected LinkedList<PropertyEditableListener> propertyEditableListeners;
 
+	protected Color colorisation;
+
 	VisualComponentGroup parent;
 
 	public VisualNode(VisualComponentGroup parent) {
@@ -29,6 +32,8 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 		transform.setToIdentity();
 
 		this.parent = parent;
+
+		colorisation = null;
 
 		propertyEditableListeners = new LinkedList<PropertyEditableListener>();
 
@@ -162,5 +167,17 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 	public void firePropertyChanged(String propertyName) {
 		for (PropertyEditableListener l : propertyEditableListeners)
 			l.propertyChanged(propertyName, this);
+	}
+
+	public void setColorisation (Color color) {
+		colorisation = color;
+	}
+
+	public Color getColorisation (Color color) {
+		return colorisation;
+	}
+
+	public void resetColorisation() {
+		setColorisation(null);
 	}
 }

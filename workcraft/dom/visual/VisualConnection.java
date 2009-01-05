@@ -17,19 +17,22 @@ public class VisualConnection implements Selectable {
 
 	float width = 0.05f;
 
+	Color defaultColor;
+	Color userColor;
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
 		this.first = first;
 		this.second = second;
+		this.defaultColor = Color.BLUE;
+		this.userColor = defaultColor;
 	}
 
 	public void draw(Graphics2D g) {
 		Line2D line = new Line2D.Double(first.getX(), first.getY(), second.getX(), second.getY());
-		g.setColor(Color.BLUE);
+		g.setColor(userColor);
 		g.setStroke(new BasicStroke(width));
 		g.draw(line);
-
 	}
 
 	public void toXML(Element vconElement) {
