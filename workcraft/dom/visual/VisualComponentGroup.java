@@ -82,8 +82,12 @@ public class VisualComponentGroup extends VisualNode {
 		// Apply group transform
 		g.transform(transform);
 
-		for (VisualConnection connection : connections)
+		for (VisualConnection connection : connections) {
+			AffineTransform rest2 = g.getTransform();
 			connection.draw(g);
+			g.setTransform(rest2);
+		}
+
 
 		for (VisualComponentGroup group : childGroups) {
 			AffineTransform rest2 = g.getTransform();
@@ -206,5 +210,15 @@ public class VisualComponentGroup extends VisualNode {
 			else
 				rect.add(grp.getBoundingBoxInParentSpace());
 		return rect;
+	}
+
+	@Override
+	public void clearColorisation() {
+		for (VisualComponentGroup g : childGroups)
+			g.clearColorisation();
+		for (VisualComponent c: components)
+			c.clearColorisation();
+		for (VisualConnection c: connections)
+			c.clearColorisation();
 	}
 }

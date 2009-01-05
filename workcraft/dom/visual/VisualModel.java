@@ -1,6 +1,7 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
@@ -208,7 +209,11 @@ public class VisualModel implements Plugin, Model {
 		return ret;
 	}
 
-	public Class<?>[] getAdditionalToolClasses() {
-		return null;
+	public ArrayList<Class<? extends GraphEditorTool>> getAdditionalToolClasses() {
+		return new ArrayList<Class<? extends GraphEditorTool>>();
+	}
+
+	public void clearColorisation() {
+		root.clearColorisation();
 	}
 }

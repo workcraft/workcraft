@@ -6,6 +6,8 @@ import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public interface GraphEditorTool {
+	public void activated(GraphEditor editor);
+	public void deactivated(GraphEditor editor);
 
 	public void mouseMoved(GraphEditorMouseEvent e);
 	public void mouseClicked(GraphEditorMouseEvent e);

@@ -4,8 +4,8 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 
 public abstract class VisualComponent extends VisualNode {
-	Component refComponent = null;
-	VisualComponentGroup parent;
+	protected Component refComponent = null;
+	protected VisualComponentGroup parent;
 
 	public VisualComponent(Component refComponent, VisualComponentGroup parent) {
 		super(parent);

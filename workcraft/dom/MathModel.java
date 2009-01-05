@@ -2,6 +2,7 @@ package org.workcraft.dom;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -244,14 +245,12 @@ public abstract class MathModel implements Plugin, Model {
 		connections.remove(connection);
 	}
 
-	abstract public Class<?>[] getSupportedComponents();
 	abstract protected void validateConnection(Connection connection) throws InvalidConnectionException;
 	abstract public void validate() throws ModelValidationException;
 
 	public Connection getConnectionByID(int ID) {
 		return connections.get(ID);
 	}
-
 
 	public MathModel getMathModel() {
 		return this;
@@ -262,7 +261,9 @@ public abstract class MathModel implements Plugin, Model {
 		return null;
 	}
 
-	public abstract Class<?>[] getComponentClasses();
+	public ArrayList<Class<? extends Component>> getSupportedComponents() {
+		return new ArrayList<Class<? extends Component>>();
+	}
 
 	public String getDisplayName() {
 		DisplayName name = this.getClass().getAnnotation(DisplayName.class);

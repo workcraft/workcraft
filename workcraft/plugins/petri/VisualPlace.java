@@ -12,19 +12,47 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 public class VisualPlace extends VisualComponent {
-	private static double size = 1;
-	private static float strokeWidth = 0.1f;
-	private static double singleTokenSize = size / 1.9;
-	private static double multipleTokenSeparation = strokeWidth / 8;
+	protected static double size = 1;
+	protected static float strokeWidth = 0.1f;
+	protected static double singleTokenSize = size / 1.9;
+	protected static double multipleTokenSeparation = strokeWidth / 8;
+
+	protected static Color defaultBorderColor = Color.BLACK;
+	protected static Color defaultFillColor = Color.WHITE;
+	protected static Color defaultTokenColor = Color.BLACK;
+
+	protected Color userBorderColor = defaultBorderColor;
+	protected Color userFillColor = defaultFillColor;
+	protected Color userTokenColor = defaultTokenColor;
+
+	public Place getPlace() {
+		return (Place)refComponent;
+	}
+
+	public int getTokens() {
+		return getPlace().getTokens();
+	}
+
+	public void setTokens(int tokens) {
+		getPlace().setTokens(tokens);
+	}
 
 	public VisualPlace(Place place, VisualComponentGroup parent) {
 		super(place, parent);
+		addPropertyDeclarations();
 	}
 
 	public VisualPlace(Place place, Element xmlElement, VisualComponentGroup parent) {
 		super(place, xmlElement, parent);
+		addPropertyDeclarations();
+	}
+
+	protected void addPropertyDeclarations() {
+		propertyDeclarations.add(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 	}
 
 	@Override
@@ -36,9 +64,9 @@ public class VisualPlace extends VisualComponent {
 				size - strokeWidth,
 				size - strokeWidth);
 
-		g.setColor(Color.WHITE);
+		g.setColor(userFillColor);
 		g.fill(shape);
-		g.setColor(Color.BLACK);
+		g.setColor(Coloriser.colorise(userBorderColor, colorisation));
 		g.setStroke(new BasicStroke(strokeWidth));
 		g.draw(shape);
 
@@ -52,7 +80,7 @@ public class VisualPlace extends VisualComponent {
 					singleTokenSize,
 					singleTokenSize);
 
-			g.setColor(Color.BLACK);
+			g.setColor(Coloriser.colorise(userTokenColor, colorisation));
 			g.fill(shape);
 		}
 		else
@@ -77,7 +105,7 @@ public class VisualPlace extends VisualComponent {
 								r * 2,
 								r * 2);
 
-					g.setColor(Color.BLACK);
+					g.setColor(Coloriser.colorise(userTokenColor, colorisation));
 					g.fill(shape);
 				}
 			}
@@ -88,8 +116,7 @@ public class VisualPlace extends VisualComponent {
 
 				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
 				g.setFont(superFont);
-
-
+				g.setColor(Coloriser.colorise(userTokenColor, colorisation));
 				g.drawString(Integer.toString(p.tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
 			}
 	}

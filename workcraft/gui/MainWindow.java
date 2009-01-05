@@ -433,6 +433,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
+	public GraphEditor getCurrentEditor() {
+		return editorInFocus;
+	}
+
 	public void repaintCurrentEditor() {
 		if (editorInFocus != null)
 			editorInFocus.repaint();

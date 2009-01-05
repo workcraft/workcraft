@@ -43,7 +43,6 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
 
 		_tmp = new double[8];
-
 	}
 
 	public VisualNode (Element xmlElement, VisualComponentGroup parent) {
@@ -177,7 +176,7 @@ public abstract class VisualNode implements PropertyEditable, Selectable {
 		return colorisation;
 	}
 
-	public void resetColorisation() {
+	public void clearColorisation() {
 		setColorisation(null);
 	}
 }

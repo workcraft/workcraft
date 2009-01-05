@@ -175,4 +175,10 @@ public class ConnectionTool implements GraphEditorTool {
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
+	public void deactivated(GraphEditor editor) {
+	}
+
+	public void activated(GraphEditor editor) {
+	}
+
 }

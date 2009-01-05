@@ -1,6 +1,9 @@
 package org.workcraft.plugins.graph;
 
+import java.util.ArrayList;
+
 import org.w3c.dom.Element;
+import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
@@ -15,7 +18,6 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @DisplayName ("Directed Graph")
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
 public class Graph extends MathModel {
-	protected static final Class<?>[] supportedComponents = new Class<?>[] { Vertex.class };
 
 	public Graph(Framework framework) {
 		super(framework);
@@ -27,10 +29,11 @@ public class Graph extends MathModel {
 
 
 	@Override
-	public Class<?>[] getSupportedComponents() {
-		return supportedComponents;
+	public ArrayList<Class<? extends Component>> getSupportedComponents() {
+		ArrayList<Class<? extends Component>> list = new ArrayList<Class<? extends Component>>(super.getSupportedComponents());
+		list.add(Vertex.class);
+		return list;
 	}
-
 
 	@Override
 	public void validate() throws ModelValidationException {
@@ -55,9 +58,4 @@ public class Graph extends MathModel {
 		return v;
 	}
 
-	public Class<?>[] getComponentClasses() {
-		return new Class<?>[] {
-				Vertex.class
-		};
-	}
 }

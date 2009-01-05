@@ -10,10 +10,15 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.gui.Coloriser;
 
 public class VisualTransition extends VisualComponent {
-	private static double size = 1;
-	private static float strokeWidth = 0.1f;
+	protected static double size = 1;
+	protected static float strokeWidth = 0.1f;
+	protected static Color defaultBorderColor = Color.BLACK;
+	protected static Color defaultFillColor = Color.WHITE;
+	protected Color userBorderColor = defaultBorderColor;
+	protected Color userFillColor = defaultFillColor;
 
 	public VisualTransition(Transition transition, VisualComponentGroup parent) {
 		super(transition, parent);
@@ -31,9 +36,9 @@ public class VisualTransition extends VisualComponent {
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
-		g.setColor(Color.WHITE);
+		g.setColor(userFillColor);
 		g.fill(shape);
-		g.setColor(Color.BLACK);
+		g.setColor(Coloriser.colorise(userBorderColor, colorisation));
 		g.setStroke(new BasicStroke(strokeWidth));
 		g.draw(shape);
 	}

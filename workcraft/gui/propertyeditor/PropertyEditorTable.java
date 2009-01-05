@@ -22,7 +22,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		setModel(model);
 
 		propertyClasses = new HashMap<Class<?>, PropertyClass>();
-		propertyClasses.put(Integer.class, new IntegerProperty());
+		propertyClasses.put(int.class, new IntegerProperty());
 		propertyClasses.put(double.class, new DoubleProperty());
 	}
 

@@ -20,7 +20,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 public class ComponentCreationTool implements GraphEditorTool {
 	protected Class<?> componentClass;
 
-	public ComponentCreationTool (Class<?> componentClass) {
+	public ComponentCreationTool (Class<? extends Component> componentClass) {
 		this.componentClass = componentClass;
 	}
 
@@ -76,38 +76,28 @@ public class ComponentCreationTool implements GraphEditorTool {
 			e.getEditor().getModel().fireModelStructureChanged();
 
 		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (NoSuchMethodException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IllegalArgumentException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (InvocationTargetException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (VisualModelConstructionException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (InvalidComponentException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (DuplicateIDException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 	}
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -118,6 +108,12 @@ public class ComponentCreationTool implements GraphEditorTool {
 		g.setColor(Color.BLUE);
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 
+	}
+
+	public void deactivated(GraphEditor editor) {
+	}
+
+	public void activated(GraphEditor editor) {
 	}
 
 }

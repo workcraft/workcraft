@@ -10,6 +10,7 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+import org.workcraft.dom.Component;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.gui.DisabledPanel;
@@ -58,8 +59,12 @@ public class EditorToolboxWindow extends JPanel {
 	}
 
 	public void selectTool(GraphEditorTool tool) {
-		if (selectedTool != null)
+		if (selectedTool != null) {
+			selectedTool.deactivated(framework.getMainWindow().getCurrentEditor());
+			framework.getMainWindow().getCurrentEditor().getModel().getVisualModel().clearColorisation();
 			reverseMap.get(selectedTool).setSelected(false);
+		}
+		tool.activated(framework.getMainWindow().getCurrentEditor());
 		reverseMap.get(tool).setSelected(true);
 		selectedTool = tool;
 		framework.getMainWindow().repaintCurrentEditor();
@@ -78,7 +83,7 @@ public class EditorToolboxWindow extends JPanel {
 
 		addCommonTools();
 
-		for (Class<?> cls : model.getMathModel().getSupportedComponents()) {
+		for (Class<? extends Component> cls : model.getMathModel().getSupportedComponents()) {
 			ComponentCreationTool tool = new ComponentCreationTool(cls);
 			addTool(tool, false);
 		}
@@ -118,7 +123,6 @@ public class EditorToolboxWindow extends JPanel {
 
 		selectionTool = new SelectionTool();
 		connectionTool = new ConnectionTool();
-
 		selectedTool = null;
 
 		clearTools();

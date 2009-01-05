@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
@@ -46,11 +47,11 @@ public class PetriNet extends MathModel {
 
 
 	@Override
-	public Class<?>[] getSupportedComponents() {
-		return new Class<?>[] {
-				Place.class,
-				Transition.class
-		};
+	public ArrayList<Class<? extends Component>> getSupportedComponents() {
+		ArrayList<Class<? extends Component>> list = new ArrayList<Class<? extends Component>>(super.getSupportedComponents());
+		list.add(Place.class);
+		list.add(Transition.class);
+		return list;
 	}
 
 
@@ -94,11 +95,4 @@ public class PetriNet extends MathModel {
 
 		return newTransition;
 	}
-
-	@Override
-	public Class<?>[] getComponentClasses() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

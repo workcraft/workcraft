@@ -10,14 +10,20 @@ import org.workcraft.dom.VisualClass;
 public class Place extends Component {
 
 	protected int tokens = 0;
-	private static int counter = 0;
-
-	public Place() {
-		super();
-		tokens = (counter++) % 20;
-	}
 
 	public Place(Element xmlElement) {
 		super(xmlElement);
+	}
+
+	public Place() {
+		super();
+	}
+
+	public int getTokens() {
+		return tokens;
+	}
+
+	public void setTokens(int tokens) {
+		this.tokens = tokens;
 	}
 }
