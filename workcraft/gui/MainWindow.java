@@ -409,21 +409,39 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
+	private static String removeSpecialFileNameCharacters(String fileName)
+	{
+		return fileName
+			.replace('\\', '_')
+			.replace('/', '_')
+			.replace(':', '_')
+			.replace('"', '_')
+			.replace('<', '_')
+			.replace('>', '_')
+			.replace('|', '_');
+	}
+
 	public void saveAs(WorkspaceEntry we) {
 		JFileChooser fc = new JFileChooser();
+		fc.setDialogType(JFileChooser.SAVE_DIALOG);
+
+		String title = we.getModel().getTitle();
+		title = removeSpecialFileNameCharacters(title);
+
+		fc.setSelectedFile(new File(title));
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+
 		if(fc.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) {
 			String path = fc.getSelectedFile().getPath();
-			if (fc.getSelectedFile().exists())
+			if (!fc.getSelectedFile().exists())
 				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION))
-					path += ".work";
+					path += FileFilters.DOCUMENT_EXTENSION;
 
 			File f = new File(path);
-			if (f.exists());
-			if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()+"\" already exists. Do you want to overwrite it?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
-				return;
+			if (f.exists())
+				if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()+"\" already exists. Do you want to overwrite it?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
+					return;
 			try {
-
 				framework.save(we.getModel(), path);
 				we.setFile(fc.getSelectedFile());
 				we.setUnsaved(false);
