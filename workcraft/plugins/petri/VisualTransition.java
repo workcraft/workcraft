@@ -46,7 +46,10 @@ public class VisualTransition extends VisualComponent {
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
+			return 1;
+		else
+			return 0;
 	}
 }

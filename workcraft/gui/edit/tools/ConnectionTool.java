@@ -11,8 +11,8 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -90,14 +90,10 @@ public class ConnectionTool implements GraphEditorTool {
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
 
-		Selectable mouseOverObject = e.getModel().getRoot().hitObject(e.getPosition());
+		highlight = e.getModel().getRoot().hitComponent(e.getPosition());
 
-		if (mouseOverObject != null  && mouseOverObject instanceof VisualComponent) {
-			highlight = (VisualComponent)mouseOverObject;
-			if (highlight == first)
+		if (highlight == first)
 				highlight = null;
-		} else
-			highlight = null;
 
 		e.getEditor().repaint();
 	}
@@ -106,11 +102,7 @@ public class ConnectionTool implements GraphEditorTool {
 
 		if (e.getButton() == MouseEvent.BUTTON1) {
 
-			Selectable mouseOverObject = e.getModel().getRoot().hitObject(e.getPosition());
-			VisualComponent vc = null;
-
-			if (mouseOverObject != null  && mouseOverObject instanceof VisualComponent)
-				vc = (VisualComponent)mouseOverObject;
+			VisualComponent vc = e.getModel().getRoot().hitComponent(e.getPosition());
 
 			switch (state) {
 			case NOTHING_SELECTED:

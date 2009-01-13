@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.visual.Selectable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
@@ -249,7 +248,7 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 	public void selectionChanged() {
 		repaint();
 
-		Selectable selection[] = visualModel.getSelection();
+		VisualNode selection[] = visualModel.getSelection();
 		if (selection.length == 1 && selection[0] instanceof PropertyEditable) {
 
 			PropertyEditable p = parent.getPropertyView().getObject();

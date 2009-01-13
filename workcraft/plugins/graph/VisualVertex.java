@@ -45,7 +45,10 @@ public class VisualVertex extends VisualComponent {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0,0) < size * size;
+	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		if (pointInLocalSpace.distanceSq(0,0) < size * size)
+			return 1;
+		else
+			return 0;
 	}
 }

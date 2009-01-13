@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.gui.Coloriser;
 
-public class VisualConnection implements Selectable {
+public class VisualConnection extends VisualNode {
 	protected Connection refConnection;
 	protected VisualComponent first;
 	protected VisualComponent second;
@@ -23,9 +23,9 @@ public class VisualConnection implements Selectable {
 
 	protected Color defaultColor = Color.BLUE;
 	protected Color userColor = defaultColor;
-	protected Color colorisation = null;
 
-	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
+	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second, VisualComponentGroup parent) {
+		super(parent);
 		this.refConnection = refConnection;
 		this.first = first;
 		this.second = second;
@@ -58,17 +58,17 @@ public class VisualConnection implements Selectable {
 		return refConnection;
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return false;
+	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return 0;
 	}
 
-	public boolean hitTestInParentSpace(Point2D pointInParentSpace) {
-		return false;
+	public int hitTestInParentSpace(Point2D pointInParentSpace) {
+		return 0;
 	}
 
-	public boolean hitTestInUserSpace(Point2D pointInUserSpace) {
+	public int hitTestInUserSpace(Point2D pointInUserSpace) {
 		// TODO: detect hits
-		return false;
+		return 0;
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {

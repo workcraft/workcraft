@@ -3,7 +3,7 @@ package org.workcraft.dom.visual;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 
-public abstract class VisualComponent extends VisualNode {
+public abstract class VisualComponent extends VisualTransformableNode {
 	protected Component refComponent = null;
 	protected VisualComponentGroup parent;
 

@@ -9,10 +9,9 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
 
-import org.workcraft.dom.visual.Selectable;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -33,34 +32,24 @@ public class SelectionTool implements GraphEditorTool {
 	private Point2D prevPosition;
 	private Point2D startPosition;
 	private Point2D snapOffset;
-	private LinkedList<Selectable> savedSelection = new LinkedList<Selectable>();
+	private LinkedList<VisualNode> savedSelection = new LinkedList<VisualNode>();
 	private int selectionMode;
 
 
 	protected void clearSelection(VisualModel model) {
-		for (Selectable so : model.getSelection()) {
-			if (so instanceof VisualNode)
-				((VisualNode)so).clearColorisation();
-			else if (so instanceof VisualConnection)
-				((VisualConnection)so).clearColorisation();
-		}
+		for (VisualNode so : model.getSelection())
+			so.clearColorisation();
 		model.selectNone();
 	}
 
-	protected void addToSelection(VisualModel model, Selectable so) {
+	protected void addToSelection(VisualModel model, VisualNode so) {
 		model.addToSelection(so);
-		if (so instanceof VisualNode)
-			((VisualNode)so).setColorisation(selectionColor);
-		else if (so instanceof VisualConnection)
-			((VisualConnection)so).setColorisation(selectionColor);
+		so.setColorisation(selectionColor);
 	}
 
-	protected void removeFromSelection(VisualModel model, Selectable so) {
+	protected void removeFromSelection(VisualModel model, VisualNode so) {
 		model.removeFromSelection(so);
-		if (so instanceof VisualNode)
-			((VisualNode)so).clearColorisation();
-		else if (so instanceof VisualConnection)
-			((VisualConnection)so).clearColorisation();
+		so.clearColorisation();
 	}
 
 	public void mouseClicked(GraphEditorMouseEvent e) {
@@ -71,7 +60,7 @@ public class SelectionTool implements GraphEditorTool {
 				cancelDrag(e);
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0)
 				clearSelection(model);
-			Selectable so = model.getRoot().hitObject(e.getPosition());
+			VisualNode so = model.getRoot().hitNode(e.getPosition());
 			if(so!=null)
 				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
 					removeFromSelection(model, so);
@@ -104,13 +93,13 @@ public class SelectionTool implements GraphEditorTool {
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<Selectable> hit = model.getRoot().hitObjects(selectionRect(e.getPosition()));
+			LinkedList<VisualNode> hit = model.getRoot().hitObjects(selectionRect(e.getPosition()));
 
 			clearSelection(model);
-			for (Selectable so: savedSelection)
+			for (VisualNode so: savedSelection)
 				addToSelection(model, so);
 
-			for(Selectable so : hit)
+			for(VisualNode so : hit)
 				if(selectionMode==SELECTION_ADD)
 					addToSelection(model, so);
 				else if(selectionMode==SELECTION_REMOVE)
@@ -129,7 +118,7 @@ public class SelectionTool implements GraphEditorTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			Selectable so = model.getRoot().hitObject(e.getPosition());
+			VisualNode so = model.getRoot().hitNode(e.getPosition());
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!model.isObjectSelected(so)) {
 					clearSelection(model);
@@ -137,8 +126,8 @@ public class SelectionTool implements GraphEditorTool {
 					model.fireSelectionChanged();
 				}
 				drag = DRAG_MOVE;
-				if(so instanceof VisualNode) {
-					VisualNode node = (VisualNode) so;
+				if(so instanceof VisualTransformableNode) {
+					VisualTransformableNode node = (VisualTransformableNode) so;
 					snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
 					prevPosition = new Point2D.Double(node.getX(), node.getY());
 				}
@@ -177,9 +166,9 @@ public class SelectionTool implements GraphEditorTool {
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
 		VisualModel model = e.getEditor().getModel().getVisualModel();
 
-		for(Selectable so : model.selection())
-			if(so instanceof VisualNode) {
-				VisualNode node = (VisualNode) so;
+		for(VisualNode so : model.selection())
+			if(so instanceof VisualTransformableNode) {
+				VisualTransformableNode node = (VisualTransformableNode) so;
 				node.setX(node.getX()+dx);
 				node.setY(node.getY()+dy);
 			}
@@ -195,7 +184,7 @@ public class SelectionTool implements GraphEditorTool {
 		}
 		else if(drag == DRAG_SELECT) {
 			clearSelection(model);
-			for (Selectable so: savedSelection)
+			for (VisualNode so: savedSelection)
 				addToSelection(model, so);
 			savedSelection.clear();
 			model.fireSelectionChanged();
@@ -215,11 +204,11 @@ public class SelectionTool implements GraphEditorTool {
 
 
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		VisualModel model = editor.getModel();
+		//VisualModel model = editor.getModel();
 		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
 		Rectangle2D.Double rect = null;
-		/*for(Selectable vo : model.getSelection()) {
+		/*for(VisualNode vo : model.getSelection()) {
 
 			if(vo==null)
 				continue;
@@ -271,12 +260,7 @@ public class SelectionTool implements GraphEditorTool {
 	}
 
 	public void activated(GraphEditor editor) {
-		for (Selectable so : editor.getModel().getSelection()) {
-			if (so instanceof VisualNode)
-				((VisualNode)so).setColorisation(selectionColor);
-			else if (so instanceof VisualConnection)
-				((VisualConnection)so).setColorisation(selectionColor);
-		}
+	//	for (VisualNode so : editor.getModel().getSelection())
+			//so.setColorisation(selectionColor);
 	}
-
 }

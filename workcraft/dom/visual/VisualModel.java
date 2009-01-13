@@ -21,7 +21,7 @@ public class VisualModel implements Plugin, Model {
 	protected MathModel mathModel;
 	protected VisualComponentGroup root;
 
-	protected LinkedList<Selectable> selection = new LinkedList<Selectable>();
+	protected LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
 
 	protected LinkedList<VisualModelListener> listeners;
 
@@ -75,7 +75,7 @@ public class VisualModel implements Plugin, Model {
 	 * Get the list of selected objects. Returned list is modifiable!
 	 * @return the selection.
 	 */
-	public LinkedList<Selectable> selection() {
+	public LinkedList<VisualNode> selection() {
 		return selection;
 	}
 
@@ -84,9 +84,7 @@ public class VisualModel implements Plugin, Model {
 	 */
 	public void selectAll() {
 		selection.clear();
-		selection.addAll(root.components);
-		selection.addAll(root.connections);
-		selection.addAll(root.childGroups);
+		selection.addAll(root.children);
 	}
 
 	/**
@@ -103,7 +101,7 @@ public class VisualModel implements Plugin, Model {
 	 * @param so selectable object
 	 * @return if <code>so</code> is selected
 	 */
-	public boolean isObjectSelected(Selectable so) {
+	public boolean isObjectSelected(VisualNode so) {
 		return selection.contains(so);
 	}
 
@@ -111,7 +109,7 @@ public class VisualModel implements Plugin, Model {
 	 * Add an object to the selection if it is not already selected.
 	 * @param so an object to select
 	 */
-	public void addToSelection(Selectable so) {
+	public void addToSelection(VisualNode so) {
 		if(!isObjectSelected(so))
 			selection.add(so);
 	}
@@ -120,7 +118,7 @@ public class VisualModel implements Plugin, Model {
 	 * Remove an object from the selection if it is selected.
 	 * @param so an object to deselect.
 	 */
-	public void removeFromSelection(Selectable so) {
+	public void removeFromSelection(VisualNode so) {
 		selection.remove(so);
 	}
 
@@ -195,13 +193,13 @@ public class VisualModel implements Plugin, Model {
 		mathModel.removeListener(listener);
 	}
 
-	public Selectable[] getSelection() {
-		return selection.toArray(new Selectable[0]);
+	public VisualNode[] getSelection() {
+		return selection.toArray(new VisualNode[0]);
 	}
 
 	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
 		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, first, second);
+		VisualConnection ret = new VisualConnection(con, first, second, root);
 		root.add(ret);
 
 		fireModelStructureChanged();
