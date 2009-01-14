@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -173,9 +174,12 @@ public class VisualComponentGroup extends VisualTransformableNode {
 	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
 		LinkedList<VisualNode> hit = new LinkedList<VisualNode>();
 
-		for (VisualNode n : children)
-			if(rectInLocalSpace.contains(n.getBoundingBoxInParentSpace()))
-				hit.add(n);
+		for (VisualNode n : children) {
+			Rectangle2D boundingBox = n.getBoundingBoxInParentSpace();
+			if(boundingBox != null)
+				if(rectInLocalSpace.contains(boundingBox))
+					hit.add(n);
+		}
 		return hit;
 	}
 
@@ -193,38 +197,48 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		return 0;
 	}
 
-	public VisualNode hitNode(Point2D pointInLocalSpace) {
-		for(VisualNode node: children)
-			if(node.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
-				if (node.hitTestInParentSpace(pointInLocalSpace)!=0)
-					return node;
+	private static <T  extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
+		for (T node : nodes) {
+			Rectangle2D boundingBox = node.getBoundingBoxInParentSpace();
+			if (boundingBox != null)
+				if (boundingBox.contains(pointInLocalSpace))
+					if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
+						return node;
+		}
 		return null;
 	}
 
+	public VisualNode hitNode(Point2D pointInLocalSpace) {
+		return hitVisualNode(pointInLocalSpace, children);
+	}
+
 	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		for(VisualComponent comp: components)
-			if(comp.getBoundingBoxInParentSpace().contains(pointInLocalSpace))
-				if (comp.hitTestInParentSpace(pointInLocalSpace)!=0)
-					return comp;
-		return null;
+		return hitVisualNode(pointInLocalSpace, components);
+	}
+
+	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
+	{
+		Rectangle2D addedRect = node.getBoundingBoxInParentSpace();
+
+		if(addedRect == null)
+			return rect;
+
+		if(rect==null) {
+			rect = new Rectangle2D.Double();
+			rect.setRect(addedRect);
+		}
+		else
+			rect.add(addedRect);
+
+		return rect;
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D.Double rect = null;
 		for(VisualComponent comp : components)
-			if(rect==null) {
-				rect = new Rectangle2D.Double();
-				rect.setRect(comp.getBoundingBoxInParentSpace());
-			}
-			else
-				rect.add(comp.getBoundingBoxInParentSpace());
+			rect = mergeRect(rect, comp);
 		for(VisualComponentGroup grp : groups)
-			if(rect==null) {
-				rect = new Rectangle2D.Double();
-				rect.setRect(grp.getBoundingBoxInParentSpace());
-			}
-			else
-				rect.add(grp.getBoundingBoxInParentSpace());
+			rect = mergeRect(rect, grp);
 		return rect;
 	}
 
