@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -27,9 +28,9 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 	protected VisualComponentGroup parent = null;
 
-	protected Set<VisualConnection> connections = new HashSet<VisualConnection>();
-	protected Set<VisualComponent> components = new HashSet<VisualComponent>();
-	protected Set<VisualComponentGroup> groups = new HashSet<VisualComponentGroup>();
+	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
+	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
+	protected Set<VisualComponentGroup> groups = new LinkedHashSet<VisualComponentGroup>();
 	protected Set<VisualNode> children = new HashSet<VisualNode>();
 
 	public VisualComponentGroup (VisualComponentGroup parent) {
@@ -254,5 +255,10 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		colorisation = color;
 		for (VisualNode node : children)
 			node.setColorisation(color);
+	}
+
+	public int getNextHighestDepth() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
