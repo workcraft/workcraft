@@ -257,8 +257,4 @@ public class VisualComponentGroup extends VisualTransformableNode {
 			node.setColorisation(color);
 	}
 
-	public int getNextHighestDepth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }
