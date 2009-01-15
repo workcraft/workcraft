@@ -29,23 +29,8 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public Rectangle2D getBoundingBoxInLocalSpace() {
-			throw new RuntimeException("Not implemented");
-		}
-
-		@Override
 		public Rectangle2D getBoundingBoxInParentSpace() {
 			return rectOuter;
-		}
-
-		@Override
-		public Rectangle2D getBoundingBoxInUserSpace() {
-			throw new RuntimeException("Not implemented");
-		}
-
-		@Override
-		public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			throw new RuntimeException("Not implemented");
 		}
 
 		@Override
@@ -53,11 +38,6 @@ public class VisualComponentGroupTests {
 			if(rectInner.contains(pointInParentSpace))
 				return 1;
 			return 0;
-		}
-
-		@Override
-		public int hitTestInUserSpace(Point2D pointInUserSpace) {
-			throw new RuntimeException("Not implemented");
 		}
 	}
 

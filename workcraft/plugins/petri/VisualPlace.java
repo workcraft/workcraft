@@ -51,7 +51,7 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclarations();
 	}
 
-	protected void addPropertyDeclarations() {
+	private void addPropertyDeclarations() {
 		propertyDeclarations.add(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 	}
 
@@ -126,7 +126,7 @@ public class VisualPlace extends VisualComponent {
 
 
 	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (pointInLocalSpace.distanceSq(0, 0) < size*size)
+		if (pointInLocalSpace.distanceSq(0, 0) < size*size/4)
 			return 1;
 		else
 			return 0;

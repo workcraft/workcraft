@@ -24,7 +24,6 @@ public class SelectionTool implements GraphEditorTool {
 	private static final int SELECTION_REMOVE = 1;
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
-	//	protected Color selectionFillColor = new Color(200, 200, 200, 32);
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
 	protected Color selectionColor = Color.RED;
 
@@ -171,6 +170,7 @@ public class SelectionTool implements GraphEditorTool {
 				VisualTransformableNode node = (VisualTransformableNode) so;
 				node.setX(node.getX()+dx);
 				node.setY(node.getY()+dy);
+				node.firePropertyChanged("transform");
 			}
 
 		model.fireLayoutChanged();

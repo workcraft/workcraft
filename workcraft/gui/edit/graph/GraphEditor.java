@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
@@ -28,9 +29,8 @@ import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
-import org.workcraft.gui.propertyeditor.PropertyEditableListener;
 
-public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyEditableListener{
+public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyChangeListener{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;

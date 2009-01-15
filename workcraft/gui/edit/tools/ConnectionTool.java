@@ -12,8 +12,8 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -54,12 +54,20 @@ public class ConnectionTool implements GraphEditorTool {
 
 		if (highlight!=null) {
 			g.setColor(Color.RED);
-			g.draw(highlight.getBoundingBoxInUserSpace());
+			try {
+				g.draw(highlight.getBoundingBoxInAncestorSpace(editor.getModel().getRoot()));
+			} catch (NotAnAncestorException e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (first!=null) {
 			g.setColor(Color.RED);
-			g.draw(first.getBoundingBoxInUserSpace());
+			try {
+				g.draw(first.getBoundingBoxInAncestorSpace(editor.getModel().getRoot()));
+			} catch (NotAnAncestorException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

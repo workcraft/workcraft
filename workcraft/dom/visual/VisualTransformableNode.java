@@ -4,37 +4,45 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
 
 public abstract class VisualTransformableNode extends VisualNode {
-	private double[] _tmp = new double[8];
 	private Point2D _tmpPoint = new Point2D.Double();
 
 	protected AffineTransform localToParentTransform = new AffineTransform();
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
+	private void addPropertyDeclarations() {
+		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", double.class));
+		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
+	}
+
 	public VisualTransformableNode(VisualComponentGroup parent) {
 		super(parent);
+		addPropertyDeclarations();
 	}
 
 	public VisualTransformableNode (Element xmlElement, VisualComponentGroup parent) {
 		super (xmlElement, parent);
+		addPropertyDeclarations();
 		NodeList nodes = xmlElement.getElementsByTagName("transform");
 		Element vnodeElement = (Element)nodes.item(0);
-		setX (XmlUtil.readDoubleAttr(vnodeElement, "x", 0));
-		setY (XmlUtil.readDoubleAttr(vnodeElement, "y", 0));
+		setX (XmlUtil.readDoubleAttr(vnodeElement, "X", 0));
+		setY (XmlUtil.readDoubleAttr(vnodeElement, "Y", 0));
 	}
+
+
 
 	public void toXML(Element xmlElement) {
 		super.toXML(xmlElement);
 		Element vnodeElement = xmlElement.getOwnerDocument().createElement("transform");
-		XmlUtil.writeDoubleAttr(vnodeElement, "x", getX());
-		XmlUtil.writeDoubleAttr(vnodeElement, "y", getY());
+		XmlUtil.writeDoubleAttr(vnodeElement, "X", getX());
+		XmlUtil.writeDoubleAttr(vnodeElement, "Y", getY());
 		xmlElement.appendChild(vnodeElement);
 	}
 
@@ -56,25 +64,8 @@ public abstract class VisualTransformableNode extends VisualNode {
 		transformChanged();
 	}
 
-	public Point2D getPositionInParentSpace() {
-		Point2D src = new Point2D.Double(0,0);
-		Point2D dst = new Point2D.Double();
-		localToParentTransform.transform(src, dst);
-		return dst;
-	}
-
-	public Point2D getPositionInUserSpace() {
-		VisualComponentGroup p = parent;
-		Point2D src = getPositionInParentSpace();
-		Point2D dst = new Point2D.Double();
-
-		while (p!=null) {
-			p.getLocalToParentTransform().transform(src, dst);
-			src.setLocation(dst);
-			p = p.getParent();
-		}
-
-		return dst;
+	public Point2D getPosition() {
+		return new Point2D.Double(getX(), getY());
 	}
 
 	protected void transformChanged() {
@@ -85,66 +76,32 @@ public abstract class VisualTransformableNode extends VisualNode {
 		}
 	}
 
+	public abstract int hitTestInLocalSpace(Point2D pointInLocalSpace);
+
 	public int hitTestInParentSpace(Point2D pointInParentSpace) {
 		parentToLocalTransform.transform(pointInParentSpace, _tmpPoint);
 		return hitTestInLocalSpace(_tmpPoint);
 	}
 
-	public int hitTestInUserSpace(Point2D pointInUserSpace) {
-		VisualComponentGroup p = parent;
 
-		LinkedList<AffineTransform> transformStack = new LinkedList<AffineTransform>();
+	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 
-		// walk up the hierarchy to the root node
-		while (p.getParent()!=null) {
-			transformStack.push(p.getParentToLocalTransform());
-			p = p.getParent();
-		}
+    public Rectangle2D getBoundingBoxInParentSpace() {
+    	Rectangle2D parentBB = getBoundingBoxInLocalSpace();
 
-		_tmpPoint.setLocation(pointInUserSpace);
+		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
+		Point2D p1 = new Point2D.Double(parentBB.getMaxX(), parentBB.getMaxY());
 
-		// apply all transforms from root to this node's parent
-		for (AffineTransform t: transformStack)
-			t.transform(_tmpPoint, _tmpPoint);
-
-		// now the point is in parent space
-		return hitTestInParentSpace(_tmpPoint);
-	}
-
-	public Rectangle2D getBoundingBoxInParentSpace() {
-		Rectangle2D localBB = getBoundingBoxInLocalSpace();
-
-		_tmp[0] = localBB.getMinX();
-		_tmp[1] = localBB.getMinY();
-		_tmp[2] = localBB.getMaxX();
-		_tmp[3] = localBB.getMaxY();
-
-		localToParentTransform.transform(_tmp, 0, _tmp, 0, 2);
+		AffineTransform t = getLocalToParentTransform();
+		t.transform(p0, p0);
+		t.transform(p1, p1);
 
 		return new Rectangle2D.Double (
-				_tmp[0], _tmp[1],
-				_tmp[2]-_tmp[0], _tmp[3]-_tmp[1]
+				p0.getX(), p0.getY(),
+				p1.getX()-p0.getX(),p1.getY() - p0.getY()
 		);
-	}
+     }
 
-	public Rectangle2D getBoundingBoxInUserSpace() {
-		Rectangle2D bb = getBoundingBoxInParentSpace();
-		VisualComponentGroup p = parent;
-
-		while (p != null) {
-			_tmp[0] = bb.getMinX();
-			_tmp[1] = bb.getMinY();
-			_tmp[2] = bb.getMaxX();
-			_tmp[3] = bb.getMaxY();
-
-			p.getLocalToParentTransform().transform(_tmp, 0, _tmp, 0, 2);
-
-			bb.setRect(_tmp[0], _tmp[1], _tmp[2]-_tmp[0], _tmp[3]-_tmp[1]);
-			p = p.getParent();
-		}
-
-		return bb;
-	}
 
 	public AffineTransform getLocalToParentTransform() {
 		return localToParentTransform;
@@ -153,4 +110,5 @@ public abstract class VisualTransformableNode extends VisualNode {
 	public AffineTransform getParentToLocalTransform() {
 		return parentToLocalTransform;
 	}
+
 }
