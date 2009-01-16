@@ -21,8 +21,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected VisualComponent first;
 	protected VisualComponent second;
 
-	protected Point2D start = new Point2D.Double();
-	protected Point2D connectionEnd = new Point2D.Double();
+	protected Point2D firstCenter = new Point2D.Double();
+	protected Point2D secondCenter = new Point2D.Double();
+	protected Point2D lineStart = new Point2D.Double();
 	protected Point2D lineEnd = new Point2D.Double();
 	protected Point2D arrowHeadPosition = new Point2D.Double();
 	protected double arrowOrientation = 0;
@@ -30,6 +31,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected double width = 0.02;
 	protected double arrowWidth = 0.2;
 	protected double arrowLength = 0.4;
+	protected double hitThreshold = 0.2;
 
 	protected Color defaultColor = Color.BLUE;
 	protected Color userColor = defaultColor;
@@ -49,8 +51,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		update();
 	}
 
+	protected Point2D getPointOnCenterLine (double t) {
+		return new Point2D.Double(firstCenter.getX() * (1-t) + secondCenter.getX() * t, firstCenter.getY() * (1-t) + secondCenter.getY() * t);
+	}
+
 	protected Point2D getPointOnConnection(double t) {
-		return new Point2D.Double(start.getX() * (1-t) + connectionEnd.getX() * t, start.getY() * (1-t) + connectionEnd.getY() * t);
+		return new Point2D.Double(lineStart.getX() * (1-t) + arrowHeadPosition.getX() * t, lineStart.getY() * (1-t) + arrowHeadPosition.getY() * t);
 	}
 
 	public void update() {
@@ -63,18 +69,22 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			return;
 		}
 
-		start = first.getPosition();
-		t1.transform(start, start);
+		// get centres of the two components in this connection's parent space
+		Rectangle2D firstBB = first.getBoundingBoxInParentSpace();
+		Rectangle2D secondBB = second.getBoundingBoxInParentSpace();
 
-		connectionEnd = second.getPosition();
-		t2.transform(connectionEnd, connectionEnd);
+		firstCenter.setLocation(firstBB.getCenterX(), firstBB.getCenterY());
+		secondCenter.setLocation(secondBB.getCenterX(), secondBB.getCenterY());
 
-		double t = 0.0f, dt = 1.0f;
+		t1.transform(firstCenter, firstCenter);
+		t2.transform(secondCenter, secondCenter);
 
-
-		AffineTransform tr;
+		// create transforms from this connection's parent space to
+		// components' parent spaces, for hit testing
+		AffineTransform it1, it2;
 		try {
-			tr = t2.createInverse();
+			it1 = t1.createInverse();
+			it2 = t2.createInverse();
 		} catch (NoninvertibleTransformException e) {
 			e.printStackTrace();
 			return;
@@ -82,38 +92,55 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		Point2D pt = new Point2D.Double();
 
-		while(dt > 1e-8)
+		// find connection line starting point
+		double t = 1.0, dt = 1.0;
+
+		while(dt > 1e-6)
 		{
-			dt /= 2.0f;
+			dt /= 2.0;
+			t -= dt;
+			pt = getPointOnCenterLine(t);
+			lineStart.setLocation(pt);
+			it1.transform(pt, pt);
+			if (first.hitTestInParentSpace(pt) != 0)
+				t+=dt;
+		}
+
+		// find arrowHeadPosition
+		t = 0.0; dt = 1.0;
+
+		while(dt > 1e-6)
+		{
+			dt /= 2.0;
 			t += dt;
-			pt = getPointOnConnection(t);
+			pt = getPointOnCenterLine(t);
 			arrowHeadPosition.setLocation(pt);
 
-			tr.transform(pt, pt);
+			it2.transform(pt, pt);
 			if (second.hitTestInParentSpace(pt) != 0)
 				t-=dt;
 		}
 
-		dt = 1.0f;
-
-		while(dt > 1e-8)
+		//  find connection line ending point
+		t = 0.0; dt = 1.0;
+		while(dt > 1e-6)
 		{
-			dt /= 2.0f;
-			t -= dt;
-			pt = getPointOnConnection(t);
-			if (arrowHeadPosition.distanceSq(pt) > arrowLength*arrowLength)
-				t += dt;
+			dt /= 2.0;
+			t += dt;
+			pt = getPointOnCenterLine(t);
+			if (arrowHeadPosition.distanceSq(pt) < arrowLength*arrowLength)
+				t-=dt;
 		}
 
 		lineEnd = pt;
-		arrowOrientation = Math.atan2(arrowHeadPosition.getY() - pt.getY() , arrowHeadPosition.getX() - pt.getX());
+		arrowOrientation = Math.atan2(arrowHeadPosition.getY() - lineEnd.getY() , arrowHeadPosition.getX() - lineEnd.getX());
 	}
 
 	public void draw(Graphics2D g) {
 		g.setColor(Coloriser.colorise(userColor, colorisation));
 		g.setStroke(new BasicStroke((float)width));
 
-		Line2D line = new Line2D.Double(start, lineEnd);
+		Line2D line = new Line2D.Double(lineStart, lineEnd);
 		g.draw(line);
 
 		g.translate(arrowHeadPosition.getX(), arrowHeadPosition.getY());
@@ -138,28 +165,28 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	private double distanceToConnection (Point2D pointInParentSpace) {
 		Point2D v = new Point2D.Double();
-		v.setLocation(connectionEnd.getX() - start.getX(), connectionEnd.getY() - start.getY());
+		v.setLocation(arrowHeadPosition.getX() - lineStart.getX(), arrowHeadPosition.getY() - lineStart.getY());
 		Point2D vv = new Point2D.Double();
-		vv.setLocation(pointInParentSpace.getX() - start.getX(), pointInParentSpace.getY() - start.getY());
+		vv.setLocation(pointInParentSpace.getX() - lineStart.getX(), pointInParentSpace.getY() - lineStart.getY());
 		Point2D pt = new Point2D.Double();
 		pt.setLocation(pointInParentSpace);
 
 		double c1 = v.getX() * vv.getX() + v.getY() * vv.getY();
 		if(c1<=0) {
-			pt.setLocation(pt.getX() - start.getX(), pt.getY() - start.getY());
+			pt.setLocation(pt.getX() - lineStart.getX(), pt.getY() - lineStart.getY());
 			return pt.distance(0, 0);
 		}
 
 		double c2 = v.getX() * v.getX() + v.getY() * v.getY();
 
 		if(c2<=c1) {
-			pt.setLocation(pt.getX() - connectionEnd.getX(), pt.getY() - connectionEnd.getY());
+			pt.setLocation(pt.getX() - arrowHeadPosition.getX(), pt.getY() - arrowHeadPosition.getY());
 			return pt.distance(0, 0);
 		}
 
 		double b = c1/c2;
 
-		pt.setLocation(pt.getX() - v.getX() *b - start.getX(), pt.getY() - v.getY() * b - start.getY());
+		pt.setLocation(pt.getX() - v.getX() *b - lineStart.getX(), pt.getY() - v.getY() * b - lineStart.getY());
 		return pt.distance(0, 0);
 	}
 
@@ -171,8 +198,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public Rectangle2D getBoundingBoxInParentSpace() {
-		Rectangle2D bb = new Rectangle2D.Double(start.getX(), start.getY(), 0, 0);
-		bb.add(connectionEnd);
+		Rectangle2D bb = new Rectangle2D.Double(lineStart.getX(), lineStart.getY(), 0, 0);
+		bb.add(arrowHeadPosition);
 		return bb;
 	}
 
