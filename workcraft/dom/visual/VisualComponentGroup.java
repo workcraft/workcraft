@@ -3,13 +3,18 @@ package org.workcraft.dom.visual;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -31,7 +36,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
 	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
 	protected Set<VisualComponentGroup> groups = new LinkedHashSet<VisualComponentGroup>();
-	protected Set<VisualNode> children = new HashSet<VisualNode>();
+	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
 	public VisualComponentGroup (VisualComponentGroup parent) {
 		super(parent);
@@ -117,7 +122,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		group.getParent().remove(group);
 		group.setParent(this);
 		groups.add(group);
-
+		children.add(group);
 	}
 
 	public void add (VisualNode node) {
@@ -256,5 +261,4 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		for (VisualNode node : children)
 			node.setColorisation(color);
 	}
-
 }
