@@ -6,16 +6,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
@@ -119,7 +114,8 @@ public class VisualComponentGroup extends VisualTransformableNode {
 	}
 
 	public void add (VisualComponentGroup group) {
-		group.getParent().remove(group);
+		if (group.getParent()!=null)
+			group.getParent().remove(group);
 		group.setParent(this);
 		groups.add(group);
 		children.add(group);
@@ -260,5 +256,32 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		colorisation = color;
 		for (VisualNode node : children)
 			node.setColorisation(color);
+	}
+
+
+	public Iterable<VisualNode> unGroup() {
+		ArrayList<VisualNode> result = new ArrayList<VisualNode>(children.size());
+		for (VisualNode node : children)
+		{
+			if(node instanceof VisualTransformableNode)
+				try {
+					((VisualTransformableNode)node).applyTransform(localToParentTransform);
+				} catch (NoninvertibleTransformException e) {
+					throw new RuntimeException("Visual component group having Noninvertible Transform!");
+				}
+			node.setParent(null);
+			result.add(node);
+		}
+
+		children.clear();
+		groups.clear();
+		components.clear();
+		connections.clear();
+
+		return result;
+	}
+
+	public final VisualNode[] getChildren() {
+		return children.toArray(new VisualNode[0]);
 	}
 }

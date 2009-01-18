@@ -1,67 +1,16 @@
 package org.workcraft.testing.dom.visual;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import org.junit.Test;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
 import org.workcraft.dom.visual.VisualNode;
 
 import junit.framework.Assert;
 
 public class VisualComponentGroupTests {
-
-	private class SquareNode extends VisualComponent
-	{
-		Rectangle2D.Double rectOuter;
-		Rectangle2D.Double rectInner;
-		int resultToReturn;
-		public SquareNode(VisualComponentGroup parent, Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
-			super(null, parent);
-			this.rectOuter = rectOuter;
-			this.rectInner = rectInner;
-		}
-
-		public SquareNode(VisualComponentGroup parent, Rectangle2D.Double rect) {
-			this(parent, rect, rect);
-		}
-
-		@Override
-		public void draw(Graphics2D g) {
-			throw new RuntimeException("Not implemented");
-		}
-
-		@Override
-		public Rectangle2D getBoundingBoxInParentSpace() {
-			return rectOuter;
-		}
-
-		@Override
-		public int hitTestInParentSpace(Point2D pointInParentSpace) {
-			if(rectInner.contains(pointInParentSpace))
-				return 1;
-			return 0;
-		}
-
-		@Override
-		public String toString() {
-			return rectInner.toString();
-		}
-
-		@Override
-		public Rectangle2D getBoundingBoxInLocalSpace() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	}
 
 	@Test
 	public void TestHitNode()
@@ -122,5 +71,66 @@ public class VisualComponentGroupTests {
 		node2.add(getSquareNode(node2, 1, 1));
 		Assert.assertEquals(node2, root.hitNode(new Point2D.Double(1.5, 1.5)));
 		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(0.5, 0.5)));
+	}
+
+	@Test
+	public void TestUngroup()
+	{
+		VisualComponentGroup root = new VisualComponentGroup(null);
+
+		VisualComponentGroup node1 = new VisualComponentGroup(root);
+		root.add(node1);
+
+		node1.setX(10);
+		node1.setY(15);
+
+		VisualComponentGroup node2 = new VisualComponentGroup(node1);
+		node1.add(node2);
+
+		SquareNode sq1 = getSquareNode(node1, 0, 0);
+		node1.add(sq1);
+		SquareNode sq2 = getSquareNode(node1, 1, 1);
+		node1.add(sq2);
+		SquareNode sq3 = getSquareNode(node1, 2, 2);
+		node1.add(sq3);
+
+		Assert.assertEquals(sq1, node1.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(sq2, node1.hitNode(new Point2D.Double(1.5, 1.5)));
+
+		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(10.5, 15.5)));
+		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(11.5, 16.5)));
+		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
+
+		Iterable<VisualNode> unGroup = node1.unGroup();
+		ArrayList<VisualNode> list = new ArrayList<VisualNode>();
+		for(VisualNode node: unGroup)
+			list.add(node);
+
+		Assert.assertEquals(4, list.size());
+		Assert.assertTrue(list.contains(sq1));
+		Assert.assertTrue(list.contains(sq2));
+		Assert.assertTrue(list.contains(sq3));
+		Assert.assertTrue(list.contains(node2));
+
+		Assert.assertTrue(list.indexOf(sq2) > list.indexOf(sq1));
+		Assert.assertTrue(list.indexOf(sq3) > list.indexOf(sq2));
+
+		Assert.assertNull(node1.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertNull(node1.hitNode(new Point2D.Double(1.5, 1.5)));
+
+		Assert.assertNull(root.hitNode(new Point2D.Double(10.5, 15.5)));
+		Assert.assertNull(root.hitNode(new Point2D.Double(11.5, 16.5)));
+		Assert.assertNull(root.hitNode(new Point2D.Double(10.5, 16.5)));
+
+		for(VisualNode node: unGroup)
+			root.add(node);
+
+		Assert.assertNull(node1.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertNull(node1.hitNode(new Point2D.Double(1.5, 1.5)));
+
+		Assert.assertEquals(sq1, root.hitNode(new Point2D.Double(10.5, 15.5)));
+		Assert.assertEquals(sq2, root.hitNode(new Point2D.Double(11.5, 16.5)));
+		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
+
 	}
 }

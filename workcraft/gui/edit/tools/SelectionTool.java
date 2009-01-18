@@ -59,7 +59,7 @@ public class SelectionTool implements GraphEditorTool {
 				cancelDrag(e);
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0)
 				clearSelection(model);
-			VisualNode so = model.getRoot().hitNode(e.getPosition());
+			VisualNode so = model.getCurrentLevel().hitNode(e.getPosition());
 			if(so!=null)
 				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
 					removeFromSelection(model, so);
@@ -92,7 +92,7 @@ public class SelectionTool implements GraphEditorTool {
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<VisualNode> hit = model.getRoot().hitObjects(selectionRect(e.getPosition()));
+			LinkedList<VisualNode> hit = model.getCurrentLevel().hitObjects(selectionRect(e.getPosition()));
 
 			clearSelection(model);
 			for (VisualNode so: savedSelection)
@@ -117,7 +117,7 @@ public class SelectionTool implements GraphEditorTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			VisualNode so = model.getRoot().hitNode(e.getPosition());
+			VisualNode so = model.getCurrentLevel().hitNode(e.getPosition());
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!model.isObjectSelected(so)) {
 					clearSelection(model);

@@ -78,7 +78,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 
 	public abstract int hitTestInLocalSpace(Point2D pointInLocalSpace);
 
-	public int hitTestInParentSpace(Point2D pointInParentSpace) {
+	public final int hitTestInParentSpace(Point2D pointInParentSpace) {
 		parentToLocalTransform.transform(pointInParentSpace, _tmpPoint);
 		return hitTestInLocalSpace(_tmpPoint);
 	}
@@ -86,8 +86,10 @@ public abstract class VisualTransformableNode extends VisualNode {
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 
-    public Rectangle2D getBoundingBoxInParentSpace() {
+    public final Rectangle2D getBoundingBoxInParentSpace() {
     	Rectangle2D parentBB = getBoundingBoxInLocalSpace();
+    	if(parentBB == null)
+    		return null;
 
 		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
 		Point2D p1 = new Point2D.Double(parentBB.getMaxX(), parentBB.getMaxY());
@@ -111,4 +113,9 @@ public abstract class VisualTransformableNode extends VisualNode {
 		return parentToLocalTransform;
 	}
 
+	public void applyTransform(AffineTransform transform) throws NoninvertibleTransformException
+	{
+		parentToLocalTransform.concatenate(transform.createInverse());
+		localToParentTransform.preConcatenate(transform);
+	}
 }

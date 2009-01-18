@@ -28,6 +28,7 @@ public class VisualModel implements Plugin, Model {
 	public VisualModel(MathModel model) throws VisualModelConstructionException {
 		mathModel = model;
 		root = new VisualComponentGroup(null);
+		currentLevel = root;
 		listeners = new LinkedList<VisualModelListener>();
 
 		// create a default flat structure
@@ -213,5 +214,57 @@ public class VisualModel implements Plugin, Model {
 
 	public void clearColorisation() {
 		root.clearColorisation();
+	}
+
+	VisualComponentGroup currentLevel;
+
+	public VisualComponentGroup getCurrentLevel() {
+		return currentLevel;
+	}
+
+	public void setCurrentLevel(VisualComponentGroup newCurrentLevel) {
+		selection.clear();
+		currentLevel = newCurrentLevel;
+		fireSelectionChanged();
+	}
+
+	public void group() {
+		VisualNode[] selected = getSelection();
+		if(selected.length == 0)
+			return;
+		VisualComponentGroup group = new VisualComponentGroup(currentLevel);
+		currentLevel.add(group);
+		for(VisualNode node : selected)
+		{
+			currentLevel.remove(node);
+			group.add(node);
+		}
+		selection.clear();
+		selection.add(group);
+		fireSelectionChanged();
+	}
+
+	public void ungroup() {
+		ArrayList<VisualNode> unGrouped = new ArrayList<VisualNode>();
+
+		for(VisualNode node : getSelection())
+		{
+			if(node instanceof VisualComponentGroup)
+			{
+				VisualComponentGroup group = (VisualComponentGroup)node;
+				for(VisualNode subNode : group.unGroup())
+					unGrouped.add(subNode);
+				currentLevel.remove(group);
+			}
+		}
+
+		selection.clear();
+
+		for(VisualNode node : unGrouped)
+		{
+			currentLevel.add(node);
+			selection.add(node);
+		}
+		fireSelectionChanged();
 	}
 }
