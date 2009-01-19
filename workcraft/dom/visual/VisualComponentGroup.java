@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -199,8 +200,12 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		return 0;
 	}
 
-	private static <T  extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
-		for (T node : nodes) {
+	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
+		ArrayList<T> list = new ArrayList<T>();
+		for (T node : nodes)
+			list.add(node);
+		for (int i=list.size()-1;i>=0;i--) {
+			T node = list.get(i);
 			Rectangle2D boundingBox = node.getBoundingBoxInParentSpace();
 			if (boundingBox != null)
 				if (boundingBox.contains(pointInLocalSpace))

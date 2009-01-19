@@ -46,6 +46,8 @@ public class VisualComponentGroupTests {
 		Assert.assertEquals(node1, group.hitNode(new Point2D.Double(0.15, 0.5)));
 		Assert.assertEquals(node1, group.hitNode(new Point2D.Double(0.55, 0.55)));
 		Assert.assertEquals(node2, group.hitNode(new Point2D.Double(0.65, 0.65)));
+		Assert.assertEquals(node2, group.hitNode(new Point2D.Double(1.05, 1.05)));
+		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(1.15, 1.15)));
 		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(1.95, 1.95)));
 		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(2.35, 1.35)));
 		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(2.45, 1.45)));
