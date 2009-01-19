@@ -5,11 +5,14 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.gui.edit.tools.DummyKeyListener;
+import org.workcraft.gui.edit.tools.GraphEditorKeyListener;
+import org.workcraft.gui.edit.tools.GraphEditorMouseListener;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.IGraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class SimulationTool implements GraphEditorTool {
+public class SimulationTool implements GraphEditorTool, GraphEditorMouseListener {
 
 	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
@@ -61,6 +64,16 @@ public class SimulationTool implements GraphEditorTool {
 	}
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
+	}
+
+	@Override
+	public GraphEditorKeyListener getKeyListener() {
+		return DummyKeyListener.getInstance();
+	}
+
+	@Override
+	public GraphEditorMouseListener getMouseListener() {
+		return this;
 	}
 
 

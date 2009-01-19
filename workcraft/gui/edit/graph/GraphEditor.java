@@ -4,16 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
@@ -27,11 +21,11 @@ import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.IGraphEditor;
-import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyChangeListener, IGraphEditor{
+public class GraphEditor extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, IGraphEditor{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -44,9 +38,7 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 	protected Grid grid;
 	protected Ruler ruler;
 
-	protected boolean panDrag = false;
 	protected boolean hasFocus = false;
-	protected Point lastMouseCoords = new Point();
 
 	protected Color background = Color.WHITE;
 	protected Color focusBorderColor = Color.BLACK;
@@ -66,9 +58,33 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 		view.addListener(grid);
 		grid.addListener(ruler);
 		addComponentListener(this);
-		addMouseMotionListener(this);
-		addMouseListener(this);
-		addMouseWheelListener(this);
+		SelectedToolProvider selectedToolProvider = new SelectedToolProvider()
+		{
+			@Override
+			public GraphEditorTool getSelectedTool()
+			{
+				return GraphEditor.this.parent.getToolboxView().getSelectedTool();
+			}
+		};
+		MouseForwarderFocusProvider focusProvider = new MouseForwarderFocusProvider()
+		{
+			@Override
+			public boolean hasFocus() {
+				return hasFocus;
+			}
+
+			@Override
+			public void requestFocus() {
+				GraphEditor.this.parent.requestFocus();
+			}
+		};
+		MouseForwarder mouseForwarder = new MouseForwarder(this, selectedToolProvider, focusProvider);
+		addMouseMotionListener(mouseForwarder);
+		addMouseListener(mouseForwarder);
+		addMouseWheelListener(mouseForwarder);
+
+		KeyForwarder keyForwarder = new KeyForwarder(this, selectedToolProvider);
+		addKeyListener(keyForwarder);
 	}
 
 	@Override
@@ -120,78 +136,7 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 		repaint();
 	}
 
-
-
 	public void componentShown(ComponentEvent e) {
-	}
-
-
-	public void mouseDragged(MouseEvent e) {
-		mouseMoved(e);
-	}
-
-
-
-	public void mouseMoved(MouseEvent e) {
-		Point currentMouseCoords = e.getPoint();
-		if (panDrag) {
-			view.pan(currentMouseCoords.x - lastMouseCoords.x, currentMouseCoords.y - lastMouseCoords.y);
-			repaint();
-		} else {
-			parent.getToolboxView().getSelectedTool().mouseMoved(new GraphEditorMouseEvent(this, e));
-		}
-		lastMouseCoords = currentMouseCoords;
-	}
-
-
-
-	public void mouseClicked(MouseEvent e) {
-		if (hasFocus) {
-			if(e.getButton()!=MouseEvent.BUTTON2)
-				parent.getToolboxView().getSelectedTool().mouseClicked(new GraphEditorMouseEvent(this, e));
-		}	else
-			if (e.getButton() == MouseEvent.BUTTON1)
-				parent.requestFocus(this);
-	}
-
-
-
-	public void mouseEntered(MouseEvent e) {
-		if (hasFocus)
-			parent.getToolboxView().getSelectedTool().mouseEntered(new GraphEditorMouseEvent(this, e));
-	}
-
-
-
-	public void mouseExited(MouseEvent e) {
-		if (hasFocus)
-			parent.getToolboxView().getSelectedTool().mouseExited(new GraphEditorMouseEvent(this, e));
-	}
-
-
-
-	public void mousePressed(MouseEvent e) {
-		if (hasFocus)
-			if (e.getButton() == MouseEvent.BUTTON2)
-				panDrag = true;
-			else
-				parent.getToolboxView().getSelectedTool().mousePressed(new GraphEditorMouseEvent(this, e));
-	}
-
-
-
-	public void mouseReleased(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON2)
-			panDrag = false;
-		else
-			parent.getToolboxView().getSelectedTool().mouseReleased(new GraphEditorMouseEvent(this, e));
-	}
-
-
-
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		view.zoom(-e.getWheelRotation(), e.getPoint());
-		repaint();
 	}
 
 	public VisualModel getModel() {

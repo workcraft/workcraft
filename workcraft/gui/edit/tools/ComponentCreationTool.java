@@ -16,7 +16,7 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class ComponentCreationTool implements GraphEditorTool {
+public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseListener {
 	protected Class<?> componentClass;
 
 	public ComponentCreationTool (Class<? extends Component> componentClass) {
@@ -113,6 +113,16 @@ public class ComponentCreationTool implements GraphEditorTool {
 	}
 
 	public void activated(IGraphEditor editor) {
+	}
+
+	@Override
+	public GraphEditorKeyListener getKeyListener() {
+		return DummyKeyListener.getInstance();
+	}
+
+	@Override
+	public GraphEditorMouseListener getMouseListener() {
+		return this;
 	}
 
 }

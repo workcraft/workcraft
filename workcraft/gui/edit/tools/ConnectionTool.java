@@ -16,7 +16,7 @@ import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class ConnectionTool implements GraphEditorTool {
+public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener {
 
 	enum ConnectionState {
 		NOTHING_SELECTED,
@@ -178,6 +178,16 @@ public class ConnectionTool implements GraphEditorTool {
 	}
 
 	public void activated(IGraphEditor editor) {
+	}
+
+	@Override
+	public GraphEditorKeyListener getKeyListener() {
+		return DummyKeyListener.getInstance();
+	}
+
+	@Override
+	public GraphEditorMouseListener getMouseListener() {
+		return this;
 	}
 
 }

@@ -9,12 +9,23 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class SelectionTool implements GraphEditorTool {
+public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener {
+	class KeyListener extends DummyKeyListener
+	{
+		@Override
+		public void keyPressed(GraphEditorKeyEvent event) {
+			JOptionPane.showMessageDialog(null, "Hurray! Key pressed! "+event.getKeyChar());
+		}
+	}
+
 	private static final int DRAG_NONE = 0;
 	private static final int DRAG_MOVE = 1;
 	private static final int DRAG_SELECT = 2;
@@ -261,5 +272,15 @@ public class SelectionTool implements GraphEditorTool {
 	public void activated(IGraphEditor editor) {
 	//	for (VisualNode so : editor.getModel().getSelection())
 			//so.setColorisation(selectionColor);
+	}
+
+	@Override
+	public GraphEditorKeyListener getKeyListener() {
+		return new KeyListener();
+	}
+
+	@Override
+	public GraphEditorMouseListener getMouseListener() {
+		return this;
 	}
 }
