@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
 	protected Connection refConnection;
@@ -28,13 +29,16 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected Point2D arrowHeadPosition = new Point2D.Double();
 	protected double arrowOrientation = 0;
 
-	protected double width = 0.02;
-	protected double arrowWidth = 0.2;
-	protected double arrowLength = 0.4;
-	protected double hitThreshold = 0.2;
+	protected static double defaultLineWidth = 0.02;
+	protected static double defaultArrowWidth = 0.15;
+	protected static double defaultArrowLength = 0.4;
+	protected static double hitThreshold = 0.2;
+	protected static Color defaultColor = Color.BLUE;
 
-	protected Color defaultColor = Color.BLUE;
-	protected Color userColor = defaultColor;
+	protected Color color = defaultColor;
+	protected double lineWidth = defaultLineWidth;
+	protected double arrowWidth = defaultArrowWidth;
+	protected double arrowLength = defaultArrowLength;
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second, VisualComponentGroup parent) {
 		super(parent);
@@ -48,6 +52,55 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		first.addListener(this);
 		second.addListener(this);
 
+		update();
+
+		propertyDeclarations.add(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
+		propertyDeclarations.add(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
+		propertyDeclarations.add(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public double getLineWidth() {
+		return lineWidth;
+	}
+
+	public void setLineWidth(double lineWidth) {
+		if (lineWidth < 0.01)
+			lineWidth = 0.01;
+		if (lineWidth > 0.5)
+			lineWidth = 0.5;
+		this.lineWidth = lineWidth;
+	}
+
+	public double getArrowWidth() {
+		return arrowWidth;
+	}
+
+	public void setArrowWidth(double arrowWidth) {
+		if (arrowWidth > 1)
+			arrowWidth = 1;
+		if (arrowWidth < 0.1)
+			arrowWidth = 0.1;
+		this.arrowWidth = arrowWidth;
+	}
+
+	public double getArrowLength() {
+		return arrowLength;
+	}
+
+	public void setArrowLength(double arrowLength) {
+		if (arrowLength > 1)
+			arrowLength = 1;
+		if (arrowLength < 0.1)
+			arrowLength = 0.1;
+		this.arrowLength = arrowLength;
 		update();
 	}
 
@@ -137,8 +190,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void draw(Graphics2D g) {
-		g.setColor(Coloriser.colorise(userColor, colorisation));
-		g.setStroke(new BasicStroke((float)width));
+		g.setColor(Coloriser.colorise(color, colorisation));
+		g.setStroke(new BasicStroke((float)lineWidth));
 
 		Line2D line = new Line2D.Double(lineStart, lineEnd);
 		g.draw(line);
