@@ -14,7 +14,6 @@ import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ComponentCreationTool implements GraphEditorTool {
@@ -24,7 +23,7 @@ public class ComponentCreationTool implements GraphEditorTool {
 		this.componentClass = componentClass;
 	}
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
 		// TODO Auto-generated method stub
 
 	}
@@ -101,7 +100,7 @@ public class ComponentCreationTool implements GraphEditorTool {
 
 	}
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "Click to create a " + componentClass.getSimpleName();
 		Rectangle2D r = g.getFont().getStringBounds(message, g.getFontRenderContext());
@@ -110,10 +109,10 @@ public class ComponentCreationTool implements GraphEditorTool {
 
 	}
 
-	public void deactivated(GraphEditor editor) {
+	public void deactivated(IGraphEditor editor) {
 	}
 
-	public void activated(GraphEditor editor) {
+	public void activated(IGraphEditor editor) {
 	}
 
 }

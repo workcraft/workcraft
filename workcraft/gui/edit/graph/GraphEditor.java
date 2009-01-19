@@ -27,10 +27,11 @@ import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.edit.tools.IGraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyChangeListener{
+public class GraphEditor extends JPanel implements ComponentListener, MouseMotionListener, MouseListener, MouseWheelListener, VisualModelListener, PropertyChangeListener, IGraphEditor{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -53,7 +54,6 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 
 	public GraphEditor(MainWindow parent, WorkspaceEntry workspaceEntry) {
 		this.parent = parent;
-
 		this.workspaceEntry = workspaceEntry;
 		visualModel = workspaceEntry.getModel().getVisualModel();
 
@@ -137,8 +137,9 @@ public class GraphEditor extends JPanel implements ComponentListener, MouseMotio
 		if (panDrag) {
 			view.pan(currentMouseCoords.x - lastMouseCoords.x, currentMouseCoords.y - lastMouseCoords.y);
 			repaint();
-		} else
+		} else {
 			parent.getToolboxView().getSelectedTool().mouseMoved(new GraphEditorMouseEvent(this, e));
+		}
 		lastMouseCoords = currentMouseCoords;
 	}
 

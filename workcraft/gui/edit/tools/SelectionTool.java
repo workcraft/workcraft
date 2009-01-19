@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class SelectionTool implements GraphEditorTool {
@@ -203,7 +202,7 @@ public class SelectionTool implements GraphEditorTool {
 	}
 
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
 		//VisualModel model = editor.getModel();
 		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
@@ -244,7 +243,7 @@ public class SelectionTool implements GraphEditorTool {
 		}
 	}
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
 
 	}
 
@@ -256,10 +255,10 @@ public class SelectionTool implements GraphEditorTool {
 		return "Selection Tool";
 	}
 
-	public void deactivated(GraphEditor editor) {
+	public void deactivated(IGraphEditor editor) {
 	}
 
-	public void activated(GraphEditor editor) {
+	public void activated(IGraphEditor editor) {
 	//	for (VisualNode so : editor.getModel().getSelection())
 			//so.setColorisation(selectionColor);
 	}

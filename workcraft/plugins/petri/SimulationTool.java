@@ -5,20 +5,20 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
+import org.workcraft.gui.edit.tools.IGraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class SimulationTool implements GraphEditorTool {
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		Rectangle2D r = g.getFont().getStringBounds("Simulation O_O;;", g.getFontRenderContext());
 		g.setColor(Color.BLUE);
 		g.drawString ("Simulation O_O;;", editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
 		// TODO: Highlight enabled transitions
 
 	}
@@ -31,12 +31,12 @@ public class SimulationTool implements GraphEditorTool {
 		return "Simulation";
 	}
 
-	public void deactivated(GraphEditor editor) {
+	public void deactivated(IGraphEditor editor) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void activated(GraphEditor editor) {
+	public void activated(IGraphEditor editor) {
 		// TODO Auto-generated method stub
 
 	}

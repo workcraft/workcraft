@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.gui.edit.graph.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ConnectionTool implements GraphEditorTool {
@@ -38,7 +37,7 @@ public class ConnectionTool implements GraphEditorTool {
 		lastMouseCoords = new Point2D.Double();
 	}
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
 		switch (state) {
 		case NOTHING_SELECTED:
 			break;
@@ -134,7 +133,7 @@ public class ConnectionTool implements GraphEditorTool {
 							state = ConnectionState.NOTHING_SELECTED;
 						}
 					} catch (InvalidConnectionException e1) {
-						JOptionPane.showMessageDialog(e.getEditor(), e1.getMessage(), "Invalid connection", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, e1.getMessage(), "Invalid connection", JOptionPane.ERROR_MESSAGE);
 						first = null;
 						state = ConnectionState.NOTHING_SELECTED;
 					}
@@ -159,7 +158,7 @@ public class ConnectionTool implements GraphEditorTool {
 
 	}
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "";
 		switch (state) {
@@ -175,10 +174,10 @@ public class ConnectionTool implements GraphEditorTool {
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
-	public void deactivated(GraphEditor editor) {
+	public void deactivated(IGraphEditor editor) {
 	}
 
-	public void activated(GraphEditor editor) {
+	public void activated(IGraphEditor editor) {
 	}
 
 }
