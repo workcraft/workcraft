@@ -65,7 +65,6 @@ public class PetriNet extends MathModel {
 	@Override
 	protected void validateConnection(Connection connection)
 	throws InvalidConnectionException {
-		throw new InvalidConnectionException("dermo");
 	}
 
 	public Place createPlace(String label) {

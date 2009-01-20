@@ -83,6 +83,14 @@ public abstract class VisualTransformableNode extends VisualNode {
 		return hitTestInLocalSpace(_tmpPoint);
 	}
 
+	@Override
+	public final void draw(java.awt.Graphics2D g) {
+		g.transform(localToParentTransform);
+		drawInLocalSpace(g);
+	};
+
+	protected void drawInLocalSpace(java.awt.Graphics2D g) {
+	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 

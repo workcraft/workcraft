@@ -25,7 +25,7 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	protected void drawInLocalSpace(Graphics2D g) {
 
 		Shape shape = new Ellipse2D.Double(
 				-size/2+strokeWidth/2,

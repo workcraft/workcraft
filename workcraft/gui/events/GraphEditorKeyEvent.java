@@ -1,5 +1,6 @@
 package org.workcraft.gui.events;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import org.workcraft.gui.edit.tools.IGraphEditor;
@@ -26,6 +27,26 @@ public class GraphEditorKeyEvent {
 	public int getKeyCode()
 	{
 		return keyCode;
+	}
+
+	private boolean isMaskHit(int mask)
+	{
+		return (modifiers&mask) == mask;
+	}
+
+	public boolean isCtrlDown()
+	{
+		return isMaskHit(InputEvent.CTRL_DOWN_MASK);
+	}
+
+	public boolean isShiftDown()
+	{
+		return isMaskHit(InputEvent.SHIFT_DOWN_MASK);
+	}
+
+	public boolean isAltDown()
+	{
+		return isMaskHit(InputEvent.ALT_DOWN_MASK);
 	}
 
 	public int getModifiers()

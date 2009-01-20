@@ -9,8 +9,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -22,7 +20,21 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 	{
 		@Override
 		public void keyPressed(GraphEditorKeyEvent event) {
-			JOptionPane.showMessageDialog(null, "Hurray! Key pressed! "+event.getKeyChar());
+			textToDraw = "Hurray! Key pressed!\nChar: "+event.getKeyChar() + "\nCode: "+event.getKeyCode()+"\nModifiers: "+event.getModifiers();
+
+			if(event.isCtrlDown() && event.getKeyCode() == (int)'G')
+			{
+				textToDraw = "Ctrl+G";
+				event.getEditor().getModel().group();
+			}
+
+			if(event.isCtrlDown() && event.getKeyCode() == (int)'U')
+			{
+				textToDraw = "Ctrl+U";
+				event.getEditor().getModel().ungroup();
+			}
+
+			event.getEditor().repaint();
 		}
 	}
 
@@ -43,6 +55,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 	private Point2D snapOffset;
 	private LinkedList<VisualNode> savedSelection = new LinkedList<VisualNode>();
 	private int selectionMode;
+	private String textToDraw = "ggggg";
 
 
 	protected void clearSelection(VisualModel model) {
@@ -255,7 +268,8 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 	}
 
 	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
-
+		Rectangle2D r = g.getFont().getStringBounds(textToDraw, g.getFontRenderContext());
+		g.drawString (textToDraw, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
 	public String getIconPath() {

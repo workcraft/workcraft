@@ -1,6 +1,5 @@
 package org.workcraft.testing.dom.visual;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -20,11 +19,6 @@ class SquareNode extends VisualComponent
 
 	public SquareNode(VisualComponentGroup parent, Rectangle2D.Double rect) {
 		this(parent, rect, rect);
-	}
-
-	@Override
-	public void draw(Graphics2D g) {
-		throw new RuntimeException("Not implemented");
 	}
 
 	@Override

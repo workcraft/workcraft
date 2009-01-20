@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -81,37 +80,23 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		}
 	}
 
+	private void drawPreservingTransform(Graphics2D g, VisualNode nodeToDraw)
+	{
+		AffineTransform oldTransform = g.getTransform();
+		nodeToDraw.draw(g);
+		g.setTransform(oldTransform);
+	}
+
 	@Override
-	public void draw(Graphics2D g) {
-		AffineTransform rest1 = g.getTransform();
+	protected void drawInLocalSpace(Graphics2D g) {
+		for (VisualConnection connection : connections)
+			drawPreservingTransform(g, connection);
 
-		// Apply group transform
-		g.transform(localToParentTransform);
+		for (VisualComponentGroup group : groups)
+			drawPreservingTransform(g, group);
 
-		for (VisualConnection connection : connections) {
-			AffineTransform rest2 = g.getTransform();
-			connection.draw(g);
-			g.setTransform(rest2);
-		}
-
-		for (VisualComponentGroup group : groups) {
-			AffineTransform rest2 = g.getTransform();
-			g.transform(group.localToParentTransform);
-			group.draw(g);
-			// Restore group transform
-			g.setTransform(rest2);
-		}
-
-		for (VisualComponent component : components) {
-			AffineTransform rest2 = g.getTransform();
-			g.transform(component.localToParentTransform);
-			component.draw(g);
-			// Restore group transform
-			g.setTransform(rest2);
-		}
-
-		// Restore original transform
-		g.setTransform(rest1);
+		for (VisualComponent component : components)
+			drawPreservingTransform(g, component);
 	}
 
 	public void add (VisualComponentGroup group) {

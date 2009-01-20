@@ -189,6 +189,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		arrowOrientation = Math.atan2(arrowHeadPosition.getY() - lineEnd.getY() , arrowHeadPosition.getX() - lineEnd.getX());
 	}
 
+	@Override
 	public void draw(Graphics2D g) {
 		g.setColor(Coloriser.colorise(color, colorisation));
 		g.setStroke(new BasicStroke((float)lineWidth));
