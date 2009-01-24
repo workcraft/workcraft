@@ -51,6 +51,8 @@ public class Ruler implements GridListener {
 	}
 
 	public void draw(Graphics2D g) {
+		g.setStroke(new BasicStroke(1f));
+
 		g.setBackground(background);
 		g.clearRect(shape.x, shape.y, shape.width, size);
 		g.clearRect(shape.x, shape.y + size, size, shape.height - size);
@@ -59,7 +61,7 @@ public class Ruler implements GridListener {
 		g.drawLine(shape.x, size, shape.width, size);
 		g.drawLine(size, shape.y, size, shape.height);
 
-		g.setStroke(new BasicStroke(1f));
+
 
 		if (minorTickSize > 0) {
 			for (int t : horizontalMinorTicks)

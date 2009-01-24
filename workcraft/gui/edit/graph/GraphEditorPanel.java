@@ -89,6 +89,8 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 
 		g2d.setTransform(screenTransform);
 
+		ruler.draw(g2d);
+
 		if (hasFocus) {
 			toolboxWindow.getTool().drawInScreenSpace(this, g2d);
 			g2d.setTransform(screenTransform);
@@ -98,7 +100,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
 
-		ruler.draw(g2d);
+
 	}
 
 
