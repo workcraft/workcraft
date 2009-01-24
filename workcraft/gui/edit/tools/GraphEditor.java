@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.graph.Viewport;
 
-public interface IGraphEditor {
+public interface GraphEditor {
 	Viewport getViewport();
 	VisualModel getModel();
 	int getWidth();

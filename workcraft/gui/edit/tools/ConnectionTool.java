@@ -37,7 +37,7 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 		lastMouseCoords = new Point2D.Double();
 	}
 
-	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		switch (state) {
 		case NOTHING_SELECTED:
 			break;
@@ -158,7 +158,7 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 
 	}
 
-	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "";
 		switch (state) {
@@ -174,10 +174,10 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
-	public void deactivated(IGraphEditor editor) {
+	public void deactivated(GraphEditor editor) {
 	}
 
-	public void activated(IGraphEditor editor) {
+	public void activated(GraphEditor editor) {
 	}
 
 	@Override

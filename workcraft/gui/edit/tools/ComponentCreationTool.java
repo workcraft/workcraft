@@ -23,7 +23,7 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 		this.componentClass = componentClass;
 	}
 
-	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		// TODO Auto-generated method stub
 
 	}
@@ -100,7 +100,7 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 
 	}
 
-	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "Click to create a " + componentClass.getSimpleName();
 		Rectangle2D r = g.getFont().getStringBounds(message, g.getFontRenderContext());
@@ -109,10 +109,10 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 
 	}
 
-	public void deactivated(IGraphEditor editor) {
+	public void deactivated(GraphEditor editor) {
 	}
 
-	public void activated(IGraphEditor editor) {
+	public void activated(GraphEditor editor) {
 	}
 
 	@Override

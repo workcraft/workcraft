@@ -22,10 +22,10 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.gui.edit.tools.IGraphEditor;
+import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditor extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, IGraphEditor{
+public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -44,7 +44,7 @@ public class GraphEditor extends JPanel implements ComponentListener, VisualMode
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
-	public GraphEditor(MainWindow parent, WorkspaceEntry workspaceEntry) {
+	public GraphEditorPanel(MainWindow parent, WorkspaceEntry workspaceEntry) {
 		this.parent = parent;
 		this.workspaceEntry = workspaceEntry;
 		visualModel = workspaceEntry.getModel().getVisualModel();
@@ -63,7 +63,7 @@ public class GraphEditor extends JPanel implements ComponentListener, VisualMode
 			@Override
 			public GraphEditorTool getSelectedTool()
 			{
-				return GraphEditor.this.parent.getToolboxView().getSelectedTool();
+				return GraphEditorPanel.this.parent.getToolboxView().getSelectedTool();
 			}
 		};
 		MouseForwarderFocusProvider focusProvider = new MouseForwarderFocusProvider()
@@ -75,7 +75,7 @@ public class GraphEditor extends JPanel implements ComponentListener, VisualMode
 
 			@Override
 			public void requestFocus() {
-				GraphEditor.this.parent.requestFocus();
+				GraphEditorPanel.this.parent.requestFocus();
 			}
 		};
 		MouseForwarder mouseForwarder = new MouseForwarder(this, selectedToolProvider, focusProvider);

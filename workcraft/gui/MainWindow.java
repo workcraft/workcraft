@@ -41,7 +41,7 @@ import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.edit.graph.EditorToolboxWindow;
-import org.workcraft.gui.edit.graph.GraphEditor;
+import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
 public class MainWindow extends JFrame implements DockingConstants{
@@ -77,7 +77,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	InternalWindow testDoc;
 
-	GraphEditor editorInFocus;
+	GraphEditorPanel editorInFocus;
 
 	private JMenuBar menuBar;
 
@@ -258,7 +258,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					return;
 				}
 
-				GraphEditor editor = new GraphEditor(this, we);
+				GraphEditorPanel editor = new GraphEditorPanel(this, we);
 				String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
 				Dockable dockable;
 
@@ -380,7 +380,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
-	public void requestFocus (GraphEditor sender) {
+	public void requestFocus (GraphEditorPanel sender) {
 		if (editorInFocus != null)
 			editorInFocus.removeFocus();
 
@@ -451,7 +451,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		}
 	}
 
-	public GraphEditor getCurrentEditor() {
+	public GraphEditorPanel getCurrentEditor() {
 		return editorInFocus;
 	}
 

@@ -226,7 +226,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 	}
 
 
-	public void drawInUserSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		//VisualModel model = editor.getModel();
 		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
@@ -267,7 +267,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 		}
 	}
 
-	public void drawInScreenSpace(IGraphEditor editor, Graphics2D g) {
+	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		Rectangle2D r = g.getFont().getStringBounds(textToDraw, g.getFontRenderContext());
 		g.drawString (textToDraw, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
@@ -280,10 +280,10 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 		return "Selection Tool";
 	}
 
-	public void deactivated(IGraphEditor editor) {
+	public void deactivated(GraphEditor editor) {
 	}
 
-	public void activated(IGraphEditor editor) {
+	public void activated(GraphEditor editor) {
 	//	for (VisualNode so : editor.getModel().getSelection())
 			//so.setColorisation(selectionColor);
 	}

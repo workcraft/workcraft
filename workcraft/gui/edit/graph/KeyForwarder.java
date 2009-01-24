@@ -3,15 +3,15 @@ package org.workcraft.gui.edit.graph;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import org.workcraft.gui.edit.tools.IGraphEditor;
+import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 
 public class KeyForwarder implements KeyListener {
 
-	private IGraphEditor editor;
+	private GraphEditor editor;
 	private SelectedToolProvider selectedToolProvider;
 
-	public KeyForwarder(IGraphEditor editor, SelectedToolProvider selectedToolProvider) {
+	public KeyForwarder(GraphEditor editor, SelectedToolProvider selectedToolProvider) {
 		this.editor = editor;
 		this.selectedToolProvider = selectedToolProvider;
 	}

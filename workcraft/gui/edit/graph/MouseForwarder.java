@@ -8,17 +8,17 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.gui.edit.tools.IGraphEditor;
+import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelListener {
-	IGraphEditor editor;
+	GraphEditor editor;
 	protected Point lastMouseCoords = new Point();
 	protected boolean panDrag = false;
 	private SelectedToolProvider toolProvider;
 	private MouseForwarderFocusProvider focusProvider;
 
-	MouseForwarder(IGraphEditor editor, SelectedToolProvider toolProvider, MouseForwarderFocusProvider focusProvider) {
+	MouseForwarder(GraphEditor editor, SelectedToolProvider toolProvider, MouseForwarderFocusProvider focusProvider) {
 		this.editor = editor;
 		this.toolProvider = toolProvider;
 		this.focusProvider = focusProvider;

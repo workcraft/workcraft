@@ -3,14 +3,14 @@ package org.workcraft.gui.events;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import org.workcraft.gui.edit.tools.IGraphEditor;
+import org.workcraft.gui.edit.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
-	IGraphEditor editor;
+	GraphEditor editor;
 	char keyChar;
 	int keyCode;
 	int modifiers;
-	public GraphEditorKeyEvent(IGraphEditor editor, KeyEvent event)
+	public GraphEditorKeyEvent(GraphEditor editor, KeyEvent event)
 	{
 		this.editor = editor;
 
@@ -54,7 +54,7 @@ public class GraphEditorKeyEvent {
 		return modifiers;
 	}
 
-	public IGraphEditor getEditor()
+	public GraphEditor getEditor()
 	{
 		return editor;
 	}
