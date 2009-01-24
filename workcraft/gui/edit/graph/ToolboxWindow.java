@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
@@ -16,11 +17,14 @@ import org.workcraft.framework.Framework;
 import org.workcraft.gui.DisabledPanel;
 import org.workcraft.gui.edit.tools.ComponentCreationTool;
 import org.workcraft.gui.edit.tools.ConnectionTool;
+import org.workcraft.gui.edit.tools.GraphEditorKeyListener;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
+import org.workcraft.gui.edit.tools.ToolProvider;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
 
 @SuppressWarnings("serial")
-public class ToolboxWindow extends JPanel implements ToolProvider {
+public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKeyListener {
 	Framework framework;
 
 	SelectionTool selectionTool;
@@ -126,5 +130,18 @@ public class ToolboxWindow extends JPanel implements ToolProvider {
 
 	public GraphEditorTool getTool() {
 		return selectedTool;
+	}
+
+	public void keyPressed(GraphEditorKeyEvent event) {
+		selectedTool.keyPressed(event);
+	}
+
+	public void keyReleased(GraphEditorKeyEvent event) {
+		selectedTool.keyReleased(event);
+
+	}
+
+	public void keyTyped(GraphEditorKeyEvent event) {
+		selectedTool.keyTyped(event);
 	}
 }

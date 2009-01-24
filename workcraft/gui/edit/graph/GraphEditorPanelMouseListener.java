@@ -7,30 +7,23 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
+import org.workcraft.gui.edit.tools.ToolProvider;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelListener {
-	GraphEditor editor;
+class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
+	protected GraphEditor editor;
 	protected Point lastMouseCoords = new Point();
 	protected boolean panDrag = false;
 	private ToolProvider toolProvider;
-	private Focusable focusProvider;
 
-	MouseForwarder(GraphEditor editor, ToolProvider toolProvider, Focusable focusProvider) {
+	public GraphEditorPanelMouseListener(GraphEditor editor, ToolProvider toolProvider) {
 		this.editor = editor;
 		this.toolProvider = toolProvider;
-		this.focusProvider = focusProvider;
 	}
 
 	public void mouseDragged(MouseEvent e) {
 		mouseMoved(e);
-	}
-
-	private GraphEditorTool getSelectedTool()
-	{
-		return toolProvider.getTool();
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -40,39 +33,35 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 					currentMouseCoords.y - lastMouseCoords.y);
 			editor.repaint();
 		} else {
-			getSelectedTool().getMouseListener()
-					.mouseMoved(new GraphEditorMouseEvent(editor, e));
+			toolProvider.getTool().mouseMoved(new GraphEditorMouseEvent(editor, e));
 		}
 		lastMouseCoords = currentMouseCoords;
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		if (focusProvider.hasFocus()) {
+		if (editor.hasFocus()) {
 			if (e.getButton() != MouseEvent.BUTTON2)
-				getSelectedTool().getMouseListener()
-						.mouseClicked(new GraphEditorMouseEvent(editor, e));
+				toolProvider.getTool().mouseClicked(new GraphEditorMouseEvent(editor, e));
 		} else if (e.getButton() == MouseEvent.BUTTON1)
-			focusProvider.grantFocus();
+			editor.grantFocus();
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		if (focusProvider.hasFocus())
-			getSelectedTool().getMouseListener()
-					.mouseEntered(new GraphEditorMouseEvent(editor, e));
+		if (editor.hasFocus())
+			toolProvider.getTool().mouseEntered(new GraphEditorMouseEvent(editor, e));
 	}
 
 	public void mouseExited(MouseEvent e) {
-		if (focusProvider.hasFocus())
-			getSelectedTool().getMouseListener()
-					.mouseExited(new GraphEditorMouseEvent(editor, e));
+		if (editor.hasFocus())
+			toolProvider.getTool().mouseExited(new GraphEditorMouseEvent(editor, e));
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (focusProvider.hasFocus())
+		if (editor.hasFocus())
 			if (e.getButton() == MouseEvent.BUTTON2)
 				panDrag = true;
 			else
-				getSelectedTool().getMouseListener()
+				toolProvider.getTool()
 						.mousePressed(new GraphEditorMouseEvent(editor, e));
 	}
 
@@ -80,7 +69,7 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 		if (e.getButton() == MouseEvent.BUTTON2)
 			panDrag = false;
 		else
-			getSelectedTool().getMouseListener()
+			toolProvider.getTool()
 					.mouseReleased(new GraphEditorMouseEvent(editor, e));
 	}
 
@@ -90,14 +79,4 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 	}
 }
 
-interface Focusable
-{
-	public boolean hasFocus();
-	public void grantFocus();
-	public void removeFocus();
-}
 
-interface ToolProvider
-{
-	public GraphEditorTool getTool();
-}

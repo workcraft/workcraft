@@ -24,14 +24,14 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor, Focusable{
+public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor {
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
 	protected WorkspaceEntry workspaceEntry;
 
 	protected MainWindow mainWindow;
-	protected ToolProvider selectedToolProvider;
+	protected ToolboxWindow toolboxWindow;
 
 	protected Viewport view;
 	protected Grid grid;
@@ -47,7 +47,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
 		visualModel = workspaceEntry.getModel().getVisualModel();
-		selectedToolProvider = mainWindow.getToolboxWindow();
+		toolboxWindow = mainWindow.getToolboxWindow();
 
 		visualModel.addListener(this);
 
@@ -59,13 +59,14 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		grid.addListener(ruler);
 		addComponentListener(this);
 
-		MouseForwarder mouseForwarder = new MouseForwarder(this, selectedToolProvider, this);
-		addMouseMotionListener(mouseForwarder);
-		addMouseListener(mouseForwarder);
-		addMouseWheelListener(mouseForwarder);
+		GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxWindow);
+		GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxWindow);
 
-		KeyForwarder keyForwarder = new KeyForwarder(this, selectedToolProvider);
-		addKeyListener(keyForwarder);
+		addMouseMotionListener(mouseListener);
+		addMouseListener(mouseListener);
+		addMouseWheelListener(mouseListener);
+
+		addKeyListener(keyListener);
 	}
 
 	@Override
@@ -84,12 +85,12 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		visualModel.draw(g2d);
 
 		if (hasFocus)
-			selectedToolProvider.getTool().drawInUserSpace(this, g2d);
+			toolboxWindow.getTool().drawInUserSpace(this, g2d);
 
 		g2d.setTransform(screenTransform);
 
 		if (hasFocus) {
-			selectedToolProvider.getTool().drawInScreenSpace(this, g2d);
+			toolboxWindow.getTool().drawInScreenSpace(this, g2d);
 			g2d.setTransform(screenTransform);
 
 			g2d.setStroke(borderStroke);
@@ -128,6 +129,10 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 
 	public void snap(Point2D point) {
 		point.setLocation(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
+	}
+
+	public boolean hasFocus() {
+		return hasFocus;
 	}
 
 	public void grantFocus() {

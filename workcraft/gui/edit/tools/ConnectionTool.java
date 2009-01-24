@@ -16,7 +16,7 @@ import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener {
+public class ConnectionTool extends AbstractTool {
 
 	enum ConnectionState {
 		NOTHING_SELECTED,
@@ -37,6 +37,7 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 		lastMouseCoords = new Point2D.Double();
 	}
 
+	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		switch (state) {
 		case NOTHING_SELECTED:
@@ -71,29 +72,17 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 
 	}
 
+	@Override
 	public String getIconPath() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getName() {
 		return "Connection tool";
 	}
 
-	public void mouseClicked(GraphEditorMouseEvent e) {
-
-	}
-
-	public void mouseEntered(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void mouseExited(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
 
@@ -105,6 +94,7 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 		e.getEditor().repaint();
 	}
 
+	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 
 		if (e.getButton() == MouseEvent.BUTTON1) {
@@ -153,11 +143,7 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 
 	}
 
-	public void mouseReleased(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "";
@@ -173,21 +159,4 @@ public class ConnectionTool implements GraphEditorTool, GraphEditorMouseListener
 		g.setColor(Color.BLUE);
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
-
-	public void deactivated(GraphEditor editor) {
-	}
-
-	public void activated(GraphEditor editor) {
-	}
-
-	@Override
-	public GraphEditorKeyListener getKeyListener() {
-		return DummyKeyListener.getInstance();
-	}
-
-	@Override
-	public GraphEditorMouseListener getMouseListener() {
-		return this;
-	}
-
 }

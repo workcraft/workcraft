@@ -3,9 +3,10 @@ package org.workcraft.gui.edit.tools;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.edit.graph.Focusable;
 import org.workcraft.gui.edit.graph.Viewport;
 
-public interface GraphEditor {
+public interface GraphEditor extends Focusable{
 	Viewport getViewport();
 	VisualModel getModel();
 	int getWidth();

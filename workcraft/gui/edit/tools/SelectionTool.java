@@ -15,29 +15,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener {
-	class KeyListener extends DummyKeyListener
-	{
-		@Override
-		public void keyPressed(GraphEditorKeyEvent event) {
-			textToDraw = "Hurray! Key pressed!\nChar: "+event.getKeyChar() + "\nCode: "+event.getKeyCode()+"\nModifiers: "+event.getModifiers();
-
-			if(event.isCtrlDown() && event.getKeyCode() == (int)'G')
-			{
-				textToDraw = "Ctrl+G";
-				event.getEditor().getModel().group();
-			}
-
-			if(event.isCtrlDown() && event.getKeyCode() == (int)'U')
-			{
-				textToDraw = "Ctrl+U";
-				event.getEditor().getModel().ungroup();
-			}
-
-			event.getEditor().repaint();
-		}
-	}
-
+public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
 	private static final int DRAG_MOVE = 1;
 	private static final int DRAG_SELECT = 2;
@@ -74,6 +52,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 		so.clearColorisation();
 	}
 
+	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
@@ -95,15 +74,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 		}
 	}
 
-	public void mouseEntered(GraphEditorMouseEvent e) {
-	}
-
-	public void mouseExited(GraphEditorMouseEvent e) {
-		//		if(this.drag!=DRAG_NONE)
-		//		cancelDrag(e); // TODO pan is better
-	}
-
-
+	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
@@ -134,6 +105,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 	}
 
 
+	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
@@ -173,7 +145,7 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 				cancelDrag(e);
 	}
 
-
+	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
 		VisualModel model = e.getModel();
 
@@ -183,6 +155,26 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 
 			drag = DRAG_NONE;
 		}
+	}
+
+	@Override
+	public void keyPressed(GraphEditorKeyEvent e) {
+		textToDraw = "Hurray! Key pressed!\nChar: "+e.getKeyChar() + "\nCode: "+e.getKeyCode()+"\nModifiers: "+e.getModifiers();
+
+
+		if(e.isCtrlDown() && e.getKeyCode() == (int)'G')
+		{
+			textToDraw = "Ctrl+G";
+			e.getEditor().getModel().group();
+		}
+
+		if(e.isCtrlDown() && e.getKeyCode() == (int)'U')
+		{
+			textToDraw = "Ctrl+U";
+			e.getEditor().getModel().ungroup();
+		}
+
+		e.getEditor().repaint();
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
@@ -280,21 +272,4 @@ public class SelectionTool implements GraphEditorTool, GraphEditorMouseListener 
 		return "Selection Tool";
 	}
 
-	public void deactivated(GraphEditor editor) {
-	}
-
-	public void activated(GraphEditor editor) {
-	//	for (VisualNode so : editor.getModel().getSelection())
-			//so.setColorisation(selectionColor);
-	}
-
-	@Override
-	public GraphEditorKeyListener getKeyListener() {
-		return new KeyListener();
-	}
-
-	@Override
-	public GraphEditorMouseListener getMouseListener() {
-		return this;
-	}
 }

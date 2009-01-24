@@ -16,20 +16,14 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseListener {
+public class ComponentCreationTool extends AbstractTool {
 	protected Class<?> componentClass;
 
 	public ComponentCreationTool (Class<? extends Component> componentClass) {
 		this.componentClass = componentClass;
 	}
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public String getIconPath() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -39,25 +33,6 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 			return "Create " + componentClass.getSimpleName();
 		else
 			return "Create " + name.value();
-	}
-
-	public void mouseClicked(GraphEditorMouseEvent e) {
-
-	}
-
-	public void mouseEntered(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void mouseExited(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void mouseMoved(GraphEditorMouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void mousePressed(GraphEditorMouseEvent e) {
@@ -96,10 +71,6 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 
 	}
 
-	public void mouseReleased(GraphEditorMouseEvent e) {
-
-	}
-
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message = "Click to create a " + componentClass.getSimpleName();
@@ -108,21 +79,4 @@ public class ComponentCreationTool implements GraphEditorTool, GraphEditorMouseL
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 
 	}
-
-	public void deactivated(GraphEditor editor) {
-	}
-
-	public void activated(GraphEditor editor) {
-	}
-
-	@Override
-	public GraphEditorKeyListener getKeyListener() {
-		return DummyKeyListener.getInstance();
-	}
-
-	@Override
-	public GraphEditorMouseListener getMouseListener() {
-		return this;
-	}
-
 }
