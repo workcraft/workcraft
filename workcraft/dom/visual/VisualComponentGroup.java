@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -26,8 +27,6 @@ public class VisualComponentGroup extends VisualTransformableNode {
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
 
-	protected VisualComponentGroup parent = null;
-
 	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
 	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
 	protected Set<VisualComponentGroup> groups = new LinkedHashSet<VisualComponentGroup>();
@@ -35,6 +34,18 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 	public VisualComponentGroup (VisualComponentGroup parent) {
 		super(parent);
+		this.addListener(new PropertyChangeListener(){
+			@Override
+			public void propertyChanged(String propertyName, Object sender) {
+				if(propertyName == "transform")
+					for(VisualNode node : children)
+					{
+						if(node instanceof VisualTransformableNode)
+							node.firePropertyChanged("transform");
+					}
+
+			}
+		});
 	}
 
 	public VisualComponentGroup (Element element, MathModel refModel, VisualComponentGroup parent) throws VisualModelConstructionException {
@@ -120,6 +131,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 			groups.add((VisualComponentGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.add((VisualConnection)node);
+		else throw new UnsupportedOperationException("Unknown node type");
 	}
 
 	protected void remove (VisualNode node) {
@@ -132,6 +144,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 			groups.remove((VisualComponentGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.remove((VisualConnection)node);
+		else throw new UnsupportedOperationException("Unknown node type");
 	}
 
 	@Override
@@ -248,19 +261,29 @@ public class VisualComponentGroup extends VisualTransformableNode {
 			node.setColorisation(color);
 	}
 
-
-	public Iterable<VisualNode> unGroup() {
+	public List<VisualNode> unGroup() {
 		ArrayList<VisualNode> result = new ArrayList<VisualNode>(children.size());
-		for (VisualNode node : children)
-		{
-			if(node instanceof VisualTransformableNode)
-				try {
-					((VisualTransformableNode)node).applyTransform(localToParentTransform);
-				} catch (NoninvertibleTransformException e) {
-					throw new RuntimeException("Visual component group having Noninvertible Transform!");
-				}
-			node.setParent(null);
-			result.add(node);
+		for (VisualConnection connection : connections.toArray(new VisualConnection[connections.size()])) {
+			parent.add(connection);
+			result.add(connection);
+		}
+
+		try	{
+			for (VisualTransformableNode group : groups.toArray(new VisualTransformableNode[groups.size()]))
+			{
+				parent.add(group);
+				result.add(group);
+				group.applyTransform(localToParentTransform);
+			}
+			for (VisualTransformableNode component : components.toArray(new VisualTransformableNode[components.size()]))
+			{
+				parent.add(component);
+				result.add(component);
+				component.applyTransform(localToParentTransform);
+			}
+		}
+		catch(NoninvertibleTransformException ex) {
+			throw new RuntimeException("localToParentTransform is not invertible!");
 		}
 
 		children.clear();

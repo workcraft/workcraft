@@ -5,7 +5,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualNode;
 
 import junit.framework.Assert;
@@ -120,19 +123,84 @@ public class VisualComponentGroupTests {
 		Assert.assertNull(node1.hitNode(new Point2D.Double(0.5, 0.5)));
 		Assert.assertNull(node1.hitNode(new Point2D.Double(1.5, 1.5)));
 
-		Assert.assertNull(root.hitNode(new Point2D.Double(10.5, 15.5)));
-		Assert.assertNull(root.hitNode(new Point2D.Double(11.5, 16.5)));
-		Assert.assertNull(root.hitNode(new Point2D.Double(10.5, 16.5)));
-
-		for(VisualNode node: unGroup)
-			root.add(node);
-
-		Assert.assertNull(node1.hitNode(new Point2D.Double(0.5, 0.5)));
-		Assert.assertNull(node1.hitNode(new Point2D.Double(1.5, 1.5)));
-
 		Assert.assertEquals(sq1, root.hitNode(new Point2D.Double(10.5, 15.5)));
 		Assert.assertEquals(sq2, root.hitNode(new Point2D.Double(11.5, 16.5)));
 		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
+	}
 
+	private VisualComponentGroup createGroup(VisualComponentGroup parent)
+	{
+		return VisualNodeTests.createGroup(parent);
+	}
+
+	@Test
+	public void TestTransformChangeNotification()
+	{
+		VisualComponentGroup root = createGroup(null);
+		final VisualComponentGroup node1 = createGroup(root);
+		final Boolean[] hit = new Boolean[]{false};
+		node1.addListener(new PropertyChangeListener()
+				{
+					@Override
+					public void propertyChanged(String propertyName, Object sender) {
+						if(propertyName=="transform" && node1 == sender)
+							hit[0] = true;
+					}
+				});
+		Assert.assertFalse("already hit o_O", hit[0]);
+		root.setX(8);
+		Assert.assertTrue("not hit", hit[0]);
+	}
+
+	class MyConnection extends VisualConnection
+	{
+		public MyConnection(VisualComponent first, VisualComponent second, VisualComponentGroup parent) {
+			super(null, first, second, parent);
+			parent.add(this);
+		}
+		@Override
+		public void setParent(VisualComponentGroup parent) {
+			super.setParent(parent);
+			uptodate = false;
+		};
+
+		public boolean uptodate = false;
+		@Override
+		public void update() {
+			super.update();
+			uptodate = true;
+		}
+	}
+
+	class DummyNode extends VisualComponent
+	{
+		public DummyNode(VisualComponentGroup parent) {
+			super(null, parent);
+			parent.add(this);
+		}
+
+		@Override
+		public Rectangle2D getBoundingBoxInLocalSpace() {
+			return new Rectangle2D.Double(0, 0, 1, 1);
+		}
+
+		@Override
+		public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+			return 0;
+		}
+	}
+
+	@Test
+	public void TestConnectionUpdate()
+	{
+		VisualComponentGroup root = createGroup(null);
+		VisualComponentGroup group1 = createGroup(root);
+		DummyNode node1 = new DummyNode(group1);
+		DummyNode node2 = new DummyNode(group1);
+		MyConnection connection = new MyConnection(node1, node2, group1);
+
+		group1.unGroup();
+
+		Assert.assertTrue("Connection must be updated", connection.uptodate);
 	}
 }

@@ -286,4 +286,10 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		if (propertyName.equals("transform"))
 			update();
 	}
+
+	@Override
+	public void setParent(VisualComponentGroup parent) {
+		super.setParent(parent);
+		update();
+	}
 }

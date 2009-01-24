@@ -3,6 +3,7 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -228,9 +229,18 @@ public class VisualModel implements Plugin, Model {
 		fireSelectionChanged();
 	}
 
+	private List<VisualTransformableNode> getTransformableSelection()
+	{
+		ArrayList<VisualTransformableNode> result = new ArrayList<VisualTransformableNode>();
+		for(VisualNode node : selection)
+			if(node instanceof VisualTransformableNode)
+				result.add((VisualTransformableNode)node);
+		return result;
+	}
+
 	public void group() {
-		VisualNode[] selected = getSelection();
-		if(selected.length == 0)
+		List<VisualTransformableNode> selected = getTransformableSelection();
+		if(selected.size() <= 1)
 			return;
 		VisualComponentGroup group = new VisualComponentGroup(currentLevel);
 		currentLevel.add(group);
@@ -239,6 +249,18 @@ public class VisualModel implements Plugin, Model {
 			currentLevel.remove(node);
 			group.add(node);
 		}
+
+		ArrayList<VisualConnection> connectionsToGroup = new ArrayList<VisualConnection>();
+		for(VisualConnection connection : currentLevel.connections)
+		{
+			if(connection.first.isDescendantOf(group) &&
+			   connection.second.isDescendantOf(group))
+				connectionsToGroup.add(connection);
+		}
+
+		for(VisualConnection connection : connectionsToGroup)
+			group.add(connection);
+
 		selection.clear();
 		selection.add(group);
 		fireSelectionChanged();
@@ -261,10 +283,7 @@ public class VisualModel implements Plugin, Model {
 		selection.clear();
 
 		for(VisualNode node : unGrouped)
-		{
-			currentLevel.add(node);
 			selection.add(node);
-		}
 		fireSelectionChanged();
 	}
 }

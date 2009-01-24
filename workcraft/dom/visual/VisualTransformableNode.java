@@ -74,6 +74,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 		} catch (NoninvertibleTransformException e) {
 			System.err.println(e.getMessage());
 		}
+		firePropertyChanged("transform");
 	}
 
 	public abstract int hitTestInLocalSpace(Point2D pointInLocalSpace);
@@ -110,8 +111,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 				p0.getX(), p0.getY(),
 				p1.getX()-p0.getX(),p1.getY() - p0.getY()
 		);
-     }
-
+    }
 
 	public AffineTransform getLocalToParentTransform() {
 		return localToParentTransform;
@@ -123,7 +123,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 
 	public void applyTransform(AffineTransform transform) throws NoninvertibleTransformException
 	{
-		parentToLocalTransform.concatenate(transform.createInverse());
 		localToParentTransform.preConcatenate(transform);
+		transformChanged();
 	}
 }

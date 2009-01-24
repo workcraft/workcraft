@@ -64,17 +64,31 @@ public abstract class VisualNode implements PropertyEditable {
 			return hitTestInParentSpace(pointInUserSpace);
 	}
 
-	public AffineTransform getAncestorToParentTransform(VisualComponentGroup ancestor) throws NoninvertibleTransformException, NotAnAncestorException {
-		return getParentToAncestorTransform(ancestor).createInverse();
+	private AffineTransform optimisticInverse(AffineTransform transform)
+	{
+		try
+		{
+			return transform.createInverse();
+		}
+		catch(NoninvertibleTransformException ex)
+		{
+			throw new RuntimeException("Matrix inverse failed!");
+		}
 	}
 
-	public AffineTransform getParentToAncestorTransform(VisualComponentGroup ancestor) throws NotAnAncestorException{
+	public final AffineTransform getAncestorToParentTransform(VisualComponentGroup ancestor) throws NotAnAncestorException {
+		return optimisticInverse(getParentToAncestorTransform(ancestor));
+	}
+
+	public final AffineTransform getParentToAncestorTransform(VisualComponentGroup ancestor) throws NotAnAncestorException{
 		AffineTransform t = new AffineTransform();
 
-		while (ancestor != parent) {
-			if (ancestor == null)
+		VisualComponentGroup next = parent;
+		while (ancestor != next) {
+			if (next == null)
 				throw new NotAnAncestorException();
-			t.concatenate(ancestor.getLocalToParentTransform());
+			t.concatenate(next.getLocalToParentTransform());
+			next = next.parent;
 		}
 
 		return t;
@@ -82,7 +96,7 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public abstract Rectangle2D getBoundingBoxInParentSpace();
 
-	public Rectangle2D getBoundingBoxInAncestorSpace(VisualComponentGroup ancestor) throws NotAnAncestorException {
+	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualComponentGroup ancestor) throws NotAnAncestorException {
 		Rectangle2D parentBB = getBoundingBoxInParentSpace();
 
 		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
@@ -125,5 +139,16 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public void clearColorisation() {
 		setColorisation(null);
+	}
+
+	public final boolean isDescendantOf(VisualComponentGroup group) {
+		VisualNode node = this;
+		while(node != group)
+		{
+			if(node == null)
+				return false;
+			node = node.parent;
+		}
+		return true;
 	}
 }
