@@ -40,7 +40,7 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
-import org.workcraft.gui.edit.graph.EditorToolboxWindow;
+import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
@@ -64,7 +64,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	JavaScriptView jsView;
 	PropertyView propertyView;
 
-	EditorToolboxWindow toolboxView;
+	ToolboxWindow toolboxView;
 	// MDIPane content;
 
 
@@ -91,7 +91,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		errorView = new ErrorView(framework);
 		jsView = new JavaScriptView(framework);
 
-		toolboxView = new EditorToolboxWindow(framework);
+		toolboxView = new ToolboxWindow(framework);
 
 		lastEditorDockable = null;
 		outputDockable = null;
@@ -391,7 +391,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		framework.setJavaScriptProperty("_vmodel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
 	}
 
-	public EditorToolboxWindow getToolboxView() {
+	public ToolboxWindow getToolboxWindow() {
 		return toolboxView;
 	}
 

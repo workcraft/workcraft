@@ -15,10 +15,10 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 	GraphEditor editor;
 	protected Point lastMouseCoords = new Point();
 	protected boolean panDrag = false;
-	private SelectedToolProvider toolProvider;
-	private MouseForwarderFocusProvider focusProvider;
+	private ToolProvider toolProvider;
+	private Focusable focusProvider;
 
-	MouseForwarder(GraphEditor editor, SelectedToolProvider toolProvider, MouseForwarderFocusProvider focusProvider) {
+	MouseForwarder(GraphEditor editor, ToolProvider toolProvider, Focusable focusProvider) {
 		this.editor = editor;
 		this.toolProvider = toolProvider;
 		this.focusProvider = focusProvider;
@@ -30,7 +30,7 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 
 	private GraphEditorTool getSelectedTool()
 	{
-		return toolProvider.getSelectedTool();
+		return toolProvider.getTool();
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -52,7 +52,7 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 				getSelectedTool().getMouseListener()
 						.mouseClicked(new GraphEditorMouseEvent(editor, e));
 		} else if (e.getButton() == MouseEvent.BUTTON1)
-			focusProvider.requestFocus();
+			focusProvider.grantFocus();
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -90,13 +90,14 @@ class MouseForwarder implements MouseMotionListener, MouseListener, MouseWheelLi
 	}
 }
 
-interface MouseForwarderFocusProvider
+interface Focusable
 {
 	public boolean hasFocus();
-	public void requestFocus();
+	public void grantFocus();
+	public void removeFocus();
 }
 
-interface SelectedToolProvider
+interface ToolProvider
 {
-	public GraphEditorTool getSelectedTool();
+	public GraphEditorTool getTool();
 }

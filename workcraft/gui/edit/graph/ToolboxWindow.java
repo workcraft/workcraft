@@ -20,7 +20,7 @@ import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.SelectionTool;
 
 @SuppressWarnings("serial")
-public class EditorToolboxWindow extends JPanel {
+public class ToolboxWindow extends JPanel implements ToolProvider {
 	Framework framework;
 
 	SelectionTool selectionTool;
@@ -106,10 +106,6 @@ public class EditorToolboxWindow extends JPanel {
 		this.repaint();
 	}
 
-	public GraphEditorTool getSelectedTool() {
-		return selectedTool;
-	}
-
 	public void clearTools() {
 		removeAll();
 		setLayout(new BorderLayout());
@@ -117,7 +113,7 @@ public class EditorToolboxWindow extends JPanel {
 		this.repaint();
 	}
 
-	public EditorToolboxWindow(Framework framework) {
+	public ToolboxWindow(Framework framework) {
 		super();
 		this.framework = framework;
 
@@ -126,5 +122,9 @@ public class EditorToolboxWindow extends JPanel {
 		selectedTool = null;
 
 		clearTools();
+	}
+
+	public GraphEditorTool getTool() {
+		return selectedTool;
 	}
 }

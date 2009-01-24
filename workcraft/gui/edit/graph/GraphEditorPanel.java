@@ -21,18 +21,17 @@ import org.workcraft.dom.visual.VisualModelListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor{
+public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor, Focusable{
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
 	protected WorkspaceEntry workspaceEntry;
 
-
-	protected MainWindow parent;
+	protected MainWindow mainWindow;
+	protected ToolProvider selectedToolProvider;
 
 	protected Viewport view;
 	protected Grid grid;
@@ -44,10 +43,11 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
-	public GraphEditorPanel(MainWindow parent, WorkspaceEntry workspaceEntry) {
-		this.parent = parent;
+	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
+		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
 		visualModel = workspaceEntry.getModel().getVisualModel();
+		selectedToolProvider = mainWindow.getToolboxWindow();
 
 		visualModel.addListener(this);
 
@@ -58,27 +58,8 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		view.addListener(grid);
 		grid.addListener(ruler);
 		addComponentListener(this);
-		SelectedToolProvider selectedToolProvider = new SelectedToolProvider()
-		{
-			@Override
-			public GraphEditorTool getSelectedTool()
-			{
-				return GraphEditorPanel.this.parent.getToolboxView().getSelectedTool();
-			}
-		};
-		MouseForwarderFocusProvider focusProvider = new MouseForwarderFocusProvider()
-		{
-			@Override
-			public boolean hasFocus() {
-				return hasFocus;
-			}
 
-			@Override
-			public void requestFocus() {
-				GraphEditorPanel.this.parent.requestFocus();
-			}
-		};
-		MouseForwarder mouseForwarder = new MouseForwarder(this, selectedToolProvider, focusProvider);
+		MouseForwarder mouseForwarder = new MouseForwarder(this, selectedToolProvider, this);
 		addMouseMotionListener(mouseForwarder);
 		addMouseListener(mouseForwarder);
 		addMouseWheelListener(mouseForwarder);
@@ -90,40 +71,38 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
-		g2d.setBackground(background);
+		AffineTransform screenTransform = g2d.getTransform();
 
+		g2d.setBackground(background);
 		g2d.clearRect(0, 0, getWidth(), getHeight());
 
 		grid.draw(g2d);
-
-		AffineTransform rest = g2d.getTransform();
+		g2d.setTransform(screenTransform);
 
 		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 		visualModel.draw(g2d);
 
 		if (hasFocus)
-			parent.getToolboxView().getSelectedTool().drawInUserSpace(this, g2d);
-		g2d.setTransform(rest);
+			selectedToolProvider.getTool().drawInUserSpace(this, g2d);
 
-		ruler.draw(g2d);
-
-		if (hasFocus)
-			parent.getToolboxView().getSelectedTool().drawInScreenSpace(this, g2d);
+		g2d.setTransform(screenTransform);
 
 		if (hasFocus) {
+			selectedToolProvider.getTool().drawInScreenSpace(this, g2d);
+			g2d.setTransform(screenTransform);
+
 			g2d.setStroke(borderStroke);
 			g2d.setColor(focusBorderColor);
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
-	}
 
+		ruler.draw(g2d);
+	}
 
 
 	public void componentHidden(ComponentEvent e) {
 	}
-
 
 	public void componentMoved(ComponentEvent e) {
 	}
@@ -168,27 +147,27 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 
 	public void visualNodePropertyChanged(VisualNode n) {
 		repaint();
-		parent.getPropertyView().repaint();
+		mainWindow.getPropertyView().repaint();
 	}
 
 	public void componentPropertyChanged(Component c) {
 		repaint();
-		parent.getPropertyView().repaint();
+		mainWindow.getPropertyView().repaint();
 	}
 
 	public void connectionPropertyChanged(Connection c) {
 		repaint();
-		parent.getPropertyView().repaint();
+		mainWindow.getPropertyView().repaint();
 	}
 
 	public void modelStructureChanged() {
 		repaint();
-		parent.getPropertyView().repaint();
+		mainWindow.getPropertyView().repaint();
 	}
 
 	public void layoutChanged() {
 		repaint();
-		parent.getPropertyView().repaint();
+		mainWindow.getPropertyView().repaint();
 	}
 
 	public void selectionChanged() {
@@ -197,16 +176,16 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		VisualNode selection[] = visualModel.getSelection();
 		if (selection.length == 1 && selection[0] instanceof PropertyEditable) {
 
-			PropertyEditable p = parent.getPropertyView().getObject();
+			PropertyEditable p = mainWindow.getPropertyView().getObject();
 
 			if (p!=null)
 				p.removeListener(this);
 
 			((PropertyEditable)selection[0]).addListener(this);
-			parent.getPropertyView().setObject((PropertyEditable)selection[0]);
+			mainWindow.getPropertyView().setObject((PropertyEditable)selection[0]);
 
 		} else {
-			parent.getPropertyView().clearObject();
+			mainWindow.getPropertyView().clearObject();
 		}
 	}
 
