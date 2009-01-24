@@ -44,4 +44,8 @@ public abstract class AbstractTool implements GraphEditorTool {
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
 	}
+
+	public int getHotKeyCode() {
+		return -1; // undefined hotkey
+	}
 }

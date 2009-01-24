@@ -3,6 +3,7 @@ package org.workcraft.plugins.petri;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.gui.edit.tools.AbstractTool;
@@ -26,5 +27,9 @@ public class SimulationTool extends AbstractTool {
 	@Override
 	public String getName() {
 		return "Simulation";
+	}
+
+	public int getHotKeyCode() {
+		return KeyEvent.VK_M;
 	}
 }

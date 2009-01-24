@@ -4,14 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
 
+@HotKeyDeclaration(KeyEvent.VK_T)
 public class VisualTransition extends VisualComponent {
 	protected static double size = 1;
 	protected static float strokeWidth = 0.1f;

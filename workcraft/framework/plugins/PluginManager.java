@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.dom.Component;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualComponentGroup;
@@ -314,6 +315,27 @@ public class PluginManager {
 			singletons.put(info.getClassName(), ret);
 		}
 		return ret;
+	}
+
+	public static int getHotKeyCodeForClass (Class <? extends Component> cls) {
+		// Find the corresponding visual class
+		VisualClass vcat = cls.getAnnotation(VisualClass.class);
+		// The component/connection does not define a visual representation
+		if (vcat == null)
+			return -1;
+
+		try {
+			Class<?> visualClass = Class.forName(vcat.value());
+			HotKeyDeclaration hkd = visualClass.getAnnotation(HotKeyDeclaration.class);
+			if (hkd == null)
+				return -1;
+			else
+				return hkd.value();
+
+		} catch (ClassNotFoundException e) {
+			return -1;
+		}
+
 	}
 
 	public static VisualModel createVisualModel (MathModel model) throws VisualModelConstructionException {

@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
@@ -18,10 +19,12 @@ import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ComponentCreationTool extends AbstractTool {
-	protected Class<?> componentClass;
+	protected Class<? extends Component> componentClass;
+	protected int hotKeyCode;
 
 	public ComponentCreationTool (Class<? extends Component> componentClass) {
 		this.componentClass = componentClass;
+
 	}
 
 	public String getIconPath() {
@@ -31,7 +34,7 @@ public class ComponentCreationTool extends AbstractTool {
 	public String getName() {
 		DisplayName name = componentClass.getAnnotation(DisplayName.class);
 		if (name == null)
-			return "Create " + componentClass.getSimpleName();
+			return "Create " + componentClass.getSimpleName().toLowerCase();
 		else
 			return "Create " + name.value();
 	}
@@ -81,5 +84,10 @@ public class ComponentCreationTool extends AbstractTool {
 		g.setColor(Color.BLUE);
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 
+	}
+
+	@Override
+	public int getHotKeyCode() {
+		return PluginManager.getHotKeyCodeForClass(componentClass);
 	}
 }

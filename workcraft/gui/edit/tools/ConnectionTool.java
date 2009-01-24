@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -98,7 +99,7 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public String getName() {
-		return "Connection tool";
+		return "Connect";
 	}
 
 	@Override
@@ -169,5 +170,10 @@ public class ConnectionTool extends AbstractTool {
 		else
 			g.setColor(Color.BLUE);
 		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
+	}
+
+	@Override
+	public int getHotKeyCode() {
+		return KeyEvent.VK_C;
 	}
 }

@@ -11,4 +11,5 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
 
 	public String getName();
 	public String getIconPath();
+	public int getHotKeyCode();
 }

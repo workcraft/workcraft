@@ -37,8 +37,6 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	protected Grid grid;
 	protected Ruler ruler;
 
-	protected boolean hasFocus = false;
-
 	protected Color background = Color.WHITE;
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
@@ -65,6 +63,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		addMouseMotionListener(mouseListener);
 		addMouseListener(mouseListener);
 		addMouseWheelListener(mouseListener);
+		addFocusListener(new GraphEditorFocusListener(this));
 
 		addKeyListener(keyListener);
 	}
@@ -84,14 +83,14 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		visualModel.draw(g2d);
 
-		if (hasFocus)
+		if (hasFocus())
 			toolboxWindow.getTool().drawInUserSpace(this, g2d);
 
 		g2d.setTransform(screenTransform);
 
 		ruler.draw(g2d);
 
-		if (hasFocus) {
+		if (hasFocus()) {
 			toolboxWindow.getTool().drawInScreenSpace(this, g2d);
 			g2d.setTransform(screenTransform);
 
@@ -133,20 +132,13 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		point.setLocation(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
 	}
 
-	public boolean hasFocus() {
-		return hasFocus;
-	}
-
-	public void grantFocus() {
-		hasFocus = true;
+	public void focusGained() {
 		this.repaint();
 	}
 
-	public void removeFocus() {
-		hasFocus = false;
+	public void focusLost() {
 		this.repaint();
 	}
-
 
 	public WorkspaceEntry getWorkspaceEntry() {
 		return workspaceEntry;
@@ -199,4 +191,10 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	public void propertyChanged(String propertyName, Object sender) {
 		visualModel.fireLayoutChanged();
 	}
+
+	@Override
+	public MainWindow getMainWindow() {
+		return mainWindow;
+	}
+
 }

@@ -34,7 +34,6 @@ public class SelectionTool extends AbstractTool {
 	private Point2D snapOffset;
 	private LinkedList<VisualNode> savedSelection = new LinkedList<VisualNode>();
 	private int selectionMode;
-	private String textToDraw = "ggggg";
 
 
 	protected void clearSelection(VisualModel model) {
@@ -259,17 +258,16 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		Rectangle2D r = g.getFont().getStringBounds(textToDraw, g.getFontRenderContext());
-		g.drawString (textToDraw, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
-	}
-
 	public String getIconPath() {
 		return "org" + File.separator + "workcraft" + File.separator + "gui" + File.separator + "icons" + File.separator + "select.png";
 	}
 
 	public String getName() {
-		return "Selection Tool";
+		return "Select";
+	}
+
+	public int getHotKeyCode() {
+		return KeyEvent.VK_S;
 	}
 
 }

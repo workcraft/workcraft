@@ -135,7 +135,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					if ( comp instanceof DockableView) {
 						DockableView wnd = (DockableView)comp;
 						boolean inTab = arg0.getDockable().getComponent().getParent() instanceof JTabbedPane;
-					//	System.out.println(inTab);
+						//	System.out.println(inTab);
 						wnd.setStandalone(!inTab);
 					}
 				}
@@ -176,6 +176,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	public Dockable addView(JComponent view, String name, String region, float split) {
 		DockableView dock = new DockableView(name, view);
+		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
 		rootDockingPort.dock(dockable, region);
@@ -197,6 +198,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	public Dockable addView(JComponent view, String name, Dockable neighbour) {
 		DockableView dock = new DockableView(name, view);
+		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
 		neighbour.dock(dockable, DockingManager.CENTER_REGION);
@@ -218,6 +220,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	public Dockable addView(JComponent view, String name, Dockable neighbour, String relativeRegion, float split) {
 		DockableView dock = new DockableView(name, view);
+		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
 		//attachDockableListener(dock);
@@ -267,9 +270,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 				else
 					dockable = addView (editor, dockableTitle, lastEditorDockable);
 
-				requestFocus(editor);
-
 				lastEditorDockable = dockable;
+
+				requestFocus(editor);
 	}
 
 	public void startup() {
@@ -321,6 +324,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		Dockable wsvd = addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
 		addView (propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
 		addView (toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
+
 
 		DockingManager.display(outputDockable);
 		DockingManager.setFloatingEnabled(true);
@@ -381,14 +385,16 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void requestFocus (GraphEditorPanel sender) {
-		if (editorInFocus != null)
-			editorInFocus.removeFocus();
+		if (editorInFocus == sender)
+			return;
 
-		sender.grantFocus();
 		editorInFocus = sender;
+
 		toolboxView.setToolsForModel(editorInFocus.getModel());
 		framework.deleteJavaScriptProperty("_vmodel", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("_vmodel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
+
+		editorInFocus.requestFocusInWindow();
 	}
 
 	public ToolboxWindow getToolboxWindow() {
@@ -412,13 +418,13 @@ public class MainWindow extends JFrame implements DockingConstants{
 	private static String removeSpecialFileNameCharacters(String fileName)
 	{
 		return fileName
-			.replace('\\', '_')
-			.replace('/', '_')
-			.replace(':', '_')
-			.replace('"', '_')
-			.replace('<', '_')
-			.replace('>', '_')
-			.replace('|', '_');
+		.replace('\\', '_')
+		.replace('/', '_')
+		.replace(':', '_')
+		.replace('"', '_')
+		.replace('<', '_')
+		.replace('>', '_')
+		.replace('|', '_');
 	}
 
 	public void saveAs(WorkspaceEntry we) {

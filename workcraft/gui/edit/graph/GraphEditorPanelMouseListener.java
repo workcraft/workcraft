@@ -8,6 +8,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import org.workcraft.gui.edit.tools.GraphEditor;
+import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.edit.tools.ToolProvider;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -33,7 +34,9 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 					currentMouseCoords.y - lastMouseCoords.y);
 			editor.repaint();
 		} else {
-			toolProvider.getTool().mouseMoved(new GraphEditorMouseEvent(editor, e));
+			GraphEditorTool tool = toolProvider.getTool();
+			if (tool != null)
+				tool.mouseMoved(new GraphEditorMouseEvent(editor, e));
 		}
 		lastMouseCoords = currentMouseCoords;
 	}
@@ -43,12 +46,16 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 			if (e.getButton() != MouseEvent.BUTTON2)
 				toolProvider.getTool().mouseClicked(new GraphEditorMouseEvent(editor, e));
 		} else if (e.getButton() == MouseEvent.BUTTON1)
-			editor.grantFocus();
+			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		if (editor.hasFocus())
-			toolProvider.getTool().mouseEntered(new GraphEditorMouseEvent(editor, e));
+		if (editor.hasFocus()) {
+			GraphEditorTool tool = toolProvider.getTool();
+			if (tool != null)
+				tool.mouseEntered(new GraphEditorMouseEvent(editor, e));
+		}
 	}
 
 	public void mouseExited(MouseEvent e) {
@@ -60,17 +67,21 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 		if (editor.hasFocus())
 			if (e.getButton() == MouseEvent.BUTTON2)
 				panDrag = true;
-			else
-				toolProvider.getTool()
-						.mousePressed(new GraphEditorMouseEvent(editor, e));
+			else {
+				GraphEditorTool tool = toolProvider.getTool();
+				if (tool != null)
+					tool.mousePressed(new GraphEditorMouseEvent(editor, e));
+			}
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2)
 			panDrag = false;
-		else
-			toolProvider.getTool()
-					.mouseReleased(new GraphEditorMouseEvent(editor, e));
+		else {
+			GraphEditorTool tool = toolProvider.getTool();
+			if (tool != null)
+				tool.mouseReleased(new GraphEditorMouseEvent(editor, e));
+		}
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {

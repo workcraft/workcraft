@@ -1,8 +1,6 @@
 package org.workcraft.dom.visual;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -41,5 +39,4 @@ public abstract class VisualComponent extends VisualTransformableNode {
 	public Component getReferencedComponent() {
 		return refComponent;
 	}
-
 }

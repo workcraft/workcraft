@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -12,9 +13,11 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
+@HotKeyDeclaration(KeyEvent.VK_P)
 public class VisualPlace extends VisualComponent {
 	protected static double size = 1;
 	protected static float strokeWidth = 0.1f;

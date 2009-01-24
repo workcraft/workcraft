@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -11,7 +12,9 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.framework.plugins.HotKeyDeclaration;
 
+@HotKeyDeclaration(KeyEvent.VK_P)
 public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
