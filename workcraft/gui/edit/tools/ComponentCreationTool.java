@@ -3,6 +3,7 @@ package org.workcraft.gui.edit.tools;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -42,8 +43,10 @@ public class ComponentCreationTool extends AbstractTool {
 			Component comp = (Component)ctor.newInstance();
 			VisualComponent vComp = (VisualComponent)PluginManager.createVisualComponent(comp, e.getModel().getRoot());
 
-			vComp.setX(e.getX());
-			vComp.setY(e.getY());
+			Point2D pos = e.getPosition();
+			e.getEditor().snap(pos);
+			vComp.setX(pos.getX());
+			vComp.setY(pos.getY());
 
 			e.getEditor().getModel().getMathModel().addComponent(comp);
 			e.getEditor().getModel().getRoot().add(vComp);
