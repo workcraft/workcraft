@@ -10,6 +10,7 @@ import org.workcraft.util.XmlUtil;
 public abstract class Component {
 	protected int ID = -1;
 	protected String label = "";
+	protected Set<Connection> connections = new HashSet<Connection>();
 
 	public String getLabel() {
 		return label;
@@ -46,6 +47,18 @@ public abstract class Component {
 
 	public void removeFromPreset(Component component) {
 		preset.remove(component);
+	}
+
+	public void addConnection(Connection connection) {
+		connections.add(connection);
+	}
+
+	public void removeConnection(Connection connection) {
+		connections.remove(connection);
+	}
+
+	public Set<Connection> getConnections() {
+		return new HashSet<Connection>(connections);
 	}
 
 	@SuppressWarnings("unchecked")

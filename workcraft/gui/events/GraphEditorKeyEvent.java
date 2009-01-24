@@ -3,6 +3,7 @@ package org.workcraft.gui.events;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
@@ -57,5 +58,9 @@ public class GraphEditorKeyEvent {
 	public GraphEditor getEditor()
 	{
 		return editor;
+	}
+
+	public VisualModel getModel() {
+		return editor.getModel();
 	}
 }

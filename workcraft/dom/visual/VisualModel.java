@@ -199,9 +199,15 @@ public class VisualModel implements Plugin, Model {
 		return selection.toArray(new VisualNode[0]);
 	}
 
+	public void validateConnection(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
+		mathModel.validateConnection(new Connection (first.getReferencedComponent(), second.getReferencedComponent()));
+	}
+
 	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
 		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
 		VisualConnection ret = new VisualConnection(con, first, second, root);
+		first.addConnection(ret);
+		second.addConnection(ret);
 		root.add(ret);
 
 		fireModelStructureChanged();
@@ -238,6 +244,10 @@ public class VisualModel implements Plugin, Model {
 		return result;
 	}
 
+	/**
+	 * Groups the selection, and selects the newly created group.
+	 * @author Arseniy Alekseyev
+	 */
 	public void group() {
 		List<VisualTransformableNode> selected = getTransformableSelection();
 		if(selected.size() <= 1)
@@ -266,6 +276,10 @@ public class VisualModel implements Plugin, Model {
 		fireSelectionChanged();
 	}
 
+	/**
+	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.
+	 * @author Arseniy Alekseyev
+	 */
 	public void ungroup() {
 		ArrayList<VisualNode> unGrouped = new ArrayList<VisualNode>();
 
@@ -285,5 +299,64 @@ public class VisualModel implements Plugin, Model {
 		for(VisualNode node : unGrouped)
 			selection.add(node);
 		fireSelectionChanged();
+	}
+
+	protected void deleteGroup(VisualComponentGroup group) {
+
+
+
+		for (VisualComponentGroup g: group.groups)
+			deleteGroup(g);
+		for (VisualComponent c: group.components)
+			deleteComponent(c);
+
+		selection.remove(group);
+		group.getParent().remove(group);
+
+		// connections will get deleted automatically
+	}
+
+	protected void deleteComponent(VisualComponent component) {
+		for (VisualConnection con : component.getConnections())
+			deleteConnection(con);
+		mathModel.removeComponent(component.refComponent);
+
+		selection.remove(component);
+		component.getParent().remove(component);
+	}
+
+	protected void deleteConnection(VisualConnection connection) {
+		connection.first.removeConnection(connection);
+		connection.second.removeConnection(connection);
+		mathModel.removeConnection(connection.getReferencedConnection());
+
+		selection.remove(connection);
+		connection.getParent().remove(connection);
+	}
+
+	/**
+	 * Deletes the selection.
+	 * @author Ivan Poliakov
+	 */
+	public void delete() {
+		LinkedList<VisualConnection> connectionsToDelete = new LinkedList<VisualConnection>();
+		LinkedList<VisualComponent> componentsToDelete = new LinkedList<VisualComponent>();
+		LinkedList<VisualComponentGroup> groupsToDelete = new LinkedList<VisualComponentGroup>();
+
+		for (VisualNode node: selection) {
+			if (node instanceof VisualComponentGroup)
+				groupsToDelete.add((VisualComponentGroup)node);
+			else if (node instanceof VisualComponent)
+				componentsToDelete.add((VisualComponent)node);
+			else if (node instanceof VisualConnection)
+				connectionsToDelete.add((VisualConnection)node);
+		}
+
+		for (VisualConnection con : connectionsToDelete)
+			deleteConnection(con);
+		for (VisualComponent comp : componentsToDelete)
+			deleteComponent(comp);
+		for (VisualComponentGroup g: groupsToDelete)
+			deleteGroup(g);
 	}
 }

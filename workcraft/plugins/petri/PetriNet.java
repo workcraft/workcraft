@@ -63,8 +63,11 @@ public class PetriNet extends MathModel {
 
 
 	@Override
-	protected void validateConnection(Connection connection)
-	throws InvalidConnectionException {
+	public void validateConnection(Connection connection)	throws InvalidConnectionException {
+		if (connection.getFirst() instanceof Place && connection.getSecond() instanceof Place)
+			throw new InvalidConnectionException ("Connections between places are not valid");
+		if (connection.getFirst() instanceof Transition && connection.getSecond() instanceof Transition)
+			throw new InvalidConnectionException ("Connections between transitions are not valid");
 	}
 
 	public Place createPlace(String label) {

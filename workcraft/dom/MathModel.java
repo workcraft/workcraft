@@ -209,6 +209,9 @@ public abstract class MathModel implements Plugin, Model {
 		// to connect Petri net place to another Petri net place
 		validateConnection (connection);
 
+		connection.first.addConnection(connection);
+		connection.second.addConnection(connection);
+
 		if (autoAssignID)
 			connection.setID(generateConnectionID());
 		else {
@@ -242,10 +245,18 @@ public abstract class MathModel implements Plugin, Model {
 	public void removeConnection (Connection connection) {
 		connection.getFirst().removeFromPostset(connection.getSecond());
 		connection.getSecond().removeFromPreset(connection.getFirst());
+		connection.getFirst().removeConnection(connection);
+		connection.getSecond().removeConnection(connection);
 		connections.remove(connection);
 	}
 
-	abstract protected void validateConnection(Connection connection) throws InvalidConnectionException;
+	public void removeComponent (Component component) {
+		for (Connection con : component.connections)
+			removeConnection(con);
+		components.remove(component);
+	}
+
+	abstract public void validateConnection(Connection connection) throws InvalidConnectionException;
 	abstract public void validate() throws ModelValidationException;
 
 	public Connection getConnectionByID(int ID) {

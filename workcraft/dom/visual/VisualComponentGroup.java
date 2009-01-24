@@ -1,5 +1,6 @@
 package org.workcraft.dom.visual;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -19,6 +20,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.util.XmlUtil;
 
 
@@ -108,6 +110,14 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 		for (VisualComponent component : components)
 			drawPreservingTransform(g, component);
+
+
+		Rectangle2D bb = getBoundingBoxInLocalSpace();
+		if (bb != null && parent != null) {
+			g.setColor(Coloriser.colorise(Color.GRAY, colorisation));
+			g.setStroke(new BasicStroke(0.02f));
+			g.draw(getBoundingBoxInLocalSpace());
+		}
 	}
 
 	public void add (VisualComponentGroup group) {
@@ -296,5 +306,17 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 	public final VisualNode[] getChildren() {
 		return children.toArray(new VisualNode[0]);
+	}
+
+	public final VisualComponent[] getComponents() {
+		return components.toArray(new VisualComponent[0]);
+	}
+
+	public final VisualConnection[] getConnections() {
+		return connections.toArray(new VisualConnection[0]);
+	}
+
+	public final VisualComponentGroup[] getGroups() {
+		return groups.toArray(new VisualComponentGroup[0]);
 	}
 }

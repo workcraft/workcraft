@@ -3,6 +3,7 @@ package org.workcraft.gui.edit.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -159,22 +160,21 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
-		textToDraw = "Hurray! Key pressed!\nChar: "+e.getKeyChar() + "\nCode: "+e.getKeyCode()+"\nModifiers: "+e.getModifiers();
-
-
-		if(e.isCtrlDown() && e.getKeyCode() == (int)'G')
-		{
-			textToDraw = "Ctrl+G";
-			e.getEditor().getModel().group();
+		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+			e.getModel().delete();
+			e.getEditor().repaint();
 		}
 
-		if(e.isCtrlDown() && e.getKeyCode() == (int)'U')
-		{
-			textToDraw = "Ctrl+U";
-			e.getEditor().getModel().ungroup();
+		if (e.isCtrlDown()) {
+			if (e.getKeyCode() == KeyEvent.VK_G) {
+				e.getModel().group();
+				e.getEditor().repaint();
+			}	else if (e.getKeyCode() == KeyEvent.VK_U) {
+				e.getModel().ungroup();
+				e.getEditor().repaint();
+			}
 		}
 
-		e.getEditor().repaint();
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {

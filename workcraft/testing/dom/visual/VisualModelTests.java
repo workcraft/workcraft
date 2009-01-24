@@ -30,7 +30,7 @@ public class VisualModelTests {
 		}
 
 		@Override
-		protected void validateConnection(Connection connection)
+		public void validateConnection(Connection connection)
 				throws InvalidConnectionException {
 			return;
 		}
