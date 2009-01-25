@@ -7,12 +7,12 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 
 public class VisualNodeTests {
 
-	static VisualComponentGroup createGroup(VisualComponentGroup parent)
+	static VisualGroup createGroup(VisualGroup parent)
 	{
 		return Tools.createGroup(parent);
 	}
@@ -38,12 +38,12 @@ public class VisualNodeTests {
 	@Test(timeout=1000)
 	public void testParentToAncestorTransform() throws NotAnAncestorException
 	{
-		VisualComponentGroup root = createGroup(null);
-		VisualComponentGroup node1 = createGroup(root);
-		VisualComponentGroup node2 = createGroup(root);
-		VisualComponentGroup node11 = createGroup(node1);
-		VisualComponentGroup node111 = createGroup(node11);
-		VisualComponentGroup node1111 = createGroup(node111);
+		VisualGroup root = createGroup(null);
+		VisualGroup node1 = createGroup(root);
+		VisualGroup node2 = createGroup(root);
+		VisualGroup node11 = createGroup(node1);
+		VisualGroup node111 = createGroup(node11);
+		VisualGroup node1111 = createGroup(node111);
 
 		node1.setX(1);
 		node1.setX(1);
@@ -89,8 +89,8 @@ public class VisualNodeTests {
 		ensureFall(node1111, node2);
 	}
 
-	private void ensureShiftX(VisualComponentGroup node,
-			VisualComponentGroup ancestor, double i) throws NotAnAncestorException {
+	private void ensureShiftX(VisualGroup node,
+			VisualGroup ancestor, double i) throws NotAnAncestorException {
 		ensureShiftX(node.getParentToAncestorTransform(ancestor), i);
 		ensureShiftX(node.getAncestorToParentTransform(ancestor), -i);
 
@@ -115,7 +115,7 @@ public class VisualNodeTests {
 		Assert.assertTrue("Expected: "+expected+", actual: "+actual, expected-eps<=actual && expected+eps>=actual);
 	}
 
-	private void ensureFall(VisualComponentGroup node, VisualComponentGroup ancestor) {
+	private void ensureFall(VisualGroup node, VisualGroup ancestor) {
 		boolean ok1 = false;
 		boolean ok2 = false;
 		try

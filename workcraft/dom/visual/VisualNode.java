@@ -19,9 +19,9 @@ public abstract class VisualNode implements PropertyEditable {
 	protected LinkedList<PropertyDeclaration> propertyDeclarations;
 	protected LinkedList<PropertyChangeListener> propertyChangeListeners;
 	protected Color colorisation;
-	protected VisualComponentGroup parent;
+	protected VisualGroup parent;
 
-	public VisualNode(VisualComponentGroup parent) {
+	public VisualNode(VisualGroup parent) {
 		this.parent = parent;
 		colorisation = null;
 
@@ -29,22 +29,18 @@ public abstract class VisualNode implements PropertyEditable {
 		propertyDeclarations = new LinkedList<PropertyDeclaration>();
 	}
 
-	public VisualNode (Element xmlElement, VisualComponentGroup parent) {
+	public VisualNode (Element xmlElement, VisualGroup parent) {
 		this(parent);
-		// NodeList nodes = xmlElement.getElementsByTagName("node");
-		// Element vnodeElement = (Element)nodes.item(0);
 	}
 
 	public void toXML(Element xmlElement) {
-		Element vnodeElement = xmlElement.getOwnerDocument().createElement("node");
-		xmlElement.appendChild(vnodeElement);
 	}
 
-	public VisualComponentGroup getParent() {
+	public VisualGroup getParent() {
 		return parent;
 	}
 
-	public void setParent(VisualComponentGroup parent) {
+	public void setParent(VisualGroup parent) {
 		this.parent = parent;
 	}
 
@@ -52,7 +48,7 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public abstract int hitTestInParentSpace(Point2D pointInParentSpace);
 
-	public int hitTestInAncestorSpace(Point2D pointInUserSpace, VisualComponentGroup ancestor) throws NotAnAncestorException {
+	public int hitTestInAncestorSpace(Point2D pointInUserSpace, VisualGroup ancestor) throws NotAnAncestorException {
 
 		if (ancestor != parent) {
 			Point2D pt = new Point2D.Double();
@@ -76,14 +72,14 @@ public abstract class VisualNode implements PropertyEditable {
 		}
 	}
 
-	public final AffineTransform getAncestorToParentTransform(VisualComponentGroup ancestor) throws NotAnAncestorException {
+	public final AffineTransform getAncestorToParentTransform(VisualGroup ancestor) throws NotAnAncestorException {
 		return optimisticInverse(getParentToAncestorTransform(ancestor));
 	}
 
-	public final AffineTransform getParentToAncestorTransform(VisualComponentGroup ancestor) throws NotAnAncestorException{
+	public final AffineTransform getParentToAncestorTransform(VisualGroup ancestor) throws NotAnAncestorException{
 		AffineTransform t = new AffineTransform();
 
-		VisualComponentGroup next = parent;
+		VisualGroup next = parent;
 		while (ancestor != next) {
 			if (next == null)
 				throw new NotAnAncestorException();
@@ -96,7 +92,7 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public abstract Rectangle2D getBoundingBoxInParentSpace();
 
-	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualComponentGroup ancestor) throws NotAnAncestorException {
+	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualGroup ancestor) throws NotAnAncestorException {
 		Rectangle2D parentBB = getBoundingBoxInParentSpace();
 
 		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
@@ -141,7 +137,7 @@ public abstract class VisualNode implements PropertyEditable {
 		setColorisation(null);
 	}
 
-	public final boolean isDescendantOf(VisualComponentGroup group) {
+	public final boolean isDescendantOf(VisualGroup group) {
 		VisualNode node = this;
 		while(node != group)
 		{

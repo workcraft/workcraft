@@ -13,28 +13,29 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.util.XmlUtil;
 
 
-public class VisualComponentGroup extends VisualTransformableNode {
+public class VisualGroup extends VisualTransformableNode {
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
 
 	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
 	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
-	protected Set<VisualComponentGroup> groups = new LinkedHashSet<VisualComponentGroup>();
+	protected Set<VisualGroup> groups = new LinkedHashSet<VisualGroup>();
 	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
-	public VisualComponentGroup (VisualComponentGroup parent) {
+	public VisualGroup (VisualGroup parent) {
 		super(parent);
 		this.addListener(new PropertyChangeListener(){
 			@Override
@@ -50,7 +51,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		});
 	}
 
-	public VisualComponentGroup (Element element, MathModel refModel, VisualComponentGroup parent) throws VisualModelConstructionException {
+	public VisualGroup (Element element, Model model, VisualGroup parent) throws VisualModelConstructionException {
 		this(parent);
 
 		NodeList nodes = element.getElementsByTagName("component");
@@ -58,15 +59,16 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		for (int i=0; i<nodes.getLength(); i++) {
 			Element vcompElement = (Element)nodes.item(i);
 			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
-			Component refComponent = refModel.getComponentByID(ref);
+			Component refComponent = model.getMathModel().getComponentByID(ref);
 			if (refComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which was not found");
-			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualComponent(refComponent, vcompElement, parent);
+			VisualComponent visualComponent = PluginManager.createVisualComponent(refComponent, vcompElement, parent);
 			if (visualComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which does not declare a visual represenation class");
 			add(visualComponent);
+			model.getVisualModel().addComponent(visualComponent);
 		}
 
 		nodes = element.getElementsByTagName("connection");
@@ -74,22 +76,28 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		for (int i=0; i<nodes.getLength(); i++) {
 			Element vconElement = (Element)nodes.item(i);
 			int ref = XmlUtil.readIntAttr(vconElement, "ref", -1);
-			Connection refConnection = refModel.getConnectionByID(ref);
+			Connection refConnection = model.getMathModel().getConnectionByID(ref);
+			VisualComponent first = model.getVisualModel().getComponentByRefID(refConnection.getFirst().getID());
+			VisualComponent second = model.getVisualModel().getComponentByRefID(refConnection.getSecond().getID());
 			if (refConnection == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
 						vconElement.getAttribute("ref")+", which was not found");
-			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualComponent(refConnection, vconElement, parent);
+			VisualConnection visualConnection = PluginManager.createVisualConnection(refConnection, vconElement, first, second, parent);
 			if (visualConnection == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
+				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
 						vconElement.getAttribute("ref")+", which does not declare a visual represenation class");
-			add(visualConnection);
+
+			this.add(visualConnection);
+			model.getVisualModel().addConnection(visualConnection);
 		}
 
 		nodes = element.getElementsByTagName("group");
 
 		for (int i=0; i<nodes.getLength(); i++) {
 			Element groupElement = (Element)nodes.item(i);
-			add (new VisualComponentGroup (groupElement, refModel, this));
+			VisualGroup visualGroup = new VisualGroup (groupElement, model, this);
+			add (visualGroup);
+			model.getVisualModel().addGroup(visualGroup);
 		}
 	}
 
@@ -105,7 +113,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		for (VisualConnection connection : connections)
 			drawPreservingTransform(g, connection);
 
-		for (VisualComponentGroup group : groups)
+		for (VisualGroup group : groups)
 			drawPreservingTransform(g, group);
 
 		for (VisualComponent component : components)
@@ -120,7 +128,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		}
 	}
 
-	public void add (VisualComponentGroup group) {
+	public void add (VisualGroup group) {
 		if (group.getParent()!=null)
 			group.getParent().remove(group);
 		group.setParent(this);
@@ -137,8 +145,8 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 		if (node instanceof VisualComponent)
 			components.add((VisualComponent)node);
-		else if (node instanceof VisualComponentGroup)
-			groups.add((VisualComponentGroup)node);
+		else if (node instanceof VisualGroup)
+			groups.add((VisualGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.add((VisualConnection)node);
 		else throw new UnsupportedOperationException("Unknown node type");
@@ -150,8 +158,8 @@ public class VisualComponentGroup extends VisualTransformableNode {
 
 		if (node instanceof VisualComponent)
 			components.remove((VisualComponent)node);
-		else if (node instanceof VisualComponentGroup)
-			groups.remove((VisualComponentGroup)node);
+		else if (node instanceof VisualGroup)
+			groups.remove((VisualGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.remove((VisualConnection)node);
 		else throw new UnsupportedOperationException("Unknown node type");
@@ -175,7 +183,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 			groupElement.appendChild(vconElement);
 		}
 
-		for (VisualComponentGroup group : groups) {
+		for (VisualGroup group : groups) {
 			Element childGroupElement = groupElement.getOwnerDocument().createElement("group");
 			group.toXML(childGroupElement);
 			groupElement.appendChild(childGroupElement);
@@ -203,7 +211,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 				return 1;
 			else if (hit instanceof VisualConnection)
 				return 2;
-			else if (hit instanceof VisualComponentGroup)
+			else if (hit instanceof VisualGroup)
 				return 3;
 		return 0;
 	}
@@ -252,7 +260,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		Rectangle2D.Double rect = null;
 		for(VisualComponent comp : components)
 			rect = mergeRect(rect, comp);
-		for(VisualComponentGroup grp : groups)
+		for(VisualGroup grp : groups)
 			rect = mergeRect(rect, grp);
 		return rect;
 	}
@@ -316,7 +324,7 @@ public class VisualComponentGroup extends VisualTransformableNode {
 		return connections.toArray(new VisualConnection[0]);
 	}
 
-	public final VisualComponentGroup[] getGroups() {
-		return groups.toArray(new VisualComponentGroup[0]);
+	public final VisualGroup[] getGroups() {
+		return groups.toArray(new VisualGroup[0]);
 	}
 }

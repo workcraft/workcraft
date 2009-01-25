@@ -40,7 +40,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected double arrowWidth = defaultArrowWidth;
 	protected double arrowLength = defaultArrowLength;
 
-	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second, VisualComponentGroup parent) {
+	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second, VisualGroup parent) {
 		super(parent);
 
 		first.addListener(this);
@@ -57,6 +57,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		propertyDeclarations.add(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
 		propertyDeclarations.add(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
 		propertyDeclarations.add(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
+	}
+
+	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second, VisualGroup parent) {
+		this(refConnection, first, second, parent);
+
 	}
 
 	public Color getColor() {
@@ -288,8 +293,16 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	@Override
-	public void setParent(VisualComponentGroup parent) {
+	public void setParent(VisualGroup parent) {
 		super.setParent(parent);
 		update();
+	}
+
+	public VisualComponent getFirst() {
+		return first;
+	}
+
+	public VisualComponent getSecond() {
+		return second;
 	}
 }

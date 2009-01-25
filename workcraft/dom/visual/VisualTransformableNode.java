@@ -22,12 +22,12 @@ public abstract class VisualTransformableNode extends VisualNode {
 		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
 	}
 
-	public VisualTransformableNode(VisualComponentGroup parent) {
+	public VisualTransformableNode(VisualGroup parent) {
 		super(parent);
 		addPropertyDeclarations();
 	}
 
-	public VisualTransformableNode (Element xmlElement, VisualComponentGroup parent) {
+	public VisualTransformableNode (Element xmlElement, VisualGroup parent) {
 		super (xmlElement, parent);
 		addPropertyDeclarations();
 		NodeList nodes = xmlElement.getElementsByTagName("transform");

@@ -20,11 +20,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
@@ -428,7 +430,7 @@ public class PluginManager {
 		}
 	}
 
-	public static Object createVisualComponent (Object component, VisualComponentGroup parent  ) throws VisualModelConstructionException {
+	public static VisualComponent createVisualComponent (Component component, VisualGroup parent) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 
@@ -438,14 +440,8 @@ public class PluginManager {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), VisualComponentGroup.class);
-			Object visual = ctor.newInstance(component, parent);
-
-			if (!VisualNode.class.isAssignableFrom(visual.getClass()))
-				throw new VisualModelConstructionException ("visual class " + visual.getClass().getName() +
-						", created for object of class " + component.getClass().getName() + ", is not inherited from "
-						+ VisualNode.class.getName());
-
+			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), VisualGroup.class);
+			VisualComponent visual = (VisualComponent) ctor.newInstance(component, parent);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -457,7 +453,7 @@ public class PluginManager {
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +"," + VisualComponentGroup.class.getName()+")" );
+					"(" + component.getClass().getName() +"," + VisualGroup.class.getName()+")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
@@ -475,7 +471,7 @@ public class PluginManager {
 
 
 
-	public static Object createVisualComponent (Object component, Element element, VisualComponentGroup parent  ) throws VisualModelConstructionException {
+	public static VisualComponent createVisualComponent (Component component, Element element, VisualGroup parent  ) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 
@@ -485,14 +481,8 @@ public class PluginManager {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), Element.class, VisualComponentGroup.class);
-			Object visual = ctor.newInstance(component, element, parent);
-
-			if (!VisualNode.class.isAssignableFrom(visual.getClass()))
-				throw new VisualModelConstructionException ("visual class " + visual.getClass().getName() +
-						", created for object of class " + component.getClass().getName() + ", is not inherited from "
-						+ VisualNode.class.getName());
-
+			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), Element.class, VisualGroup.class);
+			VisualComponent visual = (VisualComponent)ctor.newInstance(component, element, parent);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -504,7 +494,95 @@ public class PluginManager {
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +"," + Element.class.getName() + ","+ VisualComponentGroup.class.getName()+")" );
+					"(" + component.getClass().getName() +"," + Element.class.getName() + ","+ VisualGroup.class.getName()+")" );
+		} catch (IllegalArgumentException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated: \n" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated: " + e.getTargetException().getMessage());
+		}
+	}
+
+	public static VisualConnection createVisualConnection (Connection connection, Element element, VisualComponent first,
+			VisualComponent second, VisualGroup parent) throws VisualModelConstructionException {
+		// Find the corresponding visual class
+		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
+
+		// The component/connection does not define a visual representation
+		if (vcat == null)
+			return null;
+
+		try {
+			Class<?> visualClass = Class.forName(vcat.value());
+			Constructor<?> ctor;
+			try {
+				ctor = visualClass.getConstructor(connection.getClass(), Element.class, first.getClass(),
+						second.getClass(), VisualGroup.class);
+			}
+			catch (NoSuchMethodException e) {
+				ctor = visualClass.getConstructor(connection.getClass(), Element.class, VisualComponent.class,
+						VisualComponent.class, VisualGroup.class);
+			}
+			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second, parent);
+			return visual;
+
+		} catch (ClassNotFoundException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be loaded for class " + connection.getClass().getName());
+		} catch (SecurityException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to security exception:\n" + e.getMessage());
+		} catch (NoSuchMethodException e) {
+			throw new VisualModelConstructionException("visual class " + vcat.value() +
+					" does not declare the required constructor. \n");
+		} catch (IllegalArgumentException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated: \n" + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated: " + e.getTargetException().getMessage());
+		}
+	}
+
+	public static VisualConnection createVisualConnection (Connection connection, VisualComponent first,
+			VisualComponent second, VisualGroup parent) throws VisualModelConstructionException {
+		// Find the corresponding visual class
+		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
+
+		// The component/connection does not define a visual representation
+		if (vcat == null)
+			return null;
+
+		try {
+			Class<?> visualClass = Class.forName(vcat.value());
+			Constructor<?> ctor = visualClass.getConstructor(connection.getClass(), first.getClass(),
+					second.getClass(), VisualGroup.class);
+			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, first, second, parent);
+			return visual;
+
+		} catch (ClassNotFoundException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be loaded for class " + connection.getClass().getName());
+		} catch (SecurityException e) {
+			throw new VisualModelConstructionException ("visual class " + vcat.value() +
+					" could not be instantiated due to security exception:\n" + e.getMessage());
+		} catch (NoSuchMethodException e) {
+			throw new VisualModelConstructionException("visual class " + vcat.value() +
+					" does not declare the required constructor: \n" + vcat.value() +
+					"(" + connection.getClass().getName() +"," + Element.class.getName() + ","+ VisualGroup.class.getName()+")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());

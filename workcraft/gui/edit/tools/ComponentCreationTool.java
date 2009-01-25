@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;

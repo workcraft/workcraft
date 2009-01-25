@@ -12,7 +12,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -44,12 +44,12 @@ public class VisualPlace extends VisualComponent {
 		getPlace().setTokens(tokens);
 	}
 
-	public VisualPlace(Place place, VisualComponentGroup parent) {
+	public VisualPlace(Place place, VisualGroup parent) {
 		super(place, parent);
 		addPropertyDeclarations();
 	}
 
-	public VisualPlace(Place place, Element xmlElement, VisualComponentGroup parent) {
+	public VisualPlace(Place place, Element xmlElement, VisualGroup parent) {
 		super(place, xmlElement, parent);
 		addPropertyDeclarations();
 	}

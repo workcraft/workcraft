@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
@@ -176,11 +177,11 @@ public abstract class MathModel implements Plugin, Model {
 		this.title = title;
 	}
 
-	public int addComponent (Component component) throws InvalidComponentException, DuplicateIDException {
+	public final int addComponent (Component component) throws InvalidComponentException, DuplicateIDException {
 		return addComponent(component, true);
 	}
 
-	public int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
+	public final int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
 		//		if (getSupportedComponents() == null || !getSupportedComponents().contains(component.getClass()))
 		//			if (autoAssignID)
 		//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
@@ -197,14 +198,16 @@ public abstract class MathModel implements Plugin, Model {
 		}
 
 		components.put(component.getID(), component);
+		componentAdded(component);
+
 		return component.getID();
 	}
 
-	public int addConnection(Connection connection) throws InvalidConnectionException, DuplicateIDException {
+	public final int addConnection(Connection connection) throws InvalidConnectionException, DuplicateIDException {
 		return addConnection (connection, true);
 	}
 
-	public int addConnection(Connection connection, boolean autoAssignID) throws InvalidConnectionException, DuplicateIDException {
+	public final int addConnection(Connection connection, boolean autoAssignID) throws InvalidConnectionException, DuplicateIDException {
 		// first validate that this connection is allowed, e.g. disallow user
 		// to connect Petri net place to another Petri net place
 		validateConnection (connection);
@@ -224,10 +227,11 @@ public abstract class MathModel implements Plugin, Model {
 		}
 
 		connections.put(connection.getID(), connection);
+		connectionAdded(connection);
 		return connection.getID();
 	}
 
-	public Connection createConnection (Component first, Component second) throws InvalidConnectionException {
+	public final Connection createConnection (Component first, Component second) throws InvalidConnectionException {
 		Connection con = new Connection(first, second);
 		try {
 			addConnection(con);
@@ -242,22 +246,40 @@ public abstract class MathModel implements Plugin, Model {
 		return createConnection (first, second);
 	}
 
-	public void removeConnection (Connection connection) {
+	public final void removeConnection (Connection connection) {
 		connection.getFirst().removeFromPostset(connection.getSecond());
 		connection.getSecond().removeFromPreset(connection.getFirst());
 		connection.getFirst().removeConnection(connection);
 		connection.getSecond().removeConnection(connection);
+
 		connections.remove(connection);
+		connectionRemoved(connection);
 	}
 
-	public void removeComponent (Component component) {
-		for (Connection con : component.connections)
+	public final void removeComponent (Component component) {
+		HashSet<Connection> connectionsToRemove = new HashSet<Connection>(component.getConnections());
+
+		for (Connection con : connectionsToRemove)
 			removeConnection(con);
+
 		components.remove(component);
+		componentRemoved(component);
 	}
 
 	abstract public void validateConnection(Connection connection) throws InvalidConnectionException;
 	abstract public void validate() throws ModelValidationException;
+
+	protected void connectionAdded(Connection connection) {
+	}
+
+	protected void componentAdded(Component component) {
+	}
+
+	protected void connectionRemoved(Connection connection) {
+	}
+
+	protected void componentRemoved(Component component) {
+	}
 
 	public Connection getConnectionByID(int ID) {
 		return connections.get(ID);

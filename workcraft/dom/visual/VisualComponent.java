@@ -8,16 +8,16 @@ import org.workcraft.dom.Component;
 
 public abstract class VisualComponent extends VisualTransformableNode {
 	protected Component refComponent = null;
-	protected VisualComponentGroup parent;
+	protected VisualGroup parent;
 	protected Set<VisualConnection> connections = new HashSet<VisualConnection>();
 
-	public VisualComponent(Component refComponent, VisualComponentGroup parent) {
+	public VisualComponent(Component refComponent, VisualGroup parent) {
 		super(parent);
 		this.refComponent = refComponent;
 		this.parent = parent;
 	}
 
-	public VisualComponent(Component refComponent, Element xmlElement, VisualComponentGroup parent) {
+	public VisualComponent(Component refComponent, Element xmlElement, VisualGroup parent) {
 		super(xmlElement, parent);
 		this.refComponent = refComponent;
 		this.parent = parent;

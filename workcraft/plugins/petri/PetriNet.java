@@ -1,7 +1,8 @@
 package org.workcraft.plugins.petri;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
@@ -19,8 +20,8 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 public class PetriNet extends MathModel {
-	protected LinkedList<Place> places = new LinkedList<Place>();
-	protected LinkedList<Transition> transitions = new LinkedList<Transition>();
+	protected HashSet<Place> places;
+	protected HashSet<Transition> transitions;
 
 	public PetriNet(Framework framework) {
 		super(framework);
@@ -30,19 +31,20 @@ public class PetriNet extends MathModel {
 		super(framework, xmlElement, sourcePath);
 	}
 
-
+	@Override
+	protected void componentAdded(Component component) {
+		if (component instanceof Place)
+			getPlacesSet().add((Place)component);
+		else if (component instanceof Transition)
+			getTransitionsSet().add((Transition)component);
+	}
 
 	@Override
-	public int addComponent(Component component, boolean autoAssignID)
-	throws InvalidComponentException, DuplicateIDException {
-		int id = super.addComponent(component, autoAssignID);
-
+	protected void componentRemoved (Component component) {
 		if (component instanceof Place)
-			places.add((Place)component);
+			getPlacesSet().remove(component);
 		else if (component instanceof Transition)
-			transitions.add((Transition)component);
-
-		return id;
+			getTransitionsSet().remove(component);
 	}
 
 
@@ -96,5 +98,17 @@ public class PetriNet extends MathModel {
 		}
 
 		return newTransition;
+	}
+
+	private Set<Place> getPlacesSet() {
+		if (places == null)
+			places = new HashSet<Place>();
+		return places;
+	}
+
+	private Set<Transition> getTransitionsSet() {
+		if (transitions == null)
+			transitions = new HashSet<Transition>();
+		return transitions;
 	}
 }

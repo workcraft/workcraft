@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -41,7 +41,7 @@ public class VisualModelTests {
 			throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		model.getCurrentLevel().add(new VisualComponentGroup(null));
+		model.getCurrentLevel().add(new VisualGroup(null));
 
 		VisualNode[] old = model.getCurrentLevel().getChildren();
 		Assert.assertEquals(1, old.length);
@@ -95,9 +95,9 @@ public class VisualModelTests {
 		for (VisualNode node : old)
 			oldList.add(node);
 
-		VisualComponentGroup newGroup = (VisualComponentGroup) _new[_new.length - 1];
+		VisualGroup newGroup = (VisualGroup) _new[_new.length - 1];
 		Assert.assertFalse(oldList.contains(newGroup));
-		Assert.assertTrue(newGroup instanceof VisualComponentGroup);
+		Assert.assertTrue(newGroup instanceof VisualGroup);
 
 		ArrayList<VisualNode> newNodeList = new ArrayList<VisualNode>();
 		for (VisualNode node : newGroup.getChildren())
@@ -112,9 +112,9 @@ public class VisualModelTests {
 	public void TestGroup2Items() throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		VisualComponentGroup root = model.getCurrentLevel();
-		VisualComponentGroup node1 = Tools.createGroup(root);
-		VisualComponentGroup node2 = Tools.createGroup(root);
+		VisualGroup root = model.getCurrentLevel();
+		VisualGroup node1 = Tools.createGroup(root);
+		VisualGroup node2 = Tools.createGroup(root);
 
 		TestGroup(model, new VisualNode[] { node1, node2 });
 	}
@@ -123,8 +123,8 @@ public class VisualModelTests {
 	public void TestGroup1Item() throws VisualModelConstructionException {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getCurrentLevel();
-		VisualComponentGroup node1 = Tools.createGroup(root);
+		VisualGroup root = model.getCurrentLevel();
+		VisualGroup node1 = Tools.createGroup(root);
 
 		model.addToSelection(node1);
 		model.group();
@@ -137,11 +137,11 @@ public class VisualModelTests {
 	public void TestGroup5Items() throws VisualModelConstructionException {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getCurrentLevel();
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(root);
-		VisualComponentGroup node3 = new VisualComponentGroup(root);
-		VisualComponentGroup node4 = new VisualComponentGroup(root);
+		VisualGroup root = model.getCurrentLevel();
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(root);
+		VisualGroup node3 = new VisualGroup(root);
+		VisualGroup node4 = new VisualGroup(root);
 		SquareNode sq1 = new SquareNode(root,
 				new Rectangle2D.Double(0, 0, 1, 1));
 		SquareNode sq2 = new SquareNode(root,
@@ -170,13 +170,13 @@ public class VisualModelTests {
 	public void TestUngroupRoot() throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		VisualComponentGroup root = model.getCurrentLevel();
+		VisualGroup root = model.getCurrentLevel();
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(node1);
-		VisualComponentGroup node3 = new VisualComponentGroup(node2);
-		VisualComponentGroup node4 = new VisualComponentGroup(node1);
-		VisualComponentGroup node5 = new VisualComponentGroup(root);
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(node1);
+		VisualGroup node3 = new VisualGroup(node2);
+		VisualGroup node4 = new VisualGroup(node1);
+		VisualGroup node5 = new VisualGroup(root);
 
 		node2.add(node3);
 		node1.add(node2);
@@ -203,13 +203,13 @@ public class VisualModelTests {
 	public void TestUngroupNonRoot() throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		VisualComponentGroup root = model.getCurrentLevel();
+		VisualGroup root = model.getCurrentLevel();
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(node1);
-		VisualComponentGroup node3 = new VisualComponentGroup(node2);
-		VisualComponentGroup node4 = new VisualComponentGroup(node1);
-		VisualComponentGroup node5 = new VisualComponentGroup(root);
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(node1);
+		VisualGroup node3 = new VisualGroup(node2);
+		VisualGroup node4 = new VisualGroup(node1);
+		VisualGroup node5 = new VisualGroup(root);
 
 		node2.add(node3);
 		node1.add(node2);
@@ -238,10 +238,10 @@ public class VisualModelTests {
 	public void TestUngroupEmpty() throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		VisualComponentGroup root = model.getCurrentLevel();
+		VisualGroup root = model.getCurrentLevel();
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(root);
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(root);
 
 		root.add(node1);
 		root.add(node2);
@@ -261,12 +261,12 @@ public class VisualModelTests {
 	public void TestUngroupTwoGroups() throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		VisualComponentGroup root = model.getCurrentLevel();
+		VisualGroup root = model.getCurrentLevel();
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(root);
-		VisualComponentGroup node3 = new VisualComponentGroup(node1);
-		VisualComponentGroup node4 = new VisualComponentGroup(node2);
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(root);
+		VisualGroup node3 = new VisualGroup(node1);
+		VisualGroup node4 = new VisualGroup(node2);
 
 		root.add(node1);
 		root.add(node2);
@@ -292,7 +292,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnections() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualConnection con = Tools.createConnection(c1, c2, root);
@@ -309,7 +309,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnectionsIgnoreSelection() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualConnection con = Tools.createConnection(c1, c2, root);
@@ -326,7 +326,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupTwoConnections() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualConnection con1 = Tools.createConnection(c1, c2, root);
@@ -346,8 +346,8 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnectionsPointingDeep() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
-		VisualComponentGroup node1 = Tools.createGroup(root);
+		VisualGroup root = model.getRoot();
+		VisualGroup node1 = Tools.createGroup(root);
 		VisualComponent c1 = Tools.createComponent(node1);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualConnection con = Tools.createConnection(c1, c2, root);
@@ -364,7 +364,7 @@ public class VisualModelTests {
 	public void testGrouping_DontGroupConnectionsSimple() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualComponent c3 = Tools.createComponent(root);
@@ -388,9 +388,9 @@ public class VisualModelTests {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof VisualComponentGroup))
+			if (!(obj instanceof VisualGroup))
 				return false;
-			VisualComponentGroup group = (VisualComponentGroup) obj;
+			VisualGroup group = (VisualGroup) obj;
 			VisualNode[] my = expected;
 			VisualNode[] their = group.getChildren();
 			if (my.length != their.length)
@@ -406,7 +406,7 @@ public class VisualModelTests {
 	public void testGrouping_DontGroupConnections() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualComponent c3 = Tools.createComponent(root);
@@ -426,7 +426,7 @@ public class VisualModelTests {
 	public void testGrouping_DontCountConnections() {
 		VisualModel model = createModel();
 
-		VisualComponentGroup root = model.getRoot();
+		VisualGroup root = model.getRoot();
 		VisualComponent c1 = Tools.createComponent(root);
 		VisualComponent c2 = Tools.createComponent(root);
 		VisualConnection con = Tools.createConnection(c1, c2, root);

@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 
 @HotKeyDeclaration(KeyEvent.VK_P)
@@ -19,11 +19,11 @@ public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
 
-	public VisualVertex(Vertex vertex, VisualComponentGroup parent) {
+	public VisualVertex(Vertex vertex, VisualGroup parent) {
 		super(vertex, parent);
 	}
 
-	public VisualVertex(Vertex vertex, Element xmlElement, VisualComponentGroup parent) {
+	public VisualVertex(Vertex vertex, Element xmlElement, VisualGroup parent) {
 		super(vertex, xmlElement, parent);
 	}
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualComponentGroup;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualNode;
 
@@ -18,7 +18,7 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestHitNode()
 	{
-		VisualComponentGroup group = new VisualComponentGroup(null);
+		VisualGroup group = new VisualGroup(null);
 
 		Rectangle2D.Double r1 = new Rectangle2D.Double();
 		Rectangle2D.Double r1_ = new Rectangle2D.Double();
@@ -66,10 +66,10 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestHitSubGroup()
 	{
-		VisualComponentGroup root = new VisualComponentGroup(null);
+		VisualGroup root = new VisualGroup(null);
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
-		VisualComponentGroup node2 = new VisualComponentGroup(root);
+		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node2 = new VisualGroup(root);
 		root.add(node1);
 		root.add((VisualNode)node2);
 		node1.add(getSquareNode(node1, 0, 0));
@@ -81,15 +81,15 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestUngroup()
 	{
-		VisualComponentGroup root = new VisualComponentGroup(null);
+		VisualGroup root = new VisualGroup(null);
 
-		VisualComponentGroup node1 = new VisualComponentGroup(root);
+		VisualGroup node1 = new VisualGroup(root);
 		root.add(node1);
 
 		node1.setX(10);
 		node1.setY(15);
 
-		VisualComponentGroup node2 = new VisualComponentGroup(node1);
+		VisualGroup node2 = new VisualGroup(node1);
 		node1.add(node2);
 
 		SquareNode sq1 = getSquareNode(node1, 0, 0);
@@ -128,7 +128,7 @@ public class VisualComponentGroupTests {
 		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
 	}
 
-	private VisualComponentGroup createGroup(VisualComponentGroup parent)
+	private VisualGroup createGroup(VisualGroup parent)
 	{
 		return VisualNodeTests.createGroup(parent);
 	}
@@ -136,8 +136,8 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestTransformChangeNotification()
 	{
-		VisualComponentGroup root = createGroup(null);
-		final VisualComponentGroup node1 = createGroup(root);
+		VisualGroup root = createGroup(null);
+		final VisualGroup node1 = createGroup(root);
 		final Boolean[] hit = new Boolean[]{false};
 		node1.addListener(new PropertyChangeListener()
 				{
@@ -154,12 +154,12 @@ public class VisualComponentGroupTests {
 
 	class MyConnection extends VisualConnection
 	{
-		public MyConnection(VisualComponent first, VisualComponent second, VisualComponentGroup parent) {
+		public MyConnection(VisualComponent first, VisualComponent second, VisualGroup parent) {
 			super(null, first, second, parent);
 			parent.add(this);
 		}
 		@Override
-		public void setParent(VisualComponentGroup parent) {
+		public void setParent(VisualGroup parent) {
 			super.setParent(parent);
 			uptodate = false;
 		};
@@ -174,7 +174,7 @@ public class VisualComponentGroupTests {
 
 	class DummyNode extends VisualComponent
 	{
-		public DummyNode(VisualComponentGroup parent) {
+		public DummyNode(VisualGroup parent) {
 			super(null, parent);
 			parent.add(this);
 		}
@@ -193,8 +193,8 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestConnectionUpdate()
 	{
-		VisualComponentGroup root = createGroup(null);
-		VisualComponentGroup group1 = createGroup(root);
+		VisualGroup root = createGroup(null);
+		VisualGroup group1 = createGroup(root);
 		DummyNode node1 = new DummyNode(group1);
 		DummyNode node2 = new DummyNode(group1);
 		MyConnection connection = new MyConnection(node1, node2, group1);

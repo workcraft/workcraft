@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,34 +21,42 @@ import org.workcraft.gui.edit.tools.GraphEditorTool;
 
 public class VisualModel implements Plugin, Model {
 	protected MathModel mathModel;
-	protected VisualComponentGroup root;
+	protected VisualGroup root;
 
 	protected LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
+	protected LinkedList<VisualModelListener> listeners = new LinkedList<VisualModelListener>();
 
-	protected LinkedList<VisualModelListener> listeners;
+	protected HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
+	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 
 	public VisualModel(MathModel model) throws VisualModelConstructionException {
 		mathModel = model;
-		root = new VisualComponentGroup(null);
+		root = new VisualGroup(null);
 		currentLevel = root;
-		listeners = new LinkedList<VisualModelListener>();
+
 
 		// create a default flat structure
 		for (Component component : model.getComponents()) {
-			VisualComponent visualComponent = (VisualComponent)PluginManager.createVisualComponent(component, root);
-			if (visualComponent != null)
+			VisualComponent visualComponent = PluginManager.createVisualComponent(component, root);
+			if (visualComponent != null) {
 				root.add(visualComponent);
+				addComponent(visualComponent);
+			}
 		}
 
 		for (Connection connection : model.getConnections()) {
-			VisualConnection visualConnection = (VisualConnection)PluginManager.createVisualComponent(connection, root);
-			if (visualConnection != null)
+
+			VisualConnection visualConnection = PluginManager.createVisualConnection(connection, getComponentByRefID(connection.getFirst().getID()),
+																						getComponentByRefID(connection.getSecond().getID()), root);
+			if (visualConnection != null) {
 				root.add(visualConnection);
+				addConnection(visualConnection);
+			}
 		}
 	}
 
 	public VisualModel(MathModel mathModel, Element visualElement) throws VisualModelConstructionException {
-		this(mathModel);
+		this.mathModel = mathModel;
 
 		// load structure from XML
 		NodeList nodes = visualElement.getElementsByTagName("group");
@@ -55,7 +64,8 @@ public class VisualModel implements Plugin, Model {
 		if (nodes.getLength() != 1)
 			throw new VisualModelConstructionException ("<visual-model> section of the document must contain one, and only one root group");
 
-		root = new VisualComponentGroup ((Element)nodes.item(0), mathModel, null);
+		root = new VisualGroup ((Element)nodes.item(0), this, null);
+		currentLevel = root;
 	}
 
 	public void toXML(Element xmlVisualElement) {
@@ -69,7 +79,7 @@ public class VisualModel implements Plugin, Model {
 		root.draw(g);
 	}
 
-	public VisualComponentGroup getRoot() {
+	public VisualGroup getRoot() {
 		return root;
 	}
 
@@ -206,13 +216,47 @@ public class VisualModel implements Plugin, Model {
 	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
 		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
 		VisualConnection ret = new VisualConnection(con, first, second, root);
-		first.addConnection(ret);
-		second.addConnection(ret);
 		root.add(ret);
+		addConnection(ret);
+		connectionAdded(ret);
 
 		fireModelStructureChanged();
-
 		return ret;
+	}
+
+	protected final void addComponent(VisualComponent component) {
+		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
+		componentAdded(component);
+	}
+
+	protected final void addConnection(VisualConnection connection) {
+		connection.getFirst().addConnection(connection);
+		connection.getSecond().addConnection(connection);
+
+		refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
+		connectionAdded(connection);
+	}
+
+	protected final void addGroup(VisualGroup group) {
+		groupAdded(group);
+	}
+
+	protected void componentAdded(VisualComponent component) {
+	}
+
+	protected void connectionAdded(VisualConnection connection) {
+	}
+
+	protected void componentRemoved(VisualComponent component) {
+	}
+
+	protected void connectionRemoved(VisualConnection connection) {
+	}
+
+	protected void groupAdded(VisualGroup group) {
+	}
+
+	protected void groupRemoved(VisualGroup group) {
 	}
 
 	public ArrayList<Class<? extends GraphEditorTool>> getAdditionalToolClasses() {
@@ -223,13 +267,13 @@ public class VisualModel implements Plugin, Model {
 		root.clearColorisation();
 	}
 
-	VisualComponentGroup currentLevel;
+	VisualGroup currentLevel;
 
-	public VisualComponentGroup getCurrentLevel() {
+	public VisualGroup getCurrentLevel() {
 		return currentLevel;
 	}
 
-	public void setCurrentLevel(VisualComponentGroup newCurrentLevel) {
+	public void setCurrentLevel(VisualGroup newCurrentLevel) {
 		selection.clear();
 		currentLevel = newCurrentLevel;
 		fireSelectionChanged();
@@ -252,7 +296,7 @@ public class VisualModel implements Plugin, Model {
 		List<VisualTransformableNode> selected = getTransformableSelection();
 		if(selected.size() <= 1)
 			return;
-		VisualComponentGroup group = new VisualComponentGroup(currentLevel);
+		VisualGroup group = new VisualGroup(currentLevel);
 		currentLevel.add(group);
 		for(VisualNode node : selected)
 		{
@@ -285,9 +329,9 @@ public class VisualModel implements Plugin, Model {
 
 		for(VisualNode node : getSelection())
 		{
-			if(node instanceof VisualComponentGroup)
+			if(node instanceof VisualGroup)
 			{
-				VisualComponentGroup group = (VisualComponentGroup)node;
+				VisualGroup group = (VisualGroup)node;
 				for(VisualNode subNode : group.unGroup())
 					unGrouped.add(subNode);
 				currentLevel.remove(group);
@@ -301,37 +345,41 @@ public class VisualModel implements Plugin, Model {
 		fireSelectionChanged();
 	}
 
-	protected void deleteGroup(VisualComponentGroup group) {
-
-
-
-		for (VisualComponentGroup g: group.groups)
-			deleteGroup(g);
+	protected void removeGroup(VisualGroup group) {
+		for (VisualGroup g: group.groups)
+			removeGroup(g);
 		for (VisualComponent c: group.components)
-			deleteComponent(c);
+			removeComponent(c);
 
 		selection.remove(group);
 		group.getParent().remove(group);
 
+		groupRemoved(group);
 		// connections will get deleted automatically
 	}
 
-	protected void deleteComponent(VisualComponent component) {
+	protected void removeComponent(VisualComponent component) {
 		for (VisualConnection con : component.getConnections())
-			deleteConnection(con);
+			removeConnection(con);
 		mathModel.removeComponent(component.refComponent);
 
 		selection.remove(component);
 		component.getParent().remove(component);
+
+		refIDToVisualComponentMap.remove(component.getReferencedComponent().getID());
+		componentRemoved(component);
 	}
 
-	protected void deleteConnection(VisualConnection connection) {
-		connection.first.removeConnection(connection);
-		connection.second.removeConnection(connection);
+	protected void removeConnection(VisualConnection connection) {
+		connection.getFirst().removeConnection(connection);
+		connection.getSecond().removeConnection(connection);
 		mathModel.removeConnection(connection.getReferencedConnection());
 
 		selection.remove(connection);
 		connection.getParent().remove(connection);
+
+		refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
+		connectionRemoved(connection);
 	}
 
 	/**
@@ -341,11 +389,11 @@ public class VisualModel implements Plugin, Model {
 	public void delete() {
 		LinkedList<VisualConnection> connectionsToDelete = new LinkedList<VisualConnection>();
 		LinkedList<VisualComponent> componentsToDelete = new LinkedList<VisualComponent>();
-		LinkedList<VisualComponentGroup> groupsToDelete = new LinkedList<VisualComponentGroup>();
+		LinkedList<VisualGroup> groupsToDelete = new LinkedList<VisualGroup>();
 
 		for (VisualNode node: selection) {
-			if (node instanceof VisualComponentGroup)
-				groupsToDelete.add((VisualComponentGroup)node);
+			if (node instanceof VisualGroup)
+				groupsToDelete.add((VisualGroup)node);
 			else if (node instanceof VisualComponent)
 				componentsToDelete.add((VisualComponent)node);
 			else if (node instanceof VisualConnection)
@@ -353,10 +401,14 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		for (VisualConnection con : connectionsToDelete)
-			deleteConnection(con);
+			removeConnection(con);
 		for (VisualComponent comp : componentsToDelete)
-			deleteComponent(comp);
-		for (VisualComponentGroup g: groupsToDelete)
-			deleteGroup(g);
+			removeComponent(comp);
+		for (VisualGroup g: groupsToDelete)
+			removeGroup(g);
+	}
+
+	public VisualComponent getComponentByRefID(Integer id) {
+		return refIDToVisualComponentMap.get(id);
 	}
 }

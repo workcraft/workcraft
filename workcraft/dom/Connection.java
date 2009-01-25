@@ -3,6 +3,7 @@ package org.workcraft.dom;
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
+@VisualClass("org.workcraft.dom.visual.VisualConnection")
 public class Connection {
 	protected Component first;
 	protected Component second;
@@ -39,7 +40,7 @@ public class Connection {
 		ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
 
 		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);
-		int secondID = XmlUtil.readIntAttr(xmlElement, "first", -1);
+		int secondID = XmlUtil.readIntAttr(xmlElement, "second", -1);
 
 		first = model.getComponentByID(firstID);
 		second = model.getComponentByID(secondID);
