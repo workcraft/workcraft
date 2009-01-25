@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
@@ -35,8 +34,8 @@ public class VisualGroup extends VisualTransformableNode {
 	protected Set<VisualGroup> groups = new LinkedHashSet<VisualGroup>();
 	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
-	public VisualGroup (VisualGroup parent) {
-		super(parent);
+
+	private void addPropertyChangeListener() {
 		this.addListener(new PropertyChangeListener(){
 			@Override
 			public void propertyChanged(String propertyName, Object sender) {
@@ -51,19 +50,24 @@ public class VisualGroup extends VisualTransformableNode {
 		});
 	}
 
-	public VisualGroup (Element element, Model model, VisualGroup parent) throws VisualModelConstructionException {
-		this(parent);
+	public VisualGroup () {
+		super();
+		addPropertyChangeListener();
+	}
 
-		NodeList nodes = element.getElementsByTagName("component");
+	public VisualGroup (Element element, Model model) throws VisualModelConstructionException {
+		super(element);
+		addPropertyChangeListener();
 
-		for (int i=0; i<nodes.getLength(); i++) {
-			Element vcompElement = (Element)nodes.item(i);
+		List<Element> componentNodes = XmlUtil.getChildElements("component", element);
+
+		for (Element vcompElement : componentNodes) {
 			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
 			Component refComponent = model.getMathModel().getComponentByID(ref);
 			if (refComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which was not found");
-			VisualComponent visualComponent = PluginManager.createVisualComponent(refComponent, vcompElement, parent);
+			VisualComponent visualComponent = PluginManager.createVisualComponent(refComponent, vcompElement);
 			if (visualComponent == null)
 				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref")+", which does not declare a visual represenation class");
@@ -71,10 +75,17 @@ public class VisualGroup extends VisualTransformableNode {
 			model.getVisualModel().addComponent(visualComponent);
 		}
 
-		nodes = element.getElementsByTagName("connection");
+		List<Element> groupNodes = XmlUtil.getChildElements("group", element);
 
-		for (int i=0; i<nodes.getLength(); i++) {
-			Element vconElement = (Element)nodes.item(i);
+		for (Element groupElement : groupNodes) {
+			VisualGroup visualGroup = new VisualGroup (groupElement, model);
+			add (visualGroup);
+			model.getVisualModel().addGroup(visualGroup);
+		}
+
+		List<Element> connectionNodes = XmlUtil.getChildElements("connection", element);
+
+		for (Element vconElement : connectionNodes) {
 			int ref = XmlUtil.readIntAttr(vconElement, "ref", -1);
 			Connection refConnection = model.getMathModel().getConnectionByID(ref);
 			VisualComponent first = model.getVisualModel().getComponentByRefID(refConnection.getFirst().getID());
@@ -82,22 +93,13 @@ public class VisualGroup extends VisualTransformableNode {
 			if (refConnection == null)
 				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
 						vconElement.getAttribute("ref")+", which was not found");
-			VisualConnection visualConnection = PluginManager.createVisualConnection(refConnection, vconElement, first, second, parent);
+			VisualConnection visualConnection = PluginManager.createVisualConnection(refConnection, vconElement, first, second);
 			if (visualConnection == null)
 				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
 						vconElement.getAttribute("ref")+", which does not declare a visual represenation class");
 
 			this.add(visualConnection);
 			model.getVisualModel().addConnection(visualConnection);
-		}
-
-		nodes = element.getElementsByTagName("group");
-
-		for (int i=0; i<nodes.getLength(); i++) {
-			Element groupElement = (Element)nodes.item(i);
-			VisualGroup visualGroup = new VisualGroup (groupElement, model, this);
-			add (visualGroup);
-			model.getVisualModel().addGroup(visualGroup);
 		}
 	}
 
@@ -131,16 +133,18 @@ public class VisualGroup extends VisualTransformableNode {
 	public void add (VisualGroup group) {
 		if (group.getParent()!=null)
 			group.getParent().remove(group);
-		group.setParent(this);
 		groups.add(group);
 		children.add(group);
+		group.setParent(this);
 	}
 
 	public void add (VisualNode node) {
+		if (node.getParent() == this)
+			return;
+
 		if (node.getParent() != null)
 			node.getParent().remove(node);
 
-		node.setParent(this);
 		children.add(node);
 
 		if (node instanceof VisualComponent)
@@ -150,6 +154,8 @@ public class VisualGroup extends VisualTransformableNode {
 		else if (node instanceof VisualConnection)
 			connections.add((VisualConnection)node);
 		else throw new UnsupportedOperationException("Unknown node type");
+
+		node.setParent(this);
 	}
 
 	protected void remove (VisualNode node) {
@@ -170,23 +176,20 @@ public class VisualGroup extends VisualTransformableNode {
 		super.toXML(groupElement);
 
 		for (VisualComponent vcomp : components) {
-			Element vcompElement = groupElement.getOwnerDocument().createElement("component");
+			Element vcompElement = XmlUtil.createChildElement("component", groupElement);
 			XmlUtil.writeIntAttr(vcompElement, "ref", vcomp.getReferencedComponent().getID());
 			vcomp.toXML(vcompElement);
-			groupElement.appendChild(vcompElement);
 		}
 
 		for (VisualConnection vcon : connections) {
-			Element vconElement = groupElement.getOwnerDocument().createElement("connection");
+			Element vconElement = XmlUtil.createChildElement("connection", groupElement);
 			XmlUtil.writeIntAttr(vconElement, "ref", vcon.getReferencedConnection().getID());
 			vcon.toXML(vconElement);
-			groupElement.appendChild(vconElement);
 		}
 
 		for (VisualGroup group : groups) {
-			Element childGroupElement = groupElement.getOwnerDocument().createElement("group");
+			Element childGroupElement = XmlUtil.createChildElement("group", groupElement);
 			group.toXML(childGroupElement);
-			groupElement.appendChild(childGroupElement);
 		}
 	}
 

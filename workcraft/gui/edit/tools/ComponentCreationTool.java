@@ -43,7 +43,7 @@ public class ComponentCreationTool extends AbstractTool {
 		try {
 			ctor = componentClass.getConstructor();
 			Component comp = (Component)ctor.newInstance();
-			VisualComponent vComp = (VisualComponent)PluginManager.createVisualComponent(comp, e.getModel().getRoot());
+			VisualComponent vComp = (VisualComponent)PluginManager.createVisualComponent(comp);
 
 			Point2D pos = e.getPosition();
 			e.getEditor().snap(pos);

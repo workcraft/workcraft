@@ -41,7 +41,7 @@ public class VisualModelTests {
 			throws VisualModelConstructionException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
-		model.getCurrentLevel().add(new VisualGroup(null));
+		model.getCurrentLevel().add(new VisualGroup());
 
 		VisualNode[] old = model.getCurrentLevel().getChildren();
 		Assert.assertEquals(1, old.length);
@@ -138,10 +138,10 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getCurrentLevel();
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(root);
-		VisualGroup node3 = new VisualGroup(root);
-		VisualGroup node4 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
+		VisualGroup node3 = new VisualGroup();
+		VisualGroup node4 = new VisualGroup();
 		SquareNode sq1 = new SquareNode(root,
 				new Rectangle2D.Double(0, 0, 1, 1));
 		SquareNode sq2 = new SquareNode(root,
@@ -172,11 +172,11 @@ public class VisualModelTests {
 
 		VisualGroup root = model.getCurrentLevel();
 
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(node1);
-		VisualGroup node3 = new VisualGroup(node2);
-		VisualGroup node4 = new VisualGroup(node1);
-		VisualGroup node5 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
+		VisualGroup node3 = new VisualGroup();
+		VisualGroup node4 = new VisualGroup();
+		VisualGroup node5 = new VisualGroup();
 
 		node2.add(node3);
 		node1.add(node2);
@@ -205,11 +205,11 @@ public class VisualModelTests {
 
 		VisualGroup root = model.getCurrentLevel();
 
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(node1);
-		VisualGroup node3 = new VisualGroup(node2);
-		VisualGroup node4 = new VisualGroup(node1);
-		VisualGroup node5 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
+		VisualGroup node3 = new VisualGroup();
+		VisualGroup node4 = new VisualGroup();
+		VisualGroup node5 = new VisualGroup();
 
 		node2.add(node3);
 		node1.add(node2);
@@ -240,8 +240,8 @@ public class VisualModelTests {
 
 		VisualGroup root = model.getCurrentLevel();
 
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
 
 		root.add(node1);
 		root.add(node2);
@@ -263,10 +263,10 @@ public class VisualModelTests {
 
 		VisualGroup root = model.getCurrentLevel();
 
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(root);
-		VisualGroup node3 = new VisualGroup(node1);
-		VisualGroup node4 = new VisualGroup(node2);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
+		VisualGroup node3 = new VisualGroup();
+		VisualGroup node4 = new VisualGroup();
 
 		root.add(node1);
 		root.add(node2);

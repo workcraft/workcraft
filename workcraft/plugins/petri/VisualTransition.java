@@ -10,7 +10,6 @@ import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
 
@@ -23,12 +22,12 @@ public class VisualTransition extends VisualComponent {
 	protected Color userBorderColor = defaultBorderColor;
 	protected Color userFillColor = defaultFillColor;
 
-	public VisualTransition(Transition transition, VisualGroup parent) {
-		super(transition, parent);
+	public VisualTransition(Transition transition) {
+		super(transition);
 	}
 
-	public VisualTransition(Transition transition, Element xmlElement, VisualGroup parent) {
-		super(transition, xmlElement, parent);
+	public VisualTransition(Transition transition, Element xmlElement) {
+		super(transition, xmlElement);
 	}
 
 

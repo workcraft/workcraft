@@ -18,7 +18,7 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestHitNode()
 	{
-		VisualGroup group = new VisualGroup(null);
+		VisualGroup group = new VisualGroup();
 
 		Rectangle2D.Double r1 = new Rectangle2D.Double();
 		Rectangle2D.Double r1_ = new Rectangle2D.Double();
@@ -66,10 +66,10 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestHitSubGroup()
 	{
-		VisualGroup root = new VisualGroup(null);
+		VisualGroup root = new VisualGroup();
 
-		VisualGroup node1 = new VisualGroup(root);
-		VisualGroup node2 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
+		VisualGroup node2 = new VisualGroup();
 		root.add(node1);
 		root.add((VisualNode)node2);
 		node1.add(getSquareNode(node1, 0, 0));
@@ -81,15 +81,15 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestUngroup()
 	{
-		VisualGroup root = new VisualGroup(null);
+		VisualGroup root = new VisualGroup();
 
-		VisualGroup node1 = new VisualGroup(root);
+		VisualGroup node1 = new VisualGroup();
 		root.add(node1);
 
 		node1.setX(10);
 		node1.setY(15);
 
-		VisualGroup node2 = new VisualGroup(node1);
+		VisualGroup node2 = new VisualGroup();
 		node1.add(node2);
 
 		SquareNode sq1 = getSquareNode(node1, 0, 0);
@@ -155,7 +155,7 @@ public class VisualComponentGroupTests {
 	class MyConnection extends VisualConnection
 	{
 		public MyConnection(VisualComponent first, VisualComponent second, VisualGroup parent) {
-			super(null, first, second, parent);
+			super(null, first, second);
 			parent.add(this);
 		}
 		@Override
@@ -175,7 +175,7 @@ public class VisualComponentGroupTests {
 	class DummyNode extends VisualComponent
 	{
 		public DummyNode(VisualGroup parent) {
-			super(null, parent);
+			super(null);
 			parent.add(this);
 		}
 

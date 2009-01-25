@@ -22,28 +22,23 @@ public abstract class VisualTransformableNode extends VisualNode {
 		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
 	}
 
-	public VisualTransformableNode(VisualGroup parent) {
-		super(parent);
+	public VisualTransformableNode() {
+		super();
 		addPropertyDeclarations();
 	}
 
-	public VisualTransformableNode (Element xmlElement, VisualGroup parent) {
-		super (xmlElement, parent);
-		addPropertyDeclarations();
+	public VisualTransformableNode (Element xmlElement) {
+		super();
 		NodeList nodes = xmlElement.getElementsByTagName("transform");
 		Element vnodeElement = (Element)nodes.item(0);
 		setX (XmlUtil.readDoubleAttr(vnodeElement, "X", 0));
 		setY (XmlUtil.readDoubleAttr(vnodeElement, "Y", 0));
 	}
 
-
-
 	public void toXML(Element xmlElement) {
-		super.toXML(xmlElement);
-		Element vnodeElement = xmlElement.getOwnerDocument().createElement("transform");
+		Element vnodeElement = XmlUtil.createChildElement("transform", xmlElement);
 		XmlUtil.writeDoubleAttr(vnodeElement, "X", getX());
 		XmlUtil.writeDoubleAttr(vnodeElement, "Y", getY());
-		xmlElement.appendChild(vnodeElement);
 	}
 
 	public double getX() {

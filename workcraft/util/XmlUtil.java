@@ -3,6 +3,8 @@ package org.workcraft.util;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -13,8 +15,36 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class XmlUtil {
+	public static List<Element> getChildElements (String tagName, Element element) {
+			LinkedList<Element> result = new LinkedList<Element>();
+			NodeList nl = element.getChildNodes();
+			for (int i=0; i<nl.getLength(); i++) {
+				Node n = nl.item(i);
+				if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
+					result.add((Element)n);
+			}
+			return result;
+	}
+
+	public static Element getChildElement (String tagName, Element element) {
+		NodeList nl = element.getChildNodes();
+		for (int i=0; i<nl.getLength(); i++) {
+			Node n = nl.item(i);
+			if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
+				return (Element)n;
+		}
+		return null;
+	}
+
+	public static Element createChildElement (String tagName, Element parentElement) {
+		Element result = parentElement.getOwnerDocument().createElement(tagName);
+		parentElement.appendChild(result);
+		return result;
+	}
 
 	public static void saveDocument(Document doc, String path) throws IOException {
 		try

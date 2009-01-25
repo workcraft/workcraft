@@ -40,9 +40,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected double arrowWidth = defaultArrowWidth;
 	protected double arrowLength = defaultArrowLength;
 
-	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second, VisualGroup parent) {
-		super(parent);
-
+	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
 		first.addListener(this);
 
 		this.refConnection = refConnection;
@@ -59,9 +57,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		propertyDeclarations.add(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
 	}
 
-	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second, VisualGroup parent) {
-		this(refConnection, first, second, parent);
-
+	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second) {
+		this(refConnection, first, second);
 	}
 
 	public Color getColor() {
@@ -124,7 +121,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			t2 = second.getParentToAncestorTransform(parent);
 		} catch (NotAnAncestorException e) {
 			e.printStackTrace();
-			return;
+			throw new RuntimeException("qwe");
+		//	return;
 		}
 
 		// get centres of the two components in this connection's parent space

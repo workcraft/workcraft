@@ -430,7 +430,7 @@ public class PluginManager {
 		}
 	}
 
-	public static VisualComponent createVisualComponent (Component component, VisualGroup parent) throws VisualModelConstructionException {
+	public static VisualComponent createVisualComponent (Component component) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 
@@ -440,8 +440,8 @@ public class PluginManager {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), VisualGroup.class);
-			VisualComponent visual = (VisualComponent) ctor.newInstance(component, parent);
+			Constructor<?> ctor = visualClass.getConstructor(component.getClass());
+			VisualComponent visual = (VisualComponent) ctor.newInstance(component);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -453,7 +453,7 @@ public class PluginManager {
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +"," + VisualGroup.class.getName()+")" );
+					"(" + component.getClass().getName() +")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
@@ -471,7 +471,7 @@ public class PluginManager {
 
 
 
-	public static VisualComponent createVisualComponent (Component component, Element element, VisualGroup parent  ) throws VisualModelConstructionException {
+	public static VisualComponent createVisualComponent (Component component, Element element) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 
@@ -481,8 +481,8 @@ public class PluginManager {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), Element.class, VisualGroup.class);
-			VisualComponent visual = (VisualComponent)ctor.newInstance(component, element, parent);
+			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), Element.class);
+			VisualComponent visual = (VisualComponent)ctor.newInstance(component, element);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -494,7 +494,7 @@ public class PluginManager {
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +"," + Element.class.getName() + ","+ VisualGroup.class.getName()+")" );
+					"(" + component.getClass().getName() +"," + Element.class.getName() + ")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
@@ -511,7 +511,7 @@ public class PluginManager {
 	}
 
 	public static VisualConnection createVisualConnection (Connection connection, Element element, VisualComponent first,
-			VisualComponent second, VisualGroup parent) throws VisualModelConstructionException {
+			VisualComponent second) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
 
@@ -524,13 +524,13 @@ public class PluginManager {
 			Constructor<?> ctor;
 			try {
 				ctor = visualClass.getConstructor(connection.getClass(), Element.class, first.getClass(),
-						second.getClass(), VisualGroup.class);
+						second.getClass());
 			}
 			catch (NoSuchMethodException e) {
 				ctor = visualClass.getConstructor(connection.getClass(), Element.class, VisualComponent.class,
-						VisualComponent.class, VisualGroup.class);
+						VisualComponent.class);
 			}
-			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second, parent);
+			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -558,7 +558,7 @@ public class PluginManager {
 	}
 
 	public static VisualConnection createVisualConnection (Connection connection, VisualComponent first,
-			VisualComponent second, VisualGroup parent) throws VisualModelConstructionException {
+			VisualComponent second) throws VisualModelConstructionException {
 		// Find the corresponding visual class
 		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
 
@@ -570,7 +570,7 @@ public class PluginManager {
 			Class<?> visualClass = Class.forName(vcat.value());
 			Constructor<?> ctor = visualClass.getConstructor(connection.getClass(), first.getClass(),
 					second.getClass(), VisualGroup.class);
-			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, first, second, parent);
+			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, first, second);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -582,7 +582,7 @@ public class PluginManager {
 		} catch (NoSuchMethodException e) {
 			throw new VisualModelConstructionException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + connection.getClass().getName() +"," + Element.class.getName() + ","+ VisualGroup.class.getName()+")" );
+					"(" + connection.getClass().getName() +"," + Element.class.getName() + ")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualModelConstructionException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());

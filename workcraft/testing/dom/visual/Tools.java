@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.VisualConnection;
 class Tools {
 	static VisualGroup createGroup(VisualGroup parent)
 	{
-		VisualGroup node = new VisualGroup(parent);
+		VisualGroup node = new VisualGroup();
 		if(parent!=null)
 			parent.add(node);
 		return node;
@@ -24,7 +24,7 @@ class Tools {
 
 	static VisualConnection createConnection(VisualComponent c1, VisualComponent c2, VisualGroup parent)
 	{
-		VisualConnection connection = new VisualConnection(null, c1, c2, parent);
+		VisualConnection connection = new VisualConnection(null, c1, c2);
 		parent.add(connection);
 		return connection;
 	}

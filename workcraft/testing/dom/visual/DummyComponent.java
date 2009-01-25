@@ -12,7 +12,7 @@ class SquareNode extends VisualComponent
 	Rectangle2D.Double rectInner;
 	int resultToReturn;
 	public SquareNode(VisualGroup parent, Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
-		super(null, parent);
+		super(null);
 		this.rectOuter = rectOuter;
 		this.rectInner = rectInner;
 	}

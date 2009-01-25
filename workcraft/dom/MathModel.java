@@ -7,9 +7,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DuplicateIDException;
@@ -48,9 +48,8 @@ public abstract class MathModel implements Plugin, Model {
 
 		title = XmlUtil.readStringAttr(xmlModelElement, "title");
 
-		NodeList componentNodes = xmlModelElement.getElementsByTagName("component");
-		for (int i = 0; i < componentNodes.getLength(); i++) {
-			Element e  = (Element)componentNodes.item(i);
+		List<Element> componentNodes = XmlUtil.getChildElements("component", xmlModelElement);
+		for (Element e : componentNodes) {
 
 			String className = e.getAttribute("class");
 
@@ -84,11 +83,9 @@ public abstract class MathModel implements Plugin, Model {
 			}
 		}
 
-		NodeList connectionNodes = xmlModelElement.getElementsByTagName("connection");
+		List<Element> connectionNodes = XmlUtil.getChildElements("connection", xmlModelElement);
 
-		for (int i = 0; i < connectionNodes.getLength(); i++) {
-			Element e  = (Element)connectionNodes.item(i);
-
+		for (Element e: connectionNodes) {
 			String className = e.getAttribute("class");
 
 			try {
@@ -96,7 +93,7 @@ public abstract class MathModel implements Plugin, Model {
 				Constructor<?> ctor = elementClass.getConstructor(Element.class, MathModel.class);
 				Connection connection = (Connection)ctor.newInstance(e, this);
 
-				addConnection(connection);
+				addConnection(connection, false);
 
 			} catch (ClassCastException ex) {
 				throw new ModelLoadFailedException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Connection: " + ex.getMessage());
@@ -126,17 +123,15 @@ public abstract class MathModel implements Plugin, Model {
 		XmlUtil.writeStringAttr(modelElement, "title", title);
 
 		for (Component c: components.values()) {
-			Element componentElement = modelElement.getOwnerDocument().createElement("component");
+			Element componentElement = XmlUtil.createChildElement("component", modelElement);
 			componentElement.setAttribute("class", c.getClass().getName());
 			c.toXML(componentElement);
-			modelElement.appendChild(componentElement);
 		}
 
 		for (Connection c: connections.values()) {
-			Element connectionElement = modelElement.getOwnerDocument().createElement("connection");
+			Element connectionElement = XmlUtil.createChildElement("connection", modelElement);
 			connectionElement.setAttribute("class", c.getClass().getName());
 			c.toXML(connectionElement);
-			modelElement.appendChild(connectionElement);
 		}
 	}
 

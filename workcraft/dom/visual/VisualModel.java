@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
@@ -18,6 +17,7 @@ import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
+import org.workcraft.util.XmlUtil;
 
 public class VisualModel implements Plugin, Model {
 	protected MathModel mathModel;
@@ -31,13 +31,13 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualModel(MathModel model) throws VisualModelConstructionException {
 		mathModel = model;
-		root = new VisualGroup(null);
+		root = new VisualGroup();
 		currentLevel = root;
 
 
 		// create a default flat structure
 		for (Component component : model.getComponents()) {
-			VisualComponent visualComponent = PluginManager.createVisualComponent(component, root);
+			VisualComponent visualComponent = PluginManager.createVisualComponent(component);
 			if (visualComponent != null) {
 				root.add(visualComponent);
 				addComponent(visualComponent);
@@ -47,7 +47,7 @@ public class VisualModel implements Plugin, Model {
 		for (Connection connection : model.getConnections()) {
 
 			VisualConnection visualConnection = PluginManager.createVisualConnection(connection, getComponentByRefID(connection.getFirst().getID()),
-																						getComponentByRefID(connection.getSecond().getID()), root);
+																						getComponentByRefID(connection.getSecond().getID()));
 			if (visualConnection != null) {
 				root.add(visualConnection);
 				addConnection(visualConnection);
@@ -59,12 +59,12 @@ public class VisualModel implements Plugin, Model {
 		this.mathModel = mathModel;
 
 		// load structure from XML
-		NodeList nodes = visualElement.getElementsByTagName("group");
+		List<Element> nodes = XmlUtil.getChildElements("group", visualElement);
 
-		if (nodes.getLength() != 1)
+		if (nodes.size() != 1)
 			throw new VisualModelConstructionException ("<visual-model> section of the document must contain one, and only one root group");
 
-		root = new VisualGroup ((Element)nodes.item(0), this, null);
+		root = new VisualGroup (nodes.get(0), this);
 		currentLevel = root;
 	}
 
@@ -215,7 +215,7 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
 		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, first, second, root);
+		VisualConnection ret = new VisualConnection(con, first, second);
 		root.add(ret);
 		addConnection(ret);
 		connectionAdded(ret);
@@ -296,7 +296,7 @@ public class VisualModel implements Plugin, Model {
 		List<VisualTransformableNode> selected = getTransformableSelection();
 		if(selected.size() <= 1)
 			return;
-		VisualGroup group = new VisualGroup(currentLevel);
+		VisualGroup group = new VisualGroup();
 		currentLevel.add(group);
 		for(VisualNode node : selected)
 		{

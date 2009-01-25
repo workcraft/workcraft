@@ -11,16 +11,14 @@ public abstract class VisualComponent extends VisualTransformableNode {
 	protected VisualGroup parent;
 	protected Set<VisualConnection> connections = new HashSet<VisualConnection>();
 
-	public VisualComponent(Component refComponent, VisualGroup parent) {
-		super(parent);
+	public VisualComponent(Component refComponent) {
+		super();
 		this.refComponent = refComponent;
-		this.parent = parent;
 	}
 
-	public VisualComponent(Component refComponent, Element xmlElement, VisualGroup parent) {
-		super(xmlElement, parent);
+	public VisualComponent(Component refComponent, Element xmlElement) {
+		super(xmlElement);
 		this.refComponent = refComponent;
-		this.parent = parent;
 	}
 
 	public Set<VisualConnection> getConnections() {
