@@ -119,20 +119,26 @@ public abstract class MathModel implements Plugin, Model {
 		}
 	}
 
-	public void toXML (Element modelElement) {
-		XmlUtil.writeStringAttr(modelElement, "title", title);
-
-		for (Component c: components.values()) {
-			Element componentElement = XmlUtil.createChildElement("component", modelElement);
+	public static void componentsToXML (Element parentElement, Collection<? extends Component> components) {
+		for (Component c: components) {
+			Element componentElement = XmlUtil.createChildElement("component", parentElement);
 			componentElement.setAttribute("class", c.getClass().getName());
 			c.toXML(componentElement);
 		}
+	}
 
-		for (Connection c: connections.values()) {
-			Element connectionElement = XmlUtil.createChildElement("connection", modelElement);
+	public static void connectionsToXML (Element parentElement, Collection<? extends Connection> connections) {
+		for (Connection c: connections) {
+			Element connectionElement = XmlUtil.createChildElement("connection", parentElement);
 			connectionElement.setAttribute("class", c.getClass().getName());
 			c.toXML(connectionElement);
 		}
+	}
+
+	public void toXML (Element modelElement) {
+		XmlUtil.writeStringAttr(modelElement, "title", title);
+		componentsToXML(modelElement, components.values());
+		connectionsToXML(modelElement, connections.values());
 	}
 
 	public Collection<Component> getComponents() {

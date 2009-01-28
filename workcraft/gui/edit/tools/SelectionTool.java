@@ -3,6 +3,7 @@ package org.workcraft.gui.edit.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -160,17 +161,19 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-			e.getModel().delete();
+			e.getModel().deleteSelection();
 			e.getEditor().repaint();
 		}
 
 		if (e.isCtrlDown()) {
 			if (e.getKeyCode() == KeyEvent.VK_G) {
-				e.getModel().group();
+				e.getModel().groupSelection();
 				e.getEditor().repaint();
 			}	else if (e.getKeyCode() == KeyEvent.VK_U) {
-				e.getModel().ungroup();
+				e.getModel().ungroupSelection();
 				e.getEditor().repaint();
+			} else if (e.getKeyCode() == KeyEvent.VK_C) {
+				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
 			}
 		}
 

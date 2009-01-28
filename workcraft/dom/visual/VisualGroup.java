@@ -171,26 +171,12 @@ public class VisualGroup extends VisualTransformableNode {
 		else throw new UnsupportedOperationException("Unknown node type");
 	}
 
+
+
 	@Override
 	public void toXML(Element groupElement) {
 		super.toXML(groupElement);
-
-		for (VisualComponent vcomp : components) {
-			Element vcompElement = XmlUtil.createChildElement("component", groupElement);
-			XmlUtil.writeIntAttr(vcompElement, "ref", vcomp.getReferencedComponent().getID());
-			vcomp.toXML(vcompElement);
-		}
-
-		for (VisualConnection vcon : connections) {
-			Element vconElement = XmlUtil.createChildElement("connection", groupElement);
-			XmlUtil.writeIntAttr(vconElement, "ref", vcon.getReferencedConnection().getID());
-			vcon.toXML(vconElement);
-		}
-
-		for (VisualGroup group : groups) {
-			Element childGroupElement = XmlUtil.createChildElement("group", groupElement);
-			group.toXML(childGroupElement);
-		}
+		VisualModel.nodesToXml (groupElement, children);
 	}
 
 	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {

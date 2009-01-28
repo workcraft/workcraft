@@ -210,11 +210,14 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void keyPressed(GraphEditorKeyEvent event) {
-		int keyCode = event.getKeyCode();
-		ToolTracker tracker = hotkeyMap.get(keyCode);
-		if (tracker != null)
-			selectTool(tracker.getNextTool());
-		else
+		if (!event.isAltDown() && !event.isCtrlDown() && !event.isShiftDown()) {
+			int keyCode = event.getKeyCode();
+			ToolTracker tracker = hotkeyMap.get(keyCode);
+			if (tracker != null)
+				selectTool(tracker.getNextTool());
+			else
+				selectedTool.keyPressed(event);
+		} else
 			selectedTool.keyPressed(event);
 	}
 

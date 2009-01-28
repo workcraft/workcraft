@@ -1,11 +1,19 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
@@ -68,11 +76,50 @@ public class VisualModel implements Plugin, Model {
 		currentLevel = root;
 	}
 
+	public static void nodesToXml (Element parentElement, Collection <? extends VisualNode> nodes) {
+		for (VisualNode node : nodes) {
+			if (node instanceof VisualComponent) {
+				VisualComponent vc = (VisualComponent)node;
+				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
+				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
+				vc.toXML(vcompElement);
+			} else if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
+				XmlUtil.writeIntAttr(vconElement, "ref", vc.getReferencedConnection().getID());
+				vc.toXML(vconElement);
+			} else if (node instanceof VisualGroup) {
+				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
+				((VisualGroup)node).toXML(childGroupElement);
+			}
+		}
+	}
+
 	public void toXML(Element xmlVisualElement) {
 		// create root group element
 		Element rootGroupElement = xmlVisualElement.getOwnerDocument().createElement("group");
 		root.toXML(rootGroupElement);
 		xmlVisualElement.appendChild(rootGroupElement);
+	}
+
+	public void selectionToXML(Element xmlElement) {
+		Element mathElement = XmlUtil.createChildElement("model", xmlElement);
+		XmlUtil.writeStringAttr(mathElement, "class", getMathModel().getClass().getName());
+		Element visualElement = XmlUtil.createChildElement("visual-model", xmlElement);
+		XmlUtil.writeStringAttr(visualElement, "class", getClass().getName());
+
+		LinkedList<Component> referencedComponents = new LinkedList<Component>();
+		LinkedList<Connection> referencedConnections = new LinkedList<Connection>();
+
+		for (VisualNode n : selection)
+			if (n instanceof VisualComponent)
+				referencedComponents.add( ((VisualComponent)n).getReferencedComponent());
+			else if (n instanceof VisualConnection)
+				referencedConnections.add( ((VisualConnection)n).getReferencedConnection());
+
+		VisualModel.nodesToXml(visualElement, selection);
+		MathModel.componentsToXML(mathElement, referencedComponents);
+		MathModel.connectionsToXML(mathElement, referencedConnections);
 	}
 
 	public void draw (Graphics2D g) {
@@ -94,7 +141,7 @@ public class VisualModel implements Plugin, Model {
 	/**
 	 * Select all components, connections and groups from the <code>root</code> group.
 	 */
-	public void selectAll() {
+	public void selectAll() {;
 		selection.clear();
 		selection.addAll(root.children);
 	}
@@ -292,7 +339,7 @@ public class VisualModel implements Plugin, Model {
 	 * Groups the selection, and selects the newly created group.
 	 * @author Arseniy Alekseyev
 	 */
-	public void group() {
+	public void groupSelection() {
 		List<VisualTransformableNode> selected = getTransformableSelection();
 		if(selected.size() <= 1)
 			return;
@@ -324,7 +371,7 @@ public class VisualModel implements Plugin, Model {
 	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.
 	 * @author Arseniy Alekseyev
 	 */
-	public void ungroup() {
+	public void ungroupSelection() {
 		ArrayList<VisualNode> unGrouped = new ArrayList<VisualNode>();
 
 		for(VisualNode node : getSelection())
@@ -386,7 +433,7 @@ public class VisualModel implements Plugin, Model {
 	 * Deletes the selection.
 	 * @author Ivan Poliakov
 	 */
-	public void delete() {
+	public void deleteSelection() {
 		LinkedList<VisualConnection> connectionsToDelete = new LinkedList<VisualConnection>();
 		LinkedList<VisualComponent> componentsToDelete = new LinkedList<VisualComponent>();
 		LinkedList<VisualGroup> groupsToDelete = new LinkedList<VisualGroup>();
@@ -406,6 +453,33 @@ public class VisualModel implements Plugin, Model {
 			removeComponent(comp);
 		for (VisualGroup g: groupsToDelete)
 			removeGroup(g);
+	}
+
+	public void copy(Clipboard clipboard, ClipboardOwner clipboardOwner) {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+		try {
+			db = dbf.newDocumentBuilder();
+			doc = db.newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			return;
+		}
+
+		Element root = doc.createElement("workcraft-clipboard-contents");
+		doc.appendChild(root);
+		root = doc.getDocumentElement();
+		selectionToXML(root);
+		clipboard.setContents(new TransferableDocument(doc), clipboardOwner);
+	}
+
+	public void paste() {
+
+	}
+
+	public void cut(Clipboard clipboard, ClipboardOwner clipboardOwner) {
+		copy(clipboard, clipboardOwner);
+		deleteSelection();
 	}
 
 	public VisualComponent getComponentByRefID(Integer id) {
