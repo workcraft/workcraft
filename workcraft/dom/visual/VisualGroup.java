@@ -9,10 +9,14 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import net.sf.jga.algorithms.Filter;
+import net.sf.jga.fn.UnaryFunctor;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
@@ -205,18 +209,56 @@ public class VisualGroup extends VisualTransformableNode {
 		return 0;
 	}
 
-	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
-		ArrayList<T> list = new ArrayList<T>();
-		for (T node : nodes)
+	private static <T> Iterable<T> reverse(Iterable<T> original)
+	{
+		final ArrayList<T> list = new ArrayList<T>();
+		for (T node : original)
 			list.add(node);
-		for (int i=list.size()-1;i>=0;i--) {
-			T node = list.get(i);
-			Rectangle2D boundingBox = node.getBoundingBoxInParentSpace();
-			if (boundingBox != null)
-				if (boundingBox.contains(pointInLocalSpace))
-					if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
-						return node;
-		}
+		return new Iterable<T>()
+		{
+			@Override
+			public Iterator<T> iterator() {
+				return new Iterator<T>()
+				{
+					private int cur = list.size();
+					@Override
+					public boolean hasNext() {
+						return cur>0;
+					}
+					@Override
+					public T next() {
+						return list.get(--cur);
+					}
+					@Override
+					public void remove() {
+						throw new RuntimeException("Not supported");
+					}
+				};
+			}
+		};
+	}
+
+	private static <T extends VisualNode> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
+		return
+			Filter.filter(nodes, new UnaryFunctor<T, Boolean>()
+				{
+					private static final long serialVersionUID = -7790168871113424836L;
+
+					@Override
+					public Boolean fn(T arg) {
+						Rectangle2D boundingBox = arg.getBoundingBoxInParentSpace();
+						return
+							boundingBox != null &&
+							boundingBox.contains(pointInLocalSpace);
+					}
+				}
+		);
+	}
+
+	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
+		for (T node : reverse(filterByBB(nodes, pointInLocalSpace)))
+			if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
+				return node;
 		return null;
 	}
 
@@ -225,7 +267,17 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		return hitVisualNode(pointInLocalSpace, components);
+		VisualComponent result = hitVisualNode(pointInLocalSpace, components);
+		if(result!=null)
+			return result;
+		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
+			Point2D pointInChildSpace = new Point2D.Double();
+			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
+			result = group.hitComponent(pointInChildSpace);
+			if(result!=null)
+				return result;
+		}
+		return null;
 	}
 
 	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)

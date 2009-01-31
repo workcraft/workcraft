@@ -14,6 +14,7 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
@@ -65,31 +66,32 @@ public class ConnectionTool extends AbstractTool {
 				drawHighlight (g, editor.getModel(), mouseOverObject);
 			}
 		} else {
+			VisualGroup root = editor.getModel().getRoot();
+
+			warningMessage = null;
 			if (mouseOverObject != null) {
 				try {
 					editor.getModel().validateConnection(first, mouseOverObject);
-					warningMessage = null;
-
-					g.setColor(Color.GREEN);
-					Line2D line = new Line2D.Double(first.getX(), first.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
-					g.draw(line);
-					drawHighlight(g, editor.getModel(), mouseOverObject);
-
+					drawConnectingLine(g, root, Color.GREEN);
 				} catch (InvalidConnectionException e) {
 					warningMessage = e.getMessage();
-
-					g.setColor(Color.RED);
-					Line2D line = new Line2D.Double(first.getX(), first.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
-					g.draw(line);
-					drawHighlight(g, editor.getModel(), mouseOverObject);
+					drawConnectingLine(g, root, Color.RED);
 				}
+				drawHighlight(g, editor.getModel(), mouseOverObject);
 			} else {
-				warningMessage = null;
-				g.setColor(Color.BLUE);
-				Line2D line = new Line2D.Double(first.getX(), first.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
-				g.draw(line);
+				drawConnectingLine(g, root, Color.BLUE);
 			}
 		}
+	}
+
+	private void drawConnectingLine(Graphics2D g, VisualGroup root, Color color) {
+		g.setColor(color);
+
+		Rectangle2D bb = first.getBoundingBoxInAncestorSpace(root);
+		Point2D center = new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+
+		Line2D line = new Line2D.Double(center.getX(), center.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
+		g.draw(line);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.workcraft.testing.dom.visual;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
@@ -444,5 +445,49 @@ public class VisualModelTests {
 		} catch (VisualModelConstructionException e) {
 			throw new RuntimeException("error!");
 		}
+	}
+
+	@Test
+	public void TestHitNodeCurrentLevelTransformation()
+	{
+		VisualModel model = createModel();
+
+		VisualGroup root = model.getRoot();
+		VisualGroup group1 = Tools.createGroup(root);
+		group1.setX(101);
+		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
+		group1.add(sq);
+
+		Assert.assertNull(model.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(group1, model.hitNode(new Point2D.Double(101.5, 0.5)));
+		model.setCurrentLevel(group1);
+		Assert.assertNull(model.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(sq, model.hitNode(new Point2D.Double(101.5, 0.5)));
+	}
+
+	@Test
+	public void TestHitObjectsCurrentLevelTransformation()
+	{
+		VisualModel model = createModel();
+
+		VisualGroup root = model.getRoot();
+		VisualGroup group1 = Tools.createGroup(root);
+		group1.setX(101);
+		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
+		group1.add(sq);
+
+		SquareNode sq2 = new SquareNode(root, new Rectangle2D.Double(0, 5, 1, 1));
+		root.add(sq2);
+
+		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(group1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).get(0));
+		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+		Assert.assertEquals(sq2, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).get(0));
+		model.setCurrentLevel(group1);
+		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(sq, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).get(0));
+		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
 	}
 }

@@ -16,6 +16,45 @@ import junit.framework.Assert;
 public class VisualComponentGroupTests {
 
 	@Test
+	public void TestHitComponent()
+	{
+		VisualGroup root = createGroup(null);
+		VisualGroup node1 = createGroup(root);
+		node1.setX(5);
+
+		SquareNode sq1 = new SquareNode(root, new Rectangle2D.Double(1, 1, 1, 1));
+		SquareNode sq2 = new SquareNode(node1, new Rectangle2D.Double(2, 2, 1, 1));
+		root.add(sq1);
+		node1.add(sq2);
+
+		Assert.assertEquals(sq1, root.hitComponent(new Point2D.Double(1.5, 1.5)));
+		Assert.assertEquals(sq2, root.hitComponent(new Point2D.Double(7.5, 2.5)));
+		Assert.assertEquals(null, root.hitComponent(new Point2D.Double(2.5, 2.5)));
+	}
+
+	public void TestHitConnection()
+	{
+		VisualGroup root = createGroup(null);
+		VisualGroup group = createGroup(root);
+		group.setX(5);
+
+		SquareNode sqr1 = new SquareNode(root, new Rectangle2D.Double(1, 1, 1, 1));
+		SquareNode sqr2 = new SquareNode(root, new Rectangle2D.Double(3, 3, 1, 1));
+		root.add(sqr1);
+		root.add(sqr2);
+		VisualConnection connectionR = Tools.createConnection(sqr1, sqr2, root);
+
+		SquareNode sqg1 = new SquareNode(group, new Rectangle2D.Double(1, 1, 1, 1));
+		SquareNode sqg2 = new SquareNode(group, new Rectangle2D.Double(3, 3, 1, 1));
+		group.add(sqg1);
+		group.add(sqg2);
+		Tools.createConnection(sqg1, sqg2, group);
+
+		Assert.assertEquals(connectionR, root.hitNode(new Point2D.Double(2.5, 1.5)));
+		Assert.assertEquals(group, root.hitNode(new Point2D.Double(7.5, 1.5)));
+	}
+
+	@Test
 	public void TestHitNode()
 	{
 		VisualGroup group = new VisualGroup();
