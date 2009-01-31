@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
 
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -62,7 +63,7 @@ public class SelectionTool extends AbstractTool {
 				cancelDrag(e);
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0)
 				clearSelection(model);
-			VisualNode so = model.getCurrentLevel().hitNode(e.getPosition());
+			VisualNode so = model.hitNode(e.getPosition());
 			if(so!=null)
 				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
 					removeFromSelection(model, so);
@@ -87,7 +88,7 @@ public class SelectionTool extends AbstractTool {
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<VisualNode> hit = model.getCurrentLevel().hitObjects(selectionRect(e.getPosition()));
+			LinkedList<VisualNode> hit = model.hitObjects(selectionRect(e.getPosition()));
 
 			clearSelection(model);
 			for (VisualNode so: savedSelection)
@@ -113,7 +114,7 @@ public class SelectionTool extends AbstractTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			VisualNode so = model.getCurrentLevel().hitNode(e.getPosition());
+			VisualNode so = model.hitNode(e.getPosition());
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!model.isObjectSelected(so)) {
 					clearSelection(model);
@@ -158,6 +159,14 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
+	private void grayOutNotActive(VisualModel model)
+	{
+		model.getRoot().setColorisation(new Color(255, 255, 255));
+		model.getCurrentLevel().clearColorisation();
+		for(VisualNode node : model.getSelection())
+			node.setColorisation(selectionColor);
+	}
+
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
@@ -165,18 +174,55 @@ public class SelectionTool extends AbstractTool {
 			e.getEditor().repaint();
 		}
 
-		if (e.isCtrlDown()) {
-			if (e.getKeyCode() == KeyEvent.VK_G) {
-				e.getModel().groupSelection();
-				e.getEditor().repaint();
-			}	else if (e.getKeyCode() == KeyEvent.VK_U) {
-				e.getModel().ungroupSelection();
-				e.getEditor().repaint();
-			} else if (e.getKeyCode() == KeyEvent.VK_C) {
-				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+		if (!e.isCtrlDown())
+		{
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_PAGE_UP:
+				currentLevelUp(e);
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				currentLevelDown(e);
+				break;
 			}
 		}
 
+		if (e.isCtrlDown()) {
+			switch(e.getKeyCode()){
+			case KeyEvent.VK_G:
+				e.getModel().groupSelection();
+				e.getEditor().repaint();
+				break;
+			case KeyEvent.VK_U:
+				e.getModel().ungroupSelection();
+				e.getEditor().repaint();
+				break;
+			case KeyEvent.VK_C:
+				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+				break;
+			}
+		}
+	}
+
+	private void currentLevelDown(GraphEditorKeyEvent e) {
+		VisualNode[] selection = e.getModel().getSelection();
+		if(selection.length == 1)
+		{
+			VisualNode selectedNode = selection[0];
+			if(selectedNode instanceof VisualGroup)
+				e.getModel().setCurrentLevel((VisualGroup)selectedNode);
+		}
+		grayOutNotActive(e.getModel());
+	}
+
+	private void currentLevelUp(GraphEditorKeyEvent e) {
+		VisualGroup level = e.getModel().getCurrentLevel();
+		VisualGroup parent = level.getParent();
+		if(parent!=null)
+		{
+			e.getModel().setCurrentLevel(parent);
+			e.getModel().addToSelection(level);
+			grayOutNotActive(e.getModel());
+		}
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {

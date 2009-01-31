@@ -3,6 +3,8 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.exceptions.VisualModelConstructionException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginManager;
@@ -484,5 +487,34 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualComponent getComponentByRefID(Integer id) {
 		return refIDToVisualComponentMap.get(id);
+	}
+
+	private Point2D transformToCurrentSpace(Point2D pointInRootSpace)
+	{
+		if(currentLevel == root)
+			return pointInRootSpace;
+		Point2D newPoint = new Point2D.Double();
+		try {
+			currentLevel.getAncestorToParentTransform(root).transform(pointInRootSpace, newPoint);
+		} catch (NotAnAncestorException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Root is not an ancestor of the current node o_O");
+		}
+		currentLevel.getParentToLocalTransform().transform(newPoint, newPoint);
+		return newPoint;
+	}
+
+	public VisualNode hitNode(Point2D pointInRootSpace)
+	{
+		return currentLevel.hitNode(transformToCurrentSpace(pointInRootSpace));
+	}
+
+	public LinkedList<VisualNode> hitObjects(Rectangle2D selectionRect) {
+		Point2D min = new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY());
+		Point2D max = new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY());
+		min = transformToCurrentSpace(min);
+		max = transformToCurrentSpace(max);
+		selectionRect.setRect(min.getX(), min.getY(), max.getX()-min.getX(), max.getY()-min.getY());
+		return currentLevel.hitObjects(selectionRect);
 	}
 }
