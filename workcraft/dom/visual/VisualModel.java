@@ -266,7 +266,10 @@ public class VisualModel implements Plugin, Model {
 	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
 		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
 		VisualConnection ret = new VisualConnection(con, first, second);
-		root.add(ret);
+
+		VisualGroup group = VisualNode.getCommonParent(first, second);
+
+		group.add(ret);
 		addConnection(ret);
 		connectionAdded(ret);
 

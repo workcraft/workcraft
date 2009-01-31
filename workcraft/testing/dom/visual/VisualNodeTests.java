@@ -3,11 +3,11 @@ package org.workcraft.testing.dom.visual;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 
 public class VisualNodeTests {
@@ -87,6 +87,49 @@ public class VisualNodeTests {
 		ensureFall(node11, node2);
 		ensureFall(node111, node2);
 		ensureFall(node1111, node2);
+	}
+
+	@Test
+	public void TestGetPath()
+	{
+		VisualGroup root = createGroup(null);
+		Assert.assertEquals(0, root.getPath().length);
+		VisualGroup node1 = createGroup(root);
+		Assert.assertArrayEquals(new VisualGroup[]{root}, node1.getPath());
+		VisualGroup node2 = createGroup(node1);
+		Assert.assertArrayEquals(new VisualGroup[]{root, node1}, node2.getPath());
+	}
+
+	@Test
+	public void TestFindCommonParent()
+	{
+		VisualGroup root = createGroup(null);
+		VisualGroup node1 = createGroup(root);
+		VisualGroup node2 = createGroup(root);
+		VisualGroup node11 = createGroup(node1);
+		VisualGroup node12 = createGroup(node1);
+		VisualGroup node21 = createGroup(node2);
+		VisualGroup node22 = createGroup(node2);
+
+		Assert.assertEquals(root, VisualNode.getCommonParent(node1, node2));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node1, node21));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node1, node22));
+
+		Assert.assertEquals(root, VisualNode.getCommonParent(node11, node2));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node11, node21));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node11, node22));
+
+		Assert.assertEquals(root, VisualNode.getCommonParent(node12, node2));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node12, node21));
+		Assert.assertEquals(root, VisualNode.getCommonParent(node12, node22));
+
+		Assert.assertEquals(root, VisualNode.getCommonParent(node11, node1));
+
+		Assert.assertEquals(node1, VisualNode.getCommonParent(node11, node12));
+		Assert.assertEquals(node1, VisualNode.getCommonParent(node11, node11));
+
+		Assert.assertEquals(node1, VisualNode.getCommonParent(node12, node11));
+		Assert.assertEquals(node1, VisualNode.getCommonParent(node12, node12));
 	}
 
 	private void ensureShiftX(VisualGroup node,

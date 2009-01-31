@@ -132,4 +132,35 @@ public abstract class VisualNode implements PropertyEditable {
 		}
 		return true;
 	}
+	public VisualGroup [] getPath() {
+		VisualGroup group = getParent();
+		int i = 0;
+		while(group!=null)
+		{
+			i++;
+			group = group.getParent();
+		}
+		VisualGroup [] result = new VisualGroup[i];
+		group = getParent();
+		while(group!=null)
+		{
+			result[--i] = group;
+			group = group.getParent();
+		}
+
+		return result;
+	}
+
+	public static VisualGroup getCommonParent(VisualNode first, VisualNode second) {
+		VisualGroup [] path1 = first.getPath();
+		VisualGroup [] path2 = second.getPath();
+		int size = Math.min(path1.length, path2.length);
+		VisualGroup result = null;
+		for(int i=0;i<size;i++)
+			if(path1[i]==path2[i])
+				result = path1[i];
+			else
+				break;
+		return result;
+	}
 }
