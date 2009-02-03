@@ -9,20 +9,20 @@ import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualConnection;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
 
 	private class MockMathModel extends MathModel {
 
 		public MockMathModel() {
-			super(null);
+			super();
 		}
 
 		@Override
@@ -39,15 +39,15 @@ public class VisualModelTests {
 
 	@Test
 	public void TestGroupWithEmptySelection()
-			throws VisualModelConstructionException {
+			throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		model.getCurrentLevel().add(new VisualGroup());
 
-		VisualNode[] old = model.getCurrentLevel().getChildren();
+		VisualNode[] old = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
 		Assert.assertEquals(1, old.length);
 		model.groupSelection();
-		VisualNode[] _new = model.getCurrentLevel().getChildren();
+		VisualNode[] _new = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
 		Assert.assertEquals(1, _new.length);
 		Assert.assertEquals(old[0], _new[0]);
 	}
@@ -75,11 +75,11 @@ public class VisualModelTests {
 			model.addToSelection(node);
 		}
 
-		VisualNode[] old = model.getCurrentLevel().getChildren();
+		VisualNode[] old = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
 
 		model.groupSelection();
 
-		VisualNode[] _new = model.getCurrentLevel().getChildren();
+		VisualNode[] _new = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
 
 		VisualNode[] diff = findMissing(old, _new);
 
@@ -110,7 +110,7 @@ public class VisualModelTests {
 	}
 
 	@Test
-	public void TestGroup2Items() throws VisualModelConstructionException {
+	public void TestGroup2Items() throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
@@ -121,7 +121,7 @@ public class VisualModelTests {
 	}
 
 	@Test
-	public void TestGroup1Item() throws VisualModelConstructionException {
+	public void TestGroup1Item() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getCurrentLevel();
@@ -129,13 +129,13 @@ public class VisualModelTests {
 
 		model.addToSelection(node1);
 		model.groupSelection();
-		Assert.assertEquals(1, root.getChildren().length);
-		Assert.assertEquals(node1, root.getChildren()[0]);
-		Assert.assertEquals(0, node1.getChildren().length);
+		Assert.assertEquals(1, root.getChildren().toArray(new VisualNode[0]).length);
+		Assert.assertEquals(node1, root.getChildren().toArray(new VisualNode[0])[0]);
+		Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
 	}
 
 	@Test
-	public void TestGroup5Items() throws VisualModelConstructionException {
+	public void TestGroup5Items() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getCurrentLevel();
@@ -168,7 +168,7 @@ public class VisualModelTests {
 	}
 
 	@Test
-	public void TestUngroupRoot() throws VisualModelConstructionException {
+	public void TestUngroupRoot() throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
@@ -188,20 +188,20 @@ public class VisualModelTests {
 		model.addToSelection(node1);
 		model.ungroupSelection();
 
-		VisualNode[] newList = root.getChildren();
+		VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
 		Assert.assertEquals(3, newList.length);
 		Assert.assertSame(node5, newList[0]);
 		Assert.assertSame(node2, newList[1]);
 		Assert.assertSame(node4, newList[2]);
 
-		VisualNode[] n2Children = node2.getChildren();
+		VisualNode[] n2Children = node2.getChildren().toArray(new VisualNode[0]);
 		Assert.assertEquals(1, n2Children.length);
 		Assert.assertSame(node3, n2Children[0]);
 	}
 
 	@Test
-	public void TestUngroupNonRoot() throws VisualModelConstructionException {
+	public void TestUngroupNonRoot() throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
@@ -223,20 +223,20 @@ public class VisualModelTests {
 		model.addToSelection(node2);
 		model.ungroupSelection();
 
-		VisualNode[] newList = root.getChildren();
+		VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
 		Assert.assertEquals(2, newList.length);
 		Assert.assertSame(node1, newList[0]);
 		Assert.assertSame(node5, newList[1]);
 
-		VisualNode[] n1Children = node1.getChildren();
+		VisualNode[] n1Children = node1.getChildren().toArray(new VisualNode[0]);
 		Assert.assertEquals(2, n1Children.length);
 		Assert.assertSame(node4, n1Children[0]);
 		Assert.assertSame(node3, n1Children[1]);
 	}
 
 	@Test
-	public void TestUngroupEmpty() throws VisualModelConstructionException {
+	public void TestUngroupEmpty() throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
@@ -250,16 +250,16 @@ public class VisualModelTests {
 		model.addToSelection(node2);
 		model.ungroupSelection();
 
-		VisualNode[] newList = root.getChildren();
+		VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
 		Assert.assertEquals(1, newList.length);
 		Assert.assertSame(node1, newList[0]);
 
-		Assert.assertEquals(0, node1.getChildren().length);
+		Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
 	}
 
 	@Test
-	public void TestUngroupTwoGroups() throws VisualModelConstructionException {
+	public void TestUngroupTwoGroups() throws VisualModelInstantiationException {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
@@ -279,14 +279,14 @@ public class VisualModelTests {
 		model.addToSelection(node1);
 		model.ungroupSelection();
 
-		VisualNode[] newList = root.getChildren();
+		VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
 		Assert.assertEquals(2, newList.length);
 		Assert.assertSame(node4, newList[0]);
 		Assert.assertSame(node3, newList[1]);
 
-		Assert.assertEquals(0, node3.getChildren().length);
-		Assert.assertEquals(0, node4.getChildren().length);
+		Assert.assertEquals(0, node3.getChildren().toArray(new VisualNode[0]).length);
+		Assert.assertEquals(0, node4.getChildren().toArray(new VisualNode[0]).length);
 	}
 
 	@Test
@@ -303,7 +303,7 @@ public class VisualModelTests {
 		model.groupSelection();
 		Assert.assertArrayEquals(
 				new Object[] { new GroupNodeEqualityTest(new VisualNode[] {c1, c2, con}) },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 
 	@Test
@@ -321,7 +321,7 @@ public class VisualModelTests {
 		model.groupSelection();
 		Assert.assertArrayEquals(
 				new Object[] { new GroupNodeEqualityTest(new VisualNode[] {c1, c2, con}) },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 	@Test
 	public void testGrouping_AutoGroupTwoConnections() {
@@ -340,7 +340,7 @@ public class VisualModelTests {
 		model.groupSelection();
 		Assert.assertArrayEquals(
 				new Object[] { new GroupNodeEqualityTest(new VisualNode[] {c1, c2, con1, con2}) },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 
 	@Test
@@ -358,7 +358,7 @@ public class VisualModelTests {
 		model.groupSelection();
 		Assert.assertArrayEquals(
 				new Object[] { new GroupNodeEqualityTest(new VisualNode[] {node1, c2, con}) },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 
 	@Test
@@ -377,7 +377,7 @@ public class VisualModelTests {
 		model.groupSelection();
 
 		Assert.assertArrayEquals(new VisualNode[] { c1, c2, c3, con1, con2 },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 
 	class GroupNodeEqualityTest {
@@ -393,7 +393,7 @@ public class VisualModelTests {
 				return false;
 			VisualGroup group = (VisualGroup) obj;
 			VisualNode[] my = expected;
-			VisualNode[] their = group.getChildren();
+			VisualNode[] their = group.getChildren().toArray(new VisualNode[0]);;
 			if (my.length != their.length)
 				return false;
 			for (int i = 0; i < my.length; i++)
@@ -420,7 +420,7 @@ public class VisualModelTests {
 
 		Assert.assertArrayEquals(new Object[] { c1, con1,
 				new GroupNodeEqualityTest(new VisualNode[] { c2, c3 }) },
-				root.getChildren());
+				root.getChildren().toArray(new VisualNode[0]));
 	}
 
 	@Test
@@ -436,13 +436,13 @@ public class VisualModelTests {
 		model.addToSelection(con);
 		model.groupSelection();
 		Assert.assertArrayEquals(new VisualNode[] { c1, c2, con }, root
-				.getChildren());
+				.getChildren().toArray(new VisualNode[0]));
 	}
 
 	private VisualModel createModel() {
 		try {
 			return new VisualModel(new MockMathModel());
-		} catch (VisualModelConstructionException e) {
+		} catch (VisualModelInstantiationException e) {
 			throw new RuntimeException("error!");
 		}
 	}

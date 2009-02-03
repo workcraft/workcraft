@@ -2,19 +2,17 @@ package org.workcraft.plugins.graph;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 
 public class VisualGraph extends VisualModel {
 
 	public VisualGraph(Graph model)
-	throws VisualModelConstructionException {
+	throws VisualModelInstantiationException {
 		super(model);
-		// TODO Auto-generated constructor stub
 	}
 
 	public VisualGraph(Graph model, Element visualElement)
-	throws VisualModelConstructionException {
+	throws VisualModelInstantiationException {
 		super(model, visualElement);
-		// TODO Auto-generated constructor stub
 	}
 }

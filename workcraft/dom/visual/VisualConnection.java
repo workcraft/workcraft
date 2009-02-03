@@ -41,7 +41,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected double arrowLength = defaultArrowLength;
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
-		first.addListener(this);
 
 		this.refConnection = refConnection;
 		this.first = first;
@@ -115,6 +114,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void update() {
+		if (parent == null)
+			return;
 		AffineTransform t1, t2;
 		try {
 			t1 = first.getParentToAncestorTransform(parent);

@@ -34,14 +34,14 @@ import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
+import org.workcraft.framework.ModelFactory;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
-import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.WorkspaceEntry;
-import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
+import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
 public class MainWindow extends JFrame implements DockingConstants{
@@ -253,10 +253,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 			if (JOptionPane.showConfirmDialog(this, "The selected model does not have visual layout information. Do you want to create a default layout?",
 					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				try {
-					visualModel = PluginManager.createVisualModel(we.getModel().getMathModel());
+					visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
 					we.setModel(visualModel);
 
-				} catch (VisualModelConstructionException e) {
+				} catch (VisualModelInstantiationException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -368,7 +368,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
-					VisualModel visualModel = PluginManager.createVisualModel(mathModel);
+					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
 					WorkspaceEntry we = framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
 						addEditorView (we);
@@ -378,7 +378,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					framework.getWorkspace().add(mathModel);
 			} catch (PluginInstantiationException e) {
 				System.err.println(e.getMessage());
-			} catch (VisualModelConstructionException e) {
+			} catch (VisualModelInstantiationException e) {
 				System.err.println(e.getMessage());
 			}
 		}

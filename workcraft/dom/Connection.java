@@ -25,15 +25,15 @@ public class Connection {
 		return second;
 	}
 
-	public Connection (Component first, Component second) {
-		this.first = first;
-		this.second = second;
-	}
-
 	public void toXML (Element connectionElement) {
 		XmlUtil.writeIntAttr(connectionElement, "first", first.getID());
 		XmlUtil.writeIntAttr(connectionElement, "second", second.getID());
 		XmlUtil.writeIntAttr(connectionElement, "ID", getID());
+	}
+
+	public Connection (Component first, Component second) {
+		this.first = first;
+		this.second = second;
 	}
 
 	public Connection (Element xmlElement, MathModel model) {
@@ -42,7 +42,7 @@ public class Connection {
 		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);
 		int secondID = XmlUtil.readIntAttr(xmlElement, "second", -1);
 
-		first = model.getComponentByID(firstID);
-		second = model.getComponentByID(secondID);
+		first = model.getComponentByRenamedID(firstID);
+		second = model.getComponentByRenamedID(secondID);
 	}
 }

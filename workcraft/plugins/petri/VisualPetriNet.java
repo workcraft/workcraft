@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 
 public class VisualPetriNet extends VisualModel {
@@ -16,11 +16,11 @@ public class VisualPetriNet extends VisualModel {
 	}
 
 	public VisualPetriNet(PetriNet model)
-	throws VisualModelConstructionException {
+	throws VisualModelInstantiationException {
 		super(model);
 	}
 
-	public VisualPetriNet(PetriNet model, Element visualElement) throws VisualModelConstructionException {
+	public VisualPetriNet(PetriNet model, Element visualElement) throws VisualModelInstantiationException {
 		super(model, visualElement);
 
 	}

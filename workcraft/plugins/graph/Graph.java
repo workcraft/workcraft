@@ -8,8 +8,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.DuplicateIDException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
@@ -19,12 +17,11 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
 public class Graph extends MathModel {
 
-	public Graph(Framework framework) {
-		super(framework);
+	public Graph() {
 	}
 
-	public Graph(Framework framework, Element xmlElement, String sourcePath) throws ModelLoadFailedException {
-		super(framework, xmlElement, sourcePath);
+	public Graph(Element xmlElement) throws ModelLoadFailedException {
+		super(xmlElement);
 	}
 
 
@@ -52,8 +49,6 @@ public class Graph extends MathModel {
 			addComponent(v);
 		} catch (InvalidComponentException e) {
 
-		} catch (DuplicateIDException e) {
-			e.printStackTrace();
 		}
 		return v;
 	}

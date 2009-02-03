@@ -1,7 +1,5 @@
 package org.workcraft.dom;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,8 +9,10 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.DuplicateIDException;
+import org.workcraft.framework.ComponentFactory;
+import org.workcraft.framework.ConnectionFactory;
+import org.workcraft.framework.exceptions.ComponentCreationException;
+import org.workcraft.framework.exceptions.ConnectionCreationException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
@@ -21,101 +21,62 @@ import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
 public abstract class MathModel implements Plugin, Model {
-	protected int componentIDCounter = 1;
-	protected int connectionIDCounter = 1;
+	protected int componentIDCounter = 0;
+	protected int connectionIDCounter = 0;
 
-	protected Hashtable<Integer, Component> components;
-	protected Hashtable<Integer, Connection> connections;
+	protected Hashtable<Integer, Component> components = new Hashtable<Integer, Component>();
+	protected Hashtable<Integer, Connection> connections = new Hashtable<Integer, Connection>();;
 
-	protected LinkedList<MathModelListener> listeners;
+	protected Hashtable<Integer, Integer> componentRenames = new Hashtable<Integer, Integer>();
+	protected Hashtable<Integer, Integer> connectionRenames =  new Hashtable<Integer, Integer>();
 
-	protected Framework framework = null;
-	protected String sourcePath = null;
-	protected String title = null;
+	protected LinkedList<MathModelListener> listeners = new LinkedList<MathModelListener>();;
 
-	public MathModel (Framework framework) {
-		components = new Hashtable<Integer, Component>();
-		connections = new Hashtable<Integer, Connection>();
-		listeners = new LinkedList<MathModelListener>();
-		this.framework = framework;
-		title = "Untitled";
+	protected String title = "";
+
+	public MathModel () {
 	}
 
-	public MathModel (Framework framework, Element xmlModelElement, String sourcePath) throws ModelLoadFailedException{
-		this(framework);
-
-		this.sourcePath = sourcePath;
-
+	public MathModel (Element xmlModelElement) throws ModelLoadFailedException{
 		title = XmlUtil.readStringAttr(xmlModelElement, "title");
+		pasteFromXML (xmlModelElement);
+	}
 
-		List<Element> componentNodes = XmlUtil.getChildElements("component", xmlModelElement);
-		for (Element e : componentNodes) {
+	public void pasteFromXML (Element modelElement) throws ModelLoadFailedException {
+		componentRenames.clear();
+		connectionRenames.clear();
 
-			String className = e.getAttribute("class");
+		try {
+			List<Element> componentNodes = XmlUtil.getChildElements("component", modelElement);
 
-			try {
-				Class<?> elementClass = Class.forName(className);
-				Constructor<?> ctor = elementClass.getConstructor(Element.class);
-				Component component = (Component)ctor.newInstance(e);
+			for (Element e : componentNodes) {
+				Component component = ComponentFactory.createComponent(e);
 
-				addComponent(component, false);
+				Integer oldID = component.getID();
+				Integer newID = addComponent(component);
 
-			} catch (ClassCastException ex) {
-				throw new ModelLoadFailedException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Component: " + ex.getMessage());
-			}	catch (ClassNotFoundException ex) {
-				throw new ModelLoadFailedException ("Cannot load component class: " + ex.getMessage());
-			} catch (SecurityException ex) {
-				throw new ModelLoadFailedException ("Security exception: " + ex.getMessage());
-			} catch (NoSuchMethodException ex) {
-				throw new ModelLoadFailedException ("Component class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element element)");
-			} catch (IllegalArgumentException ex) {
-				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
-			} catch (InstantiationException ex) {
-				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
-			} catch (IllegalAccessException ex) {
-				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getMessage());
-			} catch (InvocationTargetException ex) {
-				throw new ModelLoadFailedException ("Component class instantiation failed: " + ex.getTargetException().getMessage());
-			} catch (InvalidComponentException ex) {
-				throw new ModelLoadFailedException ("Failed to add component: " + ex.getMessage());
-			} catch (DuplicateIDException ex) {
-				throw new ModelLoadFailedException ("Failed to add component: duplicate ID " + ex.getMessage() + "encountered");
+				componentRenames.put(oldID, newID);
 			}
-		}
 
-		List<Element> connectionNodes = XmlUtil.getChildElements("connection", xmlModelElement);
+			List<Element> connectionNodes = XmlUtil.getChildElements("connection", modelElement);
 
-		for (Element e: connectionNodes) {
-			String className = e.getAttribute("class");
+			for (Element e: connectionNodes) {
+				Connection connection = ConnectionFactory.createConnection(e, this);
 
-			try {
-				Class<?> elementClass = Class.forName(className);
-				Constructor<?> ctor = elementClass.getConstructor(Element.class, MathModel.class);
-				Connection connection = (Connection)ctor.newInstance(e, this);
+				Integer oldID = connection.getID();
+				Integer newID = addConnection(connection);
 
-				addConnection(connection, false);
-
-			} catch (ClassCastException ex) {
-				throw new ModelLoadFailedException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Connection: " + ex.getMessage());
-			}	catch (ClassNotFoundException ex) {
-				throw new ModelLoadFailedException ("Cannot load connection class: " + ex.getMessage());
-			} catch (SecurityException ex) {
-				throw new ModelLoadFailedException ("Security exception: " + ex.getMessage());
-			} catch (NoSuchMethodException ex) {
-				throw new ModelLoadFailedException ("Connection class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element, org.workcraft.dom.AbstractGraphModel)");
-			} catch (IllegalArgumentException ex) {
-				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
-			} catch (InstantiationException ex) {
-				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
-			} catch (IllegalAccessException ex) {
-				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getMessage());
-			} catch (InvocationTargetException ex) {
-				throw new ModelLoadFailedException ("Connection class instantiation failed: " + ex.getTargetException().getMessage());
-			} catch (DuplicateIDException ex) {
-				throw new ModelLoadFailedException ("Failed to add connection: duplicate ID " + ex.getMessage() + "encountered");
-			} catch (InvalidConnectionException ex) {
-				throw new ModelLoadFailedException ("Failed to add connection: " + ex.getMessage());
+				connectionRenames.put(oldID, newID);
 			}
+
+		} catch (InvalidComponentException e1) {
+			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Invalid component: " + e1.getMessage());
+		}  catch (ComponentCreationException e1) {
+			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Cannot create component: " + e1.getMessage());
+		} catch (InvalidConnectionException e) {
+			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Invalid connection: " + e.getMessage());
+		} catch (ConnectionCreationException e) {
+			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Cannot create connection: " + e.getMessage());
 		}
 	}
 
@@ -153,16 +114,26 @@ public abstract class MathModel implements Plugin, Model {
 		return components.get(ID);
 	}
 
-	protected int generateComponentID() {
+	public Component getComponentByRenamedID(int oldID) {
+		Integer newID = componentRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getComponentByID(newID);
+	}
+
+	public Connection getConnectionByRenamedID(int oldID) {
+		Integer newID = connectionRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getConnectionByID(newID);
+	}
+
+	public int getNextComponentID() {
 		return componentIDCounter++;
 	}
 
-	protected int generateConnectionID() {
+	public int getNextConnectionID() {
 		return connectionIDCounter++;
-	}
-
-	public String getSourcePath() {
-		return sourcePath;
 	}
 
 	public void renameComponent(Component component, int newID) {
@@ -178,25 +149,11 @@ public abstract class MathModel implements Plugin, Model {
 		this.title = title;
 	}
 
-	public final int addComponent (Component component) throws InvalidComponentException, DuplicateIDException {
-		return addComponent(component, true);
-	}
+	public final int addComponent (Component component) {
+		if (!getSupportedComponents().contains(component.getClass()))
+			throw new InvalidComponentException("Unsupported component " + component.getClass().getName() + " added to a " + this.getDisplayName());
 
-	public final int addComponent (Component component, boolean autoAssignID) throws InvalidComponentException, DuplicateIDException {
-		//		if (getSupportedComponents() == null || !getSupportedComponents().contains(component.getClass()))
-		//			if (autoAssignID)
-		//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+")");
-		//			else
-		//				throw new InvalidComponentException ("unsupported component (class="+component.getClass().getName()+", ID="+component.getID()+")");
-
-		if (autoAssignID)
-			component.setID(generateComponentID());
-		else {
-			if (components.get(component.getID()) != null)
-				throw new DuplicateIDException (component.getID());
-			if (component.getID() >= componentIDCounter)
-				componentIDCounter = component.getID()+1;
-		}
+		component.setID(getNextComponentID());
 
 		components.put(component.getID(), component);
 		componentAdded(component);
@@ -204,11 +161,7 @@ public abstract class MathModel implements Plugin, Model {
 		return component.getID();
 	}
 
-	public final int addConnection(Connection connection) throws InvalidConnectionException, DuplicateIDException {
-		return addConnection (connection, true);
-	}
-
-	public final int addConnection(Connection connection, boolean autoAssignID) throws InvalidConnectionException, DuplicateIDException {
+	public final int addConnection(Connection connection) throws InvalidConnectionException {
 		// first validate that this connection is allowed, e.g. disallow user
 		// to connect Petri net place to another Petri net place
 		validateConnection (connection);
@@ -216,30 +169,16 @@ public abstract class MathModel implements Plugin, Model {
 		connection.first.addConnection(connection);
 		connection.second.addConnection(connection);
 
-		if (autoAssignID)
-			connection.setID(generateConnectionID());
-		else {
-			if (connections.get(connection.getID()) != null)
-				throw new DuplicateIDException (connection.getID());
-
-			// ensure that the provided ID will not get generated automatically for another object
-			if (connection.getID() >= connectionIDCounter)
-				connectionIDCounter = connection.getID()+1;
-		}
-
+		connection.setID(getNextConnectionID());
 		connections.put(connection.getID(), connection);
 		connectionAdded(connection);
+
 		return connection.getID();
 	}
 
 	public final Connection createConnection (Component first, Component second) throws InvalidConnectionException {
 		Connection con = new Connection(first, second);
-		try {
-			addConnection(con);
-		} catch (DuplicateIDException e) {
-			// Should never happen
-			e.printStackTrace();
-		}
+		addConnection(con);
 		return con;
 	}
 

@@ -57,10 +57,16 @@ public class WorkspaceEntry {
 		if (isWork()) {
 			res = model.getTitle();
 			if (res.isEmpty())
-				if (file != null)
-					res = file.getName();
+				if (file != null) {
+					String fileName = file.getName();
+					int dot = fileName.lastIndexOf('.');
+					if (dot == -1)
+						res = fileName;
+					else
+						res = fileName.substring(0,dot);
+				}
 				else
-					res = "unnamed";
+					res = "Untitled";
 			if (model.getVisualModel() != null)
 				res = res + " [V]";
 		} else

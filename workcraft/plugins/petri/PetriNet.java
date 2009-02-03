@@ -10,9 +10,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.DuplicateIDException;
-import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -23,12 +20,12 @@ public class PetriNet extends MathModel {
 	protected HashSet<Place> places;
 	protected HashSet<Transition> transitions;
 
-	public PetriNet(Framework framework) {
-		super(framework);
+	public PetriNet() {
+		super();
 	}
 
-	public PetriNet(Framework framework, Element xmlElement, String sourcePath) throws ModelLoadFailedException {
-		super(framework, xmlElement, sourcePath);
+	public PetriNet(Element xmlElement) throws ModelLoadFailedException {
+		super(xmlElement);
 	}
 
 	@Override
@@ -75,28 +72,14 @@ public class PetriNet extends MathModel {
 	public Place createPlace(String label) {
 		Place newPlace = new Place();
 		newPlace.setLabel(label);
-		try {
-			addComponent(newPlace, true);
-		} catch (InvalidComponentException e) {
-			e.printStackTrace();
-		} catch (DuplicateIDException e) {
-			e.printStackTrace();
-		}
-
+		addComponent(newPlace);
 		return newPlace;
 	}
 
 	public Transition createTransition(String label) {
 		Transition newTransition = new Transition();
 		newTransition.setLabel(label);
-		try {
-			addComponent(newTransition, true);
-		} catch (InvalidComponentException e) {
-			e.printStackTrace();
-		} catch (DuplicateIDException e) {
-			e.printStackTrace();
-		}
-
+		addComponent(newTransition);
 		return newTransition;
 	}
 

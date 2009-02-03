@@ -11,10 +11,13 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.framework.exceptions.PasteException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -199,6 +202,13 @@ public class SelectionTool extends AbstractTool {
 			case KeyEvent.VK_C:
 				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
 				break;
+			case KeyEvent.VK_V:
+				try {
+					e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition);
+					e.getEditor().repaint();
+				} catch (PasteException e1) {
+					JOptionPane.showMessageDialog(null, "Paste failed:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}

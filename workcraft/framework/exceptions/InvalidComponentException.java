@@ -1,8 +1,7 @@
 package org.workcraft.framework.exceptions;
 
-public class InvalidComponentException extends Exception {
-	private static final long serialVersionUID = 1L;
-
+@SuppressWarnings("serial")
+public class InvalidComponentException extends RuntimeException {
 	public InvalidComponentException(String message) {
 		super(message);
 	}

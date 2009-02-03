@@ -21,9 +21,10 @@ import net.sf.jga.fn.UnaryFunctor;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
-import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.ComponentFactory;
+import org.workcraft.framework.ConnectionFactory;
+import org.workcraft.framework.exceptions.VisualComponentCreationException;
+import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.util.XmlUtil;
 
@@ -38,6 +39,7 @@ public class VisualGroup extends VisualTransformableNode {
 	protected Set<VisualGroup> groups = new LinkedHashSet<VisualGroup>();
 	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
+	private Element deferredGroupElement = null;
 
 	private void addPropertyChangeListener() {
 		this.addListener(new PropertyChangeListener(){
@@ -59,52 +61,59 @@ public class VisualGroup extends VisualTransformableNode {
 		addPropertyChangeListener();
 	}
 
-	public VisualGroup (Element element, Model model) throws VisualModelConstructionException {
-		super(element);
-		addPropertyChangeListener();
-
-		List<Element> componentNodes = XmlUtil.getChildElements("component", element);
+	private void loadComponents (Element groupElement, VisualModel model) throws VisualComponentCreationException {
+		List<Element> componentNodes = XmlUtil.getChildElements("component", groupElement);
 
 		for (Element vcompElement : componentNodes) {
 			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
-			Component refComponent = model.getMathModel().getComponentByID(ref);
+			Component refComponent = model.getMathModel().getComponentByRenamedID(ref);
 			if (refComponent == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
-						vcompElement.getAttribute("ref")+", which was not found");
-			VisualComponent visualComponent = PluginManager.createVisualComponent(refComponent, vcompElement);
-			if (visualComponent == null)
-				throw new VisualModelConstructionException ("a visual component references to the model component with ID=" +
-						vcompElement.getAttribute("ref")+", which does not declare a visual represenation class");
+				throw new VisualComponentCreationException ("a visual component references to the model component with ID=" +
+						vcompElement.getAttribute("ref") + " which was not found");
+			VisualComponent visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
 			add(visualComponent);
-			model.getVisualModel().addComponent(visualComponent);
+			model.addComponent(visualComponent);
 		}
+	}
 
-		List<Element> groupNodes = XmlUtil.getChildElements("group", element);
-
-		for (Element groupElement : groupNodes) {
-			VisualGroup visualGroup = new VisualGroup (groupElement, model);
-			add (visualGroup);
-			model.getVisualModel().addGroup(visualGroup);
-		}
-
-		List<Element> connectionNodes = XmlUtil.getChildElements("connection", element);
+	private void loadConnections (Element groupElement, VisualModel model) throws VisualConnectionCreationException {
+		List<Element> connectionNodes = XmlUtil.getChildElements("connection", groupElement);
 
 		for (Element vconElement : connectionNodes) {
 			int ref = XmlUtil.readIntAttr(vconElement, "ref", -1);
-			Connection refConnection = model.getMathModel().getConnectionByID(ref);
-			VisualComponent first = model.getVisualModel().getComponentByRefID(refConnection.getFirst().getID());
-			VisualComponent second = model.getVisualModel().getComponentByRefID(refConnection.getSecond().getID());
+			Connection refConnection = model.getMathModel().getConnectionByRenamedID(ref);
 			if (refConnection == null)
-				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
-						vconElement.getAttribute("ref")+", which was not found");
-			VisualConnection visualConnection = PluginManager.createVisualConnection(refConnection, vconElement, first, second);
-			if (visualConnection == null)
-				throw new VisualModelConstructionException ("a visual connection references to the model connection with ID=" +
-						vconElement.getAttribute("ref")+", which does not declare a visual represenation class");
-
-			this.add(visualConnection);
-			model.getVisualModel().addConnection(visualConnection);
+				throw new VisualConnectionCreationException ("a visual connection references to the model connection with ID=" +
+						vconElement.getAttribute("ref") + " which was not found");
+			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(vconElement, model);
+			add(visualConnection);
+			model.addConnection(visualConnection);
 		}
+	}
+
+	private void loadSubgroups (Element groupElement, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
+		List<Element> groupNodes = XmlUtil.getChildElements("group", groupElement);
+
+		for (Element subgroupElement : groupNodes) {
+			VisualGroup visualGroup = new VisualGroup (subgroupElement, model);
+			add (visualGroup);
+		}
+	}
+
+	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
+		for (VisualGroup g: groups)
+			g.loadDeferredConnections(model);
+		loadConnections(deferredGroupElement, model);
+		deferredGroupElement = null;
+	}
+
+	public VisualGroup (Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
+		super(element);
+		addPropertyChangeListener();
+
+		loadComponents(element, model);
+		loadSubgroups(element, model);
+		deferredGroupElement = element;
 	}
 
 	private void drawPreservingTransform(Graphics2D g, VisualNode nodeToDraw)
@@ -180,7 +189,7 @@ public class VisualGroup extends VisualTransformableNode {
 	@Override
 	public void toXML(Element groupElement) {
 		super.toXML(groupElement);
-		VisualModel.nodesToXml (groupElement, children);
+		VisualModel.nodesToXML (groupElement, children);
 	}
 
 	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
@@ -353,19 +362,15 @@ public class VisualGroup extends VisualTransformableNode {
 		return result;
 	}
 
-	public final VisualNode[] getChildren() {
-		return children.toArray(new VisualNode[0]);
+	public final Set<VisualNode> getChildren() {
+		return new LinkedHashSet<VisualNode>(children);
 	}
 
-	public final VisualComponent[] getComponents() {
-		return components.toArray(new VisualComponent[0]);
+	public final Set<VisualComponent> getComponents() {
+		return new LinkedHashSet<VisualComponent>(components);
 	}
 
-	public final VisualConnection[] getConnections() {
-		return connections.toArray(new VisualConnection[0]);
-	}
-
-	public final VisualGroup[] getGroups() {
-		return groups.toArray(new VisualGroup[0]);
+	public final Set<VisualConnection> getConnections() {
+		return new LinkedHashSet<VisualConnection>(connections);
 	}
 }

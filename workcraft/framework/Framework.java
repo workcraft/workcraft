@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,16 +29,17 @@ import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
+import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
-import org.workcraft.framework.exceptions.VisualModelConstructionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class Framework {
@@ -424,7 +424,7 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public Model load(String path) throws ModelLoadFailedException, VisualModelConstructionException {
+	public Model load(String path) throws ModelLoadFailedException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			org.w3c.dom.Document xmldoc;
@@ -442,57 +442,30 @@ public class Framework {
 			String[] ver = xmlroot.getAttribute("version").split("\\.", 2);
 
 			if (ver.length<2 || !ver[0].equals(FRAMEWORK_VERSION_MAJOR))
-				throw new ModelLoadFailedException("document was created by another version of Workcraft");
+				throw new ModelLoadFailedException("Document was created by an incompatible version of Workcraft.");
 
-			NodeList elements;
-			elements =  xmlroot.getElementsByTagName("model");
-			if (elements.getLength() != 1)
-				throw new ModelLoadFailedException("<model> section missing or duplicated");
+			Element modelElement = XmlUtil.getChildElement("model", xmlroot);
 
-			Element modelElement = (Element)elements.item(0);
-			String modelClassName = modelElement.getAttribute("class");
+			if (modelElement == null)
+				throw new ModelLoadFailedException("<model> section is missing.");
 
-			Class<?> modelClass = Class.forName(modelClassName);
-			Constructor<?> ctor = modelClass.getConstructor(Framework.class, Element.class, String.class);
-			model = (MathModel)ctor.newInstance(this, modelElement, path);
+			model = ModelFactory.createModel(modelElement);
 
-
-			elements =  xmlroot.getElementsByTagName("visual-model");
-			if (elements.getLength() > 1)
-				throw new ModelLoadFailedException("<visual-model> section duplicated");
-
-			if (elements.getLength() == 0)
+			Element visualModelElement = XmlUtil.getChildElement("visual-model", xmlroot);
+			if (visualModelElement == null)
 				return model;
 
-			Element visualModelElement = (Element)elements.item(0);
-			String visualModelClassName = visualModelElement.getAttribute("class");
-
-			Class<?> visualModelClass = Class.forName(visualModelClassName);
-			ctor = visualModelClass.getConstructor(modelClass, Element.class);
-			VisualModel visualModel = (VisualModel)ctor.newInstance(model, visualModelElement);
-
-			return visualModel;
-
+			return ModelFactory.createVisualModel(model, visualModelElement);
 		} catch (ParserConfigurationException e) {
-			throw new ModelLoadFailedException("XML Parser configuration error: \n"+ e.getMessage());
-		} catch (IOException e) {
-			throw new ModelLoadFailedException("IO error: "+ e.getMessage());
+			throw new ModelLoadFailedException ("Parser configuration exception: " + e.getMessage());
 		} catch (SAXException e) {
-			throw new ModelLoadFailedException("Parse error: " + e.getMessage());
-		} catch (IllegalArgumentException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
-		} catch (SecurityException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
-		} catch (InstantiationException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
-		} catch (IllegalAccessException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
-		} catch (InvocationTargetException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getTargetException().getMessage());
-		} catch (NoSuchMethodException e) {
-			throw new ModelLoadFailedException("Cannot instantiate model: \n" + e.getMessage());
-		} catch (ClassNotFoundException e) {
-			throw new ModelLoadFailedException("Cannot instatniate model: \n" + e.getMessage());
+			throw new ModelLoadFailedException ("SAX exception: " + e.getMessage());
+		} catch (IOException e) {
+			throw new ModelLoadFailedException ("IO exception: " + e.getMessage());
+		} catch (VisualModelInstantiationException e) {
+			throw new ModelLoadFailedException ("Visual model could not be instantiated: " + e.getMessage());
+		} catch (ModelInstantiationException e) {
+			throw new ModelLoadFailedException ("Model could not be instantiated: " + e.getMessage());
 		}
 	}
 
