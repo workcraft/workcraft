@@ -17,7 +17,6 @@ import javax.swing.tree.TreePath;
 
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.framework.workspace.WorkspaceListener;
 import org.workcraft.gui.FileFilters;
@@ -200,8 +199,6 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				try {
 					framework.getWorkspace().add(file.getPath());
 				} catch (ModelLoadFailedException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
-				} catch (VisualModelInstantiationException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
 				}
 	}

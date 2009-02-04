@@ -50,10 +50,8 @@ public class WorkspaceEntry {
 		return (model != null || file.getName().endsWith(".work"));
 	}
 
-	@Override
-	public String toString() {
-		String res = "";
-
+	public String getTitle() {
+		String res;
 		if (isWork()) {
 			res = model.getTitle();
 			if (res.isEmpty())
@@ -67,10 +65,18 @@ public class WorkspaceEntry {
 				}
 				else
 					res = "Untitled";
-			if (model.getVisualModel() != null)
-				res = res + " [V]";
 		} else
 			res = file.getName();
+
+		return res;
+	}
+
+	@Override
+	public String toString() {
+		String res = getTitle();
+
+		if (model.getVisualModel() != null)
+			res = res + " [V]";
 
 		if (unsaved || file == null)
 			res = "* " + res;

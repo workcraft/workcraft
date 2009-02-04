@@ -36,6 +36,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelFactory;
 import org.workcraft.framework.ModelSaveFailedException;
+import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
@@ -80,6 +81,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 	GraphEditorPanel editorInFocus;
 
 	private JMenuBar menuBar;
+
+	private String lastSavePath = null;
+	private String lastOpenPath = null;
 
 	protected void createViews() {
 		workspaceView  = new WorkspaceWindow(framework);
@@ -262,10 +266,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 				}
 
 				GraphEditorPanel editor = new GraphEditorPanel(this, we);
-				String modelTitle = visualModel.getTitle();
-				if (modelTitle.isEmpty())
-					modelTitle = "Untitled";
-				String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
+				String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
 				Dockable dockable;
 
 				if (lastEditorDockable == null)
@@ -302,6 +303,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 		String h = framework.getConfigVar("gui.main.height");
 		int width = (w==null)?800:Integer.parseInt(w);
 		int height = (h==null)?600:Integer.parseInt(h);
+
+		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
+		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
 
 		this.setSize(width, height);
 
@@ -350,6 +354,11 @@ public class MainWindow extends JFrame implements DockingConstants{
 		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
+
+		if (lastSavePath != null)
+			framework.setConfigVar("gui.main.lastSavePath", lastSavePath);
+		if (lastOpenPath != null)
+			framework.setConfigVar("gui.main.lastOpenPath", lastOpenPath);
 
 		outputView.releaseStream();
 		errorView.releaseStream();
@@ -404,6 +413,31 @@ public class MainWindow extends JFrame implements DockingConstants{
 		return toolboxView;
 	}
 
+	public void openWork() {
+		JFileChooser fc = new JFileChooser();
+		fc.setDialogType(JFileChooser.OPEN_DIALOG);
+
+		if (lastOpenPath != null)
+			fc.setCurrentDirectory(new File(lastOpenPath));
+
+		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+		fc.setMultiSelectionEnabled(true);
+		fc.setDialogTitle("Open work file(s))");
+
+		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
+			for (File f : fc.getSelectedFiles()) {
+				try {
+					WorkspaceEntry we = framework.getWorkspace().add(f.getPath());
+					if (we.getModel() instanceof VisualModel)
+						addEditorView(we);
+				} catch (ModelLoadFailedException e) {
+					JOptionPane.showMessageDialog(this, e.getMessage(), "Cannot load " + f.getPath() , JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			lastOpenPath = fc.getCurrentDirectory().getPath();
+		}
+	}
+
 	public void save(WorkspaceEntry we) {
 		if (we.getFile() == null) {
 			saveAs(we);
@@ -413,6 +447,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		try {
 			framework.save(we.getModel(), we.getFile().getPath());
 			we.setUnsaved(false);
+			lastSavePath = we.getFile().getParent();
+
 		} catch (ModelSaveFailedException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Save error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -440,6 +476,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 		fc.setSelectedFile(new File(title));
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 
+		if (lastSavePath != null)
+			fc.setCurrentDirectory(new File(lastSavePath));
+
 		if(fc.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) {
 			String path = fc.getSelectedFile().getPath();
 			if (!fc.getSelectedFile().exists())
@@ -454,6 +493,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 				framework.save(we.getModel(), path);
 				we.setFile(fc.getSelectedFile());
 				we.setUnsaved(false);
+				lastSavePath = fc.getCurrentDirectory().getPath();
 			} catch (ModelSaveFailedException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), "Save error", JOptionPane.ERROR_MESSAGE);
 			}

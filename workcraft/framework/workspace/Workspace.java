@@ -14,7 +14,6 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.XmlUtil;
 
 public class Workspace {
@@ -30,7 +29,7 @@ public class Workspace {
 		this.framework = framework;
 	}
 
-	public WorkspaceEntry add(String path) throws ModelLoadFailedException, VisualModelInstantiationException {
+	public WorkspaceEntry add(String path) throws ModelLoadFailedException {
 		for(WorkspaceEntry we : workspace)
 			if(we.getFile() != null && we.getFile().getPath().equals(path))
 				return we;
@@ -70,7 +69,7 @@ public class Workspace {
 		return Collections.unmodifiableList(workspace);
 	}
 
-	public Model loadModel(WorkspaceEntry we) throws ModelLoadFailedException, VisualModelInstantiationException {
+	public Model loadModel(WorkspaceEntry we) throws ModelLoadFailedException {
 		Model model = framework.load(we.getFile().getPath());
 		fireModelLoaded(we);
 		return model;
