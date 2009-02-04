@@ -4,8 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -25,7 +23,7 @@ import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
-public class SelectionTool extends AbstractTool implements ActionListener {
+public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
 	private static final int DRAG_MOVE = 1;
 	private static final int DRAG_SELECT = 2;
@@ -45,6 +43,17 @@ public class SelectionTool extends AbstractTool implements ActionListener {
 	private LinkedList<VisualNode> savedSelection = new LinkedList<VisualNode>();
 	private int selectionMode;
 
+	private GraphEditor currentEditor = null;
+
+	@Override
+	public void activated(GraphEditor editor) {
+		currentEditor = editor;
+	}
+
+	@Override
+	public void deactivated(GraphEditor editor) {
+		currentEditor = null;
+	}
 
 	protected void clearSelection(VisualModel model) {
 		for (VisualNode so : model.getSelection())
@@ -82,12 +91,14 @@ public class SelectionTool extends AbstractTool implements ActionListener {
 		else if(e.getButton()==MouseEvent.BUTTON3) {
 			VisualNode so = model.hitNode(e.getPosition());
 
-			Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
+			if (so!=null) {
+				Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
 
-			JPopupMenu popup = so.createPopupMenu(this);
+				JPopupMenu popup = so.createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
 
-			if (popup != null)
-				popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
+				if (popup != null)
+					popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
+			}
 		}
 	}
 
@@ -343,11 +354,4 @@ public class SelectionTool extends AbstractTool implements ActionListener {
 	public int getHotKeyCode() {
 		return KeyEvent.VK_S;
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-
-	}
-
 }

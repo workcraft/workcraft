@@ -353,8 +353,8 @@ public class Framework {
 			Context.call(new ContextAction() {
 				public Object run(Context cx) {
 					Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
-					ScriptableObject.putProperty(systemScope, "gui", guiScriptable);
-					systemScope.setAttributes("gui", ScriptableObject.READONLY);
+					ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
+					systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
 					return null;
 
 				}
@@ -373,7 +373,7 @@ public class Framework {
 
 			Context.call(new ContextAction() {
 				public Object run(Context cx) {
-					ScriptableObject.deleteProperty(systemScope, "gui");
+					ScriptableObject.deleteProperty(systemScope, "mainWindow");
 					return null;
 				}
 			});

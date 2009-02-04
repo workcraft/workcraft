@@ -10,13 +10,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.workcraft.gui.actions.ScriptedActionMenuItem;
+
 public class MainMenu extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 
 	JMenu mnFile, mnEdit, mnView, mnTools, mnSettings, mnHelp;
 	JMenuItem miShowPropertyEditor;
-
-
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -40,39 +40,29 @@ public class MainMenu extends JMenuBar {
 		mnFile = new JMenu();
 		mnFile.setText("File");
 
-		JMenuItem miNewModel = new JMenuItem();
-		miNewModel.setText("New work...");
+		ScriptedActionMenuItem miNewModel = new ScriptedActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
 		miNewModel.setMnemonic(KeyEvent.VK_N);
 		miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-		miNewModel.addActionListener(frame.getDefaultActionListener());
-		miNewModel.setActionCommand("gui.createWork()");
+		miNewModel.addScriptedActionListener(frame.getDefaultActionListener());
 
-		JMenuItem miExit = new JMenuItem();
-		miExit.setText("Exit");
-		//smiExit.setMnemonic(KeyEvent.VK_O);
+		ScriptedActionMenuItem miExit = new ScriptedActionMenuItem(MainWindow.Actions.EXIT_ACTION);
 		miExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		miExit.addActionListener(frame.getDefaultActionListener());
-		miExit.setActionCommand("shutdown()");
+		miExit.addScriptedActionListener(frame.getDefaultActionListener());
 
-		JMenuItem miShutdownGUI = new JMenuItem();
-		miShutdownGUI.setText("Shutdown GUI");
-		miShutdownGUI.addActionListener(frame.getDefaultActionListener());
-		miShutdownGUI.setActionCommand("shutdowngui()");
+		ScriptedActionMenuItem miShutdownGUI = new ScriptedActionMenuItem(MainWindow.Actions.SHUTDOWN_GUI_ACTION);
+		miShutdownGUI.addScriptedActionListener(frame.getDefaultActionListener());
 
-		JMenuItem miOpenModel = new JMenuItem();
-		miOpenModel.setText("Open work...");
+		ScriptedActionMenuItem miOpenModel = new ScriptedActionMenuItem(MainWindow.Actions.OPEN_WORK_ACTION);
 		miOpenModel.setMnemonic(KeyEvent.VK_O);
 		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		miOpenModel.addActionListener(frame.getDefaultActionListener());
-		miOpenModel.setActionCommand("gui.openWork()");
+		miOpenModel.addScriptedActionListener(frame.getDefaultActionListener());
 
-
-		JMenuItem miSaveWorkspace = new JMenuItem();
+/*		JMenuItem miSaveWorkspace = new JMenuItem();
 		miSaveWorkspace.setText("Save workspace");
 		miSaveWorkspace.setMnemonic(KeyEvent.VK_O);
 		miSaveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miSaveWorkspace.addActionListener(frame.getDefaultActionListener());
-		miSaveWorkspace.setActionCommand("gui.saveWorkspace()");
+		miSaveWorkspace.setActionCommand("gui.saveWorkspace()");*/
 
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
@@ -106,7 +96,7 @@ public class MainMenu extends JMenuBar {
 
 		JMenuItem miShowPropertyEditor = new JCheckBoxMenuItem();
 		miShowPropertyEditor.setText("Property editor");
-		miSaveWorkspace.setActionCommand("gui.togglePropertyEditorVisible()");
+		//miSaveWorkspace.setActionCommand("gui.togglePropertyEditorVisible()");
 
 		mnWindows.add(miShowPropertyEditor);
 
@@ -126,9 +116,8 @@ public class MainMenu extends JMenuBar {
 		mnSettings = new JMenu();
 		mnSettings.setText("Settings");
 
-		JMenuItem miReconfigure = new JMenuItem("Reconfigure plugins");
-		miReconfigure.addActionListener(frame.getDefaultActionListener());
-		miReconfigure.setActionCommand("framework.getPluginManager().reconfigure()");
+		ScriptedActionMenuItem miReconfigure = new ScriptedActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
+		miReconfigure.addScriptedActionListener(frame.getDefaultActionListener());
 
 		mnSettings.add(miReconfigure);
 

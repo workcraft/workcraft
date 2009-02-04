@@ -2,7 +2,6 @@ package org.workcraft.dom.visual;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -14,6 +13,7 @@ import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
+import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
@@ -167,7 +167,7 @@ public abstract class VisualNode implements PropertyEditable {
 		return result;
 	}
 
-	public JPopupMenu createPopupMenu(ActionListener actionListener) {
+	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		return null;
 	}
 }

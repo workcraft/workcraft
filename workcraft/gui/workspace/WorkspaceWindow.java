@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,10 +19,40 @@ import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.framework.workspace.WorkspaceListener;
 import org.workcraft.gui.FileFilters;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.ScriptedAction;
+import org.workcraft.gui.actions.ScriptedActionMenuItem;
 
 
 @SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel implements WorkspaceListener {
+	public static class Actions {
+		public static final ScriptedAction ADD_FILES_TO_WORKSPACE_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.getWorkspaceView().addToWorkspace()";
+			}
+			public String getText() {
+				return "Add files to workspace...";
+			};
+		};
+		public static final ScriptedAction SAVE_WORKSPACE_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.getWorkspaceView().saveWorkspace()";
+			}
+			public String getText() {
+				return "Save workspace";
+			};
+		};
+		public static final ScriptedAction SAVE_WORKSPACE_AS_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.getWorkspaceView().saveWorkspaceAs()";
+			}
+			public String getText() {
+				return "Save workspace as...";
+			};
+		};
+	}
+
 	private JScrollPane scrollPane = null;
 	private JTree workspaceTree = null;
 
@@ -164,21 +193,17 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		JMenu menu = new JMenu("Workspace");
 
 
-		JMenuItem miNewModel = new JMenuItem("Create new model...");
-		miNewModel.addActionListener(framework.getMainWindow().getDefaultActionListener());
-		miNewModel.setActionCommand("gui.createWork()");
+		ScriptedActionMenuItem miNewModel = new ScriptedActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
+		miNewModel.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
 
-		JMenuItem miAdd = new JMenuItem("Add files to workspace...");
-		miAdd.addActionListener(framework.getMainWindow().getDefaultActionListener());
-		miAdd.setActionCommand("gui.getWorkspaceView().addToWorkspace()");
+		ScriptedActionMenuItem miAdd = new ScriptedActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
+		miAdd.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
 
-		JMenuItem miSave = new JMenuItem("Save workspace");
-		miSave.addActionListener(framework.getMainWindow().getDefaultActionListener());
-		miSave.setActionCommand("gui.getWorkspaceView().saveWorkspace()");
+		ScriptedActionMenuItem miSave = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
+		miSave.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
 
-		JMenuItem miSaveAs = new JMenuItem("Save workspace as...");
-		miSaveAs.addActionListener(framework.getMainWindow().getDefaultActionListener());
-		miSaveAs.setActionCommand("gui.getWorkspaceView().saveWorkspaceAs()");
+		ScriptedActionMenuItem miSaveAs = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
+		miSaveAs.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
 
 		menu.add(miNewModel);
 		menu.addSeparator();

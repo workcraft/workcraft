@@ -5,23 +5,52 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.actions.ScriptedAction;
+import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 @HotKeyDeclaration(KeyEvent.VK_P)
 public class VisualPlace extends VisualComponent {
+	class AddTokenAction extends ScriptedAction {
+		private int placeID;
+		public AddTokenAction(int placeID) {
+			super();
+			this.placeID = placeID;
+		}
+		public String getScript() {
+			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
+		}
+		public String getText() {
+			return "Add token";
+		}
+	}
+
+	class RemoveTokenAction extends ScriptedAction {
+		private int placeID;
+
+		public RemoveTokenAction(int placeID) {
+			super();
+			this.placeID = placeID;
+		}
+		public String getScript() {
+			return "p=model.getComponentByID("+placeID+");\nif (p.getTokens()>0)\n\tp.setTokens(p.getTokens()-1);\n";
+		}
+		public String getText() {
+			return "Remove token";
+		}
+	}
 	protected static double size = 1;
 	protected static float strokeWidth = 0.1f;
 	protected static double singleTokenSize = size / 1.9;
@@ -143,15 +172,14 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	@Override
-	public JPopupMenu createPopupMenu(ActionListener actionListener) {
+	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		JPopupMenu popup = new JPopupMenu();
 
-		JMenuItem addToken = new JMenuItem("Add token");
-		addToken.setActionCommand("?.setTokens(?.getTokens()+1)");
-		addToken.addActionListener(actionListener);
-		JMenuItem removeToken = new JMenuItem("Remove token");
-		removeToken.setActionCommand("?.setTokens(?.getTokens()-1)");
-		removeToken.addActionListener(actionListener);
+		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(this.refComponent.getID()));
+		addToken.addScriptedActionListener(actionListener);
+
+		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(this.refComponent.getID()));
+		removeToken.addScriptedActionListener(actionListener);
 
 		popup.add(addToken);
 		popup.add(removeToken);

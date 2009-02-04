@@ -50,7 +50,7 @@ public class CreateWorkDialog extends JDialog {
 	public CreateWorkDialog(MainWindow owner) {
 		super(owner);
 
-		framework = owner.framework;
+		framework = owner.getFramework();
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setModal(true);
