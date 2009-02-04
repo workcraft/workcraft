@@ -5,10 +5,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
@@ -136,5 +140,22 @@ public class VisualPlace extends VisualComponent {
 
 	public Rectangle2D getBoundingBox() {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
+	}
+
+	@Override
+	public JPopupMenu createPopupMenu(ActionListener actionListener) {
+		JPopupMenu popup = new JPopupMenu();
+
+		JMenuItem addToken = new JMenuItem("Add token");
+		addToken.setActionCommand("?.setTokens(?.getTokens()+1)");
+		addToken.addActionListener(actionListener);
+		JMenuItem removeToken = new JMenuItem("Remove token");
+		removeToken.setActionCommand("?.setTokens(?.getTokens()-1)");
+		removeToken.addActionListener(actionListener);
+
+		popup.add(addToken);
+		popup.add(removeToken);
+
+		return popup;
 	}
 }
