@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petri;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,8 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 public class PetriNet extends MathModel {
 	protected HashSet<Place> places;
+
+
 	protected HashSet<Transition> transitions;
 
 	public PetriNet() {
@@ -92,6 +95,14 @@ public class PetriNet extends MathModel {
 	private Set<Transition> getTransitionsSet() {
 		if (transitions == null)
 			transitions = new HashSet<Transition>();
+		return transitions;
+	}
+
+	public Collection<Place> getPlaces() {
+		return places;
+	}
+
+	public Collection<Transition> getTransitions() {
 		return transitions;
 	}
 }

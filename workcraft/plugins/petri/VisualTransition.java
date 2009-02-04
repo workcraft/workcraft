@@ -30,6 +30,17 @@ public class VisualTransition extends VisualComponent {
 		super(transition, xmlElement);
 	}
 
+	public Transition getTransition() {
+		return (Transition)refComponent;
+	}
+
+	public boolean isEnabled() {
+		return getTransition().isEnabled();
+	}
+
+	public void fire() {
+		getTransition().fire();
+	}
 
 	@Override
 	protected void drawInLocalSpace(Graphics2D g) {

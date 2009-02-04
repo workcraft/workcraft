@@ -33,7 +33,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected static double defaultArrowWidth = 0.15;
 	protected static double defaultArrowLength = 0.4;
 	protected static double hitThreshold = 0.2;
-	protected static Color defaultColor = Color.BLUE;
+	protected static Color defaultColor = Color.BLACK;
 
 	protected Color color = defaultColor;
 	protected double lineWidth = defaultLineWidth;

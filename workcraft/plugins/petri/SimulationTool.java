@@ -6,10 +6,52 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class SimulationTool extends AbstractTool {
+
+	private VisualPetriNet visualNet;
+	private PetriNet net;
+
+	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
+
+	private void highlightEnabledTransitions() {
+		for (Transition t : net.getTransitions())
+			if (t.isEnabled())
+				visualNet.getComponentByRefID(t.getID()).setColorisation(enabledColor);
+			else
+				visualNet.getComponentByRefID(t.getID()).clearColorisation();
+
+	}
+
+	@Override
+	public void activated(GraphEditor editor)
+	{
+		visualNet = (VisualPetriNet)editor.getModel();
+		net = (PetriNet)visualNet.getMathModel();
+
+		highlightEnabledTransitions();
+	}
+
+	@Override
+	public void mousePressed(GraphEditorMouseEvent e) {
+		VisualNode node = e.getModel().getRoot().hitComponent(e.getPosition());
+
+		if (node instanceof VisualTransition) {
+			VisualTransition vt = (VisualTransition)node;
+
+			if (vt.isEnabled()) {
+				vt.fire();
+				highlightEnabledTransitions();
+				e.getEditor().repaint();
+			}
+
+		}
+	}
+
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {

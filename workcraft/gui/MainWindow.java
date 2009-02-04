@@ -262,6 +262,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 				}
 
 				GraphEditorPanel editor = new GraphEditorPanel(this, we);
+				String modelTitle = visualModel.getTitle();
+				if (modelTitle.isEmpty())
+					modelTitle = "Untitled";
 				String dockableTitle = visualModel.getTitle() + " - " + visualModel.getDisplayName();
 				Dockable dockable;
 

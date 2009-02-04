@@ -31,7 +31,8 @@ public class SelectionTool extends AbstractTool {
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
-	protected Color selectionColor = Color.RED;
+	protected Color selectionColor = selectionFillColor;
+	protected Color grayOutColor = Color.LIGHT_GRAY;
 
 	private int drag = DRAG_NONE;
 	private Point2D prevPosition;
@@ -164,7 +165,7 @@ public class SelectionTool extends AbstractTool {
 
 	private void grayOutNotActive(VisualModel model)
 	{
-		model.getRoot().setColorisation(new Color(255, 255, 255));
+		model.getRoot().setColorisation(grayOutColor);
 		model.getCurrentLevel().clearColorisation();
 		for(VisualNode node : model.getSelection())
 			node.setColorisation(selectionColor);

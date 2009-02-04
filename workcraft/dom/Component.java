@@ -67,11 +67,11 @@ public abstract class Component {
 	}
 
 	public void addToPostset (Component component) {
-		preset.add(component);
+		postset.add(component);
 	}
 
 	public void removeFromPostset(Component component) {
-		preset.remove(component);
+		postset.remove(component);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -447,15 +447,10 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	protected void removeGroup(VisualGroup group) {
-		for (VisualGroup g: group.groups)
-			removeGroup(g);
-		for (VisualComponent c: group.components)
-			removeComponent(c);
+		removeNodes(group.getChildren());
 
-		selection.remove(group);
 		group.getParent().remove(group);
-
-		// connections will get deleted automatically
+		selection.remove(group);
 	}
 
 	protected void removeComponent(VisualComponent component) {
@@ -475,11 +470,34 @@ public class VisualModel implements Plugin, Model {
 		connection.getSecond().removeConnection(connection);
 		mathModel.removeConnection(connection.getReferencedConnection());
 
-		selection.remove(connection);
 		connection.getParent().remove(connection);
+		selection.remove(connection);
 
 		refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
 		connectionRemoved(connection);
+	}
+
+
+	private void removeNodes(Collection<VisualNode> nodes) {
+		LinkedList<VisualConnection> connectionsToRemove = new LinkedList<VisualConnection>();
+		LinkedList<VisualComponent> componentsToRemove = new LinkedList<VisualComponent>();
+		LinkedList<VisualGroup> groupsToRemove = new LinkedList<VisualGroup>();
+
+		for (VisualNode n : nodes) {
+			if (n instanceof VisualConnection)
+				connectionsToRemove.add((VisualConnection)n);
+			if (n instanceof VisualComponent)
+				componentsToRemove.add((VisualComponent)n);
+			if (n instanceof VisualGroup)
+				groupsToRemove.add((VisualGroup)n);
+		}
+
+		for (VisualConnection con : connectionsToRemove)
+			removeConnection(con);
+		for (VisualComponent comp : componentsToRemove)
+			removeComponent(comp);
+		for (VisualGroup g: groupsToRemove)
+			removeGroup(g);
 	}
 
 	/**
@@ -487,27 +505,14 @@ public class VisualModel implements Plugin, Model {
 	 * @author Ivan Poliakov
 	 */
 	public void deleteSelection() {
-		LinkedList<VisualConnection> connectionsToDelete = new LinkedList<VisualConnection>();
-		LinkedList<VisualComponent> componentsToDelete = new LinkedList<VisualComponent>();
-		LinkedList<VisualGroup> groupsToDelete = new LinkedList<VisualGroup>();
-
-		for (VisualNode node: selection) {
-			if (node instanceof VisualGroup)
-				groupsToDelete.add((VisualGroup)node);
-			else if (node instanceof VisualComponent)
-				componentsToDelete.add((VisualComponent)node);
-			else if (node instanceof VisualConnection)
-				connectionsToDelete.add((VisualConnection)node);
-		}
-
-		for (VisualConnection con : connectionsToDelete)
-			removeConnection(con);
-		for (VisualComponent comp : componentsToDelete)
-			removeComponent(comp);
-		for (VisualGroup g: groupsToDelete)
-			removeGroup(g);
+		removeNodes(selection);
 	}
 
+	/**
+	 * @param clipboard
+	 * @param clipboardOwner
+	 * @author Ivan Poliakov
+	 */
 	public void copy(Clipboard clipboard, ClipboardOwner clipboardOwner) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc; DocumentBuilder db;
