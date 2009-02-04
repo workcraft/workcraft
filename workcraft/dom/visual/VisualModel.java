@@ -90,33 +90,43 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	protected void pasteFromXML (Element visualElement, Point2D location) throws PasteException {
+	protected final Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
 		List<Element> compElements = XmlUtil.getChildElements("component", visualElement);
 		List<Element> conElements = XmlUtil.getChildElements("connection", visualElement);
 		List<Element> groupElements = XmlUtil.getChildElements("group", visualElement);
 
+		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
+
 		try
 		{
-		for (Element e: compElements) {
-			VisualComponent vcomp = ComponentFactory.createVisualComponent(e, this);
-			vcomp.setX(vcomp.getX() + location.getX());
-			vcomp.setY(vcomp.getY() + location.getY());
-			currentLevel.add(vcomp);
-			addComponent(vcomp);
-		}
+			for (Element e: compElements) {
+				VisualComponent vcomp = ComponentFactory.createVisualComponent(e, this);
+				vcomp.setX(vcomp.getX() + location.getX());
+				vcomp.setY(vcomp.getY() + location.getY());
+				currentLevel.add(vcomp);
+				addComponent(vcomp);
 
-		for (Element e: groupElements) {
-			VisualGroup group = new VisualGroup (e, this);
-			group.loadDeferredConnections(this);
-			group.setX(group.getX() + location.getX());
-			group.setY(group.getY() + location.getY());
-			currentLevel.add(group);
-		}
+				pasted.add(vcomp);
+			}
 
-		for (Element e: conElements) {
-			VisualConnection vcon = ConnectionFactory.createVisualConnection(e, this);
-			currentLevel.add(vcon);
-		}
+			for (Element e: groupElements) {
+				VisualGroup group = new VisualGroup (e, this);
+				group.loadDeferredConnections(this);
+				group.setX(group.getX() + location.getX());
+				group.setY(group.getY() + location.getY());
+				currentLevel.add(group);
+
+				pasted.add(group);
+			}
+
+			for (Element e: conElements) {
+				VisualConnection vcon = ConnectionFactory.createVisualConnection(e, this);
+				currentLevel.add(vcon);
+
+				pasted.add(vcon);
+			}
+
+			return pasted;
 		} catch (VisualConnectionCreationException e) {
 			throw new PasteException ("Cannot create visual connection: " + e.getMessage());
 
@@ -125,7 +135,7 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	public static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes) {
+	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes) {
 		for (VisualNode node : nodes) {
 			if (node instanceof VisualComponent) {
 				VisualComponent vc = (VisualComponent)node;
@@ -148,7 +158,17 @@ public class VisualModel implements Plugin, Model {
 		nodesToXML (xmlVisualElement, root.getChildren());
 	}
 
-	public void selectionToXML(Element xmlElement) {
+	private void gatherReferences(Collection<VisualNode> nodes, LinkedList<Component> referencedComponents, LinkedList<Connection> referencedConnections) {
+		for (VisualNode n : nodes)
+			if (n instanceof VisualComponent)
+				referencedComponents.add( ((VisualComponent)n).getReferencedComponent());
+			else if (n instanceof VisualConnection)
+				referencedConnections.add( ((VisualConnection)n).getReferencedConnection());
+			else if (n instanceof VisualGroup)
+				gatherReferences( ((VisualGroup)n).getChildren(), referencedComponents, referencedConnections);
+	}
+
+	private void selectionToXML(Element xmlElement) {
 		Element mathElement = XmlUtil.createChildElement("model", xmlElement);
 		XmlUtil.writeStringAttr(mathElement, "class", getMathModel().getClass().getName());
 		Element visualElement = XmlUtil.createChildElement("visual-model", xmlElement);
@@ -156,11 +176,7 @@ public class VisualModel implements Plugin, Model {
 		LinkedList<Component> referencedComponents = new LinkedList<Component>();
 		LinkedList<Connection> referencedConnections = new LinkedList<Connection>();
 
-		for (VisualNode n : selection)
-			if (n instanceof VisualComponent)
-				referencedComponents.add( ((VisualComponent)n).getReferencedComponent());
-			else if (n instanceof VisualConnection)
-				referencedConnections.add( ((VisualConnection)n).getReferencedConnection());
+		gatherReferences (selection, referencedComponents, referencedConnections);
 
 		VisualModel.nodesToXML(visualElement, selection);
 		MathModel.componentsToXML(mathElement, referencedComponents);
@@ -526,9 +542,7 @@ public class VisualModel implements Plugin, Model {
 				throw new PasteException("Structure of clipboard XML is invalid.");
 
 			mathModel.pasteFromXML(mathModelElement);
-			pasteFromXML(visualModelElement, where);
-
-
+			select(pasteFromXML(visualModelElement, where));
 		} catch (UnsupportedFlavorException e) {
 			return;
 		} catch (IOException e) {
@@ -536,6 +550,12 @@ public class VisualModel implements Plugin, Model {
 		} catch (ModelLoadFailedException e) {
 			throw new PasteException (e.getMessage());
 		}
+	}
+
+	public void select(Collection<VisualNode> nodes) {
+		selectNone();
+		for (VisualNode n: nodes)
+			addToSelection(n);
 	}
 
 	public void cut(Clipboard clipboard, ClipboardOwner clipboardOwner) {

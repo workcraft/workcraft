@@ -202,6 +202,9 @@ public class SelectionTool extends AbstractTool {
 			case KeyEvent.VK_C:
 				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
 				break;
+			case KeyEvent.VK_X:
+				e.getModel().cut(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+				break;
 			case KeyEvent.VK_V:
 				try {
 					e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition);
