@@ -192,9 +192,8 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		visualModel.fireLayoutChanged();
 	}
 
-	@Override
+
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}
-
 }

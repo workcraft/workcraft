@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
+import org.workcraft.gui.workspace.WorkspaceWindow;
 
 public class MainMenu extends JMenuBar {
 	private static final long serialVersionUID = 1L;
@@ -57,16 +58,30 @@ public class MainMenu extends JMenuBar {
 		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miOpenModel.addScriptedActionListener(frame.getDefaultActionListener());
 
-/*		JMenuItem miSaveWorkspace = new JMenuItem();
-		miSaveWorkspace.setText("Save workspace");
-		miSaveWorkspace.setMnemonic(KeyEvent.VK_O);
-		miSaveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		miSaveWorkspace.addActionListener(frame.getDefaultActionListener());
-		miSaveWorkspace.setActionCommand("gui.saveWorkspace()");*/
+		ScriptedActionMenuItem miSaveWork = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_WORK_ACTION);
+		miSaveWork.setMnemonic(KeyEvent.VK_S);
+		miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		miSaveWork.addScriptedActionListener(frame.getDefaultActionListener());
+
+		ScriptedActionMenuItem miSaveWorkAs = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_WORK_AS_ACTION);
+		miSaveWorkAs.addScriptedActionListener(frame.getDefaultActionListener());
+
+
+		ScriptedActionMenuItem miSaveWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
+		miSaveWorkspace.addScriptedActionListener(frame.getDefaultActionListener());
+
+		ScriptedActionMenuItem miSaveWorkspaceAs = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
+		miSaveWorkspaceAs.addScriptedActionListener(frame.getDefaultActionListener());
 
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
+		mnFile.add(miSaveWork);
+		mnFile.add(miSaveWorkAs);
 
+
+		mnFile.addSeparator();
+		mnFile.add(miSaveWorkspace);
+		mnFile.add(miSaveWorkspaceAs);
 		mnFile.addSeparator();
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);

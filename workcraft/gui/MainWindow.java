@@ -66,10 +66,18 @@ public class MainWindow extends JFrame implements DockingConstants{
 		};
 		public static final ScriptedAction SAVE_WORK_ACTION = new ScriptedAction() {
 			public String getScript() {
-				return "mainWindow.save()";
+				return "mainWindow.saveWork()";
 			}
 			public String getText() {
-				return "Save";
+				return "Save work";
+			};
+		};
+		public static final ScriptedAction SAVE_WORK_AS_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.saveWorkAs()";
+			}
+			public String getText() {
+				return "Save work as...";
 			};
 		};
 		public static final ScriptedAction EXIT_ACTION = new ScriptedAction() {
@@ -85,7 +93,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 				return "framework.shutdownGUI()";
 			}
 			public String getText() {
-				return "Shutdown GUI";
+				return "Switch to console mode";
 			};
 		};
 		public static final ScriptedAction RECONFIGURE_PLUGINS_ACTION = new ScriptedAction() {
@@ -506,6 +514,20 @@ public class MainWindow extends JFrame implements DockingConstants{
 			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();
 		}
+	}
+
+	public void saveWork() {
+		if (editorInFocus != null)
+			save(editorInFocus.getWorkspaceEntry());
+		else
+			System.out.println ("No editor in focus");
+	}
+
+	public void saveWorkAs() {
+		if (editorInFocus != null)
+			saveAs(editorInFocus.getWorkspaceEntry());
+		else
+			System.out.println ("No editor in focus");
 	}
 
 	public void save(WorkspaceEntry we) {
