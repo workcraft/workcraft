@@ -25,7 +25,7 @@ public class VisualNodeTests {
 		node.addListener(new PropertyChangeListener()
 				{
 					@Override
-					public void propertyChanged(String propertyName, Object sender) {
+					public void onPropertyChanged(String propertyName, Object sender) {
 						if(propertyName=="transform" && node == sender)
 							hit[0] = true;
 					}

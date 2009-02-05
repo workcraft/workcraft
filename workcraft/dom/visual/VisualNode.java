@@ -12,6 +12,8 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.XMLSerialisable;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -19,13 +21,16 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 
 
 public abstract class VisualNode implements PropertyEditable {
-	protected LinkedList<PropertyDeclaration> propertyDeclarations = new LinkedList<PropertyDeclaration>();
-	protected LinkedList<PropertyChangeListener> propertyChangeListeners = new LinkedList<PropertyChangeListener>();
-	protected Color colorisation = null;
-	protected VisualGroup parent = null;
+	private LinkedList<PropertyDeclaration> propertyDeclarations = new LinkedList<PropertyDeclaration>();
+	private LinkedList<PropertyChangeListener> propertyChangeListeners = new LinkedList<PropertyChangeListener>();
+
+	private Color colorisation = null;
+	private VisualGroup parent = null;
+
+	private XMLSerialiser serialiser = new XMLSerialiser();
 
 	public abstract void draw (Graphics2D g);
-	public abstract void toXML(Element xmlElement);
+
 	public abstract int hitTestInParentSpace(Point2D pointInParentSpace);
 
 	public VisualGroup getParent() {
@@ -72,7 +77,7 @@ public abstract class VisualNode implements PropertyEditable {
 			if (next == null)
 				throw new NotAnAncestorException();
 			t.concatenate(next.getLocalToParentTransform());
-			next = next.parent;
+			next = next.getParent();
 		}
 
 		return t;
@@ -96,7 +101,7 @@ public abstract class VisualNode implements PropertyEditable {
 		);
 	}
 
-	public List<PropertyDeclaration> getPropertyDeclarations() {
+	final public List<PropertyDeclaration> getPropertyDeclarations() {
 		return propertyDeclarations;
 	}
 
@@ -110,14 +115,14 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public void firePropertyChanged(String propertyName) {
 		for (PropertyChangeListener l : propertyChangeListeners)
-			l.propertyChanged(propertyName, this);
+			l.onPropertyChanged(propertyName, this);
 	}
 
 	public void setColorisation (Color color) {
 		colorisation = color;
 	}
 
-	public Color getColorisation (Color color) {
+	public Color getColorisation () {
 		return colorisation;
 	}
 
@@ -170,4 +175,17 @@ public abstract class VisualNode implements PropertyEditable {
 	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		return null;
 	}
+
+	final protected void addPropertyDeclaration(PropertyDeclaration declaration) {
+		propertyDeclarations.add(declaration);
+	}
+
+	public final void addXMLSerialisable(XMLSerialisable serialisable) {
+		serialiser.addXMLSerialisable(serialisable);
+	}
+
+	public final void serialiseToXML(Element componentElement) {
+		serialiser.serialiseToXML(componentElement);
+	}
+
 }

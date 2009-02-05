@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.workcraft.dom.XMLSerialisable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
@@ -18,27 +18,36 @@ public abstract class VisualTransformableNode extends VisualNode {
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
 	private void addPropertyDeclarations() {
-		propertyDeclarations.add(new PropertyDeclaration("X", "getX", "setX", double.class));
-		propertyDeclarations.add(new PropertyDeclaration("Y", "getY", "setY", double.class));
+		addPropertyDeclaration(new PropertyDeclaration("X", "getX", "setX", double.class));
+		addPropertyDeclaration(new PropertyDeclaration("Y", "getY", "setY", double.class));
+	}
+
+	private void addXMLSerialisable() {
+		addXMLSerialisable(new XMLSerialisable(){
+			public String getTagName() {
+				return VisualTransformableNode.class.getSimpleName();
+			}
+			public void serialise(Element element) {
+				XmlUtil.writeDoubleAttr(element, "X", getX());
+				XmlUtil.writeDoubleAttr(element, "Y", getY());
+			}
+		});
 	}
 
 	public VisualTransformableNode() {
 		super();
 		addPropertyDeclarations();
+		addXMLSerialisable();
 	}
 
-	public VisualTransformableNode (Element xmlElement) {
+	public VisualTransformableNode (Element visualNodeElement) {
 		super();
-		NodeList nodes = xmlElement.getElementsByTagName("transform");
-		Element vnodeElement = (Element)nodes.item(0);
+		addPropertyDeclarations();
+		addXMLSerialisable();
+
+		Element vnodeElement = XmlUtil.getChildElement(VisualTransformableNode.class.getSimpleName(), visualNodeElement);
 		setX (XmlUtil.readDoubleAttr(vnodeElement, "X", 0));
 		setY (XmlUtil.readDoubleAttr(vnodeElement, "Y", 0));
-	}
-
-	public void toXML(Element xmlElement) {
-		Element vnodeElement = XmlUtil.createChildElement("transform", xmlElement);
-		XmlUtil.writeDoubleAttr(vnodeElement, "X", getX());
-		XmlUtil.writeDoubleAttr(vnodeElement, "Y", getY());
 	}
 
 	public double getX() {

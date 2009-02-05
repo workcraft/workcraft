@@ -149,17 +149,17 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		mainWindow.getPropertyView().repaint();
 	}
 
-	public void componentPropertyChanged(Component c) {
+	public void onComponentPropertyChanged(Component c) {
 		repaint();
 		mainWindow.getPropertyView().repaint();
 	}
 
-	public void connectionPropertyChanged(Connection c) {
+	public void onConnectionPropertyChanged(Connection c) {
 		repaint();
 		mainWindow.getPropertyView().repaint();
 	}
 
-	public void modelStructureChanged() {
+	public void onModelStructureChanged() {
 		repaint();
 		mainWindow.getPropertyView().repaint();
 	}
@@ -188,7 +188,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		}
 	}
 
-	public void propertyChanged(String propertyName, Object sender) {
+	public void onPropertyChanged(String propertyName, Object sender) {
 		visualModel.fireLayoutChanged();
 	}
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -34,6 +35,22 @@ public class VisualModelTests {
 		public void validateConnection(Connection connection)
 				throws InvalidConnectionException {
 			return;
+		}
+
+		@Override
+		protected void onComponentAdded(Component component) {
+		}
+
+		@Override
+		protected void onComponentRemoved(Component component) {
+		}
+
+		@Override
+		protected void onConnectionAdded(Connection connection) {
+		}
+
+		@Override
+		protected void onConnectionRemoved(Connection connection) {
 		}
 	}
 

@@ -31,7 +31,7 @@ public class VisualTransition extends VisualComponent {
 	}
 
 	public Transition getTransition() {
-		return (Transition)refComponent;
+		return (Transition)getReferencedComponent();
 	}
 
 	public boolean isEnabled() {
@@ -49,9 +49,9 @@ public class VisualTransition extends VisualComponent {
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
-		g.setColor(Coloriser.colorise(userFillColor, colorisation));
+		g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(userBorderColor, colorisation));
+		g.setColor(Coloriser.colorise(userBorderColor, getColorisation()));
 		g.setStroke(new BasicStroke(strokeWidth));
 		g.draw(shape);
 	}

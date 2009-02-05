@@ -10,6 +10,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
@@ -32,6 +33,12 @@ public class VisualPlace extends VisualComponent {
 		public String getScript() {
 			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
 		}
+		public String getUndoScript() {
+			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()-1);\n";
+		}
+		public String getRedoScript() {
+			return getScript();
+		}
 		public String getText() {
 			return "Add token";
 		}
@@ -40,12 +47,20 @@ public class VisualPlace extends VisualComponent {
 	class RemoveTokenAction extends ScriptedAction {
 		private int placeID;
 
-		public RemoveTokenAction(int placeID) {
+		public RemoveTokenAction(Place place) {
 			super();
-			this.placeID = placeID;
+			this.placeID = place.getID();
+				if (place.getTokens() < 1)
+					setEnabled(false);
 		}
 		public String getScript() {
-			return "p=model.getComponentByID("+placeID+");\nif (p.getTokens()>0)\n\tp.setTokens(p.getTokens()-1);\n";
+				return "p=model.getComponentByID("+placeID+");p.setTokens(p.getTokens()-1);\n";
+		}
+		public String getUndoScript() {
+				return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
+		}
+		public String getRedoScript() {
+			return getScript();
 		}
 		public String getText() {
 			return "Remove token";
@@ -65,7 +80,7 @@ public class VisualPlace extends VisualComponent {
 	protected Color userTokenColor = defaultTokenColor;
 
 	public Place getPlace() {
-		return (Place)refComponent;
+		return (Place)getReferencedComponent();
 	}
 
 	public int getTokens() {
@@ -87,7 +102,7 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		propertyDeclarations.add(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 	}
 
 	@Override
@@ -99,9 +114,9 @@ public class VisualPlace extends VisualComponent {
 				size - strokeWidth,
 				size - strokeWidth);
 
-		g.setColor(Coloriser.colorise(userFillColor, colorisation));
+		g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(userBorderColor, colorisation));
+		g.setColor(Coloriser.colorise(userBorderColor, getColorisation()));
 		g.setStroke(new BasicStroke(strokeWidth));
 		g.draw(shape);
 
@@ -115,7 +130,7 @@ public class VisualPlace extends VisualComponent {
 					singleTokenSize,
 					singleTokenSize);
 
-			g.setColor(Coloriser.colorise(userTokenColor, colorisation));
+			g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
 			g.fill(shape);
 		}
 		else
@@ -140,7 +155,7 @@ public class VisualPlace extends VisualComponent {
 								r * 2,
 								r * 2);
 
-					g.setColor(Coloriser.colorise(userTokenColor, colorisation));
+					g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
 					g.fill(shape);
 				}
 			}
@@ -151,7 +166,7 @@ public class VisualPlace extends VisualComponent {
 
 				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
 				g.setFont(superFont);
-				g.setColor(Coloriser.colorise(userTokenColor, colorisation));
+				g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
 				g.drawString(Integer.toString(p.tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
 			}
 	}
@@ -175,12 +190,14 @@ public class VisualPlace extends VisualComponent {
 	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		JPopupMenu popup = new JPopupMenu();
 
-		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(this.refComponent.getID()));
+		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedComponent().getID()));
 		addToken.addScriptedActionListener(actionListener);
 
-		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(this.refComponent.getID()));
+		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction((Place)getReferencedComponent()));
 		removeToken.addScriptedActionListener(actionListener);
 
+		popup.add(new JLabel ("Place"));
+		popup.addSeparator();
 		popup.add(addToken);
 		popup.add(removeToken);
 

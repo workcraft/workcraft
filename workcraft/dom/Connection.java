@@ -5,44 +5,66 @@ import org.workcraft.util.XmlUtil;
 
 @VisualClass("org.workcraft.dom.visual.VisualConnection")
 public class Connection {
-	protected Component first;
-	protected Component second;
-	protected int ID;
+	private Component first;
+	private Component second;
+	private int ID;
 
-	public int getID() {
-		return ID;
-	}
+	private XMLSerialiser serialiser = new XMLSerialiser();
 
-	public void setID(int id) {
-		ID = id;
-	}
-
-	public Component getFirst() {
-		return first;
-	}
-
-	public Component getSecond() {
-		return second;
-	}
-
-	public void toXML (Element connectionElement) {
-		XmlUtil.writeIntAttr(connectionElement, "first", first.getID());
-		XmlUtil.writeIntAttr(connectionElement, "second", second.getID());
-		XmlUtil.writeIntAttr(connectionElement, "ID", getID());
+	private void addXMLSerialisable() {
+		serialiser.addXMLSerialisable(new XMLSerialisable() {
+			public void serialise(Element element) {
+				XmlUtil.writeIntAttr(element, "ID", ID);
+				XmlUtil.writeIntAttr(element, "first", first.getID());
+				XmlUtil.writeIntAttr(element, "second", second.getID());
+			}
+			public String getTagName() {
+				return Connection.class.getSimpleName();
+			}
+		});
 	}
 
 	public Connection (Component first, Component second) {
 		this.first = first;
 		this.second = second;
+
+		addXMLSerialisable();
 	}
 
-	public Connection (Element xmlElement, MathModel model) {
-		ID = XmlUtil.readIntAttr(xmlElement, "ID", -1);
+	public Connection (Element connectionElement, MathModel model) {
+		Element element = XmlUtil.getChildElement(Connection.class.getSimpleName(), connectionElement);
+		ID = XmlUtil.readIntAttr(element, "ID", -1);
 
-		int firstID = XmlUtil.readIntAttr(xmlElement, "first", -1);
-		int secondID = XmlUtil.readIntAttr(xmlElement, "second", -1);
+		int firstID = XmlUtil.readIntAttr(element, "first", -1);
+		int secondID = XmlUtil.readIntAttr(element, "second", -1);
 
 		first = model.getComponentByRenamedID(firstID);
 		second = model.getComponentByRenamedID(secondID);
+
+		addXMLSerialisable();
+	}
+
+	final public int getID() {
+		return ID;
+	}
+
+	final public void setID(int id) {
+		ID = id;
+	}
+
+	final public Component getFirst() {
+		return first;
+	}
+
+	final public Component getSecond() {
+		return second;
+	}
+
+	final public void addXMLSerialisable (XMLSerialisable serialisable) {
+		serialiser.addXMLSerialisable(serialisable);
+	}
+
+	final public void serialiseToXML(Element componentElement) {
+		serialiser.serialiseToXML(componentElement);
 	}
 }

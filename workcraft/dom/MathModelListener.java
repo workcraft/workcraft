@@ -1,7 +1,7 @@
 package org.workcraft.dom;
 
 public interface MathModelListener {
-	public void modelStructureChanged();
-	public void componentPropertyChanged(Component c);
-	public void connectionPropertyChanged(Connection c);
+	public void onModelStructureChanged();
+	public void onComponentPropertyChanged(Component c);
+	public void onConnectionPropertyChanged(Connection c);
 }

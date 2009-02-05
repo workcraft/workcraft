@@ -1,6 +1,5 @@
 package org.workcraft.plugins.petri;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,53 +17,42 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 public class PetriNet extends MathModel {
-	protected HashSet<Place> places;
-
-
-	protected HashSet<Transition> transitions;
+	private HashSet<Place> places;
+	private HashSet<Transition> transitions;
 
 	public PetriNet() {
 		super();
+		addSupportedComponents();
 	}
 
 	public PetriNet(Element xmlElement) throws ModelLoadFailedException {
 		super(xmlElement);
+		addSupportedComponents();
 	}
 
-	@Override
-	protected void componentAdded(Component component) {
+	private void addSupportedComponents() {
+		addSupportedComponent(Place.class);
+		addSupportedComponent(Transition.class);
+	}
+
+	protected void onComponentAdded(Component component) {
 		if (component instanceof Place)
 			getPlacesSet().add((Place)component);
 		else if (component instanceof Transition)
 			getTransitionsSet().add((Transition)component);
 	}
 
-	@Override
-	protected void componentRemoved (Component component) {
+	protected void onComponentRemoved (Component component) {
 		if (component instanceof Place)
 			getPlacesSet().remove(component);
 		else if (component instanceof Transition)
 			getTransitionsSet().remove(component);
 	}
 
-
-	@Override
-	public ArrayList<Class<? extends Component>> getSupportedComponents() {
-		ArrayList<Class<? extends Component>> list = new ArrayList<Class<? extends Component>>(super.getSupportedComponents());
-		list.add(Place.class);
-		list.add(Transition.class);
-		return list;
-	}
-
-
-	@Override
 	public void validate() throws ModelValidationException {
-		// TODO Auto-generated method stub
-
 	}
 
 
-	@Override
 	public void validateConnection(Connection connection)	throws InvalidConnectionException {
 		if (connection.getFirst() instanceof Place && connection.getSecond() instanceof Place)
 			throw new InvalidConnectionException ("Connections between places are not valid");
@@ -72,14 +60,14 @@ public class PetriNet extends MathModel {
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
 	}
 
-	public Place createPlace(String label) {
+	final public Place createPlace(String label) {
 		Place newPlace = new Place();
 		newPlace.setLabel(label);
 		addComponent(newPlace);
 		return newPlace;
 	}
 
-	public Transition createTransition(String label) {
+	final public Transition createTransition(String label) {
 		Transition newTransition = new Transition();
 		newTransition.setLabel(label);
 		addComponent(newTransition);
@@ -98,11 +86,17 @@ public class PetriNet extends MathModel {
 		return transitions;
 	}
 
-	public Collection<Place> getPlaces() {
-		return places;
+	final public Collection<Place> getPlaces() {
+		return new HashSet<Place>(places);
 	}
 
-	public Collection<Transition> getTransitions() {
-		return transitions;
+	final public Collection<Transition> getTransitions() {
+		return new HashSet<Transition>(transitions);
+	}
+
+	public void onConnectionAdded(Connection connection) {
+	}
+
+	public void onConnectionRemoved(Connection connection) {
 	}
 }

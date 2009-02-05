@@ -1,7 +1,5 @@
 package org.workcraft.plugins.graph;
 
-import java.util.ArrayList;
-
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
@@ -24,22 +22,10 @@ public class Graph extends MathModel {
 		super(xmlElement);
 	}
 
-
-	@Override
-	public ArrayList<Class<? extends Component>> getSupportedComponents() {
-		ArrayList<Class<? extends Component>> list = new ArrayList<Class<? extends Component>>(super.getSupportedComponents());
-		list.add(Vertex.class);
-		return list;
-	}
-
-	@Override
 	public void validate() throws ModelValidationException {
 	}
 
-
-	@Override
-	public void validateConnection(Connection connection)
-	throws InvalidConnectionException {
+	public void validateConnection(Connection connection)	throws InvalidConnectionException {
 	}
 
 	public Vertex createVertex(String label) {
@@ -53,4 +39,19 @@ public class Graph extends MathModel {
 		return v;
 	}
 
+	@Override
+	protected void onComponentAdded(Component component) {
+	}
+
+	@Override
+	protected void onComponentRemoved(Component component) {
+	}
+
+	@Override
+	protected void onConnectionAdded(Connection connection) {
+	}
+
+	@Override
+	protected void onConnectionRemoved(Connection connection) {
+	}
 }

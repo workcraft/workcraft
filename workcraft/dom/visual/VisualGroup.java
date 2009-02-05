@@ -21,6 +21,7 @@ import net.sf.jga.fn.UnaryFunctor;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.XMLSerialisable;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
@@ -40,11 +41,102 @@ public class VisualGroup extends VisualTransformableNode {
 	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
 	private Element deferredGroupElement = null;
+	private String label = "";
+
+	private static <T extends VisualNode> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
+		return
+			Filter.filter(nodes, new UnaryFunctor<T, Boolean>()
+				{
+					private static final long serialVersionUID = -7790168871113424836L;
+
+					@Override
+					public Boolean fn(T arg) {
+						Rectangle2D boundingBox = arg.getBoundingBoxInParentSpace();
+						return
+							boundingBox != null &&
+							boundingBox.contains(pointInLocalSpace);
+					}
+				}
+		);
+	}
+
+	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
+		for (T node : reverse(filterByBB(nodes, pointInLocalSpace)))
+			if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
+				return node;
+		return null;
+	}
+
+	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
+	{
+		Rectangle2D addedRect = node.getBoundingBoxInParentSpace();
+
+		if(addedRect == null)
+			return rect;
+
+		if(rect==null) {
+			rect = new Rectangle2D.Double();
+			rect.setRect(addedRect);
+		}
+		else
+			rect.add(addedRect);
+
+		return rect;
+	}
+
+	private static <T> Iterable<T> reverse(Iterable<T> original)
+	{
+		final ArrayList<T> list = new ArrayList<T>();
+		for (T node : original)
+			list.add(node);
+		return new Iterable<T>()
+		{
+			@Override
+			public Iterator<T> iterator() {
+				return new Iterator<T>()
+				{
+					private int cur = list.size();
+					@Override
+					public boolean hasNext() {
+						return cur>0;
+					}
+					@Override
+					public T next() {
+						return list.get(--cur);
+					}
+					@Override
+					public void remove() {
+						throw new RuntimeException("Not supported");
+					}
+				};
+			}
+		};
+	}
+
+	public VisualGroup () {
+		super();
+		addXMLSerialisable();
+		addPropertyChangeListener();
+	}
+
+	public VisualGroup (Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
+		super(element);
+
+		Element groupElement = XmlUtil.getChildElement(VisualGroup.class.getSimpleName(), element);
+		label = XmlUtil.readStringAttr(groupElement, "label");
+
+		addXMLSerialisable();
+		addPropertyChangeListener();
+
+		loadComponents(groupElement, model);
+		loadSubgroups(groupElement, model);
+		deferredGroupElement = groupElement;
+	}
 
 	private void addPropertyChangeListener() {
 		this.addListener(new PropertyChangeListener(){
 			@Override
-			public void propertyChanged(String propertyName, Object sender) {
+			public void onPropertyChanged(String propertyName, Object sender) {
 				if(propertyName == "transform")
 					for(VisualNode node : children)
 					{
@@ -56,9 +148,23 @@ public class VisualGroup extends VisualTransformableNode {
 		});
 	}
 
-	public VisualGroup () {
-		super();
-		addPropertyChangeListener();
+	private void addXMLSerialisable() {
+		addXMLSerialisable(new XMLSerialisable() {
+			public String getTagName() {
+				return VisualGroup.class.getSimpleName();
+			}
+			public void serialise(Element element) {
+				XmlUtil.writeStringAttr(element, "label", label);
+				VisualModel.nodesToXML (element, children);
+			}
+		});
+	}
+
+	private void drawPreservingTransform(Graphics2D g, VisualNode nodeToDraw)
+	{
+		AffineTransform oldTransform = g.getTransform();
+		nodeToDraw.draw(g);
+		g.setTransform(oldTransform);
 	}
 
 	private void loadComponents (Element groupElement, VisualModel model) throws VisualComponentCreationException {
@@ -100,29 +206,6 @@ public class VisualGroup extends VisualTransformableNode {
 		}
 	}
 
-	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
-		for (VisualGroup g: groups)
-			g.loadDeferredConnections(model);
-		loadConnections(deferredGroupElement, model);
-		deferredGroupElement = null;
-	}
-
-	public VisualGroup (Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
-		super(element);
-		addPropertyChangeListener();
-
-		loadComponents(element, model);
-		loadSubgroups(element, model);
-		deferredGroupElement = element;
-	}
-
-	private void drawPreservingTransform(Graphics2D g, VisualNode nodeToDraw)
-	{
-		AffineTransform oldTransform = g.getTransform();
-		nodeToDraw.draw(g);
-		g.setTransform(oldTransform);
-	}
-
 	@Override
 	protected void drawInLocalSpace(Graphics2D g) {
 		for (VisualConnection connection : connections)
@@ -136,11 +219,24 @@ public class VisualGroup extends VisualTransformableNode {
 
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if (bb != null && parent != null) {
-			g.setColor(Coloriser.colorise(Color.GRAY, colorisation));
+		if (bb != null && getParent() != null) {
+			g.setColor(Coloriser.colorise(Color.GRAY, getColorisation()));
 			g.setStroke(new BasicStroke(0.02f));
 			g.draw(getBoundingBoxInLocalSpace());
 		}
+	}
+
+	protected void remove (VisualNode node) {
+		node.setParent(null);
+		children.remove(node);
+
+		if (node instanceof VisualComponent)
+			components.remove((VisualComponent)node);
+		else if (node instanceof VisualGroup)
+			groups.remove((VisualGroup)node);
+		else if (node instanceof VisualConnection)
+			connections.remove((VisualConnection)node);
+		else throw new UnsupportedOperationException("Unknown node type");
 	}
 
 	public void add (VisualGroup group) {
@@ -171,25 +267,50 @@ public class VisualGroup extends VisualTransformableNode {
 		node.setParent(this);
 	}
 
-	protected void remove (VisualNode node) {
-		node.setParent(null);
-		children.remove(node);
-
-		if (node instanceof VisualComponent)
-			components.remove((VisualComponent)node);
-		else if (node instanceof VisualGroup)
-			groups.remove((VisualGroup)node);
-		else if (node instanceof VisualConnection)
-			connections.remove((VisualConnection)node);
-		else throw new UnsupportedOperationException("Unknown node type");
+	@Override
+	public void clearColorisation() {
+		setColorisation(null);
+		for (VisualNode node : children)
+			node.clearColorisation();
 	}
 
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D.Double rect = null;
+		for(VisualComponent comp : components)
+			rect = mergeRect(rect, comp);
+		for(VisualGroup grp : groups)
+			rect = mergeRect(rect, grp);
+		return rect;
+	}
 
+	public final Set<VisualNode> getChildren() {
+		return new LinkedHashSet<VisualNode>(children);
+	}
 
-	@Override
-	public void toXML(Element groupElement) {
-		super.toXML(groupElement);
-		VisualModel.nodesToXML (groupElement, children);
+	public final Set<VisualComponent> getComponents() {
+		return new LinkedHashSet<VisualComponent>(components);
+	}
+
+	public final Set<VisualConnection> getConnections() {
+		return new LinkedHashSet<VisualConnection>(connections);
+	}
+
+	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
+		VisualComponent result = hitVisualNode(pointInLocalSpace, components);
+		if(result!=null)
+			return result;
+		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
+			Point2D pointInChildSpace = new Point2D.Double();
+			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
+			result = group.hitComponent(pointInChildSpace);
+			if(result!=null)
+				return result;
+		}
+		return null;
+	}
+
+	public VisualNode hitNode(Point2D pointInLocalSpace) {
+		return hitVisualNode(pointInLocalSpace, children);
 	}
 
 	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
@@ -218,113 +339,16 @@ public class VisualGroup extends VisualTransformableNode {
 		return 0;
 	}
 
-	private static <T> Iterable<T> reverse(Iterable<T> original)
-	{
-		final ArrayList<T> list = new ArrayList<T>();
-		for (T node : original)
-			list.add(node);
-		return new Iterable<T>()
-		{
-			@Override
-			public Iterator<T> iterator() {
-				return new Iterator<T>()
-				{
-					private int cur = list.size();
-					@Override
-					public boolean hasNext() {
-						return cur>0;
-					}
-					@Override
-					public T next() {
-						return list.get(--cur);
-					}
-					@Override
-					public void remove() {
-						throw new RuntimeException("Not supported");
-					}
-				};
-			}
-		};
-	}
-
-	private static <T extends VisualNode> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
-		return
-			Filter.filter(nodes, new UnaryFunctor<T, Boolean>()
-				{
-					private static final long serialVersionUID = -7790168871113424836L;
-
-					@Override
-					public Boolean fn(T arg) {
-						Rectangle2D boundingBox = arg.getBoundingBoxInParentSpace();
-						return
-							boundingBox != null &&
-							boundingBox.contains(pointInLocalSpace);
-					}
-				}
-		);
-	}
-
-	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
-		for (T node : reverse(filterByBB(nodes, pointInLocalSpace)))
-			if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
-				return node;
-		return null;
-	}
-
-	public VisualNode hitNode(Point2D pointInLocalSpace) {
-		return hitVisualNode(pointInLocalSpace, children);
-	}
-
-	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		VisualComponent result = hitVisualNode(pointInLocalSpace, components);
-		if(result!=null)
-			return result;
-		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
-			Point2D pointInChildSpace = new Point2D.Double();
-			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
-			result = group.hitComponent(pointInChildSpace);
-			if(result!=null)
-				return result;
-		}
-		return null;
-	}
-
-	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
-	{
-		Rectangle2D addedRect = node.getBoundingBoxInParentSpace();
-
-		if(addedRect == null)
-			return rect;
-
-		if(rect==null) {
-			rect = new Rectangle2D.Double();
-			rect.setRect(addedRect);
-		}
-		else
-			rect.add(addedRect);
-
-		return rect;
-	}
-
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D.Double rect = null;
-		for(VisualComponent comp : components)
-			rect = mergeRect(rect, comp);
-		for(VisualGroup grp : groups)
-			rect = mergeRect(rect, grp);
-		return rect;
-	}
-
-	@Override
-	public void clearColorisation() {
-		colorisation = null;
-		for (VisualNode node : children)
-			node.clearColorisation();
+	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
+		for (VisualGroup g: groups)
+			g.loadDeferredConnections(model);
+		loadConnections(deferredGroupElement, model);
+		deferredGroupElement = null;
 	}
 
 	@Override
 	public void setColorisation(Color color) {
-		colorisation = color;
+		super.setColorisation(color);
 		for (VisualNode node : children)
 			node.setColorisation(color);
 	}
@@ -332,20 +356,20 @@ public class VisualGroup extends VisualTransformableNode {
 	public List<VisualNode> unGroup() {
 		ArrayList<VisualNode> result = new ArrayList<VisualNode>(children.size());
 		for (VisualConnection connection : connections.toArray(new VisualConnection[connections.size()])) {
-			parent.add(connection);
+			getParent().add(connection);
 			result.add(connection);
 		}
 
 		try	{
 			for (VisualTransformableNode group : groups.toArray(new VisualTransformableNode[groups.size()]))
 			{
-				parent.add(group);
+				getParent().add(group);
 				result.add(group);
 				group.applyTransform(localToParentTransform);
 			}
 			for (VisualTransformableNode component : components.toArray(new VisualTransformableNode[components.size()]))
 			{
-				parent.add(component);
+				getParent().add(component);
 				result.add(component);
 				component.applyTransform(localToParentTransform);
 			}
@@ -360,17 +384,5 @@ public class VisualGroup extends VisualTransformableNode {
 		connections.clear();
 
 		return result;
-	}
-
-	public final Set<VisualNode> getChildren() {
-		return new LinkedHashSet<VisualNode>(children);
-	}
-
-	public final Set<VisualComponent> getComponents() {
-		return new LinkedHashSet<VisualComponent>(components);
-	}
-
-	public final Set<VisualConnection> getConnections() {
-		return new LinkedHashSet<VisualConnection>(connections);
 	}
 }

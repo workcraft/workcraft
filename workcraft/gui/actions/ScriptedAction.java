@@ -25,11 +25,14 @@ public abstract class ScriptedAction {
 		actors.remove(actor);
 	}
 
-	void setEnabled(boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		if (this.enabled != enabled) {
 			this.enabled = enabled;
 			for (ScriptedActor actor : actors)
 				actor.actionEnableStateChanged(enabled);
 		}
+	}
+	public boolean isEnabled() {
+		return enabled;
 	}
 }

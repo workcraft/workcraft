@@ -484,7 +484,7 @@ public class Framework {
 
 			Element modelElement = doc.createElement("model");
 			modelElement.setAttribute("class", model.getMathModel().getClass().getName());
-			model.getMathModel().toXML(modelElement);
+			model.getMathModel().serialiseToXML(modelElement);
 			root.appendChild(modelElement);
 
 			VisualModel visualModel = model.getVisualModel();
@@ -492,7 +492,7 @@ public class Framework {
 			if (visualModel != null) {
 				Element visualModelElement = doc.createElement("visual-model");
 				visualModelElement.setAttribute("class", visualModel.getClass().getName());
-				visualModel.toXML(visualModelElement);
+				visualModel.serialiseToXML(visualModelElement);
 				root.appendChild(visualModelElement);
 			}
 

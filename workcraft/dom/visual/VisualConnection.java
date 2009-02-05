@@ -51,9 +51,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		update();
 
-		propertyDeclarations.add(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
-		propertyDeclarations.add(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
-		propertyDeclarations.add(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
+		addPropertyDeclaration(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
 	}
 
 	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second) {
@@ -114,12 +114,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void update() {
-		if (parent == null)
+		if (getParent() == null)
 			return;
 		AffineTransform t1, t2;
 		try {
-			t1 = first.getParentToAncestorTransform(parent);
-			t2 = second.getParentToAncestorTransform(parent);
+			t1 = first.getParentToAncestorTransform(getParent());
+			t2 = second.getParentToAncestorTransform(getParent());
 		} catch (NotAnAncestorException e) {
 			e.printStackTrace();
 			throw new RuntimeException("qwe");
@@ -195,7 +195,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	@Override
 	public void draw(Graphics2D g) {
-		g.setColor(Coloriser.colorise(color, colorisation));
+		g.setColor(Coloriser.colorise(color, getColorisation()));
 		g.setStroke(new BasicStroke((float)lineWidth));
 
 		Line2D line = new Line2D.Double(lineStart, lineEnd);
@@ -211,10 +211,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		arrowShape.closePath();
 
 		g.fill(arrowShape);
-	}
-
-	public void toXML(Element vconElement) {
-
 	}
 
 	public Connection getReferencedConnection() {
@@ -274,19 +270,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		return bb;
 	}
 
-	public void setColorisation (Color color) {
-		colorisation = color;
-	}
-
-	public Color getColorisation (Color color) {
-		return colorisation;
-	}
-
-	public void clearColorisation() {
-		setColorisation(null);
-	}
-
-	public void propertyChanged(String propertyName, Object sender) {
+	public void onPropertyChanged(String propertyName, Object sender) {
 		if (propertyName.equals("transform"))
 			update();
 	}

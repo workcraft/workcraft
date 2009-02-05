@@ -24,6 +24,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.XMLSerialisable;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -38,14 +40,27 @@ import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.util.XmlUtil;
 
 public class VisualModel implements Plugin, Model {
-	protected MathModel mathModel;
-	protected VisualGroup root;
+	private MathModel mathModel;
+	private VisualGroup root;
 
-	protected LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
-	protected LinkedList<VisualModelListener> listeners = new LinkedList<VisualModelListener>();
+	private LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
+	private LinkedList<VisualModelListener> listeners = new LinkedList<VisualModelListener>();
 
-	protected HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
-	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
+	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
+	private HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
+
+	private XMLSerialiser serialiser = new XMLSerialiser();
+
+	private void addXMLSerialisable() {
+		serialiser.addXMLSerialisable(new XMLSerialisable() {
+			public String getTagName() {
+				return VisualModel.class.getSimpleName();
+			}
+			public void serialise(Element element) {
+				nodesToXML (element, root.getChildren());
+			}
+		});
+	}
 
 	public VisualModel(MathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
@@ -76,18 +91,23 @@ public class VisualModel implements Plugin, Model {
 		} catch (VisualConnectionCreationException e) {
 			throw new VisualModelInstantiationException("Failed to create visual connection:" + e.getMessage());
 		}
+
+		addXMLSerialisable();
 	}
 
-	public VisualModel(MathModel mathModel, Element visualElement) throws VisualModelInstantiationException {
+	public VisualModel(MathModel mathModel, Element visualModelElement) throws VisualModelInstantiationException {
 		this.mathModel = mathModel;
 		root = new VisualGroup();
 		currentLevel = root;
 
 		try {
-			pasteFromXML(visualElement, new Point2D.Double(0,0));
+			Element element = XmlUtil.getChildElement(VisualModel.class.getSimpleName(), visualModelElement);
+			pasteFromXML(element, new Point2D.Double(0,0));
 		} catch (PasteException e) {
 			throw new VisualModelInstantiationException("pasteFromXML failed: " + e.getMessage());
 		}
+
+		addXMLSerialisable();
 	}
 
 	protected final Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
@@ -141,21 +161,17 @@ public class VisualModel implements Plugin, Model {
 				VisualComponent vc = (VisualComponent)node;
 				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
 				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
-				vc.toXML(vcompElement);
+				vc.serialiseToXML(vcompElement);
 			} else if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
 				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
 				XmlUtil.writeIntAttr(vconElement, "ref", vc.getReferencedConnection().getID());
-				vc.toXML(vconElement);
+				vc.serialiseToXML(vconElement);
 			} else if (node instanceof VisualGroup) {
 				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
-				((VisualGroup)node).toXML(childGroupElement);
+				((VisualGroup)node).serialiseToXML(childGroupElement);
 			}
 		}
-	}
-
-	public void toXML(Element xmlVisualElement) {
-		nodesToXML (xmlVisualElement, root.getChildren());
 	}
 
 	private void gatherReferences(Collection<VisualNode> nodes, LinkedList<Component> referencedComponents, LinkedList<Connection> referencedConnections) {
@@ -272,20 +288,20 @@ public class VisualModel implements Plugin, Model {
 
 	public void fireModelStructureChanged() {
 		for (VisualModelListener l : listeners)
-			l.modelStructureChanged();
+			l.onModelStructureChanged();
 		mathModel.fireModelStructureChanged();
 	}
 
 	public void fireComponentPropertyChanged(Component c) {
 		for (VisualModelListener l : listeners)
-			l.componentPropertyChanged(c);
+			l.onComponentPropertyChanged(c);
 
 		mathModel.fireComponentPropertyChanged(c);
 	}
 
 	public void fireConnectionPropertyChanged(Connection c) {
 		for (VisualModelListener l : listeners)
-			l.connectionPropertyChanged(c);
+			l.onConnectionPropertyChanged(c);
 
 		mathModel.fireConnectionPropertyChanged(c);
 	}
@@ -456,7 +472,7 @@ public class VisualModel implements Plugin, Model {
 	protected void removeComponent(VisualComponent component) {
 		for (VisualConnection con : component.getConnections())
 			removeConnection(con);
-		mathModel.removeComponent(component.refComponent);
+		mathModel.removeComponent(component.getReferencedComponent());
 
 		selection.remove(component);
 		component.getParent().remove(component);
@@ -599,5 +615,13 @@ public class VisualModel implements Plugin, Model {
 		max = transformToCurrentSpace(max);
 		selectionRect.setRect(min.getX(), min.getY(), max.getX()-min.getX(), max.getY()-min.getY());
 		return currentLevel.hitObjects(selectionRect);
+	}
+
+	public final void addXMLSerialisable(XMLSerialisable serialisable) {
+		serialiser.addXMLSerialisable(serialisable);
+	}
+
+	public final void serialiseToXML(Element componentElement) {
+		serialiser.serialiseToXML(componentElement);
 	}
 }

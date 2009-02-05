@@ -100,8 +100,23 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(ScriptedAction e) {
-			System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
-			framework.execJavaScript(e.getScript());
+			if (e.getScript() == null)
+				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
+			else
+				System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
+
+			if (e.getUndoScript() == null)
+				System.out.println ("Action cannot be undone.");
+			else {
+				System.out.println ("Undo script:\n" +e.getUndoScript());
+				if (e.getRedoScript() == null)
+					System.out.println ("Action cannot be redone.");
+				else
+					System.out.println ("Redo script:\n"+e.getRedoScript());
+			}
+
+			if (e.getScript() != null)
+				framework.execJavaScript(e.getScript());
 		}
 	};
 

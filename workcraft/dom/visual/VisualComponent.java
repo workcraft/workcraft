@@ -7,9 +7,8 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 
 public abstract class VisualComponent extends VisualTransformableNode {
-	protected Component refComponent = null;
-	protected VisualGroup parent;
-	protected Set<VisualConnection> connections = new HashSet<VisualConnection>();
+	private Component refComponent = null;
+	private HashSet<VisualConnection> connections = new HashSet<VisualConnection>();
 
 	public VisualComponent(Component refComponent) {
 		super();
@@ -26,15 +25,15 @@ public abstract class VisualComponent extends VisualTransformableNode {
 
 	}
 
-	public void addConnection(VisualConnection connection) {
+	final public void addConnection(VisualConnection connection) {
 		connections.add(connection);
 	}
 
-	public void removeConnection(VisualConnection connection) {
+	final public void removeConnection(VisualConnection connection) {
 		connections.remove(connection);
 	}
 
-	public Component getReferencedComponent() {
+	final public Component getReferencedComponent() {
 		return refComponent;
 	}
 }

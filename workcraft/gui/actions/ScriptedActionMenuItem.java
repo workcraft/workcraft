@@ -20,6 +20,8 @@ public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
 		super(text);
 		scriptedAction = action;
 		scriptedAction.addActor(this);
+		setEnabled(scriptedAction.isEnabled());
+
 		addActionListener(new SAMIActionListener());
 	}
 

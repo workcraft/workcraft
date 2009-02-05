@@ -1,10 +1,10 @@
 package org.workcraft.plugins.petri;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
+import org.workcraft.dom.XMLSerialisable;
 import org.workcraft.util.XmlUtil;
 
 @DisplayName("Place")
@@ -12,14 +12,19 @@ import org.workcraft.util.XmlUtil;
 public class Place extends Component {
 	protected int tokens = 0;
 
-	public Place(Element xmlElement) {
-		super(xmlElement);
-		NodeList l = xmlElement.getElementsByTagName("place");
-		tokens = XmlUtil.readIntAttr( ((Element)l.item(0)), "tokens", 0);
+	public Place(Element componentElement) {
+		super(componentElement);
+
+		Element e = XmlUtil.getChildElement(Place.class.getSimpleName(), componentElement);
+		tokens = XmlUtil.readIntAttr(e, "tokens", 0);
+
+		addXMLSerialisable();
 	}
 
 	public Place() {
 		super();
+
+		addXMLSerialisable();
 	}
 
 	public int getTokens() {
@@ -30,13 +35,14 @@ public class Place extends Component {
 		this.tokens = tokens;
 	}
 
-	@Override
-	public void toXML(Element componentElement) {
-		super.toXML(componentElement);
-		Element place = componentElement.getOwnerDocument().createElement("place");
-		XmlUtil.writeIntAttr(place, "tokens", tokens);
-		componentElement.appendChild(place);
+	private void addXMLSerialisable() {
+		addXMLSerialisable(new XMLSerialisable(){
+			public String getTagName() {
+				return Place.class.getSimpleName();
+			}
+			public void serialise(Element element) {
+				XmlUtil.writeIntAttr(element, "tokens", tokens);
+			}
+		});
 	}
-
-
 }

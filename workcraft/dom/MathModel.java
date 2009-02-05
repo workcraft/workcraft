@@ -1,11 +1,11 @@
 package org.workcraft.dom;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
@@ -21,150 +21,91 @@ import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
 public abstract class MathModel implements Plugin, Model {
-	protected int componentIDCounter = 0;
-	protected int connectionIDCounter = 0;
+	private int componentIDCounter = 0;
+	private int connectionIDCounter = 0;;
 
-	protected Hashtable<Integer, Component> components = new Hashtable<Integer, Component>();
-	protected Hashtable<Integer, Connection> connections = new Hashtable<Integer, Connection>();;
+	private Hashtable<Integer, Integer> componentRenames = new Hashtable<Integer, Integer>();
+	private Hashtable<Integer, Component> components = new Hashtable<Integer, Component>();
+	private Hashtable<Integer, Integer> connectionRenames = new Hashtable<Integer, Integer>();
+	private Hashtable<Integer, Connection> connections = new Hashtable<Integer, Connection>();
 
-	protected Hashtable<Integer, Integer> componentRenames = new Hashtable<Integer, Integer>();
-	protected Hashtable<Integer, Integer> connectionRenames =  new Hashtable<Integer, Integer>();
+	private LinkedList<MathModelListener> listeners = new LinkedList<MathModelListener>();;
 
-	protected LinkedList<MathModelListener> listeners = new LinkedList<MathModelListener>();;
+	private HashSet<Class<? extends Component>> supportedComponents = new HashSet<Class<? extends Component>>();
+	private XMLSerialiser serialiser = new XMLSerialiser();
 
-	protected String title = "";
+	private String title = "";
 
-	public MathModel () {
-	}
-
-	public MathModel (Element xmlModelElement) throws ModelLoadFailedException{
-		title = XmlUtil.readStringAttr(xmlModelElement, "title");
-		pasteFromXML (xmlModelElement);
-	}
-
-	public void pasteFromXML (Element modelElement) throws ModelLoadFailedException {
-		componentRenames.clear();
-		connectionRenames.clear();
-
-		try {
-			List<Element> componentNodes = XmlUtil.getChildElements("component", modelElement);
-
-			for (Element e : componentNodes) {
-				Component component = ComponentFactory.createComponent(e);
-
-				Integer oldID = component.getID();
-				Integer newID = addComponent(component);
-
-				componentRenames.put(oldID, newID);
-			}
-
-			List<Element> connectionNodes = XmlUtil.getChildElements("connection", modelElement);
-
-			for (Element e: connectionNodes) {
-				Connection connection = ConnectionFactory.createConnection(e, this);
-
-				Integer oldID = connection.getID();
-				Integer newID = addConnection(connection);
-
-				connectionRenames.put(oldID, newID);
-			}
-
-		} catch (InvalidComponentException e1) {
-			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Invalid component: " + e1.getMessage());
-		}  catch (ComponentCreationException e1) {
-			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Cannot create component: " + e1.getMessage());
-		} catch (InvalidConnectionException e) {
-			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Invalid connection: " + e.getMessage());
-		} catch (ConnectionCreationException e) {
-			throw new ModelLoadFailedException ("(in MathModel.appendFromXml) Cannot create connection: " + e.getMessage());
-		}
-	}
-
-	public static void componentsToXML (Element parentElement, Collection<? extends Component> components) {
-		for (Component c: components) {
-			Element componentElement = XmlUtil.createChildElement("component", parentElement);
+	final public static void componentsToXML(Element parentElement,
+			Collection<? extends Component> components) {
+		for (Component c : components) {
+			Element componentElement = XmlUtil.createChildElement("component",
+					parentElement);
 			componentElement.setAttribute("class", c.getClass().getName());
-			c.toXML(componentElement);
+			c.serialiseToXML(componentElement);
 		}
 	}
 
-	public static void connectionsToXML (Element parentElement, Collection<? extends Connection> connections) {
-		for (Connection c: connections) {
-			Element connectionElement = XmlUtil.createChildElement("connection", parentElement);
+	final public static void connectionsToXML(Element parentElement,
+			Collection<? extends Connection> connections) {
+		for (Connection c : connections) {
+			Element connectionElement = XmlUtil.createChildElement(
+					"connection", parentElement);
 			connectionElement.setAttribute("class", c.getClass().getName());
-			c.toXML(connectionElement);
+			c.serialiseToXML(connectionElement);
 		}
 	}
 
-	public void toXML (Element modelElement) {
-		XmlUtil.writeStringAttr(modelElement, "title", title);
-		componentsToXML(modelElement, components.values());
-		connectionsToXML(modelElement, connections.values());
+	private void addXMLSerialisable() {
+		serialiser.addXMLSerialisable(new XMLSerialisable() {
+			@Override
+			public String getTagName() {
+				return MathModel.class.getSimpleName();
+			}
+			@Override
+			public void serialise(Element element) {
+				XmlUtil.writeStringAttr(element, "title", title);
+				componentsToXML(element, components.values());
+				connectionsToXML(element, connections.values());
+			}
+		});
 	}
 
-	public Collection<Component> getComponents() {
-		return components.values();
+	public MathModel() {
+		addXMLSerialisable();
 	}
 
-	public Collection<Connection> getConnections() {
-		return connections.values();
+	public MathModel(Element modelElement) throws ModelLoadFailedException {
+		Element mathModelElement = XmlUtil.getChildElement(MathModel.class.getSimpleName(), modelElement);
+
+		XmlUtil.readStringAttr(mathModelElement, "title");
+		pasteFromXML(mathModelElement);
+
+		addXMLSerialisable();
 	}
 
-	public Component getComponentByID(int ID) {
-		return components.get(ID);
-	}
+	abstract protected void onComponentAdded(Component component);
 
-	public Component getComponentByRenamedID(int oldID) {
-		Integer newID = componentRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getComponentByID(newID);
-	}
+	abstract protected void onComponentRemoved(Component component);
 
-	public Connection getConnectionByRenamedID(int oldID) {
-		Integer newID = connectionRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getConnectionByID(newID);
-	}
+	abstract protected void onConnectionAdded(Connection connection);
 
-	public int getNextComponentID() {
-		return componentIDCounter++;
-	}
+	abstract protected void onConnectionRemoved(Connection connection);
 
-	public int getNextConnectionID() {
-		return connectionIDCounter++;
-	}
-
-	public void renameComponent(Component component, int newID) {
-		components.remove(component.getID());
-		components.put(newID, component);
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public final int addComponent (Component component) {
-		if (!getSupportedComponents().contains(component.getClass()))
-			throw new InvalidComponentException("Unsupported component " + component.getClass().getName() + " added to a " + this.getDisplayName());
-
+	final public int addComponent(Component component) {
 		component.setID(getNextComponentID());
 
 		components.put(component.getID(), component);
-		componentAdded(component);
+		onComponentAdded(component);
 
 		return component.getID();
 	}
 
-	public final int addConnection(Connection connection) throws InvalidConnectionException {
+	final public int addConnection(Connection connection)
+			throws InvalidConnectionException {
 		// first validate that this connection is allowed, e.g. disallow user
 		// to connect Petri net place to another Petri net place
-		validateConnection (connection);
+		validateConnection(connection);
 
 		connection.getFirst().addConnection(connection);
 		connection.getFirst().addToPostset(connection.getSecond());
@@ -173,71 +114,74 @@ public abstract class MathModel implements Plugin, Model {
 
 		connection.setID(getNextConnectionID());
 		connections.put(connection.getID(), connection);
-		connectionAdded(connection);
+		onConnectionAdded(connection);
 
 		return connection.getID();
 	}
 
-	public final Connection createConnection (Component first, Component second) throws InvalidConnectionException {
+	public void addListener(MathModelListener listener) {
+		listeners.add(listener);
+	}
+
+	final public void addSupportedComponent(Class<? extends Component> componentClass) {
+		supportedComponents.add(componentClass);
+	}
+
+	public final Connection connect(Component first, Component second)
+			throws InvalidConnectionException {
+		return createConnection(first, second);
+	}
+
+	public Connection createConnection(Component first, Component second)
+			throws InvalidConnectionException {
 		Connection con = new Connection(first, second);
 		addConnection(con);
 		return con;
 	}
 
-	public Connection connect (Component first, Component second) throws InvalidConnectionException {
-		return createConnection (first, second);
+	public void fireComponentPropertyChanged(Component c) {
+		for (MathModelListener l : listeners)
+			l.onComponentPropertyChanged(c);
 	}
 
-	public final void removeConnection (Connection connection) {
-		connection.getFirst().removeFromPostset(connection.getSecond());
-		connection.getSecond().removeFromPreset(connection.getFirst());
-		connection.getFirst().removeConnection(connection);
-		connection.getSecond().removeConnection(connection);
-
-		connections.remove(connection.getID());
-		connectionRemoved(connection);
+	public void fireConnectionPropertyChanged(Connection c) {
+		for (MathModelListener l : listeners)
+			l.onConnectionPropertyChanged(c);
 	}
 
-	public final void removeComponent (Component component) {
-		HashSet<Connection> connectionsToRemove = new HashSet<Connection>(component.getConnections());
-
-		for (Connection con : connectionsToRemove)
-			removeConnection(con);
-
-		components.remove(component.getID());
-		componentRemoved(component);
+	public void fireModelStructureChanged() {
+		for (MathModelListener l : listeners)
+			l.onModelStructureChanged();
 	}
 
-	abstract public void validateConnection(Connection connection) throws InvalidConnectionException;
-	abstract public void validate() throws ModelValidationException;
-
-	protected void connectionAdded(Connection connection) {
+	final public Component getComponentByID(int ID) {
+		return components.get(ID);
 	}
 
-	protected void componentAdded(Component component) {
+	final public Component getComponentByRenamedID(int oldID) {
+		Integer newID = componentRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getComponentByID(newID);
 	}
 
-	protected void connectionRemoved(Connection connection) {
+	final public Collection<Component> getComponents() {
+		return components.values();
 	}
 
-	protected void componentRemoved(Component component) {
-	}
-
-	public Connection getConnectionByID(int ID) {
+	final public Connection getConnectionByID(int ID) {
 		return connections.get(ID);
 	}
 
-	public MathModel getMathModel() {
-		return this;
+	final public Connection getConnectionByRenamedID(int oldID) {
+		Integer newID = connectionRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getConnectionByID(newID);
 	}
 
-
-	public VisualModel getVisualModel() {
-		return null;
-	}
-
-	public ArrayList<Class<? extends Component>> getSupportedComponents() {
-		return new ArrayList<Class<? extends Component>>();
+	final public Collection<Connection> getConnections() {
+		return connections.values();
 	}
 
 	public String getDisplayName() {
@@ -248,26 +192,124 @@ public abstract class MathModel implements Plugin, Model {
 			return name.value();
 	}
 
-	public void addListener(MathModelListener listener) {
-		listeners.add(listener);
+	final public MathModel getMathModel() {
+		return this;
 	}
 
-	public void removeListener(MathModelListener listener) {
+	final public int getNextComponentID() {
+		return componentIDCounter++;
+	}
+
+	final public int getNextConnectionID() {
+		return connectionIDCounter++;
+	}
+
+	final public Set<Class<? extends Component>> getSupportedComponents() {
+		return new HashSet<Class<? extends Component>>(supportedComponents);
+	}
+
+	final public String getTitle() {
+		return title;
+	}
+
+	final public VisualModel getVisualModel() {
+		return null;
+	}
+
+	final public void pasteFromXML(Element modelElement)
+			throws ModelLoadFailedException {
+		componentRenames.clear();
+		connectionRenames.clear();
+
+		try {
+			List<Element> componentNodes = XmlUtil.getChildElements(
+					"component", modelElement);
+
+			for (Element e : componentNodes) {
+				Component component = ComponentFactory.createComponent(e);
+
+				Integer oldID = component.getID();
+				Integer newID = addComponent(component);
+
+				componentRenames.put(oldID, newID);
+			}
+
+			List<Element> connectionNodes = XmlUtil.getChildElements(
+					"connection", modelElement);
+
+			for (Element e : connectionNodes) {
+				Connection connection = ConnectionFactory.createConnection(e,
+						this);
+
+				Integer oldID = connection.getID();
+				Integer newID = addConnection(connection);
+
+				connectionRenames.put(oldID, newID);
+			}
+
+		} catch (InvalidComponentException e1) {
+			throw new ModelLoadFailedException(
+					"(in MathModel.appendFromXml) Invalid component: "
+							+ e1.getMessage());
+		} catch (ComponentCreationException e1) {
+			throw new ModelLoadFailedException(
+					"(in MathModel.appendFromXml) Cannot create component: "
+							+ e1.getMessage());
+		} catch (InvalidConnectionException e) {
+			throw new ModelLoadFailedException(
+					"(in MathModel.appendFromXml) Invalid connection: "
+							+ e.getMessage());
+		} catch (ConnectionCreationException e) {
+			throw new ModelLoadFailedException(
+					"(in MathModel.appendFromXml) Cannot create connection: "
+							+ e.getMessage());
+		}
+	}
+
+	public final void removeComponent(Component component) {
+		HashSet<Connection> connectionsToRemove = new HashSet<Connection>(
+				component.getConnections());
+
+		for (Connection con : connectionsToRemove)
+			removeConnection(con);
+
+		components.remove(component.getID());
+		onComponentRemoved(component);
+	}
+
+	final public void removeConnection(Connection connection) {
+		connection.getFirst().removeFromPostset(connection.getSecond());
+		connection.getSecond().removeFromPreset(connection.getFirst());
+		connection.getFirst().removeConnection(connection);
+		connection.getSecond().removeConnection(connection);
+
+		connections.remove(connection.getID());
+		onConnectionRemoved(connection);
+	}
+
+	final public void removeListener(MathModelListener listener) {
 		listeners.remove(listener);
 	}
 
-	public void fireModelStructureChanged() {
-		for (MathModelListener l : listeners)
-			l.modelStructureChanged();
+	final public void renameComponent(Component component, int newID) {
+		components.remove(component.getID());
+		components.put(newID, component);
 	}
 
-	public void fireComponentPropertyChanged(Component c) {
-		for (MathModelListener l : listeners)
-			l.componentPropertyChanged(c);
+	final public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public void fireConnectionPropertyChanged(Connection c) {
-		for (MathModelListener l : listeners)
-			l.connectionPropertyChanged(c);
+	abstract public void validate() throws ModelValidationException;
+
+	abstract public void validateConnection(Connection connection)
+			throws InvalidConnectionException;
+
+	public final void addXMLSerialisable(XMLSerialisable serialisable) {
+		serialiser.addXMLSerialisable(serialisable);
+	}
+
+	public final void serialiseToXML(Element componentElement) {
+		serialiser.serialiseToXML(componentElement);
 	}
 }
