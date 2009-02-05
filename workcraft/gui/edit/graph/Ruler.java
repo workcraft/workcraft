@@ -15,21 +15,19 @@ import java.awt.geom.AffineTransform;
  *
  */
 public class Ruler implements GridListener {
-	protected Color background = new Color(225, 231, 242);
-	protected Font font;
-	protected Color foreground = new Color(0, 0, 0);
-	protected String horizontalMajorCaptions[];
-	protected int[] horizontalMajorTicks;
-	protected int[] horizontalMinorTicks;
-	protected Color majorLinesColor = new Color(200, 200, 200);
-	protected int majorTickSize = 10;
-	protected Color minorLinesColor = new Color(240, 240, 240);
-	protected int minorTickSize = 3;
-	protected Rectangle shape;
-	protected int size = 15;
-	protected String verticalMajorCaptions[];
-	protected int[] verticalMajorTicks;
-	protected int[] verticalMinorTicks;
+	private Color background = new Color(225, 231, 242);
+	private Font font;
+	private Color foreground = new Color(0, 0, 0);
+	private String horizontalMajorCaptions[];
+	private int[] horizontalMajorTicks;
+	private int[] horizontalMinorTicks;
+	private int majorTickSize = 10;
+	private int minorTickSize = 3;
+	private Rectangle shape;
+	private int size = 15;
+	private String verticalMajorCaptions[];
+	private int[] verticalMajorTicks;
+	private int[] verticalMinorTicks;
 
 	/**
 	 * Constructs a new ruler with the default parameters:

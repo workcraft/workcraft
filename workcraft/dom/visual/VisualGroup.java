@@ -219,10 +219,12 @@ public class VisualGroup extends VisualTransformableNode {
 
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
+
 		if (bb != null && getParent() != null) {
+			bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
 			g.setColor(Coloriser.colorise(Color.GRAY, getColorisation()));
-			g.setStroke(new BasicStroke(0.02f));
-			g.draw(getBoundingBoxInLocalSpace());
+			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{0.2f, 0.2f}, 0.0f));
+			g.draw(bb);
 		}
 	}
 
@@ -280,6 +282,7 @@ public class VisualGroup extends VisualTransformableNode {
 			rect = mergeRect(rect, comp);
 		for(VisualGroup grp : groups)
 			rect = mergeRect(rect, grp);
+
 		return rect;
 	}
 
