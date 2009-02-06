@@ -68,7 +68,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						for (PluginInfo info : handlersInfo)
 							try {
 								FileHandler handler = (FileHandler) framework
-								.getPluginManager().getSingleton(info, FileHandler.class);
+								.getPluginManager().getSingleton(info);
 
 								if (!handler.accept(we.getFile()))
 									continue;

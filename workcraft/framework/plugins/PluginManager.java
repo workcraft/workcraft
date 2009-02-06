@@ -246,7 +246,7 @@ public class PluginManager {
 
 	}
 
-	public Object getInstance(PluginInfo info, Class<?>expectedClass) throws PluginInstantiationException {
+	public Object getInstance(PluginInfo info) throws PluginInstantiationException {
 		boolean useFramework = true;
 		Class<?> cls;
 
@@ -255,10 +255,6 @@ public class PluginManager {
 		} catch (ClassNotFoundException e) {
 			throw new PluginInstantiationException ("Class not found: " + info.getClassName() + "(" + e.getMessage()+ ")");
 		}
-
-		if (!expectedClass.isAssignableFrom(cls))
-			throw new PluginInstantiationException ("plugin class " + cls.getName() + ", is not inherited from expected class "
-					+ expectedClass.getName());
 
 		Constructor<?> ctor = null;
 
@@ -302,14 +298,18 @@ public class PluginManager {
 			}
 	}
 
-	public Object getSingleton(PluginInfo info, Class<?> expectedClass) throws PluginInstantiationException {
+	public Object getSingleton(PluginInfo info) throws PluginInstantiationException {
 		Object ret = singletons.get(info.getClassName());
 		if (ret == null) {
-			ret = getInstance(info, expectedClass);
+			ret = getInstance(info);
 			singletons.put(info.getClassName(), ret);
 		}
 		return ret;
 	}
 
+	public Object getSingletonByName(String className)  {
+		return singletons.get(className);
+
+	}
 
 }

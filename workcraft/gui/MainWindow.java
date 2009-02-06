@@ -11,7 +11,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -108,7 +107,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(ScriptedAction e) {
-			/* if (e.getScript() == null)
+			 /*if (e.getScript() == null)
 				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
 			else
 				System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
@@ -139,8 +138,6 @@ public class MainWindow extends JFrame implements DockingConstants{
 	ToolboxWindow toolboxView;
 	// MDIPane content;
 
-
-
 	JPanel content;
 
 	DefaultDockingPort rootDockingPort;
@@ -151,7 +148,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	GraphEditorPanel editorInFocus;
 
-	private JMenuBar menuBar;
+	private MainMenu menuBar;
 
 	private String lastSavePath = null;
 	private String lastOpenPath = null;
@@ -329,14 +326,11 @@ public class MainWindow extends JFrame implements DockingConstants{
 		VisualModel visualModel = we.getModel().getVisualModel();
 
 		if (visualModel == null)
-			if (JOptionPane.showConfirmDialog(this, "The selected model does not have visual layout information. Do you want to create a default layout?",
-					"No layout information", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				try {
 					visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
 					we.setModel(visualModel);
-
 				} catch (VisualModelInstantiationException e) {
-					JOptionPane.showMessageDialog(this, e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "A visual model could not be created for the model you have chosen:\n" + e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 
@@ -449,7 +443,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				MathModel mathModel = (MathModel)framework.getPluginManager().getInstance(info, MathModel.class);
+				MathModel mathModel = (MathModel)framework.getPluginManager().getInstance(info);
 
 				if (!dialog.getModelTitle().isEmpty())
 					mathModel.setTitle(dialog.getModelTitle());
@@ -477,7 +471,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		editorInFocus = sender;
 
+
 		toolboxView.setToolsForModel(editorInFocus.getModel());
+		menuBar.setMenuForModel(editorInFocus.getModel());
+
 		framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("visualModel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
 
