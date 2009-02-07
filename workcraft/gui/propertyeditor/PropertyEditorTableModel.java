@@ -55,9 +55,6 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		if (col < 1)
-			return false;
-		else
 			return (declarations[row].setter != null);
 	}
 
@@ -66,10 +63,9 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public Object getValueAt(int row, int col) {
-		if (col==0)
+		if (col ==0 )
 			return declarations[row].name;
-		else
-			try {
+		else try {
 				Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null );
 				Object o = rowClasses[row].toComponentValue(m.invoke(object, (Object[])null));
 				return o;
@@ -83,8 +79,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 				e.printStackTrace();
 				return "#UNACCESIBLE";
 			}
-
-	}
+		}
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {

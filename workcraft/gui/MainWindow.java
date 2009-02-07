@@ -259,8 +259,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	}
 
-	public Dockable addView(JComponent view, String name, String region, float split) {
-		DockableView dock = new DockableView(name, view);
+	public Dockable addView(JComponent view, String name, int options, String region, float split) {
+		DockableView dock = new DockableView(name, view, options);
 		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
@@ -281,8 +281,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		return dockable;
 	}
 
-	public Dockable addView(JComponent view, String name, Dockable neighbour) {
-		DockableView dock = new DockableView(name, view);
+	public Dockable addView(JComponent view, String name, int options, Dockable neighbour) {
+		DockableView dock = new DockableView(name, view, options);
 		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
@@ -303,8 +303,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	}
 
-	public Dockable addView(JComponent view, String name, Dockable neighbour, String relativeRegion, float split) {
-		DockableView dock = new DockableView(name, view);
+	public Dockable addView(JComponent view, String name, int options, Dockable neighbour, String relativeRegion, float split) {
+		DockableView dock = new DockableView(name, view, options);
 		dock.setFocusable(false);
 		Dockable dockable = DockingManager.registerDockable(dock, name);
 
@@ -348,9 +348,9 @@ public class MainWindow extends JFrame implements DockingConstants{
 				Dockable dockable;
 
 				if (lastEditorDockable == null)
-					dockable = addView (editor, dockableTitle, outputDockable, NORTH_REGION, 0.8f);
+					dockable = addView (editor, dockableTitle, DockableView.HEADER_BUTTONS, outputDockable, NORTH_REGION, 0.8f);
 				else
-					dockable = addView (editor, dockableTitle, lastEditorDockable);
+					dockable = addView (editor, dockableTitle, DockableView.HEADER_BUTTONS, lastEditorDockable);
 
 				lastEditorDockable = dockable;
 
@@ -402,13 +402,13 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
-		outputDockable = addView (outputView, "Output", DockingManager.SOUTH_REGION, 0.8f);
-		addView (errorView, "Problems", outputDockable);
-		addView (jsView, "JavaScript", outputDockable);
+		outputDockable = addView (outputView, "Output", 0, DockingManager.SOUTH_REGION, 0.8f);
+		addView (errorView, "Problems", 0, outputDockable);
+		addView (jsView, "JavaScript", 0, outputDockable);
 
-		Dockable wsvd = addView (workspaceView, "Workspace", DockingManager.EAST_REGION, 0.8f);
-		addView (propertyView, "Property Editor", wsvd, DockingManager.NORTH_REGION, 0.5f);
-		addView (toolboxView, "Editor Tools", wsvd, DockingManager.NORTH_REGION, 0.5f);
+		Dockable wsvd = addView (workspaceView, "Workspace", 0, DockingManager.EAST_REGION, 0.8f);
+		addView (propertyView, "Property Editor", 0, wsvd, DockingManager.NORTH_REGION, 0.5f);
+		addView (toolboxView, "Editor Tools", 0, wsvd, DockingManager.NORTH_REGION, 0.5f);
 
 
 		DockingManager.display(outputDockable);
