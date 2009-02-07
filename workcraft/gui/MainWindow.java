@@ -19,7 +19,6 @@ import javax.swing.UIManager;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
@@ -208,8 +207,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 			public void dockingComplete(DockingEvent evt) {
 /*				System.out.println (evt.getRegion());
 				System.out.println ("Same docking port = " + Boolean.toString(evt.getNewDockingPort() == evt.getOldDockingPort()));
-				System.out.println ("New docking port:");*/
-				DockingPort newPort = evt.getNewDockingPort();
+				System.out.println ("New docking port:");
+				DockingPort newPort = evt.getNewDockingPort();*/
 
 				for (Object d: evt.getNewDockingPort().getDockables()) {
 					Component comp = ((Dockable)d).getComponent();

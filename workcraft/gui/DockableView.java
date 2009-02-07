@@ -66,7 +66,7 @@ public class DockableView extends JPanel {
 			buttonPanel.setFocusable(false);
 
 			JLabel label = new JLabel( " "+ title);
-			label.setFont(label.getFont().deriveFont(Font.ITALIC));
+			label.setFont(label.getFont().deriveFont(Font.ITALIC | Font.BOLD));
 
 			this.add(label, BorderLayout.WEST);
 			this.add(buttonPanel);
