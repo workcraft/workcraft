@@ -1,7 +1,10 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -9,28 +12,64 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.border.TitledBorder;
 
 @SuppressWarnings("serial")
 public class DockableView extends JPanel {
 	class DockableViewHeader extends JPanel {
-		JButton btnMin, btnMax, btnDetach;
+		private JButton btnMin, btnMax, btnClose;
+		private JPanel buttonPanel = new JPanel();
+		private static final int BUTTON_SIZE = 20;
 
 		public DockableViewHeader(String title) {
 			super();
 			setLayout(new BorderLayout());
-			setBorder(null);
-			btnMin = new JButton();
-			btnMin.setPreferredSize(new Dimension(16,16));
-			btnMin.setSize(10,10);
 
+			Color c = getBackground();
+			Color darker = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
+			setBackground(darker);
+
+			buttonPanel.setBackground(darker);
+
+
+			buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING));
+
+			btnMin = new JButton();
+			btnMin.setBackground(darker);
+			btnMin.setPreferredSize(new Dimension(BUTTON_SIZE,BUTTON_SIZE));
+		//	btnMin.setBorderPainted(false);
+			btnMin.setFocusable(false);
+			btnMin.setBorder(null);
 			btnMin.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
-			btnMax = new JButton("max");
-			btnDetach = new JButton("dtch");
-			this.add(new JLabel(title), BorderLayout.WEST);
-			this.add(btnMin, BorderLayout.EAST);
-			//this.add(btnMax, BorderLayout.EAST);
-			//	this.add(btnDetach, BorderLayout.EAST);
+
+			btnMax = new JButton();
+			btnMax.setBackground(darker);
+			btnMax.setFocusable(false);
+	//		btnMax.setBorderPainted(false);
+			btnMax.setPreferredSize(new Dimension(BUTTON_SIZE,BUTTON_SIZE));
+			btnMax.setBorder(null);
+			btnMax.setIcon(UIManager.getIcon("InternalFrame.minimizeIcon"));
+
+
+			btnClose = new JButton();
+			btnClose.setForeground(darker);
+			btnClose.setOpaque(false);
+			btnClose.setBackground(darker);
+			btnClose.setFocusable(false);
+		//	btnClose.setBorderPainted(false);
+			btnClose.setPreferredSize(new Dimension(BUTTON_SIZE,BUTTON_SIZE));
+			btnClose.setBorder(null);
+			btnClose.setIcon(UIManager.getIcon("InternalFrame.closeIcon"));
+
+			buttonPanel.add(btnMin, BorderLayout.EAST);
+			buttonPanel.add(btnMax, BorderLayout.EAST);
+			buttonPanel.add(btnClose, BorderLayout.EAST);
+			buttonPanel.setFocusable(false);
+
+			JLabel label = new JLabel( " "+ title);
+			label.setFont(label.getFont().deriveFont(Font.ITALIC));
+
+			this.add(label, BorderLayout.WEST);
+			this.add(buttonPanel);
 		}
 
 	}
@@ -51,9 +90,11 @@ public class DockableView extends JPanel {
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout(0,0));
 		contentPane.add(content,BorderLayout.CENTER);
-		contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(this.getForeground()), title, TitledBorder.CENTER, TitledBorder.TOP));
+		contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), 2));
 
-		//contentPane.add(header, BorderLayout.NORTH);
+
+
+		contentPane.add(header, BorderLayout.NORTH);
 
 		add(contentPane, BorderLayout.CENTER);
 	}
@@ -61,10 +102,13 @@ public class DockableView extends JPanel {
 	public void setStandalone(boolean standalone) {
 		this.standalone = standalone;
 
-		if (standalone)
-			contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(this.getForeground()), title, TitledBorder.CENTER, TitledBorder.TOP, this.getFont().deriveFont(8)));
+		if (standalone) {
+			if (header.getParent() != contentPane)
+				contentPane.add(header, BorderLayout.NORTH);
+			contentPane.doLayout();
+		}
 		else
-			contentPane.setBorder(null);
+			contentPane.remove(header);
 
 	}
 

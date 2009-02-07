@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
@@ -201,27 +202,34 @@ public class MainWindow extends JFrame implements DockingConstants{
 		return workspaceView;
 	}
 
-
 	protected void attachDockableListener(Dockable dock) {
 		dock.addDockingListener( new DockingListener() {
 
-			public void dockingComplete(DockingEvent arg0) {
-				for (Object d: arg0.getNewDockingPort().getDockables()) {
+			public void dockingComplete(DockingEvent evt) {
+/*				System.out.println (evt.getRegion());
+				System.out.println ("Same docking port = " + Boolean.toString(evt.getNewDockingPort() == evt.getOldDockingPort()));
+				System.out.println ("New docking port:");*/
+				DockingPort newPort = evt.getNewDockingPort();
+
+				for (Object d: evt.getNewDockingPort().getDockables()) {
 					Component comp = ((Dockable)d).getComponent();
 					if ( comp instanceof DockableView) {
 						DockableView wnd = (DockableView)comp;
-						boolean inTab = arg0.getDockable().getComponent().getParent() instanceof JTabbedPane;
-						//	System.out.println(inTab);
+						boolean inTab = wnd.getParent() instanceof JTabbedPane;
 						wnd.setStandalone(!inTab);
 					}
 				}
 
-				for (Object d: arg0.getOldDockingPort().getDockables()) {
+/*				System.out.println ("Old docking port:");
+				DockingPort oldPort = evt.getOldDockingPort();
+				System.out.println(oldPort.getDockedComponent()); */
+
+
+				for (Object d: evt.getOldDockingPort().getDockables()) {
 					Component comp = ((Dockable)d).getComponent();
 					if ( comp instanceof DockableView) {
 						DockableView wnd = (DockableView)comp;
-						boolean inTab = arg0.getDockable().getComponent().getParent() instanceof JTabbedPane;
-						System.out.println(inTab);
+						boolean inTab = wnd.getParent() instanceof JTabbedPane;
 						wnd.setStandalone(!inTab);
 					}
 				}
@@ -237,6 +245,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 
 			public void undockingComplete(DockingEvent arg0) {
+
+
 			}
 
 
@@ -466,6 +476,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public void requestFocus (GraphEditorPanel sender) {
+		sender.requestFocusInWindow();
+
 		if (editorInFocus == sender)
 			return;
 
@@ -481,7 +493,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 		framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("model", sender.getModel().getMathModel(), framework.getJavaScriptGlobalScope(), true);
 
-		editorInFocus.requestFocusInWindow();
+		//editorInFocus.requestFocusInWindow();
 	}
 
 	public ToolboxWindow getToolboxWindow() {
