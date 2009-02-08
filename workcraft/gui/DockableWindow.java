@@ -15,6 +15,14 @@ public class DockableWindow extends AbstractDockable {
 	private LinkedList<Component> dragSources = new LinkedList<Component>();
 	private boolean closed = false;
 
+	public boolean isMaximized() {
+		return panel.isMaximized();
+	}
+
+	public void setMaximized(boolean maximized) {
+		panel.setMaximized(maximized);
+	}
+
 	public boolean isClosed() {
 		return closed;
 	}

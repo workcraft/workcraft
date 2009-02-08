@@ -357,6 +357,7 @@ public class MainWindow extends JFrame {
 
 		if (dockableWindow != null) {
 			DockingManager.toggleMaximized(dockableWindow);
+			dockableWindow.setMaximized(!dockableWindow.isMaximized());
 
 		} else {
 			System.err.println ("maximizeDockableWindow: window with ID="+ID+" was not found.");

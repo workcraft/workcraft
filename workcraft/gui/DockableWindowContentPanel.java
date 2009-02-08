@@ -52,7 +52,8 @@ public class DockableWindowContentPanel extends JPanel {
 
 	class DockableViewHeader extends JPanel {
 		private ScriptedActionButton btnMin, btnMax, btnClose;
-		private JPanel buttonPanel;
+		private JPanel buttonPanel = null;
+		private boolean maximized = false;
 
 		private ScriptedActionButton createHeaderButton(Icon icon, ScriptedAction action, ScriptedActionListener actionListener) {
 			ScriptedActionButton button = new ScriptedActionButton(action);
@@ -76,7 +77,7 @@ public class DockableWindowContentPanel extends JPanel {
 				c = getBackground();
 				c = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
 			} else
-				 c = UIManager.getColor("InternalFrame.activeTitleBackground");
+				c = UIManager.getColor("InternalFrame.activeTitleBackground");
 
 			setBackground(c);
 
@@ -100,7 +101,6 @@ public class DockableWindowContentPanel extends JPanel {
 			if ( (options & MAXIMIZE_BUTTON) != 0) {
 				btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
 						new ViewAction(ID, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
-				btnMax.setToolTipText("Toggle maximized");
 				buttonPanel.add(btnMax);
 			}
 
@@ -119,6 +119,26 @@ public class DockableWindowContentPanel extends JPanel {
 			label.setFont(label.getFont().deriveFont(Font.BOLD));
 
 			add(label, BorderLayout.WEST);
+
+			setMaximized(false);
+		}
+
+		public boolean isMaximized() {
+			return maximized;
+		}
+
+		public void setMaximized(boolean maximized) {
+			this.maximized = maximized;
+
+			if (btnMax != null)
+				if (maximized) {
+					btnMax.setIcon(UIManager.getIcon("InternalFrame.minimizeIcon"));
+					btnMax.setToolTipText("Restore window");
+				}
+				else {
+					btnMax.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
+					btnMax.setToolTipText("Maximize window");
+				}
 		}
 	}
 
@@ -133,6 +153,19 @@ public class DockableWindowContentPanel extends JPanel {
 	private MainWindow mainWindow;
 	private int ID;
 	private Dockable dockable = null;
+
+	public boolean isMaximized() {
+		if (header != null)
+			return header.isMaximized();
+		else
+			return false;
+	}
+
+	public void setMaximized(boolean maximized) {
+		if (header != null)
+			header.setMaximized(maximized);
+
+	}
 
 	public Dockable getDockable() {
 		return dockable;
