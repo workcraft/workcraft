@@ -108,7 +108,7 @@ public class DockableWindowContentPanel extends JPanel {
 				//System.out.println (UIManager.getColor("InternalFrame.activeTitleGradient"));
 				btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
 						new ViewAction(ID, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
-				btnClose.setToolTipText("Close");
+				btnClose.setToolTipText("Close window");
 				buttonPanel.add(btnClose);
 			}
 
