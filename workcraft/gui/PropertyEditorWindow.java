@@ -10,11 +10,11 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 
 @SuppressWarnings("serial")
-public class PropertyView extends JPanel {
+public class PropertyEditorWindow extends JPanel {
 	private PropertyEditorTable propertyTable;
 	private JScrollPane scrollProperties;
 
-	public PropertyView (Framework framework) {
+	public PropertyEditorWindow (Framework framework) {
 		propertyTable = new PropertyEditorTable();
 
 		scrollProperties = new JScrollPane();

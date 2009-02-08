@@ -22,7 +22,7 @@ import javax.swing.event.ChangeListener;
 import org.workcraft.framework.Framework;
 
 @SuppressWarnings("serial")
-public class ErrorView extends JPanel implements ComponentListener {
+public class ErrorWindow extends JPanel implements ComponentListener {
 	protected PrintStream systemErr;
 	protected boolean streamCaptured = false;
 	private JScrollPane scrollStdErr;
@@ -108,7 +108,7 @@ public class ErrorView extends JPanel implements ComponentListener {
 		streamCaptured = false;
 	}
 
-	public ErrorView (Framework framework) {
+	public ErrorWindow (Framework framework) {
 		txtStdErr = new JTextArea();
 		txtStdErr.setLineWrap(true);
 		txtStdErr.setEditable(false);
@@ -142,7 +142,7 @@ public class ErrorView extends JPanel implements ComponentListener {
 		if (parent instanceof JTabbedPane) {
 			JTabbedPane tab = (JTabbedPane) parent;
 			for (int i=0; i<tab.getComponentCount(); i++)
-				if (tab.getComponentAt(i) == ErrorView.this.getParent().getParent()) {
+				if (tab.getComponentAt(i) == ErrorWindow.this.getParent().getParent()) {
 					tab.setForegroundAt(i, colorBack);
 					colorBack = null;
 				}

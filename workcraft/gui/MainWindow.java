@@ -2,10 +2,13 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -13,7 +16,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
 import org.flexdock.docking.Dockable;
@@ -23,8 +25,10 @@ import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.AlphaPreview;
-import org.flexdock.docking.event.DockingEvent;
-import org.flexdock.docking.event.DockingListener;
+import org.flexdock.docking.state.PersistenceException;
+import org.flexdock.perspective.Perspective;
+import org.flexdock.perspective.persist.PerspectiveModel;
+import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
@@ -45,7 +49,7 @@ import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame implements DockingConstants{
+public class MainWindow extends JFrame {
 	public static class Actions {
 		public static final ScriptedAction CREATE_WORK_ACTION = new ScriptedAction() {
 			public String getScript() {
@@ -103,11 +107,19 @@ public class MainWindow extends JFrame implements DockingConstants{
 				return "Reconfigure plugins";
 			};
 		};
+		public static final ScriptedAction SAVE_UI_LAYOUT = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.saveDockingLayout()";
+			}
+			public String getText() {
+				return "Save UI layout";
+			};
+		};
 	}
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(ScriptedAction e) {
-			 /*if (e.getScript() == null)
+			 if (e.getScript() == null)
 				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
 			else
 				System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
@@ -120,7 +132,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					System.out.println ("Action cannot be redone.");
 				else
 					System.out.println ("Redo script:\n"+e.getRedoScript());
-			}*/
+			}
 
 			if (e.getScript() != null)
 				framework.execJavaScript(e.getScript());
@@ -129,41 +141,40 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	private Framework framework;
 
-	WorkspaceWindow workspaceView;
-	OutputView outputView;
-	ErrorView errorView;
-	JavaScriptView jsView;
-	PropertyView propertyView;
+	private WorkspaceWindow workspaceWindow;
+	private OutputWindow outputWindow;
+	private ErrorWindow errorWindow;
+	private JavaScriptWindow jsWindow;
+	private PropertyEditorWindow propertyEditorWindow;
+	private ToolboxWindow toolboxWindow;
 
-	ToolboxWindow toolboxView;
-	// MDIPane content;
+	private JPanel content;
 
-	JPanel content;
+	private DefaultDockingPort rootDockingPort;
+	private DockableWindow outputDockable;
+	private DockableWindow lastEditorDockable;
 
-	DefaultDockingPort rootDockingPort;
-	Dockable outputDockable;
-	Dockable lastEditorDockable;
+	private GraphEditorPanel editorInFocus;
 
-	InternalWindow testDoc;
-
-	GraphEditorPanel editorInFocus;
-
-	private MainMenu menuBar;
+	private MainMenu mainMenu;
 
 	private String lastSavePath = null;
 	private String lastOpenPath = null;
 
-	protected void createViews() {
-		workspaceView  = new WorkspaceWindow(framework);
-		framework.getWorkspace().addListener(workspaceView);
-		workspaceView.setVisible(true);
-		propertyView = new PropertyView(framework);
+	private int dockableIDCounter = 0;
+	private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
-		outputView = new OutputView(framework);
-		errorView = new ErrorView(framework);
-		jsView = new JavaScriptView(framework);
+	protected void createWindows() {
+		workspaceWindow  = new WorkspaceWindow(framework);
+		framework.getWorkspace().addListener(workspaceWindow);
+		workspaceWindow.setVisible(true);
+		propertyEditorWindow = new PropertyEditorWindow(framework);
 
-		toolboxView = new ToolboxWindow(framework);
+		outputWindow = new OutputWindow(framework);
+		errorWindow = new ErrorWindow(framework);
+		jsWindow = new JavaScriptWindow(framework);
+
+		toolboxWindow = new ToolboxWindow(framework);
 
 		lastEditorDockable = null;
 		outputDockable = null;
@@ -198,135 +209,44 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public WorkspaceWindow getWorkspaceView() {
-		return workspaceView;
+		return workspaceWindow;
 	}
 
-	protected void attachDockableListener(Dockable dock) {
-		dock.addDockingListener( new DockingListener() {
-
-			public void dockingComplete(DockingEvent evt) {
-/*				System.out.println (evt.getRegion());
-				System.out.println ("Same docking port = " + Boolean.toString(evt.getNewDockingPort() == evt.getOldDockingPort()));
-				System.out.println ("New docking port:");
-				DockingPort newPort = evt.getNewDockingPort();*/
-
-				for (Object d: evt.getNewDockingPort().getDockables()) {
-					Component comp = ((Dockable)d).getComponent();
-					if ( comp instanceof DockableView) {
-						DockableView wnd = (DockableView)comp;
-						boolean inTab = wnd.getParent() instanceof JTabbedPane;
-						wnd.setStandalone(!inTab);
-					}
-				}
-
-/*				System.out.println ("Old docking port:");
-				DockingPort oldPort = evt.getOldDockingPort();
-				System.out.println(oldPort.getDockedComponent()); */
-
-
-				for (Object d: evt.getOldDockingPort().getDockables()) {
-					Component comp = ((Dockable)d).getComponent();
-					if ( comp instanceof DockableView) {
-						DockableView wnd = (DockableView)comp;
-						boolean inTab = wnd.getParent() instanceof JTabbedPane;
-						wnd.setStandalone(!inTab);
-					}
-				}
-			}
-
-
-			public void dragStarted(DockingEvent arg0) {
-			}
-
-
-			public void dropStarted(DockingEvent arg0) {
-			}
-
-
-			public void undockingComplete(DockingEvent arg0) {
-
-
-			}
-
-
-			public void undockingStarted(DockingEvent arg0) {
-			}
-
-
-			public void dockingCanceled(DockingEvent evt) {
-			}
-		});
-
+	private int getNextDockableID() {
+		return dockableIDCounter ++;
 	}
 
-	public Dockable addView(JComponent view, String name, int options, String region, float split) {
-		DockableView dock = new DockableView(name, view, options);
-		dock.setFocusable(false);
-		Dockable dockable = DockingManager.registerDockable(dock, name);
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options) {
+		return createDockableWindow(component, name, neighbour, options, DockingConstants.CENTER_REGION, 0.5f, name);
+	}
 
-		rootDockingPort.dock(dockable, region);
+	private DockableWindow createDockableWindow(JComponent component, String name, int options, String relativeRegion, float split) {
+		return createDockableWindow(component, name, null, options, relativeRegion, split, name);
+	}
+
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options, String relativeRegion, float split) {
+		return createDockableWindow(component, name, neighbour, options, relativeRegion, split, name);
+	}
+
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options, String relativeRegion, float split, String persistentID) {
+		int ID = getNextDockableID();
+
+		DockableWindowContentPanel panel = new DockableWindowContentPanel(this, ID, name, component, options);
+		DockableWindow dockable = new DockableWindow(panel, name);
+		DockingManager.registerDockable(dockable);
+
+		IDToDockableWindowMap.put(ID, dockable);
+
+		if (neighbour != null)
+			DockingManager.dock(dockable, neighbour, relativeRegion);
+		else
+			DockingManager.dock(dockable, rootDockingPort, relativeRegion);
 		DockingManager.setSplitProportion(dockable, split);
 
-		for (Object d: dockable.getDockingPort().getDockables()) {
-			Component comp = ((Dockable)d).getComponent();
-			if ( comp instanceof DockableView) {
-				DockableView wnd = (DockableView)comp;
-				boolean inTab = comp.getParent() instanceof JTabbedPane;
-				//	System.out.println(inTab);
-				wnd.setStandalone(!inTab);
-			}
-		}
-
-		attachDockableListener(dockable);
 		return dockable;
 	}
 
-	public Dockable addView(JComponent view, String name, int options, Dockable neighbour) {
-		DockableView dock = new DockableView(name, view, options);
-		dock.setFocusable(false);
-		Dockable dockable = DockingManager.registerDockable(dock, name);
-
-		neighbour.dock(dockable, DockingManager.CENTER_REGION);
-
-		for (Object d: dockable.getDockingPort().getDockables()) {
-			Component comp = ((Dockable)d).getComponent();
-			if ( comp instanceof DockableView) {
-				DockableView wnd = (DockableView)comp;
-				boolean inTab = comp.getParent() instanceof JTabbedPane;
-				//	System.out.println(inTab);
-				wnd.setStandalone(!inTab);
-			}
-		}
-
-		attachDockableListener(dockable);
-		return dockable;
-
-	}
-
-	public Dockable addView(JComponent view, String name, int options, Dockable neighbour, String relativeRegion, float split) {
-		DockableView dock = new DockableView(name, view, options);
-		dock.setFocusable(false);
-		Dockable dockable = DockingManager.registerDockable(dock, name);
-
-		//attachDockableListener(dock);
-		DockingManager.dock(dockable, neighbour, relativeRegion);
-		DockingManager.setSplitProportion(dockable, split);
-
-		for (Object d: neighbour.getDockingPort().getDockables()) {
-			Component comp = ((Dockable)d).getComponent();
-			if ( comp instanceof DockableView) {
-				DockableView wnd = (DockableView)comp;
-				boolean inTab = comp.getParent() instanceof JTabbedPane;
-				//		System.out.println(inTab);
-				wnd.setStandalone(!inTab);
-			}
-		}
-
-		attachDockableListener(dockable);
-		return dockable;
-	}
-
-	public void addEditorView(WorkspaceEntry we) {
+	public void createEditorView(WorkspaceEntry we) {
 		if (we.getModel() == null) {
 			JOptionPane.showMessageDialog(this, "The selected entry is not a Workcraft model, and cannot be edited.", "Cannot open editor", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -345,12 +265,14 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 				GraphEditorPanel editor = new GraphEditorPanel(this, we);
 				String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
-				Dockable dockable;
+				DockableWindow dockable;
 
 				if (lastEditorDockable == null)
-					dockable = addView (editor, dockableTitle, DockableView.HEADER_BUTTONS, outputDockable, NORTH_REGION, 0.8f);
+					dockable = createDockableWindow (editor, dockableTitle, outputDockable,
+							DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.NORTH_REGION, 0.8f);
 				else
-					dockable = addView (editor, dockableTitle, DockableView.HEADER_BUTTONS, lastEditorDockable);
+					dockable = createDockableWindow (editor, dockableTitle, lastEditorDockable,
+							DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON);
 
 				lastEditorDockable = dockable;
 
@@ -390,35 +312,37 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (maximised)
 			setExtendedState(MAXIMIZED_BOTH);
 
-		menuBar = new MainMenu(this);
-		setJMenuBar(menuBar);
+		mainMenu = new MainMenu(this);
+		setJMenuBar(mainMenu);
 
 		setTitle("Workcraft " + Framework.FRAMEWORK_VERSION_MAJOR+"."+Framework.FRAMEWORK_VERSION_MINOR);
 
-		createViews();
+		createWindows();
 
-		outputView.captureStream();
-		errorView.captureStream();
+		outputWindow.captureStream();
+		errorWindow.captureStream();
 
 		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
-		outputDockable = addView (outputView, "Output", 0, DockingManager.SOUTH_REGION, 0.8f);
-		addView (errorView, "Problems", 0, outputDockable);
-		addView (jsView, "JavaScript", 0, outputDockable);
+		outputDockable = createDockableWindow (outputWindow, "Output", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.SOUTH_REGION, 0.8f);
+		DockableWindow problems = createDockableWindow (errorWindow, "Problems", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
+		DockableWindow javaScript =  createDockableWindow (jsWindow, "JavaScript", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
 
-		Dockable wsvd = addView (workspaceView, "Workspace", 0, DockingManager.EAST_REGION, 0.8f);
-		addView (propertyView, "Property Editor", 0, wsvd, DockingManager.NORTH_REGION, 0.5f);
-		addView (toolboxView, "Editor Tools", 0, wsvd, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow wsvd = createDockableWindow (workspaceWindow, "Workspace", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION, 0.8f);
+		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property Editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor Tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 
+		mainMenu.addWindow(outputDockable);
+		mainMenu.addWindow(problems);
+		mainMenu.addWindow(javaScript);
+		mainMenu.addWindow(wsvd);
+		mainMenu.addWindow(propertyEditor);
+		mainMenu.addWindow(toolbox);
 
 		DockingManager.display(outputDockable);
-		DockingManager.setFloatingEnabled(true);
-
-		DockingManager.setFloatingEnabled(true);
-
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
-		workspaceView.startup();
+		workspaceWindow.startup();
 
 		setVisible(true);
 
@@ -426,6 +350,67 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	public ScriptedActionListener getDefaultActionListener() {
 		return defaultActionListener;
+	}
+
+	public void maximizeDockableWindow(int ID) {
+		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+
+		if (dockableWindow != null) {
+			DockingManager.toggleMaximized(dockableWindow);
+
+		} else {
+			System.err.println ("maximizeDockableWindow: window with ID="+ID+" was not found.");
+		}
+	}
+
+	public void closeDockableWindow(int ID) {
+		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+
+		if (dockableWindow != null) {
+			DockingManager.close(dockableWindow);
+			dockableWindow.setClosed(true);
+			mainMenu.windowClosed(ID);
+
+		} else {
+			System.err.println ("closeDockableWindow: window with ID="+ID+" was not found.");
+		}
+	}
+
+	public void displayDockableWindow(int ID) {
+		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+		if (dockableWindow != null) {
+			DockingManager.display(dockableWindow);
+			dockableWindow.setClosed(false);
+			mainMenu.windowDisplayed(ID);
+
+		} else {
+			System.err.println ("displayDockableWindow: window with ID="+ID+" was not found.");
+		}
+	}
+
+	public void toggleDockableWindow(int ID) {
+		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+
+		if (dockableWindow.isClosed())
+			displayDockableWindow(ID);
+		else
+			closeDockableWindow(ID);
+	}
+
+	public void saveDockingLayout() {
+		Perspective p = new Perspective ("a", "a");
+		p.cacheLayoutState(rootDockingPort);
+		PerspectiveModel pm = new PerspectiveModel("a", "a", new Perspective[] {p});
+		XMLPersister pers = new XMLPersister();
+		try {
+			pers.store(new FileOutputStream(new File ("./config/uilayout.xml")), pm);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void shutdown() {
@@ -438,10 +423,10 @@ public class MainWindow extends JFrame implements DockingConstants{
 		if (lastOpenPath != null)
 			framework.setConfigVar("gui.main.lastOpenPath", lastOpenPath);
 
-		outputView.releaseStream();
-		errorView.releaseStream();
+		outputWindow.releaseStream();
+		errorWindow.releaseStream();
 
-		workspaceView.shutdown();
+		workspaceWindow.shutdown();
 
 		setVisible(false);
 	}
@@ -461,7 +446,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
 					WorkspaceEntry we = framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
-						addEditorView (we);
+						createEditorView (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
@@ -483,8 +468,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 		editorInFocus = sender;
 
 
-		toolboxView.setToolsForModel(editorInFocus.getModel());
-		menuBar.setMenuForModel(editorInFocus.getModel());
+		toolboxWindow.setToolsForModel(editorInFocus.getModel());
+		mainMenu.setMenuForModel(editorInFocus.getModel());
 
 		framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("visualModel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
@@ -496,7 +481,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 	}
 
 	public ToolboxWindow getToolboxWindow() {
-		return toolboxView;
+		return toolboxWindow;
 	}
 
 	public void openWork() {
@@ -515,7 +500,7 @@ public class MainWindow extends JFrame implements DockingConstants{
 				try {
 					WorkspaceEntry we = framework.getWorkspace().add(f.getPath());
 					if (we.getModel() instanceof VisualModel)
-						addEditorView(we);
+						createEditorView(we);
 				} catch (ModelLoadFailedException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(), "Cannot load " + f.getPath() , JOptionPane.ERROR_MESSAGE);
 				}
@@ -613,8 +598,8 @@ public class MainWindow extends JFrame implements DockingConstants{
 
 	}
 
-	public PropertyView getPropertyView() {
-		return propertyView;
+	public PropertyEditorWindow getPropertyView() {
+		return propertyEditorWindow;
 	}
 
 	public Framework getFramework() {

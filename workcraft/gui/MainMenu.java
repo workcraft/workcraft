@@ -3,8 +3,8 @@ package org.workcraft.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -15,6 +15,7 @@ import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.gui.actions.ScriptedAction;
+import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.layout.Layout;
@@ -38,12 +39,27 @@ public class MainMenu extends JMenuBar {
 			return layoutText;
 		}
 	}
+	class ToggleWindowAction extends ScriptedAction {
+		private int windowID;
+		private String windowTitle;
 
-	JMenu mnFile, mnEdit, mnView, mnTools = null, mnSettings, mnHelp;
-	JMenu mnLayout = null;
-	JMenuItem miShowPropertyEditor;
+		public ToggleWindowAction(DockableWindow window) {
+			windowID = window.getID();
+			windowTitle = window.getTitle();
+		}
+		public String getScript() {
+			return "mainWindow.toggleDockableWindow("+windowID+");";
+		}
+		public String getText() {
+			return windowTitle;
+		}
+	}
 
-	MainWindow mainWindow;
+	private JMenu mnFile, mnEdit, mnView, mnTools = null, mnSettings, mnHelp, mnWindows;
+	private JMenu mnLayout = null;
+
+	private MainWindow mainWindow;
+	private HashMap <Integer, ScriptedActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ScriptedActionCheckBoxMenuItem>();
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -133,14 +149,12 @@ public class MainMenu extends JMenuBar {
 			mnLAF.add(miLAFItem);
 		}
 
-		JMenu mnWindows = new JMenu();
+		mnWindows = new JMenu();
 		mnWindows.setText("Windows");
 
-		JMenuItem miShowPropertyEditor = new JCheckBoxMenuItem();
-		miShowPropertyEditor.setText("Property editor");
-		//miSaveWorkspace.setActionCommand("gui.togglePropertyEditorVisible()");
-
-		mnWindows.add(miShowPropertyEditor);
+		ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
+		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		mnView.add(miSaveLayout);
 
 		mnView.add(mnWindows);
 		mnView.addSeparator();
@@ -216,5 +230,24 @@ public class MainMenu extends JMenuBar {
 
 		doLayout();
 	}
+
+	final public void addWindow(DockableWindow window) {
+		ScriptedActionCheckBoxMenuItem miWindowItem = new ScriptedActionCheckBoxMenuItem(new ToggleWindowAction(window));
+		miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		miWindowItem.setSelected(!window.isClosed());
+		windowItems.put (window.getID(), miWindowItem);
+		mnWindows.add(miWindowItem);
+	}
+
+	final public void windowClosed (int ID) {
+		windowItems.get(ID).setSelected(false);
+
+	}
+
+	final public void windowDisplayed (int ID) {
+		windowItems.get(ID).setSelected(true);
+	}
+
+
 }
 

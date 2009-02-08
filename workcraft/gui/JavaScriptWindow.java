@@ -13,14 +13,14 @@ import org.syntax.jedit.tokenmarker.JavaScriptTokenMarker;
 import org.workcraft.framework.Framework;
 
 @SuppressWarnings("serial")
-public class JavaScriptView extends JPanel {
+public class JavaScriptWindow extends JPanel {
 	private Framework framework;
 
 	private JPanel panelInput = null;
 	private JButton btnExecute = null;
 	private JEditTextArea txtScript = null;
 
-	public JavaScriptView (Framework framework) {
+	public JavaScriptWindow (Framework framework) {
 		this.framework = framework;
 
 		btnExecute = new JButton();

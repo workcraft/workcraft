@@ -3,20 +3,21 @@ package org.workcraft.gui.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
-import javax.swing.JMenuItem;
+
+import javax.swing.JCheckBoxMenuItem;
 
 @SuppressWarnings("serial")
-public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
+public class ScriptedActionCheckBoxMenuItem extends JCheckBoxMenuItem implements ScriptedActor {
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			ScriptedActionMenuItem.this.fireActionPerformed();
+			ScriptedActionCheckBoxMenuItem.this.fireActionPerformed();
 		}
 	}
 
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
 	private ScriptedAction scriptedAction = null;
 
-	public ScriptedActionMenuItem(ScriptedAction action, String text) {
+	public ScriptedActionCheckBoxMenuItem(ScriptedAction action, String text) {
 		super(text);
 		scriptedAction = action;
 		scriptedAction.addActor(this);
@@ -25,7 +26,7 @@ public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
 		addActionListener(new ActionForwarder());
 	}
 
-	public ScriptedActionMenuItem(ScriptedAction action) {
+	public ScriptedActionCheckBoxMenuItem(ScriptedAction action) {
 		this(action, action.getText());
 
 	}

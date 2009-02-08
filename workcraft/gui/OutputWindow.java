@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import org.workcraft.framework.Framework;
 
 @SuppressWarnings("serial")
-public class OutputView extends JPanel {
+public class OutputWindow extends JPanel {
 	protected PrintStream systemOut;
 	protected boolean streamCaptured = false;
 	private JScrollPane scrollStdOut;
@@ -66,7 +66,7 @@ public class OutputView extends JPanel {
 		streamCaptured = false;
 	}
 
-	public OutputView (Framework framework) {
+	public OutputWindow (Framework framework) {
 		txtStdOut = new JTextArea();
 		txtStdOut.setLineWrap(true);
 		txtStdOut.setEditable(false);
