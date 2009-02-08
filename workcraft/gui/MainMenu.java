@@ -63,6 +63,7 @@ public class MainMenu extends JMenuBar {
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
+			"Windows",
 			"Substance: Moderate",
 			"Substance: Mist Silver",
 			"Substance: Raven",
@@ -71,6 +72,7 @@ public class MainMenu extends JMenuBar {
 	};
 	private String[] lafClasses = new String[] {
 			"javax.swing.plaf.metal.MetalLookAndFeel",
+			"com.sun.java.swing.plaf.windows.WindowsLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceModerateLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",

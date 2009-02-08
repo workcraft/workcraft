@@ -53,14 +53,15 @@ public class DockableWindowContentPanel extends JPanel {
 	class DockableViewHeader extends JPanel {
 		private ScriptedActionButton btnMin, btnMax, btnClose;
 		private JPanel buttonPanel;
-		private static final int BUTTON_SIZE = 20;
 
 		private ScriptedActionButton createHeaderButton(Icon icon, ScriptedAction action, ScriptedActionListener actionListener) {
 			ScriptedActionButton button = new ScriptedActionButton(action);
 			button.addScriptedActionListener(actionListener);
-			button.setPreferredSize(new Dimension(BUTTON_SIZE,BUTTON_SIZE));
+			button.setPreferredSize(new Dimension(icon.getIconWidth(),icon.getIconHeight()));
 			button.setFocusable(false);
 			button.setBorder(null);
+
+
 			button.setIcon(icon);
 			return button;
 		}
@@ -69,14 +70,22 @@ public class DockableWindowContentPanel extends JPanel {
 			super();
 			setLayout(new BorderLayout());
 
-			Color c = getBackground();
-			Color darker = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
-			setBackground(darker);
+			Color c;
+
+			if (UIManager.getLookAndFeel().getName().contains("Substance")) {
+				c = getBackground();
+				c = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
+			} else
+				 c = UIManager.getColor("InternalFrame.activeTitleBackground");
+
+			setBackground(c);
 
 			if  (options != 0) {
+
 				buttonPanel = new JPanel();
-				buttonPanel.setBackground(darker);
-				buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING));
+				buttonPanel.setBackground(c);
+				buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 4,2));
+				buttonPanel.setPreferredSize(new Dimension(100,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
 				buttonPanel.setFocusable(false);
 				add(buttonPanel, BorderLayout.EAST);
 			}
@@ -85,25 +94,28 @@ public class DockableWindowContentPanel extends JPanel {
 				btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
 						new ViewAction(ID, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				btnMin.setToolTipText("Toggle minimized");
-				buttonPanel.add(btnMin, BorderLayout.EAST);
+				buttonPanel.add(btnMin);
 			}
 
 			if ( (options & MAXIMIZE_BUTTON) != 0) {
 				btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
 						new ViewAction(ID, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				btnMax.setToolTipText("Toggle maximized");
-				buttonPanel.add(btnMax, BorderLayout.EAST);
+				buttonPanel.add(btnMax);
 			}
 
 			if ( (options & CLOSE_BUTTON) != 0) {
+				//System.out.println (UIManager.getColor("InternalFrame.activeTitleGradient"));
 				btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
 						new ViewAction(ID, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
 				btnClose.setToolTipText("Close");
-				buttonPanel.add(btnClose, BorderLayout.EAST);
+				buttonPanel.add(btnClose);
 			}
 
 
 			JLabel label = new JLabel(" "+ title);
+			label.setOpaque(false);
+			label.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
 			label.setFont(label.getFont().deriveFont(Font.BOLD));
 
 			add(label, BorderLayout.WEST);
