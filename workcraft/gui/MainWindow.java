@@ -217,7 +217,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options) {
-		return createDockableWindow(component, name, neighbour, options, DockingConstants.CENTER_REGION, 0.5f, name);
+		return createDockableWindow(component, name, neighbour, options, DockingConstants.CENTER_REGION, name);
 	}
 
 	private DockableWindow createDockableWindow(JComponent component, String name, int options, String relativeRegion, float split) {
@@ -228,7 +228,7 @@ public class MainWindow extends JFrame {
 		return createDockableWindow(component, name, neighbour, options, relativeRegion, split, name);
 	}
 
-	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options, String relativeRegion, float split, String persistentID) {
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options, String relativeRegion, String persistentID) {
 		int ID = getNextDockableID();
 
 		DockableWindowContentPanel panel = new DockableWindowContentPanel(this, ID, name, component, options);
@@ -241,8 +241,14 @@ public class MainWindow extends JFrame {
 			DockingManager.dock(dockable, neighbour, relativeRegion);
 		else
 			DockingManager.dock(dockable, rootDockingPort, relativeRegion);
-		DockingManager.setSplitProportion(dockable, split);
 
+		return dockable;
+	}
+
+
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options, String relativeRegion, float split, String persistentID) {
+		DockableWindow dockable = createDockableWindow (component, name, neighbour, options, relativeRegion, persistentID);
+		DockingManager.setSplitProportion(dockable, split);
 		return dockable;
 	}
 
@@ -326,11 +332,11 @@ public class MainWindow extends JFrame {
 
 		outputDockable = createDockableWindow (outputWindow, "Output", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.SOUTH_REGION, 0.8f);
 		DockableWindow problems = createDockableWindow (errorWindow, "Problems", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
-		DockableWindow javaScript =  createDockableWindow (jsWindow, "JavaScript", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
+		DockableWindow javaScript =  createDockableWindow (jsWindow, "Javascript", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
 
 		DockableWindow wsvd = createDockableWindow (workspaceWindow, "Workspace", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION, 0.8f);
-		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property Editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
-		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor Tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 
 		mainMenu.addWindow(outputDockable);
 		mainMenu.addWindow(problems);
