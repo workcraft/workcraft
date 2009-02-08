@@ -58,11 +58,9 @@ public abstract class MathModel implements Plugin, Model {
 
 	private void addXMLSerialisable() {
 		serialiser.addXMLSerialisable(new XMLSerialisable() {
-			@Override
 			public String getTagName() {
 				return MathModel.class.getSimpleName();
 			}
-			@Override
 			public void serialise(Element element) {
 				XmlUtil.writeStringAttr(element, "title", title);
 				componentsToXML(element, components.values());

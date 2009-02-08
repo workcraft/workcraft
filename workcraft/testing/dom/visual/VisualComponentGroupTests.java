@@ -180,7 +180,6 @@ public class VisualComponentGroupTests {
 		final Boolean[] hit = new Boolean[]{false};
 		node1.addListener(new PropertyChangeListener()
 				{
-					@Override
 					public void onPropertyChanged(String propertyName, Object sender) {
 						if(propertyName=="transform" && node1 == sender)
 							hit[0] = true;

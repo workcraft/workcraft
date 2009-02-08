@@ -24,7 +24,6 @@ public class VisualNodeTests {
 		final Boolean[] hit = new Boolean[]{false};
 		node.addListener(new PropertyChangeListener()
 				{
-					@Override
 					public void onPropertyChanged(String propertyName, Object sender) {
 						if(propertyName=="transform" && node == sender)
 							hit[0] = true;

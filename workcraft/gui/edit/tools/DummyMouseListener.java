@@ -10,27 +10,21 @@ public class DummyMouseListener implements GraphEditorMouseListener {
 		return instance;
 	}
 
-	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 	}
 
-	@Override
 	public void mouseEntered(GraphEditorMouseEvent e) {
 	}
 
-	@Override
 	public void mouseExited(GraphEditorMouseEvent e) {
 	}
 
-	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 	}
 
-	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 	}
 
-	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
 	}
 }

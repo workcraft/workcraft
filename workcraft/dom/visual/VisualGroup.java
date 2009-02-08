@@ -91,20 +91,16 @@ public class VisualGroup extends VisualTransformableNode {
 			list.add(node);
 		return new Iterable<T>()
 		{
-			@Override
 			public Iterator<T> iterator() {
 				return new Iterator<T>()
 				{
 					private int cur = list.size();
-					@Override
 					public boolean hasNext() {
 						return cur>0;
 					}
-					@Override
 					public T next() {
 						return list.get(--cur);
 					}
-					@Override
 					public void remove() {
 						throw new RuntimeException("Not supported");
 					}
@@ -135,7 +131,6 @@ public class VisualGroup extends VisualTransformableNode {
 
 	private void addPropertyChangeListener() {
 		this.addListener(new PropertyChangeListener(){
-			@Override
 			public void onPropertyChanged(String propertyName, Object sender) {
 				if(propertyName == "transform")
 					for(VisualNode node : children)

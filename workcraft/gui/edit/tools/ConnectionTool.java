@@ -94,12 +94,10 @@ public class ConnectionTool extends AbstractTool {
 		g.draw(line);
 	}
 
-	@Override
 	public String getIconPath() {
 		return null;
 	}
 
-	@Override
 	public String getName() {
 		return "Connect";
 	}

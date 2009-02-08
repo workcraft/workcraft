@@ -10,16 +10,13 @@ public class DummyKeyListener implements GraphEditorKeyListener {
 		return instance;
 	}
 
-	@Override
 	public void keyPressed(GraphEditorKeyEvent event) {
 
 	}
 
-	@Override
 	public void keyReleased(GraphEditorKeyEvent event) {
 	}
 
-	@Override
 	public void keyTyped(GraphEditorKeyEvent event) {
 	}
 }

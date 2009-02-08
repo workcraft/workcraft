@@ -61,12 +61,10 @@ public class SimulationTool extends AbstractTool {
 		g.drawString ("Simulation O_O;;", editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
 	}
 
-	@Override
 	public String getIconPath() {
 		return null;
 	}
 
-	@Override
 	public String getName() {
 		return "Simulation";
 	}
