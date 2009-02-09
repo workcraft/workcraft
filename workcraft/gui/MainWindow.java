@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -23,6 +24,7 @@ import javax.swing.UIManager;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
@@ -150,6 +152,7 @@ public class MainWindow extends JFrame {
 	private DockableWindow documentPlaceholder;
 
 	private LinkedHashMap<Integer, DockableWindow> editorWindows = new LinkedHashMap<Integer, DockableWindow>();
+	private LinkedList<DockableWindow> utilityWindows = new LinkedList<DockableWindow>();
 
 	private GraphEditorPanel editorInFocus;
 
@@ -278,6 +281,7 @@ public class MainWindow extends JFrame {
 
 				DockingManager.close(documentPlaceholder);
 				DockingManager.unregisterDockable(documentPlaceholder);
+				utilityWindows.remove(documentPlaceholder);
 			}
 			else {
 				DockableWindow firstEditorWindow = editorWindows.values().iterator().next();
@@ -295,9 +299,10 @@ public class MainWindow extends JFrame {
 			DockingManager.close(dockableWindow);
 		}
 		mainMenu.registerUtilityWindow(dockableWindow);
+		utilityWindows.add(dockableWindow);
 	}
 
-	public void startup() {
+	synchronized public void startup() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 		//SwingUtilities.updateComponentTreeUI(MainWindow.this);
@@ -309,9 +314,11 @@ public class MainWindow extends JFrame {
 
 		content = new JPanel(new BorderLayout(0,0));
 
-		rootDockingPort = new DefaultDockingPort();
-		// rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
-		//this.rootDockingPort.setSingleTabAllowed(true);
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
+		pm.add(new Perspective("defaultWorkspace", "defaultWorkspace"));
+		pm.setCurrentPerspective("defaultWorkspace", true);
+
+		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
 		setContentPane(content);
@@ -357,19 +364,18 @@ public class MainWindow extends JFrame {
 
 		workspaceWindow.startup();
 
-		loadDockingLayout();
-		DockableWindow.updateHeaders(rootDockingPort);
-
-
 		registerUtilityWindow (outputDockable);
 		registerUtilityWindow (problems);
 		registerUtilityWindow (javaScript);
 		registerUtilityWindow (wsvd);
 		registerUtilityWindow (propertyEditor);
 		registerUtilityWindow (toolbox);
+		utilityWindows.add(documentPlaceholder);
 
 		setVisible(true);
+		loadDockingLayout();
 
+		DockableWindow.updateHeaders(rootDockingPort);
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
@@ -401,6 +407,7 @@ public class MainWindow extends JFrame {
 				if (editorWindows.isEmpty()) {
 					DockingManager.registerDockable(documentPlaceholder);
 					DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
+					utilityWindows.add(documentPlaceholder);
 				}
 
 				DockingManager.close(dockableWindow);
@@ -441,7 +448,7 @@ public class MainWindow extends JFrame {
 	private void saveDockingLayout() {
 		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
-		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspective().getPersistentId(), pm.getPerspectives());
+		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
 			FileOutputStream os = new FileOutputStream(new File ("./config/uilayout.xml"));
@@ -467,11 +474,14 @@ public class MainWindow extends JFrame {
 			FileInputStream is = new FileInputStream(f);
 
 			PerspectiveModel pmodel = pers.load(is);
+
+			pm.remove("defaultWorkspace");
+			pm.setCurrentPerspective(null);
+
 			for (Perspective p : pmodel.getPerspectives())
-				pm.add(p);
-			pm.setCurrentPerspective(pmodel.getCurrentPerspective());
-			pm.setDefaultPersistenceKey(pmodel.getDefaultPerspective());
-			pm.reload();
+				pm.add(p, false);
+			pm.setCurrentPerspective(null);
+			pm.loadPerspective("defaultWorkspace", (DockingPort)rootDockingPort);
 			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -482,7 +492,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void shutdown() {
+	synchronized public void shutdown() {
 		LinkedHashMap<Integer, DockableWindow> windowsToClose = new LinkedHashMap<Integer, DockableWindow>(editorWindows);
 
 		for (DockableWindow w : windowsToClose.values()) {
@@ -490,6 +500,8 @@ public class MainWindow extends JFrame {
 		}
 
 		saveDockingLayout();
+
+		content.remove(rootDockingPort);
 
 		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
@@ -504,8 +516,6 @@ public class MainWindow extends JFrame {
 		errorWindow.releaseStream();
 
 		workspaceWindow.shutdown();
-
-
 
 		setVisible(false);
 	}
