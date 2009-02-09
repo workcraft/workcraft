@@ -46,7 +46,7 @@ public class DockableWindow extends AbstractDockable {
 		return panel;
 	}
 
-	private void updateHeaders(DockingPort port) {
+	public static void updateHeaders(DockingPort port) {
 		for (Object d : port.getDockables()) {
 			DockableWindow dockable = (DockableWindow)d;
 
@@ -69,12 +69,15 @@ public class DockableWindow extends AbstractDockable {
 
 	@Override
 	public void dockingComplete(DockingEvent evt) {
+//		System.out.println ("docked " + getTitle());
 		updateHeaders(evt.getNewDockingPort());
 		super.dockingComplete(evt);
+
 	}
 
 	@Override
 	public void undockingComplete(DockingEvent evt) {
+//		System.out.println ("undocked " + getTitle());
 		updateHeaders(evt.getOldDockingPort());
 		super.undockingComplete(evt);
 	}

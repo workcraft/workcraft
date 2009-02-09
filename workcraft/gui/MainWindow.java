@@ -289,6 +289,13 @@ public class MainWindow extends JFrame {
 			requestFocus(editor);
 	}
 
+	private void registerUtilityWindow(DockableWindow dockableWindow) {
+		if (!rootDockingPort.getDockables().contains(dockableWindow)) {
+			dockableWindow.setClosed(true);
+			DockingManager.close(dockableWindow);
+		}
+		mainMenu.registerUtilityWindow(dockableWindow);
+	}
 
 	public void startup() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
@@ -345,19 +352,22 @@ public class MainWindow extends JFrame {
 
 		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), "", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f, "DocumentPlaceholder");
 
-		mainMenu.registerUtilityWindow(outputDockable);
-		mainMenu.registerUtilityWindow(problems);
-		mainMenu.registerUtilityWindow(javaScript);
-		mainMenu.registerUtilityWindow(wsvd);
-		mainMenu.registerUtilityWindow(propertyEditor);
-		mainMenu.registerUtilityWindow(toolbox);
-
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
 		workspaceWindow.startup();
 
 		loadDockingLayout();
+		DockableWindow.updateHeaders(rootDockingPort);
+
+
+		registerUtilityWindow (outputDockable);
+		registerUtilityWindow (problems);
+		registerUtilityWindow (javaScript);
+		registerUtilityWindow (wsvd);
+		registerUtilityWindow (propertyEditor);
+		registerUtilityWindow (toolbox);
+
 		setVisible(true);
 
 	}
