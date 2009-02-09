@@ -90,7 +90,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						JMenuItem miOpenView = new JMenuItem("Open editor view");
 						miOpenView.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								framework.getMainWindow().createEditorView(we);
+								framework.getMainWindow().createEditorWindow(we);
 							}
 						});
 

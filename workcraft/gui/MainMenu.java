@@ -154,9 +154,13 @@ public class MainMenu extends JMenuBar {
 		mnWindows = new JMenu();
 		mnWindows.setText("Windows");
 
-		ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
+	/*	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
 		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnView.add(miSaveLayout);
+
+		ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
+		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		mnView.add(miLoadLayout);*/
 
 		mnView.add(mnWindows);
 		mnView.addSeparator();
@@ -233,7 +237,7 @@ public class MainMenu extends JMenuBar {
 		doLayout();
 	}
 
-	final public void addWindow(DockableWindow window) {
+	final public void registerUtilityWindow(DockableWindow window) {
 		ScriptedActionCheckBoxMenuItem miWindowItem = new ScriptedActionCheckBoxMenuItem(new ToggleWindowAction(window));
 		miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		miWindowItem.setSelected(!window.isClosed());
@@ -241,15 +245,16 @@ public class MainMenu extends JMenuBar {
 		mnWindows.add(miWindowItem);
 	}
 
-	final public void windowClosed (int ID) {
-		windowItems.get(ID).setSelected(false);
-
+	final public void utilityWindowClosed (int ID) {
+		ScriptedActionCheckBoxMenuItem mi = windowItems.get(ID);
+		if (mi!=null)
+			mi.setSelected(false);
 	}
 
-	final public void windowDisplayed (int ID) {
-		windowItems.get(ID).setSelected(true);
+	final public void utilityWindowDisplayed (int ID) {
+		ScriptedActionCheckBoxMenuItem mi = windowItems.get(ID);
+		if (mi!=null)
+			mi.setSelected(true);
 	}
-
-
 }
 

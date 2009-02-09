@@ -42,7 +42,7 @@ public class DockableWindow extends AbstractDockable {
 		return panel;
 	}
 
-	private DockableWindowContentPanel getPanel() {
+	public DockableWindowContentPanel getContentPanel() {
 		return panel;
 	}
 
@@ -53,9 +53,9 @@ public class DockableWindow extends AbstractDockable {
 			boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
 
 			if (inTab)
-				dockable.getPanel().setHeaderVisible(false);
+				dockable.getContentPanel().setHeaderVisible(false);
 			else
-				dockable.getPanel().setHeaderVisible(true);
+				dockable.getContentPanel().setHeaderVisible(true);
 		}
 	}
 

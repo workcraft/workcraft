@@ -5,10 +5,12 @@ import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -27,6 +29,7 @@ import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.AlphaPreview;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;
+import org.flexdock.perspective.PerspectiveManager;
 import org.flexdock.perspective.persist.PerspectiveModel;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
@@ -107,19 +110,11 @@ public class MainWindow extends JFrame {
 				return "Reconfigure plugins";
 			};
 		};
-		public static final ScriptedAction SAVE_UI_LAYOUT = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.saveDockingLayout()";
-			}
-			public String getText() {
-				return "Save UI layout";
-			};
-		};
 	}
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(ScriptedAction e) {
-			 if (e.getScript() == null)
+			if (e.getScript() == null)
 				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
 			else
 				System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
@@ -152,7 +147,9 @@ public class MainWindow extends JFrame {
 
 	private DefaultDockingPort rootDockingPort;
 	private DockableWindow outputDockable;
-	private DockableWindow lastEditorDockable;
+	private DockableWindow documentPlaceholder;
+
+	private LinkedHashMap<Integer, DockableWindow> editorWindows = new LinkedHashMap<Integer, DockableWindow>();
 
 	private GraphEditorPanel editorInFocus;
 
@@ -176,7 +173,6 @@ public class MainWindow extends JFrame {
 
 		toolboxWindow = new ToolboxWindow(framework);
 
-		lastEditorDockable = null;
 		outputDockable = null;
 		editorInFocus = null;
 	}
@@ -232,7 +228,7 @@ public class MainWindow extends JFrame {
 		int ID = getNextDockableID();
 
 		DockableWindowContentPanel panel = new DockableWindowContentPanel(this, ID, name, component, options);
-		DockableWindow dockable = new DockableWindow(panel, name);
+		DockableWindow dockable = new DockableWindow(panel, persistentID);
 		DockingManager.registerDockable(dockable);
 
 		IDToDockableWindowMap.put(ID, dockable);
@@ -252,7 +248,7 @@ public class MainWindow extends JFrame {
 		return dockable;
 	}
 
-	public void createEditorView(WorkspaceEntry we) {
+	public void createEditorWindow(WorkspaceEntry we) {
 		if (we.getModel() == null) {
 			JOptionPane.showMessageDialog(this, "The selected entry is not a Workcraft model, and cannot be edited.", "Cannot open editor", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -261,29 +257,38 @@ public class MainWindow extends JFrame {
 		VisualModel visualModel = we.getModel().getVisualModel();
 
 		if (visualModel == null)
-				try {
-					visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
-					we.setModel(visualModel);
-				} catch (VisualModelInstantiationException e) {
-					JOptionPane.showMessageDialog(this, "A visual model could not be created for the model you have chosen:\n" + e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
+			try {
+				visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
+				we.setModel(visualModel);
+			} catch (VisualModelInstantiationException e) {
+				JOptionPane.showMessageDialog(this, "A visual model could not be created for the model you have chosen:\n" + e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
-				GraphEditorPanel editor = new GraphEditorPanel(this, we);
-				String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
-				DockableWindow dockable;
+			GraphEditorPanel editor = new GraphEditorPanel(this, we);
+			String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
 
-				if (lastEditorDockable == null)
-					dockable = createDockableWindow (editor, dockableTitle, outputDockable,
-							DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.NORTH_REGION, 0.8f);
-				else
-					dockable = createDockableWindow (editor, dockableTitle, lastEditorDockable,
-							DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON);
+			DockableWindow editorWindow;
 
-				lastEditorDockable = dockable;
+			if (editorWindows.isEmpty()) {
+				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
+						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
 
-				requestFocus(editor);
+				editorWindows.put(we.getEntryID(), editorWindow);
+
+				DockingManager.close(documentPlaceholder);
+				DockingManager.unregisterDockable(documentPlaceholder);
+			}
+			else {
+				DockableWindow firstEditorWindow = editorWindows.values().iterator().next();
+				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
+						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
+			}
+
+			editorWindows.put(we.getEntryID(), editorWindow);
+			requestFocus(editor);
 	}
+
 
 	public void startup() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
@@ -338,18 +343,21 @@ public class MainWindow extends JFrame {
 		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 
-		mainMenu.addWindow(outputDockable);
-		mainMenu.addWindow(problems);
-		mainMenu.addWindow(javaScript);
-		mainMenu.addWindow(wsvd);
-		mainMenu.addWindow(propertyEditor);
-		mainMenu.addWindow(toolbox);
+		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), "", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f, "DocumentPlaceholder");
+
+		mainMenu.registerUtilityWindow(outputDockable);
+		mainMenu.registerUtilityWindow(problems);
+		mainMenu.registerUtilityWindow(javaScript);
+		mainMenu.registerUtilityWindow(wsvd);
+		mainMenu.registerUtilityWindow(propertyEditor);
+		mainMenu.registerUtilityWindow(toolbox);
 
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
 		workspaceWindow.startup();
 
+		loadDockingLayout();
 		setVisible(true);
 
 	}
@@ -374,10 +382,26 @@ public class MainWindow extends JFrame {
 		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
 
 		if (dockableWindow != null) {
-			DockingManager.close(dockableWindow);
-			dockableWindow.setClosed(true);
-			mainMenu.windowClosed(ID);
 
+			if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
+				GraphEditorPanel editor = (GraphEditorPanel)dockableWindow.getContentPanel().getContent();
+				// handle editor window close
+				editorWindows.remove(editor.getWorkspaceEntry().getEntryID());
+
+				if (editorWindows.isEmpty()) {
+					DockingManager.registerDockable(documentPlaceholder);
+					DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
+				}
+
+				DockingManager.close(dockableWindow);
+				DockingManager.unregisterDockable(dockableWindow);
+				dockableWindow.setClosed(true);
+			} else {
+				// handle utility window close
+				mainMenu.utilityWindowClosed(ID);
+				DockingManager.close(dockableWindow);
+				dockableWindow.setClosed(true);
+			}
 		} else {
 			System.err.println ("closeDockableWindow: window with ID="+ID+" was not found.");
 		}
@@ -388,7 +412,7 @@ public class MainWindow extends JFrame {
 		if (dockableWindow != null) {
 			DockingManager.display(dockableWindow);
 			dockableWindow.setClosed(false);
-			mainMenu.windowDisplayed(ID);
+			mainMenu.utilityWindowDisplayed(ID);
 
 		} else {
 			System.err.println ("displayDockableWindow: window with ID="+ID+" was not found.");
@@ -404,13 +428,41 @@ public class MainWindow extends JFrame {
 			closeDockableWindow(ID);
 	}
 
-	public void saveDockingLayout() {
-		Perspective p = new Perspective ("a", "a");
-		p.cacheLayoutState(rootDockingPort);
-		PerspectiveModel pm = new PerspectiveModel("a", "a", new Perspective[] {p});
+	private void saveDockingLayout() {
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
+		pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
+		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspective().getPersistentId(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
-			pers.store(new FileOutputStream(new File ("./config/uilayout.xml")), pm);
+			FileOutputStream os = new FileOutputStream(new File ("./config/uilayout.xml"));
+			pers.store(os, pmodel);
+			os.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadDockingLayout() {
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
+		XMLPersister pers = new XMLPersister();
+		try {
+			File f = new File ("./config/uilayout.xml");
+			if (!f.exists())
+				return;
+
+			FileInputStream is = new FileInputStream(f);
+
+			PerspectiveModel pmodel = pers.load(is);
+			for (Perspective p : pmodel.getPerspectives())
+				pm.add(p);
+			pm.setCurrentPerspective(pmodel.getCurrentPerspective());
+			pm.setDefaultPersistenceKey(pmodel.getDefaultPerspective());
+			pm.reload();
+			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -421,6 +473,14 @@ public class MainWindow extends JFrame {
 	}
 
 	public void shutdown() {
+		LinkedHashMap<Integer, DockableWindow> windowsToClose = new LinkedHashMap<Integer, DockableWindow>(editorWindows);
+
+		for (DockableWindow w : windowsToClose.values()) {
+			closeDockableWindow(w.getID());
+		}
+
+		saveDockingLayout();
+
 		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH)!=0) );
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
@@ -434,6 +494,8 @@ public class MainWindow extends JFrame {
 		errorWindow.releaseStream();
 
 		workspaceWindow.shutdown();
+
+
 
 		setVisible(false);
 	}
@@ -453,7 +515,7 @@ public class MainWindow extends JFrame {
 					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
 					WorkspaceEntry we = framework.getWorkspace().add(visualModel);
 					if (dialog.openInEditorSelected())
-						createEditorView (we);
+						createEditorWindow (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
@@ -507,7 +569,7 @@ public class MainWindow extends JFrame {
 				try {
 					WorkspaceEntry we = framework.getWorkspace().add(f.getPath());
 					if (we.getModel() instanceof VisualModel)
-						createEditorView(we);
+						createEditorWindow(we);
 				} catch (ModelLoadFailedException e) {
 					JOptionPane.showMessageDialog(this, e.getMessage(), "Cannot load " + f.getPath() , JOptionPane.ERROR_MESSAGE);
 				}

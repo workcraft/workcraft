@@ -17,13 +17,14 @@ import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.util.XmlUtil;
 
 public class Workspace {
-	LinkedList<WorkspaceEntry> workspace = new LinkedList<WorkspaceEntry>();
-	LinkedList<WorkspaceListener> workspaceListeners = new LinkedList<WorkspaceListener>();
+	private LinkedList<WorkspaceEntry> workspace = new LinkedList<WorkspaceEntry>();
+	private LinkedList<WorkspaceListener> workspaceListeners = new LinkedList<WorkspaceListener>();
 
 	Framework framework;
 
 	private boolean changed = false;
 	private String filePath = "";
+	private int entryIDCounter = 0;
 
 	public Workspace(Framework framework) {
 		this.framework = framework;
@@ -153,5 +154,9 @@ public class Workspace {
 			System.err.println("File name undefined.");
 		else
 			save(filePath);
+	}
+
+	public int getNextEntryID() {
+		return entryIDCounter++;
 	}
 }

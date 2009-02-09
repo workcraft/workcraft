@@ -182,6 +182,7 @@ public class DockableWindowContentPanel extends JPanel {
 		this.title = title;
 		this.mainWindow = mainWindow;
 		this.ID = ID;
+		this.content = content;
 
 		header = new DockableViewHeader(title, options);
 
@@ -193,6 +194,7 @@ public class DockableWindowContentPanel extends JPanel {
 
 		add(contentPane, BorderLayout.CENTER);
 		setFocusable(false);
+
 	}
 
 	public void setHeaderVisible(boolean headerVisible) {

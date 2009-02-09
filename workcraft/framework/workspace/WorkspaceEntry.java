@@ -5,15 +5,18 @@ import java.io.File;
 import org.workcraft.dom.Model;
 
 public class WorkspaceEntry {
-	protected File file;
-	protected Model model;
-	protected boolean unsaved;
-	protected Workspace workspace;
+	private File file;
+	private Model model;
+	private boolean unsaved;
+	private int entryID;
+
+	private Workspace workspace;
 
 	public WorkspaceEntry(Workspace workspace) {
 		file = null;
 		model = null;
 		unsaved = false;
+		entryID = workspace.getNextEntryID();
 		this.workspace = workspace;
 	}
 
@@ -82,5 +85,9 @@ public class WorkspaceEntry {
 			res = "* " + res;
 
 		return res;
+	}
+
+	public int getEntryID() {
+		return entryID;
 	}
 }
