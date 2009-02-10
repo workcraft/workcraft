@@ -5,17 +5,14 @@ import java.io.File;
 import org.workcraft.dom.Model;
 
 public class WorkspaceEntry {
-	private File file;
-	private Model model;
-	private boolean unsaved;
-	private int entryID;
+	private File file = null;
+	private Model model = null;
+	private boolean unsaved = false;
 
+	private int entryID;
 	private Workspace workspace;
 
 	public WorkspaceEntry(Workspace workspace) {
-		file = null;
-		model = null;
-		unsaved = false;
 		entryID = workspace.getNextEntryID();
 		this.workspace = workspace;
 	}
@@ -43,6 +40,7 @@ public class WorkspaceEntry {
 
 	public void setUnsaved(boolean unsaved) {
 		this.unsaved = unsaved;
+		workspace.fireEntryChanged(this);
 	}
 
 	public boolean isUnsaved() {
@@ -81,7 +79,7 @@ public class WorkspaceEntry {
 		if (model.getVisualModel() != null)
 			res = res + " [V]";
 
-		if (unsaved || file == null)
+		if (unsaved)
 			res = "* " + res;
 
 		return res;

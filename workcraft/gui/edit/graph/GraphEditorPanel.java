@@ -98,8 +98,6 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 			g2d.setColor(focusBorderColor);
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
-
-
 	}
 
 
@@ -147,29 +145,34 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	public void visualNodePropertyChanged(VisualNode n) {
 		repaint();
 		mainWindow.getPropertyView().repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 
 	public void onComponentPropertyChanged(Component c) {
 		repaint();
 		mainWindow.getPropertyView().repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 
 	public void onConnectionPropertyChanged(Connection c) {
 		repaint();
 		mainWindow.getPropertyView().repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 
 	public void onModelStructureChanged() {
 		repaint();
 		mainWindow.getPropertyView().repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 
-	public void layoutChanged() {
+	public void onLayoutChanged() {
 		repaint();
 		mainWindow.getPropertyView().repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 
-	public void selectionChanged() {
+	public void onSelectionChanged() {
 		repaint();
 
 		VisualNode selection[] = visualModel.getSelection();
@@ -190,6 +193,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 
 	public void onPropertyChanged(String propertyName, Object sender) {
 		visualModel.fireLayoutChanged();
+		workspaceEntry.setUnsaved(true);
 	}
 
 

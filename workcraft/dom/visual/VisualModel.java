@@ -313,12 +313,12 @@ public class VisualModel implements Plugin, Model {
 
 	public void fireLayoutChanged() {
 		for (VisualModelListener l : listeners)
-			l.layoutChanged();
+			l.onLayoutChanged();
 	}
 
 	public void fireSelectionChanged() {
 		for (VisualModelListener l : listeners)
-			l.selectionChanged();
+			l.onSelectionChanged();
 	}
 
 	public void addListener(MathModelListener listener) {

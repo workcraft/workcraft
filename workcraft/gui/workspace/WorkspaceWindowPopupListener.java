@@ -14,6 +14,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.workcraft.framework.Framework;
+import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.workspace.FileHandler;
@@ -97,14 +98,20 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						JMenuItem miSave = new JMenuItem("Save");
 						miSave.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								framework.getMainWindow().save(we);
+								try {
+									framework.getMainWindow().save(we);
+								} catch (OperationCancelledException e1) {
+								}
 							}
 						});
 
 						JMenuItem miSaveAs = new JMenuItem("Save as...");
 						miSaveAs.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								framework.getMainWindow().saveAs(we);
+								try {
+									framework.getMainWindow().saveAs(we);
+								} catch (OperationCancelledException e1) {
+								}
 							}
 						});
 

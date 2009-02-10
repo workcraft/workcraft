@@ -7,12 +7,12 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.graph.Viewport;
 
 public interface GraphEditor {
-	Viewport getViewport();
-	VisualModel getModel();
-	int getWidth();
-	int getHeight();
-	void snap(Point2D pos);
-	void repaint();
-	MainWindow getMainWindow();
+	public Viewport getViewport();
+	public MainWindow getMainWindow();
+	public VisualModel getModel();
+	public int getWidth();
+	public int getHeight();
+	public void snap(Point2D pos);
+	public void repaint();
 	public boolean hasFocus();
 }

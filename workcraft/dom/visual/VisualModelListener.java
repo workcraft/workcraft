@@ -4,6 +4,6 @@ import org.workcraft.dom.MathModelListener;
 
 public interface VisualModelListener extends MathModelListener{
 	public void visualNodePropertyChanged(VisualNode n);
-	public void selectionChanged();
-	public void layoutChanged();
+	public void onSelectionChanged();
+	public void onLayoutChanged();
 }

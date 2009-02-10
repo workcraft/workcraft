@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
+
+import javax.swing.SwingUtilities;
 
 import org.mozilla.javascript.Context;
 import org.workcraft.framework.Framework;
+import org.workcraft.framework.exceptions.OperationCancelledException;
 
 
 public class Console {
@@ -33,7 +37,7 @@ public class Console {
 		if (!silent)
 			System.out.println ("Initialising framework...");
 
-		Framework framework  = new Framework();
+		final Framework framework  = new Framework();
 
 		framework.setSilent(silent);
 
@@ -84,7 +88,25 @@ public class Console {
 
 		while (true) {
 			if (framework.shutdownRequested()) {
-				framework.shutdownGUI();
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+						public void run() {
+							try {
+								framework.shutdownGUI();
+							} catch (OperationCancelledException e) {
+								framework.abortShutdown();
+
+							}
+						}
+					});
+				} catch (InterruptedException e1) {
+				} catch (InvocationTargetException e1) {
+					e1.printStackTrace();
+				}
+
+				if (!framework.shutdownRequested())
+					continue;
+
 				try {
 					if (!silent)
 						System.out.println ("Shutting down...");

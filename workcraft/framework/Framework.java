@@ -35,6 +35,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
@@ -365,8 +366,9 @@ public class Framework {
 
 	}
 
-	public void shutdownGUI() {
+	public void shutdownGUI() throws OperationCancelledException {
 		if (inGUIMode) {
+
 			mainWindow.shutdown();
 			mainWindow = null;
 			inGUIMode = false;
@@ -388,6 +390,10 @@ public class Framework {
 
 	public boolean shutdownRequested() {
 		return shutdownRequested;
+	}
+
+	public void abortShutdown() {
+		shutdownRequested = false;
 	}
 
 	public MainWindow getMainWindow() {
@@ -535,7 +541,7 @@ public class Framework {
 
 	}
 
-	public void restartGUI() {
+	public void restartGUI() throws OperationCancelledException {
 		GUIRestartRequested = true;
 		shutdownGUI();
 	}

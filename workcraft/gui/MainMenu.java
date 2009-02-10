@@ -12,6 +12,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
+import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.gui.actions.ScriptedAction;
@@ -145,7 +146,10 @@ public class MainMenu extends JMenuBar {
 			final String lafClass = lafClasses[i];
 			miLAFItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					mainWindow.setLAF(lafClass);
+					try {
+						mainWindow.setLAF(lafClass);
+					} catch (OperationCancelledException e1) {
+					}
 				}
 			});
 			mnLAF.add(miLAFItem);
