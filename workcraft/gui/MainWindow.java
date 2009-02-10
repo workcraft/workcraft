@@ -24,7 +24,6 @@ import javax.swing.UIManager;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
@@ -313,6 +312,7 @@ public class MainWindow extends JFrame {
 		LAF.setLAF(laf);
 
 		content = new JPanel(new BorderLayout(0,0));
+		setContentPane(content);
 
 		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		pm.add(new Perspective("defaultWorkspace", "defaultWorkspace"));
@@ -321,7 +321,7 @@ public class MainWindow extends JFrame {
 		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
-		setContentPane(content);
+
 
 		boolean maximised = Boolean.parseBoolean(framework.getConfigVar("gui.main.maximised"));
 		String w = framework.getConfigVar("gui.main.width");
@@ -344,8 +344,8 @@ public class MainWindow extends JFrame {
 
 		createWindows();
 
-		outputWindow.captureStream();
-		errorWindow.captureStream();
+		//outputWindow.captureStream();
+	//	errorWindow.captureStream();
 
 		rootDockingPort.setBorderManager(new StandardBorderManager(new ShadowBorder()));
 
@@ -448,6 +448,7 @@ public class MainWindow extends JFrame {
 	private void saveDockingLayout() {
 		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
+		pm.forceDockableUpdate();
 		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
@@ -475,13 +476,15 @@ public class MainWindow extends JFrame {
 
 			PerspectiveModel pmodel = pers.load(is);
 
+
 			pm.remove("defaultWorkspace");
-			pm.setCurrentPerspective(null);
+			pm.setCurrentPerspective("defaultWorkspace");
 
 			for (Perspective p : pmodel.getPerspectives())
 				pm.add(p, false);
-			pm.setCurrentPerspective(null);
-			pm.loadPerspective("defaultWorkspace", (DockingPort)rootDockingPort);
+
+			pm.reload(rootDockingPort);
+
 			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -519,6 +522,14 @@ public class MainWindow extends JFrame {
 
 		setVisible(false);
 	}
+
+	/*private void unregisterUtilityWindows() {
+		for (DockableWindow w : utilityWindows) {
+			DockingManager.close(w);
+			DockingManager.unregisterDockable(w);
+		}
+		utilityWindows.clear();
+	}*/
 
 	public void createWork() {
 		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
