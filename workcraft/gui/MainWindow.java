@@ -364,6 +364,10 @@ public class MainWindow extends JFrame {
 
 		workspaceWindow.startup();
 
+		setVisible(true);
+		loadDockingLayout();
+		DockableWindow.updateHeaders(rootDockingPort);
+
 		registerUtilityWindow (outputDockable);
 		registerUtilityWindow (problems);
 		registerUtilityWindow (javaScript);
@@ -371,11 +375,6 @@ public class MainWindow extends JFrame {
 		registerUtilityWindow (propertyEditor);
 		registerUtilityWindow (toolbox);
 		utilityWindows.add(documentPlaceholder);
-
-		setVisible(true);
-		loadDockingLayout();
-
-		DockableWindow.updateHeaders(rootDockingPort);
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
