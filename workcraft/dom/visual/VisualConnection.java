@@ -9,6 +9,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedHashMap;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
@@ -53,7 +54,13 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		addPropertyDeclaration(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
 		addPropertyDeclaration(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class));
+
+		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
+		arrowLengths.put("short", 0.2);
+		arrowLengths.put("medium", 0.4);
+		arrowLengths.put("long", 0.8);
+
+		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
 	}
 
 	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second) {
