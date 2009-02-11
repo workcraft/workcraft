@@ -378,6 +378,7 @@ public class MainWindow extends JFrame {
 		workspaceWindow.startup();
 
 		setVisible(true);
+
 		loadDockingLayout();
 		DockableWindow.updateHeaders(rootDockingPort);
 
