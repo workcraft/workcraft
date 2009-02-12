@@ -67,7 +67,7 @@ public class ConnectionFactory {
 						second.getClass());
 			}
 			catch (NoSuchMethodException e) {
-				ctor = visualClass.getConstructor(connection.getClass(), Element.class, VisualComponent.class,
+				ctor = visualClass.getConstructor(Connection.class, Element.class, VisualComponent.class,
 						VisualComponent.class);
 			}
 			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second);
@@ -112,8 +112,17 @@ public class ConnectionFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(connection.getClass(), first.getClass(),
-					second.getClass(), VisualGroup.class);
+			Constructor<?> ctor;
+
+			try {
+				ctor = visualClass.getConstructor(connection.getClass(), first.getClass(),
+						second.getClass());
+			}
+			catch (NoSuchMethodException e) {
+				ctor = visualClass.getConstructor(Connection.class, VisualComponent.class,
+						VisualComponent.class);
+			}
+
 			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, first, second);
 			return visual;
 
