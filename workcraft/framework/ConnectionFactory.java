@@ -9,10 +9,10 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.ConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
+import org.workcraft.framework.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 public class ConnectionFactory {
@@ -61,15 +61,8 @@ public class ConnectionFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor;
-			try {
-				ctor = visualClass.getConstructor(connection.getClass(), Element.class, first.getClass(),
-						second.getClass());
-			}
-			catch (NoSuchMethodException e) {
-				ctor = visualClass.getConstructor(Connection.class, Element.class, VisualComponent.class,
-						VisualComponent.class);
-			}
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass,
+						connection.getClass(), Element.class, first.getClass(), second.getClass());
 			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second);
 			return visual;
 
@@ -112,17 +105,7 @@ public class ConnectionFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor;
-
-			try {
-				ctor = visualClass.getConstructor(connection.getClass(), first.getClass(),
-						second.getClass());
-			}
-			catch (NoSuchMethodException e) {
-				ctor = visualClass.getConstructor(Connection.class, VisualComponent.class,
-						VisualComponent.class);
-			}
-
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, connection.getClass(), first.getClass(), second.getClass());
 			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, first, second);
 			return visual;
 
@@ -135,7 +118,7 @@ public class ConnectionFactory {
 		} catch (NoSuchMethodException e) {
 			throw new VisualConnectionCreationException("visual class " + vcat.value() +
 					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + connection.getClass().getName() +"," + Element.class.getName() + ")" );
+					"(" + connection.getClass().getName() +"," + first.getClass().getName() +"," + second.getClass().getName() + ")" );
 		} catch (IllegalArgumentException e) {
 			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
 					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
