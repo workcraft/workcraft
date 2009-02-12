@@ -17,11 +17,20 @@ import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
+enum ConnectionType {POLYLINE, BEZIER};
+
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
+//	public static final int POLYLINE = 1;
+//	public static final int BEZIER = 2;
+
 	protected Connection refConnection;
 
 	protected VisualComponent first;
 	protected VisualComponent second;
+
+
+
+	protected ConnectionType connectionType = ConnectionType.POLYLINE;
 
 	protected Point2D firstCenter = new Point2D.Double();
 	protected Point2D secondCenter = new Point2D.Double();
@@ -61,10 +70,23 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		arrowLengths.put("long", 0.8);
 
 		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+		hm.put("Polyline", ConnectionType.POLYLINE);
+		hm.put("Bezier", ConnectionType.BEZIER);
+
+		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
 	}
 
 	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second) {
 		this(refConnection, first, second);
+	}
+
+	public ConnectionType getConnectionType() {
+		return connectionType;
+	}
+
+	public void setConnectionType(ConnectionType t) {
+		connectionType = t;
 	}
 
 	public Color getColor() {
