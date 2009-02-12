@@ -95,6 +95,7 @@ public class SelectionTool extends AbstractTool {
 				Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
 
 				JPopupMenu popup = so.createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
+				popup.setFocusable(false);
 
 				if (popup != null)
 					popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());

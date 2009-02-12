@@ -71,7 +71,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 	public void startup() {
 		scrollPane = new JScrollPane();
 
-		workspaceRoot = new DefaultMutableTreeNode("[new workspace]");
+		workspaceRoot = new DefaultMutableTreeNode("(default workspace)");
 
 		workspaceTree = new JTree();
 		workspaceTree.setModel(new DefaultTreeModel(workspaceRoot));

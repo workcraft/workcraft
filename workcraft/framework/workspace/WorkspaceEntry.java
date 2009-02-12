@@ -8,7 +8,7 @@ public class WorkspaceEntry {
 	private File file = null;
 	private Model model = null;
 	private boolean unsaved = false;
-
+	private boolean temporary = true;
 	private int entryID;
 	private Workspace workspace;
 
@@ -82,10 +82,21 @@ public class WorkspaceEntry {
 		if (unsaved)
 			res = "* " + res;
 
+		if (temporary)
+			res = res + " (not in workspace)";
+
 		return res;
 	}
 
 	public int getEntryID() {
 		return entryID;
+	}
+
+	public boolean isTemporary() {
+		return temporary;
+	}
+
+	public void setTemporary(boolean temporary) {
+		this.temporary = temporary;
 	}
 }
