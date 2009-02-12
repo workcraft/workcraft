@@ -1,10 +1,13 @@
 package org.workcraft.framework;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
@@ -431,6 +434,20 @@ public class Framework {
 	}
 
 	public Model load(String path) throws ModelLoadFailedException {
+		InputStream stream;
+		try {
+			stream = new FileInputStream(path);
+			try	{
+				return load(stream);
+			} finally {
+				stream.close();
+			}
+		} catch (IOException e) {
+			throw new ModelLoadFailedException ("IO Exception: " + e.getMessage());
+		}
+	}
+
+	public Model load(InputStream stream) throws ModelLoadFailedException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			org.w3c.dom.Document xmldoc;
@@ -438,7 +455,7 @@ public class Framework {
 			DocumentBuilder db;
 
 			db = dbf.newDocumentBuilder();
-			xmldoc = db.parse(new File(path));
+			xmldoc = db.parse(stream);
 
 			Element xmlroot = xmldoc.getDocumentElement();
 
@@ -475,7 +492,26 @@ public class Framework {
 		}
 	}
 
+
 	public void save(Model model, String path) throws ModelSaveFailedException {
+		try {
+			FileOutputStream stream = new FileOutputStream(path);
+			try
+			{
+				save(model, stream);
+			}
+			finally
+			{
+				stream.close();
+			}
+		} catch (FileNotFoundException e) {
+			throw new ModelSaveFailedException("File not found: "+ e.getMessage());
+		} catch (IOException e) {
+			throw new ModelSaveFailedException("IO error: "+ e.getMessage());
+		}
+	}
+
+	public void save(Model model, OutputStream output) throws ModelSaveFailedException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
@@ -507,13 +543,11 @@ public class Framework {
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			FileOutputStream fos = new FileOutputStream(path);
-
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new OutputStreamWriter(fos));
-
+			OutputStreamWriter writer = new OutputStreamWriter(output);
+			StreamResult result = new StreamResult(writer);
 			transformer.transform(source, result);
-			fos.close();
+			writer.close();
 		} catch (ParserConfigurationException e) {
 			throw new ModelSaveFailedException("XML Parser configuration error: "+ e.getMessage());
 		} catch (TransformerConfigurationException e) {

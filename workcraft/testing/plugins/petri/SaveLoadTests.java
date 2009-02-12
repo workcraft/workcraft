@@ -1,0 +1,296 @@
+package org.workcraft.testing.plugins.petri;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Random;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.workcraft.dom.Component;
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.framework.Framework;
+import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPetriNet;
+
+public class SaveLoadTests {
+
+	String testDataMathModel = "3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d225554462d3822207374616e64616c6f6e653d226e6f223f3e0d0a3c776f726b63726166742076657273696f6e3d22322e646576223e0d0a20203c6d6f64656c20636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e50657472694e6574223e0d0a202020203c4d6174684d6f64656c207469746c653d22223e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e5472616e736974696f6e223e0d0a20202020202020203c436f6d706f6e656e742049443d223422206c6162656c3d227472616e7332222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e5472616e736974696f6e223e0d0a20202020202020203c436f6d706f6e656e742049443d223322206c6162656c3d227472616e7331222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223222206c6162656c3d22706c61636533222f3e0d0a20202020202020203c506c61636520746f6b656e733d2232222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223122206c6162656c3d22706c61636532222f3e0d0a20202020202020203c506c61636520746f6b656e733d2233222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223022206c6162656c3d22706c61636531222f3e0d0a20202020202020203c506c61636520746f6b656e733d2235222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2233222066697273743d223222207365636f6e643d2234222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2232222066697273743d223322207365636f6e643d2232222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2231222066697273743d223322207365636f6e643d2231222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2230222066697273743d223022207365636f6e643d2233222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a202020203c2f4d6174684d6f64656c3e0d0a20203c2f6d6f64656c3e0d0a3c2f776f726b63726166743e0d0a";
+	String testDataVisualModel = "3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d225554462d3822207374616e64616c6f6e653d226e6f223f3e0d0a3c776f726b63726166742076657273696f6e3d22322e646576223e0d0a20203c6d6f64656c20636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e50657472694e6574223e0d0a202020203c4d6174684d6f64656c207469746c653d22223e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e5472616e736974696f6e223e0d0a20202020202020203c436f6d706f6e656e742049443d223422206c6162656c3d227472616e7332222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e5472616e736974696f6e223e0d0a20202020202020203c436f6d706f6e656e742049443d223322206c6162656c3d227472616e7331222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223222206c6162656c3d22706c61636533222f3e0d0a20202020202020203c506c61636520746f6b656e733d2232222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223122206c6162656c3d22706c61636532222f3e0d0a20202020202020203c506c61636520746f6b656e733d2233222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e7420636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e506c616365223e0d0a20202020202020203c436f6d706f6e656e742049443d223022206c6162656c3d22706c61636531222f3e0d0a20202020202020203c506c61636520746f6b656e733d2235222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2233222066697273743d223222207365636f6e643d2234222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2232222066697273743d223322207365636f6e643d2232222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2231222066697273743d223322207365636f6e643d2231222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a2020202020203c636f6e6e656374696f6e20636c6173733d226f72672e776f726b63726166742e646f6d2e436f6e6e656374696f6e223e0d0a20202020202020203c436f6e6e656374696f6e2049443d2230222066697273743d223022207365636f6e643d2233222f3e0d0a2020202020203c2f636f6e6e656374696f6e3e0d0a202020203c2f4d6174684d6f64656c3e0d0a20203c2f6d6f64656c3e0d0a20203c76697375616c2d6d6f64656c20636c6173733d226f72672e776f726b63726166742e706c7567696e732e70657472692e56697375616c50657472694e6574223e0d0a202020203c56697375616c4d6f64656c3e0d0a2020202020203c636f6d706f6e656e74207265663d2234223e0d0a20202020202020203c56697375616c5472616e73666f726d61626c654e6f646520583d22372e3330383738313930373033323930392220593d22342e313030383038313134393232303137222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e74207265663d2233223e0d0a20202020202020203c56697375616c5472616e73666f726d61626c654e6f646520583d22322e3037373134383431333039373137312220593d22332e33323731373035353935393531313138222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e74207265663d2232223e0d0a20202020202020203c56697375616c5472616e73666f726d61626c654e6f646520583d22392e3637373535393039343234313230372220593d22302e303631313731383232363537363133303036222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e74207265663d2231223e0d0a20202020202020203c56697375616c5472616e73666f726d61626c654e6f646520583d22392e3633373034373937303233323037372220593d22392e333938363533383837383139303938222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6d706f6e656e74207265663d2230223e0d0a20202020202020203c56697375616c5472616e73666f726d61626c654e6f646520583d22392e3437313934393137363633313933382220593d22392e333730383231343838393539363937222f3e0d0a2020202020203c2f636f6d706f6e656e743e0d0a2020202020203c636f6e6e656374696f6e207265663d2233222f3e0d0a2020202020203c636f6e6e656374696f6e207265663d2232222f3e0d0a2020202020203c636f6e6e656374696f6e207265663d2231222f3e0d0a2020202020203c636f6e6e656374696f6e207265663d2230222f3e0d0a202020203c2f56697375616c4d6f64656c3e0d0a20203c2f76697375616c2d6d6f64656c3e0d0a3c2f776f726b63726166743e0d0a";
+
+	InputStream stringToStream(String string) throws IOException
+	{
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(bytes);
+		writer.write(string);
+		writer.close();
+
+		return new ByteArrayInputStream(bytes.toByteArray());
+	}
+
+	@Test
+	public void TestMathModelLoad() throws Exception
+	{
+		Framework f = new Framework();
+
+		Model model = f.load(new Base16Reader(testDataMathModel));
+		PetriNet petri = (PetriNet)model.getMathModel();
+
+		Assert.assertNull(model.getVisualModel());
+		Assert.assertNotNull(petri);
+
+		assertPetriEquals(petri, buildSamplePetri());
+	}
+
+	@Test
+	public void TestVisualModelLoad() throws Exception
+	{
+		Framework f = new Framework();
+
+		Model model = f.load(new Base16Reader(testDataVisualModel));
+		VisualPetriNet petriVisual = (VisualPetriNet)model.getVisualModel();
+		PetriNet petri = (PetriNet)model.getMathModel();
+
+		Assert.assertNotNull(petriVisual);
+		Assert.assertNotNull(petri);
+
+		VisualPetriNet sample = buildSampleVisualPetri();
+		assertPetriEquals(petri, (PetriNet)sample.getMathModel());
+		assertVisualPetriEquals(petriVisual, sample);
+	}
+
+	private void assertVisualPetriEquals(VisualPetriNet petriVisual,
+			VisualPetriNet sample) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Test
+	public void GenerateSample() throws Exception
+	{
+		Framework f = new Framework();
+		StringWriter writer = new StringWriter();
+		f.save(buildSampleVisualPetri(), new Base16Writer(writer));
+		System.err.print("\"");
+		System.err.print(writer.toString());
+		System.err.println("\"");
+	}
+
+	private void assertPetriEquals(PetriNet expected, PetriNet actual) {
+		Finder<Component> componentFinder = new Finder<Component>(actual.getComponents(), new ComponentLabelExtractor());
+
+		Assert.assertEquals(expected.getComponents().size(), actual.getComponents().size());
+		for(Component component : expected.getComponents())
+			assertComponentEquals(component, componentFinder.getMatching(component));
+
+		Finder<Connection> connectionFinder = new Finder<Connection>(actual.getConnections(), new ConnectionByComponentsIdentifier(new ComponentLabelExtractor()));
+		Assert.assertEquals(expected.getConnections().size(), actual.getConnections().size());
+		for(Connection connection : expected.getConnections())
+			assertConnectionEquals(connection, connectionFinder.getMatching(connection));
+	}
+
+	private void assertConnectionEquals(Connection expected, Connection actual) {
+		assertComponentEquals(expected.getFirst(), actual.getFirst());
+		assertComponentEquals(expected.getSecond(), actual.getSecond());
+	}
+
+	int toHexchar(int ch)
+	{
+		if(ch<10)
+			return '0'+ch;
+		else
+			return 'a'+ch-10;
+	}
+
+	int fromHexchar(int ch)
+	{
+		if(ch <= 'f' && ch >= 'a')
+			return ch-'a'+10;
+		if(ch <= 'F' && ch >= 'A')
+			return ch-'A'+10;
+		if(ch <= '9' && ch >= '0')
+			return ch-'0';
+		throw new RuntimeException("Hex parse error");
+	}
+
+	class Base16Writer extends OutputStream
+	{
+		private final Writer output;
+
+		public Base16Writer(Writer output)
+		{
+			this.output = output;
+		}
+
+		@Override
+		public void write(int b) throws IOException {
+			output.write(toHexchar(b/16));
+			output.write(toHexchar(b%16));
+		}
+	}
+
+	class Base16Reader extends InputStream
+	{
+		private final Reader stringReader;
+
+		Base16Reader(String string)
+		{
+			this(new StringReader(string));
+		}
+		Base16Reader(Reader stringReader)
+		{
+			this.stringReader = stringReader;
+		}
+
+		@Override
+		public int read() throws IOException {
+			int ch1 = stringReader.read();
+			if(ch1 == -1)
+				return -1;
+			int ch2 = stringReader.read();
+			if(ch2 == -1)
+				throw new RuntimeException("Length must be even");
+
+			return fromHexchar(ch1)*16+fromHexchar(ch2);
+		}
+	}
+
+	public void assertComponentEquals(Component expected, Component actual)
+	{
+		if(expected == null)
+		{
+			Assert.assertNull(actual);
+			return;
+		}
+		Assert.assertNotNull(actual);
+
+		Class<? extends Component> type = expected.getClass();
+		Assert.assertEquals(type, actual.getClass());
+
+		Assert.assertEquals(expected.getLabel(), actual.getLabel());
+
+		if(type == Transition.class)
+			assertTransitionEquals((Transition)expected, (Transition)actual);
+		if(type == Place.class)
+			assertPlaceEquals((Place)expected, (Place)actual);
+	}
+
+	private void assertTransitionEquals(Transition expected, Transition actual) {
+	}
+
+	private void assertPlaceEquals(Place expected, Place actual) {
+		Assert.assertEquals(expected.getTokens(), actual.getTokens());
+	}
+
+	private PetriNet buildSamplePetri() throws Exception
+	{
+		return (PetriNet) buildSampleVisualPetri().getMathModel();
+	}
+
+	private VisualPetriNet buildSampleVisualPetri() throws Exception {
+		PetriNet petri = new PetriNet();
+
+		Place place1 = new Place();
+		place1.setTokens(5);
+		Place place2 = new Place();
+		place2.setTokens(3);
+		Place place3 = new Place();
+		place3.setTokens(2);
+		petri.addComponent(place1);
+		place1.setLabel("place1");
+		petri.addComponent(place2);
+		place2.setLabel("place2");
+		petri.addComponent(place3);
+		place3.setLabel("place3");
+
+		Transition trans1 = new Transition();
+		trans1.setLabel("trans1");
+		Transition trans2 = new Transition();
+		trans2.setLabel("trans2");
+
+		petri.addComponent(trans1);
+		petri.addComponent(trans2);
+
+		Connection con1 = new Connection(place1, trans1);
+		Connection con2 = new Connection(trans1, place2);
+		Connection con3 = new Connection(trans1, place3);
+		Connection con4 = new Connection(place3, trans2);
+
+		petri.addConnection(con1);
+		petri.addConnection(con2);
+		petri.addConnection(con3);
+		petri.addConnection(con4);
+
+		VisualPetriNet visual = new VisualPetriNet(petri);
+/*		VisualPlace vp1 = new VisualPlace(place1);
+		VisualPlace vp2 = new VisualPlace(place2);
+		VisualPlace vp3 = new VisualPlace(place3);
+
+		VisualTransition vt1 = new VisualTransition(trans1);
+		VisualTransition vt2 = new VisualTransition(trans2);
+
+		VisualGroup gr1 = new VisualGroup();
+		VisualGroup gr2 = new VisualGroup();
+		VisualGroup gr3 = new VisualGroup();
+
+		//todo: add components
+
+		gr1.add(vp1);
+		gr1.add(vt2);
+
+		gr2.add(gr1);
+		gr2.add(vp2);
+
+		gr3.add(vp3);
+		gr3.add(vt2);
+
+		visual.getRoot().add(gr2);
+		visual.getRoot().add(gr3);
+
+		VisualConnection vc1 = new VisualConnection(con1, vp1, vt1);
+		VisualConnection vc2 = new VisualConnection(con1, vt1, vp2);
+		VisualConnection vc3 = new VisualConnection(con1, vt1, vp3);
+		VisualConnection vc4 = new VisualConnection(con1, vp3, vt2);
+
+		visual.addConnection(vc1);
+		visual.addConnection(vc2);
+		visual.addConnection(vc3);
+		visual.addConnection(vc4);*/
+
+		r = new Random(1);
+
+		for(VisualComponent component : visual.getRoot().getComponents())
+			randomPosition(component);
+
+		/*randomPosition(vp1);
+		randomPosition(vp2);
+		randomPosition(vp3);
+
+		randomPosition(vt1);
+		randomPosition(vt2);
+
+		randomPosition(gr1);
+		randomPosition(gr2);
+		randomPosition(gr3);*/
+
+		return visual;
+	}
+	Random r;
+
+	private void randomPosition(VisualTransformableNode node) {
+		node.setX(r.nextDouble()*10);
+		node.setY(r.nextDouble()*10);
+	}
+}
