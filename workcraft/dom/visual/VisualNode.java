@@ -12,8 +12,8 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.XMLSerialisable;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -27,7 +27,7 @@ public abstract class VisualNode implements PropertyEditable {
 	private Color colorisation = null;
 	private VisualGroup parent = null;
 
-	private XMLSerialiser serialiser = new XMLSerialiser();
+	private XMLSerialisation serialiser = new XMLSerialisation();
 
 	public abstract void draw (Graphics2D g);
 
@@ -180,12 +180,12 @@ public abstract class VisualNode implements PropertyEditable {
 		propertyDeclarations.add(declaration);
 	}
 
-	public final void addXMLSerialisable(XMLSerialisable serialisable) {
-		serialiser.addXMLSerialisable(serialisable);
+	public final void addXMLSerialisable(XMLSerialiser serialisable) {
+		serialiser.addSerialiser(serialisable);
 	}
 
 	public final void serialiseToXML(Element componentElement) {
-		serialiser.serialiseToXML(componentElement);
+		serialiser.serialise(componentElement);
 	}
 
 }

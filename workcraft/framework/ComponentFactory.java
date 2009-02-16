@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.ComponentCreationException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 public class ComponentFactory {
@@ -98,7 +99,7 @@ public class ComponentFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass());
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, component.getClass());
 			VisualComponent visual = (VisualComponent) ctor.newInstance(component);
 			return visual;
 

@@ -32,7 +32,8 @@ public abstract class MathModel implements Plugin, Model {
 	private LinkedList<MathModelListener> listeners = new LinkedList<MathModelListener>();;
 
 	private HashSet<Class<? extends Component>> supportedComponents = new HashSet<Class<? extends Component>>();
-	private XMLSerialiser serialiser = new XMLSerialiser();
+
+	private XMLSerialisation serialisation = new XMLSerialisation();
 
 	private String title = "";
 
@@ -56,8 +57,8 @@ public abstract class MathModel implements Plugin, Model {
 		}
 	}
 
-	private void addXMLSerialisable() {
-		serialiser.addXMLSerialisable(new XMLSerialisable() {
+	private void addSerialisationObjects() {
+		serialisation.addSerialiser(new XMLSerialiser() {
 			public String getTagName() {
 				return MathModel.class.getSimpleName();
 			}
@@ -67,19 +68,20 @@ public abstract class MathModel implements Plugin, Model {
 				connectionsToXML(element, connections.values());
 			}
 		});
+
+		serialisation.addDeserialiser(new XMLDeserialiser() {
+			public String getTagName() {
+				return MathModel.class.getSimpleName();
+			}
+			public void deserialise(Element element) throws ModelLoadFailedException {
+				title = XmlUtil.readStringAttr(element, "title");
+				pasteFromXML(element);
+			}
+		});
 	}
 
 	public MathModel() {
-		addXMLSerialisable();
-	}
-
-	public MathModel(Element modelElement) throws ModelLoadFailedException {
-		Element mathModelElement = XmlUtil.getChildElement(MathModel.class.getSimpleName(), modelElement);
-
-		XmlUtil.readStringAttr(mathModelElement, "title");
-		pasteFromXML(mathModelElement);
-
-		addXMLSerialisable();
+		addSerialisationObjects();
 	}
 
 	abstract protected void onComponentAdded(Component component);
@@ -90,10 +92,17 @@ public abstract class MathModel implements Plugin, Model {
 
 	abstract protected void onConnectionRemoved(Connection connection);
 
+	final public void handleDeferredEvents() {
+		for (Component c : getComponents())
+			onComponentAdded(c);
+		for (Connection c: getConnections())
+			onConnectionAdded(c);
+	}
+
 	final public int addComponent(Component component) {
 		component.setID(getNextComponentID());
-
 		components.put(component.getID(), component);
+
 		onComponentAdded(component);
 
 		return component.getID();
@@ -112,6 +121,7 @@ public abstract class MathModel implements Plugin, Model {
 
 		connection.setID(getNextConnectionID());
 		connections.put(connection.getID(), connection);
+
 		onConnectionAdded(connection);
 
 		return connection.getID();
@@ -121,8 +131,16 @@ public abstract class MathModel implements Plugin, Model {
 		listeners.add(listener);
 	}
 
-	final public void addSupportedComponent(Class<? extends Component> componentClass) {
+	final public void addComponentSupport(Class<? extends Component> componentClass) {
 		supportedComponents.add(componentClass);
+	}
+
+	final public void removeComponentSupport(Class<? extends Component> componentClass) {
+		supportedComponents.remove(componentClass);
+	}
+
+	final public boolean isComponentSupported(Component component) {
+		return supportedComponents.contains(component.getClass());
 	}
 
 	public final Connection connect(Component first, Component second)
@@ -226,6 +244,9 @@ public abstract class MathModel implements Plugin, Model {
 			for (Element e : componentNodes) {
 				Component component = ComponentFactory.createComponent(e);
 
+				if (!isComponentSupported(component))
+					throw new InvalidComponentException("Unsupported component: " + component.getClass().getName());
+
 				Integer oldID = component.getID();
 				Integer newID = addComponent(component);
 
@@ -303,11 +324,20 @@ public abstract class MathModel implements Plugin, Model {
 	abstract public void validateConnection(Connection connection)
 			throws InvalidConnectionException;
 
-	public final void addXMLSerialisable(XMLSerialisable serialisable) {
-		serialiser.addXMLSerialisable(serialisable);
+	public final void addXMLSerialiser(XMLSerialiser serialiser) {
+		serialisation.addSerialiser(serialiser);
+	}
+
+	public final void addXMLDeserialiser(XMLDeserialiser deserialiser) {
+		serialisation.addDeserialiser(deserialiser);
 	}
 
 	public final void serialiseToXML(Element componentElement) {
-		serialiser.serialiseToXML(componentElement);
+		serialisation.serialise(componentElement);
 	}
+
+	public final void deserialiseFromXML(Element modelElement) throws ModelLoadFailedException {
+		serialisation.deserialise(modelElement);
+	}
+
 }

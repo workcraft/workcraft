@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.XMLSerialisable;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
@@ -23,7 +23,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 	}
 
 	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialisable(){
+		addXMLSerialisable(new XMLSerialiser(){
 			public String getTagName() {
 				return VisualTransformableNode.class.getSimpleName();
 			}

@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.dom.XMLSerialisable;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.util.XmlUtil;
 
 @DisplayName("Place")
@@ -36,7 +36,7 @@ public class Place extends Component {
 	}
 
 	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialisable(){
+		addXMLSerialisable(new XMLSerialiser(){
 			public String getTagName() {
 				return Place.class.getSimpleName();
 			}

@@ -20,38 +20,32 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 enum ConnectionType {POLYLINE, BEZIER};
 
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
-//	public static final int POLYLINE = 1;
-//	public static final int BEZIER = 2;
+	private Connection refConnection;
 
-	protected Connection refConnection;
+	private VisualComponent first;
+	private VisualComponent second;
 
-	protected VisualComponent first;
-	protected VisualComponent second;
+	private ConnectionType connectionType = ConnectionType.POLYLINE;
 
+	private Point2D firstCenter = new Point2D.Double();
+	private Point2D secondCenter = new Point2D.Double();
+	private Point2D lineStart = new Point2D.Double();
+	private Point2D lineEnd = new Point2D.Double();
+	private Point2D arrowHeadPosition = new Point2D.Double();
+	private double arrowOrientation = 0;
 
+	private static double defaultLineWidth = 0.02;
+	private static double defaultArrowWidth = 0.15;
+	private static double defaultArrowLength = 0.4;
+	private static double hitThreshold = 0.2;
+	private static Color defaultColor = Color.BLACK;
 
-	protected ConnectionType connectionType = ConnectionType.POLYLINE;
-
-	protected Point2D firstCenter = new Point2D.Double();
-	protected Point2D secondCenter = new Point2D.Double();
-	protected Point2D lineStart = new Point2D.Double();
-	protected Point2D lineEnd = new Point2D.Double();
-	protected Point2D arrowHeadPosition = new Point2D.Double();
-	protected double arrowOrientation = 0;
-
-	protected static double defaultLineWidth = 0.02;
-	protected static double defaultArrowWidth = 0.15;
-	protected static double defaultArrowLength = 0.4;
-	protected static double hitThreshold = 0.2;
-	protected static Color defaultColor = Color.BLACK;
-
-	protected Color color = defaultColor;
-	protected double lineWidth = defaultLineWidth;
-	protected double arrowWidth = defaultArrowWidth;
-	protected double arrowLength = defaultArrowLength;
+	private Color color = defaultColor;
+	private double lineWidth = defaultLineWidth;
+	private double arrowWidth = defaultArrowWidth;
+	private double arrowLength = defaultArrowLength;
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
-
 		this.refConnection = refConnection;
 		this.first = first;
 		this.second = second;

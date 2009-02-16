@@ -24,8 +24,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.XMLSerialisable;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -49,10 +49,10 @@ public class VisualModel implements Plugin, Model {
 	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
 	private HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 
-	private XMLSerialiser serialiser = new XMLSerialiser();
+	private XMLSerialisation serialiser = new XMLSerialisation();
 
 	private void addXMLSerialisable() {
-		serialiser.addXMLSerialisable(new XMLSerialisable() {
+		serialiser.addSerialiser(new XMLSerialiser() {
 			public String getTagName() {
 				return VisualModel.class.getSimpleName();
 			}
@@ -424,8 +424,8 @@ public class VisualModel implements Plugin, Model {
 		ArrayList<VisualConnection> connectionsToGroup = new ArrayList<VisualConnection>();
 		for(VisualConnection connection : currentLevel.connections)
 		{
-			if(connection.first.isDescendantOf(group) &&
-					connection.second.isDescendantOf(group))
+			if(connection.getFirst().isDescendantOf(group) &&
+					connection.getSecond().isDescendantOf(group))
 				connectionsToGroup.add(connection);
 		}
 
@@ -617,11 +617,11 @@ public class VisualModel implements Plugin, Model {
 		return currentLevel.hitObjects(selectionRect);
 	}
 
-	public final void addXMLSerialisable(XMLSerialisable serialisable) {
-		serialiser.addXMLSerialisable(serialisable);
+	public final void addXMLSerialisable(XMLSerialiser serialisable) {
+		serialiser.addSerialiser(serialisable);
 	}
 
 	public final void serialiseToXML(Element componentElement) {
-		serialiser.serialiseToXML(componentElement);
+		serialiser.serialise(componentElement);
 	}
 }

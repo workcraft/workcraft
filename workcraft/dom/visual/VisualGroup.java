@@ -21,7 +21,7 @@ import net.sf.jga.fn.UnaryFunctor;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.XMLSerialisable;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
@@ -144,7 +144,7 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialisable() {
+		addXMLSerialisable(new XMLSerialiser() {
 			public String getTagName() {
 				return VisualGroup.class.getSimpleName();
 			}

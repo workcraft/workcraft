@@ -9,10 +9,10 @@ public class Connection {
 	private Component second;
 	private int ID;
 
-	private XMLSerialiser serialiser = new XMLSerialiser();
+	private XMLSerialisation serialisation = new XMLSerialisation();
 
-	private void addXMLSerialisable() {
-		serialiser.addXMLSerialisable(new XMLSerialisable() {
+	private void addSerialisationObjects() {
+		serialisation.addSerialiser(new XMLSerialiser() {
 			public void serialise(Element element) {
 				XmlUtil.writeIntAttr(element, "ID", ID);
 				XmlUtil.writeIntAttr(element, "first", first.getID());
@@ -28,7 +28,7 @@ public class Connection {
 		this.first = first;
 		this.second = second;
 
-		addXMLSerialisable();
+		addSerialisationObjects();
 	}
 
 	public Connection (Element connectionElement, MathModel model) {
@@ -41,7 +41,7 @@ public class Connection {
 		first = model.getComponentByRenamedID(firstID);
 		second = model.getComponentByRenamedID(secondID);
 
-		addXMLSerialisable();
+		addSerialisationObjects();
 	}
 
 	final public int getID() {
@@ -60,11 +60,11 @@ public class Connection {
 		return second;
 	}
 
-	final public void addXMLSerialisable (XMLSerialisable serialisable) {
-		serialiser.addXMLSerialisable(serialisable);
+	final public void addXMLSerialisable (XMLSerialiser serialisable) {
+		serialisation.addSerialiser(serialisable);
 	}
 
 	final public void serialiseToXML(Element componentElement) {
-		serialiser.serialiseToXML(componentElement);
+		serialisation.serialise(componentElement);
 	}
 }

@@ -8,15 +8,19 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
+import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
+import org.workcraft.framework.util.ConstructorParametersMatcher;
 
 public class ModelFactory {
 	public static MathModel createModel (Element modelElement) throws ModelInstantiationException {
 		try{
 			String className = modelElement.getAttribute("class");
 			Class<?> modelClass = Class.forName(className);
-			Constructor<?> ctor = modelClass.getConstructor(Element.class);
-			return (MathModel)ctor.newInstance(modelElement);
+			Constructor<?> ctor = modelClass.getConstructor();
+			MathModel model = (MathModel)ctor.newInstance();
+			model.deserialiseFromXML(modelElement);
+			return model;
 		} catch (IllegalArgumentException e) {
 			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getMessage());
 		} catch (SecurityException e) {
@@ -30,6 +34,8 @@ public class ModelFactory {
 		} catch (NoSuchMethodException e) {
 			throw new ModelInstantiationException("Cannot instantiate model: missing constructor: \n" + e.getMessage());
 		} catch (ClassNotFoundException e) {
+			throw new ModelInstantiationException("Cannot instatniate model: \n" + e.getMessage());
+		} catch (ModelLoadFailedException e) {
 			throw new ModelInstantiationException("Cannot instatniate model: \n" + e.getMessage());
 		}
 	}
@@ -45,7 +51,7 @@ public class ModelFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(model.getClass());
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, model.getClass());
 			Object visual = ctor.newInstance(model);
 
 			if (!VisualModel.class.isAssignableFrom(visual.getClass()))

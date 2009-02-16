@@ -15,10 +15,10 @@ public abstract class Component {
 	private HashSet<Component> preset = new HashSet<Component>();
 	private HashSet<Component> postset = new HashSet<Component>();
 
-	private XMLSerialiser serialiser = new XMLSerialiser();
+	private XMLSerialisation serialisation = new XMLSerialisation();
 
-	private void addXMLSerialisable() {
-		serialiser.addXMLSerialisable(new XMLSerialisable() {
+	private void addSerialisationObjects() {
+		serialisation.addSerialiser(new XMLSerialiser() {
 			public void serialise(Element element) {
 				XmlUtil.writeIntAttr(element, "ID", Component.this.ID);
 				XmlUtil.writeStringAttr(element, "label", Component.this.label);
@@ -30,14 +30,14 @@ public abstract class Component {
 	}
 
 	public Component() {
-		addXMLSerialisable();
+		addSerialisationObjects();
 	}
 
 	public Component (Element componentElement) {
 		Element element = XmlUtil.getChildElement(Component.class.getSimpleName(), componentElement);
 		ID = XmlUtil.readIntAttr(element, "ID", ID);
 		label = XmlUtil.readStringAttr(element, "label");
-		addXMLSerialisable();
+		addSerialisationObjects();
 	}
 
 	final public String getLabel() {
@@ -94,11 +94,11 @@ public abstract class Component {
 		return (Set<Component>)postset.clone();
 	}
 
-	final public void addXMLSerialisable(XMLSerialisable serialisable) {
-		serialiser.addXMLSerialisable(serialisable);
+	final public void addXMLSerialisable(XMLSerialiser serialisable) {
+		serialisation.addSerialiser(serialisable);
 	}
 
 	final public void serialiseToXML(Element componentElement) {
-		serialiser.serialiseToXML(componentElement);
+		serialisation.serialise(componentElement);
 	}
 }

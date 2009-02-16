@@ -2,51 +2,43 @@ package org.workcraft.plugins.petri;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 public class PetriNet extends MathModel {
-	private HashSet<Place> places;
-	private HashSet<Transition> transitions;
+	private HashSet<Place> places = new HashSet<Place>();
+	private HashSet<Transition> transitions = new HashSet<Transition>();
 
 	public PetriNet() {
 		super();
 		addSupportedComponents();
 	}
 
-	public PetriNet(Element xmlElement) throws ModelLoadFailedException {
-		super(xmlElement);
-		addSupportedComponents();
-	}
-
 	private void addSupportedComponents() {
-		addSupportedComponent(Place.class);
-		addSupportedComponent(Transition.class);
+		addComponentSupport(Place.class);
+		addComponentSupport(Transition.class);
 	}
 
 	protected void onComponentAdded(Component component) {
 		if (component instanceof Place)
-			getPlacesSet().add((Place)component);
+			places.add((Place)component);
 		else if (component instanceof Transition)
-			getTransitionsSet().add((Transition)component);
+			transitions.add((Transition)component);
 	}
 
 	protected void onComponentRemoved (Component component) {
 		if (component instanceof Place)
-			getPlacesSet().remove(component);
+			places.remove(component);
 		else if (component instanceof Transition)
-			getTransitionsSet().remove(component);
+			transitions.remove(component);
 	}
 
 	public void validate() throws ModelValidationException {
@@ -72,18 +64,6 @@ public class PetriNet extends MathModel {
 		newTransition.setLabel(label);
 		addComponent(newTransition);
 		return newTransition;
-	}
-
-	private Set<Place> getPlacesSet() {
-		if (places == null)
-			places = new HashSet<Place>();
-		return places;
-	}
-
-	private Set<Transition> getTransitionsSet() {
-		if (transitions == null)
-			transitions = new HashSet<Transition>();
-		return transitions;
 	}
 
 	final public Collection<Place> getPlaces() {
