@@ -15,7 +15,6 @@ public class ConstructorParametersMatcher
 		public final Constructor<?> constructor;
 		private final Class<?>[] parameterTypes;
 
-		@Override
 		public Class<?>[] getParameterTypes() {
 			return parameterTypes;
 		}

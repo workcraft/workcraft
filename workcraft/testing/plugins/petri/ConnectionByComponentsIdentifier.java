@@ -12,7 +12,6 @@ interface KeyProvider<T>
 
 class ComponentLabelExtractor implements KeyProvider<Component>
 {
-	@Override
 	public Object getKey(Component component) {
 		return component.getLabel();
 	}
@@ -73,7 +72,6 @@ class ConnectionByComponentsIdentifier implements
 				this.componentKeyProvider = componentKeyProvider;
 	}
 
-	@Override
 	public Object getKey(Connection item) {
 
 		return new Pair(componentKeyProvider.getKey(item.getFirst()),

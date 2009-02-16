@@ -231,7 +231,9 @@ public class SelectionTool extends AbstractTool {
 				break;
 			case KeyEvent.VK_V:
 				try {
+					clearSelection(e.getModel());
 					e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition);
+					e.getModel().fireSelectionChanged();
 					e.getEditor().repaint();
 				} catch (PasteException e1) {
 					JOptionPane.showMessageDialog(null, "Paste failed:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

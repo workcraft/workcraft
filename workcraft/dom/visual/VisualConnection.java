@@ -10,6 +10,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
@@ -20,10 +21,10 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 enum ConnectionType {POLYLINE, BEZIER};
 
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
-	private Connection refConnection;
-
+	protected Connection refConnection;
 	private VisualComponent first;
 	private VisualComponent second;
+	protected LinkedList<Point2D> pathPoint = new LinkedList<Point2D>();
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
 
@@ -64,7 +65,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		arrowLengths.put("long", 0.8);
 
 		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
+
 		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
 		hm.put("Polyline", ConnectionType.POLYLINE);
 		hm.put("Bezier", ConnectionType.BEZIER);
 

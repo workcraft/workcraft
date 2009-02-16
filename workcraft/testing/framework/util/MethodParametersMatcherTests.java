@@ -110,7 +110,6 @@ public class MethodParametersMatcherTests {
 			this.method = method;
 		}
 
-		@Override
 		public Class<?>[] getParameterTypes() {
 			return method.getParameterTypes();
 		}
