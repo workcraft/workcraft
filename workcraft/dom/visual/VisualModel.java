@@ -548,13 +548,13 @@ public class VisualModel implements Plugin, Model {
 		clipboard.setContents(new TransferableDocument(doc), clipboardOwner);
 	}
 
-	public void paste(Clipboard clipboard, Point2D where) throws PasteException {
+	public Collection<VisualNode> paste(Clipboard clipboard, Point2D where) throws PasteException {
 		try {
 			Document doc = (Document)clipboard.getData(TransferableDocument.DOCUMENT_FLAVOR);
 
 			Element root = doc.getDocumentElement();
 			if (!root.getTagName().equals("workcraft-clipboard-contents"))
-				return;
+				return null;
 
 			Element mathModelElement = XmlUtil.getChildElement("model", root);
 			Element visualModelElement = XmlUtil.getChildElement("visual-model", root);
@@ -563,14 +563,15 @@ public class VisualModel implements Plugin, Model {
 				throw new PasteException("Structure of clipboard XML is invalid.");
 
 			mathModel.pasteFromXML(mathModelElement);
-			select(pasteFromXML(visualModelElement, where));
+			return pasteFromXML(visualModelElement, where);
 		} catch (UnsupportedFlavorException e) {
-			return;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ModelLoadFailedException e) {
 			throw new PasteException (e.getMessage());
 		}
+
+		return null;
 	}
 
 	public void select(Collection<VisualNode> nodes) {

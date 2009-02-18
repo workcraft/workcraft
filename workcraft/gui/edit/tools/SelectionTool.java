@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
@@ -64,6 +65,11 @@ public class SelectionTool extends AbstractTool {
 	protected void addToSelection(VisualModel model, VisualNode so) {
 		model.addToSelection(so);
 		so.setColorisation(selectionColor);
+	}
+
+	protected void addToSelection(VisualModel model, Collection<VisualNode> s) {
+		for (VisualNode n : s)
+			addToSelection(model, n);
 	}
 
 	protected void removeFromSelection(VisualModel model, VisualNode so) {
@@ -232,7 +238,7 @@ public class SelectionTool extends AbstractTool {
 			case KeyEvent.VK_V:
 				try {
 					clearSelection(e.getModel());
-					e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition);
+					addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
 					e.getModel().fireSelectionChanged();
 					e.getEditor().repaint();
 				} catch (PasteException e1) {
