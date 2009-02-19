@@ -174,6 +174,41 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
+	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes, Point2D offset) {
+		Point2D tp = new Point2D.Double();
+
+		for (VisualNode node : nodes) {
+			if (node instanceof VisualComponent) {
+				VisualComponent vc = (VisualComponent)node;
+				tp=vc.getPosition();
+				vc.setX(vc.getX()+offset.getX());
+				vc.setY(vc.getY()+offset.getY());
+				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
+				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
+				vc.serialiseToXML(vcompElement);
+				vc.setX(tp.getX());
+				vc.setY(tp.getY());
+
+			} else if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				// TODO: do the path points offset?
+				//
+				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
+				XmlUtil.writeIntAttr(vconElement, "ref", vc.getReferencedConnection().getID());
+				vc.serialiseToXML(vconElement);
+			} else if (node instanceof VisualGroup) {
+				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
+				VisualGroup vg = (VisualGroup)node;
+				tp=vg.getPosition();
+				vg.setX(vg.getX()+offset.getX());
+				vg.setY(vg.getY()+offset.getY());
+				((VisualGroup)node).serialiseToXML(childGroupElement);
+				vg.setX(tp.getX());
+				vg.setY(tp.getY());
+			}
+		}
+	}
+
 	private void gatherReferences(Collection<VisualNode> nodes, LinkedList<Component> referencedComponents, LinkedList<Connection> referencedConnections) {
 		for (VisualNode n : nodes)
 			if (n instanceof VisualComponent)
@@ -194,7 +229,17 @@ public class VisualModel implements Plugin, Model {
 
 		gatherReferences (selection, referencedComponents, referencedConnections);
 
-		VisualModel.nodesToXML(visualElement, selection);
+		// find the middle? point of the selection
+		Rectangle2D selectionBB = new Rectangle2D.Double();
+		selectionBB = selection.getFirst().getBoundingBoxInParentSpace();
+
+		for (VisualNode vn: selection) {
+			Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
+		}
+		// offset the elements of the selection
+		Point2D offset = new Point2D.Double(-selectionBB.getCenterX(), -selectionBB.getCenterY());
+
+		VisualModel.nodesToXML(visualElement, selection, offset);
 		MathModel.componentsToXML(mathElement, referencedComponents);
 		MathModel.connectionsToXML(mathElement, referencedConnections);
 	}
