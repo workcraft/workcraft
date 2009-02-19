@@ -58,10 +58,9 @@ public class VisualSignalTransition extends VisualTransition {
 		directions.put("+", SignalTransition.Direction.PLUS);
 		directions.put("-", SignalTransition.Direction.MINUS);
 
-
-		addPropertyDeclaration(new PropertyDeclaration("Signal type", "getType", "setType", SignalTransition.Type.class, types));
 		addPropertyDeclaration(new PropertyDeclaration("Signal name", "getSignalName", "setSignalName", String.class));
 		addPropertyDeclaration(new PropertyDeclaration("Transition", "getDirection", "setDirection", SignalTransition.Direction.class, directions));
+		addPropertyDeclaration(new PropertyDeclaration("Signal type", "getType", "setType", SignalTransition.Type.class, types));
 	}
 
 	@Override
