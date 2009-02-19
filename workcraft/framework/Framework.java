@@ -40,6 +40,8 @@ import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.ModelLoadFailedException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
+import org.workcraft.framework.interop.ExternalProcess;
+import org.workcraft.framework.interop.ExternalProcessListener;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
@@ -582,5 +584,29 @@ public class Framework {
 
 	public boolean isGUIRestartRequested() {
 		return GUIRestartRequested;
+	}
+
+	public void external() {
+		ExternalProcessListener listener = new ExternalProcessListener() {
+			public void errorData(byte[] data) {
+				System.out.println ("Error data: " + new String(data));
+			}
+
+			public void outputData(byte[] data) {
+				System.out.println ("Output data: " + new String(data));
+			}
+
+			public void processFinished(int returnCode) {
+				System.out.println ("Process finished: " + returnCode);
+			}
+		};
+
+		ExternalProcess test = new ExternalProcess(new String[] { "test" }, null);
+		test.addListener(listener);
+		try {
+			test.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

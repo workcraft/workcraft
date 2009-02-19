@@ -105,6 +105,58 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 	}
 
+	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
+			double diameter, double borderWidth, Color tokenColor,	Graphics2D g) {
+		Shape shape;
+		if (tokens == 1)
+		{
+			shape = new Ellipse2D.Double(
+					-singleTokenSize / 2,
+					-singleTokenSize / 2,
+					singleTokenSize,
+					singleTokenSize);
+
+			g.setColor(tokenColor);
+			g.fill(shape);
+		}
+		else
+			if (tokens > 1 && tokens < 8)
+			{
+				double al = Math.PI / tokens;
+				if (tokens == 7) al = Math.PI / 6;
+
+				double r = (diameter / 2 - borderWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
+				double R = r / Math.sin(al);
+
+				r -= multipleTokenSeparation;
+
+				for(int i = 0; i < tokens; i++)
+				{
+					if (i == 6)
+						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
+					else
+						shape = new Ellipse2D.Double(
+								-R * Math.sin(i * al * 2) - r,
+								-R * Math.cos(i * al * 2) - r,
+								r * 2,
+								r * 2);
+
+					g.setColor(tokenColor);
+					g.fill(shape);
+				}
+			}
+			else if (tokens > 7)
+			{
+				String out = Integer.toString(tokens);
+				Font superFont = g.getFont().deriveFont((float)size/2);
+
+				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
+				g.setFont(superFont);
+				g.setColor(tokenColor);
+				g.drawString(Integer.toString(tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+			}
+	}
+
 	@Override
 	protected void drawInLocalSpace(Graphics2D g)
 	{
@@ -122,53 +174,7 @@ public class VisualPlace extends VisualComponent {
 
 		Place p = (Place)getReferencedComponent();
 
-		if (p.tokens == 1)
-		{
-			shape = new Ellipse2D.Double(
-					-singleTokenSize / 2,
-					-singleTokenSize / 2,
-					singleTokenSize,
-					singleTokenSize);
-
-			g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
-			g.fill(shape);
-		}
-		else
-			if (p.tokens > 1 && p.tokens < 8)
-			{
-				double al = Math.PI / p.tokens;
-				if (p.tokens == 7) al = Math.PI / 6;
-
-				double r = (size / 2 - strokeWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
-				double R = r / Math.sin(al);
-
-				r -= multipleTokenSeparation;
-
-				for(int i = 0; i < p.tokens; i++)
-				{
-					if (i == 6)
-						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
-					else
-						shape = new Ellipse2D.Double(
-								-R * Math.sin(i * al * 2) - r,
-								-R * Math.cos(i * al * 2) - r,
-								r * 2,
-								r * 2);
-
-					g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
-					g.fill(shape);
-				}
-			}
-			else if (p.tokens > 7)
-			{
-				String out = Integer.toString(p.tokens);
-				Font superFont = g.getFont().deriveFont((float)size/2);
-
-				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
-				g.setFont(superFont);
-				g.setColor(Coloriser.colorise(userTokenColor, getColorisation()));
-				g.drawString(Integer.toString(p.tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
-			}
+		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(userTokenColor, getColorisation()), g);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {

@@ -5,10 +5,9 @@ import org.workcraft.dom.VisualClass;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Transition;
 
-@DisplayName("Signal Transition Graph (STG)")
+@DisplayName("Signal Transition Graph")
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
 public class STG extends PetriNet {
-
 	public STG() {
 		super();
 		addSupportedComponents();
@@ -18,4 +17,5 @@ public class STG extends PetriNet {
 		addComponentSupport(SignalTransition.class);
 		removeComponentSupport(Transition.class);
 	}
+
 }

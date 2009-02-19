@@ -13,18 +13,17 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
-import org.workcraft.dom.Component;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualModelListener;
+import org.workcraft.dom.visual.VisualModelEventListener;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
-public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelListener, PropertyChangeListener, GraphEditor {
+public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelEventListener, GraphEditor {
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -142,62 +141,62 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		return workspaceEntry;
 	}
 
-	public void visualNodePropertyChanged(VisualNode n) {
-		repaint();
-		mainWindow.getPropertyView().repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onComponentPropertyChanged(Component c) {
-		repaint();
-		mainWindow.getPropertyView().repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onConnectionPropertyChanged(Connection c) {
-		repaint();
-		mainWindow.getPropertyView().repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onModelStructureChanged() {
-		repaint();
-		mainWindow.getPropertyView().repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onLayoutChanged() {
-		repaint();
-		mainWindow.getPropertyView().repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
 	public void onSelectionChanged() {
 		repaint();
 
 		VisualNode selection[] = visualModel.getSelection();
 		if (selection.length == 1 && selection[0] instanceof PropertyEditable) {
-
-			PropertyEditable p = mainWindow.getPropertyView().getObject();
-
-			if (p!=null)
-				p.removeListener(this);
-
-			((PropertyEditable)selection[0]).addListener(this);
 			mainWindow.getPropertyView().setObject((PropertyEditable)selection[0]);
-
 		} else {
 			mainWindow.getPropertyView().clearObject();
 		}
 	}
 
-	public void onPropertyChanged(String propertyName, Object sender) {
-		visualModel.fireLayoutChanged();
+	public MainWindow getMainWindow() {
+		return mainWindow;
+	}
+
+	@Override
+	public void onComponentAdded(VisualComponent component) {
+		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
+	@Override
+	public void onComponentPropertyChanged(String propertyName,
+			VisualComponent component) {
+		repaint();
+		workspaceEntry.setUnsaved(true);
+	}
 
-	public MainWindow getMainWindow() {
-		return mainWindow;
+	@Override
+	public void onComponentRemoved(VisualComponent component) {
+		repaint();
+		workspaceEntry.setUnsaved(true);
+	}
+
+	@Override
+	public void onConnectionAdded(VisualConnection connection) {
+		repaint();
+		workspaceEntry.setUnsaved(true);
+	}
+
+	@Override
+	public void onConnectionPropertyChanged(String propertyName,
+			VisualConnection connection) {
+		repaint();
+		workspaceEntry.setUnsaved(true);
+	}
+
+	@Override
+	public void onConnectionRemoved(VisualConnection connection) {
+		repaint();
+		workspaceEntry.setUnsaved(true);
+	}
+
+	@Override
+	public void onLayoutChanged() {
+		repaint();
+		workspaceEntry.setUnsaved(true);
 	}
 }

@@ -20,7 +20,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
-public abstract class MathModel implements Plugin, Model {
+public abstract class MathModel implements Plugin, Model, ReferenceResolver {
 	private int componentIDCounter = 0;
 	private int connectionIDCounter = 0;;
 
@@ -91,13 +91,6 @@ public abstract class MathModel implements Plugin, Model {
 	abstract protected void onConnectionAdded(Connection connection);
 
 	abstract protected void onConnectionRemoved(Connection connection);
-
-	final public void handleDeferredEvents() {
-		for (Component c : getComponents())
-			onComponentAdded(c);
-		for (Connection c: getConnections())
-			onConnectionAdded(c);
-	}
 
 	final public int addComponent(Component component) {
 		component.setID(getNextComponentID());

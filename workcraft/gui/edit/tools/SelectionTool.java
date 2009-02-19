@@ -281,7 +281,6 @@ public class SelectionTool extends AbstractTool {
 				node.firePropertyChanged("transform");
 			}
 
-
 		model.fireLayoutChanged();
 	}
 

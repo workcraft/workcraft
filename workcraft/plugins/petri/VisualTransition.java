@@ -15,12 +15,12 @@ import org.workcraft.gui.Coloriser;
 
 @HotKeyDeclaration(KeyEvent.VK_T)
 public class VisualTransition extends VisualComponent {
-	protected static double size = 1;
-	protected static float strokeWidth = 0.1f;
-	protected static Color defaultBorderColor = Color.BLACK;
-	protected static Color defaultFillColor = Color.WHITE;
-	protected Color userBorderColor = defaultBorderColor;
-	protected Color userFillColor = defaultFillColor;
+	private final static double size = 1;
+	private final static float strokeWidth = 0.1f;
+	private static Color defaultBorderColor = Color.BLACK;
+	private static Color defaultFillColor = Color.WHITE;
+	private Color userBorderColor = defaultBorderColor;
+	private Color userFillColor = defaultFillColor;
 
 	public VisualTransition(Transition transition) {
 		super(transition);

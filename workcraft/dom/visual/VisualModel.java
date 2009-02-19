@@ -40,11 +40,23 @@ import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.util.XmlUtil;
 
 public class VisualModel implements Plugin, Model {
+
+	class VisualPropertyChangeListener implements PropertyChangeListener {
+		public void onPropertyChanged(String propertyName, Object sender) {
+			if (sender instanceof VisualComponent)
+				fireComponentPropertyChanged(propertyName, (VisualComponent)sender);
+			else if (sender instanceof VisualConnection)
+				fireConnectionPropertyChanged(propertyName, (VisualConnection)sender);
+		}
+	}
+
+	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
+
 	private MathModel mathModel;
 	private VisualGroup root;
 
 	private LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
-	private LinkedList<VisualModelListener> listeners = new LinkedList<VisualModelListener>();
+	private LinkedList<VisualModelEventListener> listeners = new LinkedList<VisualModelEventListener>();
 
 	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
 	private HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
@@ -323,46 +335,31 @@ public class VisualModel implements Plugin, Model {
 		return mathModel.getDisplayName();
 	}
 
-	public void addListener(VisualModelListener listener) {
+	public void addListener(VisualModelEventListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeListener(VisualModelListener listener) {
+	public void removeListener(VisualModelEventListener listener) {
 		listeners.remove(listener);
 	}
 
-	public void fireModelStructureChanged() {
-		for (VisualModelListener l : listeners)
-			l.onModelStructureChanged();
-		mathModel.fireModelStructureChanged();
+	public void fireComponentPropertyChanged(String propertyName, VisualComponent c) {
+		for (VisualModelEventListener l : listeners)
+			l.onComponentPropertyChanged(propertyName, c);
 	}
 
-	public void fireComponentPropertyChanged(Component c) {
-		for (VisualModelListener l : listeners)
-			l.onComponentPropertyChanged(c);
-
-		mathModel.fireComponentPropertyChanged(c);
-	}
-
-	public void fireConnectionPropertyChanged(Connection c) {
-		for (VisualModelListener l : listeners)
-			l.onConnectionPropertyChanged(c);
-
-		mathModel.fireConnectionPropertyChanged(c);
-	}
-
-	public void fireVisualNodePropertyChanged(VisualNode n) {
-		for (VisualModelListener l : listeners)
-			l.visualNodePropertyChanged(n);
+	public void fireConnectionPropertyChanged(String propertyName, VisualConnection c) {
+		for (VisualModelEventListener l : listeners)
+			l.onConnectionPropertyChanged(propertyName, c);
 	}
 
 	public void fireLayoutChanged() {
-		for (VisualModelListener l : listeners)
+		for (VisualModelEventListener l : listeners)
 			l.onLayoutChanged();
 	}
 
 	public void fireSelectionChanged() {
-		for (VisualModelListener l : listeners)
+		for (VisualModelEventListener l : listeners)
 			l.onSelectionChanged();
 	}
 
@@ -390,35 +387,37 @@ public class VisualModel implements Plugin, Model {
 
 		group.add(ret);
 		addConnection(ret);
-		connectionAdded(ret);
 
-		fireModelStructureChanged();
 		return ret;
 	}
 
 	public final void addComponent(VisualComponent component) {
 		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
-		componentAdded(component);
+		component.addListener(propertyChangeListener);
+
+		fireComponentAdded(component);
+	}
+
+	private void fireComponentAdded(VisualComponent component) {
+		for (VisualModelEventListener l : listeners)
+			l.onComponentAdded(component);
 	}
 
 	public final void addConnection(VisualConnection connection) {
 		connection.getFirst().addConnection(connection);
 		connection.getSecond().addConnection(connection);
 
-		refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
-		connectionAdded(connection);
+		if (connection.getReferencedConnection() != null)
+			refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
+
+		connection.addListener(propertyChangeListener);
+
+		fireConnectionAdded(connection);
 	}
 
-	protected void componentAdded(VisualComponent component) {
-	}
-
-	protected void connectionAdded(VisualConnection connection) {
-	}
-
-	protected void componentRemoved(VisualComponent component) {
-	}
-
-	protected void connectionRemoved(VisualConnection connection) {
+	private void fireConnectionAdded(VisualConnection connection) {
+		for (VisualModelEventListener l : listeners)
+			l.onConnectionAdded(connection);
 	}
 
 	public ArrayList<Class<? extends GraphEditorTool>> getAdditionalToolClasses() {
@@ -522,8 +521,15 @@ public class VisualModel implements Plugin, Model {
 		selection.remove(component);
 		component.getParent().remove(component);
 
+		component.removeListener(propertyChangeListener);
 		refIDToVisualComponentMap.remove(component.getReferencedComponent().getID());
-		componentRemoved(component);
+
+		fireComponentRemoved(component);
+	}
+
+	private void fireComponentRemoved(VisualComponent component) {
+		for (VisualModelEventListener l : listeners)
+			l.onComponentRemoved(component);
 	}
 
 	protected void removeConnection(VisualConnection connection) {
@@ -534,10 +540,16 @@ public class VisualModel implements Plugin, Model {
 		connection.getParent().remove(connection);
 		selection.remove(connection);
 
+		connection.removeListener(propertyChangeListener);
 		refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
-		connectionRemoved(connection);
+
+		fireConnectionRemoved(connection);
 	}
 
+	private void fireConnectionRemoved(VisualConnection connection) {
+		for (VisualModelEventListener l : listeners)
+			l.onConnectionRemoved(connection);
+	}
 
 	private void removeNodes(Collection<VisualNode> nodes) {
 		LinkedList<VisualConnection> connectionsToRemove = new LinkedList<VisualConnection>();
@@ -633,6 +645,7 @@ public class VisualModel implements Plugin, Model {
 	public VisualComponent getComponentByRefID(Integer id) {
 		return refIDToVisualComponentMap.get(id);
 	}
+
 
 	private Point2D transformToCurrentSpace(Point2D pointInRootSpace)
 	{

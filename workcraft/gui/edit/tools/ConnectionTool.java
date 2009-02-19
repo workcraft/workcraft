@@ -50,7 +50,8 @@ public class ConnectionTool extends AbstractTool {
 	protected void drawHighlight(Graphics2D g, VisualModel model, VisualComponent comp) {
 		try {
 			Rectangle2D rect = comp.getBoundingBoxInAncestorSpace(model.getRoot());
-			g.draw(getBoundingCircle(rect));
+			rect.setRect(rect.getX()-0.1, rect.getY()-0.1, rect.getWidth()+0.2, rect.getHeight()+0.2);
+			g.draw(rect);;
 		} catch (NotAnAncestorException e) {
 			e.printStackTrace();
 		}

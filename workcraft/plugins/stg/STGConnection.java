@@ -1,20 +1,57 @@
 package org.workcraft.plugins.stg;
 
-import org.w3c.dom.Element;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.VisualPlace;
 
 public class STGConnection extends VisualConnection {
+	private Place implicitPlace;
+//	private Connection refCon1;
+//	private Connection refCon2;
 
-	public STGConnection(Connection refConnection, Element xmlElement,
-			VisualComponent first, VisualComponent second) {
-		super(refConnection, xmlElement, first, second);
+	private static double tokenSpaceSize = 1;
+	private static double singleTokenSize = tokenSpaceSize * 0.4;
+	private static double multipleTokenSeparation = 0.01;
+
+	private static Color tokenColor = Color.BLACK;
+
+
+	public STGConnection (VisualComponent first, VisualComponent second, Connection refCon1, Connection refCon2, Place implicitPlace) {
+		super(null, first, second);
+		//this.refCon1 = refCon1;
+		//this.refCon2 = refCon2;
+		this.implicitPlace = implicitPlace;
+
+		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 	}
 
-	public STGConnection(Connection refConnection, VisualComponent first,
-			VisualComponent second) {
-		super(refConnection, first, second);
+	@Override
+	public void draw(Graphics2D g) {
+		super.draw(g);
+
+		int tokens = implicitPlace.getTokens();
+
+		Point2D p = getPointOnConnection(0.5);
+
+		g.translate(p.getX(), p.getY());
+		VisualPlace.drawTokens(tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, Coloriser.colorise(tokenColor, getColorisation()), g);
 	}
+
+	public int getTokens() {
+		return implicitPlace.getTokens();
+	}
+
+	public void setTokens(int tokens) {
+		implicitPlace.setTokens(tokens);
+	}
+
 
 }

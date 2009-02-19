@@ -221,6 +221,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	@Override
 	public void draw(Graphics2D g) {
+		AffineTransform save = g.getTransform();
+
 		g.setColor(Coloriser.colorise(color, getColorisation()));
 		g.setStroke(new BasicStroke((float)lineWidth));
 
@@ -237,6 +239,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		arrowShape.closePath();
 
 		g.fill(arrowShape);
+
+		g.setTransform(save);
 	}
 
 	public Connection getReferencedConnection() {
@@ -277,6 +281,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			return 0;
 	}
 
+	@Override
 	public Rectangle2D getBoundingBoxInParentSpace() {
 		Rectangle2D bb = new Rectangle2D.Double(lineStart.getX(), lineStart.getY(), 0, 0);
 		bb.add(arrowHeadPosition);
@@ -297,7 +302,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void onPropertyChanged(String propertyName, Object sender) {
-		if (propertyName.equals("transform"))
+		if (propertyName.equals("X") || propertyName.equals("Y") || propertyName.equals("transform"))
 			update();
 	}
 
