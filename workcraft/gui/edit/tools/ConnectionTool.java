@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
@@ -11,30 +12,23 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class ConnectionTool extends AbstractTool {
-	VisualComponent mouseOverObject;
-	VisualComponent first;
-	VisualComponent second;
+	private VisualNode mouseOverObject = null;
+	private VisualNode first = null;
 
-	boolean mouseExitRequiredForSelfLoop = true;
-	boolean leftFirst = false;
-	boolean validConnection = false;
-	Point2D lastMouseCoords;
-	String warningMessage = null;
+	private boolean mouseExitRequiredForSelfLoop = true;
+	private boolean leftFirst = false;
+	private Point2D lastMouseCoords;
+	private String warningMessage = null;
+
+	private static Color highlightColor = Color.YELLOW.darker();
 
 	public ConnectionTool () {
-		first = null;
-		second = null;
-		mouseOverObject = null;
 		lastMouseCoords = new Point2D.Double();
 	}
 
@@ -47,28 +41,12 @@ public class ConnectionTool extends AbstractTool {
 		return new Ellipse2D.Double(boundingRect.getCenterX() - r, boundingRect.getCenterY() - r, r*2, r*2);
 	}
 
-	protected void drawHighlight(Graphics2D g, VisualModel model, VisualComponent comp) {
-		try {
-			Rectangle2D rect = comp.getBoundingBoxInAncestorSpace(model.getRoot());
-			rect.setRect(rect.getX()-0.1, rect.getY()-0.1, rect.getWidth()+0.2, rect.getHeight()+0.2);
-			g.draw(rect);;
-		} catch (NotAnAncestorException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
 
-		if (first == null) {
-			if (mouseOverObject != null) {
-				g.setColor(Color.BLUE);
-				drawHighlight (g, editor.getModel(), mouseOverObject);
-			}
-		} else {
+		if (first != null) {
 			VisualGroup root = editor.getModel().getRoot();
-
 			warningMessage = null;
 			if (mouseOverObject != null) {
 				try {
@@ -78,7 +56,6 @@ public class ConnectionTool extends AbstractTool {
 					warningMessage = e.getMessage();
 					drawConnectingLine(g, root, Color.RED);
 				}
-				drawHighlight(g, editor.getModel(), mouseOverObject);
 			} else {
 				drawConnectingLine(g, root, Color.BLUE);
 			}
@@ -106,7 +83,18 @@ public class ConnectionTool extends AbstractTool {
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
-		mouseOverObject = e.getModel().getRoot().hitComponent(e.getPosition());
+
+		VisualNode newMouseOverObject = e.getModel().getRoot().hitNode(e.getPosition());
+
+		if (mouseOverObject != newMouseOverObject) {
+			if (mouseOverObject != null) {
+				mouseOverObject.clearColorisation();
+			}
+			if (newMouseOverObject != null)
+				newMouseOverObject.setColorisation(highlightColor);
+		}
+
+		mouseOverObject = newMouseOverObject;
 
 		if (!leftFirst && mouseExitRequiredForSelfLoop) {
 			if (mouseOverObject == first)
@@ -124,6 +112,7 @@ public class ConnectionTool extends AbstractTool {
 			if (first == null) {
 				if (mouseOverObject != null) {
 					first = mouseOverObject;
+					first.setColorisation(highlightColor);
 					leftFirst = false;
 					mouseMoved(e);
 				}
@@ -132,20 +121,24 @@ public class ConnectionTool extends AbstractTool {
 					e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+						first.clearColorisation();
 						first = mouseOverObject;
+						first.setColorisation(highlightColor);
 						mouseOverObject = null;
 					} else {
+						first.clearColorisation();
 						first = null;
 					}
 				} catch (InvalidConnectionException e1) {
-					JOptionPane.showMessageDialog(null, e1.getMessage(), "Invalid connection", JOptionPane.ERROR_MESSAGE);
-					first = null;
-					warningMessage = null;
+					Toolkit.getDefaultToolkit().beep();
 				}
 
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			first = null;
+			if (first != null) {
+				first.clearColorisation();
+				first = null;
+			}
 			mouseOverObject = null;
 		}
 

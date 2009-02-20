@@ -223,7 +223,7 @@ public class VisualGroup extends VisualTransformableNode {
 		}
 	}
 
-	protected void remove (VisualNode node) {
+	public void remove (VisualNode node) {
 		node.setParent(null);
 		children.remove(node);
 

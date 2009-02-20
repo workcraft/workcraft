@@ -14,8 +14,8 @@ import org.workcraft.plugins.petri.VisualPlace;
 
 public class STGConnection extends VisualConnection {
 	private Place implicitPlace;
-//	private Connection refCon1;
-//	private Connection refCon2;
+	private Connection refCon1;
+	private Connection refCon2;
 
 	private static double tokenSpaceSize = 1;
 	private static double singleTokenSize = tokenSpaceSize * 0.4;
@@ -26,8 +26,8 @@ public class STGConnection extends VisualConnection {
 
 	public STGConnection (VisualComponent first, VisualComponent second, Connection refCon1, Connection refCon2, Place implicitPlace) {
 		super(null, first, second);
-		//this.refCon1 = refCon1;
-		//this.refCon2 = refCon2;
+		this.refCon1 = refCon1;
+		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;
 
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
@@ -51,6 +51,18 @@ public class STGConnection extends VisualConnection {
 
 	public void setTokens(int tokens) {
 		implicitPlace.setTokens(tokens);
+	}
+
+	public Place getImplicitPlace() {
+		return implicitPlace;
+	}
+
+	public Connection getRefCon1() {
+		return refCon1;
+	}
+
+	public Connection getRefCon2() {
+		return refCon2;
 	}
 
 

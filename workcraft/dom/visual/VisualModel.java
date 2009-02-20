@@ -59,7 +59,7 @@ public class VisualModel implements Plugin, Model {
 	private LinkedList<VisualModelEventListener> listeners = new LinkedList<VisualModelEventListener>();
 
 	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
-	private HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
+	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 
 	private XMLSerialisation serialiser = new XMLSerialisation();
 
@@ -375,13 +375,22 @@ public class VisualModel implements Plugin, Model {
 		return selection.toArray(new VisualNode[0]);
 	}
 
-	public void validateConnection(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
-		mathModel.validateConnection(new Connection (first.getReferencedComponent(), second.getReferencedComponent()));
+	public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+		if (first instanceof VisualComponent && second instanceof VisualComponent) {
+			mathModel.validateConnection(new Connection (((VisualComponent)first).getReferencedComponent(),
+				((VisualComponent)second).getReferencedComponent()));
+		}
+		else throw new InvalidConnectionException("Only connections between components are allowed");
 	}
 
-	public VisualConnection connect(VisualComponent first, VisualComponent second) throws InvalidConnectionException {
-		Connection con = mathModel.connect(first.getReferencedComponent(), second.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, first, second);
+	public VisualConnection connect(VisualNode first, VisualNode second) throws InvalidConnectionException {
+		validateConnection(first, second);
+
+		VisualComponent firstComponent = (VisualComponent)first;
+		VisualComponent secondComponent = (VisualComponent)second;
+
+		Connection con = mathModel.connect(firstComponent.getReferencedComponent(), secondComponent.getReferencedComponent());
+		VisualConnection ret = new VisualConnection(con, firstComponent, secondComponent);
 
 		VisualGroup group = VisualNode.getCommonParent(first, second);
 
@@ -546,7 +555,7 @@ public class VisualModel implements Plugin, Model {
 		fireConnectionRemoved(connection);
 	}
 
-	private void fireConnectionRemoved(VisualConnection connection) {
+	protected void fireConnectionRemoved(VisualConnection connection) {
 		for (VisualModelEventListener l : listeners)
 			l.onConnectionRemoved(connection);
 	}
@@ -682,5 +691,9 @@ public class VisualModel implements Plugin, Model {
 
 	public final void serialiseToXML(Element componentElement) {
 		serialiser.serialise(componentElement);
+	}
+
+	protected VisualPropertyChangeListener getPropertyChangeListener() {
+		return propertyChangeListener;
 	}
 }

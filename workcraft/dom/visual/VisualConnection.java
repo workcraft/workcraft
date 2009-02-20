@@ -135,7 +135,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		return new Point2D.Double(firstCenter.getX() * (1-t) + secondCenter.getX() * t, firstCenter.getY() * (1-t) + secondCenter.getY() * t);
 	}
 
-	protected Point2D getPointOnConnection(double t) {
+	public Point2D getPointOnConnection(double t) {
 		return new Point2D.Double(lineStart.getX() * (1-t) + arrowHeadPosition.getX() * t, lineStart.getY() * (1-t) + arrowHeadPosition.getY() * t);
 	}
 

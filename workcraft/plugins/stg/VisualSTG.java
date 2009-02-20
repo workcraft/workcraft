@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg;
 
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
@@ -65,36 +66,142 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 	private HashSet<VisualSignalTransition> transitions = new HashSet<VisualSignalTransition>();
 
 	@Override
-	public void validateConnection(VisualComponent first, VisualComponent second)
-			throws InvalidConnectionException {
-		if (first instanceof VisualPlace)
+	public void validateConnection(VisualNode first, VisualNode second)
+	throws InvalidConnectionException {
+		if (first instanceof VisualPlace) {
 			if (second instanceof VisualPlace)
 				throw new InvalidConnectionException ("Connections between places are not allowed");
+			if (second instanceof VisualConnection)
+				throw new InvalidConnectionException ("Connections between places and implicit places are not allowed");
+		}
 
+		if (first instanceof VisualSignalTransition) {
+			if (second instanceof VisualConnection)
+				if (! (second  instanceof STGConnection))
+					throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
+		}
+
+		if (first instanceof VisualConnection) {
+			if (!(first instanceof STGConnection))
+				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
+			if (second instanceof VisualConnection)
+				throw new InvalidConnectionException ("Connections between arcs are not allowed");
+			if (second instanceof VisualPlace)
+				throw new InvalidConnectionException ("Connections between places and implicit places are not allowed");
+
+			STGConnection con = (STGConnection) first;
+			if (con.getFirst() == second || con.getSecond() == second)
+				throw new InvalidConnectionException ("Arc already exists");
+		}
 	}
 
 	@Override
-	public VisualConnection connect(VisualComponent first,
-			VisualComponent second) throws InvalidConnectionException {
-		if (first instanceof VisualSignalTransition && second instanceof VisualSignalTransition) {
-			STG mathModel = (STG)getMathModel();
-			VisualSignalTransition t1 = (VisualSignalTransition) first;
-			VisualSignalTransition t2 = (VisualSignalTransition) second;
+	public VisualConnection connect(VisualNode first,
+			VisualNode second) throws InvalidConnectionException {
 
-			Place implicitPlace = mathModel.createPlace("");
-			Connection con1 = mathModel.connect(t1.getReferencedTransition(), implicitPlace);
-			Connection con2 = mathModel.connect(implicitPlace, t2.getReferencedTransition());
+		validateConnection(first, second);
 
-			STGConnection connection = new STGConnection(first, second, con1, con2, implicitPlace);
+		if (first instanceof VisualSignalTransition) {
+			if (second instanceof VisualSignalTransition) {
+				STG mathModel = (STG)getMathModel();
+				VisualSignalTransition t1 = (VisualSignalTransition) first;
+				VisualSignalTransition t2 = (VisualSignalTransition) second;
 
-			VisualGroup group = VisualNode.getCommonParent(first, second);
+				Place implicitPlace = mathModel.createPlace("");
+				Connection con1 = mathModel.connect(t1.getReferencedTransition(), implicitPlace);
+				Connection con2 = mathModel.connect(implicitPlace, t2.getReferencedTransition());
 
-			group.add(connection);
-			addConnection(connection);
+				STGConnection connection = new STGConnection((VisualComponent)first, (VisualComponent)second, con1, con2, implicitPlace);
 
-			return connection;
+				VisualGroup group = VisualNode.getCommonParent(first, second);
+
+				group.add(connection);
+				addConnection(connection);
+
+				return connection;
+			} else if (second instanceof STGConnection) {
+				STGConnection con = (STGConnection)second;
+				VisualGroup group = con.getParent();
+
+				Place implicitPlace = con.getImplicitPlace();
+
+				VisualPlace place = new VisualPlace(implicitPlace);
+				Point2D p = con.getPointOnConnection(0.5);
+				place.setX(p.getX()); place.setY(p.getY());
+
+				VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
+				VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
+
+				addComponent(place);
+				addConnection(con1);
+				addConnection(con2);
+				group.add(place);
+				group.add(con1);
+				group.add(con2);
+
+				removeVisualConnectionOnly(con);
+
+				return super.connect(first, place);
+			}
+		}
+
+		if (first instanceof STGConnection)
+			if (second instanceof VisualSignalTransition) {
+				STGConnection con = (STGConnection)first;
+				VisualGroup group = con.getParent();
+
+				Place implicitPlace = con.getImplicitPlace();
+
+				VisualPlace place = new VisualPlace(implicitPlace);
+				Point2D p = con.getPointOnConnection(0.5);
+				place.setX(p.getX()); place.setY(p.getY());
+
+				VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
+				VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
+
+				addComponent(place);
+				addConnection(con1);
+				addConnection(con2);
+				group.add(place);
+				group.add(con1);
+				group.add(con2);
+
+				removeVisualConnectionOnly(con);
+
+				return super.connect(place, second);
+
+			}
+
+
+
+		return super.connect(first, second);
+	}
+
+	private void removeVisualConnectionOnly(VisualConnection connection) {
+		connection.getParent().remove(connection);
+		selection().remove(connection);
+		connection.removeListener(getPropertyChangeListener());
+	}
+
+	@Override
+	protected void removeConnection(VisualConnection connection) {
+		if (connection instanceof STGConnection) {
+			connection.getFirst().removeConnection(connection);
+			connection.getSecond().removeConnection(connection);
+
+			getMathModel().removeConnection(((STGConnection) connection).getRefCon1());
+			getMathModel().removeConnection(((STGConnection) connection).getRefCon2());
+			getMathModel().removeComponent(((STGConnection) connection).getImplicitPlace());
+
+			connection.getParent().remove(connection);
+			selection().remove(connection);
+
+			connection.removeListener(getPropertyChangeListener());
+
+			fireConnectionRemoved(connection);
+
 		} else {
-			return super.connect(first, second);
+			super.removeConnection(connection);
 		}
 	}
 
