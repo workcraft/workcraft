@@ -156,45 +156,38 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		return mainWindow;
 	}
 
-	@Override
 	public void onComponentAdded(VisualComponent component) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onComponentPropertyChanged(String propertyName,
 			VisualComponent component) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onComponentRemoved(VisualComponent component) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onConnectionAdded(VisualConnection connection) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onConnectionPropertyChanged(String propertyName,
 			VisualConnection connection) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onConnectionRemoved(VisualConnection connection) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	@Override
 	public void onLayoutChanged() {
 		repaint();
 		workspaceEntry.setUnsaved(true);

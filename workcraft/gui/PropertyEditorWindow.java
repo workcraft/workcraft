@@ -52,7 +52,6 @@ public class PropertyEditorWindow extends JPanel implements PropertyChangeListen
 
 	}
 
-	@Override
 	public void onPropertyChanged(String propertyName, Object sender) {
 		repaint();
 	}
