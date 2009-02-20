@@ -10,6 +10,8 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 public abstract class VisualComponent extends VisualTransformableNode {
 	private Component refComponent = null;
 	private HashSet<VisualConnection> connections = new HashSet<VisualConnection>();
+	private HashSet<VisualComponent> preset = new HashSet<VisualComponent>();
+	private HashSet<VisualComponent> postset = new HashSet<VisualComponent>();
 	private String label = "";
 
 	private void addPropertyDeclarations() {
@@ -35,10 +37,21 @@ public abstract class VisualComponent extends VisualTransformableNode {
 
 	final public void addConnection(VisualConnection connection) {
 		connections.add(connection);
+
+		if (connection.getFirst() == this)
+			postset.add(connection.getSecond());
+		else
+			preset.add(connection.getFirst());
+
 	}
 
 	final public void removeConnection(VisualConnection connection) {
 		connections.remove(connection);
+
+		if (connection.getFirst() == this)
+			postset.remove(connection.getSecond());
+		else
+			preset.remove(connection.getFirst());
 	}
 
 	final public Component getReferencedComponent() {
@@ -51,6 +64,14 @@ public abstract class VisualComponent extends VisualTransformableNode {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	final public Set<VisualComponent> getPreset() {
+		return new HashSet<VisualComponent>(preset);
+	}
+
+	final public Set<VisualComponent> getPostset() {
+		return new HashSet<VisualComponent>(postset);
 	}
 
 }

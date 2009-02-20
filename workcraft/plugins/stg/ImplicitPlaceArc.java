@@ -12,19 +12,20 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 
-public class STGConnection extends VisualConnection {
+public class ImplicitPlaceArc extends VisualConnection {
 	private Place implicitPlace;
 	private Connection refCon1;
 	private Connection refCon2;
 
-	private static double tokenSpaceSize = 1;
-	private static double singleTokenSize = tokenSpaceSize * 0.4;
-	private static double multipleTokenSeparation = 0.01;
+	private static double tokenSpaceSize = 0.8;
+	private static double singleTokenSize = tokenSpaceSize / 1.9;
+	private static double multipleTokenSeparation = 0.0125;
+
 
 	private static Color tokenColor = Color.BLACK;
 
 
-	public STGConnection (VisualComponent first, VisualComponent second, Connection refCon1, Connection refCon2, Place implicitPlace) {
+	public ImplicitPlaceArc (VisualComponent first, VisualComponent second, Connection refCon1, Connection refCon2, Place implicitPlace) {
 		super(null, first, second);
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;

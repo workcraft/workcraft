@@ -77,19 +77,19 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 
 		if (first instanceof VisualSignalTransition) {
 			if (second instanceof VisualConnection)
-				if (! (second  instanceof STGConnection))
+				if (! (second  instanceof ImplicitPlaceArc))
 					throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
 		}
 
 		if (first instanceof VisualConnection) {
-			if (!(first instanceof STGConnection))
+			if (!(first instanceof ImplicitPlaceArc))
 				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
 			if (second instanceof VisualConnection)
 				throw new InvalidConnectionException ("Connections between arcs are not allowed");
 			if (second instanceof VisualPlace)
 				throw new InvalidConnectionException ("Connections between places and implicit places are not allowed");
 
-			STGConnection con = (STGConnection) first;
+			ImplicitPlaceArc con = (ImplicitPlaceArc) first;
 			if (con.getFirst() == second || con.getSecond() == second)
 				throw new InvalidConnectionException ("Arc already exists");
 		}
@@ -111,7 +111,7 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 				Connection con1 = mathModel.connect(t1.getReferencedTransition(), implicitPlace);
 				Connection con2 = mathModel.connect(implicitPlace, t2.getReferencedTransition());
 
-				STGConnection connection = new STGConnection((VisualComponent)first, (VisualComponent)second, con1, con2, implicitPlace);
+				ImplicitPlaceArc connection = new ImplicitPlaceArc((VisualComponent)first, (VisualComponent)second, con1, con2, implicitPlace);
 
 				VisualGroup group = VisualNode.getCommonParent(first, second);
 
@@ -119,8 +119,8 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 				addConnection(connection);
 
 				return connection;
-			} else if (second instanceof STGConnection) {
-				STGConnection con = (STGConnection)second;
+			} else if (second instanceof ImplicitPlaceArc) {
+				ImplicitPlaceArc con = (ImplicitPlaceArc)second;
 				VisualGroup group = con.getParent();
 
 				Place implicitPlace = con.getImplicitPlace();
@@ -145,9 +145,9 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 			}
 		}
 
-		if (first instanceof STGConnection)
+		if (first instanceof ImplicitPlaceArc)
 			if (second instanceof VisualSignalTransition) {
-				STGConnection con = (STGConnection)first;
+				ImplicitPlaceArc con = (ImplicitPlaceArc)first;
 				VisualGroup group = con.getParent();
 
 				Place implicitPlace = con.getImplicitPlace();
@@ -183,15 +183,43 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 		connection.removeListener(getPropertyChangeListener());
 	}
 
+	private void removeVisualComponentOnly(VisualComponent component) {
+		component.getParent().remove(component);
+		selection().remove(component);
+		component.removeListener(getPropertyChangeListener());
+	}
+
+	private void makeImplicit (VisualPlace place) {
+		Connection refCon1 = null, refCon2 = null;
+		for (VisualConnection con:	place.getConnections()) {
+			if (con.getFirst() == place)
+				refCon1 = con.getReferencedConnection();
+			else if (con.getSecond() == place)
+				refCon2 = con.getReferencedConnection();
+
+			removeVisualConnectionOnly(con);
+		}
+
+		removeVisualComponentOnly(place);
+
+		VisualComponent first = place.getPreset().iterator().next();
+		VisualComponent second = place.getPostset().iterator().next();
+
+		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
+
+		VisualNode.getCommonParent(first, second).add(con);
+		addConnection(con);
+	}
+
 	@Override
 	protected void removeConnection(VisualConnection connection) {
-		if (connection instanceof STGConnection) {
+		if (connection instanceof ImplicitPlaceArc) {
 			connection.getFirst().removeConnection(connection);
 			connection.getSecond().removeConnection(connection);
 
-			getMathModel().removeConnection(((STGConnection) connection).getRefCon1());
-			getMathModel().removeConnection(((STGConnection) connection).getRefCon2());
-			getMathModel().removeComponent(((STGConnection) connection).getImplicitPlace());
+			getMathModel().removeConnection(((ImplicitPlaceArc) connection).getRefCon1());
+			getMathModel().removeConnection(((ImplicitPlaceArc) connection).getRefCon2());
+			getMathModel().removeComponent(((ImplicitPlaceArc) connection).getImplicitPlace());
 
 			connection.getParent().remove(connection);
 			selection().remove(connection);
@@ -202,6 +230,19 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 
 		} else {
 			super.removeConnection(connection);
+
+			VisualComponent c1 = connection.getFirst();
+			VisualComponent c2 = connection.getSecond();
+			VisualPlace place = null;
+
+			if (c1 instanceof VisualPlace)
+				place = (VisualPlace)c1;
+			if (c2 instanceof VisualPlace)
+				place = (VisualPlace)c2;
+
+			if (place!=null)
+				if (place.getPreset().size() == 1 && place.getPostset().size() == 1)
+					makeImplicit (place);
 		}
 	}
 

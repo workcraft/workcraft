@@ -209,4 +209,8 @@ public class VisualPlace extends VisualComponent {
 
 		return popup;
 	}
+
+	public Place getReferencedPlace() {
+		return (Place)getReferencedComponent();
+	}
 }
