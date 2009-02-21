@@ -68,6 +68,11 @@ public abstract class VisualTransformableNode extends VisualNode {
 		transformChanged();
 	}
 
+	public void setPosition(Point2D pos) {
+		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
+		transformChanged();
+	}
+
 	public Point2D getPosition() {
 		return new Point2D.Double(getX(), getY());
 	}

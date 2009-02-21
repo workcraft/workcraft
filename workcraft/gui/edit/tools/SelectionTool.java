@@ -209,13 +209,43 @@ public class SelectionTool extends AbstractTool {
 
 		if (!e.isCtrlDown())
 		{
-			switch (e.getKeyCode()) {
-			case KeyEvent.VK_PAGE_UP:
-				currentLevelUp(e);
-				break;
-			case KeyEvent.VK_PAGE_DOWN:
-				currentLevelDown(e);
-				break;
+			if (!e.isShiftDown()) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_PAGE_UP:
+					currentLevelUp(e);
+					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					currentLevelDown(e);
+					break;
+				case KeyEvent.VK_OPEN_BRACKET:
+					e.getModel().rotateSelection(-Math.PI/2);
+					break;
+				case KeyEvent.VK_CLOSE_BRACKET:
+					e.getModel().rotateSelection(Math.PI/2);
+					break;
+				case KeyEvent.VK_LEFT:
+					e.getModel().translateSelection(-1,0);
+					break;
+				case KeyEvent.VK_RIGHT:
+					e.getModel().translateSelection(1,0);
+					break;
+				case KeyEvent.VK_UP:
+					e.getModel().translateSelection(0,-1);
+					break;
+				case KeyEvent.VK_DOWN:
+					e.getModel().translateSelection(0,1);
+					break;
+				}
+			} else { // Shift is pressed
+
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					e.getModel().scaleSelection(-1,1);
+					break;
+				case KeyEvent.VK_UP:
+					e.getModel().scaleSelection(1,-1);
+					break;
+				}
 			}
 		}
 

@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -24,8 +25,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.XMLSerialisation;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -168,22 +169,7 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes) {
-		for (VisualNode node : nodes) {
-			if (node instanceof VisualComponent) {
-				VisualComponent vc = (VisualComponent)node;
-				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
-				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
-				vc.serialiseToXML(vcompElement);
-			} else if (node instanceof VisualConnection) {
-				VisualConnection vc = (VisualConnection)node;
-				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
-				XmlUtil.writeIntAttr(vconElement, "ref", vc.getReferencedConnection().getID());
-				vc.serialiseToXML(vconElement);
-			} else if (node instanceof VisualGroup) {
-				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
-				((VisualGroup)node).serialiseToXML(childGroupElement);
-			}
-		}
+		nodesToXML(parentElement, nodes, new Point2D.Double(0,0));
 	}
 
 	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes, Point2D offset) {
@@ -193,13 +179,21 @@ public class VisualModel implements Plugin, Model {
 			if (node instanceof VisualComponent) {
 				VisualComponent vc = (VisualComponent)node;
 				tp=vc.getPosition();
-				vc.setX(vc.getX()+offset.getX());
-				vc.setY(vc.getY()+offset.getY());
+
+				if (offset.getX()!=0&&offset.getY()!=0) {
+					// quick and dirty :(
+					vc.setX(vc.getX()+offset.getX());
+					vc.setY(vc.getY()+offset.getY());
+				}
+
 				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
 				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
 				vc.serialiseToXML(vcompElement);
-				vc.setX(tp.getX());
-				vc.setY(tp.getY());
+
+				if (offset.getX()!=0&&offset.getY()!=0) {
+					vc.setX(tp.getX());
+					vc.setY(tp.getY());
+				}
 
 			} else if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
@@ -212,11 +206,16 @@ public class VisualModel implements Plugin, Model {
 				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
 				VisualGroup vg = (VisualGroup)node;
 				tp=vg.getPosition();
-				vg.setX(vg.getX()+offset.getX());
-				vg.setY(vg.getY()+offset.getY());
+				if (offset.getX()!=0&&offset.getY()!=0) {
+					vg.setX(vg.getX()+offset.getX());
+					vg.setY(vg.getY()+offset.getY());
+				}
 				((VisualGroup)node).serialiseToXML(childGroupElement);
-				vg.setX(tp.getX());
-				vg.setY(tp.getY());
+
+				if (offset.getX()!=0&&offset.getY()!=0) {
+					vg.setX(tp.getX());
+					vg.setY(tp.getY());
+				}
 			}
 		}
 	}
@@ -231,6 +230,92 @@ public class VisualModel implements Plugin, Model {
 				gatherReferences( ((VisualGroup)n).getChildren(), referencedComponents, referencedConnections);
 	}
 
+	public Rectangle2D getSelectionBoundingBox() {
+		Rectangle2D selectionBB = new Rectangle2D.Double();
+
+		if (selection.isEmpty()) return selectionBB;
+
+		selectionBB = selection.getFirst().getBoundingBoxInParentSpace();
+
+		for (VisualNode vn: selection) {
+			Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
+		}
+		return selectionBB;
+	}
+
+	/*
+	 * Apply transformation to each node position, if possible
+	 * @author Stan
+	 */
+	public void transformNodePosition(Collection<VisualNode> nodes, AffineTransform t) {
+		assert nodes!=null;
+		Point2D np;
+		for (VisualNode node: nodes) {
+			if (node instanceof VisualGroup) {
+				//TODO: group rotate
+/*				VisualGroup vg=(VisualGroup)node;
+				Point2D offset = new Point2D.Double(0,0);
+				AffineTransform gt = vg.getAncestorToParentTransform(vg.getParent());
+				gt.transform(offset, offset);
+				gt.
+				*/
+				//.transform(pointInParentSpace, _tmpPoint)
+
+			} else if (node instanceof VisualConnection) {
+				//TODO: any path point translations for connections
+			} else if (node instanceof VisualTransformableNode) {
+				// for all movable objects
+				VisualTransformableNode vn=(VisualTransformableNode)node;
+				np=vn.getPosition();
+				t.transform(np, np);
+				vn.setPosition(np);
+			}
+		}
+	}
+
+	public void translateSelection(double tx, double ty) {
+		AffineTransform t = new AffineTransform();
+
+		t.translate(tx, ty);
+
+		Point2D np;
+		for (VisualNode node: selection) {
+			if (node instanceof VisualTransformableNode) {
+				// translate all movable objects
+				VisualTransformableNode vn=(VisualTransformableNode)node;
+				np=vn.getPosition();
+				t.transform(np, np);
+				vn.setPosition(np);
+			}
+		}
+	}
+
+	public void scaleSelection(double sx, double sy) {
+		Rectangle2D selectionBB = getSelectionBoundingBox();
+		// create rotation matrix
+		AffineTransform t = new AffineTransform();
+
+		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
+		t.scale(sx, sy);
+		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
+
+		// translate nodes by t
+		transformNodePosition(selection, t);
+	}
+
+	public void rotateSelection(double theta) {
+		Rectangle2D selectionBB = getSelectionBoundingBox();
+		// create rotation matrix
+		AffineTransform t = new AffineTransform();
+
+		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
+		t.rotate(theta);
+		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
+
+		// translate nodes by t
+		transformNodePosition(selection, t);
+	}
+
 	private void selectionToXML(Element xmlElement) {
 		Element mathElement = XmlUtil.createChildElement("model", xmlElement);
 		XmlUtil.writeStringAttr(mathElement, "class", getMathModel().getClass().getName());
@@ -241,13 +326,7 @@ public class VisualModel implements Plugin, Model {
 
 		gatherReferences (selection, referencedComponents, referencedConnections);
 
-		// find the middle? point of the selection
-		Rectangle2D selectionBB = new Rectangle2D.Double();
-		selectionBB = selection.getFirst().getBoundingBoxInParentSpace();
-
-		for (VisualNode vn: selection) {
-			Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
-		}
+		Rectangle2D selectionBB = getSelectionBoundingBox();
 		// offset the elements of the selection
 		Point2D offset = new Point2D.Double(-selectionBB.getCenterX(), -selectionBB.getCenterY());
 
