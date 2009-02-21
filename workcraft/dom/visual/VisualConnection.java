@@ -236,7 +236,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 
 		//  find connection line ending point
-		t = 0.0; dt = 1.0;
+		dt = t; t = 0.0;
+
 		while(dt > 1e-6)
 		{
 			dt /= 2.0;
