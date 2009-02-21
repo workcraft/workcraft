@@ -20,7 +20,6 @@ import net.sf.jga.fn.UnaryFunctor;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
@@ -144,7 +143,7 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialiser() {
+		addXMLSerialiser(new XMLSerialiser() {
 			public String getTagName() {
 				return VisualGroup.class.getSimpleName();
 			}
@@ -181,12 +180,7 @@ public class VisualGroup extends VisualTransformableNode {
 		List<Element> connectionNodes = XmlUtil.getChildElements("connection", groupElement);
 
 		for (Element vconElement : connectionNodes) {
-			int ref = XmlUtil.readIntAttr(vconElement, "ref", -1);
-			Connection refConnection = model.getMathModel().getConnectionByRenamedID(ref);
-			if (refConnection == null)
-				throw new VisualConnectionCreationException ("a visual connection references to the model connection with ID=" +
-						vconElement.getAttribute("ref") + " which was not found");
-			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(vconElement, model);
+			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(vconElement, model.getReferenceResolver());
 			add(visualConnection);
 			model.addConnection(visualConnection);
 		}
@@ -301,6 +295,20 @@ public class VisualGroup extends VisualTransformableNode {
 			Point2D pointInChildSpace = new Point2D.Double();
 			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
 			result = group.hitComponent(pointInChildSpace);
+			if(result!=null)
+				return result;
+		}
+		return null;
+	}
+
+	public VisualConnection hitConnection(Point2D pointInLocalSpace) {
+		VisualConnection result = hitVisualNode(pointInLocalSpace, connections);
+		if(result!=null)
+			return result;
+		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
+			Point2D pointInChildSpace = new Point2D.Double();
+			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
+			result = group.hitConnection(pointInChildSpace);
 			if(result!=null)
 				return result;
 		}

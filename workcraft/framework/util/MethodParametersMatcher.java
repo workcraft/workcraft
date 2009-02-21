@@ -55,7 +55,7 @@ public class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInf
 
 	private void matchByParameters(Class<?>[] parameters) {
 		for(int i=methods.size(); --i>=0;)
-			if(!matches(parameters, methods.get(i).getParameterTypes()))
+			if(!matches(methods.get(i).getParameterTypes(), parameters))
 				remove(i);
 	}
 
@@ -63,7 +63,7 @@ public class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInf
 		if(expected.length != actual.length)
 			return false;
 		for(int i=0;i<expected.length;i++)
-			if(!expected[i].isAssignableFrom(actual[i]))
+			if(!actual[i].isAssignableFrom(expected[i]))
 				return false;
 		return true;
 	}

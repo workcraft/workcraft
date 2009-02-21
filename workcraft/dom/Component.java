@@ -94,7 +94,7 @@ public abstract class Component {
 		return (Set<Component>)postset.clone();
 	}
 
-	final public void addXMLSerialisable(XMLSerialiser serialisable) {
+	final public void addXMLSerialiser(XMLSerialiser serialisable) {
 		serialisation.addSerialiser(serialisable);
 	}
 

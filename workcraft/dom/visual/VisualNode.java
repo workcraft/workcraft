@@ -27,7 +27,7 @@ public abstract class VisualNode implements PropertyEditable {
 	private Color colorisation = null;
 	private VisualGroup parent = null;
 
-	private XMLSerialisation serialiser = new XMLSerialisation();
+	private XMLSerialisation serialisation = new XMLSerialisation();
 
 	public abstract void draw (Graphics2D g);
 
@@ -180,12 +180,12 @@ public abstract class VisualNode implements PropertyEditable {
 		propertyDeclarations.add(declaration);
 	}
 
-	public final void addXMLSerialisable(XMLSerialiser serialisable) {
-		serialiser.addSerialiser(serialisable);
+	public final void addXMLSerialiser(XMLSerialiser serialiser) {
+		serialisation.addSerialiser(serialiser);
 	}
 
 	public final void serialiseToXML(Element componentElement) {
-		serialiser.serialise(componentElement);
+		serialisation.serialise(componentElement);
 	}
 
 }

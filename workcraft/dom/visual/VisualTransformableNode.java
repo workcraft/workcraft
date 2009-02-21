@@ -22,8 +22,8 @@ public abstract class VisualTransformableNode extends VisualNode {
 		addPropertyDeclaration(new PropertyDeclaration("Y", "getY", "setY", double.class));
 	}
 
-	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialiser(){
+	private void addXMLSerialiser() {
+		addXMLSerialiser(new XMLSerialiser(){
 			public String getTagName() {
 				return VisualTransformableNode.class.getSimpleName();
 			}
@@ -37,13 +37,13 @@ public abstract class VisualTransformableNode extends VisualNode {
 	public VisualTransformableNode() {
 		super();
 		addPropertyDeclarations();
-		addXMLSerialisable();
+		addXMLSerialiser();
 	}
 
 	public VisualTransformableNode (Element visualNodeElement) {
 		super();
 		addPropertyDeclarations();
-		addXMLSerialisable();
+		addXMLSerialiser();
 
 		Element vnodeElement = XmlUtil.getChildElement(VisualTransformableNode.class.getSimpleName(), visualNodeElement);
 		setX (XmlUtil.readDoubleAttr(vnodeElement, "X", 0));

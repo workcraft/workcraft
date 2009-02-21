@@ -51,7 +51,22 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
+	public class RenamedVisualReferenceResolver implements VisualReferenceResolver {
+		public VisualComponent getComponentByRefID(int ID) {
+			return VisualModel.this.getComponentByRefID(ID);
+		}
+
+		public Component getComponentByID(int ID) {
+			return mathModel.getReferenceResolver().getComponentByID(ID);
+		}
+
+		public Connection getConnectionByID(int ID) {
+			return mathModel.getReferenceResolver().getConnectionByID(ID);
+		}
+	}
+
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
+	private RenamedVisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
 
 	private MathModel mathModel;
 	private VisualGroup root;
@@ -93,7 +108,7 @@ public class VisualModel implements Plugin, Model {
 
 			for (Connection connection : model.getConnections()) {
 
-				VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, this);
+				VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
 				if (visualConnection != null) {
 					root.add(visualConnection);
 					addConnection(visualConnection);
@@ -117,7 +132,7 @@ public class VisualModel implements Plugin, Model {
 			Element element = XmlUtil.getChildElement(VisualModel.class.getSimpleName(), visualModelElement);
 			pasteFromXML(element, new Point2D.Double(0,0));
 		} catch (PasteException e) {
-			throw new VisualModelInstantiationException("pasteFromXML failed: " + e.getMessage());
+			throw new VisualModelInstantiationException(e);
 		}
 
 		addXMLSerialisable();
@@ -153,69 +168,37 @@ public class VisualModel implements Plugin, Model {
 			}
 
 			for (Element e: conElements) {
-				VisualConnection vcon = ConnectionFactory.createVisualConnection(e, this);
+				VisualConnection vcon = ConnectionFactory.createVisualConnection(e, getReferenceResolver());
 				currentLevel.add(vcon);
+				addConnection(vcon);
 
 				pasted.add(vcon);
 			}
 
 			return pasted;
 		} catch (VisualConnectionCreationException e) {
-			throw new PasteException ("Cannot create visual connection: " + e.getMessage());
+			throw new PasteException (e);
 
 		} catch (VisualComponentCreationException e) {
-			throw new PasteException ("Cannot create visual component: " + e.getMessage());
+			throw new PasteException (e);
 		}
 	}
 
 	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes) {
-		nodesToXML(parentElement, nodes, new Point2D.Double(0,0));
-	}
-
-	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes, Point2D offset) {
-		Point2D tp = new Point2D.Double();
-
 		for (VisualNode node : nodes) {
 			if (node instanceof VisualComponent) {
 				VisualComponent vc = (VisualComponent)node;
-				tp=vc.getPosition();
-
-				if (offset.getX()!=0&&offset.getY()!=0) {
-					// quick and dirty :(
-					vc.setX(vc.getX()+offset.getX());
-					vc.setY(vc.getY()+offset.getY());
-				}
-
 				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
 				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
 				vc.serialiseToXML(vcompElement);
-
-				if (offset.getX()!=0&&offset.getY()!=0) {
-					vc.setX(tp.getX());
-					vc.setY(tp.getY());
-				}
-
 			} else if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
-				// TODO: do the path points offset?
-				//
 				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
-				XmlUtil.writeIntAttr(vconElement, "ref", vc.getReferencedConnection().getID());
+				XmlUtil.writeStringAttr(vconElement, "class", vc.getClass().getName());
 				vc.serialiseToXML(vconElement);
 			} else if (node instanceof VisualGroup) {
 				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
-				VisualGroup vg = (VisualGroup)node;
-				tp=vg.getPosition();
-				if (offset.getX()!=0&&offset.getY()!=0) {
-					vg.setX(vg.getX()+offset.getX());
-					vg.setY(vg.getY()+offset.getY());
-				}
 				((VisualGroup)node).serialiseToXML(childGroupElement);
-
-				if (offset.getX()!=0&&offset.getY()!=0) {
-					vg.setX(tp.getX());
-					vg.setY(tp.getY());
-				}
 			}
 		}
 	}
@@ -326,11 +309,7 @@ public class VisualModel implements Plugin, Model {
 
 		gatherReferences (selection, referencedComponents, referencedConnections);
 
-		Rectangle2D selectionBB = getSelectionBoundingBox();
-		// offset the elements of the selection
-		Point2D offset = new Point2D.Double(-selectionBB.getCenterX(), -selectionBB.getCenterY());
-
-		VisualModel.nodesToXML(visualElement, selection, offset);
+		VisualModel.nodesToXML(visualElement, selection);
 		MathModel.componentsToXML(mathElement, referencedComponents);
 		MathModel.connectionsToXML(mathElement, referencedConnections);
 	}
@@ -711,9 +690,9 @@ public class VisualModel implements Plugin, Model {
 			return pasteFromXML(visualModelElement, where);
 		} catch (UnsupportedFlavorException e) {
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new PasteException (e);
 		} catch (ModelLoadFailedException e) {
-			throw new PasteException (e.getMessage());
+			throw new PasteException (e);
 		}
 
 		return null;
@@ -774,5 +753,9 @@ public class VisualModel implements Plugin, Model {
 
 	protected VisualPropertyChangeListener getPropertyChangeListener() {
 		return propertyChangeListener;
+	}
+
+	protected RenamedVisualReferenceResolver getReferenceResolver() {
+		return referenceResolver;
 	}
 }

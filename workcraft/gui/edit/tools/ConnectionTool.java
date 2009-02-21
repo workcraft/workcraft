@@ -84,7 +84,9 @@ public class ConnectionTool extends AbstractTool {
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
 
-		VisualNode newMouseOverObject = e.getModel().getRoot().hitNode(e.getPosition());
+		VisualNode newMouseOverObject = e.getModel().getRoot().hitComponent(e.getPosition());
+		if (newMouseOverObject == null)
+			newMouseOverObject = e.getModel().getRoot().hitConnection(e.getPosition());
 
 		if (mouseOverObject != newMouseOverObject) {
 			if (mouseOverObject != null) {

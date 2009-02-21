@@ -103,7 +103,9 @@ public class Viewport {
 	protected void shapeChanged() {
 		userToScreenTransform.setToIdentity();
 		userToScreenTransform.translate(shape.width/2 + shape.x, shape.height/2 + shape.y);
-		userToScreenTransform.scale(shape.height/2, shape.height/2);
+
+		if (shape.height != 0)
+			userToScreenTransform.scale(shape.height/2, shape.height/2);
 
 		updateFinalTransform();
 

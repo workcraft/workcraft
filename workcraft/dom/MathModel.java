@@ -20,7 +20,16 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
 
-public abstract class MathModel implements Plugin, Model, ReferenceResolver {
+public abstract class MathModel implements Plugin, Model {
+	public class RenamedReferenceResolver implements ReferenceResolver {
+		public Component getComponentByID(int ID) {
+			return getComponentByRenamedID(ID);
+		}
+		public Connection getConnectionByID(int ID) {
+			return getConnectionByRenamedID(ID);
+		}
+	}
+
 	private int componentIDCounter = 0;
 	private int connectionIDCounter = 0;;
 
@@ -34,6 +43,7 @@ public abstract class MathModel implements Plugin, Model, ReferenceResolver {
 	private HashSet<Class<? extends Component>> supportedComponents = new HashSet<Class<? extends Component>>();
 
 	private XMLSerialisation serialisation = new XMLSerialisation();
+	private RenamedReferenceResolver referenceResolver = new RenamedReferenceResolver();
 
 	private String title = "";
 
@@ -250,8 +260,7 @@ public abstract class MathModel implements Plugin, Model, ReferenceResolver {
 					"connection", modelElement);
 
 			for (Element e : connectionNodes) {
-				Connection connection = ConnectionFactory.createConnection(e,
-						this);
+				Connection connection = ConnectionFactory.createConnection(e, getReferenceResolver());
 
 				Integer oldID = connection.getID();
 				Integer newID = addConnection(connection);
@@ -331,6 +340,10 @@ public abstract class MathModel implements Plugin, Model, ReferenceResolver {
 
 	public final void deserialiseFromXML(Element modelElement) throws ModelLoadFailedException {
 		serialisation.deserialise(modelElement);
+	}
+
+	public RenamedReferenceResolver getReferenceResolver() {
+		return referenceResolver;
 	}
 
 }

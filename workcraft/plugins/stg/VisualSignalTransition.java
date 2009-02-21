@@ -24,8 +24,8 @@ public class VisualSignalTransition extends VisualTransition {
 
 	private static Color inputsColor = Color.RED.darker();
 	private static Color dummiesColor = Color.BLACK;
-	private static Color outputsColor = Color.GREEN.darker();
-	private static Color internalsColor = Color.BLUE.darker();
+	private static Color outputsColor = Color.BLUE.darker();
+	private static Color internalsColor = Color.GREEN.darker();
 	private static Color defaultFillColor = Color.WHITE;
 	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
 
@@ -37,14 +37,18 @@ public class VisualSignalTransition extends VisualTransition {
 	private Rectangle2D emptyBB = new Rectangle2D.Double(-size/2, -size/2, size, size);
 	private float textX, textY;
 
-	public VisualSignalTransition(Transition transition, Element xmlElement) {
+	public VisualSignalTransition(SignalTransition transition, Element xmlElement) {
 		super(transition, xmlElement);
 		addPropertyDeclarations();
+
+		updateText();
 	}
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
 		addPropertyDeclarations();
+
+		updateText();
 	}
 
 	private void addPropertyDeclarations() {
@@ -90,6 +94,7 @@ public class VisualSignalTransition extends VisualTransition {
 				textY = (float)-textBB.getCenterY();
 
 				textBB.setRect(textBB.getX() - textBB.getCenterX(), textBB.getY() - textBB.getCenterY(), textBB.getWidth(), textBB.getHeight());
+				firePropertyChanged("shape");
 			}
 
 			g.setStroke(new BasicStroke(strokeWidth));

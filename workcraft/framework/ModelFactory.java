@@ -22,21 +22,21 @@ public class ModelFactory {
 			model.deserialiseFromXML(modelElement);
 			return model;
 		} catch (IllegalArgumentException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (SecurityException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (InstantiationException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (IllegalAccessException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (InvocationTargetException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: \n" + e.getTargetException().getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (NoSuchMethodException e) {
-			throw new ModelInstantiationException("Cannot instantiate model: missing constructor: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (ClassNotFoundException e) {
-			throw new ModelInstantiationException("Cannot instatniate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		} catch (ModelLoadFailedException e) {
-			throw new ModelInstantiationException("Cannot instatniate model: \n" + e.getMessage());
+			throw new ModelInstantiationException(e);
 		}
 	}
 
@@ -62,27 +62,19 @@ public class ModelFactory {
 			return (VisualModel)visual;
 
 		} catch (ClassNotFoundException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be loaded for class " + model.getClass().getName());
+			throw new VisualModelInstantiationException (e);
 		} catch (SecurityException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception:\n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (NoSuchMethodException e) {
-			throw new VisualModelInstantiationException("visual class " + vcat.value() +
-					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + model.getClass().getName() +")" );
+			throw new VisualModelInstantiationException (e);
 		} catch (IllegalArgumentException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (InstantiationException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (IllegalAccessException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (InvocationTargetException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getTargetException().getMessage());
+			throw new VisualModelInstantiationException (e);
 		}
 	}
 
@@ -107,27 +99,19 @@ public class ModelFactory {
 			return (VisualModel)visual;
 
 		} catch (ClassNotFoundException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be loaded for class " + model.getClass().getName());
+			throw new VisualModelInstantiationException (e);
 		} catch (SecurityException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception: \n " + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (NoSuchMethodException e) {
-			throw new VisualModelInstantiationException("visual class " + vcat.value() +
-					" does not declare the required constructor \n" + vcat.value() +
-					"(" + model.getClass().getName() + ", " + Element.class.getName()+")" );
+			throw new VisualModelInstantiationException (e);
 		} catch (IllegalArgumentException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (InstantiationException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (IllegalAccessException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: \n " + e.getMessage());
+			throw new VisualModelInstantiationException (e);
 		} catch (InvocationTargetException e) {
-			throw new VisualModelInstantiationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getTargetException().getMessage());
+			throw new VisualModelInstantiationException (e);
 		}
 	}
 }

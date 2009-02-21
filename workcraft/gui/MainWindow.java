@@ -357,8 +357,6 @@ public class MainWindow extends JFrame {
 		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
-
-
 		boolean maximised = Boolean.parseBoolean(framework.getConfigVar("gui.main.maximised"));
 		String w = framework.getConfigVar("gui.main.width");
 		String h = framework.getConfigVar("gui.main.height");
@@ -660,7 +658,9 @@ public class MainWindow extends JFrame {
 					if (we.getModel() instanceof VisualModel)
 						createEditorWindow(we);
 				} catch (ModelLoadFailedException e) {
-					JOptionPane.showMessageDialog(this, e.getMessage(), "Cannot load " + f.getPath() , JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
+							+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
 				}
 			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();

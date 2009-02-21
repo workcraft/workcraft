@@ -36,7 +36,7 @@ public class Place extends Component {
 	}
 
 	private void addXMLSerialisable() {
-		addXMLSerialisable(new XMLSerialiser(){
+		addXMLSerialiser(new XMLSerialiser(){
 			public String getTagName() {
 				return Place.class.getSimpleName();
 			}

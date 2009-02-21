@@ -1,10 +1,22 @@
 package org.workcraft.framework.exceptions;
 
+@SuppressWarnings("serial")
 public class VisualModelInstantiationException extends java.lang.Exception {
-	private static final long serialVersionUID = 1L;
+
+	public VisualModelInstantiationException() {
+		super();
+	}
+
+	public VisualModelInstantiationException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 	public VisualModelInstantiationException(String message) {
 		super(message);
+	}
+
+	public VisualModelInstantiationException(Throwable cause) {
+		super(cause);
 	}
 
 }

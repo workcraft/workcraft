@@ -90,7 +90,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			button.setText(tool.getName());
 
 		button.setPreferredSize(new Dimension(120,20));
-		button.setMinimumSize(new Dimension(120,20));
+		button.setMinimumSize(new Dimension(0,0));
 		button.setMaximumSize(new Dimension(120,20));
 
 		button.addActionListener(new ActionListener() {

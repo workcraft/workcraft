@@ -31,15 +31,15 @@ public class Connection {
 		addSerialisationObjects();
 	}
 
-	public Connection (Element connectionElement, MathModel model) {
+	public Connection (Element connectionElement, ReferenceResolver referenceResolver) {
 		Element element = XmlUtil.getChildElement(Connection.class.getSimpleName(), connectionElement);
 		ID = XmlUtil.readIntAttr(element, "ID", -1);
 
 		int firstID = XmlUtil.readIntAttr(element, "first", -1);
 		int secondID = XmlUtil.readIntAttr(element, "second", -1);
 
-		first = model.getComponentByRenamedID(firstID);
-		second = model.getComponentByRenamedID(secondID);
+		first = referenceResolver.getComponentByID(firstID);
+		second = referenceResolver.getComponentByID(secondID);
 
 		addSerialisationObjects();
 	}

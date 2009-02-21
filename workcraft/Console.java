@@ -115,6 +115,9 @@ public class Console {
 				} catch (FileNotFoundException e) {
 					System.err.println ("System script file not found: "+e.getMessage());
 				}
+
+
+
 				System.exit(0);
 			}
 

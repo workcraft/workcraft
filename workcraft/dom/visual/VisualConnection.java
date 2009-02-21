@@ -14,16 +14,19 @@ import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.util.XmlUtil;
 
 enum ConnectionType {POLYLINE, BEZIER};
 
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
 	protected Connection refConnection;
-	private VisualComponent first;
-	private VisualComponent second;
+	protected VisualComponent first;
+	protected VisualComponent second;
+
 	protected LinkedList<Point2D> pathPoint = new LinkedList<Point2D>();
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
@@ -46,11 +49,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
 
-	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
-		this.refConnection = refConnection;
-		this.first = first;
-		this.second = second;
-
+	protected void initialise() {
 		first.addListener(this);
 		second.addListener(this);
 
@@ -72,10 +71,42 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		hm.put("Bezier", ConnectionType.BEZIER);
 
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
+
+		addXMLSerialiser(new XMLSerialiser() {
+			public String getTagName() {
+				return VisualConnection.class.getSimpleName();
+			}
+
+			public void serialise(Element element) {
+				if (refConnection != null)
+					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
+				XmlUtil.writeDoubleAttr(element, "arrowLength", getArrowLength());
+				XmlUtil.writeDoubleAttr(element, "arrowWidth", getArrowWidth());
+				XmlUtil.writeStringAttr(element, "type", getConnectionType().name());
+			}
+		});
 	}
 
-	public VisualConnection(Connection refConnection, Element xmlElement, VisualComponent first, VisualComponent second) {
-		this(refConnection, first, second);
+	protected VisualConnection() {
+
+	}
+
+	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
+		this.refConnection = refConnection;
+		this.first = first;
+		this.second = second;
+
+		initialise();
+	}
+
+	public VisualConnection (Element xmlElement, VisualReferenceResolver referenceResolver) {
+		Element element = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
+
+		refConnection = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refID", -1));
+		first = referenceResolver.getComponentByRefID(refConnection.getFirst().getID());
+		second = referenceResolver.getComponentByRefID(refConnection.getSecond().getID());
+
+		initialise();
 	}
 
 	public ConnectionType getConnectionType() {
@@ -302,7 +333,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void onPropertyChanged(String propertyName, Object sender) {
-		if (propertyName.equals("X") || propertyName.equals("Y") || propertyName.equals("transform"))
+		if (propertyName.equals("X") || propertyName.equals("Y") || propertyName.equals("transform") || propertyName.equals("shape"));
 			update();
 	}
 

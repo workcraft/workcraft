@@ -375,6 +375,7 @@ public class Framework {
 		if (inGUIMode) {
 
 			mainWindow.shutdown();
+			mainWindow.dispose();
 			mainWindow = null;
 			inGUIMode = false;
 
@@ -482,15 +483,15 @@ public class Framework {
 
 			return ModelFactory.createVisualModel(model, visualModelElement);
 		} catch (ParserConfigurationException e) {
-			throw new ModelLoadFailedException ("Parser configuration exception: " + e.getMessage());
+			throw new ModelLoadFailedException (e);
 		} catch (SAXException e) {
-			throw new ModelLoadFailedException ("SAX exception: " + e.getMessage());
+			throw new ModelLoadFailedException (e);
 		} catch (IOException e) {
-			throw new ModelLoadFailedException ("IO exception: " + e.getMessage());
+			throw new ModelLoadFailedException (e);
 		} catch (VisualModelInstantiationException e) {
-			throw new ModelLoadFailedException ("Visual model could not be instantiated: " + e.getMessage());
+			throw new ModelLoadFailedException (e);
 		} catch (ModelInstantiationException e) {
-			throw new ModelLoadFailedException ("Model could not be instantiated: " + e.getMessage());
+			throw new ModelLoadFailedException (e);
 		}
 	}
 

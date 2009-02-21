@@ -144,7 +144,7 @@ public class ComponentFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = visualClass.getConstructor(component.getClass(), Element.class);
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, component.getClass(), Element.class);
 			VisualComponent visual = (VisualComponent)ctor.newInstance(component, element);
 			return visual;
 

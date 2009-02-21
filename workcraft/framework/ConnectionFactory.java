@@ -5,24 +5,23 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.ReferenceResolver;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualReferenceResolver;
 import org.workcraft.framework.exceptions.ConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.util.ConstructorParametersMatcher;
-import org.workcraft.util.XmlUtil;
 
 public class ConnectionFactory {
 
-	public static Connection createConnection (Element element, MathModel referenceModel) throws ConnectionCreationException {
+	public static Connection createConnection (Element element, ReferenceResolver referenceResolver) throws ConnectionCreationException {
 		String className = element.getAttribute("class");
 		try {
 			Class<?> elementClass = Class.forName(className);
-			Constructor<?> ctor = elementClass.getConstructor(Element.class, MathModel.class);
-			Connection connection = (Connection)ctor.newInstance(element, referenceModel);
+			Constructor<?> ctor = elementClass.getConstructor(Element.class, ReferenceResolver.class);
+			Connection connection = (Connection)ctor.newInstance(element, referenceResolver);
 			return connection;
 		} catch (ClassCastException ex) {
 			throw new ConnectionCreationException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Connection: " + ex.getMessage());
@@ -44,57 +43,38 @@ public class ConnectionFactory {
 		}
 	}
 
-	public static VisualConnection createVisualConnection (Element element, VisualModel referenceModel)
+	public static VisualConnection createVisualConnection (Element element, VisualReferenceResolver referenceResolver)
 		throws VisualConnectionCreationException {
-		int ref = XmlUtil.readIntAttr(element, "ref", -1);
-		Connection connection = referenceModel.getMathModel().getConnectionByRenamedID(ref);
-
-		VisualComponent first = referenceModel.getComponentByRefID(connection.getFirst().getID());
-		VisualComponent second = referenceModel.getComponentByRefID(connection.getSecond().getID());
-
-		// Find the corresponding visual class
-		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
-
-		// The component/connection does not define a visual representation
-		if (vcat == null)
-			return null;
+		String className = element.getAttribute("class");
 
 		try {
-			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass,
-						connection.getClass(), Element.class, first.getClass(), second.getClass());
-			VisualConnection visual = (VisualConnection)ctor.newInstance(connection, element, first, second);
-			return visual;
+			Class<?> connectionClass = Class.forName(className);
+			Constructor<?> ctor = connectionClass.getConstructor(Element.class, VisualReferenceResolver.class);
+			VisualConnection connection = (VisualConnection)ctor.newInstance(element, referenceResolver);
+			return connection;
 
 		} catch (ClassNotFoundException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be loaded for class " + connection.getClass().getName());
+			throw new VisualConnectionCreationException (e);
 		} catch (SecurityException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception:\n" + e.getMessage());
+			throw new VisualConnectionCreationException (e);
 		} catch (NoSuchMethodException e) {
-			throw new VisualConnectionCreationException("visual class " + vcat.value() +
-			" does not declare the required constructor. \n");
+			throw new VisualConnectionCreationException (e);
 		} catch (IllegalArgumentException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+			throw new VisualConnectionCreationException (e);
 		} catch (InstantiationException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getMessage());
+			throw new VisualConnectionCreationException (e);
 		} catch (IllegalAccessException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+			throw new VisualConnectionCreationException (e);
 		} catch (InvocationTargetException e) {
-			throw new VisualConnectionCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getTargetException().getMessage());
+			throw new VisualConnectionCreationException (e);
 		}
 	}
 
-	public static VisualConnection createVisualConnection (Connection connection, VisualModel referenceModel)
+	public static VisualConnection createVisualConnection (Connection connection, VisualReferenceResolver referenceResolver)
 		throws VisualConnectionCreationException {
 
-		VisualComponent first = referenceModel.getComponentByRefID(connection.getFirst().getID());
-		VisualComponent second = referenceModel.getComponentByRefID(connection.getSecond().getID());
+		VisualComponent first = referenceResolver.getComponentByRefID(connection.getFirst().getID());
+		VisualComponent second = referenceResolver.getComponentByRefID(connection.getSecond().getID());
 
 		// Find the corresponding visual class
 		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);

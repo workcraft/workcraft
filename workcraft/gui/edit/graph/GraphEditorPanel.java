@@ -40,6 +40,8 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
+	private boolean firstPaint = true;
+
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
@@ -70,7 +72,8 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
-		AffineTransform screenTransform = g2d.getTransform();
+
+		AffineTransform screenTransform = (AffineTransform)g2d.getTransform().clone();
 
 		g2d.setBackground(background);
 		g2d.clearRect(0, 0, getWidth(), getHeight());
@@ -78,8 +81,14 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		grid.draw(g2d);
 		g2d.setTransform(screenTransform);
 
+		if (firstPaint) {
+			componentResized(null);
+			firstPaint = false;
+		}
+
 		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		visualModel.draw(g2d);
 
 		if (hasFocus())
