@@ -272,7 +272,8 @@ public class SelectionTool extends AbstractTool {
 					e.getModel().fireSelectionChanged();
 					e.getEditor().repaint();
 				} catch (PasteException e1) {
-					JOptionPane.showMessageDialog(null, "Paste failed:\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Paste failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
 		}

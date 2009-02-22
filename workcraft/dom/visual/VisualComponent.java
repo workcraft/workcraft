@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
+import org.workcraft.dom.MathNode;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 public abstract class VisualComponent extends VisualTransformableNode {
@@ -72,6 +73,12 @@ public abstract class VisualComponent extends VisualTransformableNode {
 
 	final public Set<VisualComponent> getPostset() {
 		return new HashSet<VisualComponent>(postset);
+	}
+
+	public Set<MathNode> getReferences() {
+		Set<MathNode> ret = new HashSet<MathNode>();
+		ret.add(getReferencedComponent());
+		return ret;
 	}
 
 }

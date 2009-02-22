@@ -6,7 +6,7 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
-public abstract class Component {
+public abstract class Component extends MathNode {
 	private int ID = -1;
 	private String label = "";
 
@@ -15,10 +15,8 @@ public abstract class Component {
 	private HashSet<Component> preset = new HashSet<Component>();
 	private HashSet<Component> postset = new HashSet<Component>();
 
-	private XMLSerialisation serialisation = new XMLSerialisation();
-
 	private void addSerialisationObjects() {
-		serialisation.addSerialiser(new XMLSerialiser() {
+		addXMLSerialiser(new XMLSerialiser() {
 			public void serialise(Element element) {
 				XmlUtil.writeIntAttr(element, "ID", Component.this.ID);
 				XmlUtil.writeStringAttr(element, "label", Component.this.label);
@@ -94,11 +92,5 @@ public abstract class Component {
 		return (Set<Component>)postset.clone();
 	}
 
-	final public void addXMLSerialiser(XMLSerialiser serialisable) {
-		serialisation.addSerialiser(serialisable);
-	}
 
-	final public void serialiseToXML(Element componentElement) {
-		serialisation.serialise(componentElement);
-	}
 }

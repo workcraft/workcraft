@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import net.sf.jga.fn.UnaryFunctor;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
@@ -390,5 +392,12 @@ public class VisualGroup extends VisualTransformableNode {
 		connections.clear();
 
 		return result;
+	}
+
+	public Set<MathNode> getReferences() {
+		Set<MathNode> ret = new HashSet<MathNode>();
+		for (VisualNode n: children)
+				ret.addAll(n.getReferences());
+		return ret;
 	}
 }

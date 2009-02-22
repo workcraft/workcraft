@@ -3,7 +3,7 @@ package org.workcraft.dom;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisation {
@@ -25,7 +25,7 @@ public class XMLSerialisation {
 		}
 	}
 
-	final public void deserialise(Element componentElement) throws ModelLoadFailedException {
+	final public void deserialise(Element componentElement) throws LoadFromXMLException {
 		for (XMLDeserialiser s: deserialisers) {
 			Element e = XmlUtil.getChildElement(s.getTagName(), componentElement);
 			s.deserialise(e);

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,13 +25,14 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.exceptions.PasteException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
@@ -203,14 +205,9 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	private void gatherReferences(Collection<VisualNode> nodes, LinkedList<Component> referencedComponents, LinkedList<Connection> referencedConnections) {
+	private void gatherReferences(Collection<VisualNode> nodes, HashSet<MathNode> referenceds) {
 		for (VisualNode n : nodes)
-			if (n instanceof VisualComponent)
-				referencedComponents.add( ((VisualComponent)n).getReferencedComponent());
-			else if (n instanceof VisualConnection)
-				referencedConnections.add( ((VisualConnection)n).getReferencedConnection());
-			else if (n instanceof VisualGroup)
-				gatherReferences( ((VisualGroup)n).getChildren(), referencedComponents, referencedConnections);
+			referenceds.addAll(n.getReferences());
 	}
 
 	public Rectangle2D getSelectionBoundingBox() {
@@ -304,14 +301,12 @@ public class VisualModel implements Plugin, Model {
 		XmlUtil.writeStringAttr(mathElement, "class", getMathModel().getClass().getName());
 		Element visualElement = XmlUtil.createChildElement("visual-model", xmlElement);
 
-		LinkedList<Component> referencedComponents = new LinkedList<Component>();
-		LinkedList<Connection> referencedConnections = new LinkedList<Connection>();
+		HashSet<MathNode> references = new HashSet<MathNode>();
 
-		gatherReferences (selection, referencedComponents, referencedConnections);
+		gatherReferences (selection, references);
 
 		VisualModel.nodesToXML(visualElement, selection);
-		MathModel.componentsToXML(mathElement, referencedComponents);
-		MathModel.connectionsToXML(mathElement, referencedConnections);
+		MathModel.nodesToXML(mathElement, references);
 	}
 
 	public void draw (Graphics2D g) {
@@ -691,7 +686,7 @@ public class VisualModel implements Plugin, Model {
 		} catch (UnsupportedFlavorException e) {
 		} catch (IOException e) {
 			throw new PasteException (e);
-		} catch (ModelLoadFailedException e) {
+		} catch (LoadFromXMLException e) {
 			throw new PasteException (e);
 		}
 

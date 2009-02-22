@@ -8,10 +8,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
@@ -188,4 +190,5 @@ public abstract class VisualNode implements PropertyEditable {
 		serialisation.serialise(componentElement);
 	}
 
+	public abstract Set<MathNode> getReferences();
 }

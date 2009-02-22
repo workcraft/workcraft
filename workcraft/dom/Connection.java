@@ -4,15 +4,13 @@ import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
 @VisualClass("org.workcraft.dom.visual.VisualConnection")
-public class Connection {
+public class Connection extends MathNode {
 	private Component first;
 	private Component second;
 	private int ID;
 
-	private XMLSerialisation serialisation = new XMLSerialisation();
-
 	private void addSerialisationObjects() {
-		serialisation.addSerialiser(new XMLSerialiser() {
+		addXMLSerialiser(new XMLSerialiser() {
 			public void serialise(Element element) {
 				XmlUtil.writeIntAttr(element, "ID", ID);
 				XmlUtil.writeIntAttr(element, "first", first.getID());
@@ -58,13 +56,5 @@ public class Connection {
 
 	final public Component getSecond() {
 		return second;
-	}
-
-	final public void addXMLSerialisable (XMLSerialiser serialisable) {
-		serialisation.addSerialiser(serialisable);
-	}
-
-	final public void serialiseToXML(Element componentElement) {
-		serialisation.serialise(componentElement);
 	}
 }

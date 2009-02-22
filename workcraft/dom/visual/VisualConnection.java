@@ -9,11 +9,14 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
@@ -350,5 +353,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	public VisualComponent getSecond() {
 		return second;
+	}
+
+	public Set<MathNode> getReferences() {
+		Set<MathNode> ret = new HashSet<MathNode>();
+		ret.add(getReferencedConnection());
+		return ret;
 	}
 }

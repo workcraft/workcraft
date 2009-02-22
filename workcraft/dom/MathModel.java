@@ -15,7 +15,7 @@ import org.workcraft.framework.exceptions.ComponentCreationException;
 import org.workcraft.framework.exceptions.ConnectionCreationException;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.util.XmlUtil;
@@ -47,23 +47,18 @@ public abstract class MathModel implements Plugin, Model {
 
 	private String title = "";
 
-	final public static void componentsToXML(Element parentElement,
-			Collection<? extends Component> components) {
-		for (Component c : components) {
-			Element componentElement = XmlUtil.createChildElement("component",
+	final public static void nodesToXML(Element parentElement,
+			Collection<? extends MathNode> nodes) {
+		for (MathNode n : nodes) {
+			Element element = null;
+			if (n instanceof Component)
+			 element = XmlUtil.createChildElement("component",
 					parentElement);
-			componentElement.setAttribute("class", c.getClass().getName());
-			c.serialiseToXML(componentElement);
-		}
-	}
-
-	final public static void connectionsToXML(Element parentElement,
-			Collection<? extends Connection> connections) {
-		for (Connection c : connections) {
-			Element connectionElement = XmlUtil.createChildElement(
-					"connection", parentElement);
-			connectionElement.setAttribute("class", c.getClass().getName());
-			c.serialiseToXML(connectionElement);
+			else if (n instanceof Connection)
+				 element = XmlUtil.createChildElement("connection",
+							parentElement);
+			element.setAttribute("class", n.getClass().getName());
+			n.serialiseToXML(element);
 		}
 	}
 
@@ -74,8 +69,8 @@ public abstract class MathModel implements Plugin, Model {
 			}
 			public void serialise(Element element) {
 				XmlUtil.writeStringAttr(element, "title", title);
-				componentsToXML(element, components.values());
-				connectionsToXML(element, connections.values());
+				nodesToXML(element, components.values());
+				nodesToXML(element, connections.values());
 			}
 		});
 
@@ -83,7 +78,7 @@ public abstract class MathModel implements Plugin, Model {
 			public String getTagName() {
 				return MathModel.class.getSimpleName();
 			}
-			public void deserialise(Element element) throws ModelLoadFailedException {
+			public void deserialise(Element element) throws LoadFromXMLException {
 				title = XmlUtil.readStringAttr(element, "title");
 				pasteFromXML(element);
 			}
@@ -236,7 +231,7 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	final public void pasteFromXML(Element modelElement)
-			throws ModelLoadFailedException {
+			throws LoadFromXMLException {
 		componentRenames.clear();
 		connectionRenames.clear();
 
@@ -268,22 +263,14 @@ public abstract class MathModel implements Plugin, Model {
 				connectionRenames.put(oldID, newID);
 			}
 
-		} catch (InvalidComponentException e1) {
-			throw new ModelLoadFailedException(
-					"(in MathModel.appendFromXml) Invalid component: "
-							+ e1.getMessage());
-		} catch (ComponentCreationException e1) {
-			throw new ModelLoadFailedException(
-					"(in MathModel.appendFromXml) Cannot create component: "
-							+ e1.getMessage());
+		} catch (InvalidComponentException e) {
+			throw new LoadFromXMLException(e);
+		} catch (ComponentCreationException e) {
+			throw new LoadFromXMLException(e);
 		} catch (InvalidConnectionException e) {
-			throw new ModelLoadFailedException(
-					"(in MathModel.appendFromXml) Invalid connection: "
-							+ e.getMessage());
+			throw new LoadFromXMLException(e);
 		} catch (ConnectionCreationException e) {
-			throw new ModelLoadFailedException(
-					"(in MathModel.appendFromXml) Cannot create connection: "
-							+ e.getMessage());
+			throw new LoadFromXMLException(e);
 		}
 	}
 
@@ -338,7 +325,7 @@ public abstract class MathModel implements Plugin, Model {
 		serialisation.serialise(componentElement);
 	}
 
-	public final void deserialiseFromXML(Element modelElement) throws ModelLoadFailedException {
+	public final void deserialiseFromXML(Element modelElement) throws LoadFromXMLException {
 		serialisation.deserialise(modelElement);
 	}
 

@@ -8,7 +8,7 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.util.ConstructorParametersMatcher;
 
@@ -35,7 +35,7 @@ public class ModelFactory {
 			throw new ModelInstantiationException(e);
 		} catch (ClassNotFoundException e) {
 			throw new ModelInstantiationException(e);
-		} catch (ModelLoadFailedException e) {
+		} catch (LoadFromXMLException e) {
 			throw new ModelInstantiationException(e);
 		}
 	}

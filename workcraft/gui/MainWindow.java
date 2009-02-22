@@ -45,7 +45,7 @@ import org.workcraft.framework.Importer;
 import org.workcraft.framework.ModelFactory;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.ExportException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
@@ -657,7 +657,7 @@ public class MainWindow extends JFrame {
 					WorkspaceEntry we = framework.getWorkspace().add(f.getPath());
 					if (we.getModel() instanceof VisualModel)
 						createEditorWindow(we);
-				} catch (ModelLoadFailedException e) {
+				} catch (LoadFromXMLException e) {
 					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
 							+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();

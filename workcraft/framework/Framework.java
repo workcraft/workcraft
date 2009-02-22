@@ -37,7 +37,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
-import org.workcraft.framework.exceptions.ModelLoadFailedException;
+import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.interop.ExternalProcess;
@@ -436,7 +436,7 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public Model load(String path) throws ModelLoadFailedException {
+	public Model load(String path) throws LoadFromXMLException {
 		InputStream stream;
 		try {
 			stream = new FileInputStream(path);
@@ -446,11 +446,11 @@ public class Framework {
 				stream.close();
 			}
 		} catch (IOException e) {
-			throw new ModelLoadFailedException ("IO Exception: " + e.getMessage());
+			throw new LoadFromXMLException ("IO Exception: " + e.getMessage());
 		}
 	}
 
-	public Model load(InputStream stream) throws ModelLoadFailedException {
+	public Model load(InputStream stream) throws LoadFromXMLException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			org.w3c.dom.Document xmldoc;
@@ -463,17 +463,17 @@ public class Framework {
 			Element xmlroot = xmldoc.getDocumentElement();
 
 			if (xmlroot.getNodeName()!="workcraft")
-				throw new ModelLoadFailedException("not a Workcraft document");
+				throw new LoadFromXMLException("not a Workcraft document");
 
 			String[] ver = xmlroot.getAttribute("version").split("\\.", 2);
 
 			if (ver.length<2 || !ver[0].equals(FRAMEWORK_VERSION_MAJOR))
-				throw new ModelLoadFailedException("Document was created by an incompatible version of Workcraft.");
+				throw new LoadFromXMLException("Document was created by an incompatible version of Workcraft.");
 
 			Element modelElement = XmlUtil.getChildElement("model", xmlroot);
 
 			if (modelElement == null)
-				throw new ModelLoadFailedException("<model> section is missing.");
+				throw new LoadFromXMLException("<model> section is missing.");
 
 			model = ModelFactory.createModel(modelElement);
 
@@ -483,15 +483,15 @@ public class Framework {
 
 			return ModelFactory.createVisualModel(model, visualModelElement);
 		} catch (ParserConfigurationException e) {
-			throw new ModelLoadFailedException (e);
+			throw new LoadFromXMLException (e);
 		} catch (SAXException e) {
-			throw new ModelLoadFailedException (e);
+			throw new LoadFromXMLException (e);
 		} catch (IOException e) {
-			throw new ModelLoadFailedException (e);
+			throw new LoadFromXMLException (e);
 		} catch (VisualModelInstantiationException e) {
-			throw new ModelLoadFailedException (e);
+			throw new LoadFromXMLException (e);
 		} catch (ModelInstantiationException e) {
-			throw new ModelLoadFailedException (e);
+			throw new LoadFromXMLException (e);
 		}
 	}
 
