@@ -3,9 +3,12 @@ package org.workcraft.plugins.stg;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
@@ -102,6 +105,15 @@ public class ImplicitPlaceArc extends VisualConnection {
 
 	public Connection getRefCon2() {
 		return refCon2;
+	}
+
+	@Override
+	public Set<MathNode> getReferences() {
+		Set<MathNode> ret = new HashSet<MathNode>();
+		ret.add(implicitPlace);
+		ret.add(refCon1);
+		ret.add(refCon2);
+		return ret;
 	}
 
 
