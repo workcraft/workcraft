@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,4 +32,19 @@ public class STG extends PetriNet {
 		return ret;
 	}
 
+	public void assignInstances() {
+		HashMap<String, Integer> instanceCounter = new HashMap<String, Integer>();
+
+		for (SignalTransition t : getSignalTransitions()) {
+			String signalName = t.getSignalName();
+
+			Integer instance = instanceCounter.get(signalName);
+			if (instance == null)
+				instance = new Integer(1);
+
+			t.setInstance(instance);
+
+			instanceCounter.put(signalName, ++instance);
+		}
+	}
 }
