@@ -43,21 +43,21 @@ public class ComponentFactory {
 			Component component = (Component)ctor.newInstance();
 			return component;
 		} catch (ClassCastException ex) {
-			throw new ComponentCreationException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Component: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		}	catch (ClassNotFoundException ex) {
-			throw new ComponentCreationException ("Cannot load component class: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (SecurityException ex) {
-			throw new ComponentCreationException ("Security exception: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (NoSuchMethodException ex) {
-			throw new ComponentCreationException ("Component class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element element)");
+			throw new ComponentCreationException (ex);
 		} catch (IllegalArgumentException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (InstantiationException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (IllegalAccessException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (InvocationTargetException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getTargetException().getMessage());
+			throw new ComponentCreationException (ex);
 		}
 
 	}
@@ -71,21 +71,21 @@ public class ComponentFactory {
 			Component component = (Component)ctor.newInstance(element);
 			return component;
 		} catch (ClassCastException ex) {
-			throw new ComponentCreationException ("Cannot cast the class \"" + className +"\" to org.workcraft.dom.Component: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		}	catch (ClassNotFoundException ex) {
-			throw new ComponentCreationException ("Cannot load component class: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (SecurityException ex) {
-			throw new ComponentCreationException ("Security exception: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (NoSuchMethodException ex) {
-			throw new ComponentCreationException ("Component class \"" + className + "\" does not declare the required constructor " + className + "(org.w3c.dom.Element element)");
+			throw new ComponentCreationException (ex);
 		} catch (IllegalArgumentException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (InstantiationException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (IllegalAccessException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getMessage());
+			throw new ComponentCreationException (ex);
 		} catch (InvocationTargetException ex) {
-			throw new ComponentCreationException ("Component class instantiation failed: " + ex.getTargetException().getMessage());
+			throw new ComponentCreationException (ex);
 		}
 	}
 
@@ -104,27 +104,19 @@ public class ComponentFactory {
 			return visual;
 
 		} catch (ClassNotFoundException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be loaded for class " + component.getClass().getName());
+			throw new VisualComponentCreationException (e);
 		} catch (SecurityException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception:\n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (NoSuchMethodException e) {
-			throw new VisualComponentCreationException("visual class " + vcat.value() +
-					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +")" );
+			throw new VisualComponentCreationException (e);
 		} catch (IllegalArgumentException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (InstantiationException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (IllegalAccessException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (InvocationTargetException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getTargetException().getMessage());
+			throw new VisualComponentCreationException (e);
 		}
 	}
 
@@ -149,27 +141,19 @@ public class ComponentFactory {
 			return visual;
 
 		} catch (ClassNotFoundException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be loaded for class " + component.getClass().getName());
+			throw new VisualComponentCreationException (e);
 		} catch (SecurityException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to security exception:\n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (NoSuchMethodException e) {
-			throw new VisualComponentCreationException("visual class " + vcat.value() +
-					" does not declare the required constructor: \n" + vcat.value() +
-					"(" + component.getClass().getName() +"," + Element.class.getName() + ")" );
+			throw new VisualComponentCreationException (e);
 		} catch (IllegalArgumentException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to illegal argument exception: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (InstantiationException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (IllegalAccessException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated due to inaccesibility of the constructor: \n" + e.getMessage());
+			throw new VisualComponentCreationException (e);
 		} catch (InvocationTargetException e) {
-			throw new VisualComponentCreationException ("visual class " + vcat.value() +
-					" could not be instantiated: " + e.getTargetException().getMessage());
+			throw new VisualComponentCreationException (e);
 		}
 	}
 }
