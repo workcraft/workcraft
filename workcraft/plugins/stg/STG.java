@@ -33,18 +33,31 @@ public class STG extends PetriNet {
 	}
 
 	public void assignInstances() {
-		HashMap<String, Integer> instanceCounter = new HashMap<String, Integer>();
+		HashMap<String, InstanceCounter> instanceCounterMap = new HashMap<String, InstanceCounter>();
 
 		for (SignalTransition t : getSignalTransitions()) {
 			String signalName = t.getSignalName();
 
-			Integer instance = instanceCounter.get(signalName);
-			if (instance == null)
-				instance = new Integer(1);
+			InstanceCounter instanceCounter = instanceCounterMap.get(signalName);
 
-			t.setInstance(instance);
+			if (instanceCounter == null)
+				instanceCounter = new InstanceCounter();
 
-			instanceCounter.put(signalName, ++instance);
+			switch (t.getDirection()) {
+			case PLUS:
+				t.setInstance(instanceCounter.plusCounter++);
+				break;
+			case MINUS:
+				t.setInstance(instanceCounter.minusCounter++);
+				break;
+			}
+
+			instanceCounterMap.put(signalName, instanceCounter);
 		}
 	}
+}
+
+class InstanceCounter {
+	public int plusCounter = 1;
+	public int minusCounter = 1;
 }
