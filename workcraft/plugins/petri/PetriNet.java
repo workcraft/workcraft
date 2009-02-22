@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petri;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
@@ -66,11 +66,11 @@ public class PetriNet extends MathModel {
 		return newTransition;
 	}
 
-	final public Collection<Place> getPlaces() {
+	final public Set<Place> getPlaces() {
 		return new HashSet<Place>(places);
 	}
 
-	final public Collection<Transition> getTransitions() {
+	final public Set<Transition> getTransitions() {
 		return new HashSet<Transition>(transitions);
 	}
 
