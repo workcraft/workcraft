@@ -67,6 +67,16 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
+	public class ModelListener implements MathModelListener {
+		public void onModelStructureChanged() {
+			fireLayoutChanged();
+		}
+		public void onNodePropertyChanged(String propertyName, MathNode n) {
+			if (n instanceof Component)
+				fireComponentPropertyChanged(propertyName, getComponentByRefID( ((Component)n).getID()));
+		}
+	}
+
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
 	private RenamedVisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
 
@@ -80,6 +90,7 @@ public class VisualModel implements Plugin, Model {
 	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 
 	private XMLSerialisation serialiser = new XMLSerialisation();
+	private ModelListener mathModelListener = new ModelListener();
 
 	private void addXMLSerialisable() {
 		serialiser.addSerialiser(new XMLSerialiser() {
@@ -123,6 +134,8 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		addXMLSerialisable();
+
+		mathModel.addListener(mathModelListener);
 	}
 
 	public VisualModel(MathModel mathModel, Element visualModelElement) throws VisualModelInstantiationException {
@@ -138,6 +151,8 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		addXMLSerialisable();
+
+		mathModel.addListener(mathModelListener);
 	}
 
 	protected final Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {

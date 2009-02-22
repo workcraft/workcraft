@@ -26,7 +26,7 @@ public class ConnectionTool extends AbstractTool {
 	private Point2D lastMouseCoords;
 	private String warningMessage = null;
 
-	private static Color highlightColor = Color.YELLOW.darker();
+	private static Color highlightColor = new Color(99, 130, 191).brighter();
 
 	public ConnectionTool () {
 		lastMouseCoords = new Point2D.Double();

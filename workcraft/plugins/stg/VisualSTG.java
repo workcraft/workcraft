@@ -4,9 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
@@ -18,7 +16,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 
-public class VisualSTG extends VisualPetriNet implements MathModelListener {
+public class VisualSTG extends VisualPetriNet  {
 	class Listener implements VisualModelEventListener {
 		public void onComponentAdded(VisualComponent component) {
 			if (component instanceof VisualSignalTransition)
@@ -260,17 +258,4 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 		super(model, element);
 		addListener(new Listener());
 	}
-
-	public void onComponentPropertyChanged(Component c) {
-		System.out.println (c);
-	}
-
-	public void onConnectionPropertyChanged(Connection c) {
-		System.out.println (c);
-	}
-
-	public void onModelStructureChanged() {
-		System.out.println ("Structure changed");
-	}
-
 }

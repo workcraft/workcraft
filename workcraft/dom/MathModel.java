@@ -153,14 +153,9 @@ public abstract class MathModel implements Plugin, Model {
 		return con;
 	}
 
-	public void fireComponentPropertyChanged(Component c) {
+	public void fireNodePropertyChanged(String propertyName, MathNode n) {
 		for (MathModelListener l : listeners)
-			l.onComponentPropertyChanged(c);
-	}
-
-	public void fireConnectionPropertyChanged(Connection c) {
-		for (MathModelListener l : listeners)
-			l.onConnectionPropertyChanged(c);
+			l.onNodePropertyChanged(propertyName, n);
 	}
 
 	public void fireModelStructureChanged() {

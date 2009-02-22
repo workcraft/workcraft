@@ -31,7 +31,7 @@ public class VisualPlace extends VisualComponent {
 			this.placeID = placeID;
 		}
 		public String getScript() {
-			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
+			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
 		}
 		public String getUndoScript() {
 			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()-1);\n";
@@ -54,7 +54,7 @@ public class VisualPlace extends VisualComponent {
 					setEnabled(false);
 		}
 		public String getScript() {
-				return "p=model.getComponentByID("+placeID+");p.setTokens(p.getTokens()-1);\n";
+				return "p=model.getComponentByID("+placeID+");p.setTokens(p.getTokens()-1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
 		}
 		public String getUndoScript() {
 				return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";

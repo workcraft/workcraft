@@ -34,7 +34,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
-	protected Color selectionColor = selectionFillColor;
+	protected Color selectionColor = new Color(99, 130, 191).brighter();;
 	protected Color grayOutColor = Color.LIGHT_GRAY;
 
 	private int drag = DRAG_NONE;
@@ -101,10 +101,11 @@ public class SelectionTool extends AbstractTool {
 				Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
 
 				JPopupMenu popup = so.createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
-				popup.setFocusable(false);
 
-				if (popup != null)
+				if (popup != null) {
+					popup.setFocusable(false);
 					popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
+				}
 			}
 		}
 	}
