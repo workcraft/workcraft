@@ -178,6 +178,9 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 	}
 
 	private void removeVisualConnectionOnly(VisualConnection connection) {
+		connection.getFirst().removeConnection(connection);
+		connection.getSecond().removeConnection(connection);
+
 		connection.getParent().remove(connection);
 		selection().remove(connection);
 		connection.removeListener(getPropertyChangeListener());
@@ -191,6 +194,11 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 
 	private void makeImplicit (VisualPlace place) {
 		Connection refCon1 = null, refCon2 = null;
+
+		VisualComponent first = place.getPreset().iterator().next();
+		VisualComponent second = place.getPostset().iterator().next();
+
+
 		for (VisualConnection con:	place.getConnections()) {
 			if (con.getFirst() == place)
 				refCon1 = con.getReferencedConnection();
@@ -201,9 +209,6 @@ public class VisualSTG extends VisualPetriNet implements MathModelListener {
 		}
 
 		removeVisualComponentOnly(place);
-
-		VisualComponent first = place.getPreset().iterator().next();
-		VisualComponent second = place.getPostset().iterator().next();
 
 		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
 
