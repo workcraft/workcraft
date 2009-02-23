@@ -71,7 +71,7 @@ public class DotGImporter implements Importer {
 				if (ins!=null&&!ins.isEmpty()) instance = Integer.valueOf(ins);
 
 				if (inputs.contains(name)) {
-					be1 = new SignalTransition();
+					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
 					((SignalTransition)be1).setType(Type.INPUT);
@@ -79,7 +79,7 @@ public class DotGImporter implements Importer {
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
 				} else if (outputs.contains(name)) {
-					be1 = new SignalTransition();
+					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
 					((SignalTransition)be1).setType(Type.OUTPUT);
@@ -87,7 +87,7 @@ public class DotGImporter implements Importer {
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
 				} else if (internal.contains(name)) {
-					be1 = new SignalTransition();
+					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
 					((SignalTransition)be1).setType(Type.INTERNAL);
@@ -95,7 +95,7 @@ public class DotGImporter implements Importer {
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
 				} else if (dummy.contains(name)) {
-					be1 = new SignalTransition();
+					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
 					((SignalTransition)be1).setType(Type.DUMMY);
@@ -103,7 +103,7 @@ public class DotGImporter implements Importer {
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 				} else {
 					// consider it as the place
-					be1 = new Place();
+					be1 = doc.createPlace();
 					// place label is used inside the program, but
 					// can be deleted after the import
 					be1.setLabel(nameid);
