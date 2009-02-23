@@ -58,6 +58,12 @@ public class STG extends PetriNet {
 			instanceCounterMap.put(signalName, instanceCounter);
 		}
 	}
+
+	final public SignalTransition createSignalTransition() {
+		SignalTransition ret = new SignalTransition();
+		addComponent(ret);
+		return ret;
+	}
 }
 
 class InstanceCounter {

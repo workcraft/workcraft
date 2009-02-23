@@ -105,7 +105,7 @@ public class VisualSTG extends VisualPetriNet  {
 				VisualSignalTransition t1 = (VisualSignalTransition) first;
 				VisualSignalTransition t2 = (VisualSignalTransition) second;
 
-				Place implicitPlace = mathModel.createPlace("");
+				Place implicitPlace = mathModel.createPlace();
 				Connection con1 = mathModel.connect(t1.getReferencedTransition(), implicitPlace);
 				Connection con2 = mathModel.connect(implicitPlace, t2.getReferencedTransition());
 

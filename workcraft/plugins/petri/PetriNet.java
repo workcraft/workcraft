@@ -52,16 +52,14 @@ public class PetriNet extends MathModel {
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
 	}
 
-	final public Place createPlace(String label) {
+	final public Place createPlace() {
 		Place newPlace = new Place();
-		newPlace.setLabel(label);
 		addComponent(newPlace);
 		return newPlace;
 	}
 
-	final public Transition createTransition(String label) {
+	final public Transition createTransition() {
 		Transition newTransition = new Transition();
-		newTransition.setLabel(label);
 		addComponent(newTransition);
 		return newTransition;
 	}

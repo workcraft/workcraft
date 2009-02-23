@@ -299,7 +299,8 @@ public class MainWindow extends JFrame {
 				visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
 				we.setModel(visualModel);
 			} catch (VisualModelInstantiationException e) {
-				JOptionPane.showMessageDialog(this, "A visual model could not be created for the model you have chosen:\n" + e.getMessage(), "Error creating visual model", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 				return;
 			}
 

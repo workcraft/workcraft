@@ -224,7 +224,8 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				try {
 					framework.getWorkspace().add(file.getPath());
 				} catch (LoadFromXMLException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "The file \"" + file.getName() + "\" could not be loaded. Please refer to the Problems window for details.", "Load error", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
 				}
 	}
 
