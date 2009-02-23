@@ -103,38 +103,29 @@ public class VisualModel implements Plugin, Model {
 		});
 	}
 
+	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
+		for (Component component : mathModel.getComponents()) {
+			VisualComponent visualComponent;
+			visualComponent = ComponentFactory.createVisualComponent(component);
+			if (visualComponent != null) {
+				root.add(visualComponent);
+				addComponent(visualComponent);
+			}
+		}
+
+		for (Connection connection : mathModel.getConnections()) {
+			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
+			VisualNode.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()).add(visualConnection);
+			addConnection(visualConnection);
+		}
+	}
+
+
 	public VisualModel(MathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
 		root = new VisualGroup();
 		currentLevel = root;
-
-		try {
-			// create a default flat structure
-			for (Component component : model.getComponents()) {
-				VisualComponent visualComponent;
-				visualComponent = ComponentFactory.createVisualComponent(component);
-				if (visualComponent != null) {
-					root.add(visualComponent);
-					addComponent(visualComponent);
-				}
-			}
-
-			for (Connection connection : model.getConnections()) {
-
-				VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
-				if (visualConnection != null) {
-					root.add(visualConnection);
-					addConnection(visualConnection);
-				}
-			}
-		} catch (VisualComponentCreationException e) {
-			throw new VisualModelInstantiationException ("Failed to create visual component: " + e.getMessage());
-		} catch (VisualConnectionCreationException e) {
-			throw new VisualModelInstantiationException("Failed to create visual connection:" + e.getMessage());
-		}
-
 		addXMLSerialisable();
-
 		mathModel.addListener(mathModelListener);
 	}
 
@@ -248,12 +239,12 @@ public class VisualModel implements Plugin, Model {
 		for (VisualNode node: nodes) {
 			if (node instanceof VisualGroup) {
 				//TODO: group rotate
-/*				VisualGroup vg=(VisualGroup)node;
+				/*				VisualGroup vg=(VisualGroup)node;
 				Point2D offset = new Point2D.Double(0,0);
 				AffineTransform gt = vg.getAncestorToParentTransform(vg.getParent());
 				gt.transform(offset, offset);
 				gt.
-				*/
+				 */
 				//.transform(pointInParentSpace, _tmpPoint)
 
 			} else if (node instanceof VisualConnection) {
@@ -446,7 +437,7 @@ public class VisualModel implements Plugin, Model {
 	public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 			mathModel.validateConnection(new Connection (((VisualComponent)first).getReferencedComponent(),
-				((VisualComponent)second).getReferencedComponent()));
+					((VisualComponent)second).getReferencedComponent()));
 		}
 		else throw new InvalidConnectionException("Only connections between components are allowed");
 	}
