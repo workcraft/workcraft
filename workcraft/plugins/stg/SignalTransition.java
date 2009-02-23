@@ -19,11 +19,12 @@ public class SignalTransition extends Transition {
 
 	public enum Direction {
 		PLUS,
-		MINUS
+		MINUS,
+		TOGGLE
 	}
 
 	private Type type = Type.INTERNAL;
-	private Direction direction = Direction.PLUS;
+	private Direction direction = Direction.TOGGLE;
 	private String signalName = "";
 	private int instance = 0;
 
@@ -78,10 +79,13 @@ public class SignalTransition extends Transition {
 			setDirection(Direction.PLUS);
 		else if (name.endsWith("-"))
 			setDirection(Direction.MINUS);
+		else if (name.endsWith("~"))
+			setDirection(Direction.TOGGLE);
 
 		name = name.replace("+", "");
 		name = name.replace("-", "");
 		name = name.replace("/", "");
+		name = name.replace("~", "");
 
 		signalName = name;
 	}

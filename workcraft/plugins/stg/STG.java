@@ -50,6 +50,9 @@ public class STG extends PetriNet {
 			case MINUS:
 				t.setInstance(instanceCounter.minusCounter++);
 				break;
+			case TOGGLE:
+				t.setInstance(instanceCounter.toggleCounter++);
+				break;
 			}
 
 			instanceCounterMap.put(signalName, instanceCounter);
@@ -60,4 +63,5 @@ public class STG extends PetriNet {
 class InstanceCounter {
 	public int plusCounter = 1;
 	public int minusCounter = 1;
+	public int toggleCounter = 1;
 }

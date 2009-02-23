@@ -61,6 +61,7 @@ public class VisualSignalTransition extends VisualTransition {
 		LinkedHashMap<String, Object> directions = new LinkedHashMap<String, Object>();
 		directions.put("+", SignalTransition.Direction.PLUS);
 		directions.put("-", SignalTransition.Direction.MINUS);
+		directions.put("", SignalTransition.Direction.TOGGLE);
 
 		addPropertyDeclaration(new PropertyDeclaration("Signal name", "getSignalName", "setSignalName", String.class));
 		addPropertyDeclaration(new PropertyDeclaration("Transition", "getDirection", "setDirection", SignalTransition.Direction.class, directions));
