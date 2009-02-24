@@ -274,8 +274,6 @@ public class VisualSTG extends VisualPetriNet  {
 		}
 
 		addListener(new Listener());
-
-
 	}
 
 

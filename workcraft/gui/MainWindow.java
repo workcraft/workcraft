@@ -678,7 +678,7 @@ public class MainWindow extends JFrame {
 		if (editorInFocus != null)
 			saveAs(editorInFocus.getWorkspaceEntry());
 		else
-			System.out.println ("No editor in focus");
+			System.err.println ("No editor in focus");
 	}
 
 	public void save(WorkspaceEntry we) throws OperationCancelledException {
@@ -724,9 +724,9 @@ public class MainWindow extends JFrame {
 		while (true) {
 			if(fc.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) {
 				path = fc.getSelectedFile().getPath();
-				if (!fc.getSelectedFile().exists())
-					if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION))
-						path += FileFilters.DOCUMENT_EXTENSION;
+
+				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION))
+					path += FileFilters.DOCUMENT_EXTENSION;
 
 				File f = new File(path);
 
