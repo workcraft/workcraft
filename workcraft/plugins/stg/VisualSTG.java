@@ -37,6 +37,23 @@ public class VisualSTG extends VisualPetriNet  {
 					}
 				}
 			}
+
+			if (component instanceof VisualSignalTransition && propertyName.equals("Signal name")) {
+				VisualSignalTransition t = (VisualSignalTransition)component;
+
+				String signalName = t.getSignalName();
+
+				if (signalName.isEmpty())
+					return;
+
+				for (VisualSignalTransition tt : transitions) {
+					if (signalName.equals(tt.getSignalName())) {
+						t.setType(tt.getType());
+						break;
+					}
+				}
+
+			}
 		}
 
 		public void onComponentRemoved(VisualComponent component) {
