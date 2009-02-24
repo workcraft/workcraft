@@ -1,11 +1,15 @@
 package org.workcraft.util;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -46,14 +50,14 @@ public class XmlUtil {
 		return result;
 	}
 
-	public static void saveDocument(Document doc, String path) throws IOException {
+	public static void saveDocument(Document doc, File file) throws IOException {
 		try
 		{
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			FileOutputStream fos = new FileOutputStream(path);
+			FileOutputStream fos = new FileOutputStream(file.getPath());
 
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(new OutputStreamWriter(fos));
@@ -109,5 +113,14 @@ public class XmlUtil {
 
 	public static void writeStringAttr (Element element, String attributeName, String value) {
 		element.setAttribute(attributeName, (value==null)?"":value);
+	}
+
+	public static Document createDocument() throws ParserConfigurationException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+
+		db = dbf.newDocumentBuilder();
+		doc = db.newDocument();
+		return doc;
 	}
 }

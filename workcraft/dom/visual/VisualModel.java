@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
@@ -653,17 +651,10 @@ public class VisualModel implements Plugin, Model {
 	 * @param clipboard
 	 * @param clipboardOwner
 	 * @author Ivan Poliakov
+	 * @throws ParserConfigurationException
 	 */
-	public void copy(Clipboard clipboard, ClipboardOwner clipboardOwner) {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		Document doc; DocumentBuilder db;
-		try {
-			db = dbf.newDocumentBuilder();
-			doc = db.newDocument();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return;
-		}
+	public void copy(Clipboard clipboard, ClipboardOwner clipboardOwner) throws ParserConfigurationException {
+		Document doc = XmlUtil.createDocument();
 
 		Element root = doc.createElement("workcraft-clipboard-contents");
 
@@ -705,7 +696,7 @@ public class VisualModel implements Plugin, Model {
 			addToSelection(n);
 	}
 
-	public void cut(Clipboard clipboard, ClipboardOwner clipboardOwner) {
+	public void cut(Clipboard clipboard, ClipboardOwner clipboardOwner) throws ParserConfigurationException {
 		copy(clipboard, clipboardOwner);
 		deleteSelection();
 	}

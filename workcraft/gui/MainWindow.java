@@ -454,7 +454,7 @@ public class MainWindow extends JFrame {
 				if (DockingManager.isMaximized(dockableWindow))
 					DockingManager.toggleMaximized(dockableWindow);
 
-				editorWindows.remove(editor.getWorkspaceEntry().getEntryID());
+				editorWindows.remove(dockableWindow);
 
 				if (editorWindows.isEmpty()) {
 					DockingManager.registerDockable(documentPlaceholder);
@@ -820,9 +820,8 @@ public class MainWindow extends JFrame {
 		while (true) {
 			if(fc.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) {
 				path = fc.getSelectedFile().getPath();
-				if (!fc.getSelectedFile().exists())
-					if (!path.endsWith(exporter.getExtenstion()))
-						path += exporter.getExtenstion();
+				if (!path.endsWith(exporter.getExtenstion()))
+					path += exporter.getExtenstion();
 
 				File f = new File(path);
 
@@ -837,7 +836,7 @@ public class MainWindow extends JFrame {
 		}
 
 		try {
-			exporter.exportToFile(editorInFocus.getModel(), fc.getSelectedFile());
+			exporter.exportToFile(editorInFocus.getModel(), new File(path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ModelValidationException e) {

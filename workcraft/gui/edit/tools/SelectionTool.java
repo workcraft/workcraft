@@ -3,6 +3,7 @@ package org.workcraft.gui.edit.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -14,6 +15,7 @@ import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -261,10 +263,20 @@ public class SelectionTool extends AbstractTool {
 				e.getEditor().repaint();
 				break;
 			case KeyEvent.VK_C:
-				e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+				try {
+						e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+					} catch (ParserConfigurationException e2) {
+						JOptionPane.showMessageDialog(null, "Copy failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
+						e2.printStackTrace();
+					}
 				break;
 			case KeyEvent.VK_X:
-				e.getModel().cut(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+				try {
+						e.getModel().cut(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
+					} catch (ParserConfigurationException e2) {
+						JOptionPane.showMessageDialog(null, "Copy failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
+						e2.printStackTrace();
+					}
 				break;
 			case KeyEvent.VK_V:
 				try {

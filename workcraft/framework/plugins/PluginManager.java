@@ -156,7 +156,7 @@ public class PluginManager {
 			root.appendChild(e);
 		}
 
-		XmlUtil.saveDocument(doc, path);
+		XmlUtil.saveDocument(doc, new File(path));
 	}
 
 	private void search(File root) {

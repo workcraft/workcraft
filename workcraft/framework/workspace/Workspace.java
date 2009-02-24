@@ -115,7 +115,7 @@ public class Workspace {
 		}
 
 		try {
-			XmlUtil.saveDocument(doc, path);
+			XmlUtil.saveDocument(doc, new File(path));
 			filePath = path;
 			changed = false;
 			fireWorkspaceSaved();
