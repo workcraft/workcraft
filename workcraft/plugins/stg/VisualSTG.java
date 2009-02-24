@@ -273,6 +273,8 @@ public class VisualSTG extends VisualPetriNet  {
 				maybeMakeImplicit((VisualPlace)c);
 		}
 
+		addListener(new Listener());
+
 
 	}
 
