@@ -4,17 +4,13 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModelEventListener;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.VisualComponentCreationException;
-import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -218,9 +214,9 @@ public class VisualSTG extends VisualPetriNet  {
 
 		for (VisualConnection con:	place.getConnections()) {
 			if (con.getFirst() == place)
-				refCon1 = con.getReferencedConnection();
-			else if (con.getSecond() == place)
 				refCon2 = con.getReferencedConnection();
+			else if (con.getSecond() == place)
+				refCon1 = con.getReferencedConnection();
 
 			removeVisualConnectionOnly(con);
 		}

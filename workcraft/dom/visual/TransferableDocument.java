@@ -42,6 +42,8 @@ public class TransferableDocument implements Transferable {
 				try
 				{
 					TransformerFactory tFactory = TransformerFactory.newInstance();
+					tFactory.setAttribute("indent-number", new Integer(2));
+
 					Transformer transformer = tFactory.newTransformer();
 
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -49,17 +49,23 @@ public abstract class MathModel implements Plugin, Model {
 
 	final public static void nodesToXML(Element parentElement,
 			Collection<? extends MathNode> nodes) {
-		for (MathNode n : nodes) {
-			Element element = null;
-			if (n instanceof Component)
-			 element = XmlUtil.createChildElement("component",
-					parentElement);
-			else if (n instanceof Connection)
-				 element = XmlUtil.createChildElement("connection",
-							parentElement);
-			element.setAttribute("class", n.getClass().getName());
-			n.serialiseToXML(element);
-		}
+		Element element;
+
+		for (MathNode n : nodes)
+			if (n instanceof Component) {
+				element = XmlUtil.createChildElement("component",
+						parentElement);
+				element.setAttribute("class", n.getClass().getName());
+				n.serialiseToXML(element);
+			}
+
+		for (MathNode n : nodes)
+			if (n instanceof Connection) {
+				element = XmlUtil.createChildElement("connection",
+						parentElement);
+				element.setAttribute("class", n.getClass().getName());
+				n.serialiseToXML(element);
+			}
 	}
 
 	private void addSerialisationObjects() {
@@ -107,7 +113,7 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	final public int addConnection(Connection connection)
-			throws InvalidConnectionException {
+	throws InvalidConnectionException {
 		// first validate that this connection is allowed, e.g. disallow user
 		// to connect Petri net place to another Petri net place
 		validateConnection(connection);
@@ -142,12 +148,12 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	public final Connection connect(Component first, Component second)
-			throws InvalidConnectionException {
+	throws InvalidConnectionException {
 		return createConnection(first, second);
 	}
 
 	public Connection createConnection(Component first, Component second)
-			throws InvalidConnectionException {
+	throws InvalidConnectionException {
 		Connection con = new Connection(first, second);
 		addConnection(con);
 		return con;
@@ -226,7 +232,7 @@ public abstract class MathModel implements Plugin, Model {
 	}
 
 	final public void pasteFromXML(Element modelElement)
-			throws LoadFromXMLException {
+	throws LoadFromXMLException {
 		componentRenames.clear();
 		connectionRenames.clear();
 
@@ -306,7 +312,7 @@ public abstract class MathModel implements Plugin, Model {
 	abstract public void validate() throws ModelValidationException;
 
 	abstract public void validateConnection(Connection connection)
-			throws InvalidConnectionException;
+	throws InvalidConnectionException;
 
 	public final void addXMLSerialiser(XMLSerialiser serialiser) {
 		serialisation.addSerialiser(serialiser);
