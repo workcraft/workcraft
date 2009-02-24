@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import javax.swing.JComponent;
@@ -187,7 +187,7 @@ public class MainWindow extends JFrame {
 	private DockableWindow outputDockable;
 	private DockableWindow documentPlaceholder;
 
-	private LinkedHashMap<Integer, DockableWindow> editorWindows = new LinkedHashMap<Integer, DockableWindow>();
+	private LinkedHashSet<DockableWindow> editorWindows = new LinkedHashSet<DockableWindow>();
 	private LinkedList<DockableWindow> utilityWindows = new LinkedList<DockableWindow>();
 
 	private GraphEditorPanel editorInFocus;
@@ -313,19 +313,17 @@ public class MainWindow extends JFrame {
 				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
 						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
 
-				editorWindows.put(we.getEntryID(), editorWindow);
-
 				DockingManager.close(documentPlaceholder);
 				DockingManager.unregisterDockable(documentPlaceholder);
 				utilityWindows.remove(documentPlaceholder);
 			}
 			else {
-				DockableWindow firstEditorWindow = editorWindows.values().iterator().next();
+				DockableWindow firstEditorWindow = editorWindows.iterator().next();
 				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
 						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
 			}
 
-			editorWindows.put(we.getEntryID(), editorWindow);
+			editorWindows.add(editorWindow);
 			requestFocus(editor);
 	}
 
@@ -555,9 +553,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void shutdown() throws OperationCancelledException {
-		LinkedHashMap<Integer, DockableWindow> windowsToClose = new LinkedHashMap<Integer, DockableWindow>(editorWindows);
+		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>(editorWindows);
 
-		for (DockableWindow w : windowsToClose.values()) {
+		for (DockableWindow w : windowsToClose) {
 			closeDockableWindow(w.getID());
 		}
 
