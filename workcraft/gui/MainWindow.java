@@ -742,7 +742,7 @@ public class MainWindow extends JFrame {
 
 		try {
 			framework.save(we.getModel(), path);
-			we.setFile(fc.getSelectedFile());
+			we.setFile(new File(path));
 			we.setUnsaved(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
 		} catch (ModelSaveFailedException e) {

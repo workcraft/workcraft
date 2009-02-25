@@ -146,7 +146,8 @@ public class CreateWorkDialog extends JDialog {
 		okButton.setText("OK");
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				ok();
+				if (okButton.isEnabled())
+					ok();
 			}
 		});
 
@@ -172,7 +173,8 @@ public class CreateWorkDialog extends JDialog {
 			@Override
 			public void keyPressed(java.awt.event.KeyEvent e) {
 				if (e.getKeyCode()==KeyEvent.VK_ENTER)
-					ok();
+					if (okButton.isEnabled())
+						ok();
 			}
 		});
 
