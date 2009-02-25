@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg;
 
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
@@ -79,6 +80,8 @@ public class VisualSTG extends VisualPetriNet  {
 	}
 
 	private HashSet<VisualSignalTransition> transitions = new HashSet<VisualSignalTransition>();
+	private HashSet<VisualPlace> lockedPlaces = new HashSet<VisualPlace>();
+
 
 	@Override
 	public void validateConnection(VisualNode first, VisualNode second)
@@ -277,9 +280,17 @@ public class VisualSTG extends VisualPetriNet  {
 			if (c2 instanceof VisualPlace)
 				place = (VisualPlace)c2;
 
-			if (place!=null)
+			if (place!=null && !lockedPlaces.contains(place))
 				maybeMakeImplicit (place);
 		}
+	}
+
+	@Override
+	public void removeComponent(VisualComponent component) {
+		if (component instanceof VisualPlace)
+			lockedPlaces.add((VisualPlace)component);
+		super.removeComponent(component);
+		lockedPlaces.clear();
 	}
 
 	public VisualSTG(STG model) throws VisualModelInstantiationException {
@@ -297,5 +308,21 @@ public class VisualSTG extends VisualPetriNet  {
 	public VisualSTG(STG model, Element element) throws VisualModelInstantiationException {
 		super(model, element);
 		addListener(new Listener());
+	}
+
+	private void lockPlaces(Collection<VisualNode> nodes) {
+		for (VisualNode node : nodes) {
+			if (node instanceof VisualPlace)
+				lockedPlaces.add((VisualPlace)node);
+			else if (node instanceof VisualGroup)
+				lockPlaces( ((VisualGroup)node).getChildren());
+		}
+	}
+
+	@Override
+	protected void removeNodes(Collection<VisualNode> nodes) {
+		lockPlaces(nodes);
+		super.removeNodes(nodes);
+		lockedPlaces.clear();
 	}
 }

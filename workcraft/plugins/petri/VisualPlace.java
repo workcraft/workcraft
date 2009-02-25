@@ -24,11 +24,11 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 @HotKeyDeclaration(KeyEvent.VK_P)
 public class VisualPlace extends VisualComponent {
-	class AddTokenAction extends ScriptedAction {
+	static public class AddTokenAction extends ScriptedAction {
 		private int placeID;
-		public AddTokenAction(int placeID) {
+		public AddTokenAction(Place place) {
 			super();
-			this.placeID = placeID;
+			this.placeID = place.getID();
 		}
 		public String getScript() {
 			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
@@ -44,7 +44,7 @@ public class VisualPlace extends VisualComponent {
 		}
 	}
 
-	class RemoveTokenAction extends ScriptedAction {
+	static public class RemoveTokenAction extends ScriptedAction {
 		private int placeID;
 
 		public RemoveTokenAction(Place place) {
@@ -196,10 +196,10 @@ public class VisualPlace extends VisualComponent {
 	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		JPopupMenu popup = new JPopupMenu();
 
-		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedComponent().getID()));
+		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
 		addToken.addScriptedActionListener(actionListener);
 
-		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction((Place)getReferencedComponent()));
+		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(getReferencedPlace()));
 		removeToken.addScriptedActionListener(actionListener);
 
 		popup.add(new JLabel ("Place"));

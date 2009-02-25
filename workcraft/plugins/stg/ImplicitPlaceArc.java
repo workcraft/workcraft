@@ -6,6 +6,9 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathNode;
@@ -14,6 +17,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualReferenceResolver;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -114,6 +119,24 @@ public class ImplicitPlaceArc extends VisualConnection {
 		ret.add(refCon1);
 		ret.add(refCon2);
 		return ret;
+	}
+
+	@Override
+	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
+	JPopupMenu popup = new JPopupMenu();
+
+		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new VisualPlace.AddTokenAction(implicitPlace));
+		addToken.addScriptedActionListener(actionListener);
+
+		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new VisualPlace.RemoveTokenAction(implicitPlace));
+		removeToken.addScriptedActionListener(actionListener);
+
+		popup.add(new JLabel ("Implicit place"));
+		popup.addSeparator();
+		popup.add(addToken);
+		popup.add(removeToken);
+
+		return popup;
 	}
 
 

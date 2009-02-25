@@ -617,7 +617,7 @@ public class VisualModel implements Plugin, Model {
 			l.onConnectionRemoved(connection);
 	}
 
-	private void removeNodes(Collection<VisualNode> nodes) {
+	protected void removeNodes(Collection<VisualNode> nodes) {
 		LinkedList<VisualConnection> connectionsToRemove = new LinkedList<VisualConnection>();
 		LinkedList<VisualComponent> componentsToRemove = new LinkedList<VisualComponent>();
 		LinkedList<VisualGroup> groupsToRemove = new LinkedList<VisualGroup>();
