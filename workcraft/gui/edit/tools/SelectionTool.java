@@ -103,7 +103,7 @@ public class SelectionTool extends AbstractTool {
 
 				JPopupMenu popup = so.createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
 
-				if (popup != null) {
+				if (popup.getComponentCount() != 0) {
 					popup.setFocusable(false);
 					popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
 				}

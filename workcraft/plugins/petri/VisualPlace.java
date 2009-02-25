@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -103,6 +104,22 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+
+		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
+			public void addItems(JPopupMenu menu,
+					ScriptedActionListener actionListener) {
+				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
+				addToken.addScriptedActionListener(actionListener);
+
+				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(getReferencedPlace()));
+				removeToken.addScriptedActionListener(actionListener);
+
+				menu.add(new JLabel ("Place"));
+				menu.addSeparator();
+				menu.add(addToken);
+				menu.add(removeToken);
+			}
+		});
 	}
 
 	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
@@ -190,24 +207,6 @@ public class VisualPlace extends VisualComponent {
 
 	public Rectangle2D getBoundingBox() {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-	}
-
-	@Override
-	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
-		JPopupMenu popup = new JPopupMenu();
-
-		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
-		addToken.addScriptedActionListener(actionListener);
-
-		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(getReferencedPlace()));
-		removeToken.addScriptedActionListener(actionListener);
-
-		popup.add(new JLabel ("Place"));
-		popup.addSeparator();
-		popup.add(addToken);
-		popup.add(removeToken);
-
-		return popup;
 	}
 
 	public Place getReferencedPlace() {

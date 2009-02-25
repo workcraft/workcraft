@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualReferenceResolver;
@@ -50,6 +51,22 @@ public class ImplicitPlaceArc extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+
+		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
+			public void addItems(JPopupMenu menu,
+					ScriptedActionListener actionListener) {
+				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new VisualPlace.AddTokenAction(implicitPlace));
+				addToken.addScriptedActionListener(actionListener);
+
+				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new VisualPlace.RemoveTokenAction(implicitPlace));
+				removeToken.addScriptedActionListener(actionListener);
+
+				menu.add(new JLabel ("Implicit place"));
+				menu.addSeparator();
+				menu.add(addToken);
+				menu.add(removeToken);
+			}
+		});
 	}
 
 	public ImplicitPlaceArc (VisualComponent first, VisualComponent second, Connection refCon1, Connection refCon2, Place implicitPlace) {
@@ -120,24 +137,5 @@ public class ImplicitPlaceArc extends VisualConnection {
 		ret.add(refCon2);
 		return ret;
 	}
-
-	@Override
-	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
-	JPopupMenu popup = new JPopupMenu();
-
-		ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new VisualPlace.AddTokenAction(implicitPlace));
-		addToken.addScriptedActionListener(actionListener);
-
-		ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new VisualPlace.RemoveTokenAction(implicitPlace));
-		removeToken.addScriptedActionListener(actionListener);
-
-		popup.add(new JLabel ("Implicit place"));
-		popup.addSeparator();
-		popup.add(addToken);
-		popup.add(removeToken);
-
-		return popup;
-	}
-
 
 }

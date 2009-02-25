@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.XMLSerialisation;
+import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -30,6 +31,7 @@ public abstract class VisualNode implements PropertyEditable {
 	private VisualGroup parent = null;
 
 	private XMLSerialisation serialisation = new XMLSerialisation();
+	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
 
 	public abstract void draw (Graphics2D g);
 
@@ -174,8 +176,12 @@ public abstract class VisualNode implements PropertyEditable {
 		return result;
 	}
 
-	public JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
-		return null;
+	protected final void addPopupMenuSegment (PopupMenuSegment segment) {
+		popupMenuBuilder.addSegment(segment);
+	}
+
+	public final JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
+		return popupMenuBuilder.build(actionListener);
 	}
 
 	final protected void addPropertyDeclaration(PropertyDeclaration declaration) {
