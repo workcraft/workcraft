@@ -36,7 +36,7 @@ public class SynchronousExternalProcess {
 		process.addListener(new SynchronousListener());
 	}
 
-	public void start (long timeout) throws IOException {
+	public boolean start (long timeout) throws IOException {
 		errorData.clear();
 		outputData.clear();
 		finished = false;
@@ -48,15 +48,16 @@ public class SynchronousExternalProcess {
 
 		while (System.currentTimeMillis() < endTime) {
 			if (finished)
-				return;
+				return true;
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
-				return;
+				return false;
 			}
 		}
 
 		process.cancel();
+		return false;
 	}
 
 	public int getReturnCode() {
