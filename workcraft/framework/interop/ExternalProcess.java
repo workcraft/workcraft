@@ -103,7 +103,7 @@ public class ExternalProcess {
 
 	private void processFinished() {
 		for (ExternalProcessListener l : listeners){
-				l.processFinished(process.exitValue());
+			l.processFinished(process.exitValue());
 		}
 
 		process = null;
@@ -152,4 +152,6 @@ public class ExternalProcess {
 	public void removeListener(ExternalProcessListener listener) {
 		listeners.remove(listener);
 	}
+
+
 }
