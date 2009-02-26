@@ -32,20 +32,4 @@ public class Graph extends MathModel {
 		}
 		return v;
 	}
-
-	@Override
-	protected void onComponentAdded(Component component) {
-	}
-
-	@Override
-	protected void onComponentRemoved(Component component) {
-	}
-
-	@Override
-	protected void onConnectionAdded(Connection connection) {
-	}
-
-	@Override
-	protected void onConnectionRemoved(Connection connection) {
-	}
 }

@@ -257,7 +257,7 @@ public class DotGImporter implements Importer {
 							be2 = createComponent(s[i], stg, bem);
 
 							try {
-								stg.createConnection(be1, be2);
+								stg.connect(be1, be2);
 							} catch (InvalidConnectionException e) {
 								e.printStackTrace();
 							}

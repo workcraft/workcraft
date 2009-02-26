@@ -4,93 +4,122 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.workcraft.util.XmlUtil;
 
+/**
+ * Base class for all mathematical objects that act
+ * as a graph node.
+ * @author Ivan Poliakov
+ *
+ */
 public abstract class Component extends MathNode {
-	private int ID = -1;
-	private String label = "";
-
 	private Set<Connection> connections = new HashSet<Connection>();
 
 	private HashSet<Component> preset = new HashSet<Component>();
 	private HashSet<Component> postset = new HashSet<Component>();
 
-	private void addSerialisationObjects() {
-		addXMLSerialiser(new XMLSerialiser() {
-			public void serialise(Element element) {
-				XmlUtil.writeIntAttr(element, "ID", Component.this.ID);
-				XmlUtil.writeStringAttr(element, "label", Component.this.label);
-			}
-			public String getTagName() {
-				return Component.class.getSimpleName();
-			}
-		});
-	}
-
+	/**
+	 * Default constructor, creates an unlabelled component
+	 * with default (uninitialised) ID = -1.
+	 */
 	public Component() {
-		addSerialisationObjects();
+		super();
 	}
 
-	public Component (Element componentElement) {
-		Element element = XmlUtil.getChildElement(Component.class.getSimpleName(), componentElement);
-		ID = XmlUtil.readIntAttr(element, "ID", ID);
-		label = XmlUtil.readStringAttr(element, "label");
-		addSerialisationObjects();
+	/**
+	 * <p>XML deserialisation constructor, creates a component
+	 * and reads ID and label from XML element.</p>
+	 * @param nodeElement -- an XML element containing
+	 * elements created by <type>XMLSerialiser</type> objects.
+	 */
+	public Component (Element nodeElement) {
+		super(nodeElement);
 	}
 
-	final public String getLabel() {
-		return label;
-	}
-
-	final public void setLabel(String label) {
-		this.label = label;
-	}
-
-	final public void setID(Integer id) {
-		ID = id;
-	}
-
-	final public Integer getID() {
-		return ID;
-	}
-
-	final public void addToPreset (Component component) {
+	/**
+	 * <p>Adds another component to this component's preset. Called
+	 * by <type>MathModel</type> on <i>connect</i> operation.</p>
+	 * <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param component -- the component to be added to preset
+	 */
+	final protected void addToPreset (Component component) {
 		preset.add(component);
 	}
 
-	final public void removeFromPreset(Component component) {
+	/**
+	 * <p>Removes another component from this component's preset. Called
+	 * by <type>MathModel</type> on <i>removeComponent/removeConnection</i>
+	 * operation.</p>
+	 *  <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param component -- the component to be removed from preset.
+	 */
+	final protected void removeFromPreset(Component component) {
 		preset.remove(component);
 	}
 
-	final public void addConnection(Connection connection) {
-		connections.add(connection);
-	}
-
-	final public void removeConnection(Connection connection) {
-		connections.remove(connection);
-	}
-
-	final public Set<Connection> getConnections() {
-		return new HashSet<Connection>(connections);
-	}
-
-	@SuppressWarnings("unchecked")
-	final public Set<Component> getPreset() {
-		return (Set<Component>)preset.clone();
-	}
-
+	/**
+	 * Adds another component to this component's postset. Called
+	 * by <type>MathModel</type> on <i>connect</i> operation.
+	 * <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param component -- the component to be added to postset.
+	 */
 	final public void addToPostset (Component component) {
 		postset.add(component);
 	}
 
+	/**
+	 * <p>Removes another component from this component's postset. Called
+	 * by <type>MathModel</type> on <i>removeComponent/removeConnection</i>
+	 * operation.</p>
+	 *  <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param component -- the component to be removed from postset.
+	 */
 	final public void removeFromPostset(Component component) {
 		postset.remove(component);
 	}
 
-	@SuppressWarnings("unchecked")
-	final public Set<Component> getPostset() {
-		return (Set<Component>)postset.clone();
+	/**
+	 * Adds a connection to this component's connection list. Used by
+	 * <type>MathModel</type> to cascade removal of connections
+	 * on <i>removeComponent</i> operation.
+	 * <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param connection
+	 */
+	final protected void addConnection(Connection connection) {
+		connections.add(connection);
 	}
 
+	/**
+	 * Removes a connection from this component's connection list. Used by
+	 * <type>MathModel</type> to cascade removal of connections
+	 * on <i>removeComponent</i> operation.
+	 * <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 * @param connection
+	 */
+	final protected void removeConnection(Connection connection) {
+		connections.remove(connection);
+	}
 
+	/**
+	 * <p><b>Note:</b> for internal use only, should not be called directly.</p>
+	 *  @return A set of connections involving this component.
+	 */
+	final protected Set<Connection> getConnections() {
+		return new HashSet<Connection>(connections);
+	}
+
+	/**
+	 * @return A set of components directly preceding this component in the
+	 * directed graph.
+	 */
+	final public Set<Component> getPreset() {
+		return new HashSet<Component>(preset);
+	}
+
+	/**
+	 * @return A set of components directly succeeding this component in the
+	 * directed graph.
+	 */
+	final public Set<Component> getPostset() {
+		return new HashSet<Component>(postset);
+	}
 }

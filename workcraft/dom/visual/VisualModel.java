@@ -66,12 +66,21 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public class ModelListener implements MathModelListener {
-		public void onModelStructureChanged() {
-			fireLayoutChanged();
-		}
 		public void onNodePropertyChanged(String propertyName, MathNode n) {
 			if (n instanceof Component)
 				fireComponentPropertyChanged(propertyName, getComponentByRefID( ((Component)n).getID()));
+		}
+
+		public void onComponentAdded(Component component) {
+		}
+
+		public void onComponentRemoved(Component component) {
+		}
+
+		public void onConnectionAdded(Connection connection) {
+		}
+
+		public void onConnectionRemoved(Connection connection) {
 		}
 	}
 
