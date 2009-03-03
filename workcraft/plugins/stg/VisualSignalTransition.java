@@ -70,6 +70,8 @@ public class VisualSignalTransition extends VisualTransition {
 
 	@Override
 	protected void drawInLocalSpace(Graphics2D g) {
+		drawLabelInLocalSpace(g);
+
 		if (text == null) {
 			Shape shape = new Rectangle2D.Double(
 					-size / 2 + strokeWidth / 2,

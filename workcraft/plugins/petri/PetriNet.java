@@ -7,6 +7,8 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
+import org.workcraft.dom.MathModelListener;
+import org.workcraft.dom.MathNode;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -14,31 +16,44 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 public class PetriNet extends MathModel {
+
+	public class Listener implements MathModelListener {
+		public void onComponentAdded(Component component) {
+			if (component instanceof Place)
+				places.add((Place)component);
+			else if (component instanceof Transition)
+				transitions.add((Transition)component);
+		}
+
+		public void onComponentRemoved(Component component) {
+			if (component instanceof Place)
+				places.remove(component);
+			else if (component instanceof Transition)
+				transitions.remove(component);
+		}
+
+		public void onConnectionAdded(Connection connection) {
+		}
+
+		public void onConnectionRemoved(Connection connection) {
+		}
+
+		public void onNodePropertyChanged(String propertyName, MathNode n) {
+		}
+	}
+
 	private HashSet<Place> places = new HashSet<Place>();
 	private HashSet<Transition> transitions = new HashSet<Transition>();
 
 	public PetriNet() {
 		super();
 		addSupportedComponents();
+		addListener(new Listener());
 	}
 
 	private void addSupportedComponents() {
 		addComponentSupport(Place.class);
 		addComponentSupport(Transition.class);
-	}
-
-	protected void onComponentAdded(Component component) {
-		if (component instanceof Place)
-			places.add((Place)component);
-		else if (component instanceof Transition)
-			transitions.add((Transition)component);
-	}
-
-	protected void onComponentRemoved (Component component) {
-		if (component instanceof Place)
-			places.remove(component);
-		else if (component instanceof Transition)
-			transitions.remove(component);
 	}
 
 	public void validate() throws ModelValidationException {
@@ -70,11 +85,5 @@ public class PetriNet extends MathModel {
 
 	final public Set<Transition> getTransitions() {
 		return new HashSet<Transition>(transitions);
-	}
-
-	public void onConnectionAdded(Connection connection) {
-	}
-
-	public void onConnectionRemoved(Connection connection) {
 	}
 }

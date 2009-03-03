@@ -177,6 +177,8 @@ public class VisualPlace extends VisualComponent {
 	@Override
 	protected void drawInLocalSpace(Graphics2D g)
 	{
+		drawLabelInLocalSpace(g);
+
 		Shape shape = new Ellipse2D.Double(
 				-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
