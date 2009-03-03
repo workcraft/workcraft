@@ -256,10 +256,23 @@ public class DotGImporter implements Importer {
 
 							be2 = createComponent(s[i], stg, bem);
 
-							try {
-								stg.connect(be1, be2);
-							} catch (InvalidConnectionException e) {
-								e.printStackTrace();
+							if (be1 instanceof SignalTransition && be2 instanceof SignalTransition)
+							{
+								Place implicitPlace = stg.createPlace();
+								try {
+									stg.connect(be1, implicitPlace);
+									stg.connect(implicitPlace, be2);
+								} catch (InvalidConnectionException e) {
+									e.printStackTrace();
+								}
+							}
+							else
+							{
+								try {
+									stg.connect(be1, be2);
+								} catch (InvalidConnectionException e) {
+									e.printStackTrace();
+								}
 							}
 						}
 
