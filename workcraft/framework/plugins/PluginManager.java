@@ -191,8 +191,10 @@ public class PluginManager {
 					} catch(IOException e) {
 						System.out.println("  error loading class \"" + f.getName() + "\": "
 								+ e.getMessage());
+					} catch(Throwable e){
+						System.out.println("  error loading class \"" + f.getName() + "\": "
+								+ e.getMessage());
 					}
-
 				}
 		}
 	}
