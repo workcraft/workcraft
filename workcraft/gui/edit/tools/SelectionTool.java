@@ -123,7 +123,7 @@ public class SelectionTool extends AbstractTool {
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<VisualNode> hit = model.hitObjects(selectionRect(e.getPosition()));
+			LinkedList<VisualNode> hit = model.hitObjects(startPosition, e.getPosition());
 
 			clearSelection(model);
 			for (VisualNode so: savedSelection)

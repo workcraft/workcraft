@@ -321,16 +321,40 @@ public class VisualGroup extends VisualTransformableNode {
 		return hitVisualNode(pointInLocalSpace, children);
 	}
 
-	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
+
+
+	public LinkedList<VisualNode> hitObjects(Point2D p1, Point2D p2) {
 		LinkedList<VisualNode> hit = new LinkedList<VisualNode>();
+
+		Rectangle2D rect = new Rectangle2D.Double(
+				Math.min(p1.getX(), p2.getX()),
+				Math.min(p1.getY(), p2.getY()),
+				Math.abs(p1.getX()-p2.getX()),
+				Math.abs(p1.getY()-p2.getY()));
 
 		for (VisualNode n : children) {
 			Rectangle2D boundingBox = n.getBoundingBoxInParentSpace();
-			if(boundingBox != null)
-				if(rectInLocalSpace.contains(boundingBox))
-					hit.add(n);
+			if(boundingBox != null) {
+
+				if (p1.getX()<=p2.getX()) {
+					if(rect.contains(boundingBox))
+						hit.add(n);
+
+				} else {
+
+					if(rect.intersects(boundingBox))
+						hit.add(n);
+				}
+
+			}
 		}
 		return hit;
+	}
+
+	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
+		return hitObjects(
+				new Point2D.Double(rectInLocalSpace.getMinX(), rectInLocalSpace.getMinY()),
+				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
 	}
 
 	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {

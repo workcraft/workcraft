@@ -735,12 +735,19 @@ public class VisualModel implements Plugin, Model {
 		return currentLevel.hitNode(transformToCurrentSpace(pointInRootSpace));
 	}
 
+	public LinkedList<VisualNode> hitObjects(Point2D p1, Point2D p2) {
+		p1 = transformToCurrentSpace(p1);
+		p2 = transformToCurrentSpace(p2);
+		return currentLevel.hitObjects(p1, p2);
+	}
+
 	public LinkedList<VisualNode> hitObjects(Rectangle2D selectionRect) {
 		Point2D min = new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY());
 		Point2D max = new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY());
 		min = transformToCurrentSpace(min);
 		max = transformToCurrentSpace(max);
 		selectionRect.setRect(min.getX(), min.getY(), max.getX()-min.getX(), max.getY()-min.getY());
+
 		return currentLevel.hitObjects(selectionRect);
 	}
 
