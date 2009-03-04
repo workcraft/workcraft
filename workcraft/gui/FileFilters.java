@@ -44,7 +44,7 @@ public class FileFilters {
 	public static final FileFilter DOCUMENT_FILES = new DocumentFilesFilter();
 	public static final FileFilter WORKSPACE_FILES = new WorkspaceFilesFilter();
 
-	public static String checkSaveExtension(String path, String ext) {
+	public static String addExtension(String path, String ext) {
 		return path.endsWith(ext)?path:path+ext;
 	}
 

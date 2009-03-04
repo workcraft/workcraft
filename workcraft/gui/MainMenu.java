@@ -131,6 +131,15 @@ public class MainMenu extends JMenuBar {
 		ScriptedActionMenuItem miSaveWorkAs = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_WORK_AS_ACTION);
 		miSaveWorkAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ScriptedActionMenuItem miNewWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.NEW_WORKSPACE_AS_ACTION);
+		miNewWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ScriptedActionMenuItem miOpenWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.OPEN_WORKSPACE_ACTION);
+		miOpenWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ScriptedActionMenuItem miAddFiles = new ScriptedActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
+		miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 
 		ScriptedActionMenuItem miSaveWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
 		miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -153,6 +162,9 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(mnExport);
 
 		mnFile.addSeparator();
+		mnFile.add(miNewWorkspace);
+		mnFile.add(miOpenWorkspace);
+		mnFile.add(miAddFiles);
 		mnFile.add(miSaveWorkspace);
 		mnFile.add(miSaveWorkspaceAs);
 		mnFile.addSeparator();
@@ -194,22 +206,25 @@ public class MainMenu extends JMenuBar {
 		mnView.add(miLoadLayout);*/
 
 		mnView.add(mnWindows);
-		mnView.addSeparator();
 		mnView.add(mnLAF);
 
 		// Edit
 		mnEdit = new JMenu();
 		mnEdit.setText("Edit");
 
-
 		// Settings
 		mnSettings = new JMenu();
-		mnSettings.setText("Settings");
+		mnSettings.setText("Utility");
+
+		ScriptedActionMenuItem miCustomButtons = new ScriptedActionMenuItem(MainWindow.Actions.EDIT_CUSTOM_BUTTONS_ACTION);
+		miCustomButtons.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		ScriptedActionMenuItem miReconfigure = new ScriptedActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		mnSettings.add(miCustomButtons);
 		mnSettings.add(miReconfigure);
+
 
 		// Help
 		mnHelp = new JMenu();

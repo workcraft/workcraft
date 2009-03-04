@@ -56,6 +56,7 @@ public class DotGImporter implements Importer {
 		// check whether this element is created already
 		Component be1 = bem.get(nameid);
 
+
 		if (be1==null) {
 			// if not created, try to decide, how to create it
 			if (m1.find()) {

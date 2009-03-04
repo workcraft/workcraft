@@ -3,6 +3,7 @@ package org.workcraft.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XmlUtil {
 	public static List<Element> getChildElements (String tagName, Element element) {
@@ -121,6 +123,26 @@ public class XmlUtil {
 
 		db = dbf.newDocumentBuilder();
 		doc = db.newDocument();
+		return doc;
+	}
+
+	public static Document loadDocument(String path) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+
+		db = dbf.newDocumentBuilder();
+		doc = db.parse(new File(path));
+
+		return doc;
+	}
+
+	public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+
+		db = dbf.newDocumentBuilder();
+		doc = db.parse(is);
+
 		return doc;
 	}
 }

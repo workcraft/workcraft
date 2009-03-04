@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -31,17 +29,16 @@ import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
+import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
-import org.workcraft.framework.interop.ExternalProcess;
-import org.workcraft.framework.interop.ExternalProcessListener;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
@@ -437,30 +434,20 @@ public class Framework {
 	}
 
 	public Model load(String path) throws LoadFromXMLException {
-		InputStream stream;
+		FileInputStream fis;
 		try {
-			stream = new FileInputStream(path);
-			try	{
-				return load(stream);
-			} finally {
-				stream.close();
-			}
-		} catch (IOException e) {
-			throw new LoadFromXMLException ("IO Exception: " + e.getMessage());
+			fis = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			throw new LoadFromXMLException(e);
 		}
+		return load(fis);
 	}
 
-	public Model load(InputStream stream) throws LoadFromXMLException {
+	public Model load(InputStream is) throws LoadFromXMLException {
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			org.w3c.dom.Document xmldoc;
-			MathModel model;
-			DocumentBuilder db;
+			Document doc = XmlUtil.loadDocument(is);
 
-			db = dbf.newDocumentBuilder();
-			xmldoc = db.parse(stream);
-
-			Element xmlroot = xmldoc.getDocumentElement();
+			Element xmlroot = doc.getDocumentElement();
 
 			if (xmlroot.getNodeName()!="workcraft")
 				throw new LoadFromXMLException("not a Workcraft document");
@@ -475,9 +462,10 @@ public class Framework {
 			if (modelElement == null)
 				throw new LoadFromXMLException("<model> section is missing.");
 
-			model = ModelFactory.createModel(modelElement);
+			MathModel model = ModelFactory.createModel(modelElement);
 
 			Element visualModelElement = XmlUtil.getChildElement("visual-model", xmlroot);
+
 			if (visualModelElement == null)
 				return model;
 
@@ -494,7 +482,6 @@ public class Framework {
 			throw new LoadFromXMLException (e);
 		}
 	}
-
 
 	public void save(Model model, String path) throws ModelSaveFailedException {
 		try {
@@ -515,13 +502,8 @@ public class Framework {
 	}
 
 	public void save(Model model, OutputStream output) throws ModelSaveFailedException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		org.w3c.dom.Document doc;
-		DocumentBuilder db;
-
 		try {
-			db = dbf.newDocumentBuilder();
-			doc = db.newDocument();
+			Document doc = XmlUtil.createDocument();
 
 			Element root = doc.createElement("workcraft");
 			root.setAttribute("version", FRAMEWORK_VERSION_MAJOR+"."+FRAMEWORK_VERSION_MINOR);
@@ -587,27 +569,7 @@ public class Framework {
 		return GUIRestartRequested;
 	}
 
-	public void external() {
-		ExternalProcessListener listener = new ExternalProcessListener() {
-			public void errorData(byte[] data) {
-				System.out.println ("Error data: " + new String(data));
-			}
-
-			public void outputData(byte[] data) {
-				System.out.println ("Output data: " + new String(data));
-			}
-
-			public void processFinished(int returnCode) {
-				System.out.println ("Process finished: " + returnCode);
-			}
-		};
-
-		ExternalProcess test = new ExternalProcess(new String[] { "test" }, null);
-		test.addListener(listener);
-		try {
-			test.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void loadWorkspace(File file) throws LoadFromXMLException {
+		workspace.load(file.getPath());
 	}
 }

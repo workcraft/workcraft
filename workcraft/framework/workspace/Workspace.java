@@ -10,11 +10,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.util.XmlUtil;
+import org.xml.sax.SAXException;
 
 public class Workspace {
 	private LinkedList<WorkspaceEntry> workspace = new LinkedList<WorkspaceEntry>();
@@ -23,14 +25,14 @@ public class Workspace {
 	Framework framework;
 
 	private boolean changed = false;
-	private String filePath = "";
+	private String filePath =null;
 	private int entryIDCounter = 0;
 
 	public Workspace(Framework framework) {
 		this.framework = framework;
 	}
 
-	public WorkspaceEntry add(String path) throws LoadFromXMLException {
+	public WorkspaceEntry add(String path, boolean temporary) throws LoadFromXMLException {
 		for(WorkspaceEntry we : workspace)
 			if(we.getFile() != null && we.getFile().getPath().equals(path))
 				return we;
@@ -41,6 +43,7 @@ public class Workspace {
 
 		if (f.exists()) {
 			we = new WorkspaceEntry(this);
+			we.setTemporary(temporary);
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
 				Model model = framework.load(f.getPath());
@@ -53,8 +56,9 @@ public class Workspace {
 		return we;
 	}
 
-	public WorkspaceEntry add(Model model) {
+	public WorkspaceEntry add(Model model, boolean temporary) {
 		WorkspaceEntry we = new WorkspaceEntry(this);
+		we.setTemporary(temporary);
 		we.setModel(model);
 		workspace.add(we);
 		fireEntryAdded(we);
@@ -88,6 +92,36 @@ public class Workspace {
 		return changed;
 	}
 
+	public void load(String path) throws LoadFromXMLException {
+		workspace.clear();
+
+		try {
+			Document doc = XmlUtil.loadDocument(path);
+			Element xmlroot = doc.getDocumentElement();
+
+			if (xmlroot.getNodeName()!="workcraft-workspace")
+				throw new LoadFromXMLException("not a Workcraft workspace file");
+
+
+			List<Element> entries = XmlUtil.getChildElements("entry", xmlroot);
+
+			for (Element entryElement : entries)
+				add(XmlUtil.readStringAttr(entryElement, "path"), false);
+
+			for (WorkspaceEntry we : workspace)
+				fireEntryAdded(we);
+
+			filePath = path;
+
+		} catch (ParserConfigurationException e) {
+			throw new LoadFromXMLException (e);
+		} catch (SAXException e) {
+			throw new LoadFromXMLException (e);
+		} catch (IOException e) {
+			throw new LoadFromXMLException (e);
+		}
+	}
+
 	public void save(String path) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
@@ -104,13 +138,10 @@ public class Workspace {
 		doc.appendChild(root);
 
 		for(WorkspaceEntry we : workspace) {
-			if (we.getFile() == null)
+			if (we.getFile() == null || we.isTemporary())
 				continue;
 			Element e = doc.createElement("entry");
 			e.setAttribute("path", we.getFile().getPath());
-			if (we.getModel().getTitle() != null)
-				e.setAttribute("title", we.getModel().getTitle());
-			e.setAttribute("folder", we.getModel().getDisplayName());
 			root.appendChild(e);
 		}
 
@@ -125,6 +156,7 @@ public class Workspace {
 	}
 
 	private void fireWorkspaceSaved() {
+		changed = false;
 		for (WorkspaceListener listener : workspaceListeners)
 			listener.workspaceSaved();
 	}
@@ -135,28 +167,33 @@ public class Workspace {
 	}
 
 	void fireEntryAdded(WorkspaceEntry we) {
+		changed = true;
 		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryAdded(we);
 	}
 
 	void fireEntryRemoved(WorkspaceEntry we) {
+		changed = true;
 		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryRemoved(we);
 	}
 
 	void fireEntryChanged(WorkspaceEntry we) {
+		changed = true;
 		for (WorkspaceListener listener : workspaceListeners)
 			listener.entryChanged(we);
 	}
 
-	public void save() {
-		if(filePath.isEmpty())
-			System.err.println("File name undefined.");
-		else
-			save(filePath);
-	}
-
 	public int getNextEntryID() {
 		return entryIDCounter++;
+	}
+
+	public void clear() {
+		changed = false;
+		filePath = null;
+		entryIDCounter = 0;
+
+		for (WorkspaceEntry we : workspace)
+			remove(we);
 	}
 }

@@ -76,8 +76,9 @@ public class WorkspaceEntry {
 	public String toString() {
 		String res = getTitle();
 
-		if (model.getVisualModel() != null)
-			res = res + " [V]";
+		if (model != null)
+			if (model.getVisualModel() != null)
+				res = res + " [V]";
 
 		if (unsaved)
 			res = "* " + res;

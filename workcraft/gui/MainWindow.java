@@ -132,7 +132,16 @@ public class MainWindow extends JFrame {
 			}
 			public String getText() {
 				return "Import...";
-			};
+			}
+		};
+
+		public static final ScriptedAction EDIT_CUSTOM_BUTTONS_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.editCustomButtons()";
+			}
+			public String getText() {
+				return "Edit custom buttons...";
+			}
 		};
 
 
@@ -201,7 +210,7 @@ public class MainWindow extends JFrame {
 	private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
 	protected void createWindows() {
-		workspaceWindow  = new WorkspaceWindow(framework);
+		workspaceWindow  = new WorkspaceWindow(this);
 		framework.getWorkspace().addListener(workspaceWindow);
 		workspaceWindow.setVisible(true);
 		propertyEditorWindow = new PropertyEditorWindow(framework);
@@ -553,10 +562,17 @@ public class MainWindow extends JFrame {
 	}
 
 	public void shutdown() throws OperationCancelledException {
-		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>(editorWindows);
+		closeEditorWindows();
 
-		for (DockableWindow w : windowsToClose) {
-			closeDockableWindow(w.getID());
+
+		if (framework.getWorkspace().isChanged()) {
+			int result = JOptionPane.showConfirmDialog(this, "Current workspace has unsaved changes.\nSave before closing?",
+					"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.YES_OPTION) {
+				workspaceWindow.saveWorkspace();
+			}
+			else if (result == JOptionPane.CANCEL_OPTION)
+				throw new OperationCancelledException("Operation cancelled by user.");
 		}
 
 		saveDockingLayout();
@@ -601,13 +617,13 @@ public class MainWindow extends JFrame {
 
 				if (dialog.createVisualSelected()) {
 					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
-					WorkspaceEntry we = framework.getWorkspace().add(visualModel);
+					WorkspaceEntry we = framework.getWorkspace().add(visualModel, false);
 					if (dialog.openInEditorSelected())
 						createEditorWindow (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
-					framework.getWorkspace().add(mathModel);
+					framework.getWorkspace().add(mathModel, false);
 			} catch (PluginInstantiationException e) {
 				System.err.println(e.getMessage());
 			} catch (VisualModelInstantiationException e) {
@@ -653,7 +669,7 @@ public class MainWindow extends JFrame {
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
 				try {
-					WorkspaceEntry we = framework.getWorkspace().add(f.getPath());
+					WorkspaceEntry we = framework.getWorkspace().add(f.getPath(), true);
 					if (we.getModel() instanceof VisualModel)
 						createEditorWindow(we);
 				} catch (LoadFromXMLException e) {
@@ -787,7 +803,7 @@ public class MainWindow extends JFrame {
 				for (Importer importer : importers) {
 					if (importer.accept(f)) {
 						Model model = importer.importFromFile(f);
-						WorkspaceEntry we = framework.getWorkspace().add(model);
+						WorkspaceEntry we = framework.getWorkspace().add(model, false);
 						if (we.getModel() instanceof VisualModel)
 							createEditorWindow(we);
 						break;
@@ -869,6 +885,14 @@ public class MainWindow extends JFrame {
 
 	public Framework getFramework() {
 		return framework;
+	}
+
+	public void closeEditorWindows() throws OperationCancelledException {
+		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>(editorWindows);
+
+		for (DockableWindow w : windowsToClose) {
+			closeDockableWindow(w.getID());
+		}
 	}
 }
 
