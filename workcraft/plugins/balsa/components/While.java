@@ -37,10 +37,10 @@ abstract class HandshakedComponent implements IHandshakedStgComponent
 		return result;
 	}
 
-	Map<String, Handshake> handshakes;
+	Map<String, Handshake> handshakes = createHandshakes(SimpleHandshakeBuilder.getInstance());
 
 	public Map<String, Handshake> getHandshakes() {
-		return createHandshakes(SimpleHandshakeBuilder.getInstance());
+		return handshakes;
 	}
 
 	protected abstract Map<String, Handshake> createHandshakes(HandshakeBuilder builder);

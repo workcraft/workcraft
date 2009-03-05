@@ -1,5 +1,12 @@
 package org.workcraft.plugins.balsa.components;
 
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
@@ -10,7 +17,9 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
 import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -25,11 +34,10 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	}
 
 	@Override
-	public ActivePullStg createActivePull(int width) {
-		final ActiveSyncWithRtz sync = createActiveSyncWithRtz();
+	public ActivePullStg create(ActivePull handshake) {
+		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
 
-		final StgTransition [] dataP = new StgTransition [width];
-		final StgTransition [] dataM = new StgTransition [width];
+		final int width = handshake.getWidth();
 
 		final StgPlace [] data0 = new StgPlace [width];
 		final StgPlace [] data1 = new StgPlace [width];
@@ -38,12 +46,11 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 		{
 			data0[i] = builder.buildPlace(1);
 			data1[i] = builder.buildPlace();
-			dataP[i] = builder.buildTransition();
-			dataM[i] = builder.buildTransition();
-			builder.addConnection(data0[i], dataP[i]);
-			builder.addConnection(dataP[i], data1[i]);
-			builder.addConnection(data1[i], dataM[i]);
-			builder.addConnection(dataM[i], data0[i]);
+			StgSignal dataSignal = builder.buildSignal(new SignalId(handshake, "data"+i), false);
+			builder.addConnection(data0[i], dataSignal.getPlus());
+			builder.addConnection(dataSignal.getPlus(), data1[i]);
+			builder.addConnection(data1[i], dataSignal.getMinus());
+			builder.addConnection(dataSignal.getMinus(), data0[i]);
 		}
 
 		return new ActivePullStg()
@@ -69,7 +76,7 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	}
 
 	@Override
-	public ActivePushStg createActivePush(int width) {
+	public ActivePushStg create(ActivePush handshake) {
 		throw new NotImplementedException();
 	}
 
@@ -81,16 +88,19 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	}
 
 
-	private ActiveSyncWithRtz createActiveSyncWithRtz() {
+	private ActiveSyncWithRtz createActiveSyncWithRtz(Handshake handshake) {
 		final StgPlace ready = builder.buildPlace(1);
 		final StgPlace activated = builder.buildPlace();
 		final StgPlace rtz = builder.buildPlace();
 		final StgPlace rtzRemote = builder.buildPlace();
 
-		final StgTransition rqP = builder.buildTransition();
-		final StgTransition rqM = builder.buildTransition();
-		final StgTransition acP = builder.buildTransition();
-		final StgTransition acM = builder.buildTransition();
+		StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), true);
+		StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), false);
+
+		final StgTransition rqP = rq.getPlus();
+		final StgTransition rqM = rq.getMinus();
+		final StgTransition acP = ac.getPlus();
+		final StgTransition acM = ac.getMinus();
 
 		builder.addConnection(ready, rqP);
 		builder.addConnection(rqP, activated);
@@ -121,36 +131,39 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 		};
 	}
 	@Override
-	public ActiveSyncStg createActiveSync() {
-		ActiveSyncWithRtz withRtz = createActiveSyncWithRtz();
+	public ActiveSyncStg create(ActiveSync handshake) {
+		ActiveSyncWithRtz withRtz = createActiveSyncWithRtz(handshake);
 		ActiveSyncStg result = withRtz.getActiveSync();
 		builder.addConnection(result.getDeactivationNotificator(), withRtz.getRtz());
 		return result;
 	}
 
 	@Override
-	public PassivePullStg createPassivePull(int width) {
+	public PassivePullStg create(PassivePull handshake) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public PassivePushStg createPassivePush(int width) {
+	public PassivePushStg create(PassivePush handshake) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public PassiveSyncStg createPassiveSync() {
+	public PassiveSyncStg create(PassiveSync handshake) {
 
 		final StgPlace ready = builder.buildPlace(1);
 		final StgPlace exiting = builder.buildPlace();
 		final StgPlace rtz = builder.buildPlace();
 
-		final StgTransition rqP = builder.buildTransition();
-		final StgTransition rqM = builder.buildTransition();
-		final StgTransition acP = builder.buildTransition();
-		final StgTransition acM = builder.buildTransition();
+		final StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), false);
+		final StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), true);
+
+		final StgTransition rqP = rq.getPlus();
+		final StgTransition rqM = rq.getMinus();
+		final StgTransition acP = ac.getPlus();
+		final StgTransition acM = ac.getMinus();
 
 		builder.addConnection(acP, exiting);
 		builder.addConnection(exiting, rqM);

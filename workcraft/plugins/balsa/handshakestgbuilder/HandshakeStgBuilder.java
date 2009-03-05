@@ -1,14 +1,20 @@
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 
 public interface HandshakeStgBuilder
 {
 	public StgBuilder getStgBuilder();
-	public ActiveSyncStg createActiveSync();
-	public PassiveSyncStg createPassiveSync();
-	public PassivePullStg createPassivePull(int width);
-	public ActivePullStg createActivePull(int width);
-	public PassivePushStg createPassivePush(int width);
-	public ActivePushStg createActivePush(int width);
+	public ActiveSyncStg create(ActiveSync handshake);
+	public PassiveSyncStg create(PassiveSync handshake);
+	public PassivePullStg create(PassivePull handshake);
+	public ActivePullStg create(ActivePull handshake);
+	public PassivePushStg create(PassivePush handshake);
+	public ActivePushStg create(ActivePush handshake);
 }

@@ -5,5 +5,5 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
 
 public interface Handshake
 {
-	StgHandshake buildStg(HandshakeStgBuilder builder);
+	public StgHandshake buildStg(HandshakeStgBuilder builder);
 }

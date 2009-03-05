@@ -1,6 +1,5 @@
 package org.workcraft.plugins.graph;
 
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.MathModel;
