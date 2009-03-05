@@ -14,7 +14,8 @@ public final class BalsaCircuit extends MathModel{
 	public BalsaCircuit() {
 		super();
 		// TODO Auto-generated constructor stub
-		addComponentSupport(BreezeComponent.class);
+		addComponentSupport(WhileComponent.class);
+		addComponentSupport(AdaptComponent.class);
 	}
 
 	@Override

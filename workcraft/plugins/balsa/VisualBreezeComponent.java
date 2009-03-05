@@ -10,10 +10,11 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
-import org.workcraft.plugins.balsa.components.While;
-import org.workcraft.plugins.balsa.components.WhileLayout;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
+import org.workcraft.plugins.balsa.layouts.MainLayouter;
 
 public class VisualBreezeComponent extends VisualComponent {
 
@@ -25,7 +26,8 @@ public class VisualBreezeComponent extends VisualComponent {
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
 		super(refComponent);
-		layout = new WhileLayout((While) refComponent.getUnderlyingComponent());
+		Component balsaComponent = refComponent.getUnderlyingComponent();
+		layout = MainLayouter.getLayout(balsaComponent, MainHandshakeMaker.getHandshakes(balsaComponent));
 	}
 
 	@Override

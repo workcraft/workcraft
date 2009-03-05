@@ -4,6 +4,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -45,8 +46,18 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 	}
 
 	@Override
-	public PassivePull CreatePassivePull(int width) {
-		throw new NotImplementedException();
+	public PassivePull CreatePassivePull(final int width) {
+		return new PassivePull(){
+			@Override
+			public PassivePullStg buildStg(HandshakeStgBuilder builder) {
+				return builder.create(this);
+			}
+
+			@Override
+			public int getWidth() {
+				return width;
+			}
+		};
 	}
 
 	@Override

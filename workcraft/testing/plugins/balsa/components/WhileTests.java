@@ -1,6 +1,7 @@
 package org.workcraft.testing.plugins.balsa.components;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
@@ -9,6 +10,8 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.components.FourPhaseProtocol;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
+import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.stg.STG;
@@ -23,13 +26,16 @@ public class WhileTests {
 		final While wh = new While();
 
 		final STG stg = new STG();
+
+		final Map<String, Handshake> handshakes = MainHandshakeMaker.getHandshakes(wh);
+
 		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
 		{
 			HashMap<Handshake, String> names;
 
 			{
 				names = new HashMap<Handshake, String>();
-				for(Entry<String, Handshake> entry : wh.getHandshakes().entrySet())
+				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
 					names.put(entry.getValue(), entry.getKey());
 				}
@@ -41,7 +47,7 @@ public class WhileTests {
 			}
 		});
 		FourPhaseProtocol handshakeBuilder = new FourPhaseProtocol(stgBuilder);
-		wh.buildStg(handshakeBuilder);
+		MainStgBuilder.buildStg(wh, handshakes, handshakeBuilder);
 		new org.workcraft.framework.Framework().save(new VisualSTG(stg), "while.stg.work");
 	}
 }
