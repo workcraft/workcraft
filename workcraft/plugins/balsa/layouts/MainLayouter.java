@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Adapt;
+import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.components.While;
@@ -23,6 +24,7 @@ public class MainLayouter {
 
 		map.put(Adapt.class, new AdaptLayouter());
 		map.put(While.class, new WhileLayouter());
+		map.put(BinaryFunc.class, new BinaryFuncLayouter());
 
 		return map;
 	}

@@ -112,11 +112,11 @@ public class VisualModel implements Plugin, Model {
 
 	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
 		for (Component component : mathModel.getComponents()) {
-			VisualComponent visualComponent;
+			VisualNode visualComponent;
 			visualComponent = ComponentFactory.createVisualComponent(component);
 			if (visualComponent != null) {
-				root.add(visualComponent);
-				addComponent(visualComponent);
+				getRoot().add(visualComponent);
+				addComponents(visualComponent);
 			}
 		}
 
@@ -464,6 +464,14 @@ public class VisualModel implements Plugin, Model {
 		addConnection(ret);
 
 		return ret;
+	}
+
+	public final void addComponents(VisualNode node) {
+		if(node instanceof VisualComponent)
+			addComponent((VisualComponent)node);
+		if(node instanceof VisualGroup)
+			for(VisualNode subnode : ((VisualGroup)node).getChildren())
+				addComponents(subnode);
 	}
 
 	public final void addComponent(VisualComponent component) {

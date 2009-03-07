@@ -6,8 +6,10 @@ import java.lang.reflect.InvocationTargetException;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.VisualClass;
+import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.ComponentCreationException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
@@ -89,7 +91,21 @@ public class ComponentFactory {
 		}
 	}
 
-	public static VisualComponent createVisualComponent (Component component) throws VisualComponentCreationException {
+	public static VisualNode createVisualComponent (Component component) throws VisualComponentCreationException {
+		VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
+		if(generator != null)
+			try {
+				return ((org.workcraft.dom.VisualComponentGenerator)Class.forName(generator.generator()).
+						getConstructor().newInstance()).
+						createComponent(component);
+			} catch (Exception e) {
+				throw new VisualComponentCreationException (e);
+			}
+		else
+			return createVisualComponentSimple(component);
+	}
+
+	private static VisualComponent createVisualComponentSimple (Component component) throws VisualComponentCreationException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 

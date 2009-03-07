@@ -2,58 +2,96 @@ package org.workcraft.plugins.balsa;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 import org.workcraft.plugins.balsa.layouts.MainLayouter;
 
-public class VisualBreezeComponent extends VisualComponent {
+public class VisualBreezeComponent extends VisualGroup {
 
 	HandshakeComponentLayout layout;
+	Map<String, VisualHandshake> visualHandshakes;
+	Map<Handshake,HandshakeComponent> handshakeComponents;
+	Map<String,Handshake> handshakes;
+	HandshakeVisualLayout visualLayout;
+	final Component balsaComponent;
 
 	private static final double sideDoubleHandshakeAngle = 3.141592/4; // 45 degrees in radians
-	private static final double componentRadius = 1;
+	private static final double componentRadius = 0.5;
 	private static final double handshakeRadius = componentRadius/5;
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
-		super(refComponent);
-		Component balsaComponent = refComponent.getUnderlyingComponent();
-		layout = MainLayouter.getLayout(balsaComponent, MainHandshakeMaker.getHandshakes(balsaComponent));
+		balsaComponent = refComponent.getUnderlyingComponent();
+		handshakeComponents = refComponent.getHandshakeComponents();
+		handshakes = refComponent.getHandshakes();
+		layout = MainLayouter.getLayout(balsaComponent, handshakes);
+		buildVisualHandshakes();
+	}
+
+	private void buildVisualHandshakes() {
+
+		visualLayout = new VisualLayouter().getVisualLayout(layout);
+		visualHandshakes = new HashMap<String, VisualHandshake>();
+
+		for(String name : handshakes.keySet())
+		{
+			Handshake handshake = handshakes.get(name);
+			Ray ray = visualLayout.positions.get(handshake);
+			VisualHandshake visual = new VisualHandshake(handshakeComponents.get(handshake));
+			visualHandshakes.put(name, visual);
+			Direction dir = ray.direction;
+			int quadrants =
+				dir == Direction.Right ? 0 :
+					dir == Direction.Down ? 1:
+						dir == Direction.Left ? 2:
+							3;
+
+			try {
+				visual.applyTransform(AffineTransform.getQuadrantRotateInstance(quadrants));
+				visual.applyTransform(AffineTransform.getScaleInstance(handshakeRadius*2, handshakeRadius*2));
+				visual.applyTransform(AffineTransform.getTranslateInstance(ray.position.x, ray.position.y));
+			} catch (NoninvertibleTransformException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			this.add(visual);
+		}
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		// TODO Auto-generated method stub
-		return null;
+		Rectangle2D result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
+
+		result.add(super.getBoundingBoxInLocalSpace());
+
+		return result;
 	}
 
 	@Override
 	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		// TODO Auto-generated method stub
-		return 0;
+		if(pointInLocalSpace.distanceSq(0.0, 0.0) < 0.25)
+			return 1;
+
+		return super.hitTestInLocalSpace(pointInLocalSpace);
 	}
 
 	enum Direction { Up, Right, Down, Left	};
 
-	static class HandshakePosition
-	{
-		public HandshakePosition(double x, double y, Direction direction)
-		{
-			this.position = new Point2D.Double(x, y);
-			this.direction = direction;
-		}
-		public final Point2D.Double position;
-		public final Direction direction;
-	}
 
 	static class SideLine
 	{
@@ -67,15 +105,11 @@ public class VisualBreezeComponent extends VisualComponent {
 
 	static class HandshakeVisualLayout
 	{
-		HashMap<Handshake, HandshakePosition> positions;
+		HashMap<Handshake, Ray> positions;
 		SideLine left;
 		SideLine right;
 	}
 
-	private void drawCircle(Graphics2D g, Point2D.Double center, double r)
-	{
-		drawCircle(g, center.x, center.y, r);
-	}
 	private void drawCircle(Graphics2D g, double x, double y, double r)
 	{
 		g.draw(new Ellipse2D.Double(x-r, y-r, r*2, r*2));
@@ -83,21 +117,21 @@ public class VisualBreezeComponent extends VisualComponent {
 
 	@Override
 	protected void drawInLocalSpace(Graphics2D g) {
-		g.setStroke(new BasicStroke(0.05f));
-		g.setColor(Color.black);
-
-		HandshakeVisualLayout visualLayout = new VisualLayouter().getVisualLayout(layout);
-
-		HashMap<Handshake, HandshakePosition> positions = visualLayout.positions;
-		for (Handshake handshake : positions.keySet()) {
-			HandshakePosition position = positions.get(handshake);
-			drawCircle(g, position.position, handshakeRadius);
-		}
+		g.setStroke(new BasicStroke(0.02f));
+		g.setColor(Coloriser.colorise(Color.black, this.getColorisation()));
 
 		drawSideLine(g, visualLayout.left, -1);
 		drawSideLine(g, visualLayout.right, +1);
 
 		drawCircle(g, 0, 0, componentRadius);
+
+		Font font = g.getFont();
+		font = font.deriveFont(0.1f);
+		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), balsaComponent.getClass().getSimpleName());
+		Rectangle2D bounds = vec.getVisualBounds();
+		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
+
+		super.drawInLocalSpace(g);
 	}
 
 	private void drawSideLine(Graphics2D g, SideLine extent, int dir) {
@@ -107,12 +141,12 @@ public class VisualBreezeComponent extends VisualComponent {
 
 	private static class VisualLayouter
 	{
-		HashMap<Handshake, HandshakePosition> positions;
+		HashMap<Handshake, Ray> positions;
 
 		public HandshakeVisualLayout getVisualLayout(HandshakeComponentLayout layout) {
 			HandshakeVisualLayout result = new HandshakeVisualLayout();
 
-			result.positions = positions = new HashMap<Handshake, HandshakePosition>();
+			result.positions = positions = new HashMap<Handshake, Ray>();
 			result.left = layoutSide(layout.getLeft(), -1);
 			result.right = layoutSide(layout.getRight(), +1);
 			layoutPole(layout.getTop(), -1);
@@ -125,7 +159,7 @@ public class VisualBreezeComponent extends VisualComponent {
 			if(handshake == null)
 				return;
 			Direction dir = direction > 0 ? Direction.Down : Direction.Up;
-			positions.put(handshake, new HandshakePosition(0, (componentRadius+handshakeRadius)*direction, dir));
+			positions.put(handshake, new Ray(0, (componentRadius+handshakeRadius)*direction, dir));
 		}
 
 		private SideLine layoutSide(Handshake[][] handshakes, int direction) {
@@ -180,7 +214,7 @@ public class VisualBreezeComponent extends VisualComponent {
 					if(j!=0)
 						current += stepBetweenHandshakes;
 
-					positions.put(handshakes[i][j], new HandshakePosition(x, current, dir));
+					positions.put(handshakes[i][j], new Ray(x, current, dir));
 				}
 			}
 
@@ -200,13 +234,13 @@ public class VisualBreezeComponent extends VisualComponent {
 
 			Direction dir = direction<0 ? Direction.Left : Direction.Right;
 
-			positions.put(handshake1, new HandshakePosition(x, -y, dir));
-			positions.put(handshake2, new HandshakePosition(x, y, dir));
+			positions.put(handshake1, new Ray(x, -y, dir));
+			positions.put(handshake2, new Ray(x, y, dir));
 		}
 
 		private void layoutSideSingleHandshake(Handshake handshake, int direction) {
 			positions.put(handshake,
-					new HandshakePosition(
+					new Ray(
 							direction*(componentRadius+handshakeRadius), 0,
 							direction<0 ? Direction.Left : Direction.Right));
 		}

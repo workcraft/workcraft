@@ -3,6 +3,7 @@ package org.workcraft.plugins.balsa.handshakes;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.components.Adapt;
@@ -21,6 +22,7 @@ public class MainHandshakeMaker {
 
 		map.put(While.class, new WhileHandshakes());
 		map.put(Adapt.class, new AdaptHandshakes());
+		map.put(BinaryFunc.class, new BinaryFuncHandshakes());
 
 		return map;
 	}

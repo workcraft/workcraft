@@ -106,4 +106,9 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
 	}
 
+	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
+		if(hitTestInLocalSpace(pointInLocalSpace) != 0)
+			return this;
+		return null;
+	}
 }

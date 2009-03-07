@@ -28,7 +28,10 @@ public class MainStgBuilder {
 
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> fillMap() {
 		Map<Class<? extends Component>, ComponentStgBuilder<?>> result = new HashMap<Class<? extends Component>, ComponentStgBuilder<?>>();
+
 		result.put(While.class, new WhileStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilderStgBuilder());
+
 		return result;
 	}
 

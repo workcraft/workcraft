@@ -7,7 +7,6 @@ public final class VisualBalsaCircuit extends VisualModel {
 
 	public VisualBalsaCircuit(BalsaCircuit model) throws VisualModelInstantiationException {
 		super(model);
-		// TODO Auto-generated constructor stub
 	}
 
 }

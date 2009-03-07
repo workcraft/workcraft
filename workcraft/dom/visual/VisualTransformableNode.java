@@ -116,10 +116,10 @@ public abstract class VisualTransformableNode extends VisualNode {
 		t.transform(p0, p0);
 		t.transform(p1, p1);
 
-		return new Rectangle2D.Double (
-				p0.getX(), p0.getY(),
-				p1.getX()-p0.getX(),p1.getY() - p0.getY()
-		);
+		Rectangle2D.Double result = new Rectangle2D.Double(p0.getX(), p0.getY(), 0, 0);
+		result.add(p1);
+
+		return result;
     }
 
 	public AffineTransform getLocalToParentTransform() {

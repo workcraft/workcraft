@@ -174,7 +174,7 @@ public class VisualGroup extends VisualTransformableNode {
 						vcompElement.getAttribute("ref") + " which was not found");
 			VisualComponent visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
 			add(visualComponent);
-			model.addComponent(visualComponent);
+			model.addComponents(visualComponent);
 		}
 	}
 
@@ -291,8 +291,14 @@ public class VisualGroup extends VisualTransformableNode {
 
 	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
 		VisualComponent result = hitVisualNode(pointInLocalSpace, components);
+
 		if(result!=null)
-			return result;
+		{
+			Point2D point2 = new Point2D.Double();
+			result.getAncestorToParentTransform(this).transform(pointInLocalSpace, point2);
+			result.getParentToLocalTransform().transform(point2, point2);
+			return result.hitComponent(point2);
+		}
 		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
 			Point2D pointInChildSpace = new Point2D.Double();
 			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);

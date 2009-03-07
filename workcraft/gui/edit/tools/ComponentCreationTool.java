@@ -10,7 +10,8 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.exceptions.ComponentCreationException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
@@ -40,16 +41,22 @@ public class ComponentCreationTool extends AbstractTool {
 	public void mousePressed(GraphEditorMouseEvent e) {
 		try {
 			Component comp = ComponentFactory.createComponent(componentClass.getName());
-			VisualComponent vComp = ComponentFactory.createVisualComponent(comp);
-
-			Point2D pos = e.getPosition();
-			e.getEditor().snap(pos);
-			vComp.setX(pos.getX());
-			vComp.setY(pos.getY());
-
 			e.getEditor().getModel().getMathModel().addComponent(comp);
+
+			VisualNode vComp = ComponentFactory.createVisualComponent(comp);
+
+			if(vComp instanceof VisualTransformableNode)
+			{
+				VisualTransformableNode transformable = (VisualTransformableNode) vComp;
+
+				Point2D pos = e.getPosition();
+				e.getEditor().snap(pos);
+				transformable.setX(pos.getX());
+				transformable.setY(pos.getY());
+			}
+
 			e.getEditor().getModel().getCurrentLevel().add(vComp);
-			e.getEditor().getModel().addComponent(vComp);
+			e.getEditor().getModel().addComponents(vComp);
 
 		} catch (ComponentCreationException e1) {
 			JOptionPane.showMessageDialog(null, "Cannot create component:\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
