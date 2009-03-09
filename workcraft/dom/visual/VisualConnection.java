@@ -9,7 +9,6 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -37,7 +36,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected VisualComponent second;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
-	private Path2D path = new Path2D.Double();
 
 	private Point2D firstCenter = new Point2D.Double();
 	private Point2D secondCenter = new Point2D.Double();
