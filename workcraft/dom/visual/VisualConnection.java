@@ -9,9 +9,9 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -23,16 +23,21 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-enum ConnectionType {POLYLINE, BEZIER};
+
 
 public class VisualConnection extends VisualNode implements PropertyChangeListener  {
+	public enum ConnectionType
+	{
+		POLYLINE,
+		BEZIER
+	};
+
 	protected Connection refConnection;
 	protected VisualComponent first;
 	protected VisualComponent second;
 
-	protected LinkedList<Point2D> pathPoint = new LinkedList<Point2D>();
-
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
+	private Path2D path = new Path2D.Double();
 
 	private Point2D firstCenter = new Point2D.Double();
 	private Point2D secondCenter = new Point2D.Double();
@@ -55,6 +60,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	protected void initialise() {
 		first.addListener(this);
 		second.addListener(this);
+
+		//path.
+
 
 		update();
 

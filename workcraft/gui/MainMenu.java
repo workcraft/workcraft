@@ -21,6 +21,7 @@ import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.layout.Layout;
+import org.workcraft.plugins.modelchecking.ModelChecker;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
@@ -72,9 +73,28 @@ public class MainMenu extends JMenuBar {
 		public String getText() {
 			return displayName;
 		}
+
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnTools = null, mnSettings, mnHelp, mnWindows;
+	class ModelCheckAction extends ScriptedAction {
+		private String modelCheckerClassName;
+		private String displayName;
+
+		public ModelCheckAction(ModelChecker checker) {
+			modelCheckerClassName = checker.getClass().getName();
+			displayName = checker.getDisplayName();
+		}
+
+		public String getScript() {
+			return "mainWindow.runModelChecker(\""+modelCheckerClassName+"\");";
+		}
+
+		public String getText() {
+			return displayName;
+		}
+	}
+
+	private JMenu mnFile, mnEdit, mnView, mnTools = null, mnModelChecking = null, mnSettings, mnHelp, mnWindows;
 	private JMenu mnExport;
 	private JMenu mnLayout = null;
 
@@ -246,6 +266,15 @@ public class MainMenu extends JMenuBar {
 		mnLayout.add(miLayoutMenuItem);
 	}
 
+	private void addModelChecker (ModelChecker checker) {
+		if (mnModelChecking == null)
+			mnModelChecking = new JMenu("Model checking");
+
+		ScriptedActionMenuItem miModelCheckMenuItem = new ScriptedActionMenuItem(new ModelCheckAction(checker));
+		miModelCheckMenuItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		mnModelChecking.add(miModelCheckMenuItem);
+	}
+
 	private void addExporter (Exporter exporter) {
 		ScriptedActionMenuItem miExport = new ScriptedActionMenuItem(new ExportAction(exporter));
 		miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -280,6 +309,23 @@ public class MainMenu extends JMenuBar {
 
 		if (mnLayout != null)
 			mnTools.add(mnLayout);
+
+
+		PluginInfo[] modelCheckerPluginInfo = framework.getPluginManager().getPluginsByInterface(ModelChecker.class.getName());
+
+		try {
+			for (PluginInfo info : modelCheckerPluginInfo) {
+				ModelChecker modelChecker = (ModelChecker)framework.getPluginManager().getSingleton(info);
+
+				if (modelChecker.isApplicableTo(model))
+					addModelChecker(modelChecker);
+			}
+		} catch (PluginInstantiationException e) {
+			System.err.println ("Could not instantiate layout plugin class: " + e.getMessage() + " (skipped)");
+		}
+
+		if (mnModelChecking != null)
+			mnTools.add(mnModelChecking);
 
 
 		if (mnTools.getMenuComponentCount() > 0)

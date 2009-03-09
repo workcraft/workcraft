@@ -57,6 +57,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.plugins.modelchecking.ModelChecker;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -813,6 +814,13 @@ public class MainWindow extends JFrame {
 			lastOpenPath = fc.getCurrentDirectory().getPath();
 		}
 	}
+
+	public void runModelChecker(String modelCheckerClassName) {
+		ModelChecker checker = (ModelChecker)framework.getPluginManager().getSingletonByName(modelCheckerClassName);
+		checker.run(editorInFocus.getModel());
+
+	}
+
 
 	public void exportTo(String exporterClassName) throws OperationCancelledException {
 		Exporter exporter = (Exporter)framework.getPluginManager().getSingletonByName(exporterClassName);

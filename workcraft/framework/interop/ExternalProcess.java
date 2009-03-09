@@ -90,7 +90,6 @@ public class ExternalProcess {
 		processBuilder.directory(workingDirectory == null? null : new File(workingDirectory));
 	}
 
-
 	private void outputData(byte[] data) {
 		for (ExternalProcessListener l : listeners)
 			l.outputData(data);
