@@ -15,60 +15,48 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 		return new SimpleHandshakeBuilder();
 	}
 
-	@Override
 	public ActivePull CreateActivePull(final int width) {
 		return new ActivePull(){
-			@Override
 			public ActivePullStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 
-			@Override
 			public int getWidth() {
 				return width;
 			}
 		};
 	}
 
-	@Override
 	public ActivePush CreateActivePush(int width) {
 		throw new NotImplementedException();
 	}
 
-	@Override
 	public ActiveSync CreateActiveSync() {
 		return new ActiveSync(){
-			@Override
 			public ActiveSyncStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 		};
 	}
 
-	@Override
 	public PassivePull CreatePassivePull(final int width) {
 		return new PassivePull(){
-			@Override
 			public PassivePullStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 
-			@Override
 			public int getWidth() {
 				return width;
 			}
 		};
 	}
 
-	@Override
 	public PassivePush CreatePassivePush(int width) {
 		throw new NotImplementedException();
 	}
 
-	@Override
 	public PassiveSync CreatePassiveSync() {
 		return new PassiveSync(){
-			@Override
 			public PassiveSyncStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}

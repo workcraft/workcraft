@@ -33,7 +33,6 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 		this.builder = builder;
 	}
 
-	@Override
 	public ActivePullStg create(ActivePull handshake) {
 		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
 
@@ -55,27 +54,22 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 
 		return new ActivePullStg()
 		{
-			@Override
 			public StgTransition getActivator() {
 				return sync.getActiveSync().getActivator();
 			}
-			@Override
 			public ReadablePlace getData(int index, boolean value) {
 				return value ? data1[index] : data0[index];
 			}
 
-			@Override
 			public TransitionOutput getDeactivationNotificator() {
 				return sync.getActiveSync().getDeactivationNotificator();
 			}
-			@Override
 			public StgPlace getReleaseDataPlace() {
 				return sync.getRtz();
 			}
 		};
 	}
 
-	@Override
 	public ActivePushStg create(ActivePush handshake) {
 		throw new NotImplementedException();
 	}
@@ -115,11 +109,9 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 			public ActiveSyncStg getActiveSync() {
 				return new ActiveSyncStg()
 				{
-					@Override
 					public StgTransition getActivator() {
 						return rqP;
 					}
-					@Override
 					public TransitionOutput getDeactivationNotificator() {
 						return acP;
 					}
@@ -130,7 +122,6 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 			}
 		};
 	}
-	@Override
 	public ActiveSyncStg create(ActiveSync handshake) {
 		ActiveSyncWithRtz withRtz = createActiveSyncWithRtz(handshake);
 		ActiveSyncStg result = withRtz.getActiveSync();
@@ -138,19 +129,16 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 		return result;
 	}
 
-	@Override
 	public PassivePullStg create(PassivePull handshake) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
-	@Override
 	public PassivePushStg create(PassivePush handshake) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
-	@Override
 	public PassiveSyncStg create(PassiveSync handshake) {
 
 		final StgPlace ready = builder.buildPlace(1);
@@ -174,19 +162,16 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 
 		return new PassiveSyncStg()
 		{
-			@Override
 			public TransitionOutput getActivationNotificator() {
 				return rqP;
 			}
 
-			@Override
 			public StgTransition getDeactivator() {
 				return acP;
 			}
 		};
 	}
 
-	@Override
 	public StgBuilder getStgBuilder() {
 		return builder;
 	}

@@ -50,22 +50,18 @@ public class StgModelStgBuilder implements StgBuilder {
 		}
 	}
 
-	@Override
 	public void addConnection(StgPlace place, StgTransition transition) {
 		addConnection((StgModelStgPlace)place, (StgModelStgTransition)transition);
 	}
 
-	@Override
 	public void addConnection(StgTransition transition, StgPlace place) {
 		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
 	}
 
-	@Override
 	public void addConnection(TransitionOutput transition, StgPlace place) {
 		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
 	}
 
-	@Override
 	public void addReadArc(ReadablePlace place, StgTransition transition) {
 		StgModelStgTransition t = (StgModelStgTransition)transition;
 		StgModelStgPlace p = (StgModelStgPlace)place;
@@ -73,19 +69,16 @@ public class StgModelStgBuilder implements StgBuilder {
 		addConnection(t, p);
 	}
 
-	@Override
 	public StgPlace buildPlace() {
 		return buildPlace(0);
 	}
 
-	@Override
 	public StgModelStgTransition buildTransition() {
 		SignalTransition transition = new SignalTransition();
 		model.addComponent(transition);
 		return new StgModelStgTransition(transition);
 	}
 
-	@Override
 	public StgPlace buildPlace(int tokenCount) {
 		Place place = new Place();
 		place.setTokens(tokenCount);

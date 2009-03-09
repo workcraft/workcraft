@@ -27,17 +27,14 @@ public class WhileStgBuilder extends ComponentStgBuilder<While> {
 			this.map = map;
 		}
 
-		@Override
 		public PassiveSyncStg getActivate() {
 			return (PassiveSyncStg)map.get("activate");
 		}
 
-		@Override
 		public ActiveSyncStg getActivateOut() {
 			return (ActiveSyncStg)map.get("activateOut");
 		}
 
-		@Override
 		public ActivePullStg getGuard() {
 			return (ActivePullStg)map.get("guard");
 		}

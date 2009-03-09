@@ -11,22 +11,18 @@ public class WhileLayouter extends Layouter<While>{
 	{
 		return new HandshakeComponentLayout()
 		{
-			@Override
 			public Handshake getBottom() {
 				return null;
 			}
 
-			@Override
 			public Handshake[][] getLeft() {
 				return new Handshake[][]{new Handshake[]{handshakes.get("guard")}};
 			}
 
-			@Override
 			public Handshake[][] getRight() {
 				return new Handshake[][]{new Handshake[]{handshakes.get("activateOut")}};
 			}
 
-			@Override
 			public Handshake getTop() {
 				return handshakes.get("activate");
 			}
