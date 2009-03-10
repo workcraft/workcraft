@@ -1,14 +1,13 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 	static final String [] columnNames = { "property", "value" };
-	PropertyDeclaration[] declarations = null;
+	PropertyDescriptor[] declarations = null;
 	PropertyClass[] rowClasses = null;
 	PropertyEditable object = null;
 
@@ -19,7 +18,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
 	public void setObject(PropertyEditable object) {
 		this.object = object;
-		declarations =  object.getPropertyDeclarations().toArray(new PropertyDeclaration[0]);
+		declarations =  object.getPropertyDeclarations().toArray(new PropertyDescriptor[0]);
 		rowClasses = new PropertyClass[declarations.length];
 
 		fireTableDataChanged();
@@ -58,61 +57,60 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 		if (col == 0)
 			return false;
 		else
-			return (declarations[row].setter != null);
+			return (declarations[row].isWritable());
 	}
 
-	public PropertyDeclaration getRowDeclaration(int i) {
+	public PropertyDescriptor getRowDeclaration(int i) {
 		return declarations[i];
 	}
 
 	public Object getValueAt(int row, int col) {
 		if (col ==0 )
-			return declarations[row].name;
+			return declarations[row].getName();
 		else try {
-			Method m = object.getClass().getMethod(declarations[row].getter,  (Class[])null);
+			Object value = declarations[row].getValue(object);
 			if (rowClasses[row] != null)
-				return rowClasses[row].toCellRendererValue(m.invoke(object, (Object[])null));
+				return rowClasses[row].toCellRendererValue(value);
 			else
-				return declarations[row].valueNames.get(m.invoke(object, (Object[])null));
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			return "#NO SUCH METHOD";
-		} catch (InvocationTargetException e) {
+			{
+				Map<Object, String> choice = declarations[row].getChoice();
+				if(choice != null)
+					return choice.get(value);
+				else
+					return value.toString();
+			}
+		} catch (Throwable e) {
 			e.printStackTrace();
 			return "#EXCEPTION";
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return "#UNACCESIBLE";
 		}
 	}
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 		try {
-			Method m = object.getClass().getMethod(declarations[row].setter,  declarations[row].cls );
+			PropertyDescriptor desc = declarations[row];
+
 			if (rowClasses[row] != null)
-				m.invoke(object, rowClasses[row].fromCellEditorValue(value));
+				desc.setValue(object, rowClasses[row].fromCellEditorValue(value));
 			else {
-				if (!declarations[row].cls.isPrimitive())
-					m.invoke(object, declarations[row].cls.cast(value));
+				Class<?> type = desc.getType();
+
+				if (!type.isPrimitive())
+					desc.setValue(object, type.cast(value));
 				else {
-					if (declarations[row].cls.equals(double.class)) {
+					if (type.equals(double.class)) {
 						Double boxedValue = (Double)value;
 						double unboxedValue = boxedValue.doubleValue();
-						m.invoke(object, unboxedValue);
-					} else if (declarations[row].cls.equals(int.class)) {
+						desc.setValue(object, unboxedValue);
+					} else if (type.equals(int.class)) {
 						Integer boxedValue = (Integer)value;
 						int unboxedValue = boxedValue.intValue();
-						m.invoke(object, unboxedValue);
+						desc.setValue(object, unboxedValue);
 					} else throw new RuntimeException ("");
 				}
 			}
-			object.firePropertyChanged(declarations[row].name);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+			object.firePropertyChanged(desc.getName());
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}

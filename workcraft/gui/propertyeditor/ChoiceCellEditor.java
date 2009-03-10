@@ -15,16 +15,16 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
 	private ChoiceWrapper[] wrappers;
 
 
-	public ChoiceCellEditor(PropertyDeclaration decl) {
+	public ChoiceCellEditor(PropertyDescriptor decl) {
 		comboBox = new JComboBox();
 		comboBox.setEditable(false);
 		comboBox.setFocusable(false);
 		comboBox.addItemListener(this);
 
-		wrappers = new ChoiceWrapper[decl.predefinedValues.size()];
+		wrappers = new ChoiceWrapper[decl.getChoice().size()];
 		int j = 0;
-		for (String k : decl.predefinedValues.keySet()) {
-			wrappers[j] = new ChoiceWrapper(k,decl.predefinedValues.get(k));
+		for (Object o : decl.getChoice().keySet()) {
+			wrappers[j] = new ChoiceWrapper(decl.getChoice().get(o), o);
 			comboBox.addItem(wrappers[j]);
 			j++;
 		}

@@ -12,7 +12,14 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
+import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 
 @VisualClass ("org.workcraft.plugins.balsa.VisualBalsaCircuit")
@@ -24,6 +31,7 @@ public final class BalsaCircuit extends MathModel {
 		addComponentSupport(WhileComponent.class);
 		addComponentSupport(AdaptComponent.class);
 		addComponentSupport(BinaryFuncComponent.class);
+		addComponentSupport(HandshakeComponent.class);
 
 		this.addListener(new MathModelListener(){
 
@@ -69,6 +77,48 @@ public final class BalsaCircuit extends MathModel {
 	@Override
 	public void validateConnection(Connection connection)
 			throws InvalidConnectionException {
-		// TODO Auto-generated method stub
+		HandshakeComponent first = (HandshakeComponent)connection.getFirst();
+		HandshakeComponent second = (HandshakeComponent)connection.getSecond();
+
+		if(first.getPostset().size() + first.getPreset().size() +
+			second.getPostset().size() + second.getPreset().size() > 0)
+			throw new InvalidConnectionException("Cannot connect already connected handshakes");
+
+
+		Handshake h1 = first.getHandshake();
+		Handshake h2 = second.getHandshake();
+
+		if(!(h1 instanceof ActiveSync && h2 instanceof PassiveSync ||
+			h2 instanceof ActiveSync && h1 instanceof PassiveSync))
+			throw new InvalidConnectionException("Must connect passive and active handshakes");
+
+		boolean isData1 = h1 instanceof DataHandshake;
+		boolean isData2 = h2 instanceof DataHandshake;
+		if(isData1 != isData2)
+			throw new InvalidConnectionException("Cannot connect data handshake with an activation handshake");
+
+		if(isData1)
+		{
+			DataHandshake dh1 = (DataHandshake)h1;
+			DataHandshake dh2 = (DataHandshake)h2;
+
+			boolean push1 = isPush(dh1);
+			boolean push2 = isPush(dh2);
+
+			if(push1 != push2)
+				throw new InvalidConnectionException("Cannot connect push handshake with pull handshake");
+
+			if(dh1.getWidth() != dh2.getWidth())
+				throw new InvalidConnectionException("Cannot connect data handshakes with different bit widths");
+		}
+	}
+
+	private boolean isPush(DataHandshake handshake)
+	{
+		if (handshake instanceof ActivePush || handshake instanceof PassivePush)
+			return true;
+		if (handshake instanceof ActivePull || handshake instanceof PassivePull)
+			return false;
+		throw new RuntimeException("Unknown data handshake type");
 	}
 }

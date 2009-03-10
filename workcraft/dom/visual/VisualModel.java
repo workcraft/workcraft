@@ -153,41 +153,39 @@ public class VisualModel implements Plugin, Model {
 		mathModel.addListener(mathModelListener);
 	}
 
+	protected VisualNode createNode(Element element) throws VisualComponentCreationException, VisualConnectionCreationException
+	{
+		if(element.getTagName() == "component")
+			return ComponentFactory.createVisualComponent(element, this);
+		if(element.getTagName() == "connection")
+			return ConnectionFactory.createVisualConnection(element, getReferenceResolver());
+		if(element.getTagName() == "group")
+			return new VisualGroup(element, this);
+		throw new RuntimeException("Not supported element: " + element.getTagName());
+	}
+
 	protected final Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
-		List<Element> compElements = XmlUtil.getChildElements("component", visualElement);
-		List<Element> conElements = XmlUtil.getChildElements("connection", visualElement);
-		List<Element> groupElements = XmlUtil.getChildElements("group", visualElement);
+		List<Element> children = XmlUtil.getChildElements("component", visualElement);
+		children.addAll(XmlUtil.getChildElements("connection", visualElement));
+		children.addAll(XmlUtil.getChildElements("group", visualElement));
 
 		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
 
 		try
 		{
-			for (Element e: compElements) {
-				VisualComponent vcomp = ComponentFactory.createVisualComponent(e, this);
-				vcomp.setX(vcomp.getX() + location.getX());
-				vcomp.setY(vcomp.getY() + location.getY());
-				currentLevel.add(vcomp);
-				addComponent(vcomp);
+			for (Element e: children) {
+				VisualNode node = createNode(e);
+				if(node instanceof VisualTransformableNode)
+				{
+					VisualTransformableNode tn = (VisualTransformableNode)node;
+					tn.setX(tn.getX() + location.getX());
+					tn.setY(tn.getY() + location.getY());
+				}
 
-				pasted.add(vcomp);
-			}
+				currentLevel.add(node);
+				addComponents(node);
 
-			for (Element e: groupElements) {
-				VisualGroup group = new VisualGroup (e, this);
-				group.loadDeferredConnections(this);
-				group.setX(group.getX() + location.getX());
-				group.setY(group.getY() + location.getY());
-				currentLevel.add(group);
-
-				pasted.add(group);
-			}
-
-			for (Element e: conElements) {
-				VisualConnection vcon = ConnectionFactory.createVisualConnection(e, getReferenceResolver());
-				currentLevel.add(vcon);
-				addConnection(vcon);
-
-				pasted.add(vcon);
+				pasted.add(node);
 			}
 
 			return pasted;

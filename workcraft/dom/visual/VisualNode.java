@@ -19,12 +19,12 @@ import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
 
 public abstract class VisualNode implements PropertyEditable {
-	private LinkedList<PropertyDeclaration> propertyDeclarations = new LinkedList<PropertyDeclaration>();
+	private List<PropertyDescriptor> propertyDeclarations = new LinkedList<PropertyDescriptor>();
 	private LinkedList<PropertyChangeListener> propertyChangeListeners = new LinkedList<PropertyChangeListener>();
 
 	private Color colorisation = null;
@@ -105,7 +105,7 @@ public abstract class VisualNode implements PropertyEditable {
 		);
 	}
 
-	final public List<PropertyDeclaration> getPropertyDeclarations() {
+	final public List<PropertyDescriptor> getPropertyDeclarations() {
 		return propertyDeclarations;
 	}
 
@@ -184,7 +184,7 @@ public abstract class VisualNode implements PropertyEditable {
 		return popupMenuBuilder.build(actionListener);
 	}
 
-	final protected void addPropertyDeclaration(PropertyDeclaration declaration) {
+	final protected void addPropertyDeclaration(PropertyDescriptor declaration) {
 		propertyDeclarations.add(declaration);
 	}
 

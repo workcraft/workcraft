@@ -59,10 +59,10 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 
 		for (int i = 0; i < model.getRowCount(); i++) {
-			PropertyDeclaration decl = model.getRowDeclaration(i);
+			PropertyDescriptor decl = model.getRowDeclaration(i);
 
 			// If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
-			if (decl.isChoice()) {
+			if (decl.getChoice() != null) {
 				model.setRowClass(i, null);
 
 				cellRenderers[i] = new DefaultTableCellRenderer();
@@ -70,7 +70,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 				cellEditors[i] = ce;
 			} else {
 				// otherwise, try to get a corresponding PropertyClass object, that knows how to edit a property of this class
-				PropertyClass cls = propertyClasses.get(decl.cls);
+				PropertyClass cls = propertyClasses.get(decl.getType());
 				model.setRowClass(i, cls);
 
 				if (cls == null) {
@@ -78,7 +78,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 					System.err
 					.println("Data class \""
-							+ decl.cls.getName()
+							+ decl.getType().getName()
 							+ "\" is not supported by the Property Editor.");
 
 					cellRenderers[i] = new DefaultTableCellRenderer();

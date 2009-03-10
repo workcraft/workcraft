@@ -3,7 +3,7 @@ package org.workcraft.gui.propertyeditor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PropertyDeclaration {
+public class PropertyDeclaration implements PropertyDescriptor {
 	public String name;
 	public String getter;
 	public String setter;
@@ -43,5 +43,43 @@ public class PropertyDeclaration {
 		}
 
 		choice = true;
+	}
+
+	@Override
+	public Map<Object, String> getChoice() {
+		return valueNames;
+	}
+
+	@Override
+	public Object getValue(Object owner) {
+		try {
+			return owner.getClass().getMethod(getter).invoke(owner);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void setValue(Object owner, Object value) {
+		try {
+			owner.getClass().getMethod(setter, cls).invoke(owner, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Class<?> getType() {
+		return cls;
+	}
+
+	@Override
+	public boolean isWritable() {
+		return setter != null;
 	}
 }

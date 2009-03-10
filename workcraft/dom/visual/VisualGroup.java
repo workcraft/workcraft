@@ -172,7 +172,7 @@ public class VisualGroup extends VisualTransformableNode {
 			if (refComponent == null)
 				throw new VisualComponentCreationException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref") + " which was not found");
-			VisualComponent visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
+			VisualNode visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
 			add(visualComponent);
 			model.addComponents(visualComponent);
 		}

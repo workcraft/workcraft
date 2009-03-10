@@ -91,21 +91,26 @@ public class ComponentFactory {
 		}
 	}
 
-	public static VisualNode createVisualComponent (Component component) throws VisualComponentCreationException {
+	public static VisualNode createVisualComponent (Component component) throws VisualComponentCreationException
+	{
+		return createVisualComponentInternal(component);
+	}
+
+	public static VisualNode createVisualComponentInternal (Component component, Object ... constructorParameters) throws VisualComponentCreationException {
 		VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
 		if(generator != null)
 			try {
 				return ((org.workcraft.dom.VisualComponentGenerator)Class.forName(generator.generator()).
 						getConstructor().newInstance()).
-						createComponent(component);
+						createComponent(component, constructorParameters);
 			} catch (Exception e) {
 				throw new VisualComponentCreationException (e);
 			}
 		else
-			return createVisualComponentSimple(component);
+			return createVisualComponentSimple(component, constructorParameters);
 	}
 
-	private static VisualComponent createVisualComponentSimple (Component component) throws VisualComponentCreationException {
+	private static VisualComponent createVisualComponentSimple (Component component, Object ... constructorParameters) throws VisualComponentCreationException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 
@@ -115,8 +120,18 @@ public class ComponentFactory {
 
 		try {
 			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, component.getClass());
-			VisualComponent visual = (VisualComponent) ctor.newInstance(component);
+
+			Object [] args = new Object[constructorParameters.length+1];
+			args[0] = component;
+			for(int i=0;i<constructorParameters.length;i++)
+				args[i+1] = constructorParameters[i];
+
+			Class <?> [] types = new Class <?> [args.length];
+			for(int i=0;i<args.length;i++)
+				types[i] = args[i].getClass();
+
+			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, types);
+			VisualComponent visual = (VisualComponent) ctor.newInstance(args);
 			return visual;
 
 		} catch (ClassNotFoundException e) {
@@ -138,38 +153,11 @@ public class ComponentFactory {
 
 
 
-	public static VisualComponent createVisualComponent (Element element, VisualModel refModel) throws VisualComponentCreationException {
+	public static VisualNode createVisualComponent (Element element, VisualModel refModel) throws VisualComponentCreationException {
 		// Find the component
 		int ref = XmlUtil.readIntAttr(element, "ref", -1);
 		Component component = refModel.getMathModel().getComponentByRenamedID(ref);
 
-		// Find the corresponding visual class
-		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
-
-		// The component/connection does not define a visual representation
-		if (vcat == null)
-			return null;
-
-		try {
-			Class<?> visualClass = Class.forName(vcat.value());
-			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, component.getClass(), Element.class);
-			VisualComponent visual = (VisualComponent)ctor.newInstance(component, element);
-			return visual;
-
-		} catch (ClassNotFoundException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (SecurityException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (NoSuchMethodException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (IllegalArgumentException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (InstantiationException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (IllegalAccessException e) {
-			throw new VisualComponentCreationException (e);
-		} catch (InvocationTargetException e) {
-			throw new VisualComponentCreationException (e);
-		}
+		return createVisualComponentInternal(component, element);
 	}
 }

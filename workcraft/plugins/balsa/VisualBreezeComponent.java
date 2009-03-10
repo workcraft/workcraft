@@ -11,10 +11,17 @@ import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.framework.exceptions.VisualComponentCreationException;
+import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
@@ -34,12 +41,30 @@ public class VisualBreezeComponent extends VisualGroup {
 	private static final double componentRadius = 0.5;
 	private static final double handshakeRadius = componentRadius/5;
 
+	public VisualBreezeComponent(BreezeComponent refComponent, Element element) throws VisualConnectionCreationException, VisualComponentCreationException {
+		super(element, null);
+		balsaComponent = refComponent.getUnderlyingComponent();
+	}
+
 	public VisualBreezeComponent(BreezeComponent refComponent) {
 		balsaComponent = refComponent.getUnderlyingComponent();
 		handshakeComponents = refComponent.getHandshakeComponents();
 		handshakes = refComponent.getHandshakes();
 		layout = MainLayouter.getLayout(balsaComponent, handshakes);
 		buildVisualHandshakes();
+		makeProperties();
+	}
+
+	private void makeProperties() {
+		try {
+			BeanInfo info = Introspector.getBeanInfo(balsaComponent.getClass());
+			PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
+			for(int i=0;i<descriptors.length;i++)
+				if(!descriptors[i].getName().equals("class"))
+					addPropertyDeclaration(new BreezePropertyDescriptor(descriptors[i]));
+		} catch (IntrospectionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void buildVisualHandshakes() {
