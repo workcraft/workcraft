@@ -46,6 +46,7 @@ import org.workcraft.framework.ModelFactory;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
+import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
@@ -817,8 +818,12 @@ public class MainWindow extends JFrame {
 
 	public void runModelChecker(String modelCheckerClassName) {
 		ModelChecker checker = (ModelChecker)framework.getPluginManager().getSingletonByName(modelCheckerClassName);
-		checker.run(editorInFocus.getModel());
-
+		try {
+			checker.run(editorInFocus.getModel());
+		} catch (ModelCheckingFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 

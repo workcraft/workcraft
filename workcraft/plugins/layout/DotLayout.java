@@ -77,7 +77,6 @@ public class DotLayout implements Layout {
 
 	private void cleanUp() {
 		(new File(tmpGraphFilePath)).delete();
-		(new File(tmpGraphFilePath+".dot")).delete();
 	}
 
 	public void doLayout(VisualModel model) throws LayoutFailedException {
