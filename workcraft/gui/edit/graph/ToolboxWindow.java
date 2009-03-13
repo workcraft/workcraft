@@ -171,17 +171,8 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			addTool(tool, false);
 		}
 
-		for (Class<?> cls : model.getVisualModel().getAdditionalToolClasses()) {
-			if (GraphEditorTool.class.isAssignableFrom(cls)) {
-				try {
-					addTool((GraphEditorTool)cls.newInstance(), false);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		for (GraphEditorTool tool : model.getVisualModel().getAdditionalTools())
+			addTool(tool, false);
 
 		selectedTool = selectionTool;
 

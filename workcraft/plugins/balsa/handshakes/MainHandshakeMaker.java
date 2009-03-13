@@ -14,7 +14,11 @@ public class MainHandshakeMaker {
 
 	public static Map<String, Handshake> getHandshakes(Component component)
 	{
-		return map.get(component.getClass()).getComponentHandshakes(component);
+		HandshakeMaker<?> maker = map.get(component.getClass());
+		if(maker == null)
+			return  new HashMap<String, Handshake>();
+
+		return maker.getComponentHandshakes(component);
 	}
 
 	private static Map<Class<? extends Component>, HandshakeMaker<?>> getMap() {

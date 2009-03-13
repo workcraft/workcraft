@@ -1,9 +1,9 @@
 package org.workcraft.plugins.balsa.components;
 
-public class Variable extends Component {
+public class PassiveEagerFalseVariable extends Component {
 	private int width;
 	private int readPortCount;
-	private String name;
+	private String specification;
 
 	public void setWidth(int width) {
 		this.width = width;
@@ -17,10 +17,10 @@ public class Variable extends Component {
 	public int getReadPortCount() {
 		return readPortCount;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setSpecification(String specification) {
+		this.specification = specification;
 	}
-	public String getName() {
-		return name;
+	public String getSpecification() {
+		return specification;
 	}
 }

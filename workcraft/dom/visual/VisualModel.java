@@ -501,8 +501,8 @@ public class VisualModel implements Plugin, Model {
 			l.onConnectionAdded(connection);
 	}
 
-	public ArrayList<Class<? extends GraphEditorTool>> getAdditionalToolClasses() {
-		return new ArrayList<Class<? extends GraphEditorTool>>();
+	public ArrayList<GraphEditorTool> getAdditionalTools() {
+		return new ArrayList<GraphEditorTool>();
 	}
 
 	public void clearColorisation() {

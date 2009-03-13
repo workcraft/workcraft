@@ -16,7 +16,34 @@ public class MainLayouter {
 
 	public static HandshakeComponentLayout getLayout(Component component, Map<String, Handshake> handshakes)
 	{
-		return map.get(component.getClass()).getComponentLayout(component, handshakes);
+		Layouter<?> layouter = map.get(component.getClass());
+		if(layouter == null)
+			return getDefaultLayout(handshakes);
+		return layouter.getComponentLayout(component, handshakes);
+	}
+
+	private static HandshakeComponentLayout getDefaultLayout(
+			final Map<String, Handshake> handshakes) {
+		return new HandshakeComponentLayout()
+		{
+			public Handshake getBottom() {
+				return null;
+			}
+
+			public Handshake[][] getLeft() {
+				return new Handshake[][]{new Handshake[]{}};
+			}
+
+			public Handshake[][] getRight() {
+				Handshake[] allHandshakes = new Handshake[handshakes.size()];
+				handshakes.values().toArray(allHandshakes);
+				return new Handshake[][]{allHandshakes};
+			}
+
+			public Handshake getTop() {
+				return null;
+			}
+		};
 	}
 
 	private static Map<Class<? extends Component>, Layouter<?>> getMap() {

@@ -102,7 +102,9 @@ public class VisualBreezeComponent extends VisualGroup {
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 
-		result.add(super.getBoundingBoxInLocalSpace());
+		Rectangle2D parentBB = super.getBoundingBoxInLocalSpace();
+		if(parentBB != null)
+			result.add(parentBB);
 
 		return result;
 	}

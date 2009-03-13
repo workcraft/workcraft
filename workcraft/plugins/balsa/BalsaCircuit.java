@@ -28,9 +28,7 @@ public final class BalsaCircuit extends MathModel {
 
 	public BalsaCircuit() {
 		super();
-		addComponentSupport(WhileComponent.class);
-		addComponentSupport(AdaptComponent.class);
-		addComponentSupport(BinaryFuncComponent.class);
+		addComponentSupport(BreezeComponent.class);
 		addComponentSupport(HandshakeComponent.class);
 
 		this.addListener(new MathModelListener(){

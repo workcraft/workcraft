@@ -41,6 +41,9 @@ public class ComponentCreationTool extends AbstractTool {
 	public void mousePressed(GraphEditorMouseEvent e) {
 		try {
 			Component comp = ComponentFactory.createComponent(componentClass.getName());
+
+			initComponent(comp);
+
 			e.getEditor().getModel().getMathModel().addComponent(comp);
 
 			VisualNode vComp = ComponentFactory.createVisualComponent(comp);
@@ -62,6 +65,9 @@ public class ComponentCreationTool extends AbstractTool {
 			JOptionPane.showMessageDialog(null, "Cannot create component:\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (VisualComponentCreationException e1) {
 			JOptionPane.showMessageDialog(null, "Cannot create visual component:\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);		}
+	}
+
+	protected void initComponent(Component comp) {
 	}
 
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {

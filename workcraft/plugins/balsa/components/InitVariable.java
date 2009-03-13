@@ -1,9 +1,12 @@
 package org.workcraft.plugins.balsa.components;
 
-public class Variable extends Component {
+import java.util.BitSet;
+
+public class InitVariable extends Component {
 	private int width;
 	private int readPortCount;
 	private String name;
+	private BitSet initValue;
 
 	public void setWidth(int width) {
 		this.width = width;
@@ -22,5 +25,11 @@ public class Variable extends Component {
 	}
 	public String getName() {
 		return name;
+	}
+	public void setInitValue(BitSet initValue) {
+		this.initValue = initValue;
+	}
+	public BitSet getInitValue() {
+		return initValue;
 	}
 }

@@ -11,9 +11,9 @@ import org.workcraft.gui.edit.tools.GraphEditorTool;
 
 public class VisualPetriNet extends VisualModel {
 	@Override
-	public ArrayList<Class<? extends GraphEditorTool>> getAdditionalToolClasses() {
-		ArrayList<Class<? extends GraphEditorTool>> list = new ArrayList<Class<? extends GraphEditorTool>>(super.getAdditionalToolClasses());
-		list.add(SimulationTool.class);
+	public ArrayList<GraphEditorTool> getAdditionalTools() {
+		ArrayList<GraphEditorTool> list = new ArrayList<GraphEditorTool>(super.getAdditionalTools());
+		list.add(new SimulationTool());
 		return list;
 	}
 
