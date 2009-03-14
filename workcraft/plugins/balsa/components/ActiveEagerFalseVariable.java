@@ -5,17 +5,17 @@ public class ActiveEagerFalseVariable extends Component {
 	private int readPortCount;
 	private String specification;
 
-	int getWidth() {
+	public int getWidth() {
 		return width;
 	}
-	void setWidth(int width)
+	public void setWidth(int width)
 	{
 		this.width = width;
 	}
-	int getReadPortCount() {
+	public int getReadPortCount() {
 		return readPortCount;
 	}
-	void setReadPortCount(int readPortCount)
+	public void setReadPortCount(int readPortCount)
 	{
 		this.readPortCount = readPortCount;
 	}

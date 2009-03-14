@@ -89,7 +89,7 @@ public class StgModelStgBuilder implements StgBuilder {
 	public StgSignal buildSignal(SignalId id, boolean isOutput) {
 		final StgModelStgTransition transitionP = buildTransition();
 		final StgModelStgTransition transitionM = buildTransition();
-		final String sname = nameProvider.getName(id.getOwner()) + ":" + id.getName();
+		final String sname = nameProvider.getName(id.getOwner()) + "_" + id.getName();
 		transitionP.getModelTransition().setSignalName(sname);
 		transitionM.getModelTransition().setSignalName(sname);
 
@@ -123,4 +123,11 @@ public class StgModelStgBuilder implements StgBuilder {
 	}
 
 	HashMap<SignalId, StgSignal> exports = new HashMap<SignalId, StgSignal>();
+
+	@Override
+	public void addConnection(TransitionOutput t1, StgTransition t2) {
+		StgPlace place = this.buildPlace();
+		addConnection(t1, place);
+		addConnection(place, t2);
+	}
 }

@@ -10,4 +10,5 @@ public interface StgBuilder
 	void addConnection(StgTransition transition, StgPlace place);
 	void addConnection(TransitionOutput transition, StgPlace place);
 	void addReadArc(ReadablePlace place, StgTransition transition);
+	void addConnection(TransitionOutput t1, StgTransition t2);
 }

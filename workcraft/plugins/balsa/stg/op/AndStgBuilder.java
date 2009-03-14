@@ -10,6 +10,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 public class AndStgBuilder extends ComponentStgBuilder<BinaryFunc> {
 
 	public void buildStg(BinaryFunc component, Map<String, StgHandshake> handshakes, StgBuilder builder) {
+		throw new RuntimeException("Not implemented");
 /*		ActivePull inpA = (ActivePull)handshakes.get("inpA");
 		ActivePull inpB = (ActivePull)handshakes.get("inpB");
 		PassivePull out = (PassivePull)handshakes.get("out");*/

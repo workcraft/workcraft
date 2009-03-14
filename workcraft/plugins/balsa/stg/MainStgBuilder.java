@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Component;
-import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
@@ -29,8 +28,10 @@ public class MainStgBuilder {
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> fillMap() {
 		Map<Class<? extends Component>, ComponentStgBuilder<?>> result = new HashMap<Class<? extends Component>, ComponentStgBuilder<?>>();
 
-		result.put(While.class, new WhileStgBuilder());
-		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilderStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.Concur.class, new SequenceOptimisedStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder());
 
 		return result;
 	}

@@ -9,10 +9,10 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
 import org.workcraft.plugins.balsa.stg.op.AndStgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 
-public class BinaryFuncStgBuilderStgBuilder extends
+public class BinaryFuncStgBuilder extends
 		ComponentStgBuilder<BinaryFunc> {
 
-	public BinaryFuncStgBuilderStgBuilder()
+	public BinaryFuncStgBuilder()
 	{
 		opBuilders.put(BinaryOperator.AND, new AndStgBuilder());
 	}

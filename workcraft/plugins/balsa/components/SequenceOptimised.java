@@ -1,8 +1,8 @@
 package org.workcraft.plugins.balsa.components;
 
 public class SequenceOptimised extends Component {
-	private int outputCount;
-	private String specification;
+	private int outputCount = 2;
+	private String specification = "";
 
 	public void setOutputCount(int outputCount) {
 		this.outputCount = outputCount;

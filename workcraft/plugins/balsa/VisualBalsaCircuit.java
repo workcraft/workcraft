@@ -93,8 +93,11 @@ public final class VisualBalsaCircuit extends VisualModel {
 		Class<?> [] balsaClasses =
 			new Class<?>[]
 			{
-				Adapt.class,
 				While.class,
+				Concur.class,
+				SequenceOptimised.class,
+
+				Adapt.class,
 				ActiveEagerFalseVariable.class,
 				Arbiter.class,
 				Bar.class,
@@ -110,7 +113,6 @@ public final class VisualBalsaCircuit extends VisualModel {
 				CaseFetch.class,
 				Combine.class,
 				CombineEqual.class,
-				Concur.class,
 				Constant.class,
 				Continue.class,
 				ContinuePush.class,
@@ -129,7 +131,6 @@ public final class VisualBalsaCircuit extends VisualModel {
 				PassivatorPush.class,
 				PassiveEagerFalseVariable.class,
 				PassiveSyncEagerFalseVariable.class,
-				SequenceOptimised.class,
 				Slice.class,
 				Split.class,
 				SplitEqual.class,

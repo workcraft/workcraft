@@ -2,15 +2,12 @@ package org.workcraft.plugins.modelchecking;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.interop.DotGExporter;
-import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.stg.STG;
 
 public class DeadlockChecker implements ModelChecker

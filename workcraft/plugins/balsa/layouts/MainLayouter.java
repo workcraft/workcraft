@@ -6,7 +6,9 @@ import java.util.Map;
 import org.workcraft.plugins.balsa.components.Adapt;
 import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.components.Component;
+import org.workcraft.plugins.balsa.components.Concur;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
+import org.workcraft.plugins.balsa.components.SequenceOptimised;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
@@ -52,6 +54,8 @@ public class MainLayouter {
 		map.put(Adapt.class, new AdaptLayouter());
 		map.put(While.class, new WhileLayouter());
 		map.put(BinaryFunc.class, new BinaryFuncLayouter());
+		map.put(Concur.class, new ConcurLayouter());
+		map.put(SequenceOptimised.class, new SequenceOptimisedLayouter());
 
 		return map;
 	}
