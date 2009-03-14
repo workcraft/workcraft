@@ -64,14 +64,14 @@ public class SynchronousExternalProcess {
 		return returnCode;
 	}
 
-	private ByteBuffer mergeChunks (LinkedList<byte[]> chunks) {
+	private static ByteBuffer mergeChunks (LinkedList<byte[]> chunks) {
 		int len = 0;
-		for (byte[] dataChunk : errorData)
+		for (byte[] dataChunk : chunks)
 			len += dataChunk.length;
 
 		ByteBuffer ret = ByteBuffer.allocate(len);
 
-		for (byte[] dataChunk : errorData)
+		for (byte[] dataChunk : chunks)
 			ret.put(dataChunk);
 
 		return ret;
@@ -79,7 +79,6 @@ public class SynchronousExternalProcess {
 
 	public ByteBuffer getOutputData() {
 		return mergeChunks(outputData);
-
 	}
 
 	public ByteBuffer getErrorData() {
