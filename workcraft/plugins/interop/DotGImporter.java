@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -136,7 +137,7 @@ public class DotGImporter implements Importer {
 
 					// read heading
 					while ((str=br.readLine())!=null) {
-						s = str.trim().split("[ \\t\\v\\f]+");
+						s = splitToTokens(str);
 						if (s.length==0) continue;
 						if (s[0].charAt(0)=='#') continue;
 
@@ -172,7 +173,7 @@ public class DotGImporter implements Importer {
 					}
 
 					// if neither type of transition was found, just quit
-					if (inputs.isEmpty()&&outputs.isEmpty()&&internal.isEmpty()&&dummy.isEmpty()) return null;
+					if (inputs.isEmpty()&&outputs.isEmpty()&&internal.isEmpty()&&dummy.isEmpty()) return stg;
 
 
 					Component be1, be2; // first and second connection candidates
@@ -182,7 +183,7 @@ public class DotGImporter implements Importer {
 
 					// read connections
 					while ((str=br.readLine())!=null) {
-						s = str.trim().split("[ \\t\\v\\f]+");
+						s = splitToTokens(str);
 						if (s.length==0) continue;
 						if (s[0].charAt(0)=='#') continue;
 
@@ -192,7 +193,7 @@ public class DotGImporter implements Importer {
 							if (!m.find()) continue;
 							str = m.group(1).trim();
 
-							s = str.split("[ \\t\\v\\f]+");
+							s = splitToTokens(str);
 
 							// read starting markings
 							for (int i=0;i<s.length;i++) {
@@ -291,5 +292,17 @@ public class DotGImporter implements Importer {
 		}
 
 		return stg;
+	}
+
+	private static String[] splitToTokens(String str) {
+		String[] split = str.split("[ \\t\\v\\f]+");
+
+		ArrayList<String> result = new ArrayList<String>();
+
+		for(String s : split)
+			if(s.length() != 0)
+				result.add(s);
+
+		return result.toArray(new String [result.size()]);
 	}
 }
