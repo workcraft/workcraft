@@ -124,7 +124,6 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	HashMap<SignalId, StgSignal> exports = new HashMap<SignalId, StgSignal>();
 
-	@Override
 	public void addConnection(TransitionOutput t1, StgTransition t2) {
 		StgPlace place = this.buildPlace();
 		addConnection(t1, place);

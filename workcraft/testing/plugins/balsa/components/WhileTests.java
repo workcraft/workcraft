@@ -90,7 +90,6 @@ public class WhileTests {
 						}
 					}
 
-					@Override
 					public String getName(Handshake handshake) {
 						return names.get(handshake);
 					}

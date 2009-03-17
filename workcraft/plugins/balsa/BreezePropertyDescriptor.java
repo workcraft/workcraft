@@ -12,22 +12,18 @@ public class BreezePropertyDescriptor implements PropertyDescriptor {
 		this.propertyDescriptor = propertyDescriptor;
 	}
 
-	@Override
 	public Map<Object, String> getChoice() {
 		return null;
 	}
 
-	@Override
 	public String getName() {
 		return propertyDescriptor.getDisplayName();
 	}
 
-	@Override
 	public Class<?> getType() {
 		return propertyDescriptor.getPropertyType();
 	}
 
-	@Override
 	public Object getValue(Object owner) {
 		try {
 			VisualBreezeComponent component = (VisualBreezeComponent)owner;
@@ -37,12 +33,10 @@ public class BreezePropertyDescriptor implements PropertyDescriptor {
 		}
 	}
 
-	@Override
 	public boolean isWritable() {
 		return propertyDescriptor.getWriteMethod() != null;
 	}
 
-	@Override
 	public void setValue(Object owner, Object value) {
 		try {
 			VisualBreezeComponent component = (VisualBreezeComponent)owner;

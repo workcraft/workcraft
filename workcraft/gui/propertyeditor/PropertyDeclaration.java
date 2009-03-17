@@ -45,12 +45,10 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		choice = true;
 	}
 
-	@Override
 	public Map<Object, String> getChoice() {
 		return valueNames;
 	}
 
-	@Override
 	public Object getValue(Object owner) {
 		try {
 			return owner.getClass().getMethod(getter).invoke(owner);
@@ -59,7 +57,6 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		}
 	}
 
-	@Override
 	public void setValue(Object owner, Object value) {
 		try {
 			owner.getClass().getMethod(setter, cls).invoke(owner, value);
@@ -68,17 +65,14 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		}
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public Class<?> getType() {
 		return cls;
 	}
 
-	@Override
 	public boolean isWritable() {
 		return setter != null;
 	}
