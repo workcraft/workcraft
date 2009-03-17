@@ -1,5 +1,5 @@
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-public interface PassivePushStg extends PassiveSyncStg
+public interface PassivePushStg extends PassiveSyncStg, DataReadStg
 {
 }

@@ -1,26 +1,31 @@
 package org.workcraft.testing.plugins.balsa.components;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
-import org.workcraft.plugins.balsa.components.FourPhaseProtocol;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
+import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
+import org.workcraft.plugins.interop.BalsaToStgExporter_TwoPhase;
+import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -53,7 +58,8 @@ public class WhileTests {
 				return names.get(handshake);
 			}
 		});
-		FourPhaseProtocol handshakeBuilder = new FourPhaseProtocol(stgBuilder);
+		FourPhaseProtocol handshakeBuilder = new FourPhaseProtocol();
+		handshakeBuilder.setStgBuilder(stgBuilder);
 		MainStgBuilder.buildStg(wh, handshakes, handshakeBuilder);
 
 		new DeadlockChecker().run(stg);
@@ -61,48 +67,8 @@ public class WhileTests {
 		new org.workcraft.framework.Framework().save(new VisualSTG(stg), "while.stg.work");
 	}
 
-	private void buildStg(BalsaCircuit balsa, STG stg) throws ModelCheckingFailedException
-	{
-		for(Component component : balsa.getComponents())
-		{
-			if(component instanceof BreezeComponent)
-			{
-				final BreezeComponent breezeComponent = (BreezeComponent) component;
-
-				final Map<Handshake, HandshakeComponent> handshakeComponents = breezeComponent.getHandshakeComponents();
-				final Map<String, Handshake> handshakes = breezeComponent.getHandshakes();
-
-				StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
-				{
-					HashMap<Handshake, String> names;
-
-					{
-						names = new HashMap<Handshake, String>();
-						for(Entry<String, Handshake> entry : handshakes.entrySet())
-						{
-							names.put(entry.getValue(), "free_" + breezeComponent.getID() + "_" + entry.getKey());
-						}
-						for(Entry<Handshake, HandshakeComponent> entry : handshakeComponents.entrySet())
-						{
-							Connection connection = entry.getValue().getConnection();
-							if(connection != null)
-								names.put(entry.getKey(), "con_" + connection.getID());
-						}
-					}
-
-					public String getName(Handshake handshake) {
-						return names.get(handshake);
-					}
-				});
-
-				FourPhaseProtocol handshakeBuilder = new FourPhaseProtocol(stgBuilder);
-				MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), handshakes, handshakeBuilder);
-			}
-		}
-	}
-
 	@Test
-	public void TestCombine() throws ModelSaveFailedException, VisualModelInstantiationException, InvalidConnectionException, ModelCheckingFailedException
+	public void TestCombine() throws ModelSaveFailedException, VisualModelInstantiationException, InvalidConnectionException, ModelCheckingFailedException, IOException, LayoutFailedException
 	{
 		BalsaCircuit balsa = new BalsaCircuit();
 
@@ -119,11 +85,15 @@ public class WhileTests {
 
 		balsa.addConnection(new Connection(wh1Out, wh2In));
 
-		final STG stg = new STG();
+		File stgFile = new File("while_while.g");
+		new BalsaToStgExporter_TwoPhase().exportToFile(balsa, stgFile);
+		final STG stg = (STG) new DotGImporter().importFromFile(stgFile);
 
-		buildStg(balsa, stg);
+		VisualSTG visualStg = new VisualSTG(stg);
 
-		new org.workcraft.framework.Framework().save(new VisualSTG(stg), "while_while.stg.work");
+		new DotLayout().doLayout(visualStg);
+
+		new org.workcraft.framework.Framework().save(visualStg, "while_while.stg.work");
 	}
 
 }

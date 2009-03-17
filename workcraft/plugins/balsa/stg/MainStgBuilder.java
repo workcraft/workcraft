@@ -29,7 +29,7 @@ public class MainStgBuilder {
 		Map<Class<? extends Component>, ComponentStgBuilder<?>> result = new HashMap<Class<? extends Component>, ComponentStgBuilder<?>>();
 
 		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
-		result.put(org.workcraft.plugins.balsa.components.Concur.class, new SequenceOptimisedStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.SequenceOptimised.class, new SequenceOptimisedStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder());
 

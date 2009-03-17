@@ -2,7 +2,6 @@ package org.workcraft.plugins.modelchecking;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
@@ -15,8 +14,8 @@ public class DeadlockChecker implements ModelChecker
 	private static final String tmpNetFilePath = "tmp.g";
 	private static final String tmpUnfoldingFilePath = "tmp.mci";
 	private static final String reachFilePath = "deadlock.re";
-	private static final String punfPath = ".\\punf";
-	private static final String mpsatPath = ".\\mpsat";
+	private static final String punfPath = "..//Util/punf";
+	private static final String mpsatPath = "..//Util/mpsat";
 
 
 	public String getDisplayName() {
@@ -57,14 +56,13 @@ public class DeadlockChecker implements ModelChecker
 
 			p.start(10000);
 
-			ByteBuffer buf = p.getOutputData();
+			byte [] buf = p.getOutputData();
 
 			if(p.getReturnCode()!=0)
 			{
 				System.out.println("[punf] Unfolding failed.");
 
-				buf.rewind();
-				System.out.println(new String (buf.array()));
+				System.out.println(new String (buf));
 				cleanUp();
 				return;
 			}
@@ -74,17 +72,15 @@ public class DeadlockChecker implements ModelChecker
 			SynchronousExternalProcess q = new SynchronousExternalProcess(
 					new String[] {mpsatPath, "-F", "-d", "@" + reachFilePath, tmpUnfoldingFilePath}, ".");
 
-			q.start(10000);
+			q.start(10000, new byte[]{13, 13, 13, 10, 13, 10, 13});
 
 			buf = q.getOutputData();
-			buf.rewind();
 
-			System.out.println(new String (buf.array()));
+			System.out.println(new String (buf));
 
 			buf = q.getErrorData();
-			buf.rewind();
 
-			System.out.println(new String (buf.array()));
+			System.out.println(new String (buf));
 			cleanUp();
 
 		} catch(IOException e)

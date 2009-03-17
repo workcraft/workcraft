@@ -10,28 +10,36 @@ import java.util.LinkedList;
 
 
 public class ExternalProcess {
-	class InputReaderThread extends Thread {
-		private ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+	abstract static class StreamReaderThread extends Thread
+	{
+		private final ReadableByteChannel channel;
+		private final ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+		public StreamReaderThread(ReadableByteChannel channel)
+		{
+			this.channel = channel;
+		}
+
+		abstract void handleData(byte [] data);
 
 		public void run() {
 			while (true)
 				try {
 					buffer.rewind();
-					int result = inputStream.read(buffer);
+					int result = channel.read(buffer);
 
-					if (result == -1) {
-						System.out.println ("End of output stream.");
+					if (result == -1)
 						return;
-					}
+
 					if (result == 0)
 						continue;
-
 
 					buffer.rewind();
 					byte[] data = new byte[result];
 					buffer.get(data);
 
-					outputData(data);
+					handleData(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 					return;
@@ -39,30 +47,26 @@ public class ExternalProcess {
 		}
 	}
 
-	class ErrorReaderThread extends Thread {
-		private ByteBuffer buffer = ByteBuffer.allocate(1024);
+	class InputReaderThread extends StreamReaderThread {
 
-		public void run() {
-			while (true)
-				try {
-					buffer.rewind();
-					int result = errorStream.read(buffer);
+		InputReaderThread()
+		{
+			super(inputStream);
+		}
 
-					if (result == -1)
-						return;
-					if (result == 0)
-						continue;
+		void handleData(byte[] data) {
+			outputData(data);
+		}
+	}
 
-					buffer.rewind();
-					byte[] data = new byte[result];
-					buffer.get(data);
+	class ErrorReaderThread extends StreamReaderThread {
+		ErrorReaderThread()
+		{
+			super(errorStream);
+		}
 
-					errorData(data);
-
-				} catch (IOException e) {
-					e.printStackTrace();
-					return;
-				}
+		void handleData(byte[] data) {
+			errorData(data);
 		}
 	}
 
@@ -125,7 +129,6 @@ public class ExternalProcess {
 		errorStream = Channels.newChannel(process.getErrorStream());
 		inputStream = Channels.newChannel(process.getInputStream());
 
-
 		new InputReaderThread().start();
 		new ErrorReaderThread().start();
 		new WaiterThread().start();
@@ -152,5 +155,8 @@ public class ExternalProcess {
 		listeners.remove(listener);
 	}
 
+	public void closeInput() throws IOException {
+		outputStream.close();
+	}
 
 }

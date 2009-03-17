@@ -1,7 +1,6 @@
 package org.workcraft.framework.interop;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 public class SynchronousExternalProcess {
@@ -37,6 +36,10 @@ public class SynchronousExternalProcess {
 	}
 
 	public boolean start (long timeout) throws IOException {
+		return start(timeout, new byte[]{});
+	}
+
+	public boolean start (long timeout, byte[] input) throws IOException {
 		errorData.clear();
 		outputData.clear();
 		finished = false;
@@ -45,6 +48,8 @@ public class SynchronousExternalProcess {
 		long endTime = System.currentTimeMillis() + timeout;
 
 		process.start();
+		process.writeData(input);
+		process.closeInput();
 
 		while (System.currentTimeMillis() < endTime) {
 			if (finished)
@@ -64,24 +69,26 @@ public class SynchronousExternalProcess {
 		return returnCode;
 	}
 
-	private static ByteBuffer mergeChunks (LinkedList<byte[]> chunks) {
+	private static byte [] mergeChunksToArray (LinkedList<byte[]> chunks) {
 		int len = 0;
 		for (byte[] dataChunk : chunks)
 			len += dataChunk.length;
 
-		ByteBuffer ret = ByteBuffer.allocate(len);
+		byte [] result = new byte[len];
 
+		int cur = 0;
 		for (byte[] dataChunk : chunks)
-			ret.put(dataChunk);
+			for(int i=0;i<dataChunk.length;i++)
+				result[cur++] = dataChunk[i];
 
-		return ret;
+		return result;
 	}
 
-	public ByteBuffer getOutputData() {
-		return mergeChunks(outputData);
+	public byte [] getOutputData() {
+		return mergeChunksToArray(outputData);
 	}
 
-	public ByteBuffer getErrorData() {
-		return mergeChunks(errorData);
+	public byte [] getErrorData() {
+		return mergeChunksToArray(errorData);
 	}
 }

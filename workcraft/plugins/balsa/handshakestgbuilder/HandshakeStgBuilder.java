@@ -11,6 +11,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 public interface HandshakeStgBuilder
 {
 	public StgBuilder getStgBuilder();
+	void setStgBuilder(StgBuilder builder);
 	public ActiveSyncStg create(ActiveSync handshake);
 	public PassiveSyncStg create(PassiveSync handshake);
 	public PassivePullStg create(PassivePull handshake);

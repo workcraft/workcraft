@@ -1,4 +1,4 @@
-package org.workcraft.plugins.balsa.components;
+package org.workcraft.plugins.balsa.protocols;
 
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
@@ -26,31 +26,12 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class FourPhaseProtocol implements HandshakeStgBuilder
 {
-	private final StgBuilder builder;
-
-	public FourPhaseProtocol (StgBuilder builder)
-	{
-		this.builder = builder;
-	}
+	private StgBuilder builder;
 
 	public ActivePullStg create(ActivePull handshake) {
 		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
 
-		final int width = handshake.getWidth();
-
-		final StgPlace [] data0 = new StgPlace [width];
-		final StgPlace [] data1 = new StgPlace [width];
-
-		for(int i=0;i<width;i++)
-		{
-			data0[i] = builder.buildPlace(1);
-			data1[i] = builder.buildPlace();
-			StgSignal dataSignal = builder.buildSignal(new SignalId(handshake, "data"+i), false);
-			builder.addConnection(data0[i], dataSignal.getPlus());
-			builder.addConnection(dataSignal.getPlus(), data1[i]);
-			builder.addConnection(data1[i], dataSignal.getMinus());
-			builder.addConnection(dataSignal.getMinus(), data0[i]);
-		}
+		final InputDataSignal[] signals = DataSignalBuilder.buildInputDataSignals(handshake, builder);
 
 		return new ActivePullStg()
 		{
@@ -58,7 +39,7 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 				return sync.getActiveSync().getActivator();
 			}
 			public ReadablePlace getData(int index, boolean value) {
-				return value ? data1[index] : data0[index];
+				return value ? signals[index].p1 : signals[index].p0;
 			}
 
 			public TransitionOutput getDeactivationNotificator() {
@@ -69,6 +50,7 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 			}
 		};
 	}
+
 
 	public ActivePushStg create(ActivePush handshake) {
 		throw new NotImplementedException();
@@ -175,4 +157,14 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	public StgBuilder getStgBuilder() {
 		return builder;
 	}
+
+	public void setStgBuilder(StgBuilder builder) {
+		this.builder = builder;
+	}
+}
+
+class InputDataSignal
+{
+	StgPlace p0;
+	StgPlace p1;
 }
