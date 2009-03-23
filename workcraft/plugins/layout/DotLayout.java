@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,16 +14,29 @@ import java.util.regex.Pattern;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.framework.Config;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
+import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.layout.Layout;
 
-public class DotLayout implements Layout {
+public class DotLayout implements Layout, PersistentPropertyEditable {
 
 	private static final double dotPositionScaleFactor = 0.02;
 
-	private static final String tmpGraphFilePath = "tmp.dot";
-	private static final String dotCommandPath = "\"C:/Program Files/Graphviz2.20/bin/dot\"";
+	private static String tmpGraphFilePath = "tmp.dot";
+	private static String dotCommand = "\"D:/mech/dot/bin/dot\"";
+
+	private static LinkedList<PropertyDescriptor> properties;
+
+
+	public DotLayout() {
+		properties = new LinkedList<PropertyDescriptor>();
+		properties.add(new PropertyDeclaration("Dot command", "getDotCommand", "setDotCommand", String.class));
+		properties.add(new PropertyDeclaration("Temporary dot file path", "getTmpGraphFilePath", "setTmpGraphFilePath", String.class));
+	}
 
 	private void saveGraph(VisualModel model) throws IOException {
 		PrintStream out = new PrintStream(new File(tmpGraphFilePath));
@@ -83,7 +98,7 @@ public class DotLayout implements Layout {
 		try {
 			saveGraph(model);
 			SynchronousExternalProcess p = new SynchronousExternalProcess(
-					new String[] {dotCommandPath, "-Tdot", "-O", tmpGraphFilePath}, ".");
+					new String[] {dotCommand, "-Tdot", "-O", tmpGraphFilePath}, ".");
 			p.start(10000);
 			if(p.getReturnCode()==0) {
 				String in = fileToString(tmpGraphFilePath+".dot");
@@ -108,4 +123,37 @@ public class DotLayout implements Layout {
 		return true;
 	}
 
+	public List<PropertyDescriptor> getPersistentPropertyDeclarations() {
+		return properties;
+	}
+
+	public void loadPersistentProperties(Config config) {
+		String s = config.get("plugins.layout.dot.dotCommand");
+		if (s!=null)
+			dotCommand = s;
+		s = config.get("plugins.layout.dot.tmpGraphFilePath");
+		if (s!=null)
+			tmpGraphFilePath = s;
+	}
+
+	public void storePersistentProperties(Config config) {
+		config.set("plugins.layout.dot.dotCommand", dotCommand)	;
+		config.set("plugins.layout.dot.tmpGraphFilePath", tmpGraphFilePath);
+	}
+
+	public static String getTmpGraphFilePath() {
+		return tmpGraphFilePath;
+	}
+
+	public static void setTmpGraphFilePath(String tmpGraphFilePath) {
+		DotLayout.tmpGraphFilePath = tmpGraphFilePath;
+	}
+
+	public static String getDotCommand() {
+		return dotCommand;
+	}
+
+	public static void setDotCommand(String dotCommand) {
+		DotLayout.dotCommand = dotCommand;
+	}
 }

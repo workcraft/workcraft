@@ -25,7 +25,7 @@ import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.stg.STG;
 
-public abstract class BalsaToStgExporter implements Exporter {
+public abstract class BalsaToStgExporter {
 
 	private final HandshakeStgBuilder protocol;
 	private final String protocolName;

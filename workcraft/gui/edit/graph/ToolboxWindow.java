@@ -129,13 +129,14 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void selectTool(GraphEditorTool tool) {
+		System.out.println ("Select tool " + tool);
 		ToolTracker tracker = null;
 
 		if (selectedTool != null) {
+			System.out.println (selectedTool);
 			tracker = trackerMap.get(selectedTool);
 
 			selectedTool.deactivated(framework.getMainWindow().getCurrentEditor());
-
 			framework.getMainWindow().getCurrentEditor().getModel().getVisualModel().clearColorisation();
 			reverseMap.get(selectedTool).setSelected(false);
 		}
@@ -158,10 +159,13 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void setToolsForModel (Model model) {
+		System.out.println ("Set tools for model " + model);
 		map.clear();
 		reverseMap.clear();
 		clearTrackers();
 		removeAll();
+		selectedTool = null;
+
 		setLayout(new FlowLayout (FlowLayout.LEFT, 5, 5));
 
 		addCommonTools();
@@ -173,8 +177,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 		for (GraphEditorTool tool : model.getVisualModel().getAdditionalTools())
 			addTool(tool, false);
-
-		selectedTool = selectionTool;
 
 		doLayout();
 		this.repaint();
