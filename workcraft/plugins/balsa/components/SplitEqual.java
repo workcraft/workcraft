@@ -11,10 +11,10 @@ public class SplitEqual extends Component {
 	public int getInputWidth() {
 		return inputWidth;
 	}
-	public void setOutputWIdth(int outputWIdth) {
-		this.outputWIdth = outputWIdth;
+	public void setOutputWidth(int outputWidth) {
+		this.outputWIdth = outputWidth;
 	}
-	public int getOutputWIdth() {
+	public int getOutputWidth() {
 		return outputWIdth;
 	}
 	public void setOutputCount(int outputCount) {

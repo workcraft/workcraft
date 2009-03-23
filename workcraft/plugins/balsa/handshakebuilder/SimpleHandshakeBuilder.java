@@ -1,12 +1,12 @@
 package org.workcraft.plugins.balsa.handshakebuilder;
 
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
@@ -27,8 +27,17 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 		};
 	}
 
-	public ActivePush CreateActivePush(int width) {
-		throw new NotImplementedException();
+	public ActivePush CreateActivePush(final int width) {
+		return new ActivePush()
+		{
+			public ActivePushStg buildStg(HandshakeStgBuilder builder) {
+				return builder.create(this);
+			}
+
+			public int getWidth() {
+				return width;
+			}
+		};
 	}
 
 	public ActiveSync CreateActiveSync() {
@@ -51,8 +60,17 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 		};
 	}
 
-	public PassivePush CreatePassivePush(int width) {
-		throw new NotImplementedException();
+	public PassivePush CreatePassivePush(final int width) {
+		return new PassivePush()
+		{
+			public PassivePushStg buildStg(HandshakeStgBuilder builder) {
+				return builder.create(this);
+			}
+
+			public int getWidth() {
+				return width;
+			}
+		};
 	}
 
 	public PassiveSync CreatePassiveSync() {
