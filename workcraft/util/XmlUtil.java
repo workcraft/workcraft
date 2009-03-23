@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,6 +72,24 @@ public class XmlUtil {
 		}
 	}
 
+	public static void saveDocument(Document doc, File transform, File file) throws IOException {
+		try
+		{
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			Transformer transformer = tFactory.newTransformer(new StreamSource(transform));
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+			FileOutputStream fos = new FileOutputStream(file.getPath());
+
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new OutputStreamWriter(fos));
+
+			transformer.transform(source, result);
+			fos.close();
+		} catch (TransformerException e) {
+			System.err.println(e.getMessage());
+		}
+	}
 	public static int readIntAttr (Element element, String attributeName, int defaultValue)  {
 		String attributeValue = element.getAttribute(attributeName);
 		try {

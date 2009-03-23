@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -196,5 +197,7 @@ public abstract class VisualNode implements PropertyEditable {
 		serialisation.serialise(componentElement);
 	}
 
-	public abstract Set<MathNode> getReferences();
+	public Set<MathNode> getReferences() {
+		return new HashSet<MathNode>();
+	}
 }

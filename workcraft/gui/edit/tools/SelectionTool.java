@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -85,14 +86,27 @@ public class SelectionTool extends AbstractTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			if(drag!=DRAG_NONE)
 				cancelDrag(e);
-			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0)
-				clearSelection(model);
-			VisualNode so = model.hitNode(e.getPosition());
-			if(so!=null)
+
+			VisualNode node = model.hitNode(e.getPosition());
+
+			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
+				if (node != null) {
+					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2)
+						((VisualConnection)node).addAnchorPoint(e.getPosition());
+					else {
+						clearSelection(model);
+						addToSelection(model, node);
+					}
+				} else
+					clearSelection(model);
+			} else {
 				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
-					removeFromSelection(model, so);
-				else
-					addToSelection(model, so);
+					removeFromSelection(model, node);
+				else {
+					addToSelection(model, node);
+				}
+			}
+
 			model.fireSelectionChanged();
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3) {

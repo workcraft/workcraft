@@ -324,7 +324,12 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	public VisualNode hitNode(Point2D pointInLocalSpace) {
-		return hitVisualNode(pointInLocalSpace, children);
+		VisualNode node = hitVisualNode(pointInLocalSpace, components);
+		if (node == null)
+			node = hitVisualNode(pointInLocalSpace, groups);
+		if (node == null)
+			node = hitVisualNode(pointInLocalSpace, connections);
+		return node;
 	}
 
 
