@@ -129,7 +129,6 @@ public abstract class BalsaToStgExporter {
 				}
 			}
 
-			@Override
 			public String getName(Handshake handshake) {
 				return names.get(handshake);
 			}
