@@ -38,10 +38,13 @@ import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
+import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
+import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -188,9 +191,31 @@ public class Framework {
 
 	public void loadConfig(String fileName) {
 		config.load(fileName);
+
+		PluginInfo[] infos = pluginManager.getPluginsByInterface(PersistentPropertyEditable.class.getName());
+
+		for (PluginInfo info : infos) {
+			try {
+				PersistentPropertyEditable e = (PersistentPropertyEditable)pluginManager.getSingleton(info);
+				e.loadPersistentProperties(config);
+			} catch (PluginInstantiationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void saveConfig(String fileName) {
+		PluginInfo[] infos = pluginManager.getPluginsByInterface(PersistentPropertyEditable.class.getName());
+
+		for (PluginInfo info : infos) {
+			try {
+				PersistentPropertyEditable e = (PersistentPropertyEditable)pluginManager.getSingleton(info);
+				e.storePersistentProperties(config);
+			} catch (PluginInstantiationException e) {
+				e.printStackTrace();
+			}
+		}
+
 		config.save(fileName);
 	}
 
@@ -571,5 +596,9 @@ public class Framework {
 
 	public void loadWorkspace(File file) throws LoadFromXMLException {
 		workspace.load(file.getPath());
+	}
+
+	public Config getConfig() {
+		return config;
 	}
 }

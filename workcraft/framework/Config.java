@@ -40,6 +40,32 @@ public class Config {
 		}
 	}
 
+	public String getString(String key, String defaultValue) {
+		String s = get(key);
+		if (s == null)
+			return defaultValue;
+		else
+			return s;
+	}
+
+	public double getDouble (String key, double defaultValue) {
+		String s = get (key);
+
+		if (s == null)
+			return defaultValue;
+
+		try {
+			return Double.parseDouble(s);
+		}
+		catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
+	public void setDouble (String key, double value) {
+		set (key, Double.toString(value));
+	}
+
 	public void set(String key, String value) {
 		String[] k = key.split("\\.", 2);
 

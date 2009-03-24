@@ -29,14 +29,14 @@ public class MainMenu extends JMenuBar {
 		String layoutClassName;
 		String layoutText;
 
-		public LayoutAction(Layout layout) {
-			layoutClassName = layout.getClass().getName();
-			layoutText = layout.getDisplayName();
+		public LayoutAction(PluginInfo layoutPlugin) {
+			layoutClassName = layoutPlugin.getClassName();
+			layoutText = layoutPlugin.getDisplayName();
 		}
 
 		public String getScript() {
-			return "layout = framework.getPluginManager().getSingletonByName(\""+layoutClassName+"\");\n" +
-			"layout.doLayout(visualModel);";
+			return "mainWindow.doLayout(\""+layoutClassName+"\")";
+
 		}
 		public String getText() {
 			return layoutText;
@@ -242,9 +242,12 @@ public class MainMenu extends JMenuBar {
 		ScriptedActionMenuItem miReconfigure = new ScriptedActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ScriptedActionMenuItem miProperties = new ScriptedActionMenuItem(MainWindow.Actions.EDIT_SETTINGS_ACTION);
+		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		mnSettings.add(miProperties);
 		mnSettings.add(miCustomButtons);
 		mnSettings.add(miReconfigure);
-
 
 		// Help
 		mnHelp = new JMenu();
@@ -257,11 +260,11 @@ public class MainMenu extends JMenuBar {
 		add(mnHelp);
 	}
 
-	private void addLayout (Layout layout) {
+	private void addLayout (PluginInfo layoutPlugin) {
 		if (mnLayout == null)
 			mnLayout = new JMenu("Layout");
 
-		ScriptedActionMenuItem miLayoutMenuItem = new ScriptedActionMenuItem(new LayoutAction(layout));
+		ScriptedActionMenuItem miLayoutMenuItem = new ScriptedActionMenuItem(new LayoutAction(layoutPlugin));
 		miLayoutMenuItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnLayout.add(miLayoutMenuItem);
 	}
@@ -301,7 +304,7 @@ public class MainMenu extends JMenuBar {
 				Layout layout = (Layout)framework.getPluginManager().getSingleton(info);
 
 				if (layout.isApplicableTo(model))
-					addLayout(layout);
+					addLayout(info);
 			}
 		} catch (PluginInstantiationException e) {
 			System.err.println ("Could not instantiate layout plugin class: " + e.getMessage() + " (skipped)");

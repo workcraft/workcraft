@@ -17,6 +17,11 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public void setObject(PropertyEditable object) {
+		if (object == null) {
+			clearObject();
+			return;
+		}
+
 		this.object = object;
 		declarations =  object.getPropertyDeclarations().toArray(new PropertyDescriptor[0]);
 		rowClasses = new PropertyClass[declarations.length];

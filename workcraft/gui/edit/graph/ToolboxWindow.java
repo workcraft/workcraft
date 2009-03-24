@@ -129,7 +129,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void selectTool(GraphEditorTool tool) {
-		System.out.println ("Select tool " + tool);
 		ToolTracker tracker = null;
 
 		if (selectedTool != null) {
@@ -159,7 +158,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void setToolsForModel (Model model) {
-		System.out.println ("Set tools for model " + model);
 		map.clear();
 		reverseMap.clear();
 		clearTrackers();

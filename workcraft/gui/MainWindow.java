@@ -45,6 +45,7 @@ import org.workcraft.framework.Importer;
 import org.workcraft.framework.ModelFactory;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -57,7 +58,9 @@ import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.edit.graph.ToolboxWindow;
+import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
 import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.layout.Layout;
 import org.workcraft.plugins.modelchecking.ModelChecker;
 
 @SuppressWarnings("serial")
@@ -146,6 +149,14 @@ public class MainWindow extends JFrame {
 			}
 		};
 
+		public static final ScriptedAction EDIT_SETTINGS_ACTION = new ScriptedAction() {
+			public String getScript() {
+				return "mainWindow.editSettings()";
+			}
+			public String getText() {
+				return "Settings...";
+			}
+		};
 
 		public static final String tryOperation (String operation) {
 			return "try\n" +
@@ -827,6 +838,17 @@ public class MainWindow extends JFrame {
 	}
 
 
+	public void doLayout (String layoutClassName) {
+		Layout layout = (Layout)framework.getPluginManager().getSingletonByName(layoutClassName);
+
+		try {
+			layout.doLayout(editorInFocus.getModel());
+		} catch (LayoutFailedException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Layout failed", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+	}
+
 	public void exportTo(String exporterClassName) throws OperationCancelledException {
 		Exporter exporter = (Exporter)framework.getPluginManager().getSingletonByName(exporterClassName);
 
@@ -906,6 +928,13 @@ public class MainWindow extends JFrame {
 		for (DockableWindow w : windowsToClose) {
 			closeDockableWindow(w.getID());
 		}
+	}
+
+	public void editSettings() {
+		PersistentPropertyEditorDialog dlg = new PersistentPropertyEditorDialog(this);
+		dlg.setModal(false);
+		dlg.setResizable(true);
+		dlg.setVisible(true);
 	}
 }
 
