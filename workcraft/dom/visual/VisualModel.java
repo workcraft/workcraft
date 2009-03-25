@@ -86,6 +86,50 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
+	class Listener implements VisualModelEventListener {
+		private HashSet<VisualConnectionAnchorPoint> connectionAnchorPoints = new HashSet<VisualConnectionAnchorPoint>();
+
+		public void onComponentAdded(VisualComponent component) {
+		}
+
+		public void onComponentPropertyChanged(String propertyName,
+				VisualComponent component) {
+		}
+
+		public void onComponentRemoved(VisualComponent component) {
+		}
+
+		public void onConnectionAdded(VisualConnection connection) {
+		}
+
+		public void onConnectionPropertyChanged(String propertyName,
+				VisualConnection connection) {
+		}
+
+		public void onConnectionRemoved(VisualConnection connection) {
+		}
+
+		public void onLayoutChanged() {
+		}
+
+		public void onSelectionChanged() {
+			for (VisualConnectionAnchorPoint p : connectionAnchorPoints)
+				p.getParent().remove(p);
+
+			connectionAnchorPoints.clear();
+
+			for (VisualNode n : selection) {
+				if (n instanceof VisualConnection) {
+					VisualConnection con = (VisualConnection)n;
+
+					VisualConnectionAnchorPoint[] ap = con.getAnchorPointComponents();
+					for (VisualConnectionAnchorPoint p : ap)
+						con.getParent().add(p);
+				}
+			}
+		}
+	}
+
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
 	private RenamedVisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
 
@@ -97,6 +141,8 @@ public class VisualModel implements Plugin, Model {
 
 	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
 	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
+
+
 
 	private XMLSerialisation serialiser = new XMLSerialisation();
 	private ModelListener mathModelListener = new ModelListener();
@@ -136,6 +182,7 @@ public class VisualModel implements Plugin, Model {
 		currentLevel = root;
 		addXMLSerialisable();
 		mathModel.addListener(mathModelListener);
+		addListener(new Listener());
 	}
 
 	public VisualModel(MathModel mathModel, Element visualModelElement) throws VisualModelInstantiationException {

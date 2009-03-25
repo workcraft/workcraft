@@ -40,6 +40,7 @@ public class VisualGroup extends VisualTransformableNode {
 	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
 	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
 	protected Set<VisualGroup> groups = new LinkedHashSet<VisualGroup>();
+	protected Set<VisualNode> misc = new LinkedHashSet<VisualNode>();
 	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
 
 	private Element deferredGroupElement = null;
@@ -209,6 +210,9 @@ public class VisualGroup extends VisualTransformableNode {
 		for (VisualComponent component : components)
 			drawPreservingTransform(g, component);
 
+		for (VisualNode node : misc)
+			drawPreservingTransform(g, node);
+
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 
@@ -230,7 +234,8 @@ public class VisualGroup extends VisualTransformableNode {
 			groups.remove((VisualGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.remove((VisualConnection)node);
-		else throw new UnsupportedOperationException("Unknown node type");
+		else
+			misc.remove(node);
 	}
 
 	public void add (VisualGroup group) {
@@ -256,7 +261,8 @@ public class VisualGroup extends VisualTransformableNode {
 			groups.add((VisualGroup)node);
 		else if (node instanceof VisualConnection)
 			connections.add((VisualConnection)node);
-		else throw new UnsupportedOperationException("Unknown node type");
+		else
+			misc.add(node);
 
 		node.setParent(this);
 	}
@@ -325,7 +331,9 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	public VisualNode hitNode(Point2D pointInLocalSpace) {
-		VisualNode node = hitVisualNode(pointInLocalSpace, components);
+		VisualNode node = hitVisualNode(pointInLocalSpace, misc);
+		if (node == null)
+			node = hitVisualNode(pointInLocalSpace, components);
 		if (node == null)
 			node = hitVisualNode(pointInLocalSpace, groups);
 		if (node == null)
