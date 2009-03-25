@@ -22,6 +22,14 @@ public class BreezeComponent extends Component {
 	static final String charsetName = "UTF-8";
 
 	public BreezeComponent(Element e) {
+		super(e);
+
+		init();
+
+		setUnderlyingComponent(readUnderlyingComponent(e));
+	}
+
+	private org.workcraft.plugins.balsa.components.Component readUnderlyingComponent(Element e) {
 		NodeList breezeElements = e.getElementsByTagName("breeze");
 		if(breezeElements.getLength() != 1)
 			throw new RuntimeException("Breeze component description must have at least one <breeze> tag");
@@ -36,10 +44,14 @@ public class BreezeComponent extends Component {
 		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
 		XMLDecoder dec = new XMLDecoder(stream);
 		Object obj = dec.readObject();
-		setUnderlyingComponent((org.workcraft.plugins.balsa.components.Component) obj);
+		return (org.workcraft.plugins.balsa.components.Component) obj;
 	}
 
 	public BreezeComponent() {
+		init();
+	}
+
+	private void init() {
 		addXMLSerialiser(new XMLSerialiser(){
 			public String getTagName() {
 				return "breeze";
@@ -71,6 +83,10 @@ public class BreezeComponent extends Component {
 
 	public void setHandshakeComponents(Map<Handshake, HandshakeComponent> handshakes) {
 		this.handshakeComponents = handshakes;
+	}
+
+	public final HandshakeComponent getHandshakeComponentByName(String name) {
+		return getHandshakeComponents().get(getHandshakes().get(name));
 	}
 
 	public Map<Handshake, HandshakeComponent> getHandshakeComponents() {

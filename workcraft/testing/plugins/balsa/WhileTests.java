@@ -1,4 +1,4 @@
-package org.workcraft.testing.plugins.balsa.components;
+package org.workcraft.testing.plugins.balsa;
 
 import java.io.File;
 import java.io.IOException;

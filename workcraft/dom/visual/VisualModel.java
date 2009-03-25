@@ -29,6 +29,8 @@ import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
+import org.workcraft.framework.GroupFactory;
+import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
@@ -160,14 +162,14 @@ public class VisualModel implements Plugin, Model {
 		if(element.getTagName() == "connection")
 			return ConnectionFactory.createVisualConnection(element, getReferenceResolver());
 		if(element.getTagName() == "group")
-			return new VisualGroup(element, this);
-		throw new RuntimeException("Not supported element: " + element.getTagName());
+			return GroupFactory.createVisualGroup(element, this);
+		return null;
 	}
 
-	protected final Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
+	protected Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
 		List<Element> children = XmlUtil.getChildElements("component", visualElement);
-		children.addAll(XmlUtil.getChildElements("connection", visualElement));
 		children.addAll(XmlUtil.getChildElements("group", visualElement));
+		children.addAll(XmlUtil.getChildElements("connection", visualElement));
 
 		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
 
@@ -175,6 +177,8 @@ public class VisualModel implements Plugin, Model {
 		{
 			for (Element e: children) {
 				VisualNode node = createNode(e);
+				if(node == null)
+					continue;
 				if(node instanceof VisualTransformableNode)
 				{
 					VisualTransformableNode tn = (VisualTransformableNode)node;
@@ -211,7 +215,10 @@ public class VisualModel implements Plugin, Model {
 				vc.serialiseToXML(vconElement);
 			} else if (node instanceof VisualGroup) {
 				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
-				((VisualGroup)node).serialiseToXML(childGroupElement);
+
+				VisualNodeSerialiser serialiser = ((VisualGroup)node).getSerialiser();
+				serialiser.serialise(node, childGroupElement);
+				XmlUtil.writeStringAttr(childGroupElement, "class", node.getClass().getName());
 			}
 		}
 	}
@@ -316,7 +323,7 @@ public class VisualModel implements Plugin, Model {
 
 		gatherReferences (selection, references);
 
-		VisualModel.nodesToXML(visualElement, selection);
+		nodesToXML(visualElement, selection);
 		MathModel.nodesToXML(mathElement, references);
 	}
 

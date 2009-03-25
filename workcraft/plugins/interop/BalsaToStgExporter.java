@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
-import org.workcraft.framework.Exporter;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;

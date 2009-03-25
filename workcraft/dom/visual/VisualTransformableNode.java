@@ -45,9 +45,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 		addPropertyDeclarations();
 		addXMLSerialiser();
 
-		Element vnodeElement = XmlUtil.getChildElement(VisualTransformableNode.class.getSimpleName(), visualNodeElement);
-		setX (XmlUtil.readDoubleAttr(vnodeElement, "X", 0));
-		setY (XmlUtil.readDoubleAttr(vnodeElement, "Y", 0));
+		VisualTransformableNodeDeserialiser.initTransformableNode(visualNodeElement, this);
 	}
 
 	public double getX() {

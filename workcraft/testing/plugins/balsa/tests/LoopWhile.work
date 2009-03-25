@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workcraft version="2.dev">
+  <model class="org.workcraft.plugins.balsa.BalsaCircuit">
+    <MathModel title="">
+      <component class="org.workcraft.plugins.balsa.HandshakeComponent">
+		  <Handshake name="activate" owner="4"></Handshake>
+        <MathNode ID="7" label=""/>
+      </component>
+      <component class="org.workcraft.plugins.balsa.HandshakeComponent">
+		  <Handshake name="guard" owner="4"></Handshake>
+        <MathNode ID="6" label=""/>
+      </component>
+      <component class="org.workcraft.plugins.balsa.HandshakeComponent">
+		  <Handshake name="activateOut" owner="4"></Handshake>
+        <MathNode ID="5" label=""/>
+      </component>
+      <component class="org.workcraft.plugins.balsa.BreezeComponent">
+        <MathNode ID="4" label=""/>
+        <breeze>&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;java version="1.6.0_11" class="java.beans.XMLDecoder"&gt; 
+ &lt;object class="org.workcraft.plugins.balsa.components.While"/&gt; 
+&lt;/java&gt; 
+</breeze>
+      </component>
+      <component class="org.workcraft.plugins.balsa.HandshakeComponent">
+		  <Handshake name="activate" owner="0"/>
+        <MathNode ID="3" label=""/>
+      </component>
+      <component class="org.workcraft.plugins.balsa.HandshakeComponent">
+		  <Handshake name="activateOut" owner="0"></Handshake>
+        <MathNode ID="1" label=""/>
+      </component>
+      <component class="org.workcraft.plugins.balsa.BreezeComponent">
+        <MathNode ID="0" label=""/>
+        <breeze>&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;java version="1.6.0_11" class="java.beans.XMLDecoder"&gt; 
+ &lt;object class="org.workcraft.plugins.balsa.components.Loop"/&gt; 
+&lt;/java&gt; 
+</breeze>
+      </component>
+      <connection class="org.workcraft.dom.Connection">
+        <MathNode ID="8" label=""/>
+        <Connection first="1" second="7"/>
+      </connection>
+    </MathModel>
+  </model>
+</workcraft>

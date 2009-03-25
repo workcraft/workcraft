@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
+import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
@@ -27,6 +30,7 @@ import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.layouts.MainLayouter;
+import org.workcraft.util.XmlUtil;
 
 public class VisualBreezeComponent extends VisualGroup {
 
@@ -35,24 +39,48 @@ public class VisualBreezeComponent extends VisualGroup {
 	Map<Handshake,HandshakeComponent> handshakeComponents;
 	Map<String,Handshake> handshakes;
 	HandshakeVisualLayout visualLayout;
-	final Component balsaComponent;
+	Component balsaComponent;
 
 	private static final double sideDoubleHandshakeAngle = 3.141592/4; // 45 degrees in radians
 	private static final double componentRadius = 0.5;
 	private static final double handshakeRadius = componentRadius/5;
+	private final BreezeComponent refComponent;
 
-	public VisualBreezeComponent(BreezeComponent refComponent, Element element) throws VisualConnectionCreationException, VisualComponentCreationException {
-		super(element, null);
-		balsaComponent = refComponent.getUnderlyingComponent();
+	public VisualBreezeComponent(Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
+		this(getRefComponent(element, model), element);
 	}
 
-	public VisualBreezeComponent(BreezeComponent refComponent) {
+	private static BreezeComponent getRefComponent(Element element,
+			VisualModel model) {
+		Element refElement = XmlUtil.getChildElement(VisualBreezeComponent.class.getSimpleName(), element);
+		int id = XmlUtil.readIntAttr(refElement, "ref", -1);
+
+		return (BreezeComponent)model.getMathModel().getComponentByRenamedID(id);
+	}
+
+	public VisualBreezeComponent(BreezeComponent refComponent, Element element) throws VisualConnectionCreationException, VisualComponentCreationException {
+		VisualTransformableNodeDeserialiser.initTransformableNode(element, this);
+
+		this.refComponent = refComponent;
+		init();
+	}
+
+	private void init() {
 		balsaComponent = refComponent.getUnderlyingComponent();
 		handshakeComponents = refComponent.getHandshakeComponents();
 		handshakes = refComponent.getHandshakes();
 		layout = MainLayouter.getLayout(balsaComponent, handshakes);
 		buildVisualHandshakes();
 		makeProperties();
+	}
+
+	public VisualBreezeComponent(BreezeComponent refComponent) {
+		this.refComponent = refComponent;
+		init();
+	}
+
+	public VisualNodeSerialiser getSerialiser() {
+		return new VisualBreezeSerialiser();
 	}
 
 	private void makeProperties() {
@@ -271,5 +299,9 @@ public class VisualBreezeComponent extends VisualGroup {
 							direction*(componentRadius+handshakeRadius), 0,
 							direction<0 ? Direction.Left : Direction.Right));
 		}
+	}
+
+	public BreezeComponent getRefComponent() {
+		return refComponent;
 	}
 }

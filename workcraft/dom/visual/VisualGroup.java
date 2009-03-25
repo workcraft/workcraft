@@ -25,6 +25,7 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
+import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
@@ -434,5 +435,14 @@ public class VisualGroup extends VisualTransformableNode {
 		for (VisualNode n: children)
 				ret.addAll(n.getReferences());
 		return ret;
+	}
+
+	public VisualNodeSerialiser getSerialiser() {
+		return new VisualNodeSerialiser()
+		{
+			public void serialise(VisualNode node, Element element) {
+				((VisualGroup)node).serialiseToXML(element);
+			}
+		};
 	}
 }

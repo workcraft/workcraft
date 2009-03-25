@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -381,38 +380,16 @@ public abstract class MathModel implements Plugin, Model {
 	 * @throws LoadFromXMLException thrown if a problem is encountered during deserialisation.
 	 * The particular cause can be established by calling <code>getCause</code> on this exception object.
 	 */
-	final public void pasteFromXML(Element modelElement)
+	public void pasteFromXML(Element modelElement)
 	throws LoadFromXMLException {
-		componentRenames.clear();
-		connectionRenames.clear();
+		initPaste();
 
 		try {
-			List<Element> componentNodes = XmlUtil.getChildElements(
-					"component", modelElement);
+			for (Element e : XmlUtil.getChildElements("component", modelElement))
+				deserializeComponent(e);
 
-			for (Element e : componentNodes) {
-				Component component = ComponentFactory.createComponent(e);
-
-				if (!isComponentSupported(component))
-					throw new InvalidComponentException("Unsupported component: " + component.getClass().getName());
-
-				Integer oldID = component.getID();
-				Integer newID = addComponent(component);
-
-				componentRenames.put(oldID, newID);
-			}
-
-			List<Element> connectionNodes = XmlUtil.getChildElements(
-					"connection", modelElement);
-
-			for (Element e : connectionNodes) {
-				Connection connection = ConnectionFactory.createConnection(e, getReferenceResolver());
-
-				Integer oldID = connection.getID();
-				Integer newID = addConnection(connection);
-
-				connectionRenames.put(oldID, newID);
-			}
+			for (Element e : XmlUtil.getChildElements("connection", modelElement))
+				deserialiseConnection(e);
 
 		} catch (InvalidComponentException e) {
 			throw new LoadFromXMLException(e);
@@ -423,6 +400,38 @@ public abstract class MathModel implements Plugin, Model {
 		} catch (ConnectionCreationException e) {
 			throw new LoadFromXMLException(e);
 		}
+	}
+
+
+	protected final void initPaste() {
+		componentRenames.clear();
+		connectionRenames.clear();
+	}
+
+
+	protected final void deserialiseConnection(Element e)
+			throws ConnectionCreationException, InvalidConnectionException {
+		{
+			Connection connection = ConnectionFactory.createConnection(e, getReferenceResolver());
+
+			Integer oldID = connection.getID();
+			Integer newID = addConnection(connection);
+
+			connectionRenames.put(oldID, newID);
+		}
+	}
+
+
+	protected final void deserializeComponent(Element e) throws ComponentCreationException {
+		Component component = ComponentFactory.createComponent(e, getReferenceResolver());
+
+		if (!isComponentSupported(component))
+			throw new InvalidComponentException("Unsupported component: " + component.getClass().getName());
+
+		Integer oldID = component.getID();
+		Integer newID = addComponent(component);
+
+		componentRenames.put(oldID, newID);
 	}
 
 	/**

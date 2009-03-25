@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
+import org.workcraft.dom.ReferenceResolver;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.visual.VisualComponent;
@@ -91,6 +92,33 @@ public class ComponentFactory {
 		}
 	}
 
+	public static Component createComponent (Element element, ReferenceResolver resolver) throws ComponentCreationException {
+		String className = element.getAttribute("class");
+
+		try {
+			Class<?> elementClass = Class.forName(className);
+			Constructor<?> ctor = elementClass.getConstructor(Element.class, ReferenceResolver.class);
+			Component component = (Component)ctor.newInstance(element, resolver);
+			return component;
+		} catch (ClassCastException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (ClassNotFoundException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (SecurityException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (NoSuchMethodException ex) {
+			return createComponent(element);
+		} catch (IllegalArgumentException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (InstantiationException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (IllegalAccessException ex) {
+			throw new ComponentCreationException (ex);
+		} catch (InvocationTargetException ex) {
+			throw new ComponentCreationException (ex);
+		}
+	}
+
 	public static VisualNode createVisualComponent (Component component) throws VisualComponentCreationException
 	{
 		return createVisualComponentInternal(component);
@@ -150,8 +178,6 @@ public class ComponentFactory {
 			throw new VisualComponentCreationException (e);
 		}
 	}
-
-
 
 	public static VisualNode createVisualComponent (Element element, VisualModel refModel) throws VisualComponentCreationException {
 		// Find the component
