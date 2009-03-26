@@ -132,7 +132,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		ToolTracker tracker = null;
 
 		if (selectedTool != null) {
-			System.out.println (selectedTool);
 			tracker = trackerMap.get(selectedTool);
 
 			selectedTool.deactivated(framework.getMainWindow().getCurrentEditor());

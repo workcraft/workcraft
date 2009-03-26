@@ -72,6 +72,8 @@ public class VisualSignalTransition extends VisualTransition {
 	protected void drawInLocalSpace(Graphics2D g) {
 		drawLabelInLocalSpace(g);
 
+
+
 		if (text == null) {
 			Shape shape = new Rectangle2D.Double(
 					-size / 2 + strokeWidth / 2,
@@ -81,6 +83,8 @@ public class VisualSignalTransition extends VisualTransition {
 
 			g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
 			g.fill(shape);
+
+
 			g.setColor(Coloriser.colorise(getColor(), getColorisation()));
 			g.setStroke(new BasicStroke(strokeWidth));
 			g.draw(shape);
@@ -93,6 +97,8 @@ public class VisualSignalTransition extends VisualTransition {
 				textBB = glyphVector.getVisualBounds();
 				textBB.setRect(textBB.getX() - 0.075, textBB.getY() - 0.075, textBB.getWidth() + 0.15, textBB.getHeight() + 0.15);
 
+
+
 				textX = (float)-textBB.getCenterX();
 				textY = (float)-textBB.getCenterY();
 
@@ -100,7 +106,10 @@ public class VisualSignalTransition extends VisualTransition {
 				firePropertyChanged("shape");
 			}
 
-			g.setStroke(new BasicStroke(strokeWidth));
+			g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
+			g.fill(textBB);
+
+			g.setColor(Coloriser.colorise(getColor(), getColorisation()));
 			g.drawGlyphVector(glyphVector, textX, textY);
 		}
 	}
