@@ -254,6 +254,8 @@ public class VisualSTG extends VisualPetriNet  {
 	@Override
 	protected void removeConnection(VisualConnection connection) {
 		if (connection instanceof ImplicitPlaceArc) {
+
+			connection.removeAllAnchorPoints();
 			connection.getFirst().removeConnection(connection);
 			connection.getSecond().removeConnection(connection);
 

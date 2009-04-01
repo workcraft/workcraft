@@ -17,6 +17,7 @@ import javax.swing.JPopupMenu;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.workcraft.dom.visual.VisualConnection;
+import org.workcraft.dom.visual.VisualConnectionAnchorPoint;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -59,23 +60,29 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	protected void clearSelection(VisualModel model) {
-		for (VisualNode so : model.getSelection())
+		for (VisualNode so : model.getSelection()) {
 			so.clearColorisation();
+			if (so instanceof VisualConnection) ((VisualConnection)so).hideAnchorPoints();
+		}
 		model.selectNone();
 	}
 
 	protected void addToSelection(VisualModel model, VisualNode so) {
 		model.addToSelection(so);
+		if (so instanceof VisualConnection) ((VisualConnection)so).showAnchorPoints();
 		so.setColorisation(selectionColor);
 	}
 
 	protected void addToSelection(VisualModel model, Collection<VisualNode> s) {
-		for (VisualNode n : s)
+		for (VisualNode n : s) {
 			addToSelection(model, n);
+			if (n instanceof VisualConnection) ((VisualConnection)n).showAnchorPoints();
+		}
 	}
 
 	protected void removeFromSelection(VisualModel model, VisualNode so) {
 		model.removeFromSelection(so);
+		if (so instanceof VisualConnection) ((VisualConnection)so).hideAnchorPoints();
 		so.clearColorisation();
 	}
 
@@ -91,11 +98,17 @@ public class SelectionTool extends AbstractTool {
 
 			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
 				if (node != null) {
-					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2)
-						((VisualConnection)node).addAnchorPoint(e.getPosition());
-					else {
+					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2) {
+						VisualConnectionAnchorPoint ap = ((VisualConnection)node).addAnchorPoint(e.getPosition());
+						ap.getParentConnection().getParent().add(ap);
+						addToSelection(model, ap);
+
+					} else {
 						clearSelection(model);
 						addToSelection(model, node);
+						if (node instanceof VisualConnectionAnchorPoint) {
+							addToSelection(model, ((VisualConnectionAnchorPoint)node).getParentConnection());
+						}
 					}
 				} else
 					clearSelection(model);
@@ -167,7 +180,11 @@ public class SelectionTool extends AbstractTool {
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!model.isObjectSelected(so)) {
 					clearSelection(model);
+
 					addToSelection(model, so);
+					if (so instanceof VisualConnectionAnchorPoint) {
+						addToSelection(model, ((VisualConnectionAnchorPoint)so).getParentConnection());
+					}
 					model.fireSelectionChanged();
 				}
 				drag = DRAG_MOVE;

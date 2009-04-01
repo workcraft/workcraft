@@ -87,7 +87,7 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	class Listener implements VisualModelEventListener {
-		private HashSet<VisualConnectionAnchorPoint> connectionAnchorPoints = new HashSet<VisualConnectionAnchorPoint>();
+//		private HashSet<VisualConnectionAnchorPoint> connectionAnchorPoints = new HashSet<VisualConnectionAnchorPoint>();
 
 		public void onComponentAdded(VisualComponent component) {
 		}
@@ -113,20 +113,22 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		public void onSelectionChanged() {
-			for (VisualConnectionAnchorPoint p : connectionAnchorPoints)
-				p.getParent().remove(p);
 
-			connectionAnchorPoints.clear();
 
-			for (VisualNode n : selection) {
-				if (n instanceof VisualConnection) {
-					VisualConnection con = (VisualConnection)n;
+//			for (VisualConnectionAnchorPoint p : connectionAnchorPoints)
+//				p.getParentConnection().getParent().remove(p);
+//
+//			connectionAnchorPoints.clear();
 
-					VisualConnectionAnchorPoint[] ap = con.getAnchorPointComponents();
-					for (VisualConnectionAnchorPoint p : ap)
-						con.getParent().add(p);
-				}
-			}
+//			for (VisualNode n : selection) {
+//				if (n instanceof VisualConnection) {
+//					VisualConnection con = (VisualConnection)n;
+//
+//					VisualConnectionAnchorPoint[] ap = con.getAnchorPointComponents();
+//					for (VisualConnectionAnchorPoint p : ap)
+//						con.getParent().add(p);
+//				}
+//			}
 		}
 	}
 
@@ -667,7 +669,17 @@ public class VisualModel implements Plugin, Model {
 			l.onComponentRemoved(component);
 	}
 
+	protected void removeAnchor(VisualConnectionAnchorPoint anchor) {
+
+		anchor.getParentConnection().removeAnchorPoint(anchor);
+		selection.remove(anchor);
+
+	}
+
 	protected void removeConnection(VisualConnection connection) {
+		// remove each anchor from the model
+		connection.removeAllAnchorPoints();
+		//
 		connection.getFirst().removeConnection(connection);
 		connection.getSecond().removeConnection(connection);
 		mathModel.removeConnection(connection.getReferencedConnection());
@@ -681,6 +693,11 @@ public class VisualModel implements Plugin, Model {
 		fireConnectionRemoved(connection);
 	}
 
+//	protected void fireAnchorRemoved(VisualConnectionAnchorPoint anchor) {
+//		for (VisualModelEventListener l : listeners)
+//			l.onAnchorRemoved(anchor);
+//	}
+
 	protected void fireConnectionRemoved(VisualConnection connection) {
 		for (VisualModelEventListener l : listeners)
 			l.onConnectionRemoved(connection);
@@ -690,8 +707,11 @@ public class VisualModel implements Plugin, Model {
 		LinkedList<VisualConnection> connectionsToRemove = new LinkedList<VisualConnection>();
 		LinkedList<VisualComponent> componentsToRemove = new LinkedList<VisualComponent>();
 		LinkedList<VisualGroup> groupsToRemove = new LinkedList<VisualGroup>();
+		LinkedList<VisualConnectionAnchorPoint> anchorsToRemove = new LinkedList<VisualConnectionAnchorPoint>();
 
 		for (VisualNode n : nodes) {
+			if (n instanceof VisualConnectionAnchorPoint)
+				anchorsToRemove.add((VisualConnectionAnchorPoint)n);
 			if (n instanceof VisualConnection)
 				connectionsToRemove.add((VisualConnection)n);
 			if (n instanceof VisualComponent)
@@ -700,6 +720,10 @@ public class VisualModel implements Plugin, Model {
 				groupsToRemove.add((VisualGroup)n);
 		}
 
+		for (VisualConnectionAnchorPoint an : anchorsToRemove) {
+			removeAnchor(an);
+			connectionsToRemove.remove(an.getParentConnection());
+		}
 		for (VisualConnection con : connectionsToRemove)
 			removeConnection(con);
 		for (VisualComponent comp : componentsToRemove)
