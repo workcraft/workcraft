@@ -46,6 +46,19 @@ public abstract class VisualNode implements PropertyEditable {
 		this.parent = parent;
 	}
 
+	public boolean insideRectangle(Rectangle2D rect) {
+		Rectangle2D boundingBox = getBoundingBoxInParentSpace();
+		if (boundingBox!=null&&rect.contains(boundingBox)) return true;
+		return false;
+	}
+
+	public boolean touchesRectangle(Rectangle2D rect) {
+		Rectangle2D boundingBox = getBoundingBoxInParentSpace();
+
+		if (boundingBox!=null&&rect.intersects(boundingBox)) return true;
+		return false;
+	}
+
 	public int hitTestInAncestorSpace(Point2D pointInUserSpace, VisualGroup ancestor) throws NotAnAncestorException {
 
 		if (ancestor != parent) {

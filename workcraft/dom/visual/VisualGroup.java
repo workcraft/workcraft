@@ -353,19 +353,12 @@ public class VisualGroup extends VisualTransformableNode {
 				Math.abs(p1.getY()-p2.getY()));
 
 		for (VisualNode n : children) {
-			Rectangle2D boundingBox = n.getBoundingBoxInParentSpace();
-			if(boundingBox != null) {
-
-				if (p1.getX()<=p2.getX()) {
-					if(rect.contains(boundingBox))
-						hit.add(n);
-
-				} else {
-
-					if(rect.intersects(boundingBox))
-						hit.add(n);
-				}
-
+			if (p1.getX()<=p2.getX()) {
+				if (n.insideRectangle(rect))
+					hit.add(n);
+			} else {
+				if (n.touchesRectangle(rect))
+					hit.add(n);
 			}
 		}
 		return hit;

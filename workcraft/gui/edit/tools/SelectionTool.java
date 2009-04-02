@@ -99,16 +99,20 @@ public class SelectionTool extends AbstractTool {
 			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
 				if (node != null) {
 					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2) {
+
 						VisualConnectionAnchorPoint ap = ((VisualConnection)node).addAnchorPoint(e.getPosition());
+
+						clearSelection(model);
+						addToSelection(model, ap.getParentConnection());
 						ap.getParentConnection().getParent().add(ap);
 						addToSelection(model, ap);
 
 					} else {
-						clearSelection(model);
-						addToSelection(model, node);
-						if (node instanceof VisualConnectionAnchorPoint) {
-							addToSelection(model, ((VisualConnectionAnchorPoint)node).getParentConnection());
-						}
+//						clearSelection(model);
+//						addToSelection(model, node);
+//						if (node instanceof VisualConnectionAnchorPoint) {
+//							addToSelection(model, ((VisualConnectionAnchorPoint)node).getParentConnection());
+//						}
 					}
 				} else
 					clearSelection(model);

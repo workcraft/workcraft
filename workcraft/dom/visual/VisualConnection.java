@@ -49,6 +49,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		public Rectangle2D getBoundingBox();
 
 		public VisualConnectionAnchorPoint[] getAnchorPointComponents();
+
+		public boolean touchesRectangle(Rectangle2D rect);
 	}
 
 	class Polyline implements ConnectionImplementation {
@@ -314,6 +316,22 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 			VisualConnection.this.update();
 			firePropertyChanged("anchors");
+		}
+
+		public boolean touchesRectangle(Rectangle2D rect) {
+			if (!rect.intersects(getBoundingBox())) return false;
+
+			for (VisualConnectionAnchorPoint ap: anchorPoints) {
+				if (rect.contains(ap.getPosition())) return true;
+			}
+
+			for (int i=0;i<getSegmentCount();i++) {
+				if (rect.intersectsLine(getSegment(i))) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 	}
@@ -593,6 +611,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			return 1;
 		else
 			return 0;
+	}
+
+	@Override
+	public boolean touchesRectangle(Rectangle2D rect) {
+		return impl.touchesRectangle(rect);
 	}
 
 	@Override
