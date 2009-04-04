@@ -13,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -48,9 +49,13 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		public Rectangle2D getBoundingBox();
 
+		public int getAnchorPointCount();
 		public VisualConnectionAnchorPoint[] getAnchorPointComponents();
 
 		public boolean touchesRectangle(Rectangle2D rect);
+
+		public void writeToXML(Element element);
+		public void readFromXML(Element element, VisualConnection parent);
 	}
 
 	class Polyline implements ConnectionImplementation {
@@ -257,14 +262,13 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 //			PolylineAnchorPoint ap = new PolylineAnchorPoint(nearestSegment);
 			PolylineAnchorPoint ap = new PolylineAnchorPoint(VisualConnection.this);
 
+			ap.setPosition(pointOnConnection);
+
 			ap.addListener(new PropertyChangeListener() {
 				public void onPropertyChanged(String propertyName, Object sender) {
 					VisualConnection.this.update();
 				}
 			});
-
-			ap.setPosition(pointOnConnection);
-
 			if (anchorPoints.size() == 0)
 				anchorPoints.add(ap);
 			else
@@ -334,6 +338,49 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			return false;
 		}
 
+		public int getAnchorPointCount() {
+			return anchorPoints.size();
+		}
+
+		public void readFromXML(Element element, VisualConnection parent) {
+			Element anchors;
+			anchors = XmlUtil.getChildElement("anchorPoints", element);
+			if (anchors==null) return;
+			List<Element> xap = XmlUtil.getChildElements(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+			if (xap==null) return;
+
+			PolylineAnchorPoint pap;
+			anchorPoints.clear();
+			for (Element eap: xap) {
+				pap = new PolylineAnchorPoint(parent);
+				pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
+				pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
+
+				pap.addListener(new PropertyChangeListener() {
+					public void onPropertyChanged(String propertyName, Object sender) {
+						VisualConnection.this.update();
+					}
+				});
+				anchorPoints.add(pap);
+
+				parent.update();
+			}
+
+		}
+
+		public void writeToXML(Element element) {
+			if (anchorPoints.size()>0) {
+				Element anchors = XmlUtil.createChildElement("anchorPoints", element);
+				Element xap;
+				for (VisualConnectionAnchorPoint ap: anchorPoints) {
+					xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+					XmlUtil.writeDoubleAttr(xap, "X", ap.getX());
+					XmlUtil.writeDoubleAttr(xap, "Y", ap.getY());
+				}
+			}
+
+		}
+
 	}
 
 	protected Connection refConnection;
@@ -383,7 +430,10 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
 
+
+
 		addXMLSerialiser(new XMLSerialiser() {
+
 			public String getTagName() {
 				return VisualConnection.class.getSimpleName();
 			}
@@ -391,9 +441,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			public void serialise(Element element) {
 				if (refConnection != null)
 					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
-				XmlUtil.writeDoubleAttr(element, "arrowLength", getArrowLength());
-				XmlUtil.writeDoubleAttr(element, "arrowWidth", getArrowWidth());
-				XmlUtil.writeStringAttr(element, "type", getConnectionType().name());
+				writeXMLConnectionProperties(element);
 			}
 		});
 	}
@@ -411,12 +459,34 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		initialise();
 	}
 
+
+
+	protected void writeXMLConnectionProperties(Element element) {
+		XmlUtil.writeDoubleAttr(element, "arrowLength", getArrowLength());
+		XmlUtil.writeDoubleAttr(element, "arrowWidth", getArrowWidth());
+		XmlUtil.writeDoubleAttr(element, "lineWidth", getLineWidth());
+		XmlUtil.writeStringAttr(element, "type", getConnectionType().name());
+		impl.writeToXML(element);
+	}
+
+	protected void readXMLConnectionProperties(Element element) {
+		String strConnectionType = XmlUtil.readStringAttr(element, "type");
+		if (!strConnectionType.equals(""))
+		connectionType = ConnectionType.valueOf(strConnectionType);
+		setArrowLength(XmlUtil.readDoubleAttr(element, "arrowLength", defaultArrowLength));
+		setArrowWidth(XmlUtil.readDoubleAttr(element, "arrowWidth", defaultArrowWidth));
+		setLineWidth(XmlUtil.readDoubleAttr(element, "lineWidth", defaultLineWidth));
+		impl.readFromXML(element, VisualConnection.this);
+	}
+
 	public VisualConnection (Element xmlElement, VisualReferenceResolver referenceResolver) {
 		Element element = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
 
 		refConnection = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refID", -1));
 		first = referenceResolver.getComponentByRefID(refConnection.getFirst().getID());
 		second = referenceResolver.getComponentByRefID(refConnection.getSecond().getID());
+
+		readXMLConnectionProperties(element);
 
 		initialise();
 	}

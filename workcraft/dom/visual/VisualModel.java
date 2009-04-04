@@ -226,20 +226,22 @@ public class VisualModel implements Plugin, Model {
 		{
 			for (Element e: children) {
 				VisualNode node = createNode(e);
-				if(node == null)
-					continue;
-				if(node instanceof VisualTransformableNode)
-				{
-					VisualTransformableNode tn = (VisualTransformableNode)node;
-					tn.setX(tn.getX() + location.getX());
-					tn.setY(tn.getY() + location.getY());
-				}
+				if(node == null) continue;
 
 				currentLevel.add(node);
 				addComponents(node);
 
 				pasted.add(node);
+
+				if (node instanceof VisualConnection) {
+					for (VisualConnectionAnchorPoint ap: ((VisualConnection)node).getAnchorPointComponents()) {
+						pasted.add(ap);
+					}
+				}
 			}
+
+			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
+			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
 
 			return pasted;
 		} catch (VisualConnectionCreationException e) {
@@ -277,17 +279,26 @@ public class VisualModel implements Plugin, Model {
 			referenceds.addAll(n.getReferences());
 	}
 
-	public Rectangle2D getSelectionBoundingBox() {
+	public static Rectangle2D getNodesBoundingBox(Collection<VisualNode> nodes) {
 		Rectangle2D selectionBB = new Rectangle2D.Double();
 
-		if (selection.isEmpty()) return selectionBB;
+		if (nodes.isEmpty()) return selectionBB;
 
-		selectionBB = selection.getFirst().getBoundingBoxInParentSpace();
+		boolean first=true;
 
-		for (VisualNode vn: selection) {
-			Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
+		for (VisualNode vn: nodes) {
+			if (first) {
+				selectionBB = vn.getBoundingBoxInParentSpace();
+				first=false;
+			} else {
+				Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
+			}
 		}
 		return selectionBB;
+	}
+
+	public Rectangle2D getSelectionBoundingBox() {
+		return getNodesBoundingBox(selection);
 	}
 
 	/*
@@ -308,8 +319,6 @@ public class VisualModel implements Plugin, Model {
 				 */
 				//.transform(pointInParentSpace, _tmpPoint)
 
-			} else if (node instanceof VisualConnection) {
-				//TODO: any path point translations for connections
 			} else if (node instanceof VisualTransformableNode) {
 				// for all movable objects
 				VisualTransformableNode vn=(VisualTransformableNode)node;
@@ -320,13 +329,13 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	public void translateSelection(double tx, double ty) {
+	public void translateNodes(Collection<VisualNode> nodes, double tx, double ty) {
 		AffineTransform t = new AffineTransform();
 
 		t.translate(tx, ty);
 
 		Point2D np;
-		for (VisualNode node: selection) {
+		for (VisualNode node: nodes) {
 			if (node instanceof VisualTransformableNode) {
 				// translate all movable objects
 				VisualTransformableNode vn=(VisualTransformableNode)node;
@@ -335,6 +344,10 @@ public class VisualModel implements Plugin, Model {
 				vn.setPosition(np);
 			}
 		}
+	}
+
+	public void translateSelection(double tx, double ty) {
+		translateNodes(selection, tx, ty);
 	}
 
 	public void scaleSelection(double sx, double sy) {

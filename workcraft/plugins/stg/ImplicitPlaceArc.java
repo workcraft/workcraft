@@ -45,6 +45,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 				XmlUtil.writeIntAttr(element, "refCon1", refCon1.getID());
 				XmlUtil.writeIntAttr(element, "refCon2", refCon2.getID());
 				XmlUtil.writeIntAttr(element, "placeRef", implicitPlace.getID());
+				writeXMLConnectionProperties(element);
 			}
 		});
 	}
@@ -90,6 +91,9 @@ public class ImplicitPlaceArc extends VisualConnection {
 
 		first = referenceResolver.getComponentByRefID(refCon1.getFirst().getID());
 		second = referenceResolver.getComponentByRefID(refCon2.getSecond().getID());
+
+
+		readXMLConnectionProperties(element);
 
 		addPropertyDeclarations();
 		addXMLSerialiser();
