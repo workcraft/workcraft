@@ -149,6 +149,23 @@ public class SelectionTool extends AbstractTool {
 		if(drag==DRAG_MOVE) {
 			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
 			e.getEditor().snap(pos);
+			//
+			if (model.getSelection().length==1) {
+				for (VisualNode vn : model.getSelection()) {
+					if (vn instanceof VisualConnection) {
+						VisualConnection vc = (VisualConnection)vn;
+						if (vc.getConnectionType()!=VisualConnection.ConnectionType.POLYLINE||
+								vc.getAnchorPointCount()==0) {
+							vc.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+							vc.showAnchorPoints();
+							for (VisualConnectionAnchorPoint ap: vc.getAnchorPointComponents()) {
+								addToSelection(model, ap);
+							}
+						}
+					}
+				}
+			}
+
 			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
 			model.fireLayoutChanged();
 			prevPosition = pos;

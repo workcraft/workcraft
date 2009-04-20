@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
@@ -13,6 +14,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +26,7 @@ import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
+
 
 
 
@@ -40,7 +43,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		public Point2D getPointOnConnection(double t);
 		public Point2D getNearestPointOnConnection(Point2D pt);
-		public double getDistanceToConnection(Point2D pt);
+//		public double getDistanceToConnection(Point2D pt);
 
 		public VisualConnectionAnchorPoint addAnchorPoint(Point2D pt);
 //		public void removeAnchorPoint(int index);
@@ -56,6 +59,310 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		public void writeToXML(Element element);
 		public void readFromXML(Element element, VisualConnection parent);
+	}
+
+	class Bezier implements ConnectionImplementation {
+		private BezierAnchorPoint cp2 = new BezierAnchorPoint(VisualConnection.this);
+		private BezierAnchorPoint cp1 = new BezierAnchorPoint(VisualConnection.this);
+		private CubicCurve2D curve = new CubicCurve2D.Double();
+		private double ax, bx, cx, ay, by, cy;
+		private boolean coeff_valid = false;
+
+		class BezierAnchorPoint extends VisualConnectionAnchorPoint {
+
+			private double size = 0.25;
+			private Color fillColor = Color.BLUE.darker();
+
+			Shape shape = new Rectangle2D.Double(
+					-size / 2,
+					-size / 2,
+					size,
+					size);
+
+			public BezierAnchorPoint(VisualConnection parent) {
+				super(parent);
+
+				addListener(new PropertyChangeListener() {
+					public void onPropertyChanged(String propertyName, Object sender) {
+						VisualConnection.this.update();
+					}
+				});
+			}
+
+			@Override
+			protected void drawInLocalSpace(Graphics2D g) {
+				g.setColor(Coloriser.colorise(fillColor, getColorisation()));
+				g.fill(shape);
+			}
+
+			public Rectangle2D getBoundingBoxInLocalSpace() {
+				return new Rectangle2D.Double(-size/2, -size/2, size, size);
+			}
+
+			public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+				if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
+					return 1;
+				else
+					return 0;
+			}
+
+		}
+
+//		public Bezier (Point2D p1, Point2D cp1, Point2D cp2, Point2D p2) {
+//			this.p1.setLocation(p1);
+//			this.cp1.setLocation(cp1);
+//			this.cp2.setLocation(cp2);
+//			this.p2.setLocation(p2);
+//			updateCoefficients();
+//		}
+
+		public Bezier() {
+			cp1.setPosition(cp1.getParentConnection().firstCenter);
+			cp2.setPosition(cp2.getParentConnection().secondCenter);
+		}
+
+		private void updateCoefficients() {
+			Point2D p1 = VisualConnection.this.first.getPosition();
+			Point2D p2 = VisualConnection.this.second.getPosition();
+
+			cx = 3.0f * (cp1.getX() - p1.getX());
+			bx = 3.0f * (cp2.getX() - cp1.getX()) - cx;
+			ax = p2.getX() - p1.getX() - cx - bx;
+
+			cy = 3.0f * (cp1.getY() - p1.getY());
+			by = 3.0f * (cp2.getY() - cp1.getY()) - cy;
+			ay = p2.getY() - p1.getY() - cy - by;
+
+//			System.out.printf("ax=%8.4f bx=%8.4f cx=%8.4f\n", ax, bx, cx);
+
+			coeff_valid = true;
+		}
+
+		public VisualConnectionAnchorPoint addAnchorPoint(Point2D pt) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void draw(Graphics2D g) {
+			g.draw(curve);
+
+		}
+
+		public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
+			VisualConnectionAnchorPoint[] ret = {cp1, cp2};
+			return ret;
+		}
+
+		public int getAnchorPointCount() {
+			return 2;
+		}
+
+		public Rectangle2D getBoundingBox() {
+			return curve.getBounds2D();
+		}
+
+//		public double getDistanceToConnection(Point2D pt) {
+//			// TODO Auto-generated method stub
+//			return 10000;
+//		}
+
+		public Point2D getNearestPointOnConnection(Point2D pt) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		// finds cubic root in real numbers
+		public double curt(double a) {
+			if (a==0) return 0;
+			double s = Math.signum(a);
+			return s*Math.exp(Math.log(s*a)/3);
+		}
+
+		public LinkedList<Double> solveCubic(double a, double b, double c, double d) {
+
+			LinkedList<Double> ret= new LinkedList<Double>();
+			double epsilon = 0.00000000001;
+
+			if (a==0) {
+				if (b==0) {
+					if (c!=0)
+						ret.add(-d/c);
+					return ret;
+				}
+
+				// solveQuadratic(b, c, d)
+				double D = c*c-4*b*d;
+				if (Math.abs(D)<epsilon) {
+					ret.add(-c/(2*b));
+					return ret;
+				}
+
+				if (D>0) {
+					ret.add((-c+Math.sqrt(D))/(2*b));
+					ret.add((-c-Math.sqrt(D))/(2*b));
+				}
+				return ret;
+
+			}
+
+			double f = ((3*c/a)-(b*b/(a*a)))/3;
+			double g = ((2*b*b*b/(a*a*a)) - (9*b*c/(a*a)) + (27*d/a))/27;
+			double h = (g*g/4)+(f*f*f/27);
+
+			if (h<=0) {
+				if (g==0&&f==0) {
+//					System.out.printf("all in same position\n");
+					// all roots in the same position
+					double x = curt(d/a);
+					ret.add(x);
+					return ret;
+				}
+//				System.out.printf("3 roots\n");
+				// all three real roots
+				double i= Math.sqrt(g*g/4-h);
+				double j= curt(i);
+				double K= Math.acos(-(g/(2*i)));
+				double L= j*-1;
+				double M= Math.cos(K/3);
+				double N= Math.sqrt(3)*Math.sin(K/3);
+				double P= -(b/(3*a));
+				double x1 = 2*j* Math.cos(K/3) - (b/(3*a));
+				double x2 = L*(M+N)+P;
+				double x3 = L*(M-N)+P;
+				ret.add(x1);
+				ret.add(x2);
+				ret.add(x3);
+				return ret;
+			} else {
+//				System.out.printf("only one real root\n");
+				// only one root is real
+				double R = -(g/2)+Math.sqrt(h);
+				double S = curt(R);
+				double T = -(g/2)-Math.sqrt(h);
+				double U = curt(T);
+				double x = (S+U)-(b/(3*a));
+				ret.add(x);
+				return ret;
+			}
+		}
+
+		public boolean touchesRectangle(Rectangle2D rect) {
+
+			if (!curve.intersects(rect)) return false;
+
+			LinkedList<Double> ROOTS;
+
+//			boolean found = false;
+//			System.out.printf("X=%6.5f Y=%6.5f\n", rect.getMinX(), rect.getMinY());
+			ROOTS = solveCubic(ax, bx, cx, VisualConnection.this.first.getX()-rect.getMinX());
+			for (Double r : ROOTS) {
+				Point2D P = getPointOnConnection(r);
+				double Y = P.getY();
+//				double X = P.getX();
+//				System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
+				if (Y>=rect.getMinY()&&Y<=rect.getMaxY()) return true;
+			}
+//			if (found) return true;
+
+
+			ROOTS = solveCubic(ax, bx, cx, VisualConnection.this.first.getX()-rect.getMaxX());
+			for (Double r : ROOTS) {
+				Point2D P = getPointOnConnection(r);
+				double Y = P.getY();
+//				double X = P.getX();
+//				System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
+				if (Y>=rect.getMinY()&&Y<=rect.getMaxY()) return true;
+			}
+
+			ROOTS = solveCubic(ay, by, cy, VisualConnection.this.first.getY()-rect.getMinY());
+			for (Double r : ROOTS) {
+				Point2D P = getPointOnConnection(r);
+//				double Y = P.getY();
+				double X = P.getX();
+//				System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
+				if (X>=rect.getMinX()&&X<=rect.getMaxX()) return true;
+			}
+
+			ROOTS = solveCubic(ay, by, cy, VisualConnection.this.first.getY()-rect.getMaxY());
+			for (Double r : ROOTS) {
+				Point2D P = getPointOnConnection(r);
+//				double Y = P.getY();
+				double X = P.getX();
+//				System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
+				if (X>=rect.getMinX()&&X<=rect.getMaxX()) return true;
+			}
+
+			return false;
+		}
+
+		public Point2D getPointOnConnection(double t) {
+
+			double tSquared = t * t;
+			double tCubed = tSquared * t;
+
+			double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + VisualConnection.this.first.getX();
+			double y = (ay * tCubed) + (by * tSquared) + (cy * t) + VisualConnection.this.first.getY();
+
+			return new Point2D.Double(x, y);
+		}
+
+		public void readFromXML(Element element, VisualConnection parent) {
+			Element anchors;
+			anchors = XmlUtil.getChildElement("anchorPoints", element);
+			if (anchors==null) return;
+			List<Element> xap = XmlUtil.getChildElements(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+			if (xap==null) return;
+
+			Element eap = xap.get(0);
+			cp1.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
+			cp1.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
+			cp1.addListener(new PropertyChangeListener() {
+				public void onPropertyChanged(String propertyName, Object sender) {
+					VisualConnection.this.update();
+				}
+			});
+			xap.get(1);
+			cp2.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
+			cp2.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
+			cp2.addListener(new PropertyChangeListener() {
+				public void onPropertyChanged(String propertyName, Object sender) {
+					VisualConnection.this.update();
+				}
+			});
+			parent.update();
+
+		}
+
+		public void writeToXML(Element element) {
+			Element anchors = XmlUtil.createChildElement("anchorPoints", element);
+			Element xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+			XmlUtil.writeDoubleAttr(xap, "X", cp1.getX());
+			XmlUtil.writeDoubleAttr(xap, "Y", cp1.getY());
+			xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+			XmlUtil.writeDoubleAttr(xap, "X", cp2.getX());
+			XmlUtil.writeDoubleAttr(xap, "Y", cp2.getY());
+		}
+
+		public void removeAllAnchorPoints() {
+			cp1.setPosition(cp1.getParentConnection().firstCenter);
+			cp2.setPosition(cp2.getParentConnection().secondCenter);
+
+			cp1.getParentConnection().getParent().remove(cp1);
+			cp2.getParentConnection().getParent().remove(cp2);
+
+		}
+
+		public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
+			if (anchor==cp1) cp1.setPosition(cp1.getParentConnection().firstCenter);
+			if (anchor==cp2) cp2.setPosition(cp2.getParentConnection().secondCenter);
+		}
+
+		public void update() {
+			curve.setCurve(cp1.getParentConnection().firstCenter, cp1.getPosition(), cp2.getPosition(), cp2.getParentConnection().secondCenter);
+			updateCoefficients();
+		}
+
 	}
 
 	class Polyline implements ConnectionImplementation {
@@ -362,9 +669,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 					}
 				});
 				anchorPoints.add(pap);
-
-				parent.update();
 			}
+			parent.update();
 
 		}
 
@@ -378,9 +684,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 					XmlUtil.writeDoubleAttr(xap, "Y", ap.getY());
 				}
 			}
-
 		}
-
 	}
 
 	protected Connection refConnection;
@@ -471,11 +775,13 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	protected void readXMLConnectionProperties(Element element) {
 		String strConnectionType = XmlUtil.readStringAttr(element, "type");
-		if (!strConnectionType.equals(""))
-		connectionType = ConnectionType.valueOf(strConnectionType);
+		if (!strConnectionType.equals("")) {
+			setConnectionType(ConnectionType.valueOf(strConnectionType));
+		}
 		setArrowLength(XmlUtil.readDoubleAttr(element, "arrowLength", defaultArrowLength));
 		setArrowWidth(XmlUtil.readDoubleAttr(element, "arrowWidth", defaultArrowWidth));
 		setLineWidth(XmlUtil.readDoubleAttr(element, "lineWidth", defaultLineWidth));
+
 		impl.readFromXML(element, VisualConnection.this);
 	}
 
@@ -496,7 +802,16 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public void setConnectionType(ConnectionType t) {
-		connectionType = t;
+		if (connectionType!=t) {
+			impl.removeAllAnchorPoints();
+			if (t==ConnectionType.POLYLINE) {
+				impl = new Polyline();
+			}
+			if (t==ConnectionType.BEZIER) {
+				impl = new Bezier();
+			}
+			connectionType = t;
+		}
 	}
 
 	public Color getColor() {
@@ -672,15 +987,26 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	public Connection getReferencedConnection() {
 		return refConnection;
 	}
-	public double distanceToConnection (Point2D pointInParentSpace) {
-		return impl.getDistanceToConnection(pointInParentSpace);
-	}
+
+//	public double distanceToConnection (Point2D pointInParentSpace) {
+//		return impl.getDistanceToConnection(pointInParentSpace);
+//	}
 
 	public int hitTestInParentSpace(Point2D pointInParentSpace) {
-		if (distanceToConnection(pointInParentSpace) < hitThreshold)
+		Rectangle2D rect = new Rectangle2D.Double(
+				pointInParentSpace.getX()-hitThreshold,
+				pointInParentSpace.getY()-hitThreshold,
+				2*hitThreshold,
+				2*hitThreshold
+				);
+		if (touchesRectangle(rect))
 			return 1;
 		else
 			return 0;
+//		if (distanceToConnection(pointInParentSpace) < hitThreshold)
+//			return 1;
+//		else
+//			return 0;
 	}
 
 	@Override
@@ -720,6 +1046,10 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
 		return impl.getAnchorPointComponents();
+	}
+
+	public int getAnchorPointCount() {
+		return impl.getAnchorPointCount();
 	}
 
 	public void showAnchorPoints() {
