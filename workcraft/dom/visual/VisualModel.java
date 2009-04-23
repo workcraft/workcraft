@@ -194,7 +194,7 @@ public class VisualModel implements Plugin, Model {
 
 		try {
 			Element element = XmlUtil.getChildElement(VisualModel.class.getSimpleName(), visualModelElement);
-			pasteFromXML(element, new Point2D.Double(0,0));
+			loadFromXML(element);
 		} catch (PasteException e) {
 			throw new VisualModelInstantiationException(e);
 		}
@@ -242,6 +242,44 @@ public class VisualModel implements Plugin, Model {
 
 			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
 			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
+
+			return pasted;
+		} catch (VisualConnectionCreationException e) {
+			throw new PasteException (e);
+
+		} catch (VisualComponentCreationException e) {
+			throw new PasteException (e);
+		}
+	}
+
+	// the same as pasteFromXML, with no offset applied
+	protected Collection<VisualNode> loadFromXML (Element visualElement) throws PasteException {
+		List<Element> children = XmlUtil.getChildElements("component", visualElement);
+		children.addAll(XmlUtil.getChildElements("group", visualElement));
+		children.addAll(XmlUtil.getChildElements("connection", visualElement));
+
+		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
+
+		try
+		{
+			for (Element e: children) {
+				VisualNode node = createNode(e);
+				if(node == null) continue;
+
+				currentLevel.add(node);
+				addComponents(node);
+
+				pasted.add(node);
+
+				if (node instanceof VisualConnection) {
+					for (VisualConnectionAnchorPoint ap: ((VisualConnection)node).getAnchorPointComponents()) {
+						pasted.add(ap);
+					}
+				}
+			}
+
+//			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
+//			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
 
 			return pasted;
 		} catch (VisualConnectionCreationException e) {
@@ -611,6 +649,10 @@ public class VisualModel implements Plugin, Model {
 		currentLevel.add(group);
 		for(VisualNode node : selected)
 		{
+			if (node instanceof VisualConnectionAnchorPoint) {
+				selection.remove(node);
+				continue;
+			}
 			currentLevel.remove(node);
 			group.add(node);
 		}
@@ -619,8 +661,10 @@ public class VisualModel implements Plugin, Model {
 		for(VisualConnection connection : currentLevel.connections)
 		{
 			if(connection.getFirst().isDescendantOf(group) &&
-					connection.getSecond().isDescendantOf(group))
+					connection.getSecond().isDescendantOf(group)) {
+				connection.hideAnchorPoints();
 				connectionsToGroup.add(connection);
+			}
 		}
 
 		for(VisualConnection connection : connectionsToGroup)

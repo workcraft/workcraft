@@ -403,6 +403,14 @@ public class VisualGroup extends VisualTransformableNode {
 		for (VisualConnection connection : connections.toArray(new VisualConnection[connections.size()])) {
 			getParent().add(connection);
 			result.add(connection);
+			try	{
+				for (VisualConnectionAnchorPoint ap: connection.getAnchorPointComponents()) {
+					ap.applyTransform(localToParentTransform);
+				}
+			}
+			catch(NoninvertibleTransformException ex) {
+				throw new RuntimeException("localToParentTransform is not invertible!");
+			}
 		}
 
 		try	{

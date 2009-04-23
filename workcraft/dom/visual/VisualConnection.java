@@ -62,16 +62,18 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	class Bezier implements ConnectionImplementation {
-		private BezierAnchorPoint cp2 = new BezierAnchorPoint(VisualConnection.this);
-		private BezierAnchorPoint cp1 = new BezierAnchorPoint(VisualConnection.this);
+		private BezierAnchorPoint cp2 = new BezierAnchorPoint(VisualConnection.this, second);
+		private BezierAnchorPoint cp1 = new BezierAnchorPoint(VisualConnection.this, first);
 		private CubicCurve2D curve = new CubicCurve2D.Double();
 		private double ax, bx, cx, ay, by, cy;
-		private boolean coeff_valid = false;
+		private Rectangle2D boundingBox = null;
+		//private boolean coeff_valid = false;
 
 		class BezierAnchorPoint extends VisualConnectionAnchorPoint {
 
 			private double size = 0.25;
 			private Color fillColor = Color.BLUE.darker();
+			private VisualComponent parentComponent = null;
 
 			Shape shape = new Rectangle2D.Double(
 					-size / 2,
@@ -79,8 +81,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 					size,
 					size);
 
-			public BezierAnchorPoint(VisualConnection parent) {
+			public BezierAnchorPoint(VisualConnection parent, VisualComponent parentC) {
 				super(parent);
+				parentComponent = parentC;
 
 				addListener(new PropertyChangeListener() {
 					public void onPropertyChanged(String propertyName, Object sender) {
@@ -91,6 +94,18 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 			@Override
 			protected void drawInLocalSpace(Graphics2D g) {
+
+				Point2D p = parentComponent.getPosition();
+				AffineTransform at = getParentToLocalTransform();
+
+				at.transform(p, p);
+
+				g.setColor(Color.RED);
+				g.setStroke(new BasicStroke(0.02f));
+
+				Line2D l = new Line2D.Double(0, 0, p.getX(), p.getY());
+				g.draw(l);
+
 				g.setColor(Coloriser.colorise(fillColor, getColorisation()));
 				g.fill(shape);
 			}
@@ -135,7 +150,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 //			System.out.printf("ax=%8.4f bx=%8.4f cx=%8.4f\n", ax, bx, cx);
 
-			coeff_valid = true;
+		//	coeff_valid = true;
 		}
 
 		public VisualConnectionAnchorPoint addAnchorPoint(Point2D pt) {
@@ -144,6 +159,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 
 		public void draw(Graphics2D g) {
+
 			g.draw(curve);
 
 		}
@@ -158,13 +174,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 
 		public Rectangle2D getBoundingBox() {
-			return curve.getBounds2D();
+			return boundingBox;
 		}
 
-//		public double getDistanceToConnection(Point2D pt) {
-//			// TODO Auto-generated method stub
-//			return 10000;
-//		}
 
 		public Point2D getNearestPointOnConnection(Point2D pt) {
 			// TODO Auto-generated method stub
@@ -361,6 +373,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		public void update() {
 			curve.setCurve(cp1.getParentConnection().firstCenter, cp1.getPosition(), cp2.getPosition(), cp2.getParentConnection().secondCenter);
 			updateCoefficients();
+
+			boundingBox = curve.getBounds2D();
+			boundingBox.add(boundingBox.getMinX()-hitThreshold, boundingBox.getMinY()-hitThreshold);
+			boundingBox.add(boundingBox.getMinX()-hitThreshold, boundingBox.getMaxY()+hitThreshold);
+			boundingBox.add(boundingBox.getMaxX()+hitThreshold, boundingBox.getMinY()-hitThreshold);
+			boundingBox.add(boundingBox.getMaxX()+hitThreshold, boundingBox.getMaxY()+hitThreshold);
 		}
 
 	}
