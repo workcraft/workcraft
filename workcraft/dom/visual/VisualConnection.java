@@ -334,7 +334,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 					VisualConnection.this.update();
 				}
 			});
-			xap.get(1);
+			eap=xap.get(1);
 			cp2.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 			cp2.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
 			cp2.addListener(new PropertyChangeListener() {
