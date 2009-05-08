@@ -1,5 +1,6 @@
 package org.workcraft.gui.propertyeditor;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 import javax.swing.JTable;
@@ -28,6 +29,8 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(int.class, new IntegerProperty());
 		propertyClasses.put(double.class, new DoubleProperty());
 		propertyClasses.put(String.class, new StringProperty());
+		propertyClasses.put(boolean.class, new BooleanProperty());
+		propertyClasses.put(Color.class, new ColorProperty());
 	}
 
 	@Override

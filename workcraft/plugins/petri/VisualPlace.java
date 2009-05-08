@@ -22,6 +22,7 @@ import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @HotKeyDeclaration(KeyEvent.VK_P)
 public class VisualPlace extends VisualComponent {
@@ -67,10 +68,9 @@ public class VisualPlace extends VisualComponent {
 			return "Remove token";
 		}
 	}
-	protected static double size = 1;
-	protected static float strokeWidth = 0.1f;
-	protected static double singleTokenSize = size / 1.9;
-	protected static double multipleTokenSeparation = strokeWidth / 8;
+
+	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
+	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 
 	protected static Color defaultBorderColor = Color.BLACK;
 	protected static Color defaultFillColor = Color.WHITE;
@@ -165,7 +165,7 @@ public class VisualPlace extends VisualComponent {
 			else if (tokens > 7)
 			{
 				String out = Integer.toString(tokens);
-				Font superFont = g.getFont().deriveFont((float)size/2);
+				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
 
 				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
 				g.setFont(superFont);
@@ -179,6 +179,9 @@ public class VisualPlace extends VisualComponent {
 	{
 		drawLabelInLocalSpace(g);
 
+		double size = CommonVisualSettings.getSize();
+		double strokeWidth = CommonVisualSettings.getStrokeWidth();
+
 		Shape shape = new Ellipse2D.Double(
 				-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
@@ -188,7 +191,7 @@ public class VisualPlace extends VisualComponent {
 		g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(userBorderColor, getColorisation()));
-		g.setStroke(new BasicStroke(strokeWidth));
+		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
@@ -197,10 +200,13 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
 
 
 	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		double size = CommonVisualSettings.getSize();
+
 		if (pointInLocalSpace.distanceSq(0, 0) < size*size/4)
 			return 1;
 		else
@@ -208,6 +214,8 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	public Rectangle2D getBoundingBox() {
+		double size = CommonVisualSettings.getSize();
+
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 
