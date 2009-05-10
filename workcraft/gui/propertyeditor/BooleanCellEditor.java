@@ -12,7 +12,7 @@ import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class BooleanCellEditor extends AbstractCellEditor implements
-		TableCellEditor, ItemListener {
+		TableCellEditor, ItemListener{
 
 	private JCheckBox checkBox;
 
@@ -20,6 +20,8 @@ public class BooleanCellEditor extends AbstractCellEditor implements
 		 checkBox = new JCheckBox();
 		 checkBox.setOpaque(false);
 		 checkBox.setFocusable(false);
+
+		 checkBox.addItemListener(this);
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value,
@@ -31,6 +33,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements
 	public Object getCellEditorValue() {
 		return checkBox.isSelected();
 	}
+
 
 	public void itemStateChanged(ItemEvent e) {
 		fireEditingStopped();
