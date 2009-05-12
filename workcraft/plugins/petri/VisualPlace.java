@@ -72,13 +72,7 @@ public class VisualPlace extends VisualComponent {
 	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 
-	protected static Color defaultBorderColor = Color.BLACK;
-	protected static Color defaultFillColor = Color.WHITE;
-	protected static Color defaultTokenColor = Color.BLACK;
-
-	protected Color userBorderColor = defaultBorderColor;
-	protected Color userFillColor = defaultFillColor;
-	protected Color userTokenColor = defaultTokenColor;
+	private Color tokenColor = CommonVisualSettings.getForegroundColor();
 
 	public Place getPlace() {
 		return (Place)getReferencedComponent();
@@ -104,6 +98,7 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration ("Token color", "getTokenColor", "setTokenColor", Color.class));
 
 		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,
@@ -188,15 +183,15 @@ public class VisualPlace extends VisualComponent {
 				size - strokeWidth,
 				size - strokeWidth);
 
-		g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(userBorderColor, getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
 
-		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(userTokenColor, getColorisation()), g);
+		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(getTokenColor(), getColorisation()), g);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
@@ -221,5 +216,13 @@ public class VisualPlace extends VisualComponent {
 
 	public Place getReferencedPlace() {
 		return (Place)getReferencedComponent();
+	}
+
+	public Color getTokenColor() {
+		return tokenColor;
+	}
+
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
 	}
 }

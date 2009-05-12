@@ -12,8 +12,11 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.MathNode;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.XmlUtil;
 
 public abstract class VisualComponent extends VisualTransformableNode {
 	private Component refComponent = null;
@@ -25,22 +28,63 @@ public abstract class VisualComponent extends VisualTransformableNode {
 	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private GlyphVector labelGlyphs = null;
 	private Point2D labelPosition = null;
-	private Color labelColor = Color.BLACK;
 
+	private Color labelColor = CommonVisualSettings.getForegroundColor();
+	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
+	private Color fillColor = CommonVisualSettings.getFillColor();
+
+	private static class VisualComponentDeserialiser {
+
+		public static void deserialise(Element element, VisualComponent node)
+		{
+			Element e = XmlUtil.getChildElement(VisualComponent.class.getSimpleName(), element);
+			node.setLabelColor(XmlUtil.readColorAttr(e, "labelColor", CommonVisualSettings.getForegroundColor()));
+			node.setFillColor(XmlUtil.readColorAttr(e, "fillColor", CommonVisualSettings.getFillColor()));
+			node.setForegroundColor(XmlUtil.readColorAttr(e, "foregroundColor", CommonVisualSettings.getForegroundColor()));
+
+		}
+	}
+
+
+	private void addXMLSerialiser() {
+		addXMLSerialiser(new XMLSerialiser(){
+			public String getTagName() {
+				return VisualComponent.class.getSimpleName();
+			}
+			public void serialise(Element element) {
+				XmlUtil.writeColorAttr(element, "labelColor", getLabelColor());
+				XmlUtil.writeColorAttr(element, "foregroundColor", getForegroundColor());
+				XmlUtil.writeColorAttr(element, "fillColor", getFillColor());
+			}
+		});
+	}
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration("Label", "getLabel", "setLabel", String.class));
+		addPropertyDeclaration(new PropertyDeclaration("Label color", "getLabelColor", "setLabelColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration("Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration("Fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
 	public VisualComponent(Component refComponent) {
 		super();
 		this.refComponent = refComponent;
+
 		addPropertyDeclarations();
+		addXMLSerialiser();
+
+		setFillColor (CommonVisualSettings.getFillColor());
+		setForegroundColor(CommonVisualSettings.getForegroundColor());
+		setLabelColor(CommonVisualSettings.getForegroundColor());
 	}
 
 	public VisualComponent(Component refComponent, Element xmlElement) {
 		super(xmlElement);
 		this.refComponent = refComponent;
+
+		VisualComponentDeserialiser.deserialise(xmlElement, this);
+
 		addPropertyDeclarations();
+		addXMLSerialiser();
 	}
 
 	public Set<VisualConnection> getConnections() {
@@ -110,5 +154,29 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		if(hitTestInLocalSpace(pointInLocalSpace) != 0)
 			return this;
 		return null;
+	}
+
+	public Color getLabelColor() {
+		return labelColor;
+	}
+
+	public void setLabelColor(Color labelColor) {
+		this.labelColor = labelColor;
+	}
+
+	public Color getForegroundColor() {
+		return foregroundColor;
+	}
+
+	public void setForegroundColor(Color foregroundColor) {
+		this.foregroundColor = foregroundColor;
+	}
+
+	public Color getFillColor() {
+		return fillColor;
+	}
+
+	public void setFillColor(Color fillColor) {
+		this.fillColor = fillColor;
 	}
 }

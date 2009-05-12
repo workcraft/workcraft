@@ -1,5 +1,6 @@
 package org.workcraft.util;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -90,6 +91,26 @@ public class XmlUtil {
 			System.err.println(e.getMessage());
 		}
 	}
+
+	public static void writeColorAttr (Element element, String attributeName, Color value) {
+		element.setAttribute(attributeName, String.format("#%x", value.getRGB() & 0xffffff));
+	}
+
+	public static Color readColorAttr (Element element, String attributeName, Color defaultValue) {
+		String s = element.getAttribute(attributeName);
+
+		if (s == null || s.charAt(0) != '#')
+			return defaultValue;
+
+		try {
+			return new Color(Integer.parseInt(s.substring(1), 16), false);
+		} catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			return defaultValue;
+		}
+	}
+
 	public static int readIntAttr (Element element, String attributeName, int defaultValue)  {
 		String attributeValue = element.getAttribute(attributeName);
 		try {

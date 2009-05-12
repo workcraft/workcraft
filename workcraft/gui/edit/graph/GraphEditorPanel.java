@@ -22,6 +22,7 @@ import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelEventListener, GraphEditor {
 	private static final long serialVersionUID = 1L;
@@ -36,8 +37,6 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	protected Grid grid;
 	protected Ruler ruler;
 
-	protected Color background = Color.WHITE;
-	protected Color focusBorderColor = Color.BLACK;
 	protected Stroke borderStroke = new BasicStroke(2);
 
 	private boolean firstPaint = true;
@@ -75,7 +74,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 
 		AffineTransform screenTransform = (AffineTransform)g2d.getTransform().clone();
 
-		g2d.setBackground(background);
+		g2d.setBackground(CommonVisualSettings.getBackgroundColor());
 		g2d.clearRect(0, 0, getWidth(), getHeight());
 
 		grid.draw(g2d);
@@ -103,7 +102,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 			g2d.setTransform(screenTransform);
 
 			g2d.setStroke(borderStroke);
-			g2d.setColor(focusBorderColor);
+			g2d.setColor(CommonVisualSettings.getForegroundColor());
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
 	}

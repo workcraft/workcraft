@@ -1,5 +1,6 @@
 package org.workcraft.framework;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,12 +59,45 @@ public class Config {
 			return Double.parseDouble(s);
 		}
 		catch (NumberFormatException e) {
+			e.printStackTrace();
 			return defaultValue;
 		}
 	}
 
 	public void setDouble (String key, double value) {
 		set (key, Double.toString(value));
+	}
+
+	public void setColor (String key, Color value) {
+		set (key, String.format("#%x", value.getRGB() & 0xffffff));
+	}
+
+	public Color getColor(String key, Color defaultValue) {
+		String s = get (key);
+
+		if (s == null || s.charAt(0) != '#')
+			return defaultValue;
+
+
+		try {
+			return new Color(Integer.parseInt(s.substring(1), 16), false);
+		} catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			return defaultValue;
+		}
+	}
+
+	public void setBoolean (String key, boolean value) {
+		set (key, Boolean.toString(value));
+	}
+
+	public boolean getBoolean (String key, boolean defaultValue) {
+		String s = get(key);
+		if (s == null)
+			return defaultValue;
+		else
+			return Boolean.parseBoolean(s);
 	}
 
 	public void set(String key, String value) {
