@@ -1,6 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 

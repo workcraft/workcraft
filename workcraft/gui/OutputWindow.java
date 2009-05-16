@@ -42,7 +42,7 @@ public class OutputWindow extends JPanel {
 			systemOut.write(b, off, len);
 			String s = new String(b , off , len);
 			txtStdOut.append(s);
-			txtStdOut.setCaretPosition(txtStdOut.getDocument().getLength());
+		//	txtStdOut.setCaretPosition(txtStdOut.getDocument().getLength());
 		}
 	}
 

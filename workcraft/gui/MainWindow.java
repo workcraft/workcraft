@@ -19,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.flexdock.docking.Dockable;
@@ -35,7 +36,7 @@ import org.flexdock.perspective.persist.PerspectiveModel;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
+import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
@@ -367,6 +368,7 @@ public class MainWindow extends JFrame {
 		if (laf == null)
 			laf = UIManager.getCrossPlatformLookAndFeelClassName();
 		LAF.setLAF(laf);
+		SwingUtilities.updateComponentTreeUI(this);
 
 		content = new JPanel(new BorderLayout(0,0));
 		setContentPane(content);

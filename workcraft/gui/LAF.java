@@ -4,7 +4,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.utils.SubstanceConstants.TabContentPaneBorderKind;
+import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+
 
 public class LAF {
 	public static String currentLAF = UIManager.getLookAndFeel().getClass().getName();
