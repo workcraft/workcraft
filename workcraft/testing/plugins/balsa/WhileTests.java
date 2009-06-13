@@ -25,7 +25,6 @@ import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.BalsaToStgExporter_TwoPhase;
 import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -91,9 +90,6 @@ public class WhileTests {
 
 		VisualSTG visualStg = new VisualSTG(stg);
 
-		new DotLayout().doLayout(visualStg);
-
 		new org.workcraft.framework.Framework().save(visualStg, "while_while.stg.work");
 	}
-
 }

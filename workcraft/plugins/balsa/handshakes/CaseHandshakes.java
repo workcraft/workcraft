@@ -9,9 +9,9 @@ public class CaseHandshakes extends HandshakeMaker<Case> {
 
 	@Override
 	protected void fillHandshakes(Case component, Map<String, Handshake> handshakes) {
-		handshakes.put("inp", builder.CreateActivePull(component.getInputWidth()));
+		handshakes.put("inp", builder.CreatePassivePush(component.getInputWidth()));
 		for(int i=0;i<component.getOutputCount();i++)
-			handshakes.put("activateOut"+i, builder.CreatePassiveSync());
+			handshakes.put("activateOut"+i, builder.CreateActiveSync());
 	}
 
 }
