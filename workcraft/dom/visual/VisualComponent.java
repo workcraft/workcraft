@@ -77,6 +77,22 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		setLabelColor(CommonVisualSettings.getForegroundColor());
 	}
 
+	public boolean isTurnable() {
+		return false;
+	}
+
+	public void setRotation() {
+
+	}
+
+	public double getRotation() {
+		return 0;
+	}
+
+	public void setRotation(double rot) {
+
+	}
+
 	public VisualComponent(Component refComponent, Element xmlElement) {
 		super(xmlElement);
 		this.refComponent = refComponent;
