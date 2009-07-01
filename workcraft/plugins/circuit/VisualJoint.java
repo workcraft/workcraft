@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -10,7 +9,6 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class VisualJoint extends VisualComponent {
 	static double jointSize = 0.25;

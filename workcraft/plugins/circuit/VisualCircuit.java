@@ -8,8 +8,6 @@ import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.SimulationTool;
 
 
 public class VisualCircuit extends VisualModel {
