@@ -580,7 +580,7 @@ public class MainWindow extends JFrame {
 		closeEditorWindows();
 
 
-		if (framework.getWorkspace().isChanged()) {
+		if (framework.getWorkspace().isChanged() && ! framework.getWorkspace().isTemporary()) {
 			int result = JOptionPane.showConfirmDialog(this, "Current workspace has unsaved changes.\nSave before closing?",
 					"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {

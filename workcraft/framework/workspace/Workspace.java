@@ -24,8 +24,10 @@ public class Workspace {
 
 	Framework framework;
 
+	private boolean temporary = true;
+
 	private boolean changed = false;
-	private String filePath =null;
+	private String filePath = null;
 	private int entryIDCounter = 0;
 
 	public Workspace(Framework framework) {
@@ -113,6 +115,8 @@ public class Workspace {
 
 			filePath = path;
 
+			setTemporary (false);
+
 		} catch (ParserConfigurationException e) {
 			throw new LoadFromXMLException (e);
 		} catch (SAXException e) {
@@ -150,6 +154,8 @@ public class Workspace {
 			filePath = path;
 			changed = false;
 			fireWorkspaceSaved();
+
+			setTemporary(false);
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
 		}
@@ -196,4 +202,13 @@ public class Workspace {
 		for (WorkspaceEntry we : workspace)
 			remove(we);
 	}
+
+	public boolean isTemporary() {
+		return temporary;
+	}
+
+	public void setTemporary(boolean temporary) {
+		this.temporary = temporary;
+	}
+
 }
