@@ -7,10 +7,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 
-public class VisualJoint extends VisualComponent {
+public class VisualJoint extends VisualCircuitComponent {
 	static double jointSize = 0.25;
 
 	public VisualJoint(Joint joint) {

@@ -22,14 +22,14 @@ public class Circuit extends MathModel {
 	public class Listener implements MathModelListener {
 
 		public void onComponentAdded(Component component) {
-			if (component instanceof CircuitComponent)
+			if (component instanceof Formula)
 				components.add((CircuitComponent)component);
 			else if (component instanceof Joint)
 				components.add((Joint)component);
 		}
 
 		public void onComponentRemoved(Component component) {
-			if (component instanceof CircuitComponent)
+			if (component instanceof Formula)
 				components.remove(component);
 			else if (component instanceof Joint)
 				components.remove(component);
@@ -46,7 +46,7 @@ public class Circuit extends MathModel {
 	}
 
 
-	private HashSet<Component> components = new HashSet<Component>();
+	private HashSet<CircuitComponent> components = new HashSet<CircuitComponent>();
 
 	public Circuit() {
 		super();
@@ -55,7 +55,7 @@ public class Circuit extends MathModel {
 	}
 
 	private void addSupportedComponents() {
-		addComponentSupport(CircuitComponent.class);
+		addComponentSupport(Formula.class);
 		addComponentSupport(Joint.class);
 	}
 
@@ -83,8 +83,8 @@ public class Circuit extends MathModel {
 //		return newTransition;
 //	}
 
-	final public Set<Component> getComponenets() {
-		return new HashSet<Component>(components);
+	final public Set<CircuitComponent> getCircuitComponenets() {
+		return new HashSet<CircuitComponent>(components);
 	}
 
 }

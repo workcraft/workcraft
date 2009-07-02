@@ -805,14 +805,21 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	public VisualConnection (Element xmlElement, VisualReferenceResolver referenceResolver) {
 		Element element = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
+		int ID = XmlUtil.readIntAttr(element, "refID", -1);
 
-		refConnection = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refID", -1));
-		first = referenceResolver.getComponentByRefID(refConnection.getFirst().getID());
-		second = referenceResolver.getComponentByRefID(refConnection.getSecond().getID());
+		refConnection = referenceResolver.getConnectionByID(ID);
+		if (refConnection != null) {
+			first = referenceResolver.getComponentByRefID(refConnection.getFirst().getID());
+			second = referenceResolver.getComponentByRefID(refConnection.getSecond().getID());
+			readXMLConnectionProperties(element);
 
-		readXMLConnectionProperties(element);
+			initialise();
+		} else {
+			// refConnection was not found
 
-		initialise();
+			throw new RuntimeException ("Referenced connection "+ID+" was not found");
+		}
+
 	}
 
 	public ConnectionType getConnectionType() {

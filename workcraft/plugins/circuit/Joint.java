@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
@@ -10,7 +9,7 @@ import org.workcraft.dom.XMLSerialiser;
 @DisplayName("Joint")
 @VisualClass("org.workcraft.plugins.circuit.VisualJoint")
 
-public class Joint extends Component {
+public class Joint extends CircuitComponent {
 	public Joint(Element componentElement) {
 		super(componentElement);
 
