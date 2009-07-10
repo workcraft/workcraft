@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
@@ -19,11 +20,23 @@ public class SimulationTool extends AbstractTool {
 	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
 
 	private void highlightEnabledTransitions() {
+		/*
 		for (Transition t : net.getTransitions())
 			if (t.isEnabled())
 				visualNet.getComponentByRefID(t.getID()).setColorisation(enabledColor);
 			else
 				visualNet.getComponentByRefID(t.getID()).clearColorisation();
+		*/
+
+		for (VisualComponent t : visualNet.getVisualComponents()) {
+			if (t instanceof VisualTransition) {
+				if (((VisualTransition)t).isEnabled())
+					t.setColorisation(enabledColor);
+				else
+					t.clearColorisation();
+			}
+		}
+
 
 	}
 

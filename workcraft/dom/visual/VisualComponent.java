@@ -15,14 +15,22 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.stg.ImplicitPlaceArc;
 import org.workcraft.util.XmlUtil;
+
+import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
 
 public abstract class VisualComponent extends VisualTransformableNode {
 	private Component refComponent = null;
 	private HashSet<VisualConnection> connections = new HashSet<VisualConnection>();
+
+
 	private HashSet<VisualComponent> preset = new HashSet<VisualComponent>();
 	private HashSet<VisualComponent> postset = new HashSet<VisualComponent>();
+
+
 	private String label = "";
 
 	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
@@ -33,11 +41,20 @@ public abstract class VisualComponent extends VisualTransformableNode {
 	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
+	@Override
+	public boolean isReferring(int ID) {
+		return refComponent.getID()==ID;
+	}
+
 	private static class VisualComponentDeserialiser {
 
 		public static void deserialise(Element element, VisualComponent node)
 		{
 			Element e = XmlUtil.getChildElement(VisualComponent.class.getSimpleName(), element);
+
+			int ID = XmlUtil.readIntAttr(e, "ID", -1);
+			node.setID(ID);
+
 			node.setLabelColor(XmlUtil.readColorAttr(e, "labelColor", CommonVisualSettings.getForegroundColor()));
 			node.setFillColor(XmlUtil.readColorAttr(e, "fillColor", CommonVisualSettings.getFillColor()));
 			node.setForegroundColor(XmlUtil.readColorAttr(e, "foregroundColor", CommonVisualSettings.getForegroundColor()));
@@ -52,6 +69,11 @@ public abstract class VisualComponent extends VisualTransformableNode {
 				return VisualComponent.class.getSimpleName();
 			}
 			public void serialise(Element element) {
+				if (refComponent != null)
+					XmlUtil.writeIntAttr(element, "refID", refComponent.getID());
+
+				XmlUtil.writeIntAttr(element, "ID", getID());
+
 				XmlUtil.writeColorAttr(element, "labelColor", getLabelColor());
 				XmlUtil.writeColorAttr(element, "foregroundColor", getForegroundColor());
 				XmlUtil.writeColorAttr(element, "fillColor", getFillColor());
@@ -125,6 +147,7 @@ public abstract class VisualComponent extends VisualTransformableNode {
 			postset.remove(connection.getSecond());
 		else
 			preset.remove(connection.getFirst());
+
 	}
 
 	final public Component getReferencedComponent() {

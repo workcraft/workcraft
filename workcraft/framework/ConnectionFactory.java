@@ -70,11 +70,14 @@ public class ConnectionFactory {
 		}
 	}
 
+
+
 	public static VisualConnection createVisualConnection (Connection connection, VisualReferenceResolver referenceResolver)
 		throws VisualConnectionCreationException {
 
-		VisualComponent first = referenceResolver.getComponentByRefID(connection.getFirst().getID());
-		VisualComponent second = referenceResolver.getComponentByRefID(connection.getSecond().getID());
+		VisualComponent first = referenceResolver.getVisualComponentByID(connection.getFirst().getID());
+		VisualComponent second = referenceResolver.getVisualComponentByID(connection.getSecond().getID());
+
 
 		// Find the corresponding visual class
 		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
@@ -113,4 +116,6 @@ public class ConnectionFactory {
 					" could not be instantiated: " + e.getTargetException().getMessage());
 		}
 	}
+
+
 }

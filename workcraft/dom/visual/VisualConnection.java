@@ -729,6 +729,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
 
+	@Override
+	public boolean isReferring(int ID) {
+		return refConnection.getID()==ID;
+	}
+
 	protected void initialise() {
 		first.addListener(this);
 		second.addListener(this);
@@ -763,6 +768,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			public void serialise(Element element) {
 				if (refConnection != null)
 					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
+
+				XmlUtil.writeIntAttr(element, "ID", getID());
+				XmlUtil.writeIntAttr(element, "first", first.getID());
+				XmlUtil.writeIntAttr(element, "second", second.getID());
+
 				writeXMLConnectionProperties(element);
 			}
 		});
@@ -804,22 +814,23 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public VisualConnection (Element xmlElement, VisualReferenceResolver referenceResolver) {
+
 		Element element = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
-		int ID = XmlUtil.readIntAttr(element, "refID", -1);
+		int refID = XmlUtil.readIntAttr(element, "refID", -1);
+		int ID = XmlUtil.readIntAttr(element, "ID", -1);
+		setID(ID);
 
-		refConnection = referenceResolver.getConnectionByID(ID);
-		if (refConnection != null) {
-			first = referenceResolver.getComponentByRefID(refConnection.getFirst().getID());
-			second = referenceResolver.getComponentByRefID(refConnection.getSecond().getID());
-			readXMLConnectionProperties(element);
+		int firstID = XmlUtil.readIntAttr(element, "first", -1);
+		int secondID = XmlUtil.readIntAttr(element, "second", -1);
 
-			initialise();
-		} else {
-			// refConnection was not found
 
-			throw new RuntimeException ("Referenced connection "+ID+" was not found");
-		}
+		refConnection = referenceResolver.getConnectionByID(refID);
 
+		first = referenceResolver.getVisualComponentByID(firstID);
+		second = referenceResolver.getVisualComponentByID(secondID);
+
+		readXMLConnectionProperties(element);
+		initialise();
 	}
 
 	public ConnectionType getConnectionType() {

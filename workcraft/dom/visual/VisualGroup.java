@@ -169,11 +169,14 @@ public class VisualGroup extends VisualTransformableNode {
 		List<Element> componentNodes = XmlUtil.getChildElements("component", groupElement);
 
 		for (Element vcompElement : componentNodes) {
+
 			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
+
 			Component refComponent = model.getMathModel().getComponentByRenamedID(ref);
 			if (refComponent == null)
 				throw new VisualComponentCreationException ("a visual component references to the model component with ID=" +
 						vcompElement.getAttribute("ref") + " which was not found");
+
 			VisualNode visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
 			add(visualComponent);
 			model.addComponents(visualComponent);

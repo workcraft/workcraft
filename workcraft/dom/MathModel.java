@@ -153,6 +153,7 @@ public abstract class MathModel implements Plugin, Model {
 		connection.getSecond().addToPreset(connection.getFirst());
 
 		connection.setID(getNextNodeID());
+
 		connections.put(connection.getID(), connection);
 
 		fireConnectionAdded(connection);
@@ -348,7 +349,8 @@ public abstract class MathModel implements Plugin, Model {
 		return this;
 	}
 
-	final private int getNextNodeID() {
+
+	final public int getNextNodeID() {
 		return nodeIDCounter++;
 	}
 

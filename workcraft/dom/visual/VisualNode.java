@@ -25,6 +25,21 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 
 
 public abstract class VisualNode implements PropertyEditable {
+	private int ID = -1;
+
+	final protected void setID(int id) {
+		ID = id;
+	}
+
+	final public int getID() {
+		return ID;
+	}
+
+	// return true if component refers to a particular mathematical node
+	public boolean isReferring(int refID) {
+		return false;
+	}
+
 	private List<PropertyDescriptor> propertyDeclarations = new LinkedList<PropertyDescriptor>();
 	private LinkedList<PropertyChangeListener> propertyChangeListeners = new LinkedList<PropertyChangeListener>();
 
@@ -213,4 +228,5 @@ public abstract class VisualNode implements PropertyEditable {
 	public Set<MathNode> getReferences() {
 		return new HashSet<MathNode>();
 	}
+
 }

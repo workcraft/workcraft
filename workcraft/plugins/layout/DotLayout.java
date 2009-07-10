@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
@@ -36,9 +37,11 @@ public class DotLayout implements Layout {
 						double height = bb.getHeight();
 						out.println("\""+id+"\" [width=\""+width+"\", height=\""+height+"\"];");
 					}
-					Set<VisualComponent> postset = comp.getPostset();
-					for(VisualComponent target : postset) {
-						Integer targetId = target.getReferencedComponent().getID();
+
+					Set<Component> postset = comp.getReferencedComponent().getPostset();
+
+					for(Component target : postset) {
+						Integer targetId = target.getID();
 						if(targetId!=null) {
 							out.println("\""+id+"\" -> \""+targetId+"\";");
 						}
@@ -63,7 +66,11 @@ public class DotLayout implements Layout {
 
 		while(matcher.find()) {
 			Integer id = Integer.parseInt(matcher.group(1));
-			VisualComponent comp = model.getComponentByRefID(id);
+
+			//VisualComponent comp = model.getComponentByRefID(id);
+			VisualComponent comp = model.getFirstVisualComponentByRefID(id);
+
+
 			if(comp==null)
 				continue;
 			comp.setX(Integer.parseInt(matcher.group(4))*DotLayoutSettings.dotPositionScaleFactor);

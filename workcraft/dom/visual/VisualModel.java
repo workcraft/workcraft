@@ -54,23 +54,33 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public class RenamedVisualReferenceResolver implements VisualReferenceResolver {
-		public VisualComponent getComponentByRefID(int ID) {
-			return VisualModel.this.getComponentByRefID(ID);
+		public VisualComponent getVisualComponentByID(int ID) {
+			return VisualModel.this.getVisualComponentByRenamedID(ID);
+		}
+		public VisualConnection getVisualConnectionByID(int ID) {
+			return VisualModel.this.getVisualConnectionByRenamedID(ID);
 		}
 
 		public Component getComponentByID(int ID) {
-			return mathModel.getReferenceResolver().getComponentByID(ID);
+			return mathModel.getComponentByRenamedID(ID);
 		}
-
 		public Connection getConnectionByID(int ID) {
-			return mathModel.getReferenceResolver().getConnectionByID(ID);
+			return mathModel.getConnectionByRenamedID(ID);
 		}
 	}
+
+	public VisualComponent getFirstVisualComponentByRefID(int ID) {
+		for (VisualComponent vc: getVisualComponents()) {
+			if (vc.isReferring(ID)) return vc;
+		}
+		return null;
+	}
+
 
 	public class ModelListener implements MathModelListener {
 		public void onNodePropertyChanged(String propertyName, MathNode n) {
 			if (n instanceof Component)
-				fireComponentPropertyChanged(propertyName, getComponentByRefID( ((Component)n).getID()));
+				fireComponentPropertyChanged(propertyName, getVisualComponentByID( ((Component)n).getID()));
 		}
 
 		public void onComponentAdded(Component component) {
@@ -141,10 +151,12 @@ public class VisualModel implements Plugin, Model {
 	private LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
 	private LinkedList<VisualModelEventListener> listeners = new LinkedList<VisualModelEventListener>();
 
-	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
-	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
-
-
+//	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
+//	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
+	private HashMap<Integer, VisualComponent> visualComponents = new HashMap<Integer, VisualComponent>();
+	protected HashMap<Integer, VisualConnection> visualConnections = new HashMap<Integer, VisualConnection>();
+	private HashMap<Integer, Integer> visualComponentRenames = new HashMap<Integer, Integer>();
+	protected HashMap<Integer, Integer> visualConnectionRenames = new HashMap<Integer, Integer>();
 
 	private XMLSerialisation serialiser = new XMLSerialisation();
 	private ModelListener mathModelListener = new ModelListener();
@@ -206,16 +218,38 @@ public class VisualModel implements Plugin, Model {
 
 	protected VisualNode createNode(Element element) throws VisualComponentCreationException, VisualConnectionCreationException
 	{
-		if(element.getTagName() == "component")
-			return ComponentFactory.createVisualComponent(element, this);
-		if(element.getTagName() == "connection")
-			return ConnectionFactory.createVisualConnection(element, getReferenceResolver());
-		if(element.getTagName() == "group")
+		Integer oldID;
+		Integer newID;
+		if(element.getTagName() == "component") {
+
+			VisualComponent vc = (VisualComponent)ComponentFactory.createVisualComponent(element, this);
+			oldID = vc.getID();
+			newID = addComponent(vc);
+			visualComponentRenames.put(oldID, newID);
+			return vc;
+		}
+		if(element.getTagName() == "connection") {
+			VisualConnection vc = ConnectionFactory.createVisualConnection(element, getReferenceResolver());
+			oldID = vc.getID();
+			newID = addConnection(vc);
+			visualConnectionRenames.put(oldID, newID);
+			return vc;
+		}
+		if(element.getTagName() == "group") {
 			return GroupFactory.createVisualGroup(element, this);
+		}
 		return null;
 	}
 
+	protected final void initPaste() {
+		visualComponentRenames.clear();
+		visualConnectionRenames.clear();
+	}
+
 	protected Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
+
+		initPaste();
+
 		List<Element> children = XmlUtil.getChildElements("component", visualElement);
 		children.addAll(XmlUtil.getChildElements("group", visualElement));
 		children.addAll(XmlUtil.getChildElements("connection", visualElement));
@@ -263,7 +297,16 @@ public class VisualModel implements Plugin, Model {
 		try
 		{
 			for (Element e: children) {
-				VisualNode node = createNode(e);
+				VisualNode node;
+				try
+				{
+					node = createNode(e);
+
+				} catch (VisualConnectionCreationException ex) {
+					//throw new PasteException (ex);
+					node = null;
+				}
+
 				if(node == null) continue;
 
 				currentLevel.add(node);
@@ -282,8 +325,6 @@ public class VisualModel implements Plugin, Model {
 //			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
 
 			return pasted;
-		} catch (VisualConnectionCreationException e) {
-			throw new PasteException (e);
 
 		} catch (VisualComponentCreationException e) {
 			throw new PasteException (e);
@@ -296,6 +337,8 @@ public class VisualModel implements Plugin, Model {
 				VisualComponent vc = (VisualComponent)node;
 				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
 				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
+				XmlUtil.writeStringAttr(vcompElement, "class", vc.getClass().getName());
+
 				vc.serialiseToXML(vcompElement);
 			} else if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
@@ -572,18 +615,32 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public final void addComponents(VisualNode node) {
-		if(node instanceof VisualComponent)
+		if(node instanceof VisualComponent) {
 			addComponent((VisualComponent)node);
+		}
+
+		if(node instanceof VisualConnection) {
+			addConnection((VisualConnection)node);
+		}
+
+
 		if(node instanceof VisualGroup)
 			for(VisualNode subnode : ((VisualGroup)node).getChildren())
 				addComponents(subnode);
 	}
 
-	public final void addComponent(VisualComponent component) {
-		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
+	public final int addComponent(VisualComponent component) {
+//		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
+
 		component.addListener(propertyChangeListener);
 
+		component.setID(getMathModel().getNextNodeID());
+
+		visualComponents.put(component.getID(), component);
+
 		fireComponentAdded(component);
+
+		return component.getID();
 	}
 
 	private void fireComponentAdded(VisualComponent component) {
@@ -591,16 +648,21 @@ public class VisualModel implements Plugin, Model {
 			l.onComponentAdded(component);
 	}
 
-	public final void addConnection(VisualConnection connection) {
+	public final int addConnection(VisualConnection connection) {
 		connection.getFirst().addConnection(connection);
 		connection.getSecond().addConnection(connection);
 
-		if (connection.getReferencedConnection() != null)
-			refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
+		connection.setID(getMathModel().getNextNodeID());
+
+//		if (connection.getReferencedConnection() != null)
+//			refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
+		visualConnections.put(connection.getID(), connection);
 
 		connection.addListener(propertyChangeListener);
 
 		fireConnectionAdded(connection);
+
+		return connection.getID();
 	}
 
 	private void fireConnectionAdded(VisualConnection connection) {
@@ -716,7 +778,9 @@ public class VisualModel implements Plugin, Model {
 		component.getParent().remove(component);
 
 		component.removeListener(propertyChangeListener);
-		refIDToVisualComponentMap.remove(component.getReferencedComponent().getID());
+
+		//refIDToVisualComponentMap.remove(component.getReferencedComponent().getID());
+		visualComponents.remove(component.getID());
 
 		fireComponentRemoved(component);
 	}
@@ -745,7 +809,8 @@ public class VisualModel implements Plugin, Model {
 		selection.remove(connection);
 
 		connection.removeListener(propertyChangeListener);
-		refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
+		//refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
+		visualConnections.remove(connection.getID());
 
 		fireConnectionRemoved(connection);
 	}
@@ -796,6 +861,21 @@ public class VisualModel implements Plugin, Model {
 	public void deleteSelection() {
 		removeNodes(selection);
 	}
+
+	final public VisualComponent getVisualComponentByRenamedID(int oldID) {
+		Integer newID = visualComponentRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getVisualComponentByID(newID);
+	}
+
+	final public VisualConnection getVisualConnectionByRenamedID(int oldID) {
+		Integer newID = visualConnectionRenames.get(oldID);
+		if (newID == null)
+			return null;
+		return getVisualConnectionByID(newID);
+	}
+
 
 	/**
 	 * @param clipboard
@@ -851,8 +931,20 @@ public class VisualModel implements Plugin, Model {
 		deleteSelection();
 	}
 
-	public VisualComponent getComponentByRefID(Integer id) {
-		return refIDToVisualComponentMap.get(id);
+//	public VisualComponent getComponentByRefID(Integer id) {
+//		return refIDToVisualComponentMap.get(id);
+//	}
+
+	public VisualComponent getVisualComponentByID(Integer id) {
+		return visualComponents.get(id);
+	}
+
+	public VisualConnection getVisualConnectionByID(Integer id) {
+		return visualConnections.get(id);
+	}
+
+	public HashSet<VisualComponent> getVisualComponents() {
+		return new HashSet<VisualComponent>(visualComponents.values());
 	}
 
 

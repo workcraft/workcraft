@@ -172,6 +172,31 @@ public class VisualPlace extends VisualComponent {
 	@Override
 	protected void drawInLocalSpace(Graphics2D g)
 	{
+/*
+		// some debug info
+		int postv = getPostset().size();
+		int postm = getReferencedPlace().getPostset().size();
+		int prev = getPreset().size();
+		int prem = getReferencedPlace().getPreset().size();
+
+		if (postv!=postm||prev!=prem) {
+
+			g.setColor(Color.red);
+		    Font font = new Font("Courier", Font.PLAIN, 1);
+		    g.setFont(font);
+
+			String str = (postv!=postm)?("POST("+postv+","+postm+")"):"";
+			str+=(prev!=prem)?("PRE("+prev+","+prem+")"):"";
+
+			g.drawString("ERROR:"+str, 1, 0);
+
+		}
+		g.setColor(Color.red);
+	    Font font = new Font("Courier", Font.PLAIN, 1);
+	    g.setFont(font);
+		g.drawString("#"+getReferencedPlace().getID(), 1, 1);
+*/
+
 		drawLabelInLocalSpace(g);
 
 		double size = CommonVisualSettings.getSize();
