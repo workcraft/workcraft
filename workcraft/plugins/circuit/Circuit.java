@@ -26,12 +26,16 @@ public class Circuit extends MathModel {
 				components.add((CircuitComponent)component);
 			else if (component instanceof Joint)
 				components.add((Joint)component);
+			else if (component instanceof Contact)
+				components.add((Contact)component);
 		}
 
 		public void onComponentRemoved(Component component) {
 			if (component instanceof Formula)
 				components.remove(component);
 			else if (component instanceof Joint)
+				components.remove(component);
+			else if (component instanceof Contact)
 				components.remove(component);
 		}
 
@@ -46,7 +50,7 @@ public class Circuit extends MathModel {
 	}
 
 
-	private HashSet<CircuitComponent> components = new HashSet<CircuitComponent>();
+	private HashSet<Component> components = new HashSet<Component>();
 
 	public Circuit() {
 		super();
@@ -57,6 +61,7 @@ public class Circuit extends MathModel {
 	private void addSupportedComponents() {
 		addComponentSupport(Formula.class);
 		addComponentSupport(Joint.class);
+		addComponentSupport(Contact.class);
 	}
 
 	public void validate() throws ModelValidationException {
@@ -83,8 +88,8 @@ public class Circuit extends MathModel {
 //		return newTransition;
 //	}
 
-	final public Set<CircuitComponent> getCircuitComponenets() {
-		return new HashSet<CircuitComponent>(components);
+	final public Set<Component> getCircuitComponenets() {
+		return new HashSet<Component>(components);
 	}
 
 }

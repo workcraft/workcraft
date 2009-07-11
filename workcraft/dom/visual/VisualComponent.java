@@ -15,12 +15,8 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.stg.ImplicitPlaceArc;
 import org.workcraft.util.XmlUtil;
-
-import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
 
 public abstract class VisualComponent extends VisualTransformableNode {
 	private Component refComponent = null;
@@ -175,6 +171,22 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		Set<MathNode> ret = new HashSet<MathNode>();
 		ret.add(getReferencedComponent());
 		return ret;
+	}
+
+	public GlyphVector getLabelGlyphs(Graphics2D g) {
+		if (labelGlyphs == null) {
+			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
+		}
+
+		return labelGlyphs;
+	}
+
+	public Rectangle2D getLabelBB(Graphics2D g) {
+		if (labelGlyphs == null) {
+			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
+		}
+
+		return labelGlyphs.getVisualBounds();
 	}
 
 	protected void drawLabelInLocalSpace(Graphics2D g) {

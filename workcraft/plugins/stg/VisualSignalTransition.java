@@ -73,6 +73,25 @@ public class VisualSignalTransition extends VisualTransition {
 		drawLabelInLocalSpace(g);
 
 
+		// some debug info
+		int postv = getPostset().size();
+		int postm = getReferencedTransition().getPostset().size();
+		int prev = getPreset().size();
+		int prem = getReferencedTransition().getPreset().size();
+
+		if (postv!=postm||prev!=prem) {
+
+			g.setColor(Color.red);
+		    Font font = new Font("Courier", Font.PLAIN, 1);
+		    g.setFont(font);
+
+			String str = (postv!=postm)?("POST("+postv+","+postm+")"):"";
+			str+=(prev!=prem)?("PRE("+prev+","+prem+")"):"";
+
+			g.drawString("ERROR:"+str, 1, 0);
+
+		}
+
 
 		if (text == null) {
 			Shape shape = new Rectangle2D.Double(

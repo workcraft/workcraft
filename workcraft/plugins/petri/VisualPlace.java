@@ -172,7 +172,7 @@ public class VisualPlace extends VisualComponent {
 	@Override
 	protected void drawInLocalSpace(Graphics2D g)
 	{
-/*
+
 		// some debug info
 		int postv = getPostset().size();
 		int postm = getReferencedPlace().getPostset().size();
@@ -191,6 +191,7 @@ public class VisualPlace extends VisualComponent {
 			g.drawString("ERROR:"+str, 1, 0);
 
 		}
+		/*
 		g.setColor(Color.red);
 	    Font font = new Font("Courier", Font.PLAIN, 1);
 	    g.setFont(font);
