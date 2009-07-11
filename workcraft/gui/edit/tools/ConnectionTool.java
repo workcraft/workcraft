@@ -12,6 +12,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -120,11 +121,11 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else if (mouseOverObject != null) {
 				try {
-					e.getModel().connect(first, mouseOverObject);
+					VisualConnection vcon = e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
 						first.clearColorisation();
-						first = mouseOverObject;
+						first = vcon.getSecond();
 						first.setColorisation(highlightColor);
 						mouseOverObject = null;
 					} else {
