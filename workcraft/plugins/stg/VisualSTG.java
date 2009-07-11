@@ -251,6 +251,7 @@ public class VisualSTG extends VisualPetriNet  {
 		return con;
 	}
 
+
 	@Override
 	protected void removeConnection(VisualConnection connection) {
 		if (connection instanceof ImplicitPlaceArc) {
@@ -272,19 +273,16 @@ public class VisualSTG extends VisualPetriNet  {
 
 		} else {
 			super.removeConnection(connection);
-
-			VisualComponent c1 = connection.getFirst();
-			VisualComponent c2 = connection.getSecond();
-			VisualPlace place = null;
-
-			if (c1 instanceof VisualPlace)
-				place = (VisualPlace)c1;
-			if (c2 instanceof VisualPlace)
-				place = (VisualPlace)c2;
-
-			if (place!=null && !lockedPlaces.contains(place))
-				maybeMakeImplicit (place);
 		}
+	}
+
+	private void refreshImplicitPlaces() {
+		for (VisualComponent c : getRoot().getComponents()) {
+			if (c instanceof VisualPlace)
+				if (!lockedPlaces.contains(c))
+				maybeMakeImplicit((VisualPlace)c);
+		}
+
 	}
 
 	@Override
@@ -297,11 +295,7 @@ public class VisualSTG extends VisualPetriNet  {
 
 	public VisualSTG(STG model) throws VisualModelInstantiationException {
 		super(model);
-
-		for (VisualComponent c : getRoot().getComponents()) {
-			if (c instanceof VisualPlace)
-				maybeMakeImplicit((VisualPlace)c);
-		}
+		refreshImplicitPlaces();
 
 		addListener(new Listener());
 	}
@@ -325,6 +319,7 @@ public class VisualSTG extends VisualPetriNet  {
 	protected void removeNodes(Collection<VisualNode> nodes) {
 		lockPlaces(nodes);
 		super.removeNodes(nodes);
+		refreshImplicitPlaces();
 		lockedPlaces.clear();
 	}
 }
