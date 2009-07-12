@@ -55,8 +55,11 @@ public class ImplicitPlaceArc extends VisualConnection {
 		return refCon1.getID()==ID||refCon2.getID()==ID;
 	}
 
+
+
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration ("Capacity", "getCapacity", "setCapacity", int.class));
 
 		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,
@@ -132,6 +135,14 @@ public class ImplicitPlaceArc extends VisualConnection {
 
 	public void setTokens(int tokens) {
 		implicitPlace.setTokens(tokens);
+	}
+
+	public int getCapacity() {
+		return implicitPlace.getCapacity();
+	}
+
+	public void setCapacity(int c) {
+		implicitPlace.setCapacity(c);
 	}
 
 	public Place getImplicitPlace() {

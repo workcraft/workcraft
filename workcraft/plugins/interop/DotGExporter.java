@@ -141,6 +141,7 @@ public class DotGExporter implements Exporter {
 		List<String> connections1 = new ArrayList<String>(); // connections from transitions
 		List<String> connections2 = new ArrayList<String>(); // connections from places
 		String tokens = ""; // all the token markings, separated with space
+		String capacity = ""; // each token capacity
 
 		for (SignalTransition st : transitions) {
 			List<String> ts = new ArrayList<String>();
@@ -177,6 +178,11 @@ public class DotGExporter implements Exporter {
 				if (p.getTokens()>1)
 					tokens+="="+p.getTokens();
 			}
+
+			if (p.getCapacity()!=1) {
+				capacity+=" "+getName(allnames, p)+"="+p.getCapacity();
+			}
+
 		}
 
 		////////////////////////////////////////////////////
@@ -223,6 +229,9 @@ public class DotGExporter implements Exporter {
 			for (String s : connections2) out.print(s+"\n");
 
 			out.print(".marking { "+tokens+" }\n");
+			if (!capacity.equals(""))
+				out.print(".capacity "+capacity+"\n");
+
 			out.print(".end\n");
 			out.close();
 

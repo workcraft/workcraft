@@ -187,6 +187,58 @@ public class DotGImporter implements Importer {
 						if (s.length==0) continue;
 						if (s[0].charAt(0)=='#') continue;
 
+						if (s[0].equals(".capacity")) {
+							p = Pattern.compile(".capacity ([^#]*)");
+							m = p.matcher(str);
+							if (!m.find()) continue;
+							str = m.group(1).trim();
+							s = splitToTokens(str);
+
+							for (int i=0;i<s.length;i++) {
+
+								if (s[i].charAt(0)!='<') {
+									// simple case, just find the place and set the capacity
+									p = Pattern.compile("([a-zA-Z\\_][a-zA-Z\\_0-9\\/]*)(=([0-9]+))?");
+									m = p.matcher(s[i]);
+									if (m.find()) {
+										str=m.group(1); // name of the signal
+
+										if (m.group(m.groupCount())!=null) {
+											((Place)bem.get(str)).setCapacity(Integer.valueOf(m.group(m.groupCount())));
+										}
+									}
+
+								} else {
+
+									str = "\\<("+signalPattern+"),("+signalPattern+")\\>(=([0-9]+))?";
+									p = Pattern.compile(str);
+									m = p.matcher(s[i]);
+
+									if (m.find()) {
+//									for (int j=0;j<=m.groupCount();j++)
+//										System.out.println(m.group(j));
+										// groups 1 and 6 correspond to full transition names
+										SignalTransition et1 = (SignalTransition)bem.get(m.group(1));
+										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
+
+										if (et1!=null&&et2!=null) {
+											Collection<Component> ep = et1.getPostset();
+											ep.retainAll(et2.getPreset());
+
+											Iterator<Component> it = ep.iterator();
+
+											if (m.group(m.groupCount())!=null) {
+												((Place)it.next()).setCapacity(Integer.valueOf(m.group(m.groupCount())));
+											}
+										}
+
+									}
+								}
+
+							}
+							continue;
+						}
+
 						if (s[0].equals(".marking")) {
 							p = Pattern.compile(".marking \\{([^#]*)\\}");
 							m = p.matcher(str);
@@ -243,7 +295,7 @@ public class DotGImporter implements Importer {
 								}
 
 							}
-							break;
+							continue;
 						}
 
 						if (s[0].charAt(0)=='.') continue; // ignore other lines beginning with '.' (some unimplemented features?)

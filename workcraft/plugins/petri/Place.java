@@ -11,13 +11,15 @@ import org.workcraft.util.XmlUtil;
 @VisualClass("org.workcraft.plugins.petri.VisualPlace")
 public class Place extends Component {
 	protected int tokens = 0;
+	protected int capacity = 1;
+
 
 	public Place(Element componentElement) {
 		super(componentElement);
 
 		Element e = XmlUtil.getChildElement(Place.class.getSimpleName(), componentElement);
 		tokens = XmlUtil.readIntAttr(e, "tokens", 0);
-
+		capacity = XmlUtil.readIntAttr(e, "capacity", 1);
 		addXMLSerialisable();
 	}
 
@@ -25,6 +27,14 @@ public class Place extends Component {
 		super();
 
 		addXMLSerialisable();
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int c) {
+		this.capacity = c;
 	}
 
 	public int getTokens() {
@@ -42,6 +52,8 @@ public class Place extends Component {
 			}
 			public void serialise(Element element) {
 				XmlUtil.writeIntAttr(element, "tokens", tokens);
+				if (capacity!=1)
+					XmlUtil.writeIntAttr(element, "capacity", capacity);
 			}
 		});
 	}

@@ -86,6 +86,14 @@ public class VisualPlace extends VisualComponent {
 		getPlace().setTokens(tokens);
 	}
 
+	public int getCapacity() {
+		return getPlace().getCapacity();
+	}
+
+	public void setCapacity(int c) {
+		getPlace().setCapacity(c);
+	}
+
 	public VisualPlace(Place place) {
 		super(place);
 		addPropertyDeclarations();
@@ -98,6 +106,7 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration ("Capacity", "getCapacity", "setCapacity", int.class));
 		addPropertyDeclaration(new PropertyDeclaration ("Token color", "getTokenColor", "setTokenColor", Color.class));
 
 		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {

@@ -69,6 +69,22 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
+	public class RegularVisualReferenceResolver implements VisualReferenceResolver {
+		public VisualComponent getVisualComponentByID(int ID) {
+			return VisualModel.this.getVisualComponentByID(ID);
+		}
+		public VisualConnection getVisualConnectionByID(int ID) {
+			return VisualModel.this.getVisualConnectionByID(ID);
+		}
+
+		public Component getComponentByID(int ID) {
+			return mathModel.getComponentByID(ID);
+		}
+		public Connection getConnectionByID(int ID) {
+			return mathModel.getConnectionByID(ID);
+		}
+	}
+
 	public VisualComponent getFirstVisualComponentByRefID(int ID) {
 		for (VisualComponent vc: getVisualComponents()) {
 			if (vc.isReferring(ID)) return vc;
@@ -143,7 +159,7 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
-	private RenamedVisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
+	private VisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
 
 	private MathModel mathModel;
 	private VisualGroup root;
@@ -173,19 +189,29 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
+		initRenames();
+
 		for (Component component : mathModel.getComponents()) {
 			VisualNode visualComponent;
 			visualComponent = ComponentFactory.createVisualComponent(component);
+
 			if (visualComponent != null) {
 				getRoot().add(visualComponent);
 				addComponents(visualComponent);
+
+				// because visual nodes are just created, we use rename lists to map math nodes to visual ones
+				visualComponentRenames.put(component.getID(), visualComponent.getID());
 			}
 		}
 
 		for (Connection connection : mathModel.getConnections()) {
 			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
+
 			VisualNode.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()).add(visualConnection);
 			addConnection(visualConnection);
+
+			visualConnectionRenames.put(connection.getID(), visualConnection.getID());
+
 		}
 	}
 
@@ -241,14 +267,14 @@ public class VisualModel implements Plugin, Model {
 		return null;
 	}
 
-	protected final void initPaste() {
+	protected final void initRenames() {
 		visualComponentRenames.clear();
 		visualConnectionRenames.clear();
 	}
 
 	protected Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
 
-		initPaste();
+		initRenames();
 
 		List<Element> children = XmlUtil.getChildElements("component", visualElement);
 		children.addAll(XmlUtil.getChildElements("group", visualElement));
@@ -1018,7 +1044,7 @@ public class VisualModel implements Plugin, Model {
 		return propertyChangeListener;
 	}
 
-	protected RenamedVisualReferenceResolver getReferenceResolver() {
+	protected VisualReferenceResolver getReferenceResolver() {
 		return referenceResolver;
 	}
 }
