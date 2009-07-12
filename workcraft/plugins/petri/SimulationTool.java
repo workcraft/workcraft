@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -16,6 +17,8 @@ public class SimulationTool extends AbstractTool {
 
 	private VisualPetriNet visualNet;
 	private PetriNet net;
+
+	HashMap<Integer, Integer> tokens = new HashMap<Integer, Integer>();
 
 	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
 
@@ -41,10 +44,22 @@ public class SimulationTool extends AbstractTool {
 	}
 
 	@Override
+	public void deactivated(GraphEditor editor)
+	{
+
+		for (Place p : net.getPlaces()) {
+			p.setTokens(tokens.get(p.getID()));
+		}
+	}
+
+	@Override
 	public void activated(GraphEditor editor)
 	{
 		visualNet = (VisualPetriNet)editor.getModel();
 		net = (PetriNet)visualNet.getMathModel();
+		for (Place p : net.getPlaces()) {
+			tokens.put(p.getID(), p.getTokens());
+		}
 
 		highlightEnabledTransitions();
 	}
