@@ -42,12 +42,11 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		if (editor.hasFocus()) {
-			if (e.getButton() != MouseEvent.BUTTON2)
-				toolProvider.getTool().mouseClicked(new GraphEditorMouseEvent(editor, e));
-		} else if (e.getButton() == MouseEvent.BUTTON1)
+		if (!editor.hasFocus())
 			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
 
+		if (e.getButton() != MouseEvent.BUTTON2)
+			toolProvider.getTool().mouseClicked(new GraphEditorMouseEvent(editor, e));
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -64,14 +63,16 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (editor.hasFocus())
-			if (e.getButton() == MouseEvent.BUTTON2)
-				panDrag = true;
-			else {
-				GraphEditorTool tool = toolProvider.getTool();
-				if (tool != null)
-					tool.mousePressed(new GraphEditorMouseEvent(editor, e));
-			}
+		if (!editor.hasFocus())
+			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+
+		if (e.getButton() == MouseEvent.BUTTON2)
+			panDrag = true;
+		else {
+			GraphEditorTool tool = toolProvider.getTool();
+			if (tool != null)
+				tool.mousePressed(new GraphEditorMouseEvent(editor, e));
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {

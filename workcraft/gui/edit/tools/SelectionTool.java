@@ -108,8 +108,8 @@ public class SelectionTool extends AbstractTool {
 						addToSelection(model, ap);
 
 					} else {
-//						clearSelection(model);
-//						addToSelection(model, node);
+						clearSelection(model);
+						addToSelection(model, node);
 //						if (node instanceof VisualConnectionAnchorPoint) {
 //							addToSelection(model, ((VisualConnectionAnchorPoint)node).getParentConnection());
 //						}
