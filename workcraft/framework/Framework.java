@@ -458,7 +458,7 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public Model load(String path) throws LoadFromXMLException {
+	public static Model load(String path) throws LoadFromXMLException {
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(path);
@@ -468,7 +468,7 @@ public class Framework {
 		return load(fis);
 	}
 
-	public Model load(InputStream is) throws LoadFromXMLException {
+	public static Model load(InputStream is) throws LoadFromXMLException {
 		try {
 			Document doc = XmlUtil.loadDocument(is);
 

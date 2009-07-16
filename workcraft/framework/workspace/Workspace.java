@@ -48,7 +48,7 @@ public class Workspace {
 			we.setTemporary(temporary);
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
-				Model model = framework.load(f.getPath());
+				Model model = Framework.load(f.getPath());
 				we.setModel(model);
 			}
 			workspace.add(we);
@@ -77,7 +77,7 @@ public class Workspace {
 	}
 
 	public Model loadModel(WorkspaceEntry we) throws LoadFromXMLException {
-		Model model = framework.load(we.getFile().getPath());
+		Model model = Framework.load(we.getFile().getPath());
 		fireModelLoaded(we);
 		return model;
 	}
