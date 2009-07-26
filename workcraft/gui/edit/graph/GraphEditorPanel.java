@@ -87,6 +87,7 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		visualModel.draw(g2d);
 
 		if (hasFocus())
