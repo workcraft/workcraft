@@ -25,7 +25,9 @@ import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
+import org.workcraft.util.Geometry.CurveSplitResult;
 
 
 
@@ -39,6 +41,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	interface ConnectionImplementation {
 		public void update();
+		public void updateVisibleRange(double tStart, double tEnd);
 		public void draw (Graphics2D g);
 
 		public Point2D getPointOnConnection(double t);
@@ -64,7 +67,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	class Bezier implements ConnectionImplementation {
 		private BezierAnchorPoint cp2 = new BezierAnchorPoint(VisualConnection.this, second);
 		private BezierAnchorPoint cp1 = new BezierAnchorPoint(VisualConnection.this, first);
+
+
 		private CubicCurve2D curve = new CubicCurve2D.Double();
+		private CubicCurve2D visibleCurve = new CubicCurve2D.Double();
+
 		private double ax, bx, cx, ay, by, cy;
 		private Rectangle2D boundingBox = null;
 		//private boolean coeff_valid = false;
@@ -159,9 +166,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 
 		public void draw(Graphics2D g) {
-
-			g.draw(curve);
-
+			g.draw(visibleCurve);
 		}
 
 		public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
@@ -370,8 +375,27 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			if (anchor==cp2) cp2.setPosition(cp2.getParentConnection().secondCenter);
 		}
 
+		private CubicCurve2D getPartialCurve(double tStart, double tEnd)
+		{
+			CubicCurve2D result = new CubicCurve2D.Double();
+
+			CubicCurve2D fullCurve = new CubicCurve2D.Double();
+			fullCurve.setCurve(cp1.getParentConnection().firstCenter, cp1.getPosition(), cp2.getPosition(), cp2.getParentConnection().secondCenter);
+
+			CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
+			CurveSplitResult secondSplit = Geometry.splitCubicCurve(fullCurve, tEnd);
+
+			result.setCurve(firstSplit.splitPoint, firstSplit.control2, secondSplit.control1, secondSplit.splitPoint);
+
+			return result;
+		}
+
+		public void updateVisibleRange(double tStart, double tEnd) {
+			visibleCurve = getPartialCurve(tStart, tEnd);
+		}
+
+
 		public void update() {
-			curve.setCurve(cp1.getParentConnection().firstCenter, cp1.getPosition(), cp2.getPosition(), cp2.getParentConnection().secondCenter);
 			updateCoefficients();
 
 			boundingBox = curve.getBounds2D();
@@ -703,6 +727,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 				}
 			}
 		}
+
+		@Override
+		public void updateVisibleRange(double start, double end) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 
 	protected Connection refConnection;
@@ -917,6 +947,25 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 
+	private double getBorderPoint (VisualComponent collisionComponent, AffineTransform toComponentParent, double tStart, double tEnd)
+	{
+		Point2D point = new Point2D.Double();
+
+		while(Math.abs(tEnd-tStart) > 1e-6)
+		{
+			double t = (tStart + tEnd)*0.5;
+			point = getPointOnConnection(t);
+
+			toComponentParent.transform(point, point);
+			if (collisionComponent.hitTestInParentSpace(point) != 0)
+				tStart = t;
+			else
+				tEnd = t;
+		}
+
+		return tStart;
+	}
+
 	public void update() {
 		if (getParent() == null)
 			return;
@@ -939,12 +988,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		t1.transform(firstCenter, firstCenter);
 		t2.transform(secondCenter, secondCenter);
 
-		impl.update();
-
 		// create transforms from this connection's parent space to
 		// components' parent spaces, for hit testing
+		AffineTransform it1;
 		AffineTransform it2;
 		try {
+			it1 = t1.createInverse();
 			it2 = t2.createInverse();
 		} catch (NoninvertibleTransformException e) {
 			e.printStackTrace();
@@ -953,23 +1002,18 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		Point2D pt = new Point2D.Double();
 
-		// find arrow head position
-		double t = 0.0; double dt = 1.0;
+		impl.update();
 
-		while(dt > 1e-6)
-		{
-			dt /= 2.0;
-			t += dt;
-			pt = getPointOnConnection(t);
-			arrowHeadPosition.setLocation(pt);
+		// find connection curve starting point
+		double tStart = getBorderPoint(first, it1, 0, 1);
+		double tEnd = getBorderPoint(second, it2, 1, 0);
 
-			it2.transform(pt, pt);
-			if (second.hitTestInParentSpace(pt) != 0)
-				t-=dt;
-		}
+		Point2D pointEnd = getPointOnConnection(tEnd);
 
-		//  find arrow base position
-		dt = t; t = 0.0;
+		arrowHeadPosition = pointEnd;
+
+		double dt = tEnd;
+		double t = 0.0;
 
 		while(dt > 1e-6)
 		{
@@ -981,6 +1025,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 
 		arrowOrientation = Math.atan2(arrowHeadPosition.getY() - pt.getY() , arrowHeadPosition.getX() - pt.getX());
+
+		impl.updateVisibleRange(tStart, t);
 	}
 
 	@Override

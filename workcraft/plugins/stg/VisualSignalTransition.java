@@ -125,8 +125,8 @@ public class VisualSignalTransition extends VisualTransition {
 				firePropertyChanged("shape");
 			}
 
-			g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
-			g.fill(textBB);
+			//g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
+		//	g.fill(textBB);
 
 			g.setColor(Coloriser.colorise(getColor(), getColorisation()));
 			g.drawGlyphVector(glyphVector, textX, textY);
