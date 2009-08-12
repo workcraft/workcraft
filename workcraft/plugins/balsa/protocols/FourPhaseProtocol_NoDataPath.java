@@ -22,27 +22,27 @@ import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
-public class FourPhaseProtocol implements HandshakeStgBuilder
+public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 {
 	private StgBuilder builder;
 
 	public ActivePullStg create(ActivePull handshake) {
 		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
 
-		final InputDataSignal[] signals = DataSignalBuilder.buildInputDataSignals(handshake, builder);
-
 		return new ActivePullStg()
 		{
 			public StgTransition getActivator() {
 				return sync.getActiveSync().getActivator();
 			}
+
 			public ReadablePlace getData(int index, boolean value) {
-				return value ? signals[index].p1 : signals[index].p0;
+				return null;
 			}
 
 			public TransitionOutput getDeactivationNotificator() {
 				return sync.getActiveSync().getDeactivationNotificator();
 			}
+
 			public StgPlace getReleaseDataPlace() {
 				return sync.getRtz();
 			}
@@ -51,7 +51,18 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 
 
 	public ActivePushStg create(ActivePush handshake) {
-		throw new RuntimeException("Not implemented");
+		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
+
+		return new ActivePushStg()
+		{
+			public StgTransition getActivator() {
+				return sync.getActiveSync().getActivator();
+			}
+
+			public TransitionOutput getDeactivationNotificator() {
+				return sync.getActiveSync().getDeactivationNotificator();
+			}
+		};
 	}
 
 
@@ -110,13 +121,41 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	}
 
 	public PassivePullStg create(PassivePull handshake) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("Not implemented");
+		final PassiveSyncStg sync = create((PassiveSync)handshake);
+
+		return new PassivePullStg()
+		{
+			public TransitionOutput getActivationNotificator() {
+				return sync.getActivationNotificator();
+			}
+
+			public StgTransition getDeactivator() {
+				return sync.getDeactivator();
+			}
+		};
 	}
 
 	public PassivePushStg create(PassivePush handshake) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("Not implemented");
+		final PassiveSyncStg sync = create((PassiveSync)handshake);
+
+		return new PassivePushStg()
+		{
+			public TransitionOutput getActivationNotificator() {
+				return sync.getActivationNotificator();
+			}
+
+			public StgTransition getDeactivator() {
+				return sync.getDeactivator();
+			}
+
+			public ReadablePlace getData(int index, boolean value) {
+				return null;
+			}
+
+			public StgPlace getReleaseDataPlace() {
+				return null;
+			}
+		};
 	}
 
 	public PassiveSyncStg create(PassiveSync handshake) {
@@ -159,10 +198,4 @@ public class FourPhaseProtocol implements HandshakeStgBuilder
 	public void setStgBuilder(StgBuilder builder) {
 		this.builder = builder;
 	}
-}
-
-class InputDataSignal
-{
-	StgPlace p0;
-	StgPlace p1;
 }

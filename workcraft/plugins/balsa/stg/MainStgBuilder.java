@@ -30,7 +30,7 @@ public class MainStgBuilder {
 
 		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.SequenceOptimised.class, new SequenceOptimisedStgBuilder());
-		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder_NoDataPath());
 		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder());
 
 		return result;
