@@ -15,8 +15,8 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualReferenceResolver;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
@@ -158,7 +158,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 	}
 
 	@Override
-	public Set<MathNode> getReferences() {
+	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
 		ret.add(implicitPlace);
 		ret.add(refCon1);

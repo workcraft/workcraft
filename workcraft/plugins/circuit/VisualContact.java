@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -53,11 +54,11 @@ public class VisualContact extends VisualComponent {
 
 
 	@Override
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return 1;
+			return this;
 		else
-			return 0;
+			return null;
 	}
 
 }

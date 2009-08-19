@@ -1,12 +1,12 @@
 package org.workcraft.framework;
 
-public class HistoryEvent extends Event {
+public class HistoryEvent {
 	private String undoScript;
 	private String redoScript;
 	private String eventDescription;
 
 	public HistoryEvent (String undoScript, String redoScript, String eventDescription, Object sender) {
-		super(sender);
+		//super(sender);
 		this.undoScript = undoScript;
 		this.redoScript = redoScript;
 		this.eventDescription = eventDescription;

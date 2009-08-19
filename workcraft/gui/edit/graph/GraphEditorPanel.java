@@ -9,14 +9,15 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 
 import javax.swing.JPanel;
 
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelEventListener;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.edit.tools.GraphEditor;
@@ -149,12 +150,11 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		return workspaceEntry;
 	}
 
-	public void onSelectionChanged() {
+	public void onSelectionChanged(Collection<HierarchyNode> selection) {
 		repaint();
 
-		VisualNode selection[] = visualModel.getSelection();
-		if (selection.length == 1 && selection[0] instanceof PropertyEditable) {
-			mainWindow.getPropertyView().setObject((PropertyEditable)selection[0]);
+		if (selection.size() == 1 && selection.iterator().next() instanceof PropertyEditable) {
+			mainWindow.getPropertyView().setObject((PropertyEditable)selection.iterator().next());
 		} else {
 			mainWindow.getPropertyView().clearObject();
 		}

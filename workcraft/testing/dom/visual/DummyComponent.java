@@ -3,6 +3,7 @@ package org.workcraft.testing.dom.visual;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 
@@ -32,10 +33,10 @@ class SquareNode extends VisualComponent
 	}
 
 	@Override
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		if(rectInner.contains(pointInLocalSpace))
-			return 1;
-		return 0;
+			return this;
+		return null;
 	}
 }
 

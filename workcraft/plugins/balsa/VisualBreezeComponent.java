@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
@@ -138,9 +139,9 @@ public class VisualBreezeComponent extends VisualGroup {
 	}
 
 	@Override
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		if(pointInLocalSpace.distanceSq(0.0, 0.0) < 0.25)
-			return 1;
+			return this;
 
 		return super.hitTestInLocalSpace(pointInLocalSpace);
 	}

@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.gui.Coloriser;
 
 public class VisualJoint extends VisualCircuitComponent {
@@ -42,12 +43,12 @@ public class VisualJoint extends VisualCircuitComponent {
 
 
 	@Override
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 
 		if (pointInLocalSpace.distanceSq(0, 0) < jointSize*jointSize/4)
-			return 1;
+			return this;
 		else
-			return 0;
+			return null;
 	}
 
 }

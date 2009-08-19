@@ -12,6 +12,7 @@ import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.PopupMenuBuilder;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -188,13 +189,8 @@ public class VisualRegister extends VisualComponent {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
 
 
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			return 1;
-	}
-
-	public Rectangle2D getBoundingBox() {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
+			return this;
 	}
 
 	public boolean isEnabled() {

@@ -16,16 +16,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.workcraft.dom.visual.VisualConnection;
-import org.workcraft.dom.visual.VisualConnectionAnchorPoint;
+import org.workcraft.dom.visual.Colorisable;
+import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
 import org.workcraft.framework.exceptions.PasteException;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.propertyeditor.PropertyEditable;
 
 public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
@@ -44,7 +49,7 @@ public class SelectionTool extends AbstractTool {
 	private Point2D prevPosition;
 	private Point2D startPosition;
 	private Point2D snapOffset;
-	private LinkedList<VisualNode> savedSelection = new LinkedList<VisualNode>();
+	private LinkedList<HierarchyNode> savedSelection = new LinkedList<HierarchyNode>();
 	private int selectionMode;
 
 	private GraphEditor currentEditor = null;
@@ -62,32 +67,32 @@ public class SelectionTool extends AbstractTool {
 	protected void clearSelection(VisualModel model) {
 		for (VisualNode so : model.getSelection()) {
 			so.clearColorisation();
-			if (so instanceof VisualConnection) ((VisualConnection)so).hideAnchorPoints();
 		}
 		model.selectNone();
 	}
 
-	protected void addToSelection(VisualModel model, VisualNode so) {
+	protected void addToSelection(VisualModel model, HierarchyNode so) {
 		model.addToSelection(so);
-		if (so instanceof VisualConnection) ((VisualConnection)so).showAnchorPoints();
-		so.setColorisation(selectionColor);
+		if(so instanceof Colorisable)
+			((Colorisable)so).setColorisation(selectionColor);
 	}
 
-	protected void addToSelection(VisualModel model, Collection<VisualNode> s) {
-		for (VisualNode n : s) {
+	protected void addToSelection(VisualModel model, Collection<HierarchyNode> s) {
+		for (HierarchyNode n : s) {
 			addToSelection(model, n);
-			if (n instanceof VisualConnection) ((VisualConnection)n).showAnchorPoints();
 		}
 	}
 
-	protected void removeFromSelection(VisualModel model, VisualNode so) {
+	protected void removeFromSelection(VisualModel model, HierarchyNode so) {
 		model.removeFromSelection(so);
-		if (so instanceof VisualConnection) ((VisualConnection)so).hideAnchorPoints();
-		so.clearColorisation();
+		if(so instanceof Colorisable)
+			((Colorisable)so).setColorisation(selectionColor);
 	}
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
+		//System.out.println ("mouseClicking <_<");
+
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
@@ -99,13 +104,14 @@ public class SelectionTool extends AbstractTool {
 			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
 				if (node != null) {
 					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2) {
-
+						/*
 						VisualConnectionAnchorPoint ap = ((VisualConnection)node).addAnchorPoint(e.getPosition());
 
 						clearSelection(model);
 						addToSelection(model, ap.getParentConnection());
 						ap.getParentConnection().getParent().add(ap);
 						addToSelection(model, ap);
+						*/
 
 					} else {
 						clearSelection(model);
@@ -140,6 +146,8 @@ public class SelectionTool extends AbstractTool {
 				}
 			}
 		}
+
+		//System.out.println ("mouseClicked >_>");
 	}
 
 	@Override
@@ -151,7 +159,7 @@ public class SelectionTool extends AbstractTool {
 			e.getEditor().snap(pos);
 			//
 			if (model.getSelection().length==1) {
-				for (VisualNode vn : model.getSelection()) {
+				/*for (VisualNode vn : model.getSelection()) {
 					if (vn instanceof VisualConnection) {
 						VisualConnection vc = (VisualConnection)vn;
 						if (vc.getConnectionType()!=VisualConnection.ConnectionType.POLYLINE||
@@ -163,7 +171,7 @@ public class SelectionTool extends AbstractTool {
 							}
 						}
 					}
-				}
+				}*/
 			}
 
 			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
@@ -171,13 +179,13 @@ public class SelectionTool extends AbstractTool {
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<VisualNode> hit = model.hitObjects(startPosition, e.getPosition());
+			LinkedList<Touchable> hit = model.hitObjects(startPosition, e.getPosition());
 
 			clearSelection(model);
-			for (VisualNode so: savedSelection)
+			for (HierarchyNode so: savedSelection)
 				addToSelection(model, so);
 
-			for(VisualNode so : hit)
+			for(Touchable so : hit)
 				if(selectionMode==SELECTION_ADD)
 					addToSelection(model, so);
 				else if(selectionMode==SELECTION_REMOVE)
@@ -192,6 +200,8 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+
+		//System.out.println ("mousePressing ^_^");
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
@@ -232,10 +242,13 @@ public class SelectionTool extends AbstractTool {
 		else if(e.getButton()==MouseEvent.BUTTON3)
 			if(drag!=DRAG_NONE)
 				cancelDrag(e);
+
+		//System.out.println ("mousePressed d^_^b");
 	}
 
 	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
+		//System.out.println ("mouseReleasing T_T");
 		VisualModel model = e.getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
@@ -244,6 +257,7 @@ public class SelectionTool extends AbstractTool {
 
 			drag = DRAG_NONE;
 		}
+		//System.out.println ("mouseReleased X_X");
 	}
 
 	private void grayOutNotActive(VisualModel model)
@@ -368,12 +382,14 @@ public class SelectionTool extends AbstractTool {
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
 		VisualModel model = e.getEditor().getModel().getVisualModel();
 
-		for(VisualNode so : model.selection())
-			if(so instanceof VisualTransformableNode) {
-				VisualTransformableNode node = (VisualTransformableNode) so;
-				node.setX(node.getX()+dx);
-				node.setY(node.getY()+dy);
-				node.firePropertyChanged("transform");
+		for(HierarchyNode node : model.selection())
+			if(node instanceof Movable) {
+				Movable mv = (Movable) node;
+				mv.setX(mv.getX()+dx);
+				mv.setY(mv.getY()+dy);
+
+				if(node instanceof PropertyEditable)
+					((PropertyEditable)node).firePropertyChanged("transform");
 			}
 
 		model.fireLayoutChanged();
@@ -387,7 +403,7 @@ public class SelectionTool extends AbstractTool {
 		}
 		else if(drag == DRAG_SELECT) {
 			clearSelection(model);
-			for (VisualNode so: savedSelection)
+			for (HierarchyNode so: savedSelection)
 				addToSelection(model, so);
 			savedSelection.clear();
 			model.fireSelectionChanged();

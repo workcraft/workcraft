@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualConnection;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -39,9 +39,7 @@ public class SaveLoadTests {
 
 	void testMathModelLoadWhileWhile(InputStream input) throws LoadFromXMLException
 	{
-		Framework f = new Framework();
-
-		Model model = f.load(input);
+		Model model = Framework.load(input);
 		BalsaCircuit circuit = (BalsaCircuit)model.getMathModel();
 
 		Assert.assertNull(model.getVisualModel());
@@ -87,9 +85,7 @@ public class SaveLoadTests {
 	@Test
 	public void TestVisualModelLoad() throws Exception
 	{
-		Framework f = new Framework();
-
-		Model model = f.load("./org/workcraft/testing/plugins/balsa/tests/LoopWhile_Visual.work");
+		Model model = Framework.load("./org/workcraft/testing/plugins/balsa/tests/LoopWhile_Visual.work");
 		testVisualModelLoopWhile(model);
 	}
 
@@ -106,7 +102,7 @@ public class SaveLoadTests {
 		VisualBreezeComponent wh = null;
 		VisualBreezeComponent loop = null;
 
-		for(VisualNode node : visual.getRoot().getChildren())
+		for(HierarchyNode node : visual.getRoot().getChildren())
 			if(node instanceof VisualConnection)
 				con = (VisualConnection)node;
 			else if(node instanceof VisualBreezeComponent)
@@ -170,9 +166,9 @@ public class SaveLoadTests {
 		//new Framework().save(circuit, temp);
 		//temp.close();
 		new Framework().save(circuit, stream);
-
+		testVisualModelLoopWhile(circuit);
 		testVisualModelLoopWhile(
-				new Framework().load(
+				Framework.load(
 				new ByteArrayInputStream(stream.toByteArray())));
 	}
 
@@ -231,7 +227,7 @@ public class SaveLoadTests {
 
 		f.save(circuit, stream);
 
-		Model loaded = f.load(new ByteArrayInputStream(stream.toByteArray()));
+		Model loaded = Framework.load(new ByteArrayInputStream(stream.toByteArray()));
 
 		stream = new ByteArrayOutputStream();
 

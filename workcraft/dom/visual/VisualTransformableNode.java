@@ -11,7 +11,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
 
-public abstract class VisualTransformableNode extends VisualNode {
+public abstract class VisualTransformableNode extends VisualNode implements Movable {
 	private Point2D _tmpPoint = new Point2D.Double();
 
 	protected AffineTransform localToParentTransform = new AffineTransform();
@@ -84,9 +84,9 @@ public abstract class VisualTransformableNode extends VisualNode {
 		firePropertyChanged("transform");
 	}
 
-	public abstract int hitTestInLocalSpace(Point2D pointInLocalSpace);
+	public abstract Touchable hitTestInLocalSpace(Point2D pointInLocalSpace);
 
-	public final int hitTestInParentSpace(Point2D pointInParentSpace) {
+	public Touchable hitTest(Point2D pointInParentSpace) {
 		parentToLocalTransform.transform(pointInParentSpace, _tmpPoint);
 		return hitTestInLocalSpace(_tmpPoint);
 	}
@@ -102,7 +102,7 @@ public abstract class VisualTransformableNode extends VisualNode {
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 
-    public final Rectangle2D getBoundingBoxInParentSpace() {
+    public final Rectangle2D getBoundingBox() {
     	Rectangle2D parentBB = getBoundingBoxInLocalSpace();
     	if(parentBB == null)
     		return null;
@@ -131,6 +131,39 @@ public abstract class VisualTransformableNode extends VisualNode {
 	public void applyTransform(AffineTransform transform) throws NoninvertibleTransformException
 	{
 		localToParentTransform.preConcatenate(transform);
+		transformChanged();
+	}
+
+	public double getRotation() {
+		return 0;
+	}
+
+	public double getScaleX() {
+		return 0;
+	}
+
+	public double getScaleY() {
+		return 0;
+	}
+
+	public AffineTransform getTransform() {
+		return getLocalToParentTransform();
+	}
+
+	public void setRotation(double rotation) {
+
+	}
+
+	public void setScaleX(double scaleX) {
+
+	}
+
+	public void setScaleY(double scaleY) {
+
+	}
+
+	public void setTransform(AffineTransform transform) {
+		localToParentTransform.setTransform(transform);
 		transformChanged();
 	}
 }

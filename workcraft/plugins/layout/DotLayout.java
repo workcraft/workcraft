@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 
 import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.layout.Layout;
@@ -26,7 +26,7 @@ public class DotLayout implements Layout {
 		out.println("digraph work {");
 		out.println("graph [nodesep=\"2.0\"];");
 		out.println("node [shape=box];");
-		for (VisualNode n : model.getRoot().getChildren()) {
+		for (HierarchyNode n : model.getRoot().getChildren()) {
 			if (n instanceof VisualComponent) {
 				VisualComponent comp = (VisualComponent) n;
 				Integer id = comp.getReferencedComponent().getID();

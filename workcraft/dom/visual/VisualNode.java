@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +16,8 @@ import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.MathNode;
-import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.XMLSerialisation;
+import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -24,8 +25,21 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
 
-public abstract class VisualNode implements PropertyEditable {
+public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable {
+
+	public Rectangle2D getBoundingBox() {
+		return null;
+	}
+
+	public Touchable hitTest(Point2D point) {
+		return null;
+	}
+
 	private int ID = -1;
+
+	public Collection<HierarchyNode> getChildren() {
+		return null;
+	}
 
 	final protected void setID(int id) {
 		ID = id;
@@ -51,8 +65,6 @@ public abstract class VisualNode implements PropertyEditable {
 
 	public abstract void draw (Graphics2D g);
 
-	public abstract int hitTestInParentSpace(Point2D pointInParentSpace);
-
 	public VisualGroup getParent() {
 		return parent;
 	}
@@ -61,29 +73,16 @@ public abstract class VisualNode implements PropertyEditable {
 		this.parent = parent;
 	}
 
-	public boolean insideRectangle(Rectangle2D rect) {
-		Rectangle2D boundingBox = getBoundingBoxInParentSpace();
-		if (boundingBox!=null&&rect.contains(boundingBox)) return true;
-		return false;
-	}
-
-	public boolean touchesRectangle(Rectangle2D rect) {
-		Rectangle2D boundingBox = getBoundingBoxInParentSpace();
-
-		if (boundingBox!=null&&rect.intersects(boundingBox)) return true;
-		return false;
-	}
-
-	public int hitTestInAncestorSpace(Point2D pointInUserSpace, VisualGroup ancestor) throws NotAnAncestorException {
+	public Touchable hitTestInAncestorSpace(Point2D pointInUserSpace, VisualGroup ancestor) throws NotAnAncestorException {
 
 		if (ancestor != parent) {
 			Point2D pt = new Point2D.Double();
 			pt.setLocation(pointInUserSpace);
 			AffineTransform t = getParentToAncestorTransform(ancestor);
 			t.transform(pt,pt);
-			return hitTestInParentSpace(pt);
+			return hitTest(pt);
 		} else
-			return hitTestInParentSpace(pointInUserSpace);
+			return hitTest(pointInUserSpace);
 	}
 
 	private AffineTransform optimisticInverse(AffineTransform transform)
@@ -116,10 +115,8 @@ public abstract class VisualNode implements PropertyEditable {
 		return t;
 	}
 
-	public abstract Rectangle2D getBoundingBoxInParentSpace();
-
 	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualGroup ancestor) throws NotAnAncestorException {
-		Rectangle2D parentBB = getBoundingBoxInParentSpace();
+		Rectangle2D parentBB = getBoundingBox();
 
 		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
 		Point2D p1 = new Point2D.Double(parentBB.getMaxX(), parentBB.getMaxY());
@@ -225,7 +222,7 @@ public abstract class VisualNode implements PropertyEditable {
 		serialisation.serialise(componentElement);
 	}
 
-	public Set<MathNode> getReferences() {
+	public Set<MathNode> getMathReferences() {
 		return new HashSet<MathNode>();
 	}
 

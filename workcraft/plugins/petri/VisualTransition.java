@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -60,10 +61,10 @@ public class VisualTransition extends VisualComponent {
 		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
 
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return 1;
+			return this;
 		else
-			return 0;
+			return null;
 	}
 }

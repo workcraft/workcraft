@@ -2,13 +2,13 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -37,7 +37,7 @@ public class VisualCircuitComponent extends VisualComponent {
 
 	protected Rectangle2D getContactLabelBB(Graphics2D g) {
 		double maxi, maxo;
-		double ysumi, ysumo, cury;
+		double ysumi, ysumo;
 		Rectangle2D cur;
 		ysumi=0;
 		ysumo=0;
@@ -62,13 +62,10 @@ public class VisualCircuitComponent extends VisualComponent {
 	}
 
 	protected void drawContactsInLocalSpace(Graphics2D g, Rectangle2D BBox) {
-		double dx, dy;
-		double maxi=0, maxo=0;
-		double ysumi, ysumo, cury;
+		double maxi=0;
+		double ysumi, cury;
 		Rectangle2D cur;
 		ysumi=0;
-		ysumo=0;
-
 
 		cury=-ysumi/2;
 		for (VisualContact c: inputs) {
@@ -112,11 +109,11 @@ public class VisualCircuitComponent extends VisualComponent {
 
 
 	@Override
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return 1;
+			return this;
 		else
-			return 0;
+			return null;
 	}
 
 }

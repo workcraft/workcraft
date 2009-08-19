@@ -9,7 +9,7 @@ import org.workcraft.util.XmlUtil;
  * @author Ivan Poliakov
  *
  */
-@VisualClass("org.workcraft.dom.visual.VisualConnection")
+@VisualClass("org.workcraft.dom.visual.connections.VisualConnection")
 public class Connection extends MathNode {
 	private Component first;
 	private Component second;

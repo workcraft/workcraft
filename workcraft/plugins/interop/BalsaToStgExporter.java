@@ -62,7 +62,7 @@ public abstract class BalsaToStgExporter {
 
 		String [] args = new String [tempFiles.size() + 2];
 		args[0] = pcompPath;
-		args[1] = "-i";
+		args[1] = "-d";
 		for(int i=0;i<tempFiles.size();i++)
 			args[i+2] = tempFiles.get(i).getPath();
 

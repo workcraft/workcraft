@@ -13,7 +13,7 @@ public class Contact extends Component {
 
 	public enum IOType {input, output};
 	private IOType iotype;
-	private boolean invertSignal = false;
+	//private boolean invertSignal = false;
 
 	public Contact(Element xmlElement) {
 		super(xmlElement);

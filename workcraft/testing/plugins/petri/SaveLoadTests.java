@@ -43,9 +43,8 @@ public class SaveLoadTests {
 	@Test
 	public void TestMathModelLoad() throws Exception
 	{
-		Framework f = new Framework();
 
-		Model model = f.load(new Base16Reader(testDataMathModel));
+		Model model = Framework.load(new Base16Reader(testDataMathModel));
 		PetriNet petri = (PetriNet)model.getMathModel();
 
 		Assert.assertNull(model.getVisualModel());
@@ -57,9 +56,7 @@ public class SaveLoadTests {
 	@Test
 	public void TestVisualModelLoad() throws Exception
 	{
-		Framework f = new Framework();
-
-		Model model = f.load(new Base16Reader(testDataVisualModel));
+		Model model = Framework.load(new Base16Reader(testDataVisualModel));
 		VisualPetriNet petriVisual = (VisualPetriNet)model.getVisualModel();
 		PetriNet petri = (PetriNet)model.getMathModel();
 

@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.VisualNodeSerialiser;
@@ -54,7 +55,11 @@ public class VisualGroup extends VisualTransformableNode {
 
 					@Override
 					public Boolean fn(T arg) {
-						Rectangle2D boundingBox = arg.getBoundingBoxInParentSpace();
+						Rectangle2D boundingBox = arg.getBoundingBox();
+
+						//System.out.println (boundingBox.toString());
+						//System.out.println (pointInLocalSpace.toString());
+
 						return
 							boundingBox != null &&
 							boundingBox.contains(pointInLocalSpace);
@@ -65,14 +70,14 @@ public class VisualGroup extends VisualTransformableNode {
 
 	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
 		for (T node : reverse(filterByBB(nodes, pointInLocalSpace)))
-			if (node.hitTestInParentSpace(pointInLocalSpace) != 0)
+			if (node.hitTest(pointInLocalSpace) != null)
 				return node;
 		return null;
 	}
 
 	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
 	{
-		Rectangle2D addedRect = node.getBoundingBoxInParentSpace();
+		Rectangle2D addedRect = node.getBoundingBox();
 
 		if(addedRect == null)
 			return rect;
@@ -287,8 +292,8 @@ public class VisualGroup extends VisualTransformableNode {
 		return rect;
 	}
 
-	public final Set<VisualNode> getChildren() {
-		return new LinkedHashSet<VisualNode>(children);
+	public final Collection<HierarchyNode> getChildren() {
+		return new LinkedHashSet<HierarchyNode>(children);
 	}
 
 	public final Set<VisualComponent> getComponents() {
@@ -346,8 +351,8 @@ public class VisualGroup extends VisualTransformableNode {
 
 
 
-	public LinkedList<VisualNode> hitObjects(Point2D p1, Point2D p2) {
-		LinkedList<VisualNode> hit = new LinkedList<VisualNode>();
+	public LinkedList<Touchable> hitObjects(Point2D p1, Point2D p2) {
+		LinkedList<Touchable> hit = new LinkedList<Touchable>();
 
 		Rectangle2D rect = new Rectangle2D.Double(
 				Math.min(p1.getX(), p2.getX()),
@@ -355,36 +360,26 @@ public class VisualGroup extends VisualTransformableNode {
 				Math.abs(p1.getX()-p2.getX()),
 				Math.abs(p1.getY()-p2.getY()));
 
-		for (VisualNode n : children) {
+		for (Touchable n : childrenOfType(Touchable.class)) {
 			if (p1.getX()<=p2.getX()) {
-				if (n.insideRectangle(rect))
+				if (TouchableHelper.insideRectangle(n, rect))
 					hit.add(n);
 			} else {
-				if (n.touchesRectangle(rect))
+				if (TouchableHelper.touchesRectangle(n, rect))
 					hit.add(n);
 			}
 		}
 		return hit;
 	}
 
-	public LinkedList<VisualNode> hitObjects(Rectangle2D rectInLocalSpace) {
+	public LinkedList<Touchable> hitObjects(Rectangle2D rectInLocalSpace) {
 		return hitObjects(
 				new Point2D.Double(rectInLocalSpace.getMinX(), rectInLocalSpace.getMinY()),
 				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
 	}
 
-	public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		VisualNode hit = hitNode(pointInLocalSpace);
-		if (hitNode(pointInLocalSpace)==null)
-			return 0;
-		else
-			if (hit instanceof VisualComponent)
-				return 1;
-			else if (hit instanceof VisualConnection)
-				return 2;
-			else if (hit instanceof VisualGroup)
-				return 3;
-		return 0;
+	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return hitNode(pointInLocalSpace);
 	}
 
 	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
@@ -406,14 +401,6 @@ public class VisualGroup extends VisualTransformableNode {
 		for (VisualConnection connection : connections.toArray(new VisualConnection[connections.size()])) {
 			getParent().add(connection);
 			result.add(connection);
-			try	{
-				for (VisualConnectionAnchorPoint ap: connection.getAnchorPointComponents()) {
-					ap.applyTransform(localToParentTransform);
-				}
-			}
-			catch(NoninvertibleTransformException ex) {
-				throw new RuntimeException("localToParentTransform is not invertible!");
-			}
 		}
 
 		try	{
@@ -442,17 +429,30 @@ public class VisualGroup extends VisualTransformableNode {
 		return result;
 	}
 
-	public Set<MathNode> getReferences() {
+	@SuppressWarnings("unchecked")
+	private <T> Collection<T> childrenOfType(Class<T> type)
+	{
+		ArrayList<T> result = new ArrayList<T>();
+
+		for(HierarchyNode node : children)
+		{
+			if(type.isInstance(node))
+				result.add((T)node);
+		}
+		return result;
+	}
+
+	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
-		for (VisualNode n: children)
-				ret.addAll(n.getReferences());
+		for (DependentNode n: childrenOfType(DependentNode.class))
+			ret.addAll(n.getMathReferences());
 		return ret;
 	}
 
 	public VisualNodeSerialiser getSerialiser() {
 		return new VisualNodeSerialiser()
 		{
-			public void serialise(VisualNode node, Element element) {
+			public void serialise(HierarchyNode node, Element element) {
 				((VisualGroup)node).serialiseToXML(element);
 			}
 		};

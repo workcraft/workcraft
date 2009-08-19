@@ -27,6 +27,8 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.GroupFactory;
@@ -156,6 +158,12 @@ public class VisualModel implements Plugin, Model {
 //				}
 //			}
 		}
+
+		@Override
+		public void onSelectionChanged(Collection<HierarchyNode> selection) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
@@ -164,7 +172,7 @@ public class VisualModel implements Plugin, Model {
 	private MathModel mathModel;
 	private VisualGroup root;
 
-	private LinkedList<VisualNode> selection = new LinkedList<VisualNode>();
+	private LinkedList<HierarchyNode> selection = new LinkedList<HierarchyNode>();
 	private LinkedList<VisualModelEventListener> listeners = new LinkedList<VisualModelEventListener>();
 
 //	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
@@ -218,6 +226,15 @@ public class VisualModel implements Plugin, Model {
 
 	public VisualModel(MathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
+
+
+
+
+
+
+
+
+
 		root = new VisualGroup();
 		currentLevel = root;
 		addXMLSerialisable();
@@ -272,7 +289,7 @@ public class VisualModel implements Plugin, Model {
 		visualConnectionRenames.clear();
 	}
 
-	protected Collection<VisualNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
+	protected Collection<HierarchyNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
 
 		initRenames();
 
@@ -280,7 +297,7 @@ public class VisualModel implements Plugin, Model {
 		children.addAll(XmlUtil.getChildElements("group", visualElement));
 		children.addAll(XmlUtil.getChildElements("connection", visualElement));
 
-		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
+		LinkedList<HierarchyNode> pasted = new LinkedList<HierarchyNode>();
 
 		try
 		{
@@ -292,12 +309,6 @@ public class VisualModel implements Plugin, Model {
 				addComponents(node);
 
 				pasted.add(node);
-
-				if (node instanceof VisualConnection) {
-					for (VisualConnectionAnchorPoint ap: ((VisualConnection)node).getAnchorPointComponents()) {
-						pasted.add(ap);
-					}
-				}
 			}
 
 			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
@@ -339,12 +350,6 @@ public class VisualModel implements Plugin, Model {
 				addComponents(node);
 
 				pasted.add(node);
-
-				if (node instanceof VisualConnection) {
-					for (VisualConnectionAnchorPoint ap: ((VisualConnection)node).getAnchorPointComponents()) {
-						pasted.add(ap);
-					}
-				}
 			}
 
 //			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
@@ -357,8 +362,8 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	static void nodesToXML (Element parentElement, Collection <? extends VisualNode> nodes) {
-		for (VisualNode node : nodes) {
+	static void nodesToXML (Element parentElement, Collection <? extends HierarchyNode> nodes) {
+		for (HierarchyNode node : nodes) {
 			if (node instanceof VisualComponent) {
 				VisualComponent vc = (VisualComponent)node;
 				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
@@ -381,25 +386,30 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	private void gatherReferences(Collection<VisualNode> nodes, HashSet<MathNode> referenceds) {
-		for (VisualNode n : nodes)
-			referenceds.addAll(n.getReferences());
+	private void gatherReferences(Collection<HierarchyNode> nodes, HashSet<MathNode> referenceds) {
+		for (HierarchyNode n : nodes)
+			if(n instanceof DependentNode)
+				referenceds.addAll(((DependentNode)n).getMathReferences());
 	}
 
-	public static Rectangle2D getNodesBoundingBox(Collection<VisualNode> nodes) {
-		Rectangle2D selectionBB = new Rectangle2D.Double();
+	private static Rectangle2D bbUnion(Rectangle2D bb1, Rectangle2D bb2)
+	{
+		if(bb1 == null)
+			return bb2;
+		if(bb2 == null)
+			return bb1;
+		Rectangle2D.union(bb1, bb2, bb1);
+		return bb1;
+	}
+
+	public static Rectangle2D getNodesBoundingBox(Collection<HierarchyNode> nodes) {
+		Rectangle2D selectionBB = null;
 
 		if (nodes.isEmpty()) return selectionBB;
 
-		boolean first=true;
-
-		for (VisualNode vn: nodes) {
-			if (first) {
-				selectionBB = vn.getBoundingBoxInParentSpace();
-				first=false;
-			} else {
-				Rectangle2D.union(selectionBB, vn.getBoundingBoxInParentSpace(), selectionBB);
-			}
+		for (HierarchyNode vn: nodes) {
+			if(vn instanceof Touchable)
+				selectionBB = bbUnion(selectionBB, ((Touchable)vn).getBoundingBox());
 		}
 		return selectionBB;
 	}
@@ -412,45 +422,27 @@ public class VisualModel implements Plugin, Model {
 	 * Apply transformation to each node position, if possible
 	 * @author Stan
 	 */
-	public void transformNodePosition(Collection<VisualNode> nodes, AffineTransform t) {
+	public void transformNodePosition(Collection<HierarchyNode> nodes, AffineTransform t) {
 		assert nodes!=null;
 		Point2D np;
-		for (VisualNode node: nodes) {
-			if (node instanceof VisualGroup) {
-				//TODO: group rotate
-				/*				VisualGroup vg=(VisualGroup)node;
-				Point2D offset = new Point2D.Double(0,0);
-				AffineTransform gt = vg.getAncestorToParentTransform(vg.getParent());
-				gt.transform(offset, offset);
-				gt.
-				 */
-				//.transform(pointInParentSpace, _tmpPoint)
-
-			} else if (node instanceof VisualTransformableNode) {
+		for (HierarchyNode node: nodes) {
+			if (node instanceof Movable) {
 				// for all movable objects
-				VisualTransformableNode vn=(VisualTransformableNode)node;
-				np=vn.getPosition();
+				Movable mn = (Movable)node;
+				np = new Point2D.Double(mn.getX(), mn.getY());
 				t.transform(np, np);
-				vn.setPosition(np);
+				mn.setX(np.getX());
+				mn.setY(np.getY());
 			}
 		}
 	}
 
-	public void translateNodes(Collection<VisualNode> nodes, double tx, double ty) {
+	public void translateNodes(Collection<HierarchyNode> nodes, double tx, double ty) {
 		AffineTransform t = new AffineTransform();
 
 		t.translate(tx, ty);
 
-		Point2D np;
-		for (VisualNode node: nodes) {
-			if (node instanceof VisualTransformableNode) {
-				// translate all movable objects
-				VisualTransformableNode vn=(VisualTransformableNode)node;
-				np=vn.getPosition();
-				t.transform(np, np);
-				vn.setPosition(np);
-			}
-		}
+		transformNodePosition(nodes, t);
 	}
 
 	public void translateSelection(double tx, double ty) {
@@ -490,10 +482,10 @@ public class VisualModel implements Plugin, Model {
 
 		HashSet<MathNode> references = new HashSet<MathNode>();
 
-		LinkedList <VisualNode> unselect = new LinkedList<VisualNode>();
+		LinkedList <HierarchyNode> unselect = new LinkedList<HierarchyNode>();
 
 		// remove partial connections from selection
-		for (VisualNode vn : selection) {
+		for (HierarchyNode vn : selection) {
 			if (vn instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)vn;
 				if (!selection.contains(vc.getFirst())||!selection.contains(vc.getSecond())) {
@@ -502,9 +494,10 @@ public class VisualModel implements Plugin, Model {
 			}
 		}
 
-		for (VisualNode vn : unselect) {
+		for (HierarchyNode vn : unselect) {
 			removeFromSelection(vn);
-			vn.clearColorisation();
+			if(vn instanceof Colorisable)
+				((Colorisable)vn).clearColorisation();
 		}
 
 		if (!unselect.isEmpty()) {
@@ -530,7 +523,7 @@ public class VisualModel implements Plugin, Model {
 	 * Get the list of selected objects. Returned list is modifiable!
 	 * @return the selection.
 	 */
-	public LinkedList<VisualNode> selection() {
+	public LinkedList<HierarchyNode> selection() {
 		return selection;
 	}
 
@@ -556,7 +549,7 @@ public class VisualModel implements Plugin, Model {
 	 * @param so selectable object
 	 * @return if <code>so</code> is selected
 	 */
-	public boolean isObjectSelected(VisualNode so) {
+	public boolean isObjectSelected(HierarchyNode so) {
 		return selection.contains(so);
 	}
 
@@ -564,7 +557,7 @@ public class VisualModel implements Plugin, Model {
 	 * Add an object to the selection if it is not already selected.
 	 * @param so an object to select
 	 */
-	public void addToSelection(VisualNode so) {
+	public void addToSelection(HierarchyNode so) {
 		if(!isObjectSelected(so))
 			selection.add(so);
 	}
@@ -573,7 +566,7 @@ public class VisualModel implements Plugin, Model {
 	 * Remove an object from the selection if it is selected.
 	 * @param so an object to deselect.
 	 */
-	public void removeFromSelection(VisualNode so) {
+	public void removeFromSelection(HierarchyNode so) {
 		selection.remove(so);
 	}
 
@@ -622,7 +615,7 @@ public class VisualModel implements Plugin, Model {
 
 	public void fireSelectionChanged() {
 		for (VisualModelEventListener l : listeners)
-			l.onSelectionChanged();
+			l.onSelectionChanged(selection);
 	}
 
 	public void addListener(MathModelListener listener) {
@@ -662,19 +655,20 @@ public class VisualModel implements Plugin, Model {
 		return ret;
 	}
 
-	public final void addComponents(VisualNode node) {
+	public final void addComponents(HierarchyNode node) {
 		if(node instanceof VisualComponent) {
 			addComponent((VisualComponent)node);
-		}
+		} else
 
 		if(node instanceof VisualConnection) {
 			addConnection((VisualConnection)node);
-		}
-
+		} else
 
 		if(node instanceof VisualGroup)
-			for(VisualNode subnode : ((VisualGroup)node).getChildren())
+			for(HierarchyNode subnode : ((VisualGroup)node).getChildren())
 				addComponents(subnode);
+
+		else throw new RuntimeException("Unknown component type");
 	}
 
 	public final int addComponent(VisualComponent component) {
@@ -741,7 +735,7 @@ public class VisualModel implements Plugin, Model {
 	private List<VisualTransformableNode> getTransformableSelection()
 	{
 		ArrayList<VisualTransformableNode> result = new ArrayList<VisualTransformableNode>();
-		for(VisualNode node : selection)
+		for(HierarchyNode node : selection)
 			if(node instanceof VisualTransformableNode)
 				result.add((VisualTransformableNode)node);
 		return result;
@@ -772,7 +766,6 @@ public class VisualModel implements Plugin, Model {
 		{
 			if(connection.getFirst().isDescendantOf(group) &&
 					connection.getSecond().isDescendantOf(group)) {
-				connection.hideAnchorPoints();
 				connectionsToGroup.add(connection);
 			}
 		}
@@ -837,18 +830,7 @@ public class VisualModel implements Plugin, Model {
 		for (VisualModelEventListener l : listeners)
 			l.onComponentRemoved(component);
 	}
-
-	protected void removeAnchor(VisualConnectionAnchorPoint anchor) {
-
-		anchor.getParentConnection().removeAnchorPoint(anchor);
-		selection.remove(anchor);
-
-	}
-
 	protected void removeConnection(VisualConnection connection) {
-		// remove each anchor from the model
-		connection.removeAllAnchorPoints();
-		//
 		connection.getFirst().removeConnection(connection);
 		connection.getSecond().removeConnection(connection);
 		mathModel.removeConnection(connection.getReferencedConnection());
@@ -873,13 +855,13 @@ public class VisualModel implements Plugin, Model {
 			l.onConnectionRemoved(connection);
 	}
 
-	protected void removeNodes(Collection<VisualNode> nodes) {
+	protected void removeNodes(Collection<HierarchyNode> nodes) {
 		LinkedList<VisualConnection> connectionsToRemove = new LinkedList<VisualConnection>();
 		LinkedList<VisualComponent> componentsToRemove = new LinkedList<VisualComponent>();
 		LinkedList<VisualGroup> groupsToRemove = new LinkedList<VisualGroup>();
 		LinkedList<VisualConnectionAnchorPoint> anchorsToRemove = new LinkedList<VisualConnectionAnchorPoint>();
 
-		for (VisualNode n : nodes) {
+		for (HierarchyNode n : nodes) {
 			if (n instanceof VisualConnectionAnchorPoint)
 				anchorsToRemove.add((VisualConnectionAnchorPoint)n);
 			if (n instanceof VisualConnection)
@@ -891,7 +873,6 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		for (VisualConnectionAnchorPoint an : anchorsToRemove) {
-			removeAnchor(an);
 			connectionsToRemove.remove(an.getParentConnection());
 		}
 		for (VisualConnection con : connectionsToRemove)
@@ -942,7 +923,7 @@ public class VisualModel implements Plugin, Model {
 		clipboard.setContents(new TransferableDocument(doc), clipboardOwner);
 	}
 
-	public Collection<VisualNode> paste(Clipboard clipboard, Point2D where) throws PasteException {
+	public Collection<HierarchyNode> paste(Clipboard clipboard, Point2D where) throws PasteException {
 		try {
 			Document doc = (Document)clipboard.getData(TransferableDocument.DOCUMENT_FLAVOR);
 
@@ -1016,13 +997,13 @@ public class VisualModel implements Plugin, Model {
 		return currentLevel.hitNode(transformToCurrentSpace(pointInRootSpace));
 	}
 
-	public LinkedList<VisualNode> hitObjects(Point2D p1, Point2D p2) {
+	public LinkedList<Touchable> hitObjects(Point2D p1, Point2D p2) {
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);
 		return currentLevel.hitObjects(p1, p2);
 	}
 
-	public LinkedList<VisualNode> hitObjects(Rectangle2D selectionRect) {
+	public LinkedList<Touchable> hitObjects(Rectangle2D selectionRect) {
 		Point2D min = new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY());
 		Point2D max = new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY());
 		min = transformToCurrentSpace(min);

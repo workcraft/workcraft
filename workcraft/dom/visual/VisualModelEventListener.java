@@ -1,5 +1,9 @@
 package org.workcraft.dom.visual;
 
+import java.util.Collection;
+
+import org.workcraft.dom.visual.connections.VisualConnection;
+
 public interface VisualModelEventListener {
 	public void onComponentPropertyChanged(String propertyName, VisualComponent component);
 	public void onConnectionPropertyChanged(String propertyName, VisualConnection connection);
@@ -7,6 +11,6 @@ public interface VisualModelEventListener {
 	public void onComponentRemoved(VisualComponent component);
 	public void onConnectionAdded (VisualConnection connection);
 	public void onConnectionRemoved (VisualConnection connection);
-	public void onSelectionChanged();
+	public void onSelectionChanged(Collection<HierarchyNode> selection);
 	public void onLayoutChanged();
 }

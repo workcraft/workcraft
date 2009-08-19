@@ -4,7 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection;
 
 class Tools {
 	static VisualGroup createGroup(VisualGroup parent)

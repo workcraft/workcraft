@@ -6,10 +6,11 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 
 import junit.framework.Assert;
 
@@ -223,8 +224,8 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public int hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			return 0;
+		public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
+			return null;
 		}
 	}
 

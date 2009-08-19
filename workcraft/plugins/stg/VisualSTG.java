@@ -3,14 +3,16 @@ package org.workcraft.plugins.stg;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModelEventListener;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
@@ -75,7 +77,13 @@ public class VisualSTG extends VisualPetriNet  {
 		public void onLayoutChanged() {
 		}
 
-		public void onSelectionChanged() {
+		public void onSelectionChanged(Set<VisualNode> s) {
+		}
+
+		@Override
+		public void onSelectionChanged(Collection<HierarchyNode> selection) {
+			// TODO Auto-generated method stub
+
 		}
 	}
 
@@ -256,7 +264,7 @@ public class VisualSTG extends VisualPetriNet  {
 	protected void removeConnection(VisualConnection connection) {
 		if (connection instanceof ImplicitPlaceArc) {
 
-			connection.removeAllAnchorPoints();
+			//connection.removeAllAnchorPoints();
 			connection.getFirst().removeConnection(connection);
 			connection.getSecond().removeConnection(connection);
 
@@ -306,8 +314,8 @@ public class VisualSTG extends VisualPetriNet  {
 		addListener(new Listener());
 	}
 
-	private void lockPlaces(Collection<VisualNode> nodes) {
-		for (VisualNode node : nodes) {
+	private void lockPlaces(Collection<HierarchyNode> nodes) {
+		for (HierarchyNode node : nodes) {
 			if (node instanceof VisualPlace)
 				lockedPlaces.add((VisualPlace)node);
 			else if (node instanceof VisualGroup)
@@ -316,7 +324,7 @@ public class VisualSTG extends VisualPetriNet  {
 	}
 
 	@Override
-	protected void removeNodes(Collection<VisualNode> nodes) {
+	protected void removeNodes(Collection<HierarchyNode> nodes) {
 		lockPlaces(nodes);
 		super.removeNodes(nodes);
 		refreshImplicitPlaces();

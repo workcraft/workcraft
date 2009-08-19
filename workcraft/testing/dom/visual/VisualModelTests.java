@@ -8,11 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathModel;
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
@@ -102,8 +103,8 @@ public class VisualModelTests {
 		Assert.assertFalse(oldList.contains(newGroup));
 		Assert.assertTrue(newGroup instanceof VisualGroup);
 
-		ArrayList<VisualNode> newNodeList = new ArrayList<VisualNode>();
-		for (VisualNode node : newGroup.getChildren())
+		ArrayList<HierarchyNode> newNodeList = new ArrayList<HierarchyNode>();
+		for (HierarchyNode node : newGroup.getChildren())
 			newNodeList.add(node);
 
 		Assert.assertEquals(toGroup.length, newNodeList.size());

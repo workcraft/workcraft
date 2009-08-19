@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -167,7 +168,7 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		return new HashSet<VisualComponent>(postset);
 	}
 
-	public Set<MathNode> getReferences() {
+	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
 		ret.add(getReferencedComponent());
 		return ret;
@@ -202,7 +203,7 @@ public abstract class VisualComponent extends VisualTransformableNode {
 	}
 
 	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		if(hitTestInLocalSpace(pointInLocalSpace) != 0)
+		if(hitTestInLocalSpace(pointInLocalSpace) != null)
 			return this;
 		return null;
 	}
