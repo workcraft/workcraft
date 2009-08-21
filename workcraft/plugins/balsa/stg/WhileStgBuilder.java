@@ -9,6 +9,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 
 public class WhileStgBuilder extends ComponentStgBuilder<While> {
 	static interface WhileStgHandshakes
@@ -65,11 +66,13 @@ public class WhileStgBuilder extends ComponentStgBuilder<While> {
 			builder.addConnection(dataReady, activate.getDeactivator());
 			builder.addReadArc(guard.getData(0, false), activate.getDeactivator());
 
-			StgPlace dataRelease = guard.getReleaseDataPlace();
+			StgTransition dataRelease = guard.getDataReleaser();
 			if(dataRelease != null)
 			{
-				builder.addConnection(activateOut.getActivator(), dataRelease);
-				builder.addConnection(activate.getDeactivator(), dataRelease);
+				StgPlace releaseAllowed = builder.buildPlace();
+				builder.addConnection(activateOut.getActivator(), releaseAllowed);
+				builder.addConnection(activate.getDeactivator(), releaseAllowed);
+				builder.addConnection(releaseAllowed, dataRelease);
 			}
 		}
 	}

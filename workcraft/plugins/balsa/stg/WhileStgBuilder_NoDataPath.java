@@ -7,8 +7,10 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 
 public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
@@ -43,35 +45,7 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 
 	static class WhileInternalStgBuilder
 	{
-		interface WireStg
-		{
-			public StgPlace getZero();
-			public StgPlace getOne();
-			public StgTransition getMinus();
-			public StgTransition getPlus();
-		}
-
-		private static WireStg buildWire(final StgBuilder builder)
-		{
-			final StgPlace one = builder.buildPlace();
-			final StgPlace zero = builder.buildPlace();
-			final StgTransition plus = builder.buildTransition();
-			final StgTransition minus = builder.buildTransition();
-			builder.addConnection(one, minus);
-			builder.addConnection(minus, zero);
-			builder.addConnection(zero, plus);
-			builder.addConnection(plus, one);
-
-			return new WireStg()
-			{
-				public StgTransition getMinus() { return minus; }
-				public StgPlace getOne() { return one; }
-				public StgTransition getPlus() { return plus; }
-				public StgPlace getZero() { return zero; }
-			};
-		}
-
-		public static void buildStg(WhileStgHandshakes handshakes, StgBuilder builder)
+		public static void buildStg(While component, WhileStgHandshakes handshakes, StgBuilder builder)
 		{
 			StgPlace activated = builder.buildPlace();
 			StgPlace dataReady = builder.buildPlace();
@@ -80,7 +54,20 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 			ActiveSyncStg activateOut = handshakes.getActivateOut();
 			ActivePullStg guard = handshakes.getGuard();
 
-			WireStg guardWire = buildWire(builder);
+			StgPlace guardChangeAllowed = builder.buildPlace(1);
+
+			StgSignal guardSignal = builder.buildSignal(new SignalId(component, "dp"), false);
+			final StgPlace guardOne = builder.buildPlace();
+			final StgPlace guardZero = builder.buildPlace(1);
+			builder.addConnection(guardOne, guardSignal.getMinus());
+			builder.addConnection(guardSignal.getMinus(), guardZero);
+			builder.addConnection(guardZero, guardSignal.getPlus());
+			builder.addConnection(guardSignal.getPlus(), guardOne);
+
+			builder.addConnection(guard.getDataReleaser(), guardChangeAllowed);
+			builder.addConnection(guardChangeAllowed, guard.getDeactivationNotificator());
+			builder.addReadArc(guardChangeAllowed, guardSignal.getMinus());
+			builder.addReadArc(guardChangeAllowed, guardSignal.getPlus());
 
 			// Call guard
 			builder.addConnection(activate.getActivationNotificator(), activated);
@@ -89,24 +76,26 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 
 			// Activate and repeatedly call guard
 			builder.addConnection(dataReady, activateOut.getActivator());
-			builder.addReadArc(guardWire.getOne(), activateOut.getActivator());
+			builder.addReadArc(guardOne, activateOut.getActivator());
 			builder.addConnection(activateOut.getDeactivationNotificator(), activated);
 
 			// Return
 			builder.addConnection(dataReady, activate.getDeactivator());
-			builder.addReadArc(guardWire.getZero(), activate.getDeactivator());
+			builder.addReadArc(guardZero, activate.getDeactivator());
 
-			StgPlace dataRelease = guard.getReleaseDataPlace();
+			StgTransition dataRelease = guard.getDataReleaser();
 			if(dataRelease != null)
 			{
-				builder.addConnection(activateOut.getActivator(), dataRelease);
-				builder.addConnection(activate.getDeactivator(), dataRelease);
+				StgPlace releaseAllowed = builder.buildPlace();
+				builder.addConnection(activateOut.getActivator(), releaseAllowed);
+				builder.addConnection(activate.getDeactivator(), releaseAllowed);
+				builder.addConnection(releaseAllowed, dataRelease);
 			}
 		}
 	}
 
 	public void buildStg(While component, Map<String, StgHandshake> handshakes, StgBuilder builder)
 	{
-		WhileInternalStgBuilder.buildStg(new WhileStgHandshakesFromCollection(handshakes), builder);
+		WhileInternalStgBuilder.buildStg(component, new WhileStgHandshakesFromCollection(handshakes), builder);
 	}
 }

@@ -1,18 +1,16 @@
 package org.workcraft.plugins.balsa.stgbuilder;
 
-import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-
 public class SignalId {
-	private final Handshake owner;
+	private final Object owner;
 	private final String name;
-	public SignalId(Handshake owner, String name)
+	public SignalId(Object owner, String name)
 	{
 		if(owner == null || name == null)
 			throw new NullPointerException("Argument is null");
 		this.owner = owner;
 		this.name = name;
 	}
-	public Handshake getOwner()
+	public Object getOwner()
 	{
 		return owner;
 	}

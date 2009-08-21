@@ -2,7 +2,7 @@ package org.workcraft.plugins.balsa.components;
 
 public class CallMux extends Component {
 	private int width;
-	private int inputCount;
+	private int inputCount = 2;
 
 	public void setWidth(int width) {
 		this.width = width;

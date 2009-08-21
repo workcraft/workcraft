@@ -112,10 +112,10 @@ public abstract class BalsaToStgExporter {
 
 		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
 		{
-			HashMap<Handshake, String> names;
+			HashMap<Object, String> names;
 
 			{
-				names = new HashMap<Handshake, String>();
+				names = new HashMap<Object, String>();
 				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
 					names.put(entry.getValue(), "c" + breezeComponent.getID() + "_" + entry.getKey());
@@ -126,9 +126,10 @@ public abstract class BalsaToStgExporter {
 					if(connection != null)
 						names.put(entry.getKey(), "cn_" + connection.getID());
 				}
+				names.put(breezeComponent.getUnderlyingComponent(), "c" + breezeComponent.getID());
 			}
 
-			public String getName(Handshake handshake) {
+			public String getName(Object handshake) {
 				return names.get(handshake);
 			}
 		});

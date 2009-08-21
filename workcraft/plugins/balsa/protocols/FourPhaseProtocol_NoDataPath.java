@@ -26,24 +26,30 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 {
 	private StgBuilder builder;
 
+	public ActiveSyncWithRtz createActiveSyncWithRtz(Handshake handshake) {
+		FourPhaseProtocol fpp = new FourPhaseProtocol();
+		fpp.setStgBuilder(builder);
+		return fpp.createActiveSyncWithRtz(handshake);
+	}
+
 	public ActivePullStg create(ActivePull handshake) {
 		final ActiveSyncWithRtz sync = createActiveSyncWithRtz(handshake);
 
 		return new ActivePullStg()
 		{
 			public StgTransition getActivator() {
-				return sync.getActiveSync().getActivator();
+				return sync.getActivator();
 			}
 
 			public ReadablePlace getData(int index, boolean value) {
 				return null;
 			}
 
-			public TransitionOutput getDeactivationNotificator() {
-				return sync.getActiveSync().getDeactivationNotificator();
+			public StgTransition getDeactivationNotificator() {
+				return sync.getDeactivationNotificator();
 			}
 
-			public StgPlace getReleaseDataPlace() {
+			public StgTransition getDataReleaser() {
 				return sync.getRtz();
 			}
 		};
@@ -56,81 +62,34 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 		return new ActivePushStg()
 		{
 			public StgTransition getActivator() {
-				return sync.getActiveSync().getActivator();
+				return sync.getActivator();
 			}
 
-			public TransitionOutput getDeactivationNotificator() {
-				return sync.getActiveSync().getDeactivationNotificator();
-			}
-		};
-	}
-
-
-	private interface ActiveSyncWithRtz
-	{
-		public ActiveSyncStg getActiveSync();
-		public StgPlace getRtz();
-	}
-
-
-	private ActiveSyncWithRtz createActiveSyncWithRtz(Handshake handshake) {
-		final StgPlace ready = builder.buildPlace(1);
-		final StgPlace activated = builder.buildPlace();
-		final StgPlace rtz = builder.buildPlace();
-		final StgPlace rtzRemote = builder.buildPlace();
-
-		StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), true);
-		StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), false);
-
-		final StgTransition rqP = rq.getPlus();
-		final StgTransition rqM = rq.getMinus();
-		final StgTransition acP = ac.getPlus();
-		final StgTransition acM = ac.getMinus();
-
-		builder.addConnection(ready, rqP);
-		builder.addConnection(rqP, activated);
-		builder.addConnection(activated, acP);
-		builder.addConnection(rtz, rqM);
-		builder.addConnection(rqM, rtzRemote);
-		builder.addConnection(rtzRemote, acM);
-		builder.addConnection(acM, ready);
-
-		return new ActiveSyncWithRtz()
-		{
-			public ActiveSyncStg getActiveSync() {
-				return new ActiveSyncStg()
-				{
-					public StgTransition getActivator() {
-						return rqP;
-					}
-					public TransitionOutput getDeactivationNotificator() {
-						return acP;
-					}
-				};
-			}
-			public StgPlace getRtz() {
-				return rtz;
+			public StgTransition getDeactivationNotificator() {
+				return sync.getDeactivationNotificator();
 			}
 		};
 	}
+
 	public ActiveSyncStg create(ActiveSync handshake) {
-		ActiveSyncWithRtz withRtz = createActiveSyncWithRtz(handshake);
-		ActiveSyncStg result = withRtz.getActiveSync();
-		builder.addConnection(result.getDeactivationNotificator(), withRtz.getRtz());
-		return result;
+		return createActiveSyncWithRtz(handshake);
 	}
 
 	public PassivePullStg create(PassivePull handshake) {
-		final PassiveSyncStg sync = create((PassiveSync)handshake);
+		final PassiveSyncWithRtz sync = create((PassiveSync)handshake);
 
 		return new PassivePullStg()
 		{
-			public TransitionOutput getActivationNotificator() {
+			public StgTransition getActivationNotificator() {
 				return sync.getActivationNotificator();
 			}
 
 			public StgTransition getDeactivator() {
 				return sync.getDeactivator();
+			}
+
+			public TransitionOutput getDataRelease() {
+				return sync.getRtz();
 			}
 		};
 	}
@@ -140,7 +99,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 
 		return new PassivePushStg()
 		{
-			public TransitionOutput getActivationNotificator() {
+			public StgTransition getActivationNotificator() {
 				return sync.getActivationNotificator();
 			}
 
@@ -152,13 +111,13 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 				return null;
 			}
 
-			public StgPlace getReleaseDataPlace() {
-				return null;
+			public StgTransition getDataReleaser() {
+				return sync.getDeactivator();
 			}
 		};
 	}
 
-	public PassiveSyncStg create(PassiveSync handshake) {
+	public PassiveSyncWithRtz create(PassiveSync handshake) {
 
 		final StgPlace ready = builder.buildPlace(1);
 		final StgPlace exiting = builder.buildPlace();
@@ -178,15 +137,20 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 		builder.addConnection(rtz, acM);
 		builder.addConnection(acM, ready);
 		builder.addConnection(ready, rqP);
+		builder.addConnection(rqP, acP);
 
-		return new PassiveSyncStg()
+		return new PassiveSyncWithRtz()
 		{
-			public TransitionOutput getActivationNotificator() {
+			public StgTransition getActivationNotificator() {
 				return rqP;
 			}
 
 			public StgTransition getDeactivator() {
 				return acP;
+			}
+
+			public TransitionOutput getRtz() {
+				return rqM;
 			}
 		};
 	}

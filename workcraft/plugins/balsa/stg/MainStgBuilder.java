@@ -11,12 +11,9 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
 public class MainStgBuilder {
 	public static void buildStg(Component component, Map<String, Handshake> handshakes, HandshakeStgBuilder builder)
 	{
-		buildStgStep2(component, buildHandshakes(handshakes, builder), builder);
-	}
-
-	public static void buildStgStep2(Component component, Map<String, StgHandshake> handshakes, HandshakeStgBuilder builder)
-	{
-		getComponentStgBuilder(component).buildComponentStg(component, handshakes, builder.getStgBuilder());
+		Map<String, StgHandshake> handshakeStg = buildHandshakes(handshakes, builder);
+		ComponentStgBuilder<?> componentBuilder = getComponentStgBuilder(component);
+		componentBuilder.buildComponentStg(component, handshakeStg, builder.getStgBuilder());
 	}
 
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> map = fillMap();
@@ -31,7 +28,11 @@ public class MainStgBuilder {
 		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.SequenceOptimised.class, new SequenceOptimisedStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder_NoDataPath());
-		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder());
+		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder_NoDataPath());
+		result.put(org.workcraft.plugins.balsa.components.CallMux.class, new CallMux_NoDataPath());
+		result.put(org.workcraft.plugins.balsa.components.Case.class, new Case_NoDataPath_OneBit());
+		result.put(org.workcraft.plugins.balsa.components.Variable.class, new Variable_NoDataPath());
+		result.put(org.workcraft.plugins.balsa.components.Fetch.class, new Fetch_NoDataPath());
 
 		return result;
 	}

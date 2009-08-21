@@ -43,17 +43,17 @@ public class WhileTests {
 
 		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
 		{
-			HashMap<Handshake, String> names;
+			HashMap<Object, String> names;
 
 			{
-				names = new HashMap<Handshake, String>();
+				names = new HashMap<Object, String>();
 				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
 					names.put(entry.getValue(), entry.getKey());
 				}
 			}
 
-			public String getName(Handshake handshake) {
+			public String getName(Object handshake) {
 				return names.get(handshake);
 			}
 		});

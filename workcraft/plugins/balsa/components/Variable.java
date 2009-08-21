@@ -2,8 +2,8 @@ package org.workcraft.plugins.balsa.components;
 
 public class Variable extends Component {
 	private int width;
-	private int readPortCount;
-	private String name;
+	private int readPortCount = 1;
+	private String name = "Var";
 
 	public void setWidth(int width) {
 		this.width = width;

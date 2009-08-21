@@ -19,7 +19,6 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
@@ -60,7 +59,7 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 			public StgTransition getActivator() {
 				return activator;
 			}
-			public TransitionOutput getDeactivationNotificator() {
+			public StgTransition getDeactivationNotificator() {
 				return deactivation;
 			}
 		};
@@ -107,7 +106,7 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 		return new PassiveSyncStg()
 		{
-			public TransitionOutput getActivationNotificator() {
+			public StgTransition getActivationNotificator() {
 				return activation;
 			}
 			public StgTransition getDeactivator() {
@@ -131,10 +130,10 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 			public StgTransition getActivator() {
 				return sync.getActivator();
 			}
-			public TransitionOutput getDeactivationNotificator() {
+			public StgTransition getDeactivationNotificator() {
 				return sync.getDeactivationNotificator();
 			}
-			public StgPlace getReleaseDataPlace() {
+			public StgTransition getDataReleaser() {
 				return null;
 			}
 			public ReadablePlace getData(int index, boolean value) {
@@ -155,13 +154,13 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 				InputDataSignal signal = dataSignals[index];
 				return value ? signal.p1 : signal.p0;
 			}
-			public TransitionOutput getActivationNotificator() {
+			public StgTransition getActivationNotificator() {
 				return sync.getActivationNotificator();
 			}
 			public StgTransition getDeactivator() {
 				return sync.getDeactivator();
 			}
-			public StgPlace getReleaseDataPlace() {
+			public StgTransition getDataReleaser() {
 				return null;
 			}
 		};

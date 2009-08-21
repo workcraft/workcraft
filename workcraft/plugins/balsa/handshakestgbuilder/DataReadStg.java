@@ -1,9 +1,9 @@
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
 import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 
 public interface DataReadStg {
-	public StgPlace getReleaseDataPlace();
+	public StgTransition getDataReleaser();
 	public ReadablePlace getData(int index, boolean value);
 }

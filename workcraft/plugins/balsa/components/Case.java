@@ -2,7 +2,7 @@ package org.workcraft.plugins.balsa.components;
 
 public class Case extends Component {
 	private int inputWidth;
-	private int outputCount;
+	private int outputCount = 2;
 	private String specification;
 	public void setInputWidth(int inputWidth) {
 		this.inputWidth = inputWidth;
