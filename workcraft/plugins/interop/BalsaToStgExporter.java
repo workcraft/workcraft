@@ -1,10 +1,9 @@
 package org.workcraft.plugins.interop;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,10 @@ import java.util.Map.Entry;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
+import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
+import org.workcraft.framework.util.Export;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
@@ -37,7 +39,7 @@ public abstract class BalsaToStgExporter {
 
 	private String pcompPath = "../Util/pcomp";
 
-	public void exportToFile(Model model, File file) throws IOException {
+	public void export(Model model, WritableByteChannel out) throws IOException, ModelValidationException, ExportException {
 
 		BalsaCircuit balsa = (BalsaCircuit)model.getMathModel();
 
@@ -56,7 +58,7 @@ public abstract class BalsaToStgExporter {
 
 				DotGExporter exporter = new DotGExporter();
 
-				exporter.exportToFile(stg, tempFile);
+				Export.exportToFile(exporter, stg, tempFile);
 			}
 		}
 
@@ -85,22 +87,15 @@ public abstract class BalsaToStgExporter {
 			throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
 		}
 
-		saveData(outputData, file);
+		saveData(outputData, out);
 
 		for(File f : tempFiles)
 			f.delete();
 	}
 
-	public static void saveData(byte [] outputData, File out) throws IOException
+	public static void saveData(byte [] outputData, WritableByteChannel out) throws IOException
 	{
-	    FileChannel outChannel = new
-	        FileOutputStream(out).getChannel();
-	    try {
-	    	outChannel.write(ByteBuffer.wrap(outputData));
-	    }
-	    finally {
-	        outChannel.close();
-	    }
+		out.write(ByteBuffer.wrap(outputData));
 	}
 
 

@@ -1,6 +1,8 @@
 package org.workcraft.util;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 public class Geometry {
@@ -36,5 +38,17 @@ public class Geometry {
 		Point2D c = lerp(b1, b2, t);
 
 		return new CurveSplitResult(c, b1, b2);
+	}
+
+	public static AffineTransform optimisticInverse(AffineTransform transform)
+	{
+		try
+		{
+			return transform.createInverse();
+		}
+		catch(NoninvertibleTransformException ex)
+		{
+			throw new RuntimeException("Matrix inverse failed! Pessimists win :( ");
+		}
 	}
 }

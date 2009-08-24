@@ -99,7 +99,7 @@ public class SelectionTool extends AbstractTool {
 			if(drag!=DRAG_NONE)
 				cancelDrag(e);
 
-			VisualNode node = model.hitNode(e.getPosition());
+			HierarchyNode node = model.hitNode(e.getPosition());
 
 			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
 				if (node != null) {
@@ -133,16 +133,19 @@ public class SelectionTool extends AbstractTool {
 			model.fireSelectionChanged();
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3) {
-			VisualNode so = model.hitNode(e.getPosition());
+			HierarchyNode so = model.hitNode(e.getPosition());
 
 			if (so!=null) {
 				Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
 
-				JPopupMenu popup = so.createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
+				if(so instanceof VisualNode)
+				{
+					JPopupMenu popup = ((VisualNode)so).createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
 
-				if (popup.getComponentCount() != 0) {
-					popup.setFocusable(false);
-					popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
+					if (popup.getComponentCount() != 0) {
+						popup.setFocusable(false);
+						popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
+					}
 				}
 			}
 		}
@@ -207,7 +210,7 @@ public class SelectionTool extends AbstractTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			VisualNode so = model.hitNode(e.getPosition());
+			HierarchyNode so = model.hitNode(e.getPosition());
 			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
 				if(!model.isObjectSelected(so)) {
 					clearSelection(model);

@@ -10,7 +10,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 
@@ -28,7 +27,7 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 
 		Shape shape = new Ellipse2D.Double(
 				-size/2+strokeWidth/2,
@@ -48,10 +47,7 @@ public class VisualVertex extends VisualComponent {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (pointInLocalSpace.distanceSq(0,0) < size * size)
-			return this;
-		else
-			return null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0,0) < size * size;
 	}
 }

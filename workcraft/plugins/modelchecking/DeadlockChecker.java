@@ -1,7 +1,10 @@
 package org.workcraft.plugins.modelchecking;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
@@ -38,7 +41,16 @@ public class DeadlockChecker implements ModelChecker
 	private void exportNet(Model model)
 	{
 		DotGExporter exporter = new DotGExporter();
-		exporter.exportToFile(model, new File(tmpNetFilePath));
+		WritableByteChannel ch;
+		try {
+			ch = new FileOutputStream(new File(tmpNetFilePath)).getChannel();
+			exporter.export(model, ch);
+			ch.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void run(Model model) throws ModelCheckingFailedException

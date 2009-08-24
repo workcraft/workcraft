@@ -242,7 +242,7 @@ class Polyline implements ConnectionGraphic {
 
 		ap.setPosition(pointOnConnection);
 
-		ap.addListener(new PropertyChangeListener() {
+		ap.addPropertyChangeListener(new PropertyChangeListener() {
 			public void onPropertyChanged(String propertyName, Object sender) {
 				parentConnection.update();
 			}
@@ -334,7 +334,7 @@ class Polyline implements ConnectionGraphic {
 			pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 			pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
 
-			pap.addListener(new PropertyChangeListener() {
+			pap.addPropertyChangeListener(new PropertyChangeListener() {
 				public void onPropertyChanged(String propertyName, Object sender) {
 					parentConnection.update();
 				}
@@ -364,7 +364,6 @@ class Polyline implements ConnectionGraphic {
 
 	public void cleanup() {
 		removeAllAnchorPoints();
-
 	}
 
 	public void click(Point2D point) {
@@ -375,8 +374,9 @@ class Polyline implements ConnectionGraphic {
 
 	}
 
-	@Override
+	Collection<HierarchyNode> controls = new ArrayList<HierarchyNode>();
+
 	public Collection<HierarchyNode> getControls() {
-		return new ArrayList<HierarchyNode>();
+		return controls;
 	}
 }

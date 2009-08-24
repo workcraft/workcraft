@@ -34,7 +34,7 @@ public class PropertyEditorWindow extends JPanel implements PropertyChangeListen
 	public void setObject (PropertyEditable o) {
 		removeAll();
 		propertyTable.setObject(o);
-		o.addListener(this);
+		o.addPropertyChangeListener(this);
 		add(scrollProperties, BorderLayout.CENTER);
 		validate();
 		repaint();
@@ -43,7 +43,7 @@ public class PropertyEditorWindow extends JPanel implements PropertyChangeListen
 	public void clearObject () {
 		if (propertyTable.getObject() != null) {
 			removeAll();
-			propertyTable.getObject().removeListener(this);
+			propertyTable.getObject().removePropertyChangeListener(this);
 			propertyTable.clearObject();
 			add(new DisabledPanel(), BorderLayout.CENTER);
 			validate();

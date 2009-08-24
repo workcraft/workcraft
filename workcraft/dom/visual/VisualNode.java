@@ -1,15 +1,12 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPopupMenu;
@@ -19,10 +16,12 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
+import org.workcraft.framework.PropertySupport;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.util.Geometry;
 
 
 public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable {
@@ -31,14 +30,10 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return null;
 	}
 
-	public Touchable hitTest(Point2D point) {
-		return null;
-	}
-
 	private int ID = -1;
 
 	public Collection<HierarchyNode> getChildren() {
-		return null;
+		return Collections.emptyList();
 	}
 
 	final protected void setID(int id) {
@@ -54,16 +49,14 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return false;
 	}
 
-	private List<PropertyDescriptor> propertyDeclarations = new LinkedList<PropertyDescriptor>();
-	private LinkedList<PropertyChangeListener> propertyChangeListeners = new LinkedList<PropertyChangeListener>();
 
 	private Color colorisation = null;
 	private VisualGroup parent = null;
+	private boolean hidden = false;
 
 	private XMLSerialisation serialisation = new XMLSerialisation();
 	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
-
-	public abstract void draw (Graphics2D g);
+	private PropertySupport propertySupport = new PropertySupport();
 
 	public VisualGroup getParent() {
 		return parent;
@@ -73,32 +66,10 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		this.parent = parent;
 	}
 
-	public Touchable hitTestInAncestorSpace(Point2D pointInUserSpace, VisualGroup ancestor) throws NotAnAncestorException {
 
-		if (ancestor != parent) {
-			Point2D pt = new Point2D.Double();
-			pt.setLocation(pointInUserSpace);
-			AffineTransform t = getParentToAncestorTransform(ancestor);
-			t.transform(pt,pt);
-			return hitTest(pt);
-		} else
-			return hitTest(pointInUserSpace);
-	}
-
-	private AffineTransform optimisticInverse(AffineTransform transform)
-	{
-		try
-		{
-			return transform.createInverse();
-		}
-		catch(NoninvertibleTransformException ex)
-		{
-			throw new RuntimeException("Matrix inverse failed!");
-		}
-	}
 
 	public final AffineTransform getAncestorToParentTransform(VisualGroup ancestor) throws NotAnAncestorException {
-		return optimisticInverse(getParentToAncestorTransform(ancestor));
+		return Geometry.optimisticInverse(getParentToAncestorTransform(ancestor));
 	}
 
 	public final AffineTransform getParentToAncestorTransform(VisualGroup ancestor) throws NotAnAncestorException{
@@ -129,23 +100,6 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 				p0.getX(), p0.getY(),
 				p1.getX()-p0.getX(),p1.getY() - p0.getY()
 		);
-	}
-
-	final public List<PropertyDescriptor> getPropertyDeclarations() {
-		return propertyDeclarations;
-	}
-
-	public void addListener(PropertyChangeListener listener) {
-		propertyChangeListeners.add(listener);
-	}
-
-	public void removeListener(PropertyChangeListener listener) {
-		propertyChangeListeners.remove(listener);
-	}
-
-	public void firePropertyChanged(String propertyName) {
-		for (PropertyChangeListener l : propertyChangeListeners)
-			l.onPropertyChanged(propertyName, this);
 	}
 
 	public void setColorisation (Color color) {
@@ -210,9 +164,7 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return popupMenuBuilder.build(actionListener);
 	}
 
-	final protected void addPropertyDeclaration(PropertyDescriptor declaration) {
-		propertyDeclarations.add(declaration);
-	}
+
 
 	public final void addXMLSerialiser(XMLSerialiser serialiser) {
 		serialisation.addSerialiser(serialiser);
@@ -226,4 +178,31 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return new HashSet<MathNode>();
 	}
 
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertySupport.addPropertyChangeListener(listener);
+	}
+
+	public void addPropertyDeclaration(PropertyDescriptor declaration) {
+		propertySupport.addPropertyDeclaration(declaration);
+	}
+
+	public void firePropertyChanged(String propertyName) {
+		propertySupport.firePropertyChanged(propertyName, this);
+	}
+
+	public Collection<PropertyDescriptor> getPropertyDeclarations() {
+		return propertySupport.getPropertyDeclarations();
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertySupport.removePropertyChangeListener(listener);
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
 }

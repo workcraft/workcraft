@@ -9,7 +9,6 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.gui.Coloriser;
 
@@ -48,15 +47,15 @@ class PolylineAnchorPoint extends VisualConnectionAnchorPoint {
 			return new Rectangle2D.Double(-size/2, -size/2, size, size);
 		}
 
-		public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 			if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-				return this;
+				return true;
 			else
-				return null;
+				return false;
 		}
 
 		@Override
-		protected void drawInLocalSpace(Graphics2D g) {
+		public void draw(Graphics2D g) {
 			g.setColor(Coloriser.colorise(fillColor, getColorisation()));
 			g.fill(shape);
 		}

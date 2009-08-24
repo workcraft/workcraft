@@ -23,7 +23,7 @@ class BezierAnchorPoint extends VisualConnectionAnchorPoint {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		Point2D p = parentComponent.getPosition();
 		AffineTransform at = getParentToLocalTransform();
 
@@ -35,7 +35,7 @@ class BezierAnchorPoint extends VisualConnectionAnchorPoint {
 		Line2D l = new Line2D.Double(0, 0, p.getX(), p.getY());
 		g.draw(l);
 
-		super.drawInLocalSpace(g);
+		super.draw(g);
 	}
 
 	public void subscribeEvents(VisualModelEventDispatcher eventDispatcher) {

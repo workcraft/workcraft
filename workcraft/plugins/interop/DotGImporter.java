@@ -3,8 +3,10 @@ package org.workcraft.plugins.interop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -118,7 +120,7 @@ public class DotGImporter implements Importer {
 		return be1;
 	}
 
-	public Model importFromFile(File file) {
+	public Model importFrom (ReadableByteChannel in) {
 		STG stg = new STG();
 
 //		File file = new File(path);
@@ -127,7 +129,7 @@ public class DotGImporter implements Importer {
 
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader(file));
+			br = new BufferedReader(new InputStreamReader(Channels.newInputStream(in)));
 
 			//		BufferedReader br = new BufferedReader(new FileReader(file));
 					String str;

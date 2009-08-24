@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -17,8 +18,10 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
+import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
+import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
@@ -144,19 +147,19 @@ public class SaveLoadTests {
 	}
 
 	@Test
-	public void TestMathModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException
+	public void TestMathModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, ExportException
 	{
 		BalsaCircuit circuit = createWhileWhileMathCircuit();
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		new Framework().save(circuit, stream);
+		new Framework().save(circuit, Channels.newChannel(stream));
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}
 
 	@Test
-	public void TestVisualModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, VisualModelInstantiationException, IOException
+	public void TestVisualModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, VisualModelInstantiationException, IOException, ModelValidationException, ExportException
 	{
 		VisualBalsaCircuit circuit = createLoopWhileVisualCircuit();
 
@@ -165,7 +168,7 @@ public class SaveLoadTests {
 		//FileOutputStream temp = new FileOutputStream("temp.work");
 		//new Framework().save(circuit, temp);
 		//temp.close();
-		new Framework().save(circuit, stream);
+		new Framework().save(circuit, Channels.newChannel(stream));
 		testVisualModelLoopWhile(circuit);
 		testVisualModelLoopWhile(
 				Framework.load(
@@ -217,7 +220,7 @@ public class SaveLoadTests {
 
 
 	@Test
-	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException
+	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, ExportException
 	{
 		Framework f = new Framework();
 
@@ -225,13 +228,13 @@ public class SaveLoadTests {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		f.save(circuit, stream);
+		f.save(circuit, Channels.newChannel(stream));
 
 		Model loaded = Framework.load(new ByteArrayInputStream(stream.toByteArray()));
 
 		stream = new ByteArrayOutputStream();
 
-		f.save(loaded, stream);
+		f.save(loaded, Channels.newChannel(stream));
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}

@@ -69,7 +69,7 @@ public class VisualSignalTransition extends VisualTransition {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		drawLabelInLocalSpace(g);
 
 

@@ -3,26 +3,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ImporterTopLevel;
@@ -33,18 +23,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DocumentFormatException;
+import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
+import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.util.Export;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
+import org.workcraft.plugins.shared.DefaultSerialiser;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -150,6 +143,7 @@ public class Framework {
 	private boolean silent = false;
 
 	private MainWindow mainWindow;
+	private DefaultSerialiser serialiser;
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
@@ -158,6 +152,7 @@ public class Framework {
 		workspace = new Workspace(this);
 		javaScriptExecution = new JavaScriptExecution();
 		javaScriptCompilation = new JavaScriptCompilation();
+		serialiser = new DefaultSerialiser();
 	}
 
 
@@ -508,67 +503,13 @@ public class Framework {
 		}
 	}
 
-	public void save(Model model, String path) throws ModelSaveFailedException {
-		try {
-			FileOutputStream stream = new FileOutputStream(path);
-			try
-			{
-				save(model, stream);
-			}
-			finally
-			{
-				stream.close();
-			}
-		} catch (FileNotFoundException e) {
-			throw new ModelSaveFailedException("File not found: "+ e.getMessage());
-		} catch (IOException e) {
-			throw new ModelSaveFailedException("IO error: "+ e.getMessage());
-		}
+	public void save(Model model, String path) throws ModelValidationException, ExportException, IOException {
+		Export.exportToFile(serialiser, model, path);
 	}
 
-	public void save(Model model, OutputStream output) throws ModelSaveFailedException {
-		try {
-			Document doc = XmlUtil.createDocument();
+	public void save(Model model, WritableByteChannel ch) throws IOException, ModelValidationException, ExportException {
+		serialiser.export(model, ch);
 
-			Element root = doc.createElement("workcraft");
-			root.setAttribute("version", FRAMEWORK_VERSION_MAJOR+"."+FRAMEWORK_VERSION_MINOR);
-			doc.appendChild(root);
-
-			Element modelElement = doc.createElement("model");
-			modelElement.setAttribute("class", model.getMathModel().getClass().getName());
-			model.getMathModel().serialiseToXML(modelElement);
-			root.appendChild(modelElement);
-
-			VisualModel visualModel = model.getVisualModel();
-
-			if (visualModel != null) {
-				Element visualModelElement = doc.createElement("visual-model");
-				visualModelElement.setAttribute("class", visualModel.getClass().getName());
-				visualModel.serialiseToXML(visualModelElement);
-				root.appendChild(visualModelElement);
-			}
-
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			tFactory.setAttribute("indent-number", new Integer(2));
-			Transformer transformer = tFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-			DOMSource source = new DOMSource(doc);
-			OutputStreamWriter writer = new OutputStreamWriter(output);
-			StreamResult result = new StreamResult(writer);
-			transformer.transform(source, result);
-			writer.close();
-		} catch (ParserConfigurationException e) {
-			throw new ModelSaveFailedException("XML Parser configuration error: "+ e.getMessage());
-		} catch (TransformerConfigurationException e) {
-			throw new ModelSaveFailedException("XML transformer configuration error: "+ e.getMessage());
-		} catch (TransformerException e) {
-			throw new ModelSaveFailedException("XML transformer error: "+ e.getMessage());
-		} catch (FileNotFoundException e) {
-			throw new ModelSaveFailedException("File not found: "+ e.getMessage());
-		} catch (IOException e) {
-			throw new ModelSaveFailedException("IO error: "+ e.getMessage());
-		}
 	}
 
 	public void initPlugins() {

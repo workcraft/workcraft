@@ -44,8 +44,8 @@ import org.workcraft.framework.Exporter;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.Importer;
 import org.workcraft.framework.ModelFactory;
-import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.ImportException;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
@@ -54,6 +54,8 @@ import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
+import org.workcraft.framework.util.Export;
+import org.workcraft.framework.util.Import;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -718,11 +720,18 @@ public class MainWindow extends JFrame {
 		}
 		try {
 			framework.save(we.getModel(), we.getFile().getPath());
-			we.setUnsaved(false);
-			lastSavePath = we.getFile().getParent();
-		} catch (ModelSaveFailedException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Save error", JOptionPane.ERROR_MESSAGE);
+		} catch (ModelValidationException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
+		} catch (ExportException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
 		}
+		we.setUnsaved(false);
+		lastSavePath = we.getFile().getParent();
 	}
 
 	private static String removeSpecialFileNameCharacters(String fileName)
@@ -776,8 +785,15 @@ public class MainWindow extends JFrame {
 			we.setFile(new File(path));
 			we.setUnsaved(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
-		} catch (ModelSaveFailedException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Save error", JOptionPane.ERROR_MESSAGE);
+		} catch (ModelValidationException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
+		} catch (ExportException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -817,11 +833,20 @@ public class MainWindow extends JFrame {
 			for (File f : fc.getSelectedFiles()) {
 				for (Importer importer : importers) {
 					if (importer.accept(f)) {
-						Model model = importer.importFromFile(f);
-						WorkspaceEntry we = framework.getWorkspace().add(model, false);
-						if (we.getModel() instanceof VisualModel)
-							createEditorWindow(we);
-						break;
+						Model model;
+						try {
+							model = Import.importFromFile(importer, f);
+							WorkspaceEntry we = framework.getWorkspace().add(model, false);
+							if (we.getModel() instanceof VisualModel)
+								createEditorWindow(we);
+							break;
+						} catch (IOException e) {
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
+						} catch (ImportException e) {
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(this, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
 			}
@@ -889,7 +914,7 @@ public class MainWindow extends JFrame {
 		}
 
 		try {
-			exporter.exportToFile(editorInFocus.getModel(), new File(path));
+			Export.exportToFile(exporter, editorInFocus.getModel(), path);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ModelValidationException e) {

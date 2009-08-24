@@ -4,7 +4,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
 import org.w3c.dom.Element;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -84,20 +83,11 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		firePropertyChanged("transform");
 	}
 
-	public abstract Touchable hitTestInLocalSpace(Point2D pointInLocalSpace);
+	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
 
-	public Touchable hitTest(Point2D pointInParentSpace) {
-		parentToLocalTransform.transform(pointInParentSpace, _tmpPoint);
+	public boolean hitTest(Point2D point) {
+		parentToLocalTransform.transform(point, _tmpPoint);
 		return hitTestInLocalSpace(_tmpPoint);
-	}
-
-	@Override
-	public final void draw(java.awt.Graphics2D g) {
-		g.transform(localToParentTransform);
-		drawInLocalSpace(g);
-	};
-
-	protected void drawInLocalSpace(java.awt.Graphics2D g) {
 	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();

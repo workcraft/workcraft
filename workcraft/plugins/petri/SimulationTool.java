@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.edit.tools.AbstractTool;
@@ -66,7 +67,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		VisualNode node = e.getModel().getRoot().hitComponent(e.getPosition());
+		VisualNode node = HitMan.hitDeepestNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualComponent.class);
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;

@@ -10,12 +10,14 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.workcraft.dom.Component;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 
 public class DotGImporterTests {
 	@Test
-	public void Test1() throws IOException
+	public void Test1() throws IOException, ImportException
 	{
 		File tempFile = File.createTempFile("test", ".g");
 
@@ -45,7 +47,7 @@ public class DotGImporterTests {
 		writer.close();
 		fileStream.close();
 
-		STG imported = (STG)new DotGImporter().importFromFile(tempFile);
+		STG imported = (STG) Import.importFromFile(new DotGImporter(), tempFile);
 
 		Set<Component> components = imported.getComponents();
 		Assert.assertEquals(8, components.size());

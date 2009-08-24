@@ -221,13 +221,13 @@ public class VisualSTG extends VisualPetriNet  {
 
 		connection.getParent().remove(connection);
 		selection().remove(connection);
-		connection.removeListener(getPropertyChangeListener());
+		connection.removePropertyChangeListener(getPropertyChangeListener());
 	}
 
 	private void removeVisualComponentOnly(VisualComponent component) {
 		component.getParent().remove(component);
 		selection().remove(component);
-		component.removeListener(getPropertyChangeListener());
+		component.removePropertyChangeListener(getPropertyChangeListener());
 	}
 
 	private VisualConnection maybeMakeImplicit (VisualPlace place) {
@@ -275,7 +275,7 @@ public class VisualSTG extends VisualPetriNet  {
 			connection.getParent().remove(connection);
 			selection().remove(connection);
 
-			connection.removeListener(getPropertyChangeListener());
+			connection.removePropertyChangeListener(getPropertyChangeListener());
 
 			fireConnectionRemoved(connection);
 

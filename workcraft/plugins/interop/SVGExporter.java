@@ -2,8 +2,10 @@ package org.workcraft.plugins.interop;
 
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -18,7 +20,7 @@ import org.workcraft.util.XmlUtil;
 public class SVGExporter implements Exporter {
 
 
-	public void exportToFile(Model model, File name) throws IOException,
+	public void export(Model model, WritableByteChannel out) throws IOException,
 			ModelValidationException, ExportException {
 
 		if (model.getVisualModel() == null)
@@ -38,7 +40,7 @@ public class SVGExporter implements Exporter {
 
 				model.getVisualModel().draw(g2d);
 
-				g2d.stream(name.getPath());
+				g2d.stream(new OutputStreamWriter(Channels.newOutputStream(out)));
 
 			} catch (ParserConfigurationException e) {
 				throw new ExportException(e);

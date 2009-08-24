@@ -65,13 +65,13 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 		DotLayoutSettings.dotPositionScaleFactor = dotPositionScaleFactor;
 	}
 
-	public void addListener(PropertyChangeListener listener) {
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public void firePropertyChanged(String propertyName) {
 	}
 
-	public void removeListener(PropertyChangeListener listener) {
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public String getSection() {

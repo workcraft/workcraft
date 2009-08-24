@@ -5,8 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -28,9 +28,9 @@ public class VisualComponentGroupTests {
 		root.add(sq1);
 		node1.add(sq2);
 
-		Assert.assertEquals(sq1, root.hitComponent(new Point2D.Double(1.5, 1.5)));
-		Assert.assertEquals(sq2, root.hitComponent(new Point2D.Double(7.5, 2.5)));
-		Assert.assertEquals(null, root.hitComponent(new Point2D.Double(2.5, 2.5)));
+		Assert.assertEquals(sq1, HitMan.hitDeepestNodeOfType(new Point2D.Double(1.5, 1.5), root, VisualComponent.class));
+		Assert.assertEquals(sq2, HitMan.hitDeepestNodeOfType(new Point2D.Double(7.5, 2.5), root, VisualComponent.class));
+		Assert.assertEquals(null, HitMan.hitDeepestNodeOfType(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
 	}
 
 	public void TestHitConnection()
@@ -51,8 +51,8 @@ public class VisualComponentGroupTests {
 		group.add(sqg2);
 		Tools.createConnection(sqg1, sqg2, group);
 
-		Assert.assertEquals(connectionR, root.hitNode(new Point2D.Double(2.5, 1.5)));
-		Assert.assertEquals(group, root.hitNode(new Point2D.Double(7.5, 1.5)));
+		Assert.assertEquals(connectionR, HitMan.hitTestForSelection(new Point2D.Double(2.5, 1.5), root));
+		Assert.assertEquals(group, HitMan.hitTestForSelection(new Point2D.Double(7.5, 1.5), root));
 	}
 
 	@Test
@@ -83,19 +83,19 @@ public class VisualComponentGroupTests {
 		group.add(node1);
 		group.add(node2);
 		group.add(node3);
-		Assert.assertNull(group.hitNode(new Point2D.Double(-1, -1)));
-		Assert.assertNull(group.hitNode(new Point2D.Double(10, 10)));
-		Assert.assertNull(group.hitNode(new Point2D.Double(0.05, 0.05)));
-		Assert.assertEquals(node1, group.hitNode(new Point2D.Double(0.15, 0.5)));
-		Assert.assertEquals(node1, group.hitNode(new Point2D.Double(0.55, 0.55)));
-		Assert.assertEquals(node2, group.hitNode(new Point2D.Double(0.65, 0.65)));
-		Assert.assertEquals(node2, group.hitNode(new Point2D.Double(1.05, 1.05)));
-		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(1.15, 1.15)));
-		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(1.95, 1.95)));
-		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(2.35, 1.35)));
-		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(2.45, 1.45)));
-		Assert.assertEquals(node3, group.hitNode(new Point2D.Double(2.85, 2.85)));
-		Assert.assertNull(group.hitNode(new Point2D.Double(2.95, 2.95)));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(-1, -1), group));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(10, 10), group));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.05, 0.05), group));
+		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(0.15, 0.5), group));
+		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(0.55, 0.55), group));
+		Assert.assertEquals(node2, HitMan.hitTestForSelection(new Point2D.Double(0.65, 0.65), group));
+		Assert.assertEquals(node2, HitMan.hitTestForSelection(new Point2D.Double(1.05, 1.05), group));
+		Assert.assertEquals(node3, HitMan.hitTestForSelection(new Point2D.Double(1.15, 1.15), group));
+		Assert.assertEquals(node3, HitMan.hitTestForSelection(new Point2D.Double(1.95, 1.95), group));
+		Assert.assertEquals(node3, HitMan.hitTestForSelection(new Point2D.Double(2.35, 1.35), group));
+		Assert.assertEquals(node3, HitMan.hitTestForSelection(new Point2D.Double(2.45, 1.45), group));
+		Assert.assertEquals(node3, HitMan.hitTestForSelection(new Point2D.Double(2.85, 2.85), group));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(2.95, 2.95), group));
 	}
 
 	private SquareNode getSquareNode(VisualNode parent, double x, double y)
@@ -114,8 +114,8 @@ public class VisualComponentGroupTests {
 		root.add((VisualNode)node2);
 		node1.add(getSquareNode(node1, 0, 0));
 		node2.add(getSquareNode(node2, 1, 1));
-		Assert.assertEquals(node2, root.hitNode(new Point2D.Double(1.5, 1.5)));
-		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(node2, HitMan.hitTestForSelection(new Point2D.Double(1.5, 1.5), root));
+		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), root));
 	}
 
 	@Test
@@ -139,12 +139,12 @@ public class VisualComponentGroupTests {
 		SquareNode sq3 = getSquareNode(node1, 2, 2);
 		node1.add(sq3);
 
-		Assert.assertEquals(sq1, node1.hitNode(new Point2D.Double(0.5, 0.5)));
-		Assert.assertEquals(sq2, node1.hitNode(new Point2D.Double(1.5, 1.5)));
+		Assert.assertEquals(sq1, HitMan.hitTestForSelection(new Point2D.Double(10.5, 15.5), node1));
+		Assert.assertEquals(sq2, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), node1));
 
-		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(10.5, 15.5)));
-		Assert.assertEquals(node1, root.hitNode(new Point2D.Double(11.5, 16.5)));
-		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
+		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(10.5, 15.5), root));
+		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
+		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
 
 		Iterable<VisualNode> unGroup = node1.unGroup();
 		ArrayList<VisualNode> list = new ArrayList<VisualNode>();
@@ -160,12 +160,12 @@ public class VisualComponentGroupTests {
 		Assert.assertTrue(list.indexOf(sq2) > list.indexOf(sq1));
 		Assert.assertTrue(list.indexOf(sq3) > list.indexOf(sq2));
 
-		Assert.assertNull(node1.hitNode(new Point2D.Double(0.5, 0.5)));
-		Assert.assertNull(node1.hitNode(new Point2D.Double(1.5, 1.5)));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), node1));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(1.5, 1.5), node1));
 
-		Assert.assertEquals(sq1, root.hitNode(new Point2D.Double(10.5, 15.5)));
-		Assert.assertEquals(sq2, root.hitNode(new Point2D.Double(11.5, 16.5)));
-		Assert.assertEquals(null, root.hitNode(new Point2D.Double(10.5, 16.5)));
+		Assert.assertEquals(sq1, HitMan.hitTestForSelection(new Point2D.Double(10.5, 15.5), root));
+		Assert.assertEquals(sq2, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
+		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
 	}
 
 	private VisualGroup createGroup(VisualGroup parent)
@@ -179,10 +179,10 @@ public class VisualComponentGroupTests {
 		VisualGroup root = createGroup(null);
 		final VisualGroup node1 = createGroup(root);
 		final Boolean[] hit = new Boolean[]{false};
-		node1.addListener(new PropertyChangeListener()
+		node1.addPropertyChangeListener(new PropertyChangeListener()
 				{
 					public void onPropertyChanged(String propertyName, Object sender) {
-						if(propertyName=="transform" && node1 == sender)
+						if(propertyName.equals("transform") && node1 == sender)
 							hit[0] = true;
 					}
 				});
@@ -224,8 +224,8 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			return null;
+		public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+			return false;
 		}
 	}
 

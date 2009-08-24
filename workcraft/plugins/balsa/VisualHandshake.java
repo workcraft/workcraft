@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.dom.MathNode;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
@@ -34,15 +33,15 @@ public class VisualHandshake extends VisualComponent {
 		return new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 	}
 
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < 0.25 ? this : null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0, 0) < 0.25;
 	}
 
 	public Set<MathNode> getMathReferences() {
 		return new HashSet<MathNode>();
 	}
 
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		g.setStroke(new BasicStroke(0.1f));
 		Ellipse2D.Double circle = new Ellipse2D.Double(-0.5, -0.5, 1, 1);
 		g.draw(circle);

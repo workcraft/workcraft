@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
@@ -139,11 +138,8 @@ public class VisualBreezeComponent extends VisualGroup {
 	}
 
 	@Override
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if(pointInLocalSpace.distanceSq(0.0, 0.0) < 0.25)
-			return this;
-
-		return super.hitTestInLocalSpace(pointInLocalSpace);
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0.0, 0.0) < 0.25;
 	}
 
 	enum Direction { Up, Right, Down, Left	};
@@ -172,7 +168,7 @@ public class VisualBreezeComponent extends VisualGroup {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		g.setStroke(new BasicStroke(0.02f));
 		g.setColor(Coloriser.colorise(Color.black, this.getColorisation()));
 
@@ -187,7 +183,7 @@ public class VisualBreezeComponent extends VisualGroup {
 		Rectangle2D bounds = vec.getVisualBounds();
 		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
 
-		super.drawInLocalSpace(g);
+		super.draw(g);
 	}
 
 	private void drawSideLine(Graphics2D g, SideLine extent, int dir) {

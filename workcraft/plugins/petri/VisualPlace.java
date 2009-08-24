@@ -15,7 +15,6 @@ import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.PopupMenuBuilder;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -180,7 +179,7 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g)
+	public void draw(Graphics2D g)
 	{
 
 		// some debug info
@@ -236,13 +235,10 @@ public class VisualPlace extends VisualComponent {
 		}
 
 
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		double size = CommonVisualSettings.getSize();
 
-		if (pointInLocalSpace.distanceSq(0, 0) < size*size/4)
-			return this;
-		else
-			return null;
+		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
 	}
 
 	public Place getReferencedPlace() {

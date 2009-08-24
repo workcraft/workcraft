@@ -19,7 +19,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.XmlUtil;
 
-public abstract class VisualComponent extends VisualTransformableNode {
+public abstract class VisualComponent extends VisualTransformableNode implements Drawable {
 	private Component refComponent = null;
 	private HashSet<VisualConnection> connections = new HashSet<VisualConnection>();
 
@@ -202,12 +202,6 @@ public abstract class VisualComponent extends VisualTransformableNode {
 		g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
 	}
 
-	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		if(hitTestInLocalSpace(pointInLocalSpace) != null)
-			return this;
-		return null;
-	}
-
 	public Color getLabelColor() {
 		return labelColor;
 	}
@@ -230,5 +224,8 @@ public abstract class VisualComponent extends VisualTransformableNode {
 
 	public void setFillColor(Color fillColor) {
 		this.fillColor = fillColor;
+	}
+
+	public void draw(java.awt.Graphics2D g) {
 	}
 }

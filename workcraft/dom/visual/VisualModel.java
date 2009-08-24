@@ -512,7 +512,7 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	public void draw (Graphics2D g) {
-		root.draw(g);
+		DrawMan.draw(g, root);
 	}
 
 	public VisualGroup getRoot() {
@@ -674,7 +674,7 @@ public class VisualModel implements Plugin, Model {
 	public final int addComponent(VisualComponent component) {
 //		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
 
-		component.addListener(propertyChangeListener);
+		component.addPropertyChangeListener(propertyChangeListener);
 
 		component.setID(getMathModel().getNextNodeID());
 
@@ -700,7 +700,7 @@ public class VisualModel implements Plugin, Model {
 //			refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
 		visualConnections.put(connection.getID(), connection);
 
-		connection.addListener(propertyChangeListener);
+		connection.addPropertyChangeListener(propertyChangeListener);
 
 		fireConnectionAdded(connection);
 
@@ -818,7 +818,7 @@ public class VisualModel implements Plugin, Model {
 		selection.remove(component);
 		component.getParent().remove(component);
 
-		component.removeListener(propertyChangeListener);
+		component.removePropertyChangeListener(propertyChangeListener);
 
 		//refIDToVisualComponentMap.remove(component.getReferencedComponent().getID());
 		visualComponents.remove(component.getID());
@@ -838,7 +838,7 @@ public class VisualModel implements Plugin, Model {
 		connection.getParent().remove(connection);
 		selection.remove(connection);
 
-		connection.removeListener(propertyChangeListener);
+		connection.removePropertyChangeListener(propertyChangeListener);
 		//refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
 		visualConnections.remove(connection.getID());
 
@@ -988,13 +988,12 @@ public class VisualModel implements Plugin, Model {
 			e.printStackTrace();
 			throw new RuntimeException("Root is not an ancestor of the current node o_O");
 		}
-		currentLevel.getParentToLocalTransform().transform(newPoint, newPoint);
 		return newPoint;
 	}
 
-	public VisualNode hitNode(Point2D pointInRootSpace)
+	public HierarchyNode hitNode(Point2D pointInRootSpace)
 	{
-		return currentLevel.hitNode(transformToCurrentSpace(pointInRootSpace));
+		return HitMan.hitTestForSelection(transformToCurrentSpace(pointInRootSpace), currentLevel);
 	}
 
 	public LinkedList<Touchable> hitObjects(Point2D p1, Point2D p2) {

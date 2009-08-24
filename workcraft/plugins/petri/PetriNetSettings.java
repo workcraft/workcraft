@@ -33,7 +33,7 @@ public class PetriNetSettings implements PersistentPropertyEditable, Plugin {
 		return "Visual";
 	}
 
-	public void addListener(PropertyChangeListener listener) {
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 
@@ -41,7 +41,7 @@ public class PetriNetSettings implements PersistentPropertyEditable, Plugin {
 	}
 
 
-	public void removeListener(PropertyChangeListener listener) {
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 }

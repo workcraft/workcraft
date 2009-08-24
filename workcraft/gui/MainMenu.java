@@ -279,6 +279,8 @@ public class MainMenu extends JMenuBar {
 	}
 
 	private void addExporter (Exporter exporter) {
+		//if (exporter.getExtenstion().equals(".work"))
+		//	return;
 		ScriptedActionMenuItem miExport = new ScriptedActionMenuItem(new ExportAction(exporter));
 		miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnExport.add(miExport);

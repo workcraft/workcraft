@@ -47,13 +47,13 @@ public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin 
 		config.setDouble("RandomLayout.rangeY", rangeY);
 	}
 
-	public void addListener(PropertyChangeListener listener) {
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public void firePropertyChanged(String propertyName) {
 	}
 
-	public void removeListener(PropertyChangeListener listener) {
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public String getSection() {

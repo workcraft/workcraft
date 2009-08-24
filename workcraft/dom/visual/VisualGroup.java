@@ -3,21 +3,16 @@ package org.workcraft.dom.visual;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import net.sf.jga.algorithms.Filter;
-import net.sf.jga.fn.UnaryFunctor;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
@@ -30,10 +25,11 @@ import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.XmlUtil;
 
 
-public class VisualGroup extends VisualTransformableNode {
+public class VisualGroup extends VisualTransformableNode implements Drawable {
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
@@ -46,34 +42,6 @@ public class VisualGroup extends VisualTransformableNode {
 
 	private Element deferredGroupElement = null;
 	private String label = "";
-
-	private static <T extends VisualNode> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
-		return
-			Filter.filter(nodes, new UnaryFunctor<T, Boolean>()
-				{
-					private static final long serialVersionUID = -7790168871113424836L;
-
-					@Override
-					public Boolean fn(T arg) {
-						Rectangle2D boundingBox = arg.getBoundingBox();
-
-						//System.out.println (boundingBox.toString());
-						//System.out.println (pointInLocalSpace.toString());
-
-						return
-							boundingBox != null &&
-							boundingBox.contains(pointInLocalSpace);
-					}
-				}
-		);
-	}
-
-	private static <T extends VisualNode> T hitVisualNode(Point2D pointInLocalSpace, Collection<T> nodes) {
-		for (T node : reverse(filterByBB(nodes, pointInLocalSpace)))
-			if (node.hitTest(pointInLocalSpace) != null)
-				return node;
-		return null;
-	}
 
 	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
 	{
@@ -92,30 +60,7 @@ public class VisualGroup extends VisualTransformableNode {
 		return rect;
 	}
 
-	private static <T> Iterable<T> reverse(Iterable<T> original)
-	{
-		final ArrayList<T> list = new ArrayList<T>();
-		for (T node : original)
-			list.add(node);
-		return new Iterable<T>()
-		{
-			public Iterator<T> iterator() {
-				return new Iterator<T>()
-				{
-					private int cur = list.size();
-					public boolean hasNext() {
-						return cur>0;
-					}
-					public T next() {
-						return list.get(--cur);
-					}
-					public void remove() {
-						throw new RuntimeException("Not supported");
-					}
-				};
-			}
-		};
-	}
+
 
 	public VisualGroup () {
 		super();
@@ -138,13 +83,13 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	private void addPropertyChangeListener() {
-		this.addListener(new PropertyChangeListener(){
+		this.addPropertyChangeListener(new PropertyChangeListener(){
 			public void onPropertyChanged(String propertyName, Object sender) {
 				if(propertyName == "transform")
 					for(VisualNode node : children)
 					{
-						if(node instanceof VisualTransformableNode)
-							node.firePropertyChanged("transform");
+						if(node instanceof VisualTransformableNode && node instanceof PropertyEditable)
+							((PropertyEditable)node).firePropertyChanged("transform");
 					}
 
 			}
@@ -161,13 +106,6 @@ public class VisualGroup extends VisualTransformableNode {
 				VisualModel.nodesToXML (element, children);
 			}
 		});
-	}
-
-	private void drawPreservingTransform(Graphics2D g, VisualNode nodeToDraw)
-	{
-		AffineTransform oldTransform = g.getTransform();
-		nodeToDraw.draw(g);
-		g.setTransform(oldTransform);
 	}
 
 	private void loadComponents (Element groupElement, VisualModel model) throws VisualComponentCreationException {
@@ -208,20 +146,7 @@ public class VisualGroup extends VisualTransformableNode {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
-		for (VisualConnection connection : connections)
-			drawPreservingTransform(g, connection);
-
-		for (VisualGroup group : groups)
-			drawPreservingTransform(g, group);
-
-		for (VisualComponent component : components)
-			drawPreservingTransform(g, component);
-
-		for (VisualNode node : misc)
-			drawPreservingTransform(g, node);
-
-
+	public void draw(Graphics2D g) {
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 
 		if (bb != null && getParent() != null) {
@@ -304,64 +229,22 @@ public class VisualGroup extends VisualTransformableNode {
 		return new LinkedHashSet<VisualConnection>(connections);
 	}
 
-	public VisualComponent hitComponent(Point2D pointInLocalSpace) {
-		VisualComponent result = hitVisualNode(pointInLocalSpace, components);
+	public LinkedList<Touchable> hitObjects(Point2D p1 , Point2D p2) {
+		Point2D p1local = new Point2D.Double();
+		Point2D p2local = new Point2D.Double();
+		this.getParentToLocalTransform().transform(p1, p1local);
+		this.getParentToLocalTransform().transform(p2, p2local);
 
-		if(result!=null)
-		{
-			Point2D point2 = new Point2D.Double();
-			result.getAncestorToParentTransform(this).transform(pointInLocalSpace, point2);
-			result.getParentToLocalTransform().transform(point2, point2);
-			return result.hitComponent(point2);
-		}
-		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
-			Point2D pointInChildSpace = new Point2D.Double();
-			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
-			result = group.hitComponent(pointInChildSpace);
-			if(result!=null)
-				return result;
-		}
-		return null;
-	}
-
-	public VisualConnection hitConnection(Point2D pointInLocalSpace) {
-		VisualConnection result = hitVisualNode(pointInLocalSpace, connections);
-		if(result!=null)
-			return result;
-		for (VisualGroup group : reverse(filterByBB(groups, pointInLocalSpace))) {
-			Point2D pointInChildSpace = new Point2D.Double();
-			group.parentToLocalTransform.transform(pointInLocalSpace, pointInChildSpace);
-			result = group.hitConnection(pointInChildSpace);
-			if(result!=null)
-				return result;
-		}
-		return null;
-	}
-
-	public VisualNode hitNode(Point2D pointInLocalSpace) {
-		VisualNode node = hitVisualNode(pointInLocalSpace, misc);
-		if (node == null)
-			node = hitVisualNode(pointInLocalSpace, components);
-		if (node == null)
-			node = hitVisualNode(pointInLocalSpace, groups);
-		if (node == null)
-			node = hitVisualNode(pointInLocalSpace, connections);
-		return node;
-	}
-
-
-
-	public LinkedList<Touchable> hitObjects(Point2D p1, Point2D p2) {
 		LinkedList<Touchable> hit = new LinkedList<Touchable>();
 
 		Rectangle2D rect = new Rectangle2D.Double(
-				Math.min(p1.getX(), p2.getX()),
-				Math.min(p1.getY(), p2.getY()),
-				Math.abs(p1.getX()-p2.getX()),
-				Math.abs(p1.getY()-p2.getY()));
+				Math.min(p1local.getX(), p2local.getX()),
+				Math.min(p1local.getY(), p2local.getY()),
+				Math.abs(p1local.getX()-p2local.getX()),
+				Math.abs(p1local.getY()-p2local.getY()));
 
 		for (Touchable n : childrenOfType(Touchable.class)) {
-			if (p1.getX()<=p2.getX()) {
+			if (p1local.getX()<=p2local.getX()) {
 				if (TouchableHelper.insideRectangle(n, rect))
 					hit.add(n);
 			} else {
@@ -376,10 +259,6 @@ public class VisualGroup extends VisualTransformableNode {
 		return hitObjects(
 				new Point2D.Double(rectInLocalSpace.getMinX(), rectInLocalSpace.getMinY()),
 				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
-	}
-
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return hitNode(pointInLocalSpace);
 	}
 
 	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
@@ -456,5 +335,9 @@ public class VisualGroup extends VisualTransformableNode {
 				((VisualGroup)node).serialiseToXML(element);
 			}
 		};
+	}
+
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return false;
 	}
 }

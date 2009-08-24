@@ -6,13 +6,13 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.Coloriser;
 
 
-public abstract class VisualConnectionAnchorPoint extends VisualTransformableNode {
+public abstract class VisualConnectionAnchorPoint extends VisualTransformableNode implements Drawable {
 	private double size = 0.25;
 	private Color fillColor = Color.BLUE.darker();
 
@@ -31,7 +31,7 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 	public VisualConnectionAnchorPoint(VisualConnection parent) {
 		parentConnection = parent;
 
-		addListener(new PropertyChangeListener() {
+		addPropertyChangeListener(new PropertyChangeListener() {
 			public void onPropertyChanged(String propertyName, Object sender) {
 				parentConnection.update();
 			}
@@ -43,15 +43,12 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		g.setColor(Coloriser.colorise(fillColor, getColorisation()));
 		g.fill(shape);
 	}
 
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return this;
-		else
-			return null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 }

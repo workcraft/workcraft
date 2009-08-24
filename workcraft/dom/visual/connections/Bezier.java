@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual.connections;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -220,7 +219,7 @@ class Bezier implements ConnectionGraphic {
 		Element eap = xap.get(0);
 		cp1.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 		cp1.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-		cp1.addListener(new PropertyChangeListener() {
+		cp1.addPropertyChangeListener(new PropertyChangeListener() {
 			public void onPropertyChanged(String propertyName, Object sender) {
 				parentConnection.update();
 			}
@@ -228,7 +227,7 @@ class Bezier implements ConnectionGraphic {
 		eap=xap.get(1);
 		cp2.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 		cp2.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-		cp2.addListener(new PropertyChangeListener() {
+		cp2.addPropertyChangeListener(new PropertyChangeListener() {
 			public void onPropertyChanged(String propertyName, Object sender) {
 				parentConnection.update();
 			}
@@ -299,11 +298,10 @@ class Bezier implements ConnectionGraphic {
 
 	}
 
-	public void applyTransform(AffineTransform transform) {
-
-	}
-
 	public Collection<HierarchyNode> getControls() {
-		return new ArrayList<HierarchyNode>();
+		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>();
+		result.add(cp1);
+		result.add(cp2);
+		return result;
 	}
 }

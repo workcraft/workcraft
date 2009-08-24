@@ -8,7 +8,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -86,7 +85,7 @@ public class VisualCircuitComponent extends VisualComponent {
 
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 
 		drawLabelInLocalSpace(g);
 
@@ -109,11 +108,8 @@ public class VisualCircuitComponent extends VisualComponent {
 
 
 	@Override
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return this;
-		else
-			return null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
 }

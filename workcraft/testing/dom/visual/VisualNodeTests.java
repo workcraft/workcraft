@@ -22,7 +22,7 @@ public class VisualNodeTests {
 	{
 		final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
 		final Boolean[] hit = new Boolean[]{false};
-		node.addListener(new PropertyChangeListener()
+		node.addPropertyChangeListener(new PropertyChangeListener()
 				{
 					public void onPropertyChanged(String propertyName, Object sender) {
 						if(propertyName=="transform" && node == sender)

@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -185,4 +187,15 @@ public class XmlUtil {
 
 		return doc;
 	}
+
+	public static Document loadDocument(ReadableByteChannel in) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+
+		db = dbf.newDocumentBuilder();
+		doc = db.parse(Channels.newInputStream(in));
+
+		return doc;
+	}
+
 }

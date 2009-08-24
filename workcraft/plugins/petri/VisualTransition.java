@@ -8,7 +8,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -38,7 +37,7 @@ public class VisualTransition extends VisualComponent {
 	}
 
 	@Override
-	protected void drawInLocalSpace(Graphics2D g) {
+	public void draw(Graphics2D g) {
 		drawLabelInLocalSpace(g);
 
 		double size = CommonVisualSettings.getSize();
@@ -61,10 +60,7 @@ public class VisualTransition extends VisualComponent {
 		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
 
-	public Touchable hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (getBoundingBoxInLocalSpace().contains(pointInLocalSpace))
-			return this;
-		else
-			return null;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 }

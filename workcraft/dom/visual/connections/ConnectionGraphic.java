@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual.connections;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -23,7 +22,6 @@ public interface ConnectionGraphic {
 
 	public void cleanup();
 	public void click(Point2D point);
-	public void applyTransform(AffineTransform transform);
 
 	public boolean touchesRectangle(Rectangle2D rect);
 

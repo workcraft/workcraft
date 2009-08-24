@@ -18,9 +18,9 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TouchableHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -33,7 +33,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode {
+public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable {
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -97,8 +97,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	protected void initialise() {
-		first.addListener(this);
-		second.addListener(this);
+		first.addPropertyChangeListener(this);
+		second.addPropertyChangeListener(this);
 
 		update();
 
@@ -268,10 +268,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		graphic.click(point);
 	}
 
-	public void applyTransform(AffineTransform transform) {
-		graphic.applyTransform(transform);
-	}
-
 	private double getBorderPoint (VisualComponent collisionComponent, AffineTransform toComponentParent, double tStart, double tEnd)
 	{
 		Point2D point = new Point2D.Double();
@@ -282,7 +278,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			point = getPointOnConnection(t);
 
 			toComponentParent.transform(point, point);
-			if (collisionComponent.hitTest(point) != null)
+			if (collisionComponent.hitTest(point))
 				tStart = t;
 			else
 				tEnd = t;
@@ -400,7 +396,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 //		return impl.getDistanceToConnection(pointInParentSpace);
 //	}
 
-	public Touchable hitTest(Point2D pointInParentSpace) {
+	public boolean hitTest(Point2D pointInParentSpace) {
 		Rectangle2D rect = new Rectangle2D.Double(
 				pointInParentSpace.getX()-hitThreshold,
 				pointInParentSpace.getY()-hitThreshold,
@@ -408,9 +404,9 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 				2*hitThreshold
 				);
 		if (TouchableHelper.touchesRectangle(this, rect))
-			return this;
+			return true;
 		else
-			return null;
+			return false;
 //		if (distanceToConnection(pointInParentSpace) < hitThreshold)
 //			return 1;
 //		else
@@ -457,6 +453,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	public Collection<HierarchyNode> getChildren() {
-		return  this.graphic.getControls();
+		return this.graphic.getControls();
 	}
 }

@@ -150,7 +150,7 @@ public class SDFSVisualSettings implements PersistentPropertyEditable, Plugin {
 
 
 
-	public void addListener(PropertyChangeListener listener) {
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 
@@ -158,7 +158,7 @@ public class SDFSVisualSettings implements PersistentPropertyEditable, Plugin {
 	}
 
 
-	public void removeListener(PropertyChangeListener listener) {
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 
