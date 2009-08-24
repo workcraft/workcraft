@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.workcraft.dom.Component;
 import org.workcraft.framework.exceptions.ImportException;
 import org.workcraft.framework.util.Import;
-import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 
 public class DotGImporterTests {

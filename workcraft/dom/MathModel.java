@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Serialisable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
@@ -27,7 +28,7 @@ import org.workcraft.util.XmlUtil;
  * @author Ivan Poliakov
  *
  */
-public abstract class MathModel implements Plugin, Model {
+public abstract class MathModel implements Plugin, Model, Serialisable {
 	public class RenamedReferenceResolver implements ReferenceResolver {
 		public Component getComponentByID(int ID) {
 			return getComponentByRenamedID(ID);

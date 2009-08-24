@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -56,23 +57,24 @@ public class XmlUtil {
 		return result;
 	}
 
-	public static void saveDocument(Document doc, File file) throws IOException {
+	public static void writeDocument(Document doc, OutputStream os) throws IOException {
 		try
 		{
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			FileOutputStream fos = new FileOutputStream(file.getPath());
-
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new OutputStreamWriter(fos));
-
+			StreamResult result = new StreamResult(new OutputStreamWriter(os));
 			transformer.transform(source, result);
-			fos.close();
+
 		} catch (TransformerException e) {
 			System.err.println(e.getMessage());
 		}
+	}
+
+	public static void saveDocument(Document doc, File file) throws IOException {
+		writeDocument (doc, new FileOutputStream(file));
 	}
 
 	public static void saveDocument(Document doc, File transform, File file) throws IOException {
@@ -91,6 +93,7 @@ public class XmlUtil {
 			fos.close();
 		} catch (TransformerException e) {
 			System.err.println(e.getMessage());
+			throw new IOException(e);
 		}
 	}
 

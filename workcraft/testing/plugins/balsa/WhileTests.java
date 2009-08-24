@@ -3,7 +3,6 @@ package org.workcraft.testing.plugins.balsa;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,9 +28,9 @@ import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
-import org.workcraft.plugins.interop.BalsaToStgExporter_TwoPhase;
-import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
+import org.workcraft.plugins.serialisation.BalsaToStgExporter_TwoPhase;
+import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
 
@@ -91,9 +90,7 @@ public class WhileTests {
 		balsa.addConnection(new Connection(wh1Out, wh2In));
 
 		File stgFile = new File("while_while.g");
-		WritableByteChannel ch = new FileOutputStream(stgFile).getChannel();
-		new BalsaToStgExporter_TwoPhase().export(balsa, ch);
-		ch.close();
+		new BalsaToStgExporter_TwoPhase().export(balsa, new FileOutputStream(stgFile));
 
 		final STG stg = (STG) Import.importFromFile(new DotGImporter(), stgFile);
 

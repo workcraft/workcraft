@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
-
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
-import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.STG;
 
 public class DeadlockChecker implements ModelChecker
@@ -40,11 +38,11 @@ public class DeadlockChecker implements ModelChecker
 
 	private void exportNet(Model model)
 	{
-		DotGExporter exporter = new DotGExporter();
-		WritableByteChannel ch;
+		DotGSerialiser exporter = new DotGSerialiser();
+		FileOutputStream ch;
 		try {
-			ch = new FileOutputStream(new File(tmpNetFilePath)).getChannel();
-			exporter.export(model, ch);
+			ch = new FileOutputStream(new File(tmpNetFilePath));
+			exporter.export(model.getMathModel(), ch);
 			ch.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

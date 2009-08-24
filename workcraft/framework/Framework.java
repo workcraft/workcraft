@@ -3,16 +3,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ImporterTopLevel;
@@ -33,11 +37,14 @@ import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.util.Export;
+import org.workcraft.framework.serialisation.ExportReferenceResolver;
+import org.workcraft.framework.serialisation.MathSerialiser;
+import org.workcraft.framework.serialisation.VisualSerialiser;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
-import org.workcraft.plugins.shared.DefaultSerialiser;
+import org.workcraft.plugins.serialisation.XMLVisualSerialiser;
+import org.workcraft.plugins.serialisation.XMLMathSerialiser;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -143,7 +150,6 @@ public class Framework {
 	private boolean silent = false;
 
 	private MainWindow mainWindow;
-	private DefaultSerialiser serialiser;
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
@@ -152,7 +158,6 @@ public class Framework {
 		workspace = new Workspace(this);
 		javaScriptExecution = new JavaScriptExecution();
 		javaScriptCompilation = new JavaScriptCompilation();
-		serialiser = new DefaultSerialiser();
 	}
 
 
@@ -504,12 +509,70 @@ public class Framework {
 	}
 
 	public void save(Model model, String path) throws ModelValidationException, ExportException, IOException {
-		Export.exportToFile(serialiser, model, path);
+		File file = new File(path);
+		FileOutputStream stream = new FileOutputStream(file);
+		save (model, stream);
+		stream.close();
 	}
 
-	public void save(Model model, WritableByteChannel ch) throws IOException, ModelValidationException, ExportException {
-		serialiser.export(model, ch);
+	public void save(Model model, OutputStream out) throws IOException, ModelValidationException, ExportException {
+		boolean haveVisual = model.getVisualModel() != null;
 
+		ZipOutputStream zos = new ZipOutputStream(out);
+
+		// TODO: get appropiate serialiser from config
+		MathSerialiser mathSerialiser = new XMLMathSerialiser();
+		String mathEntryName = "model" + mathSerialiser.getExtension();
+		ZipEntry ze = new ZipEntry(mathEntryName);
+		zos.putNextEntry(ze);
+		ExportReferenceResolver refResolver = mathSerialiser.export(model.getMathModel(), zos);
+		zos.closeEntry();
+
+		String visualEntryName = null;
+		VisualSerialiser visualSerialiser = null;
+
+		if (haveVisual) {
+			// TODO: get appropiate serialiser from config
+			visualSerialiser = new XMLVisualSerialiser();
+			visualEntryName = "visualModel" + visualSerialiser.getExtension();
+			ze = new ZipEntry(visualEntryName);
+			zos.putNextEntry(ze);
+			visualSerialiser.export(model.getVisualModel(), refResolver, zos);
+			zos.closeEntry();
+		}
+
+		ze = new ZipEntry("meta");
+		zos.putNextEntry(ze);
+
+		try {
+			Document doc;
+			doc = XmlUtil.createDocument();
+
+			Element root = doc.createElement("workcraft-meta");
+			doc.appendChild(root);
+
+			Element math = doc.createElement("math");
+			math.setAttribute("entry-name", mathEntryName);
+			math.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
+			root.appendChild(math);
+
+			if (haveVisual) {
+				Element visual = doc.createElement("visual");
+				visual.setAttribute("entry-name", visualEntryName);
+				visual.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
+				root.appendChild(visual);
+			}
+
+
+
+			XmlUtil.writeDocument(doc, zos);
+
+		} catch (ParserConfigurationException e) {
+			throw new IOException(e);
+		}
+
+		zos.closeEntry();
+		zos.close();
 	}
 
 	public void initPlugins() {

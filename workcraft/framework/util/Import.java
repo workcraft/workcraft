@@ -7,8 +7,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 import org.workcraft.dom.Model;
-import org.workcraft.framework.Importer;
 import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.Importer;
 
 public class Import {
 	static public Model importFromFile (Importer importer, File file) throws IOException, ImportException {

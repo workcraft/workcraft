@@ -1,6 +1,6 @@
-package org.workcraft.framework;
+package org.workcraft.framework.serialisation;
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
+import java.io.OutputStream;
 
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.ExportException;
@@ -11,5 +11,5 @@ public interface Exporter extends Plugin {
 	public String getDescription();
 	public String getExtenstion();
 	public boolean isApplicableTo (Model model);
-	public void export (Model model, WritableByteChannel out) throws IOException, ModelValidationException, ExportException;
+	public void export (Model model, OutputStream out) throws IOException, ModelValidationException, ExportException;
 }

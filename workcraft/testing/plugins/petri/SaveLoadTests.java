@@ -10,7 +10,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.channels.Channels;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -80,7 +79,7 @@ public class SaveLoadTests {
 	{
 		Framework f = new Framework();
 		StringWriter writer = new StringWriter();
-		f.save(buildSamplePetri(), Channels.newChannel(new Base16Writer(writer)));
+		f.save(buildSamplePetri(), new Base16Writer(writer));
 		System.err.print("\"");
 		System.err.print(writer.toString());
 		System.err.println("\"");

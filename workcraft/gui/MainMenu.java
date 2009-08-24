@@ -5,17 +5,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.Exporter;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
+import org.workcraft.framework.serialisation.Exporter;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
@@ -279,9 +280,23 @@ public class MainMenu extends JMenuBar {
 	}
 
 	private void addExporter (Exporter exporter) {
+		addExporter (exporter, null);
+	}
+
+	private void addExportSeparator (String text) {
+		mnExport.add(new JLabel(text));
+		mnExport.addSeparator();
+	}
+
+	private void addExporter (Exporter exporter, String additionalDescription) {
 		//if (exporter.getExtenstion().equals(".work"))
 		//	return;
-		ScriptedActionMenuItem miExport = new ScriptedActionMenuItem(new ExportAction(exporter));
+		ScriptedActionMenuItem miExport = new ScriptedActionMenuItem(new ExportAction(exporter),
+				additionalDescription == null?
+					exporter.getDescription()
+					:
+					exporter.getDescription()+ " " + additionalDescription);
+
 		miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnExport.add(miExport);
 		mnExport.setEnabled(true);
@@ -343,17 +358,41 @@ public class MainMenu extends JMenuBar {
 
 		PluginInfo[] exportPluginInfo = framework.getPluginManager().getPluginsByInterface(Exporter.class.getName());
 
+		boolean haveVisual = false;
+
 		try {
 			for (PluginInfo info : exportPluginInfo) {
 				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
 
-				if (exporter.isApplicableTo(model))
+				if (exporter.isApplicableTo(model.getVisualModel())) {
+					if (!haveVisual)
+						addExportSeparator("Visual");
 					addExporter(exporter);
+					haveVisual = true;
+				}
 			}
 		}  catch (PluginInstantiationException e) {
 			System.err.println ("Could not instantiate export plugin class: " + e.getMessage() + " (skipped)");
 		}
 
+		boolean haveNonVisual = false;
+
+
+
+		try {
+			for (PluginInfo info : exportPluginInfo) {
+				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
+
+				if (exporter.isApplicableTo(model.getMathModel())) {
+					if (!haveNonVisual)
+						addExportSeparator("Non-visual");
+					addExporter(exporter);
+					haveNonVisual = true;
+				}
+			}
+		}  catch (PluginInstantiationException e) {
+			System.err.println ("Could not instantiate export plugin class: " + e.getMessage() + " (skipped)");
+		}
 
 		doLayout();
 	}

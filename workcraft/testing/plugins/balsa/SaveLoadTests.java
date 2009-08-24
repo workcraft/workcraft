@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -153,7 +152,7 @@ public class SaveLoadTests {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		new Framework().save(circuit, Channels.newChannel(stream));
+		new Framework().save(circuit, stream);
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}
@@ -168,7 +167,7 @@ public class SaveLoadTests {
 		//FileOutputStream temp = new FileOutputStream("temp.work");
 		//new Framework().save(circuit, temp);
 		//temp.close();
-		new Framework().save(circuit, Channels.newChannel(stream));
+		new Framework().save(circuit, stream);
 		testVisualModelLoopWhile(circuit);
 		testVisualModelLoopWhile(
 				Framework.load(
@@ -228,13 +227,13 @@ public class SaveLoadTests {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		f.save(circuit, Channels.newChannel(stream));
+		f.save(circuit, stream);
 
 		Model loaded = Framework.load(new ByteArrayInputStream(stream.toByteArray()));
 
 		stream = new ByteArrayOutputStream();
 
-		f.save(loaded, Channels.newChannel(stream));
+		f.save(loaded, stream);
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}

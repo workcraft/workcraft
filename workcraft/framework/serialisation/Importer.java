@@ -1,4 +1,4 @@
-package org.workcraft.framework;
+package org.workcraft.framework.serialisation;
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;

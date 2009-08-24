@@ -1027,4 +1027,5 @@ public class VisualModel implements Plugin, Model {
 	protected VisualReferenceResolver getReferenceResolver() {
 		return referenceResolver;
 	}
+
 }
