@@ -8,7 +8,6 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.BeanInfo;
@@ -113,14 +112,9 @@ public class VisualBreezeComponent extends VisualGroup {
 						dir == Direction.Left ? 2:
 							3;
 
-			try {
-				visual.applyTransform(AffineTransform.getQuadrantRotateInstance(quadrants));
-				visual.applyTransform(AffineTransform.getScaleInstance(handshakeRadius*2, handshakeRadius*2));
-				visual.applyTransform(AffineTransform.getTranslateInstance(ray.position.x, ray.position.y));
-			} catch (NoninvertibleTransformException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			visual.applyTransform(AffineTransform.getQuadrantRotateInstance(quadrants));
+			visual.applyTransform(AffineTransform.getScaleInstance(handshakeRadius*2, handshakeRadius*2));
+			visual.applyTransform(AffineTransform.getTranslateInstance(ray.position.x, ray.position.y));
 
 			this.add(visual);
 		}

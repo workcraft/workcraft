@@ -215,7 +215,9 @@ public class VisualModel implements Plugin, Model {
 		for (Connection connection : mathModel.getConnections()) {
 			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
 
-			VisualNode.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()).add(visualConnection);
+			HierarchyHelper.getNearestAncestor(
+					HierarchyHelper.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
+					Container.class).add(visualConnection);
 			addConnection(visualConnection);
 
 			visualConnectionRenames.put(connection.getID(), visualConnection.getID());
@@ -630,7 +632,7 @@ public class VisualModel implements Plugin, Model {
 		return selection.toArray(new VisualNode[0]);
 	}
 
-	public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+	public void validateConnection(HierarchyNode first, HierarchyNode second) throws InvalidConnectionException {
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 			mathModel.validateConnection(new Connection (((VisualComponent)first).getReferencedComponent(),
 					((VisualComponent)second).getReferencedComponent()));
@@ -638,7 +640,7 @@ public class VisualModel implements Plugin, Model {
 		else throw new InvalidConnectionException("Only connections between components are allowed");
 	}
 
-	public VisualConnection connect(VisualNode first, VisualNode second) throws InvalidConnectionException {
+	public VisualConnection connect(HierarchyNode first, HierarchyNode second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualComponent firstComponent = (VisualComponent)first;
@@ -647,7 +649,10 @@ public class VisualModel implements Plugin, Model {
 		Connection con = mathModel.connect(firstComponent.getReferencedComponent(), secondComponent.getReferencedComponent());
 		VisualConnection ret = new VisualConnection(con, firstComponent, secondComponent);
 
-		VisualGroup group = VisualNode.getCommonParent(first, second);
+		Container group =
+			HierarchyHelper.getNearestAncestor(
+			HierarchyHelper.getCommonParent(first, second),
+			Container.class);
 
 		group.add(ret);
 		addConnection(ret);
@@ -753,16 +758,12 @@ public class VisualModel implements Plugin, Model {
 		currentLevel.add(group);
 		for(VisualNode node : selected)
 		{
-			if (node instanceof VisualConnectionAnchorPoint) {
-				selection.remove(node);
-				continue;
-			}
 			currentLevel.remove(node);
 			group.add(node);
 		}
 
 		ArrayList<VisualConnection> connectionsToGroup = new ArrayList<VisualConnection>();
-		for(VisualConnection connection : currentLevel.connections)
+		for(VisualConnection connection : currentLevel.getChildrenOfType(VisualConnection.class))
 		{
 			if(connection.getFirst().isDescendantOf(group) &&
 					connection.getSecond().isDescendantOf(group)) {
@@ -771,7 +772,10 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		for(VisualConnection connection : connectionsToGroup)
+		{
+			currentLevel.remove(connection);
 			group.add(connection);
+		}
 
 		selection.clear();
 		selection.add(group);
@@ -783,14 +787,14 @@ public class VisualModel implements Plugin, Model {
 	 * @author Arseniy Alekseyev
 	 */
 	public void ungroupSelection() {
-		ArrayList<VisualNode> unGrouped = new ArrayList<VisualNode>();
+		ArrayList<HierarchyNode> unGrouped = new ArrayList<HierarchyNode>();
 
 		for(VisualNode node : getSelection())
 		{
 			if(node instanceof VisualGroup)
 			{
 				VisualGroup group = (VisualGroup)node;
-				for(VisualNode subNode : group.unGroup())
+				for(HierarchyNode subNode : group.unGroup())
 					unGrouped.add(subNode);
 				currentLevel.remove(group);
 			}
@@ -798,7 +802,7 @@ public class VisualModel implements Plugin, Model {
 
 		selection.clear();
 
-		for(VisualNode node : unGrouped)
+		for(HierarchyNode node : unGrouped)
 			selection.add(node);
 		fireSelectionChanged();
 	}
@@ -806,7 +810,7 @@ public class VisualModel implements Plugin, Model {
 	protected void removeGroup(VisualGroup group) {
 		removeNodes(group.getChildren());
 
-		group.getParent().remove(group);
+		((Container)group.getParent()).remove(group);
 		selection.remove(group);
 	}
 
@@ -816,7 +820,7 @@ public class VisualModel implements Plugin, Model {
 		mathModel.removeComponent(component.getReferencedComponent());
 
 		selection.remove(component);
-		component.getParent().remove(component);
+		((Container)component.getParent()).remove(component);
 
 		component.removePropertyChangeListener(propertyChangeListener);
 
@@ -835,7 +839,7 @@ public class VisualModel implements Plugin, Model {
 		connection.getSecond().removeConnection(connection);
 		mathModel.removeConnection(connection.getReferencedConnection());
 
-		connection.getParent().remove(connection);
+		((Container)connection.getParent()).remove(connection);
 		selection.remove(connection);
 
 		connection.removePropertyChangeListener(propertyChangeListener);

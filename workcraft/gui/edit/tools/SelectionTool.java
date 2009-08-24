@@ -17,6 +17,7 @@ import javax.swing.JPopupMenu;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.workcraft.dom.visual.Colorisable;
+import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Touchable;
@@ -373,7 +374,7 @@ public class SelectionTool extends AbstractTool {
 
 	private void currentLevelUp(GraphEditorKeyEvent e) {
 		VisualGroup level = e.getModel().getCurrentLevel();
-		VisualGroup parent = level.getParent();
+		VisualGroup parent = HierarchyHelper.getNearestAncestor(level.getParent(), VisualGroup.class);
 		if(parent!=null)
 		{
 			e.getModel().setCurrentLevel(parent);

@@ -249,10 +249,6 @@ class Bezier implements ConnectionGraphic {
 	public void removeAllAnchorPoints() {
 		cp1.setPosition(cp1.getParentConnection().getFirst().getPosition());
 		cp2.setPosition(cp2.getParentConnection().getSecond().getPosition());
-
-		cp1.getParentConnection().getParent().remove(cp1);
-		cp2.getParentConnection().getParent().remove(cp2);
-
 	}
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {

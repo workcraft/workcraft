@@ -19,11 +19,12 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.visual.FreeNode;
 import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.TouchableHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualReferenceResolver;
@@ -33,7 +34,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable {
+public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable, FreeNode {
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -292,8 +293,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			return;
 		AffineTransform t1,t2;
 		try {
-			t1 = first.getParentToAncestorTransform(getParent());
-			t2 = second.getParentToAncestorTransform(getParent());
+			t1 = TransformHelper.getTransform(first, this);
+			t2 = TransformHelper.getTransform(second, this);
 		} catch (NotAnAncestorException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -403,10 +404,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 				2*hitThreshold,
 				2*hitThreshold
 				);
-		if (TouchableHelper.touchesRectangle(this, rect))
-			return true;
-		else
-			return false;
+		return TouchableHelper.touchesRectangle(this, rect);
 //		if (distanceToConnection(pointInParentSpace) < hitThreshold)
 //			return 1;
 //		else
@@ -424,7 +422,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	@Override
-	public void setParent(VisualGroup parent) {
+	public void setParent(HierarchyNode parent) {
 		super.setParent(parent);
 		update();
 	}

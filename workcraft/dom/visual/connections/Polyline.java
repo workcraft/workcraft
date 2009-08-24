@@ -282,18 +282,12 @@ class Polyline implements ConnectionGraphic {
 
 
 	public void removeAllAnchorPoints() {
-		for (VisualConnectionAnchorPoint ap: anchorPoints) {
-			ap.getParentConnection().getParent().remove(ap);
-		}
-
 		anchorPoints.clear();
 		parentConnection.update();
 		parentConnection.firePropertyChanged("anchors");
 	}
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
-		anchor.getParentConnection().getParent().remove(anchor);
-
 		anchorPoints.remove(anchor);
 
 		parentConnection.update();

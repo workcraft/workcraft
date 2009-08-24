@@ -1,13 +1,12 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 
 public interface Movable extends HierarchyNode {
 	public AffineTransform getTransform();
 
-	public void setTransform(AffineTransform transform) throws NoninvertibleTransformException;
-	public void applyTransform(AffineTransform transform) throws NoninvertibleTransformException;
+	public void setTransform(AffineTransform transform);
+	public void applyTransform(AffineTransform transform);
 
 	public double getX();
 	public void setX(double X);

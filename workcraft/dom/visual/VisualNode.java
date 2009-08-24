@@ -24,7 +24,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Geometry;
 
 
-public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable {
+public abstract class VisualNode implements PropertyEditable, FreeNode, DependentNode, Touchable, Colorisable {
 
 	public Rectangle2D getBoundingBox() {
 		return null;
@@ -51,21 +51,20 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 
 
 	private Color colorisation = null;
-	private VisualGroup parent = null;
+	private HierarchyNode parent = null;
 	private boolean hidden = false;
 
 	private XMLSerialisation serialisation = new XMLSerialisation();
 	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
 	private PropertySupport propertySupport = new PropertySupport();
 
-	public VisualGroup getParent() {
+	public HierarchyNode getParent() {
 		return parent;
 	}
 
-	public void setParent(VisualGroup parent) {
+	public void setParent(HierarchyNode parent) {
 		this.parent = parent;
 	}
-
 
 
 	public final AffineTransform getAncestorToParentTransform(VisualGroup ancestor) throws NotAnAncestorException {
@@ -73,17 +72,9 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 	}
 
 	public final AffineTransform getParentToAncestorTransform(VisualGroup ancestor) throws NotAnAncestorException{
-		AffineTransform t = new AffineTransform();
-
-		VisualGroup next = parent;
-		while (ancestor != next) {
-			if (next == null)
-				throw new NotAnAncestorException();
-			t.concatenate(next.getLocalToParentTransform());
-			next = next.getParent();
-		}
-
-		return t;
+		AffineTransform transform = TransformHelper.getTransformToAncestor(this, ancestor);
+		transform.preConcatenate(ancestor.parentToLocalTransform);
+		return transform;
 	}
 
 	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualGroup ancestor) throws NotAnAncestorException {
@@ -115,47 +106,8 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 	}
 
 	public final boolean isDescendantOf(VisualGroup group) {
-		VisualNode node = this;
-		while(node != group)
-		{
-			if(node == null)
-				return false;
-			node = node.parent;
-		}
-		return true;
+		return HierarchyHelper.isDescendant(this, group);
 	}
-	public VisualGroup [] getPath() {
-		VisualGroup group = getParent();
-		int i = 0;
-		while(group!=null)
-		{
-			i++;
-			group = group.getParent();
-		}
-		VisualGroup [] result = new VisualGroup[i];
-		group = getParent();
-		while(group!=null)
-		{
-			result[--i] = group;
-			group = group.getParent();
-		}
-
-		return result;
-	}
-
-	public static VisualGroup getCommonParent(VisualNode first, VisualNode second) {
-		VisualGroup [] path1 = first.getPath();
-		VisualGroup [] path2 = second.getPath();
-		int size = Math.min(path1.length, path2.length);
-		VisualGroup result = null;
-		for(int i=0;i<size;i++)
-			if(path1[i]==path2[i])
-				result = path1[i];
-			else
-				break;
-		return result;
-	}
-
 	protected final void addPopupMenuSegment (PopupMenuSegment segment) {
 		popupMenuBuilder.addSegment(segment);
 	}

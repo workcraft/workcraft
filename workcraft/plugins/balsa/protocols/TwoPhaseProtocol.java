@@ -134,7 +134,7 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 				return sync.getDeactivationNotificator();
 			}
 			public StgTransition getDataReleaser() {
-				return null;
+				return getActivator();
 			}
 			public ReadablePlace getData(int index, boolean value) {
 				InputDataSignal signal = dataSignals[index];
@@ -161,7 +161,7 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 				return sync.getDeactivator();
 			}
 			public StgTransition getDataReleaser() {
-				return null;
+				return getDeactivator();
 			}
 		};
 	}

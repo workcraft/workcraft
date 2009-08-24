@@ -3,7 +3,6 @@ package org.workcraft.dom.visual;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -29,16 +28,12 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.XmlUtil;
 
 
-public class VisualGroup extends VisualTransformableNode implements Drawable {
+public class VisualGroup extends VisualTransformableNode implements Drawable, Container {
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
 
-	protected Set<VisualConnection> connections = new LinkedHashSet<VisualConnection>();
-	protected Set<VisualComponent> components = new LinkedHashSet<VisualComponent>();
-	protected Set<VisualGroup> groups = new LinkedHashSet<VisualGroup>();
-	protected Set<VisualNode> misc = new LinkedHashSet<VisualNode>();
-	protected Set<VisualNode> children = new LinkedHashSet<VisualNode>();
+	protected Set<FreeNode> children = new LinkedHashSet<FreeNode>();
 
 	private Element deferredGroupElement = null;
 	private String label = "";
@@ -86,9 +81,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 		this.addPropertyChangeListener(new PropertyChangeListener(){
 			public void onPropertyChanged(String propertyName, Object sender) {
 				if(propertyName == "transform")
-					for(VisualNode node : children)
+					for(HierarchyNode node : children)
 					{
-						if(node instanceof VisualTransformableNode && node instanceof PropertyEditable)
+						if(node instanceof Movable && node instanceof PropertyEditable)
 							((PropertyEditable)node).firePropertyChanged("transform");
 					}
 
@@ -157,45 +152,19 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 		}
 	}
 
-	public void remove (VisualNode node) {
+	public void remove (FreeNode node) {
 		node.setParent(null);
 		children.remove(node);
-
-		if (node instanceof VisualComponent)
-			components.remove((VisualComponent)node);
-		else if (node instanceof VisualGroup)
-			groups.remove((VisualGroup)node);
-		else if (node instanceof VisualConnection)
-			connections.remove((VisualConnection)node);
-		else
-			misc.remove(node);
 	}
 
-	public void add (VisualGroup group) {
-		if (group.getParent()!=null)
-			group.getParent().remove(group);
-		groups.add(group);
-		children.add(group);
-		group.setParent(this);
-	}
-
-	public void add (VisualNode node) {
+	public void add (FreeNode node) {
 		if (node.getParent() == this)
 			return;
 
 		if (node.getParent() != null)
-			node.getParent().remove(node);
+			throw new RuntimeException("Cannot attach a someone else's node. Please detach from an old parent first.");
 
 		children.add(node);
-
-		if (node instanceof VisualComponent)
-			components.add((VisualComponent)node);
-		else if (node instanceof VisualGroup)
-			groups.add((VisualGroup)node);
-		else if (node instanceof VisualConnection)
-			connections.add((VisualConnection)node);
-		else
-			misc.add(node);
 
 		node.setParent(this);
 	}
@@ -203,15 +172,15 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 	@Override
 	public void clearColorisation() {
 		setColorisation(null);
-		for (VisualNode node : children)
+		for (Colorisable node : getChildrenOfType(Colorisable.class))
 			node.clearColorisation();
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D.Double rect = null;
-		for(VisualComponent comp : components)
+		for(VisualComponent comp : getChildrenOfType(VisualComponent.class))
 			rect = mergeRect(rect, comp);
-		for(VisualGroup grp : groups)
+		for(VisualGroup grp : getChildrenOfType(VisualGroup.class))
 			rect = mergeRect(rect, grp);
 
 		return rect;
@@ -221,12 +190,12 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 		return new LinkedHashSet<HierarchyNode>(children);
 	}
 
-	public final Set<VisualComponent> getComponents() {
-		return new LinkedHashSet<VisualComponent>(components);
+	public final Collection<VisualComponent> getComponents() {
+		return getChildrenOfType(VisualComponent.class);
 	}
 
-	public final Set<VisualConnection> getConnections() {
-		return new LinkedHashSet<VisualConnection>(connections);
+	public final Collection<VisualConnection> getConnections() {
+		return getChildrenOfType(VisualConnection.class);
 	}
 
 	public LinkedList<Touchable> hitObjects(Point2D p1 , Point2D p2) {
@@ -243,7 +212,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 				Math.abs(p1local.getX()-p2local.getX()),
 				Math.abs(p1local.getY()-p2local.getY()));
 
-		for (Touchable n : childrenOfType(Touchable.class)) {
+		for (Touchable n : getChildrenOfType(Touchable.class)) {
 			if (p1local.getX()<=p2local.getX()) {
 				if (TouchableHelper.insideRectangle(n, rect))
 					hit.add(n);
@@ -262,7 +231,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 	}
 
 	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
-		for (VisualGroup g: groups)
+		for (VisualGroup g: getChildrenOfType(VisualGroup.class))
 			g.loadDeferredConnections(model);
 		loadConnections(deferredGroupElement, model);
 		deferredGroupElement = null;
@@ -271,45 +240,30 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 	@Override
 	public void setColorisation(Color color) {
 		super.setColorisation(color);
-		for (VisualNode node : children)
+		for (Colorisable node : getChildrenOfType(Colorisable.class))
 			node.setColorisation(color);
 	}
 
-	public List<VisualNode> unGroup() {
-		ArrayList<VisualNode> result = new ArrayList<VisualNode>(children.size());
-		for (VisualConnection connection : connections.toArray(new VisualConnection[connections.size()])) {
-			getParent().add(connection);
-			result.add(connection);
+	public List<HierarchyNode> unGroup() {
+		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>(children.size());
+
+		Container parent = HierarchyHelper.getNearestAncestor(getParent(), Container.class);
+
+		for (FreeNode node : children) {
+			node.setParent(null);
+			parent.add(node);
+			result.add(node);
 		}
 
-		try	{
-			for (VisualTransformableNode group : groups.toArray(new VisualTransformableNode[groups.size()]))
-			{
-				getParent().add(group);
-				result.add(group);
-				group.applyTransform(localToParentTransform);
-			}
-			for (VisualTransformableNode component : components.toArray(new VisualTransformableNode[components.size()]))
-			{
-				getParent().add(component);
-				result.add(component);
-				component.applyTransform(localToParentTransform);
-			}
-		}
-		catch(NoninvertibleTransformException ex) {
-			throw new RuntimeException("localToParentTransform is not invertible!");
-		}
+		TransformHelper.applyTransformToChildNodes(this, localToParentTransform);
 
 		children.clear();
-		groups.clear();
-		components.clear();
-		connections.clear();
 
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Collection<T> childrenOfType(Class<T> type)
+	public <T> Collection<T> getChildrenOfType(Class<T> type)
 	{
 		ArrayList<T> result = new ArrayList<T>();
 
@@ -323,7 +277,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable {
 
 	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
-		for (DependentNode n: childrenOfType(DependentNode.class))
+		for (DependentNode n: getChildrenOfType(DependentNode.class))
 			ret.addAll(n.getMathReferences());
 		return ret;
 	}

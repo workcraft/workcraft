@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.visual.Container;
+import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -92,7 +94,7 @@ public class VisualSTG extends VisualPetriNet  {
 
 
 	@Override
-	public void validateConnection(VisualNode first, VisualNode second)
+	public void validateConnection(HierarchyNode first, HierarchyNode second)
 	throws InvalidConnectionException {
 		if (first instanceof VisualPlace) {
 			if (second instanceof VisualPlace)
@@ -122,8 +124,8 @@ public class VisualSTG extends VisualPetriNet  {
 	}
 
 	@Override
-	public VisualConnection connect(VisualNode first,
-			VisualNode second) throws InvalidConnectionException {
+	public VisualConnection connect(HierarchyNode first,
+			HierarchyNode second) throws InvalidConnectionException {
 
 		validateConnection(first, second);
 
@@ -139,7 +141,10 @@ public class VisualSTG extends VisualPetriNet  {
 
 				ImplicitPlaceArc connection = new ImplicitPlaceArc((VisualComponent)first, (VisualComponent)second, con1, con2, implicitPlace);
 
-				VisualGroup group = VisualNode.getCommonParent(first, second);
+				Container group =
+					HierarchyHelper.getNearestAncestor(
+					HierarchyHelper.getCommonParent(first, second),
+					Container.class);
 
 				group.add(connection);
 				addConnection(connection);
@@ -147,7 +152,7 @@ public class VisualSTG extends VisualPetriNet  {
 				return connection;
 			} else if (second instanceof ImplicitPlaceArc) {
 				ImplicitPlaceArc con = (ImplicitPlaceArc)second;
-				VisualGroup group = con.getParent();
+				Container group = HierarchyHelper.getNearestAncestor(con, Container.class);
 
 				Place implicitPlace = con.getImplicitPlace();
 
@@ -175,7 +180,7 @@ public class VisualSTG extends VisualPetriNet  {
 		if (first instanceof ImplicitPlaceArc)
 			if (second instanceof VisualSignalTransition) {
 				ImplicitPlaceArc con = (ImplicitPlaceArc)first;
-				VisualGroup group = con.getParent();
+				Container group = HierarchyHelper.getNearestAncestor(con, Container.class);
 
 				Place implicitPlace = con.getImplicitPlace();
 
@@ -219,13 +224,13 @@ public class VisualSTG extends VisualPetriNet  {
 		connection.getFirst().removeConnection(connection);
 		connection.getSecond().removeConnection(connection);
 
-		connection.getParent().remove(connection);
+		((Container)connection.getParent()).remove(connection);
 		selection().remove(connection);
 		connection.removePropertyChangeListener(getPropertyChangeListener());
 	}
 
 	private void removeVisualComponentOnly(VisualComponent component) {
-		component.getParent().remove(component);
+		((Container)component.getParent()).remove(component);
 		selection().remove(component);
 		component.removePropertyChangeListener(getPropertyChangeListener());
 	}
@@ -253,7 +258,9 @@ public class VisualSTG extends VisualPetriNet  {
 
 		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
 
-		VisualNode.getCommonParent(first, second).add(con);
+		HierarchyHelper.getNearestAncestor(
+				HierarchyHelper.getCommonParent(first, second), Container.class)
+					.add(con);
 		addConnection(con);
 
 		return con;
@@ -272,7 +279,7 @@ public class VisualSTG extends VisualPetriNet  {
 			getMathModel().removeConnection(((ImplicitPlaceArc) connection).getRefCon2());
 			getMathModel().removeComponent(((ImplicitPlaceArc) connection).getImplicitPlace());
 
-			connection.getParent().remove(connection);
+			((Container)connection.getParent()).remove(connection);
 			selection().remove(connection);
 
 			connection.removePropertyChangeListener(getPropertyChangeListener());

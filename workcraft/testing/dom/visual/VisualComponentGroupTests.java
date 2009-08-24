@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualComponent;
@@ -146,9 +147,9 @@ public class VisualComponentGroupTests {
 		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
 		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
 
-		Iterable<VisualNode> unGroup = node1.unGroup();
-		ArrayList<VisualNode> list = new ArrayList<VisualNode>();
-		for(VisualNode node: unGroup)
+		Iterable<HierarchyNode> unGroup = node1.unGroup();
+		ArrayList<HierarchyNode> list = new ArrayList<HierarchyNode>();
+		for(HierarchyNode node: unGroup)
 			list.add(node);
 
 		Assert.assertEquals(4, list.size());
@@ -198,7 +199,7 @@ public class VisualComponentGroupTests {
 			parent.add(this);
 		}
 		@Override
-		public void setParent(VisualGroup parent) {
+		public void setParent(HierarchyNode parent) {
 			super.setParent(parent);
 			uptodate = false;
 		};

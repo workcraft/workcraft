@@ -1,12 +1,12 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 
 
@@ -75,11 +75,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	protected void transformChanged() {
-		try {
-			parentToLocalTransform = localToParentTransform.createInverse();
-		} catch (NoninvertibleTransformException e) {
-			System.err.println(e.getMessage());
-		}
+		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
 		firePropertyChanged("transform");
 	}
 
@@ -118,7 +114,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return parentToLocalTransform;
 	}
 
-	public void applyTransform(AffineTransform transform) throws NoninvertibleTransformException
+	public void applyTransform(AffineTransform transform)
 	{
 		localToParentTransform.preConcatenate(transform);
 		transformChanged();
