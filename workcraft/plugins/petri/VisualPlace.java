@@ -13,7 +13,6 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
@@ -99,8 +98,7 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclarations();
 	}
 
-	public VisualPlace(Place place, Element xmlElement) {
-		super(place, xmlElement);
+	public VisualPlace() {
 		addPropertyDeclarations();
 	}
 

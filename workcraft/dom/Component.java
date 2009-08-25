@@ -3,8 +3,6 @@ package org.workcraft.dom;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.Element;
-
 /**
  * Base class for all mathematical objects that act
  * as a graph node.
@@ -16,24 +14,6 @@ public abstract class Component extends MathNode {
 
 	private HashSet<Component> preset = new HashSet<Component>();
 	private HashSet<Component> postset = new HashSet<Component>();
-
-	/**
-	 * Default constructor, creates an unlabelled component
-	 * with default (uninitialised) ID = -1.
-	 */
-	public Component() {
-		super();
-	}
-
-	/**
-	 * <p>XML deserialisation constructor, creates a component
-	 * and reads ID and label from XML element.</p>
-	 * @param nodeElement -- an XML element containing
-	 * elements created by <type>XMLSerialiser</type> objects.
-	 */
-	public Component (Element nodeElement) {
-		super(nodeElement);
-	}
 
 	/**
 	 * <p>Adds another component to this component's preset. Called

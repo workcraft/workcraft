@@ -13,7 +13,7 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelEventListener;

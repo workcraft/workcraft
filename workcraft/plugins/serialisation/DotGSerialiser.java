@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.UUID;
 
 import org.workcraft.dom.Component;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
 import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ExportReferenceResolver;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.Format;
-import org.workcraft.framework.serialisation.MathSerialiser;
+import org.workcraft.framework.serialisation.ModelSerialiser;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 
-public class DotGSerialiser implements MathSerialiser, Plugin {
-	class ReferenceResolver implements ExportReferenceResolver {
+public class DotGSerialiser implements ModelSerialiser, Plugin {
+	class ReferenceResolver implements ExternalReferenceResolver {
 		HashMap<Object, String> refMap = new HashMap<Object, String>();
 
 		public String getReference(Object obj) {
@@ -87,7 +87,7 @@ public class DotGSerialiser implements MathSerialiser, Plugin {
 
 
 
-	public ExportReferenceResolver export(MathModel model, OutputStream outStream) {
+	public ExternalReferenceResolver export(Model model, OutputStream outStream, ExternalReferenceResolver inRef) {
 		STG stg = (STG)model.getMathModel();
 
 		stg.assignInstances();
@@ -241,7 +241,7 @@ public class DotGSerialiser implements MathSerialiser, Plugin {
 		return resolver;
 	}
 
-	public boolean isApplicableTo(MathModel model) {
+	public boolean isApplicableTo(Model model) {
 		if (model instanceof STG)
 			return true;
 		return false;

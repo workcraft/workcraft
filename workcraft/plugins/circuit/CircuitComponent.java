@@ -7,6 +7,9 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.circuit.Contact.IOType;
 
 @DisplayName("Component")
@@ -17,16 +20,7 @@ public class CircuitComponent extends Component {
 	private HashSet<Contact> inputs = new HashSet<Contact>();
 	private HashSet<Contact> outputs = new HashSet<Contact>();
 
-
-	public CircuitComponent(Element xmlElement) {
-		super(xmlElement);
-		addXMLSerialisable();
-	}
-
 	public CircuitComponent() {
-		super();
-
-
 		addXMLSerialisable();
 	}
 
@@ -55,11 +49,13 @@ public class CircuitComponent extends Component {
 			public String getTagName() {
 				return CircuitComponent.class.getSimpleName();
 			}
-			public void serialise(Element element) {
 
-//				XmlUtil.writeIntAttr(element, "tokens", tokens);
+			public void serialise(Element element, ExternalReferenceResolver refResolver) {
+			}
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
 			}
 		});
 	}
-
 }

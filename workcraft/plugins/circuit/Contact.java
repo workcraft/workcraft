@@ -5,6 +5,9 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 
 @DisplayName("Contact")
 @VisualClass("org.workcraft.plugins.circuit.VisualContact")
@@ -15,14 +18,7 @@ public class Contact extends Component {
 	private IOType iotype;
 	//private boolean invertSignal = false;
 
-	public Contact(Element xmlElement) {
-		super(xmlElement);
-		addXMLSerialisable();
-	}
-
 	public Contact() {
-		super();
-
 		addXMLSerialisable();
 	}
 
@@ -47,9 +43,13 @@ public class Contact extends Component {
 			public String getTagName() {
 				return CircuitComponent.class.getSimpleName();
 			}
-			public void serialise(Element element) {
 
-//				XmlUtil.writeIntAttr(element, "tokens", tokens);
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 			}
 		});
 	}

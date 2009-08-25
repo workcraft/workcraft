@@ -9,7 +9,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 
@@ -22,11 +21,6 @@ public class VisualVertex extends VisualComponent {
 		super(vertex);
 	}
 
-	public VisualVertex(Vertex vertex, Element xmlElement) {
-		super(vertex, xmlElement);
-	}
-
-	@Override
 	public void draw(Graphics2D g) {
 
 		Shape shape = new Ellipse2D.Double(

@@ -6,7 +6,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.w3c.dom.Element;
 import org.workcraft.gui.Coloriser;
 
 public class VisualJoint extends VisualCircuitComponent {
@@ -14,10 +13,6 @@ public class VisualJoint extends VisualCircuitComponent {
 
 	public VisualJoint(Joint joint) {
 		super(joint);
-	}
-
-	public VisualJoint(Joint joint, Element xmlElement) {
-		super(joint, xmlElement);
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
@@ -20,8 +19,8 @@ public class VisualTransition extends VisualComponent {
 		super(transition);
 	}
 
-	public VisualTransition(Transition transition, Element xmlElement) {
-		super(transition, xmlElement);
+	public VisualTransition() {
+
 	}
 
 	public Transition getTransition() {

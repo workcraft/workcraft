@@ -16,25 +16,26 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.visual.FreeNode;
-import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.TouchableHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualReferenceResolver;
 import org.workcraft.framework.EventListener1;
+import org.workcraft.framework.exceptions.ImportException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable, FreeNode {
+public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable {
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -92,16 +93,8 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
 
-	@Override
-	public boolean isReferring(int ID) {
-		return refConnection.getID()==ID;
-	}
-
 	protected void initialise() {
-		first.addPropertyChangeListener(this);
-		second.addPropertyChangeListener(this);
-
-		update();
+		addListeners();
 
 		addPropertyDeclaration(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
 		addPropertyDeclaration(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
@@ -120,15 +113,26 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
 
-
-
 		addXMLSerialiser(new XMLSerialiser() {
 
 			public String getTagName() {
 				return VisualConnection.class.getSimpleName();
 			}
 
-			public void serialise(Element element) {
+			public void deserialise(Element element,
+					ReferenceResolver referenceResolver) throws ImportException {
+				setID(XmlUtil.readIntAttr(element, "ID", -1));
+
+				refConnection = (Connection) referenceResolver.getObject(element.getAttribute("refID"));
+
+				first = (VisualComponent) referenceResolver.getObject(element.getAttribute("first"));
+				second = (VisualComponent) referenceResolver.getObject(element.getAttribute("second"));
+
+				readXMLConnectionProperties(element);
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				if (refConnection != null)
 					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
 
@@ -139,6 +143,13 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 				writeXMLConnectionProperties(element);
 			}
 		});
+	}
+
+	private void addListeners() {
+		first.addPropertyChangeListener(this);
+		second.addPropertyChangeListener(this);
+
+		update();
 	}
 
 	protected VisualConnection() {
@@ -172,26 +183,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		setLineWidth(XmlUtil.readDoubleAttr(element, "lineWidth", defaultLineWidth));
 
 		graphic.readFromXML(element, VisualConnection.this);
-	}
-
-	public VisualConnection (Element xmlElement, VisualReferenceResolver referenceResolver) {
-
-		Element element = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
-		int refID = XmlUtil.readIntAttr(element, "refID", -1);
-		int ID = XmlUtil.readIntAttr(element, "ID", -1);
-		setID(ID);
-
-		int firstID = XmlUtil.readIntAttr(element, "first", -1);
-		int secondID = XmlUtil.readIntAttr(element, "second", -1);
-
-
-		refConnection = referenceResolver.getConnectionByID(refID);
-
-		first = referenceResolver.getVisualComponentByID(firstID);
-		second = referenceResolver.getVisualComponentByID(secondID);
-
-		readXMLConnectionProperties(element);
-		initialise();
 	}
 
 	public ConnectionType getConnectionType() {

@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualComponent;

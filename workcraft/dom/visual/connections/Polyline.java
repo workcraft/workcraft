@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.util.XmlUtil;
 

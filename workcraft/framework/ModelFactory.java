@@ -8,18 +8,15 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.ModelInstantiationException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.util.ConstructorParametersMatcher;
 
 public class ModelFactory {
-	public static MathModel createModel (Element modelElement) throws ModelInstantiationException {
+	public static MathModel createModel (String className) throws ModelInstantiationException {
 		try{
-			String className = modelElement.getAttribute("class");
 			Class<?> modelClass = Class.forName(className);
 			Constructor<?> ctor = modelClass.getConstructor();
 			MathModel model = (MathModel)ctor.newInstance();
-			model.deserialiseFromXML(modelElement);
 			return model;
 		} catch (IllegalArgumentException e) {
 			throw new ModelInstantiationException(e);
@@ -34,8 +31,6 @@ public class ModelFactory {
 		} catch (NoSuchMethodException e) {
 			throw new ModelInstantiationException(e);
 		} catch (ClassNotFoundException e) {
-			throw new ModelInstantiationException(e);
-		} catch (LoadFromXMLException e) {
 			throw new ModelInstantiationException(e);
 		}
 	}

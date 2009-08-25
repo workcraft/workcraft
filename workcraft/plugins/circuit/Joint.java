@@ -4,24 +4,17 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 
 
 @DisplayName("Joint")
 @VisualClass("org.workcraft.plugins.circuit.VisualJoint")
 
 public class Joint extends CircuitComponent {
-	public Joint(Element componentElement) {
-		super(componentElement);
-
-//		Element e = XmlUtil.getChildElement(Place.class.getSimpleName(), componentElement);
-//		tokens = XmlUtil.readIntAttr(e, "tokens", 0);
-
-		addXMLSerialisable();
-	}
 
 	public Joint() {
-		super();
-
 		addXMLSerialisable();
 	}
 
@@ -32,8 +25,15 @@ public class Joint extends CircuitComponent {
 				return Joint.class.getSimpleName();
 			}
 
-			public void serialise(Element element) {
-				//XmlUtil.writeIntAttr(element, "tokens", tokens);
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
+				// TODO Auto-generated method stub
 			}
 		});
 	}

@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit;
 
 import java.util.ArrayList;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
@@ -29,11 +28,6 @@ public class VisualCircuit extends VisualModel {
 		} catch (VisualConnectionCreationException e) {
 			throw new VisualModelInstantiationException(e);
 		}
-	}
-
-	public VisualCircuit(Circuit model, Element visualElement) throws VisualModelInstantiationException {
-		super(model, visualElement);
-
 	}
 
 }

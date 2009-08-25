@@ -1,5 +1,7 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.dom.HierarchyNode;
+
 import net.sf.jga.fn.UnaryFunctor;
 
 public class HierarchyHelper {

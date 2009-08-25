@@ -4,6 +4,9 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
 
@@ -14,19 +17,7 @@ public class Register extends Component {
 	protected boolean marked = false;
 	protected boolean enabled = false;
 
-	public Register(Element componentElement) {
-		super(componentElement);
-
-		Element e = XmlUtil.getChildElement(Register.class.getSimpleName(), componentElement);
-		marked = XmlUtil.readBoolAttr(e, "marked");
-		enabled = XmlUtil.readBoolAttr(e, "enabled");
-
-		addXMLSerialisable();
-	}
-
 	public Register() {
-		super();
-
 		addXMLSerialisable();
 	}
 
@@ -51,12 +42,19 @@ public class Register extends Component {
 			public String getTagName() {
 				return Register.class.getSimpleName();
 			}
-			public void serialise(Element element) {
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				marked = XmlUtil.readBoolAttr(element, "marked");
+				enabled = XmlUtil.readBoolAttr(element, "enabled");
+
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				XmlUtil.writeBoolAttr(element, "enabled", enabled);
 				XmlUtil.writeBoolAttr(element, "marked", marked);
 			}
 		});
 	}
-
-
 }

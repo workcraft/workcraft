@@ -14,18 +14,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
-import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.ComponentFactory;
-import org.workcraft.framework.ConnectionFactory;
 import org.workcraft.framework.VisualNodeSerialiser;
-import org.workcraft.framework.exceptions.VisualComponentCreationException;
-import org.workcraft.framework.exceptions.VisualConnectionCreationException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
-import org.workcraft.util.XmlUtil;
 
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Container {
@@ -33,10 +29,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
 
-	protected Set<FreeNode> children = new LinkedHashSet<FreeNode>();
+	protected Set<HierarchyNode> children = new LinkedHashSet<HierarchyNode>();
 
-	private Element deferredGroupElement = null;
-	private String label = "";
+	//private Element deferredGroupElement = null;
+	//private String label = "";
 
 	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
 	{
@@ -59,22 +55,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	public VisualGroup () {
 		super();
-		addXMLSerialisable();
 		addPropertyChangeListener();
-	}
-
-	public VisualGroup (Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
-		super(element);
-
-		Element groupElement = XmlUtil.getChildElement(VisualGroup.class.getSimpleName(), element);
-		label = XmlUtil.readStringAttr(groupElement, "label");
-
-		addXMLSerialisable();
-		addPropertyChangeListener();
-
-		loadComponents(groupElement, model);
-		loadSubgroups(groupElement, model);
-		deferredGroupElement = groupElement;
 	}
 
 	private void addPropertyChangeListener() {
@@ -91,56 +72,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		});
 	}
 
-	private void addXMLSerialisable() {
-		addXMLSerialiser(new XMLSerialiser() {
-			public String getTagName() {
-				return VisualGroup.class.getSimpleName();
-			}
-			public void serialise(Element element) {
-				XmlUtil.writeStringAttr(element, "label", label);
-				VisualModel.nodesToXML (element, children);
-			}
-		});
-	}
-
-	private void loadComponents (Element groupElement, VisualModel model) throws VisualComponentCreationException {
-		List<Element> componentNodes = XmlUtil.getChildElements("component", groupElement);
-
-		for (Element vcompElement : componentNodes) {
-
-			int ref = XmlUtil.readIntAttr(vcompElement, "ref", -1);
-
-			Component refComponent = model.getMathModel().getComponentByRenamedID(ref);
-			if (refComponent == null)
-				throw new VisualComponentCreationException ("a visual component references to the model component with ID=" +
-						vcompElement.getAttribute("ref") + " which was not found");
-
-			VisualNode visualComponent = ComponentFactory.createVisualComponent(vcompElement, model);
-			add(visualComponent);
-			model.addComponents(visualComponent);
-		}
-	}
-
-	private void loadConnections (Element groupElement, VisualModel model) throws VisualConnectionCreationException {
-		List<Element> connectionNodes = XmlUtil.getChildElements("connection", groupElement);
-
-		for (Element vconElement : connectionNodes) {
-			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(vconElement, model.getReferenceResolver());
-			add(visualConnection);
-			model.addConnection(visualConnection);
-		}
-	}
-
-	private void loadSubgroups (Element groupElement, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
-		List<Element> groupNodes = XmlUtil.getChildElements("group", groupElement);
-
-		for (Element subgroupElement : groupNodes) {
-			VisualGroup visualGroup = new VisualGroup (subgroupElement, model);
-			add (visualGroup);
-		}
-	}
-
-	@Override
 	public void draw(Graphics2D g) {
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 
@@ -152,12 +83,12 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		}
 	}
 
-	public void remove (FreeNode node) {
+	public void remove (HierarchyNode node) {
 		node.setParent(null);
 		children.remove(node);
 	}
 
-	public void add (FreeNode node) {
+	public void add (HierarchyNode node) {
 		if (node.getParent() == this)
 			return;
 
@@ -230,14 +161,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
 	}
 
-	public void loadDeferredConnections(VisualModel model) throws VisualConnectionCreationException {
-		for (VisualGroup g: getChildrenOfType(VisualGroup.class))
-			g.loadDeferredConnections(model);
-		loadConnections(deferredGroupElement, model);
-		deferredGroupElement = null;
-	}
-
-	@Override
 	public void setColorisation(Color color) {
 		super.setColorisation(color);
 		for (Colorisable node : getChildrenOfType(Colorisable.class))
@@ -249,7 +172,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 		Container parent = HierarchyHelper.getNearestAncestor(getParent(), Container.class);
 
-		for (FreeNode node : children) {
+		for (HierarchyNode node : children) {
 			node.setParent(null);
 			parent.add(node);
 			result.add(node);
@@ -285,8 +208,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public VisualNodeSerialiser getSerialiser() {
 		return new VisualNodeSerialiser()
 		{
-			public void serialise(HierarchyNode node, Element element) {
-				((VisualGroup)node).serialiseToXML(element);
+			public void serialise(HierarchyNode node, Element element,
+					ExternalReferenceResolver referenceResolver) {
+				((VisualGroup)node).serialise(element, referenceResolver);
 			}
 		};
 	}

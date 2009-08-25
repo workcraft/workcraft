@@ -5,11 +5,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.visual.Container;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.HierarchyHelper;
-import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModelEventListener;
@@ -315,11 +314,6 @@ public class VisualSTG extends VisualPetriNet  {
 		addListener(new Listener());
 	}
 
-
-	public VisualSTG(STG model, Element element) throws VisualModelInstantiationException {
-		super(model, element);
-		addListener(new Listener());
-	}
 
 	private void lockPlaces(Collection<HierarchyNode> nodes) {
 		for (HierarchyNode node : nodes) {

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import net.sf.jga.algorithms.Filter;
 import net.sf.jga.fn.UnaryFunctor;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Geometry;
 

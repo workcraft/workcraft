@@ -12,19 +12,21 @@ import java.util.Set;
 import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.PropertySupport;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Geometry;
 
 
-public abstract class VisualNode implements PropertyEditable, FreeNode, DependentNode, Touchable, Colorisable {
+public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable {
 
 	public Rectangle2D getBoundingBox() {
 		return null;
@@ -122,8 +124,8 @@ public abstract class VisualNode implements PropertyEditable, FreeNode, Dependen
 		serialisation.addSerialiser(serialiser);
 	}
 
-	public final void serialiseToXML(Element componentElement) {
-		serialisation.serialise(componentElement);
+	public final void serialise(Element componentElement, ExternalReferenceResolver refResolver) {
+		serialisation.serialise(componentElement, refResolver);
 	}
 
 	public Set<MathNode> getMathReferences() {

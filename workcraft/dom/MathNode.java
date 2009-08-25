@@ -1,6 +1,12 @@
 package org.workcraft.dom;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.w3c.dom.Element;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
 /**
@@ -9,17 +15,26 @@ import org.workcraft.util.XmlUtil;
  * @author Ivan Poliakov
  *
  */
-public abstract class MathNode {
+public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 	private int ID = -1;
 	private String label = "";
 	private XMLSerialisation serialisation = new XMLSerialisation();
 
+	private HierarchyNode parent = null;
+
 	private void addSerialisationObjects() {
 		addXMLSerialiser(new XMLSerialiser() {
-			public void serialise(Element element) {
+			public void serialise(Element element, ExternalReferenceResolver refResolver) {
 				XmlUtil.writeIntAttr(element, "ID", getID());
 				XmlUtil.writeStringAttr(element, "label", getLabel());
 			}
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				setID(XmlUtil.readIntAttr(element, "ID", -1));
+				setLabel(XmlUtil.readStringAttr(element, "label"));
+			}
+
 			public String getTagName() {
 				return MathNode.class.getSimpleName();
 			}
@@ -27,14 +42,6 @@ public abstract class MathNode {
 	}
 
 	public MathNode() {
-		addSerialisationObjects();
-	}
-
-	public MathNode(Element nodeElement) {
-		Element element = XmlUtil.getChildElement(MathNode.class.getSimpleName(), nodeElement);
-		setID(XmlUtil.readIntAttr(element, "ID", -1));
-		setLabel(XmlUtil.readStringAttr(element, "label"));
-
 		addSerialisationObjects();
 	}
 
@@ -103,11 +110,16 @@ public abstract class MathNode {
 	/**
 	 * Serialises the node into an XML element using <type>XMLSerialiser</type>
 	 * objects registered by all the types in hierarchy.
-	 * @param componentElement
+	 * @param element
 	 */
-	final protected void serialiseToXML(Element componentElement) {
-		serialisation.serialise(componentElement);
+	final public void serialise(Element element, ExternalReferenceResolver refResolver) {
+		serialisation.serialise(element, refResolver);
 	}
+
+	final public void deserialise(Element element, ReferenceResolver refResolver) throws ImportException {
+		serialisation.deserialise(element, refResolver);
+	}
+
 
 
 	/**
@@ -143,5 +155,18 @@ public abstract class MathNode {
 	 */
 	final public int getID() {
 		return ID;
+	}
+
+
+	public Collection<HierarchyNode> getChildren() {
+		return new HashSet<HierarchyNode>();
+	}
+
+	public HierarchyNode getParent() {
+		return parent;
+	}
+
+	public void setParent(HierarchyNode parent) {
+		this.parent = parent;
 	}
 }

@@ -3,11 +3,9 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
@@ -31,16 +31,15 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
 import org.workcraft.framework.ComponentFactory;
 import org.workcraft.framework.ConnectionFactory;
-import org.workcraft.framework.GroupFactory;
-import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.exceptions.PasteException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.Plugin;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.util.XmlUtil;
 
@@ -54,46 +53,6 @@ public class VisualModel implements Plugin, Model {
 				fireConnectionPropertyChanged(propertyName, (VisualConnection)sender);
 		}
 	}
-
-	public class RenamedVisualReferenceResolver implements VisualReferenceResolver {
-		public VisualComponent getVisualComponentByID(int ID) {
-			return VisualModel.this.getVisualComponentByRenamedID(ID);
-		}
-		public VisualConnection getVisualConnectionByID(int ID) {
-			return VisualModel.this.getVisualConnectionByRenamedID(ID);
-		}
-
-		public Component getComponentByID(int ID) {
-			return mathModel.getComponentByRenamedID(ID);
-		}
-		public Connection getConnectionByID(int ID) {
-			return mathModel.getConnectionByRenamedID(ID);
-		}
-	}
-
-	public class RegularVisualReferenceResolver implements VisualReferenceResolver {
-		public VisualComponent getVisualComponentByID(int ID) {
-			return VisualModel.this.getVisualComponentByID(ID);
-		}
-		public VisualConnection getVisualConnectionByID(int ID) {
-			return VisualModel.this.getVisualConnectionByID(ID);
-		}
-
-		public Component getComponentByID(int ID) {
-			return mathModel.getComponentByID(ID);
-		}
-		public Connection getConnectionByID(int ID) {
-			return mathModel.getConnectionByID(ID);
-		}
-	}
-
-	public VisualComponent getFirstVisualComponentByRefID(int ID) {
-		for (VisualComponent vc: getVisualComponents()) {
-			if (vc.isReferring(ID)) return vc;
-		}
-		return null;
-	}
-
 
 	public class ModelListener implements MathModelListener {
 		public void onNodePropertyChanged(String propertyName, MathNode n) {
@@ -167,7 +126,6 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
-	private VisualReferenceResolver referenceResolver = new RenamedVisualReferenceResolver();
 
 	private MathModel mathModel;
 	private VisualGroup root;
@@ -179,220 +137,48 @@ public class VisualModel implements Plugin, Model {
 //	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 	private HashMap<Integer, VisualComponent> visualComponents = new HashMap<Integer, VisualComponent>();
 	protected HashMap<Integer, VisualConnection> visualConnections = new HashMap<Integer, VisualConnection>();
-	private HashMap<Integer, Integer> visualComponentRenames = new HashMap<Integer, Integer>();
-	protected HashMap<Integer, Integer> visualConnectionRenames = new HashMap<Integer, Integer>();
 
 	private XMLSerialisation serialiser = new XMLSerialisation();
 	private ModelListener mathModelListener = new ModelListener();
 
-	private void addXMLSerialisable() {
-		serialiser.addSerialiser(new XMLSerialiser() {
-			public String getTagName() {
-				return VisualModel.class.getSimpleName();
-			}
-			public void serialise(Element element) {
-				nodesToXML (element, root.getChildren());
-			}
-		});
-	}
-
 	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
-		initRenames();
-
 		for (Component component : mathModel.getComponents()) {
 			VisualNode visualComponent;
 			visualComponent = ComponentFactory.createVisualComponent(component);
 
 			if (visualComponent != null) {
-				getRoot().add(visualComponent);
+				root.add(visualComponent);
 				addComponents(visualComponent);
-
-				// because visual nodes are just created, we use rename lists to map math nodes to visual ones
-				visualComponentRenames.put(component.getID(), visualComponent.getID());
 			}
 		}
 
+		ReferenceResolver refRes = createMathIDtoVisualObjectResolver();
+
 		for (Connection connection : mathModel.getConnections()) {
-			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, getReferenceResolver());
+			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, refRes);
 
 			HierarchyHelper.getNearestAncestor(
 					HierarchyHelper.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
 					Container.class).add(visualConnection);
 			addConnection(visualConnection);
 
-			visualConnectionRenames.put(connection.getID(), visualConnection.getID());
-
 		}
 	}
-
 
 	public VisualModel(MathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
 
-
-
-
-
-
-
-
-
 		root = new VisualGroup();
 		currentLevel = root;
-		addXMLSerialisable();
 		mathModel.addListener(mathModelListener);
 		addListener(new Listener());
 	}
 
-	public VisualModel(MathModel mathModel, Element visualModelElement) throws VisualModelInstantiationException {
-		this.mathModel = mathModel;
-		root = new VisualGroup();
-		currentLevel = root;
-
-		try {
-			Element element = XmlUtil.getChildElement(VisualModel.class.getSimpleName(), visualModelElement);
-			loadFromXML(element);
-		} catch (PasteException e) {
-			throw new VisualModelInstantiationException(e);
-		}
-
-		addXMLSerialisable();
-
-		mathModel.addListener(mathModelListener);
-	}
-
-	protected VisualNode createNode(Element element) throws VisualComponentCreationException, VisualConnectionCreationException
-	{
-		Integer oldID;
-		Integer newID;
-		if(element.getTagName() == "component") {
-
-			VisualComponent vc = (VisualComponent)ComponentFactory.createVisualComponent(element, this);
-			oldID = vc.getID();
-			newID = addComponent(vc);
-			visualComponentRenames.put(oldID, newID);
-			return vc;
-		}
-		if(element.getTagName() == "connection") {
-			VisualConnection vc = ConnectionFactory.createVisualConnection(element, getReferenceResolver());
-			oldID = vc.getID();
-			newID = addConnection(vc);
-			visualConnectionRenames.put(oldID, newID);
-			return vc;
-		}
-		if(element.getTagName() == "group") {
-			return GroupFactory.createVisualGroup(element, this);
-		}
-		return null;
-	}
-
-	protected final void initRenames() {
-		visualComponentRenames.clear();
-		visualConnectionRenames.clear();
-	}
-
-	protected Collection<HierarchyNode> pasteFromXML (Element visualElement, Point2D location) throws PasteException {
-
-		initRenames();
-
-		List<Element> children = XmlUtil.getChildElements("component", visualElement);
-		children.addAll(XmlUtil.getChildElements("group", visualElement));
-		children.addAll(XmlUtil.getChildElements("connection", visualElement));
-
-		LinkedList<HierarchyNode> pasted = new LinkedList<HierarchyNode>();
-
-		try
-		{
-			for (Element e: children) {
-				VisualNode node = createNode(e);
-				if(node == null) continue;
-
-				currentLevel.add(node);
-				addComponents(node);
-
-				pasted.add(node);
-			}
-
-			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
-			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
-
-			return pasted;
-		} catch (VisualConnectionCreationException e) {
-			throw new PasteException (e);
-
-		} catch (VisualComponentCreationException e) {
-			throw new PasteException (e);
-		}
-	}
-
-	// the same as pasteFromXML, with no offset applied
-	protected Collection<VisualNode> loadFromXML (Element visualElement) throws PasteException {
-		List<Element> children = XmlUtil.getChildElements("component", visualElement);
-		children.addAll(XmlUtil.getChildElements("group", visualElement));
-		children.addAll(XmlUtil.getChildElements("connection", visualElement));
-
-		LinkedList<VisualNode> pasted = new LinkedList<VisualNode>();
-
-		try
-		{
-			for (Element e: children) {
-				VisualNode node;
-				try
-				{
-					node = createNode(e);
-
-				} catch (VisualConnectionCreationException ex) {
-					//throw new PasteException (ex);
-					node = null;
-				}
-
-				if(node == null) continue;
-
-				currentLevel.add(node);
-				addComponents(node);
-
-				pasted.add(node);
-			}
-
-//			Rectangle2D nodesBB = VisualModel.getNodesBoundingBox(pasted);
-//			translateNodes(pasted, location.getX()-nodesBB.getCenterX(), location.getY()-nodesBB.getCenterY());
-
-			return pasted;
-
-		} catch (VisualComponentCreationException e) {
-			throw new PasteException (e);
-		}
-	}
-
-	static void nodesToXML (Element parentElement, Collection <? extends HierarchyNode> nodes) {
-		for (HierarchyNode node : nodes) {
-			if (node instanceof VisualComponent) {
-				VisualComponent vc = (VisualComponent)node;
-				Element vcompElement = XmlUtil.createChildElement("component", parentElement);
-				XmlUtil.writeIntAttr(vcompElement, "ref", vc.getReferencedComponent().getID());
-				XmlUtil.writeStringAttr(vcompElement, "class", vc.getClass().getName());
-
-				vc.serialiseToXML(vcompElement);
-			} else if (node instanceof VisualConnection) {
-				VisualConnection vc = (VisualConnection)node;
-				Element vconElement = XmlUtil.createChildElement("connection", parentElement);
-				XmlUtil.writeStringAttr(vconElement, "class", vc.getClass().getName());
-				vc.serialiseToXML(vconElement);
-			} else if (node instanceof VisualGroup) {
-				Element childGroupElement = XmlUtil.createChildElement("group", parentElement);
-
-				VisualNodeSerialiser serialiser = ((VisualGroup)node).getSerialiser();
-				serialiser.serialise(node, childGroupElement);
-				XmlUtil.writeStringAttr(childGroupElement, "class", node.getClass().getName());
-			}
-		}
-	}
-
-	private void gatherReferences(Collection<HierarchyNode> nodes, HashSet<MathNode> referenceds) {
+	/*private void gatherReferences(Collection<HierarchyNode> nodes, HashSet<MathNode> referenceds) {
 		for (HierarchyNode n : nodes)
 			if(n instanceof DependentNode)
 				referenceds.addAll(((DependentNode)n).getMathReferences());
-	}
+	}*/
 
 	private static Rectangle2D bbUnion(Rectangle2D bb1, Rectangle2D bb2)
 	{
@@ -475,42 +261,6 @@ public class VisualModel implements Plugin, Model {
 
 		// translate nodes by t
 		transformNodePosition(selection, t);
-	}
-
-	private void selectionToXML(Element xmlElement) {
-		Element mathElement = XmlUtil.createChildElement("model", xmlElement);
-		XmlUtil.writeStringAttr(mathElement, "class", getMathModel().getClass().getName());
-		Element visualElement = XmlUtil.createChildElement("visual-model", xmlElement);
-
-		HashSet<MathNode> references = new HashSet<MathNode>();
-
-		LinkedList <HierarchyNode> unselect = new LinkedList<HierarchyNode>();
-
-		// remove partial connections from selection
-		for (HierarchyNode vn : selection) {
-			if (vn instanceof VisualConnection) {
-				VisualConnection vc = (VisualConnection)vn;
-				if (!selection.contains(vc.getFirst())||!selection.contains(vc.getSecond())) {
-					unselect.add(vn);
-				}
-			}
-		}
-
-		for (HierarchyNode vn : unselect) {
-			removeFromSelection(vn);
-			if(vn instanceof Colorisable)
-				((Colorisable)vn).clearColorisation();
-		}
-
-		if (!unselect.isEmpty()) {
-			fireSelectionChanged();
-		}
-
-
-		gatherReferences (selection, references);
-
-		nodesToXML(visualElement, selection);
-		MathModel.nodesToXML(mathElement, references);
 	}
 
 	public void draw (Graphics2D g) {
@@ -895,21 +645,6 @@ public class VisualModel implements Plugin, Model {
 		removeNodes(selection);
 	}
 
-	final public VisualComponent getVisualComponentByRenamedID(int oldID) {
-		Integer newID = visualComponentRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getVisualComponentByID(newID);
-	}
-
-	final public VisualConnection getVisualConnectionByRenamedID(int oldID) {
-		Integer newID = visualConnectionRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getVisualConnectionByID(newID);
-	}
-
-
 	/**
 	 * @param clipboard
 	 * @param clipboardOwner
@@ -923,12 +658,12 @@ public class VisualModel implements Plugin, Model {
 
 		doc.appendChild(root);
 		root = doc.getDocumentElement();
-		selectionToXML(root);
+		//selectionToXML(root);
 		clipboard.setContents(new TransferableDocument(doc), clipboardOwner);
 	}
 
-	public Collection<HierarchyNode> paste(Clipboard clipboard, Point2D where) throws PasteException {
-		try {
+	public Collection<HierarchyNode> paste(Collection<HierarchyNode> what, Point2D where) throws PasteException {
+		/*try {
 			Document doc = (Document)clipboard.getData(TransferableDocument.DOCUMENT_FLAVOR);
 
 			Element root = doc.getDocumentElement();
@@ -942,13 +677,13 @@ public class VisualModel implements Plugin, Model {
 				throw new PasteException("Structure of clipboard XML is invalid.");
 
 			mathModel.pasteFromXML(mathModelElement);
-			return pasteFromXML(visualModelElement, where);
+			//return pasteFromXML(visualModelElement, where);
 		} catch (UnsupportedFlavorException e) {
 		} catch (IOException e) {
 			throw new PasteException (e);
 		} catch (LoadFromXMLException e) {
 			throw new PasteException (e);
-		}
+		}*/
 
 		return null;
 	}
@@ -1020,16 +755,43 @@ public class VisualModel implements Plugin, Model {
 		serialiser.addSerialiser(serialisable);
 	}
 
-	public final void serialiseToXML(Element componentElement) {
-		serialiser.serialise(componentElement);
+	public final void serialise(Element componentElement, ExternalReferenceResolver refResolver) {
+		serialiser.serialise(componentElement, refResolver);
 	}
 
 	protected VisualPropertyChangeListener getPropertyChangeListener() {
 		return propertyChangeListener;
 	}
 
-	protected VisualReferenceResolver getReferenceResolver() {
-		return referenceResolver;
+	public ReferenceResolver createMathIDtoVisualObjectResolver() {
+		return new ReferenceResolver() {
+			private HashMap<String, LinkedList<VisualNode>> map = new HashMap<String, LinkedList<VisualNode>>();
+
+			private void process(HierarchyNode node) {
+				if(node instanceof DependentNode && node instanceof VisualNode)
+					for (MathNode mn : ((DependentNode)node).getMathReferences())
+					{
+						String id = Integer.toString(mn.getID());
+						LinkedList<VisualNode> list = map.get(id);
+						if (list == null) {
+							list = new LinkedList<VisualNode>();
+							map.put(id, list);
+						}
+						list.add((VisualNode)node);
+					}
+
+				for (HierarchyNode cn : node.getChildren())
+					process(cn);
+			}
+
+			{
+				process(root);
+			}
+
+			public Object getObject(String reference) {
+				return map.get(reference);
+			}
+		};
 	}
 
 }

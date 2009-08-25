@@ -5,6 +5,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
@@ -26,7 +29,15 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 			public String getTagName() {
 				return VisualTransformableNode.class.getSimpleName();
 			}
-			public void serialise(Element element) {
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				setX (XmlUtil.readDoubleAttr(element, "X", 0));
+				setY (XmlUtil.readDoubleAttr(element, "Y", 0));
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				XmlUtil.writeDoubleAttr(element, "X", getX());
 				XmlUtil.writeDoubleAttr(element, "Y", getY());
 			}

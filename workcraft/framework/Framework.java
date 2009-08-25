@@ -25,28 +25,22 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.dom.MathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
-import org.workcraft.framework.exceptions.ModelInstantiationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.serialisation.ExportReferenceResolver;
-import org.workcraft.framework.serialisation.MathSerialiser;
-import org.workcraft.framework.serialisation.VisualSerialiser;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ModelSerialiser;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
-import org.workcraft.plugins.serialisation.XMLVisualSerialiser;
-import org.workcraft.plugins.serialisation.XMLMathSerialiser;
+import org.workcraft.plugins.serialisation.XMLSerialiser;
 import org.workcraft.util.XmlUtil;
-import org.xml.sax.SAXException;
 
 public class Framework {
 	public static final String FRAMEWORK_VERSION_MAJOR = "2";
@@ -469,7 +463,9 @@ public class Framework {
 	}
 
 	public static Model load(InputStream is) throws LoadFromXMLException {
-		try {
+		throw new RuntimeException("Not implemented O_O");
+	}
+		/*try {
 			Document doc = XmlUtil.loadDocument(is);
 
 			Element xmlroot = doc.getDocumentElement();
@@ -506,7 +502,7 @@ public class Framework {
 		} catch (ModelInstantiationException e) {
 			throw new LoadFromXMLException (e);
 		}
-	}
+	}*/
 
 	public void save(Model model, String path) throws ModelValidationException, ExportException, IOException {
 		File file = new File(path);
@@ -521,23 +517,36 @@ public class Framework {
 		ZipOutputStream zos = new ZipOutputStream(out);
 
 		// TODO: get appropiate serialiser from config
-		MathSerialiser mathSerialiser = new XMLMathSerialiser();
+		ModelSerialiser mathSerialiser = null;
+
+		try {
+			mathSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
+		} catch (PluginInstantiationException e) {
+			throw new ExportException(e);
+		}
+
 		String mathEntryName = "model" + mathSerialiser.getExtension();
 		ZipEntry ze = new ZipEntry(mathEntryName);
 		zos.putNextEntry(ze);
-		ExportReferenceResolver refResolver = mathSerialiser.export(model.getMathModel(), zos);
+		ExternalReferenceResolver refResolver = mathSerialiser.export(model.getMathModel(), zos, null);
 		zos.closeEntry();
 
 		String visualEntryName = null;
-		VisualSerialiser visualSerialiser = null;
+		ModelSerialiser visualSerialiser = null;
 
 		if (haveVisual) {
 			// TODO: get appropiate serialiser from config
-			visualSerialiser = new XMLVisualSerialiser();
+
+			try {
+				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
+			} catch (PluginInstantiationException e) {
+				throw new ExportException(e);
+			}
+
 			visualEntryName = "visualModel" + visualSerialiser.getExtension();
 			ze = new ZipEntry(visualEntryName);
 			zos.putNextEntry(ze);
-			visualSerialiser.export(model.getVisualModel(), refResolver, zos);
+			visualSerialiser.export(model.getVisualModel(), zos, refResolver);
 			zos.closeEntry();
 		}
 

@@ -5,6 +5,9 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
 @DisplayName("Place")
@@ -13,19 +16,7 @@ public class Place extends Component {
 	protected int tokens = 0;
 	protected int capacity = 1;
 
-
-	public Place(Element componentElement) {
-		super(componentElement);
-
-		Element e = XmlUtil.getChildElement(Place.class.getSimpleName(), componentElement);
-		tokens = XmlUtil.readIntAttr(e, "tokens", 0);
-		capacity = XmlUtil.readIntAttr(e, "capacity", 1);
-		addXMLSerialisable();
-	}
-
 	public Place() {
-		super();
-
 		addXMLSerialisable();
 	}
 
@@ -50,7 +41,14 @@ public class Place extends Component {
 			public String getTagName() {
 				return Place.class.getSimpleName();
 			}
-			public void serialise(Element element) {
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				tokens = XmlUtil.readIntAttr(element, "tokens", 0);
+				capacity = XmlUtil.readIntAttr(element, "capacity", 1);
+			}
+			@Override
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				XmlUtil.writeIntAttr(element, "tokens", tokens);
 				if (capacity!=1)
 					XmlUtil.writeIntAttr(element, "capacity", capacity);

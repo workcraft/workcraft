@@ -2,7 +2,6 @@ package org.workcraft.plugins.balsa;
 
 import java.util.ArrayList;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
@@ -59,10 +58,6 @@ public final class VisualBalsaCircuit extends VisualModel {
 
 	public VisualBalsaCircuit(BalsaCircuit model) throws VisualModelInstantiationException {
 		super(model);
-	}
-
-	public VisualBalsaCircuit(BalsaCircuit model, Element element) throws VisualModelInstantiationException {
-		super(model, element);
 	}
 
 	GraphEditorTool getComponentTool(final Class<? extends org.workcraft.plugins.balsa.components.Component> balsaClass)

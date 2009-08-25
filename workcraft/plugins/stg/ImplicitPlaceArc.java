@@ -15,8 +15,10 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualReferenceResolver;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
@@ -41,7 +43,29 @@ public class ImplicitPlaceArc extends VisualConnection {
 			public String getTagName() {
 				return ImplicitPlaceArc.class.getSimpleName();
 			}
-			public void serialise(Element element) {
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				/*int ID = XmlUtil.readIntAttr(element2, "ID", -1);
+				setID(ID);
+
+				int firstID = XmlUtil.readIntAttr(element2, "first", -1);
+				int secondID = XmlUtil.readIntAttr(element2, "second", -1);
+
+				first = referenceResolver.getVisualComponentByID(firstID);
+				second = referenceResolver.getVisualComponentByID(secondID);
+
+				Element element = XmlUtil.getChildElement(ImplicitPlaceArc.class.getSimpleName(), xmlElement);
+
+				implicitPlace = (Place)referenceResolver.getComponentByID(XmlUtil.readIntAttr(element, "placeRef", -1));
+				refCon1 = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refCon1", -1));
+				refCon2 = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refCon2", -1));
+
+				readXMLConnectionProperties(element);*/
+			}
+
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				XmlUtil.writeIntAttr(element, "refCon1", refCon1.getID());
 				XmlUtil.writeIntAttr(element, "refCon2", refCon2.getID());
 				XmlUtil.writeIntAttr(element, "placeRef", implicitPlace.getID());
@@ -49,13 +73,6 @@ public class ImplicitPlaceArc extends VisualConnection {
 			}
 		});
 	}
-
-	@Override
-	public boolean isReferring(int ID) {
-		return refCon1.getID()==ID||refCon2.getID()==ID;
-	}
-
-
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
@@ -88,36 +105,6 @@ public class ImplicitPlaceArc extends VisualConnection {
 		addXMLSerialiser();
 	}
 
-
-
-	public ImplicitPlaceArc(Element xmlElement, VisualReferenceResolver referenceResolver) {
-		super();
-
-		Element element2 = XmlUtil.getChildElement(VisualConnection.class.getSimpleName(), xmlElement);
-		int ID = XmlUtil.readIntAttr(element2, "ID", -1);
-		setID(ID);
-
-		int firstID = XmlUtil.readIntAttr(element2, "first", -1);
-		int secondID = XmlUtil.readIntAttr(element2, "second", -1);
-
-		first = referenceResolver.getVisualComponentByID(firstID);
-		second = referenceResolver.getVisualComponentByID(secondID);
-
-		Element element = XmlUtil.getChildElement(ImplicitPlaceArc.class.getSimpleName(), xmlElement);
-
-		implicitPlace = (Place)referenceResolver.getComponentByID(XmlUtil.readIntAttr(element, "placeRef", -1));
-		refCon1 = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refCon1", -1));
-		refCon2 = referenceResolver.getConnectionByID(XmlUtil.readIntAttr(element, "refCon2", -1));
-
-		readXMLConnectionProperties(element);
-
-		addPropertyDeclarations();
-		addXMLSerialiser();
-
-		initialise();
-	}
-
-	@Override
 	public void draw(Graphics2D g) {
 		super.draw(g);
 

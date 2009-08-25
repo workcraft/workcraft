@@ -10,7 +10,6 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
@@ -20,7 +19,6 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.XmlUtil;
 
 @HotKeyDeclaration(KeyEvent.VK_R)
 public class VisualRegister extends VisualComponent {
@@ -77,20 +75,6 @@ public class VisualRegister extends VisualComponent {
 			return text;
 		}
 	}
-
-	private static class VisualRegisterDeserialiser {
-
-		public static void deserialise(Element element, VisualRegister node)
-		{
-			Element e = XmlUtil.getChildElement(VisualRegister.class.getSimpleName(), element);
-			node.setLabelColor(XmlUtil.readColorAttr(e, "labelColor", SDFSVisualSettings.getForegroundColor()));
-			node.setFillColor(XmlUtil.readColorAttr(e, "fillColor", SDFSVisualSettings.getFillColor()));
-			node.setForegroundColor(XmlUtil.readColorAttr(e, "foregroundColor", SDFSVisualSettings.getForegroundColor()));
-			node.setMarked(XmlUtil.readBoolAttr(e, "marked"));
-			node.setEnabled(XmlUtil.readBoolAttr(e, "enabled"));
-		}
-	}
-
 	private static Rectangle2D outerRect;
 	private static Rectangle2D innerRect;
 	private static Ellipse2D token;
@@ -108,10 +92,9 @@ public class VisualRegister extends VisualComponent {
 		setLabelColor(SDFSVisualSettings.getForegroundColor());
 	}
 
-	public VisualRegister(Register register, Element xmlElement) {
-		super(register, xmlElement);
+	public VisualRegister() {
+		super();
 		addPropertyDeclarations();
-		VisualRegisterDeserialiser.deserialise(xmlElement, this);
 	}
 
 	private void addPropertyDeclarations() {

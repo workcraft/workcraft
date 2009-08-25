@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.util.Collection;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public interface VisualModelEventListener {

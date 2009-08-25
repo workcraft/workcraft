@@ -30,4 +30,6 @@ public interface Model {
 	 * is missing, taken from the name of the model class.
 	 */
 	public String getDisplayName();
+
+	public HierarchyNode getRoot();
 }

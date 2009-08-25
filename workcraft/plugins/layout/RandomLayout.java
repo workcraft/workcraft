@@ -3,7 +3,7 @@ package org.workcraft.plugins.layout;
 import java.util.Random;
 
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.layout.Layout;

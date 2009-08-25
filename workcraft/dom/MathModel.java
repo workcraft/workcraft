@@ -7,17 +7,13 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Serialisable;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.ComponentFactory;
-import org.workcraft.framework.ConnectionFactory;
-import org.workcraft.framework.exceptions.ComponentCreationException;
-import org.workcraft.framework.exceptions.ConnectionCreationException;
-import org.workcraft.framework.exceptions.InvalidComponentException;
+import org.workcraft.framework.exceptions.ImportException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
 /**
@@ -28,16 +24,7 @@ import org.workcraft.util.XmlUtil;
  * @author Ivan Poliakov
  *
  */
-public abstract class MathModel implements Plugin, Model, Serialisable {
-	public class RenamedReferenceResolver implements ReferenceResolver {
-		public Component getComponentByID(int ID) {
-			return getComponentByRenamedID(ID);
-		}
-		public Connection getConnectionByID(int ID) {
-			return getConnectionByRenamedID(ID);
-		}
-	}
-
+public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	private int nodeIDCounter = 0;
 
 	private Hashtable<Integer, Integer> connectionRenames = new Hashtable<Integer, Integer>();
@@ -50,29 +37,21 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 	private HashSet<Class<? extends Component>> supportedComponents = new HashSet<Class<? extends Component>>();
 
 	private XMLSerialisation serialisation = new XMLSerialisation();
-	private RenamedReferenceResolver referenceResolver = new RenamedReferenceResolver();
 
 	private String title = "";
+
+	private Group root = new Group();
 
 	private void addSerialisationObjects() {
 		serialisation.addSerialiser(new XMLSerialiser() {
 			public String getTagName() {
 				return MathModel.class.getSimpleName();
 			}
-			public void serialise(Element element) {
+			public void serialise(Element element, ExternalReferenceResolver refResolver) {
 				XmlUtil.writeStringAttr(element, "title", title);
-				nodesToXML(element, components.values());
-				nodesToXML(element, connections.values());
 			}
-		});
-
-		serialisation.addDeserialiser(new XMLDeserialiser() {
-			public String getTagName() {
-				return MathModel.class.getSimpleName();
-			}
-			public void deserialise(Element element) throws LoadFromXMLException {
+			public void deserialise(Element element, ReferenceResolver refResolver) throws ImportException {
 				title = XmlUtil.readStringAttr(element, "title");
-				pasteFromXML(element);
 			}
 		});
 	}
@@ -93,7 +72,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 				element = XmlUtil.createChildElement("component",
 						parentElement);
 				element.setAttribute("class", n.getClass().getName());
-				n.serialiseToXML(element);
+				n.serialise(element, null);
 			}
 
 		for (MathNode n : nodes)
@@ -101,7 +80,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 				element = XmlUtil.createChildElement("connection",
 						parentElement);
 				element.setAttribute("class", n.getClass().getName());
-				n.serialiseToXML(element);
+				n.serialise(element, null);
 			}
 	}
 
@@ -124,6 +103,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 	final public int addComponent(Component component) {
 		component.setID(getNextNodeID());
 		components.put(component.getID(), component);
+		root.add(component);
 
 		fireComponentAdded(component);
 
@@ -156,6 +136,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 		connection.setID(getNextNodeID());
 
 		connections.put(connection.getID(), connection);
+		root.add(connection);
 
 		fireConnectionAdded(connection);
 
@@ -377,67 +358,6 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 	}
 
 	/**
-	 * Deserialises a number of nodes from an XML document fragment, and adds
-	 * them to the model.
-	 * @param modelElement -- the parent &lt;model&gt; element that the node elements will be read from.
-	 * @throws LoadFromXMLException thrown if a problem is encountered during deserialisation.
-	 * The particular cause can be established by calling <code>getCause</code> on this exception object.
-	 */
-	public void pasteFromXML(Element modelElement)
-	throws LoadFromXMLException {
-		initPaste();
-
-		try {
-			for (Element e : XmlUtil.getChildElements("component", modelElement))
-				deserializeComponent(e);
-
-			for (Element e : XmlUtil.getChildElements("connection", modelElement))
-				deserialiseConnection(e);
-
-		} catch (InvalidComponentException e) {
-			throw new LoadFromXMLException(e);
-		} catch (ComponentCreationException e) {
-			throw new LoadFromXMLException(e);
-		} catch (InvalidConnectionException e) {
-			throw new LoadFromXMLException(e);
-		} catch (ConnectionCreationException e) {
-			throw new LoadFromXMLException(e);
-		}
-	}
-
-
-	protected final void initPaste() {
-		componentRenames.clear();
-		connectionRenames.clear();
-	}
-
-
-	protected final void deserialiseConnection(Element e)
-			throws ConnectionCreationException, InvalidConnectionException {
-		{
-			Connection connection = ConnectionFactory.createConnection(e, getReferenceResolver());
-
-			Integer oldID = connection.getID();
-			Integer newID = addConnection(connection);
-
-			connectionRenames.put(oldID, newID);
-		}
-	}
-
-
-	protected final void deserializeComponent(Element e) throws ComponentCreationException {
-		Component component = ComponentFactory.createComponent(e, getReferenceResolver());
-
-		if (!isComponentSupported(component))
-			throw new InvalidComponentException("Unsupported component: " + component.getClass().getName());
-
-		Integer oldID = component.getID();
-		Integer newID = addComponent(component);
-
-		componentRenames.put(oldID, newID);
-	}
-
-	/**
 	 * <p>Removes a component from the model.</p>
 	 * <p>This will cause all connections either starting or ending on
 	 * this component to be removed as well.</p>
@@ -453,6 +373,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 			removeConnection(con);
 
 		components.remove(component.getID());
+		root.remove(component);
 
 		fireComponentRemoved(component);
 	}
@@ -476,6 +397,7 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 		connection.getSecond().removeConnection(connection);
 
 		connections.remove(connection.getID());
+		root.remove(connection);
 		fireConnectionRemoved(connection);
 	}
 
@@ -528,19 +450,14 @@ public abstract class MathModel implements Plugin, Model, Serialisable {
 		serialisation.addSerialiser(serialiser);
 	}
 
-	final protected void addXMLDeserialiser(XMLDeserialiser deserialiser) {
-		serialisation.addDeserialiser(deserialiser);
+	public final void serialise(Element element, ExternalReferenceResolver refResolver) {
+		serialisation.serialise(element, refResolver);
 	}
 
-	public final void serialiseToXML(Element componentElement) {
-		serialisation.serialise(componentElement);
+	public final void deserialise(Element modelElement, ReferenceResolver refResolver) throws ImportException {
+		serialisation.deserialise(modelElement, refResolver);
 	}
-
-	public final void deserialiseFromXML(Element modelElement) throws LoadFromXMLException {
-		serialisation.deserialise(modelElement);
-	}
-
-	public RenamedReferenceResolver getReferenceResolver() {
-		return referenceResolver;
+	public Group getRoot() {
+		return root;
 	}
 }

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.sdfs;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
@@ -18,10 +17,5 @@ public class VisualSDFS extends VisualModel {
 		} catch (VisualConnectionCreationException e) {
 			throw new VisualModelInstantiationException(e);
 		}
-	}
-
-	public VisualSDFS(SDFS model, Element visualElement) throws VisualModelInstantiationException {
-		super(model, visualElement);
-
 	}
 }

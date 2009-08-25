@@ -4,6 +4,9 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.util.XmlUtil;
 
@@ -34,7 +37,17 @@ public class SignalTransition extends Transition {
 				return SignalTransition.class.getSimpleName();
 			}
 
-			public void serialise(Element element) {
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				setSignalName(XmlUtil.readStringAttr(element, "signalName"));
+				setDirection(Direction.valueOf(XmlUtil.readStringAttr(element, "direction")));
+				setType(Type.valueOf(XmlUtil.readStringAttr(element, "type")));
+				setInstance(XmlUtil.readIntAttr(element, "instance", 0));
+			}
+
+			@Override
+			public void serialise(Element element,
+					ExternalReferenceResolver refResolver) {
 				XmlUtil.writeStringAttr(element, "signalName", signalName);
 				XmlUtil.writeStringAttr(element, "direction", direction.name());
 				XmlUtil.writeStringAttr(element, "type", type.name());
@@ -44,21 +57,6 @@ public class SignalTransition extends Transition {
 	}
 
 	public SignalTransition() {
-		super();
-
-		addXMLSerialiser();
-	}
-
-	public SignalTransition(Element xmlElement) {
-		super(xmlElement);
-
-		Element element = XmlUtil.getChildElement(SignalTransition.class.getSimpleName(), xmlElement);
-
-		setSignalName(XmlUtil.readStringAttr(element, "signalName"));
-		setDirection(Direction.valueOf(XmlUtil.readStringAttr(element, "direction")));
-		setType(Type.valueOf(XmlUtil.readStringAttr(element, "type")));
-		setInstance(XmlUtil.readIntAttr(element, "instance", 0));
-
 		addXMLSerialiser();
 	}
 

@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.util.Geometry;
 

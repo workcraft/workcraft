@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 
 public interface ConnectionGraphic {
 	public void update();

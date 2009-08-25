@@ -9,9 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.visual.HierarchyNode;
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.LayoutFailedException;
@@ -26,10 +25,12 @@ public class DotLayout implements Layout {
 		out.println("digraph work {");
 		out.println("graph [nodesep=\"2.0\"];");
 		out.println("node [shape=box];");
+
+
 		for (HierarchyNode n : model.getRoot().getChildren()) {
 			if (n instanceof VisualComponent) {
 				VisualComponent comp = (VisualComponent) n;
-				Integer id = comp.getReferencedComponent().getID();
+				Integer id = comp.getID();
 				if(id!=null) {
 					Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
 					if(bb!=null) {
@@ -38,9 +39,9 @@ public class DotLayout implements Layout {
 						out.println("\""+id+"\" [width=\""+width+"\", height=\""+height+"\"];");
 					}
 
-					Set<Component> postset = comp.getReferencedComponent().getPostset();
+					Set<VisualComponent> postset = comp.getPostset();
 
-					for(Component target : postset) {
+					for(VisualComponent target : postset) {
 						Integer targetId = target.getID();
 						if(targetId!=null) {
 							out.println("\""+id+"\" -> \""+targetId+"\";");
@@ -67,16 +68,13 @@ public class DotLayout implements Layout {
 		while(matcher.find()) {
 			Integer id = Integer.parseInt(matcher.group(1));
 
-			//VisualComponent comp = model.getComponentByRefID(id);
-			VisualComponent comp = model.getFirstVisualComponentByRefID(id);
-
+			VisualComponent comp = model.getVisualComponentByID(id);
 
 			if(comp==null)
 				continue;
 			comp.setX(Integer.parseInt(matcher.group(4))*DotLayoutSettings.dotPositionScaleFactor);
 			comp.setY(-Integer.parseInt(matcher.group(5))*DotLayoutSettings.dotPositionScaleFactor);
 		}
-
 	}
 
 	private void cleanUp() {

@@ -855,29 +855,42 @@ public class MainWindow extends JFrame {
 	}
 
 	public void runModelChecker(String modelCheckerClassName) {
-		ModelChecker checker = (ModelChecker)framework.getPluginManager().getSingletonByName(modelCheckerClassName);
 		try {
+			ModelChecker checker = (ModelChecker)framework.getPluginManager().getSingletonByName(modelCheckerClassName);
 			checker.run(editorInFocus.getModel());
 		} catch (ModelCheckingFailedException e) {
-			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model checking failed", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		} catch (PluginInstantiationException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model checking failed", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
 
 
 	public void doLayout (String layoutClassName) {
-		Layout layout = (Layout)framework.getPluginManager().getSingletonByName(layoutClassName);
-
 		try {
+			Layout layout = (Layout)framework.getPluginManager().getSingletonByName(layoutClassName);
 			layout.doLayout(editorInFocus.getModel());
 		} catch (LayoutFailedException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Layout failed", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		} catch (PluginInstantiationException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Layout failed", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
 
 	public void exportTo(String exporterClassName) throws OperationCancelledException {
-		Exporter exporter = (Exporter)framework.getPluginManager().getSingletonByName(exporterClassName);
+		Exporter exporter;
+
+		try {
+			exporter = (Exporter)framework.getPluginManager().getSingletonByName(exporterClassName);
+		} catch (PluginInstantiationException e1) {
+			JOptionPane.showMessageDialog(this, e1.getMessage(), "Export failed", JOptionPane.ERROR_MESSAGE);
+			e1.printStackTrace();
+			return;
+		}
 
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);

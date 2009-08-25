@@ -1,10 +1,8 @@
 package org.workcraft.plugins.balsa;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
@@ -12,11 +10,7 @@ import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.framework.exceptions.ComponentCreationException;
-import org.workcraft.framework.exceptions.ConnectionCreationException;
-import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
@@ -27,47 +21,10 @@ import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
 import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
-import org.workcraft.util.XmlUtil;
 
 @VisualClass ("org.workcraft.plugins.balsa.VisualBalsaCircuit")
 @DisplayName ("Balsa circuit")
 public final class BalsaCircuit extends MathModel {
-
-	@Override
-	public void pasteFromXML(Element modelElement) throws LoadFromXMLException
-	{
-		initPaste();
-
-		try {
-
-			ArrayList<Element> toDoLater = new ArrayList<Element>();
-
-			for (Element e : XmlUtil.getChildElements("component", modelElement))
-			{
-				String typeName = e.getAttribute("class");
-
-				if(typeName.equals("org.workcraft.plugins.balsa.BreezeComponent"))
-					deserializeComponent(e);
-				else
-					toDoLater.add(e);
-			}
-
-			for (Element e : toDoLater)
-				deserializeComponent(e);
-
-			for (Element e : XmlUtil.getChildElements("connection", modelElement))
-				deserialiseConnection(e);
-
-		} catch (InvalidComponentException e) {
-			throw new LoadFromXMLException(e);
-		} catch (ComponentCreationException e) {
-			throw new LoadFromXMLException(e);
-		} catch (InvalidConnectionException e) {
-			throw new LoadFromXMLException(e);
-		} catch (ConnectionCreationException e) {
-			throw new LoadFromXMLException(e);
-		}
-	}
 
 	public BalsaCircuit() {
 		super();

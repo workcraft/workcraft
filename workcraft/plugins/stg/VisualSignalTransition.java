@@ -10,7 +10,6 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
-import org.w3c.dom.Element;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -37,10 +36,8 @@ public class VisualSignalTransition extends VisualTransition {
 	private Rectangle2D emptyBB = new Rectangle2D.Double(-size/2, -size/2, size, size);
 	private float textX, textY;
 
-	public VisualSignalTransition(SignalTransition transition, Element xmlElement) {
-		super(transition, xmlElement);
+	public VisualSignalTransition() {
 		addPropertyDeclarations();
-
 		updateText();
 	}
 

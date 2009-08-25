@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.Document;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.serialisation.Exporter;
@@ -34,7 +35,7 @@ public class SVGExporter implements Exporter {
 
 				g2d.scale(50, 50);
 
-				Rectangle2D bounds = model.getVisualModel().getRoot().getBoundingBoxInLocalSpace();
+				Rectangle2D bounds = ((VisualGroup)model.getVisualModel().getRoot()).getBoundingBoxInLocalSpace();
 
 				g2d.translate(-bounds.getMinX(), -bounds.getMinY());
 				g2d.setSVGCanvasSize(new Dimension((int)bounds.getWidth()*50, (int)bounds.getHeight()*50));

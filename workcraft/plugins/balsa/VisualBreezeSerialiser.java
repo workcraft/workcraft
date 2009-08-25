@@ -1,13 +1,8 @@
 package org.workcraft.plugins.balsa;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.XMLSerialisation;
-import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.dom.visual.VisualNode;
+/*public class VisualBreezeSerialiser extends VisualTransformableNodeSerialiser {
 
-public class VisualBreezeSerialiser extends VisualTransformableNodeSerialiser {
-
-	public void serialise(VisualNode node, Element element) {
+	public void serialise(VisualNode node, Element element, ExportReferenceResolver refResolver) {
 		try {
 			if(!(node instanceof VisualBreezeComponent))
 				throw new RuntimeException("Unsupported component");
@@ -21,14 +16,22 @@ public class VisualBreezeSerialiser extends VisualTransformableNodeSerialiser {
 				public String getTagName() {
 					return VisualBreezeComponent.class.getSimpleName();
 				}
-				public void serialise(Element element) {
-					element.setAttribute("ref", component.getRefComponent().getID()+"");
+
+				public void serialise(Element element,
+						ExportReferenceResolver refResolver) {
+					element.setAttribute("ref", refResolver.getReference(component.getRefComponent()));
+				}
+
+				public void deserialise(Element element,
+						ReferenceResolver refResolver)
+						throws ImportException {
+
 				}
 			});
 
-			serialisation.serialise(element);
+			serialisation.serialise(element, refResolver);
 
-			super.serialise(node, element);
+			super.serialise(node, element, refResolver);
 
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -36,3 +39,4 @@ public class VisualBreezeSerialiser extends VisualTransformableNodeSerialiser {
 	}
 
 }
+*/

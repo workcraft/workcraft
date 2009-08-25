@@ -3,6 +3,8 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import org.workcraft.dom.HierarchyNode;
+
 
 class DrawMan
 {

@@ -21,7 +21,6 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
-import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
@@ -76,10 +75,6 @@ public class VisualBreezeComponent extends VisualGroup {
 	public VisualBreezeComponent(BreezeComponent refComponent) {
 		this.refComponent = refComponent;
 		init();
-	}
-
-	public VisualNodeSerialiser getSerialiser() {
-		return new VisualBreezeSerialiser();
 	}
 
 	private void makeProperties() {

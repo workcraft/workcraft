@@ -16,9 +16,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HierarchyHelper;
-import org.workcraft.dom.visual.HierarchyNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualGroup;
@@ -27,7 +27,6 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
-import org.workcraft.framework.exceptions.PasteException;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -266,7 +265,10 @@ public class SelectionTool extends AbstractTool {
 
 	private void grayOutNotActive(VisualModel model)
 	{
-		model.getRoot().setColorisation(grayOutColor);
+		HierarchyNode root = model.getRoot();
+		if (root instanceof Colorisable)
+			((Colorisable)root).setColorisation(grayOutColor);
+
 		model.getCurrentLevel().clearColorisation();
 		for(VisualNode node : model.getSelection())
 			node.setColorisation(selectionColor);
@@ -348,15 +350,10 @@ public class SelectionTool extends AbstractTool {
 					}
 				break;
 			case KeyEvent.VK_V:
-				try {
-					clearSelection(e.getModel());
-					addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
+				clearSelection(e.getModel());
+					//addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
 					e.getModel().fireSelectionChanged();
 					e.getEditor().repaint();
-				} catch (PasteException e1) {
-					JOptionPane.showMessageDialog(null, "Paste failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
-					e1.printStackTrace();
-				}
 			}
 		}
 	}

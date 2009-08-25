@@ -42,7 +42,7 @@ public class DeadlockChecker implements ModelChecker
 		FileOutputStream ch;
 		try {
 			ch = new FileOutputStream(new File(tmpNetFilePath));
-			exporter.export(model.getMathModel(), ch);
+			exporter.export(model.getMathModel(), ch, null);
 			ch.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

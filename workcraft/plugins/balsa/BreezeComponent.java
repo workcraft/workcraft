@@ -12,6 +12,9 @@ import org.w3c.dom.NodeList;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
 @VisualComponentGeneratorAttribute(generator="org.workcraft.plugins.balsa.BreezeVisualComponentGenerator")
@@ -20,14 +23,6 @@ public class BreezeComponent extends Component {
 	private org.workcraft.plugins.balsa.components.Component underlyingComponent;
 
 	static final String charsetName = "UTF-8";
-
-	public BreezeComponent(Element e) {
-		super(e);
-
-		init();
-
-		setUnderlyingComponent(readUnderlyingComponent(e));
-	}
 
 	private org.workcraft.plugins.balsa.components.Component readUnderlyingComponent(Element e) {
 		NodeList breezeElements = e.getElementsByTagName("breeze");
@@ -56,7 +51,7 @@ public class BreezeComponent extends Component {
 			public String getTagName() {
 				return "breeze";
 			}
-			public void serialise(Element element) {
+			public void serialise(Element element, ExternalReferenceResolver refResolver) {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 				XMLEncoder q = new XMLEncoder(bytes);
 				q.writeObject(underlyingComponent);
@@ -69,6 +64,11 @@ public class BreezeComponent extends Component {
 					throw new RuntimeException(e);
 				}
 				element.setTextContent(s);
+			}
+
+			public void deserialise(Element element,
+					ReferenceResolver refResolver) throws ImportException {
+				setUnderlyingComponent(readUnderlyingComponent(element));
 			}
 		});
 	}

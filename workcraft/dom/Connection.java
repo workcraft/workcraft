@@ -1,6 +1,9 @@
 package org.workcraft.dom;
 
 import org.w3c.dom.Element;
+import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
 /**
@@ -16,9 +19,13 @@ public class Connection extends MathNode {
 
 	private void addSerialisationObjects() {
 		addXMLSerialiser(new XMLSerialiser() {
-			public void serialise(Element element) {
+			public void serialise(Element element, ExternalReferenceResolver refResolver) {
 				XmlUtil.writeIntAttr(element, "first", first.getID());
 				XmlUtil.writeIntAttr(element, "second", second.getID());
+			}
+			public void deserialise (Element element, ReferenceResolver refResolver) throws ImportException {
+				first = (Component) refResolver.getObject(element.getAttribute("first"));
+				second = (Component) refResolver.getObject(element.getAttribute("second"));
 			}
 			public String getTagName() {
 				return Connection.class.getSimpleName();
@@ -41,33 +48,6 @@ public class Connection extends MathNode {
 
 		this.first = first;
 		this.second = second;
-
-		addSerialisationObjects();
-	}
-
-	/**
-	 * <p>XML deserialisation constructor, creates a connection reading
-	 * its parameters from XML element.</p>
-	 * <p><b>Note: </b> this only creates the connection object. This will not automatically
-	 * add the connection to the model. If you want to add the newly created connection
-	 * to the model, use
-	 * <code>MathModel.connect()</code> instead. Alternatively, call
-	 * <code>MathModell.addConnection()</code> to add the connection to the model.
-	 * @param connectionElement -- an XML element containing
-	 * elements created by <type>XMLSerialiser</type> objects.
-	 * @param referenceResolver -- an object that can be queried
-	 * to retrieve components from the model using their IDs.
-	 */
-	public Connection (Element connectionElement, ReferenceResolver referenceResolver) {
-		super(connectionElement);
-
-		Element element = XmlUtil.getChildElement(Connection.class.getSimpleName(), connectionElement);
-
-		int firstID = XmlUtil.readIntAttr(element, "first", -1);
-		int secondID = XmlUtil.readIntAttr(element, "second", -1);
-
-		first = referenceResolver.getComponentByID(firstID);
-		second = referenceResolver.getComponentByID(secondID);
 
 		addSerialisationObjects();
 	}

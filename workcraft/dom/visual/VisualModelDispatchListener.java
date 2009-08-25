@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.EventListener0;
 import org.workcraft.framework.EventListener1;

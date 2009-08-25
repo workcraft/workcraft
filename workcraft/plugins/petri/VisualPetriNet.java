@@ -2,7 +2,6 @@ package org.workcraft.plugins.petri;
 
 import java.util.ArrayList;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
@@ -28,10 +27,4 @@ public class VisualPetriNet extends VisualModel {
 			throw new VisualModelInstantiationException(e);
 		}
 	}
-
-	public VisualPetriNet(PetriNet model, Element visualElement) throws VisualModelInstantiationException {
-		super(model, visualElement);
-
-	}
-
 }
