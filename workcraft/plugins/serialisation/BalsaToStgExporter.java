@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.framework.util.Export;
@@ -38,7 +38,7 @@ public abstract class BalsaToStgExporter {
 
 	private String pcompPath = "../Util/pcomp";
 
-	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, ExportException {
+	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 
 		BalsaCircuit balsa = (BalsaCircuit)model.getMathModel();
 

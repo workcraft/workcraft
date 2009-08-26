@@ -8,13 +8,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.ExportException;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisation {
 	private HashMap<String, Class<? extends XMLSerialiser>> serialisers = new HashMap<String, Class<? extends XMLSerialiser>>();
@@ -77,7 +76,7 @@ public class XMLSerialisation {
 		return deserialiser;
 	}
 
-	private void doSerialisation(Element element, Object object, ExternalReferenceResolver referenceResolver, Class<?> currentLevel) throws InstantiationException, IllegalAccessException, ExportException, IntrospectionException, IllegalArgumentException, InvocationTargetException
+	private void doSerialisation(Element element, Object object, ExternalReferenceResolver referenceResolver, Class<?> currentLevel) throws InstantiationException, IllegalAccessException, SerialisationException, IntrospectionException, IllegalArgumentException, InvocationTargetException
 	{
 		Element curLevelElement = element.getOwnerDocument().createElement(currentLevel.getSimpleName());
 		element.appendChild(curLevelElement);
@@ -87,20 +86,23 @@ public class XMLSerialisation {
 		autoSerialiseProperties(curLevelElement, object, referenceResolver, currentLevel);
 
 		if (serialiser != null)
-			serialiser.serialise(curLevelElement, object, referenceResolver);
+			if (serialiser instanceof BasicXMLSerialiser)
+				((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
+			else if (serialiser instanceof ReferencingXMLSerialiser)
+				((ReferencingXMLSerialiser)serialiser).serialise(curLevelElement, object, referenceResolver);
 
 
 		if (currentLevel.getSuperclass() != Object.class)
 			doSerialisation(element, object, referenceResolver, currentLevel.getSuperclass());
 	}
 
-	private void doDeserialisation(Element element, Object object, ReferenceResolver referenceResolver, Class<?> currentLevel) throws InstantiationException, IllegalAccessException, ImportException
+	private void doDeserialisation(Element element, Object object, ReferenceResolver referenceResolver, Class<?> currentLevel) throws InstantiationException, IllegalAccessException, DeserialisationException
 	{
-		Element curLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
+		/*Element curLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
 
 		if (curLevelElement != null)
 		{
-			XMLDeserialiser deserialiser = getDeserialiserFor(currentLevel);
+			BasicXMLDeserialiser deserialiser = getDeserialiserFor(currentLevel);
 			if (deserialiser == null)
 			{
 				//TODO: auto-deserialise public properties
@@ -111,15 +113,13 @@ public class XMLSerialisation {
 		}
 
 		if (currentLevel.getSuperclass() != Object.class)
-			doDeserialisation(element, object, referenceResolver, currentLevel.getSuperclass());
+			doDeserialisation(element, object, referenceResolver, currentLevel.getSuperclass());*/
 	}
 
-	private void autoSerialiseProperties(Element element, Object object, ExternalReferenceResolver referenceResolver, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, ExportException, InvocationTargetException {
-		/*System.out.println ("Introspecting class " + currentLevel.getSimpleName());
-
-		for (Method m : currentLevel.getMethods()) {
-			System.out.println (m.getName() + " " + m.getReturnType());
-		}*/
+	private void autoSerialiseProperties(Element element, Object object, ExternalReferenceResolver referenceResolver, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
+		// type explicitly requested to be excluded from auto serialisation
+		if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
+			return;
 
 		BeanInfo info = Introspector.getBeanInfo(currentLevel, currentLevel.getSuperclass());
 
@@ -128,79 +128,87 @@ public class XMLSerialisation {
 			if (desc.getPropertyType() == null)
 				continue;
 
-			if (desc.getWriteMethod() == null )
+			if (desc.getWriteMethod() == null || desc.getReadMethod() == null)
 				continue;
 
+			// property explicitly requested to be excluded from auto serialisation
+			if (
+					desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
+					desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
+					)
+				continue;
+
+			// the property is writable and is not of array type, try to get a serialiser
 			XMLSerialiser serialiser = getSerialiserFor(desc.getPropertyType());
 
-			if (serialiser == null)
-				continue;
-
-			if (serialiser.getClass().getAnnotation(AllowPropertySerialisation.class) == null)
-				continue;
+			if (!(serialiser != null  && serialiser instanceof BasicXMLSerialiser))
+			{
+				// no serialiser, try to use the special case enum serialiser
+				if (desc.getPropertyType().isEnum())
+				{
+					serialiser = getSerialiserFor(Enum.class);
+					if (serialiser == null)
+						continue;
+				} else
+					continue;
+			}
 
 			Element propertyElement = element.getOwnerDocument().createElement("property");
 			element.appendChild(propertyElement);
 			propertyElement.setAttribute("class", desc.getPropertyType().getName());
 			propertyElement.setAttribute("name", desc.getName());
 
-
-			serialiser.serialise(propertyElement, desc.getReadMethod().invoke(object), referenceResolver);
-
-			/*String name = desc.getName();
-			Class<?> type = desc.getPropertyType();
-			String typeName = type.getName();
-			System.out.println ("Found property \"" + name  + "\" of type " + typeName);*/
+			((BasicXMLSerialiser)serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void processPlugins(PluginManager manager) {
-		PluginInfo[] serialiserInfos = manager.getPluginsByInterface(XMLSerialiser.class.getName());
+		PluginInfo[] serialiserInfos = manager.getPluginsByInterface(BasicXMLSerialiser.class.getName());
 
 		for (PluginInfo info : serialiserInfos) {
 			try {
-				registerSerialiser( (Class<? extends XMLSerialiser>) info.loadClass());
+				registerSerialiser( (Class<? extends BasicXMLSerialiser>) info.loadClass());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 
-		PluginInfo[] deserialiserInfos = manager.getPluginsByInterface(XMLDeserialiser.class.getName());
+		PluginInfo[] deserialiserInfos = manager.getPluginsByInterface(BasicXMLDeserialiser.class.getName());
 
 		for (PluginInfo info : deserialiserInfos) {
 			try {
-				registerDeserialiser( (Class<? extends XMLDeserialiser>) Class.forName(info.getClassName()));
+				registerDeserialiser( (Class<? extends BasicXMLDeserialiser>) Class.forName(info.getClassName()));
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void serialise (Element element, Object object, ExternalReferenceResolver referenceResolver) throws ExportException
+	public void serialise (Element element, Object object, ExternalReferenceResolver referenceResolver) throws SerialisationException
 	{
 		try {
 			doSerialisation(element, object, referenceResolver, object.getClass());
 		} catch (InstantiationException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		} catch (IllegalAccessException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		} catch (IntrospectionException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		} catch (IllegalArgumentException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		} catch (InvocationTargetException e) {
-			throw new ExportException(e);		}
+			throw new SerialisationException(e);		}
 	}
 
-	public void deserialise (Element element, Object object, ReferenceResolver referenceResolver) throws ImportException
+	public void deserialise (Element element, Object object, ReferenceResolver referenceResolver) throws DeserialisationException
 	{
 		try {
 			doDeserialisation(element, object, referenceResolver, object.getClass());
 		} catch (InstantiationException e) {
-			throw new ImportException(e);
+			throw new DeserialisationException(e);
 		} catch (IllegalAccessException e) {
-			throw new ImportException(e);
+			throw new DeserialisationException(e);
 		}
 	}
 }

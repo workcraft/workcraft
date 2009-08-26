@@ -5,7 +5,7 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
@@ -42,7 +42,7 @@ public class Place extends Component {
 				return Place.class.getSimpleName();
 			}
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 				tokens = XmlUtil.readIntAttr(element, "tokens", 0);
 				capacity = XmlUtil.readIntAttr(element, "capacity", 1);
 			}

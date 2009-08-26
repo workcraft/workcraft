@@ -17,7 +17,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
-import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -146,7 +146,7 @@ public class SaveLoadTests {
 	}
 
 	@Test
-	public void TestMathModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, ExportException
+	public void TestMathModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit circuit = createWhileWhileMathCircuit();
 
@@ -158,7 +158,7 @@ public class SaveLoadTests {
 	}
 
 	@Test
-	public void TestVisualModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, VisualModelInstantiationException, IOException, ModelValidationException, ExportException
+	public void TestVisualModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, VisualModelInstantiationException, IOException, ModelValidationException, SerialisationException
 	{
 		VisualBalsaCircuit circuit = createLoopWhileVisualCircuit();
 
@@ -219,7 +219,7 @@ public class SaveLoadTests {
 
 
 	@Test
-	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, ExportException
+	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException
 	{
 		Framework f = new Framework();
 

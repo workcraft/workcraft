@@ -27,7 +27,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.EventListener1;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
@@ -120,7 +120,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver referenceResolver) throws ImportException {
+					ReferenceResolver referenceResolver) throws DeserialisationException {
 				setID(XmlUtil.readIntAttr(element, "ID", -1));
 
 				refConnection = (Connection) referenceResolver.getObject(element.getAttribute("refID"));

@@ -13,7 +13,7 @@ import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginConsumer;
 import org.workcraft.framework.plugins.PluginManager;
@@ -36,7 +36,7 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 		}
 	}
 
-	private Element serialise(HierarchyNode node, Document doc, ExternalReferenceResolver inRef) throws ExportException {
+	private Element serialise(HierarchyNode node, Document doc, ExternalReferenceResolver inRef) throws SerialisationException {
 		Element e = doc.createElement("node");
 		e.setAttribute("class", node.getClass().getName());
 
@@ -75,7 +75,7 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 	}
 
 	public ExternalReferenceResolver export(Model model, OutputStream out, ExternalReferenceResolver incomingReferenceResolver)
-	throws ExportException {
+	throws SerialisationException {
 		try{
 			Document doc = XmlUtil.createDocument();
 
@@ -95,9 +95,9 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 
 			XmlUtil.writeDocument(doc, out);
 		} catch (ParserConfigurationException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		} catch (IOException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		}
 		return new ReferenceResolver();
 	}

@@ -10,8 +10,8 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.framework.ModelSaveFailedException;
-import org.workcraft.framework.exceptions.ExportException;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
@@ -38,7 +38,7 @@ import org.workcraft.plugins.stg.VisualSTG;
 public class WhileTests {
 
 	@Test
-	public void Test1() throws ModelSaveFailedException, VisualModelInstantiationException, ModelCheckingFailedException, ModelValidationException, ExportException, IOException
+	public void Test1() throws ModelSaveFailedException, VisualModelInstantiationException, ModelCheckingFailedException, ModelValidationException, SerialisationException, IOException
 	{
 		final While wh = new While();
 
@@ -72,7 +72,7 @@ public class WhileTests {
 	}
 
 	@Test
-	public void TestCombine() throws ModelSaveFailedException, VisualModelInstantiationException, InvalidConnectionException, ModelCheckingFailedException, IOException, LayoutFailedException, ModelValidationException, ExportException, ImportException
+	public void TestCombine() throws ModelSaveFailedException, VisualModelInstantiationException, InvalidConnectionException, ModelCheckingFailedException, IOException, LayoutFailedException, ModelValidationException, SerialisationException, DeserialisationException
 	{
 		BalsaCircuit balsa = new BalsaCircuit();
 

@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 
@@ -26,7 +26,7 @@ public class Joint extends CircuitComponent {
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 				// TODO Auto-generated method stub
 
 			}

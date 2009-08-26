@@ -3,7 +3,7 @@ package org.workcraft.dom;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
@@ -22,7 +22,7 @@ public class XMLSerialisation {
 		}
 	}
 
-	final public void deserialise(Element componentElement, ReferenceResolver refResolver) throws ImportException {
+	final public void deserialise(Element componentElement, ReferenceResolver refResolver) throws DeserialisationException {
 		for (XMLSerialiser s: serialisers) {
 			Element e = XmlUtil.getChildElement(s.getTagName(), componentElement);
 			s.deserialise(e, refResolver);

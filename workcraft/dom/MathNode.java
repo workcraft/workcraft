@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
@@ -30,7 +30,7 @@ public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 				setID(XmlUtil.readIntAttr(element, "ID", -1));
 				setLabel(XmlUtil.readStringAttr(element, "label"));
 			}
@@ -116,7 +116,7 @@ public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 		serialisation.serialise(element, refResolver);
 	}
 
-	final public void deserialise(Element element, ReferenceResolver refResolver) throws ImportException {
+	final public void deserialise(Element element, ReferenceResolver refResolver) throws DeserialisationException {
 		serialisation.deserialise(element, refResolver);
 	}
 
@@ -141,7 +141,7 @@ public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 	 * Sets the node ID.
 	 * @param id -- the new ID.
 	 */
-	final protected void setID(int id) {
+	final public void setID(int id) {
 		ID = id;
 	}
 

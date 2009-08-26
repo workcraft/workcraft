@@ -5,7 +5,7 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 
@@ -45,7 +45,7 @@ public class Contact extends Component {
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 			}
 
 			public void serialise(Element element,

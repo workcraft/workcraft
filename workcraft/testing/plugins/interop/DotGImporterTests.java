@@ -10,14 +10,14 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.workcraft.dom.Component;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 
 public class DotGImporterTests {
 	@Test
-	public void Test1() throws IOException, ImportException
+	public void Test1() throws IOException, DeserialisationException
 	{
 		File tempFile = File.createTempFile("test", ".g");
 

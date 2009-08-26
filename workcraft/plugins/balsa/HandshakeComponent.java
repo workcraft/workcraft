@@ -6,7 +6,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
@@ -23,7 +23,7 @@ public class HandshakeComponent extends Component {
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 
 				Element handshakeElement = XmlUtil.getChildElement("Handshake", element);
 				handshakeName = handshakeElement.getAttribute("name");

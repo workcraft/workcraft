@@ -1,7 +1,7 @@
 package org.workcraft.dom;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
@@ -23,7 +23,7 @@ public class Connection extends MathNode {
 				XmlUtil.writeIntAttr(element, "first", first.getID());
 				XmlUtil.writeIntAttr(element, "second", second.getID());
 			}
-			public void deserialise (Element element, ReferenceResolver refResolver) throws ImportException {
+			public void deserialise (Element element, ReferenceResolver refResolver) throws DeserialisationException {
 				first = (Component) refResolver.getObject(element.getAttribute("first"));
 				second = (Component) refResolver.getObject(element.getAttribute("second"));
 			}

@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.petri.Transition;
@@ -31,6 +31,7 @@ public class SignalTransition extends Transition {
 	private String signalName = "";
 	private int instance = 0;
 
+
 	private void addXMLSerialiser() {
 		addXMLSerialiser(new XMLSerialiser() {
 			public String getTagName() {
@@ -38,7 +39,7 @@ public class SignalTransition extends Transition {
 			}
 
 			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws ImportException {
+					ReferenceResolver refResolver) throws DeserialisationException {
 				setSignalName(XmlUtil.readStringAttr(element, "signalName"));
 				setDirection(Direction.valueOf(XmlUtil.readStringAttr(element, "direction")));
 				setType(Type.valueOf(XmlUtil.readStringAttr(element, "type")));

@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
@@ -504,14 +504,14 @@ public class Framework {
 		}
 	}*/
 
-	public void save(Model model, String path) throws ModelValidationException, ExportException, IOException {
+	public void save(Model model, String path) throws ModelValidationException, SerialisationException, IOException {
 		File file = new File(path);
 		FileOutputStream stream = new FileOutputStream(file);
 		save (model, stream);
 		stream.close();
 	}
 
-	public void save(Model model, OutputStream out) throws IOException, ModelValidationException, ExportException {
+	public void save(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 		boolean haveVisual = model.getVisualModel() != null;
 
 		ZipOutputStream zos = new ZipOutputStream(out);
@@ -522,7 +522,7 @@ public class Framework {
 		try {
 			mathSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
 		} catch (PluginInstantiationException e) {
-			throw new ExportException(e);
+			throw new SerialisationException(e);
 		}
 
 		String mathEntryName = "model" + mathSerialiser.getExtension();
@@ -540,7 +540,7 @@ public class Framework {
 			try {
 				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
 			} catch (PluginInstantiationException e) {
-				throw new ExportException(e);
+				throw new SerialisationException(e);
 			}
 
 			visualEntryName = "visualModel" + visualSerialiser.getExtension();

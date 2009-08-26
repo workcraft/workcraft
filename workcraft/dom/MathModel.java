@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.plugins.Plugin;
@@ -50,7 +50,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 			public void serialise(Element element, ExternalReferenceResolver refResolver) {
 				XmlUtil.writeStringAttr(element, "title", title);
 			}
-			public void deserialise(Element element, ReferenceResolver refResolver) throws ImportException {
+			public void deserialise(Element element, ReferenceResolver refResolver) throws DeserialisationException {
 				title = XmlUtil.readStringAttr(element, "title");
 			}
 		});
@@ -454,7 +454,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 		serialisation.serialise(element, refResolver);
 	}
 
-	public final void deserialise(Element modelElement, ReferenceResolver refResolver) throws ImportException {
+	public final void deserialise(Element modelElement, ReferenceResolver refResolver) throws DeserialisationException {
 		serialisation.deserialise(modelElement, refResolver);
 	}
 	public Group getRoot() {

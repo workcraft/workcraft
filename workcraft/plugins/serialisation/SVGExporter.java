@@ -13,7 +13,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.Document;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.framework.exceptions.ExportException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.serialisation.Exporter;
 import org.workcraft.framework.serialisation.Format;
@@ -23,10 +23,10 @@ public class SVGExporter implements Exporter {
 
 
 	public void export(Model model, OutputStream out) throws IOException,
-			ModelValidationException, ExportException {
+			ModelValidationException, SerialisationException {
 
 		if (model.getVisualModel() == null)
-			throw new ExportException ("Not a visual model");
+			throw new SerialisationException ("Not a visual model");
 
 			try {
 				Document doc = XmlUtil.createDocument();
@@ -45,7 +45,7 @@ public class SVGExporter implements Exporter {
 				g2d.stream(new OutputStreamWriter(out));
 
 			} catch (ParserConfigurationException e) {
-				throw new ExportException(e);
+				throw new SerialisationException(e);
 			}
 		}
 

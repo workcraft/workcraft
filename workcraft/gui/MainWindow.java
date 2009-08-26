@@ -42,8 +42,8 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelFactory;
-import org.workcraft.framework.exceptions.ExportException;
-import org.workcraft.framework.exceptions.ImportException;
+import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
@@ -723,7 +723,7 @@ public class MainWindow extends JFrame {
 		} catch (ModelValidationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
-		} catch (ExportException e) {
+		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
@@ -788,7 +788,7 @@ public class MainWindow extends JFrame {
 		} catch (ModelValidationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
-		} catch (ExportException e) {
+		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
@@ -843,7 +843,7 @@ public class MainWindow extends JFrame {
 						} catch (IOException e) {
 							e.printStackTrace();
 							JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
-						} catch (ImportException e) {
+						} catch (DeserialisationException e) {
 							e.printStackTrace();
 							JOptionPane.showMessageDialog(this, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
 						}
@@ -932,7 +932,7 @@ public class MainWindow extends JFrame {
 			e.printStackTrace();
 		} catch (ModelValidationException e) {
 			e.printStackTrace();
-		} catch (ExportException e) {
+		} catch (SerialisationException e) {
 			e.printStackTrace();
 		}
 
