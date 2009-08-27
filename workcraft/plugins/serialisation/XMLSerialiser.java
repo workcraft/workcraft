@@ -20,11 +20,11 @@ import org.workcraft.framework.plugins.PluginManager;
 import org.workcraft.framework.serialisation.ExternalReferenceResolver;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
-import org.workcraft.framework.serialisation.xml.XMLSerialisation;
+import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
-	XMLSerialisation serialisation = new XMLSerialisation();
+	XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
 	class ReferenceResolver implements ExternalReferenceResolver
 	{
