@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.ExportException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.framework.serialisation.Exporter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
@@ -16,7 +16,7 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 public class BalsaToGatesExporter implements Exporter {
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
-			ModelValidationException, ExportException {
+			ModelValidationException, SerialisationException {
 		File tempDir = createTempDirectory();
 
 		File original = new File(tempDir, "composition.g");
@@ -89,7 +89,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 	private void exportOriginal(Model model, File original)
 			throws FileNotFoundException, IOException,
-			ModelValidationException, ExportException {
+			ModelValidationException, SerialisationException {
 		FileOutputStream tempFileStream = new FileOutputStream(original);
 		try
 		{
