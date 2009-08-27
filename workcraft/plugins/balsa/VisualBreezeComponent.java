@@ -14,12 +14,17 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
@@ -30,7 +35,8 @@ import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.layouts.MainLayouter;
 import org.workcraft.util.XmlUtil;
 
-public class VisualBreezeComponent extends VisualGroup {
+public class VisualBreezeComponent extends VisualTransformableNode implements Drawable
+{
 
 	HandshakeComponentLayout layout;
 	Map<String, VisualHandshake> visualHandshakes;
@@ -70,6 +76,14 @@ public class VisualBreezeComponent extends VisualGroup {
 		layout = MainLayouter.getLayout(balsaComponent, handshakes);
 		buildVisualHandshakes();
 		makeProperties();
+		addPropertyChangeListener(
+				new PropertyChangeListener()
+				{
+					public void onPropertyChanged(String propertyName, Object sender) {
+						buildVisualHandshakes();
+					}
+				}
+			);
 	}
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
@@ -87,6 +101,14 @@ public class VisualBreezeComponent extends VisualGroup {
 		} catch (IntrospectionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	Collection<HierarchyNode> subNodes;
+
+
+	@Override
+	public Collection<HierarchyNode> getChildren() {
+		return new ArrayList<HierarchyNode>(visualHandshakes.values());
 	}
 
 	private void buildVisualHandshakes() {
@@ -110,8 +132,6 @@ public class VisualBreezeComponent extends VisualGroup {
 			visual.applyTransform(AffineTransform.getQuadrantRotateInstance(quadrants));
 			visual.applyTransform(AffineTransform.getScaleInstance(handshakeRadius*2, handshakeRadius*2));
 			visual.applyTransform(AffineTransform.getTranslateInstance(ray.position.x, ray.position.y));
-
-			this.add(visual);
 		}
 	}
 
@@ -119,7 +139,7 @@ public class VisualBreezeComponent extends VisualGroup {
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 
-		Rectangle2D parentBB = super.getBoundingBoxInLocalSpace();
+		Rectangle2D parentBB = null;//TODO: include children bounding boxes (was super.getBoundingBoxInLocalSpace();)
 		if(parentBB != null)
 			result.add(parentBB);
 
@@ -171,8 +191,6 @@ public class VisualBreezeComponent extends VisualGroup {
 		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), balsaComponent.getClass().getSimpleName());
 		Rectangle2D bounds = vec.getVisualBounds();
 		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
-
-		super.draw(g);
 	}
 
 	private void drawSideLine(Graphics2D g, SideLine extent, int dir) {

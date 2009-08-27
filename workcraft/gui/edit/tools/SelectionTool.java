@@ -20,6 +20,7 @@ import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -386,8 +387,7 @@ public class SelectionTool extends AbstractTool {
 		for(HierarchyNode node : model.selection())
 			if(node instanceof Movable) {
 				Movable mv = (Movable) node;
-				mv.setX(mv.getX()+dx);
-				mv.setY(mv.getY()+dy);
+				MovableHelper.translate(mv, dx, dy);
 
 				if(node instanceof PropertyEditable)
 					((PropertyEditable)node).firePropertyChanged("transform");

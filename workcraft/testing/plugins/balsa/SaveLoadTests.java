@@ -13,7 +13,6 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
@@ -120,8 +119,8 @@ public class SaveLoadTests {
 		Assert.assertNotNull(wh);
 		Assert.assertNotNull(loop);
 
-		Assert.assertEquals(3, wh.getComponents().size());
-		Assert.assertEquals(2, loop.getComponents().size());
+		Assert.assertEquals(3, wh.getChildren().size());
+		Assert.assertEquals(2, loop.getChildren().size());
 
 		VisualHandshake whActivate = getVisualHandshakeByName(wh, "activate");
 		VisualHandshake loopActivateOut = getVisualHandshakeByName(loop, "activateOut");
@@ -136,7 +135,7 @@ public class SaveLoadTests {
 	}
 
 	private VisualHandshake getVisualHandshakeByName(VisualBreezeComponent wh, String name) {
-		for(VisualComponent component : wh.getComponents())
+		for(HierarchyNode component : wh.getChildren())
 		{
 			VisualHandshake handshake = (VisualHandshake) component;
 			if(((HandshakeComponent)handshake.getReferencedComponent()).getHandshakeName().equals(name))

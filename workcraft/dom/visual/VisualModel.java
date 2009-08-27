@@ -206,29 +206,14 @@ public class VisualModel implements Plugin, Model {
 		return getNodesBoundingBox(selection);
 	}
 
-	/*
-	 * Apply transformation to each node position, if possible
-	 * @author Stan
-	 */
 	public void transformNodePosition(Collection<HierarchyNode> nodes, AffineTransform t) {
 		assert nodes!=null;
-		Point2D np;
-		for (HierarchyNode node: nodes) {
-			if (node instanceof Movable) {
-				// for all movable objects
-				Movable mn = (Movable)node;
-				np = new Point2D.Double(mn.getX(), mn.getY());
-				t.transform(np, np);
-				mn.setX(np.getX());
-				mn.setY(np.getY());
-			}
-		}
+		for (HierarchyNode node: nodes)
+			TransformHelper.applyTransform(node, t);
 	}
 
 	public void translateNodes(Collection<HierarchyNode> nodes, double tx, double ty) {
-		AffineTransform t = new AffineTransform();
-
-		t.translate(tx, ty);
+		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
 
 		transformNodePosition(nodes, t);
 	}
@@ -239,27 +224,25 @@ public class VisualModel implements Plugin, Model {
 
 	public void scaleSelection(double sx, double sy) {
 		Rectangle2D selectionBB = getSelectionBoundingBox();
-		// create rotation matrix
+
 		AffineTransform t = new AffineTransform();
 
 		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
 		t.scale(sx, sy);
 		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
 
-		// translate nodes by t
 		transformNodePosition(selection, t);
 	}
 
 	public void rotateSelection(double theta) {
 		Rectangle2D selectionBB = getSelectionBoundingBox();
-		// create rotation matrix
+
 		AffineTransform t = new AffineTransform();
 
 		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
 		t.rotate(theta);
 		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
 
-		// translate nodes by t
 		transformNodePosition(selection, t);
 	}
 
