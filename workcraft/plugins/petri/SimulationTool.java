@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -32,9 +33,10 @@ public class SimulationTool extends AbstractTool {
 				visualNet.getComponentByRefID(t.getID()).clearColorisation();
 		*/
 
-		for (VisualComponent t : visualNet.getVisualComponents()) {
-			if (t instanceof VisualTransition) {
-				if (((VisualTransition)t).isEnabled())
+		for (HierarchyNode n : visualNet.getVisualComponents()) {
+			if (n instanceof VisualTransition) {
+				VisualTransition t = (VisualTransition)n;
+				if (t.isEnabled())
 					t.setColorisation(enabledColor);
 				else
 					t.clearColorisation();

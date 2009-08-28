@@ -146,7 +146,7 @@ public class VisualSTG extends VisualPetriNet  {
 					Container.class);
 
 				group.add(connection);
-				addConnection(connection);
+				addNode(connection);
 
 				return connection;
 			} else if (second instanceof ImplicitPlaceArc) {
@@ -162,9 +162,9 @@ public class VisualSTG extends VisualPetriNet  {
 				VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
 				VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
 
-				addComponent(place);
-				addConnection(con1);
-				addConnection(con2);
+				addNode(place);
+				addNode(con1);
+				addNode(con2);
 				group.add(place);
 				group.add(con1);
 				group.add(con2);
@@ -190,9 +190,9 @@ public class VisualSTG extends VisualPetriNet  {
 				VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
 				VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
 
-				addComponent(place);
-				addConnection(con1);
-				addConnection(con2);
+				addNode(place);
+				addNode(con1);
+				addNode(con2);
 				group.add(place);
 				group.add(con1);
 				group.add(con2);
@@ -260,7 +260,7 @@ public class VisualSTG extends VisualPetriNet  {
 		HierarchyHelper.getNearestAncestor(
 				HierarchyHelper.getCommonParent(first, second), Container.class)
 					.add(con);
-		addConnection(con);
+		addNode(con);
 
 		return con;
 	}

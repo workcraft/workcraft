@@ -18,16 +18,16 @@ public class TemplateLayout extends Component implements Layout{
 
 
 	/*private void positionByTemplate(VisualSTG model, VisualSTG template) {
-		for (VisualComponent vc: model.getVisualComponents()) {
+		for (HierarchyNode vc: model.getVisualComponents()) {
 			if (vc instanceof VisualSignalTransition) {
-				for (VisualComponent vc2: template.getVisualComponents()) {
+				for (HierarchyNode vc2: template.getVisualComponents()) {
 					if (vc2 instanceof VisualSignalTransition) {
-						if (((VisualSignalTransition) vc2).getSignalName().equals(((VisualSignalTransition) vc).getSignalName())
-								&&((VisualSignalTransition) vc2).getDirection()==((VisualSignalTransition) vc).getDirection())
-						{
-							vc.setX(vc2.getX());
-							vc.setY(vc2.getY());
-						}
+						VisualSignalTransition st1 = (VisualSignalTransition) vc;
+						VisualSignalTransition st2 = (VisualSignalTransition) vc2;
+
+						if (st2.getSignalName().equals(st1.getSignalName())
+								&& st2.getDirection()==st1.getDirection())
+							st1.setTransform(st2.getTransform());
 
 					}
 				}

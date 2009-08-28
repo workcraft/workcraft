@@ -21,12 +21,11 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.AbstractMathModel;
+import org.workcraft.dom.IntIdentifiable;
+import org.workcraft.dom.MathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.XMLSerialisation;
-import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
 import org.workcraft.framework.ComponentFactory;
@@ -38,10 +37,10 @@ import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
+import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.XmlUtil;
 
 public class VisualModel implements Plugin, Model {
@@ -58,7 +57,7 @@ public class VisualModel implements Plugin, Model {
 	public class ModelListener implements MathModelListener {
 		public void onNodePropertyChanged(String propertyName, MathNode n) {
 			if (n instanceof Component)
-				fireComponentPropertyChanged(propertyName, getVisualComponentByID( ((Component)n).getID()));
+				fireComponentPropertyChanged(propertyName, (VisualComponent)getVisualComponentByID( ((Component)n).getID()));
 		}
 
 		public void onComponentAdded(Component component) {
@@ -101,22 +100,6 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		public void onSelectionChanged() {
-
-
-//			for (VisualConnectionAnchorPoint p : connectionAnchorPoints)
-//				p.getParentConnection().getParent().remove(p);
-//
-//			connectionAnchorPoints.clear();
-
-//			for (VisualNode n : selection) {
-//				if (n instanceof VisualConnection) {
-//					VisualConnection con = (VisualConnection)n;
-//
-//					VisualConnectionAnchorPoint[] ap = con.getAnchorPointComponents();
-//					for (VisualConnectionAnchorPoint p : ap)
-//						con.getParent().add(p);
-//				}
-//			}
 		}
 
 		@Override
@@ -128,7 +111,7 @@ public class VisualModel implements Plugin, Model {
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
 
-	private AbstractMathModel mathModel;
+	private MathModel mathModel;
 	private VisualGroup root;
 
 	private LinkedList<HierarchyNode> selection = new LinkedList<HierarchyNode>();
@@ -136,10 +119,8 @@ public class VisualModel implements Plugin, Model {
 
 //	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
 //	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
-	private HashMap<Integer, VisualComponent> visualComponents = new HashMap<Integer, VisualComponent>();
-	protected HashMap<Integer, VisualConnection> visualConnections = new HashMap<Integer, VisualConnection>();
+	private HashMap<Integer, HierarchyNode> visualComponents = new HashMap<Integer, HierarchyNode>();
 
-	private XMLSerialisation serialiser = new XMLSerialisation();
 	private ModelListener mathModelListener = new ModelListener();
 
 	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
@@ -149,7 +130,7 @@ public class VisualModel implements Plugin, Model {
 
 			if (visualComponent != null) {
 				root.add(visualComponent);
-				addComponents(visualComponent);
+				addNode(visualComponent);
 			}
 		}
 
@@ -161,12 +142,12 @@ public class VisualModel implements Plugin, Model {
 			HierarchyHelper.getNearestAncestor(
 					HierarchyHelper.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
 					Container.class).add(visualConnection);
-			addConnection(visualConnection);
+			addNode(visualConnection);
 
 		}
 	}
 
-	public VisualModel(AbstractMathModel model) throws VisualModelInstantiationException {
+	public VisualModel(MathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
 
 		root = new VisualGroup();
@@ -307,11 +288,12 @@ public class VisualModel implements Plugin, Model {
 	}
 
 	@NoAutoSerialisation
-	public void setMathModel(AbstractMathModel mathModel) {
+	public void setMathModel(MathModel mathModel) {
 		this.mathModel = mathModel;
 	}
 
-	public AbstractMathModel getMathModel() {
+
+	public MathModel getMathModel() {
 		return mathModel;
 	}
 
@@ -393,66 +375,51 @@ public class VisualModel implements Plugin, Model {
 			Container.class);
 
 		group.add(ret);
-		addConnection(ret);
+		addNode(ret);
 
 		return ret;
 	}
 
-	public final void addComponents(HierarchyNode node) {
-		if(node instanceof VisualComponent) {
-			addComponent((VisualComponent)node);
-		} else
+	public final void addNode(HierarchyNode component) {
+		if(component instanceof PropertyEditable)
+			((PropertyEditable)component).addPropertyChangeListener(propertyChangeListener);
 
-		if(node instanceof VisualConnection) {
-			addConnection((VisualConnection)node);
-		} else
+		if(component instanceof IntIdentifiable)
+		{
+			int id = getNextNodeID();
 
-		if(node instanceof VisualGroup)
-			for(HierarchyNode subnode : ((VisualGroup)node).getChildren())
-				addComponents(subnode);
+			((IntIdentifiable)component).setID(id);
 
-		else throw new RuntimeException("Unknown component type");
+			visualComponents.put(id, component);
+		}
+
+		if(component instanceof VisualConnection)
+		{
+			VisualConnection connection = (VisualConnection)component;
+			connection.getFirst().addConnection(connection);
+			connection.getSecond().addConnection(connection);
+		}
+
+		if(component instanceof Container)
+			for(HierarchyNode subnode : ((Container)component).getChildren())
+				addNode(subnode);
+
+		fireNodeAdded(component);
 	}
 
-	public final int addComponent(VisualComponent component) {
-//		refIDToVisualComponentMap.put(component.getReferencedComponent().getID(), component);
-
-		component.addPropertyChangeListener(propertyChangeListener);
-
-		component.setID(getMathModel().getNextNodeID());
-
-		visualComponents.put(component.getID(), component);
-
-		fireComponentAdded(component);
-
-		return component.getID();
+	private int nodeIDCounter = 0;
+	private int getNextNodeID() {
+		return 	nodeIDCounter++;
 	}
 
-	private void fireComponentAdded(VisualComponent component) {
-		for (VisualModelEventListener l : listeners)
-			l.onComponentAdded(component);
-	}
+	private void fireNodeAdded(HierarchyNode component) {
+		if(component instanceof VisualComponent)
+			for (VisualModelEventListener l : listeners)
+				l.onComponentAdded((VisualComponent)component);
 
-	public final int addConnection(VisualConnection connection) {
-		connection.getFirst().addConnection(connection);
-		connection.getSecond().addConnection(connection);
-
-		connection.setID(getMathModel().getNextNodeID());
-
-//		if (connection.getReferencedConnection() != null)
-//			refIDToVisualConnectionMap.put(connection.getReferencedConnection().getID(), connection);
-		visualConnections.put(connection.getID(), connection);
-
-		connection.addPropertyChangeListener(propertyChangeListener);
-
-		fireConnectionAdded(connection);
-
-		return connection.getID();
-	}
-
-	private void fireConnectionAdded(VisualConnection connection) {
-		for (VisualModelEventListener l : listeners)
-			l.onConnectionAdded(connection);
+		if(component instanceof VisualConnection)
+			for (VisualModelEventListener l : listeners)
+				l.onConnectionAdded((VisualConnection)component);
 	}
 
 	public ArrayList<GraphEditorTool> getAdditionalTools() {
@@ -582,7 +549,6 @@ public class VisualModel implements Plugin, Model {
 
 		connection.removePropertyChangeListener(propertyChangeListener);
 		//refIDToVisualConnectionMap.remove(connection.getReferencedConnection().getID());
-		visualConnections.remove(connection.getID());
 
 		fireConnectionRemoved(connection);
 	}
@@ -691,18 +657,13 @@ public class VisualModel implements Plugin, Model {
 //		return refIDToVisualComponentMap.get(id);
 //	}
 
-	public VisualComponent getVisualComponentByID(Integer id) {
+	public HierarchyNode getVisualComponentByID(Integer id) {
 		return visualComponents.get(id);
 	}
 
-	public VisualConnection getVisualConnectionByID(Integer id) {
-		return visualConnections.get(id);
+	public HashSet<HierarchyNode> getVisualComponents() {
+		return new HashSet<HierarchyNode>(visualComponents.values());
 	}
-
-	public HashSet<VisualComponent> getVisualComponents() {
-		return new HashSet<VisualComponent>(visualComponents.values());
-	}
-
 
 	private Point2D transformToCurrentSpace(Point2D pointInRootSpace)
 	{
@@ -739,14 +700,6 @@ public class VisualModel implements Plugin, Model {
 		return currentLevel.hitObjects(selectionRect);
 	}
 
-	public final void addXMLSerialisable(XMLSerialiser serialisable) {
-		serialiser.addSerialiser(serialisable);
-	}
-
-	public final void serialise(Element componentElement, ReferenceProducer refResolver) {
-		serialiser.serialise(componentElement, refResolver);
-	}
-
 	protected VisualPropertyChangeListener getPropertyChangeListener() {
 		return propertyChangeListener;
 	}
@@ -781,4 +734,5 @@ public class VisualModel implements Plugin, Model {
 			}
 		};
 	}
+
 }

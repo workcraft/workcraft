@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialisation;
 import org.workcraft.dom.XMLSerialiser;
@@ -26,7 +27,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Geometry;
 
 
-public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable {
+public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable, IntIdentifiable {
 
 	public Rectangle2D getBoundingBox() {
 		return null;
@@ -38,7 +39,7 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return Collections.emptyList();
 	}
 
-	final protected void setID(int id) {
+	final public void setID(int id) {
 		ID = id;
 	}
 

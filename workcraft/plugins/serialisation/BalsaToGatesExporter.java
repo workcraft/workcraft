@@ -33,10 +33,28 @@ public class BalsaToGatesExporter implements Exporter {
 		File synthesised = new File(tempDir, "RESULT");
 
 		synthesise(csc_resolved_mci, synthesised);
+
+		FileUtils.copyFileToStream(synthesised, out);
 	}
 
-	private void synthesise(File cscResolvedMci, File synthesised) {
-		// TODO Auto-generated method stub
+	private void synthesise(File cscResolvedMci, File synthesised) throws IOException {
+
+		String mpsatFullPath = new File(mpsatPath).getAbsolutePath();
+
+		SynchronousExternalProcess process = new SynchronousExternalProcess(
+				new String[]{
+						mpsatFullPath,
+						"-E",
+						cscResolvedMci.getAbsolutePath(),
+						synthesised.getAbsolutePath()
+				}, ".");
+
+		process.start(100000);
+
+		System.out.println("MPSAT complex gate synthesis output: ");
+		System.out.write(process.getOutputData());
+		System.out.println("MPSAT complex gate synthesis errors: ");
+		System.out.write(process.getErrorData());
 
 	}
 
@@ -54,10 +72,12 @@ public class BalsaToGatesExporter implements Exporter {
 		SynchronousExternalProcess process = new SynchronousExternalProcess(args, resolutionDir.getAbsolutePath());
 
 		process.start(100000);
-		System.out.print("MPSAT CSC resolution output: ");
+		System.out.println("MPSAT CSC resolution output: ");
 		System.out.write(process.getOutputData());
-		System.out.print("MPSAT CSC resolution errors: ");
+		System.out.println("MPSAT CSC resolution errors: ");
 		System.out.write(process.getErrorData());
+
+		FileUtils.copyFile(new File(resolutionDir, "mpsat.mci"), cscResolvedMci);
 
 		deleteDirectory(resolutionDir);
 	}
@@ -81,9 +101,9 @@ public class BalsaToGatesExporter implements Exporter {
 							"-m="+unfolding.getAbsolutePath()},
 							".");
 		process.start(100000);
-		System.out.print("Unfolding output: ");
+		System.out.println("Unfolding output: ");
 		System.out.write(process.getOutputData());
-		System.out.print("Unfolding errors: ");
+		System.out.println("Unfolding errors: ");
 		System.out.write(process.getErrorData());
 	}
 

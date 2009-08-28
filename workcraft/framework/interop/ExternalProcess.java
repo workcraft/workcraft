@@ -80,7 +80,7 @@ public class ExternalProcess {
 		}
 	}
 
-	private ProcessBuilder processBuilder;
+	private final ProcessBuilder processBuilder;
 	private Process process = null;
 
 	private ReadableByteChannel inputStream = null;

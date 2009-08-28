@@ -171,7 +171,7 @@ public class HitMan
 	public static HierarchyNode hitTestForSelection(Point2D point, HierarchyNode node) {
 		HierarchyNode nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<HierarchyNode, Boolean>() {
 			public Boolean fn(HierarchyNode n) {
-				if (n instanceof VisualComponent || n instanceof VisualGroup)
+				if (n instanceof Movable)
 					return true;
 				else
 					return false;

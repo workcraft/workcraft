@@ -280,19 +280,19 @@ public abstract class AbstractMathModel implements Plugin, XMLSerialisable, Math
 	}
 
 
-	final public int getNextNodeID() {
+	final private int getNextNodeID() {
 		return nodeIDCounter++;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.workcraft.dom.Kojo#getSupportedComponents()
+	 * @see org.workcraft.dom.MathModel#getSupportedComponents()
 	 */
 	final public Set<Class<? extends Component>> getSupportedComponents() {
 		return new HashSet<Class<? extends Component>>(supportedComponents);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.workcraft.dom.Kojo#getTitle()
+	 * @see org.workcraft.dom.MathModel#getTitle()
 	 */
 	final public String getTitle() {
 		return title;

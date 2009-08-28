@@ -10,17 +10,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.MathNode;
+import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginConsumer;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
@@ -77,10 +76,8 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 
 			ReferenceProducer internalReferences = new ReferenceProducer() {
 				public String getReference(Object obj) {
-					if (obj instanceof MathNode)
-						return Integer.toString(((MathNode)obj).getID());
-					else if (obj instanceof VisualNode)
-						return Integer.toString(((VisualNode)obj).getID());
+					if (obj instanceof IntIdentifiable)
+						return Integer.toString(((IntIdentifiable)obj).getID());
 					else
 						return null;
 				}

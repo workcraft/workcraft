@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.LayoutFailedException;
@@ -68,12 +70,15 @@ public class DotLayout implements Layout {
 		while(matcher.find()) {
 			Integer id = Integer.parseInt(matcher.group(1));
 
-			VisualComponent comp = model.getVisualComponentByID(id);
+			HierarchyNode comp = model.getVisualComponentByID(id);
 
-			if(comp==null)
+			if(comp==null || !(comp instanceof Movable))
 				continue;
-			comp.setX(Integer.parseInt(matcher.group(4))*DotLayoutSettings.dotPositionScaleFactor);
-			comp.setY(-Integer.parseInt(matcher.group(5))*DotLayoutSettings.dotPositionScaleFactor);
+			Movable m = (Movable)comp;
+			MovableHelper.resetTransform(m);
+			MovableHelper.translate(m,
+					Integer.parseInt(matcher.group(4))*DotLayoutSettings.dotPositionScaleFactor,
+					-Integer.parseInt(matcher.group(5))*DotLayoutSettings.dotPositionScaleFactor);
 		}
 	}
 

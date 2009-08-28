@@ -15,7 +15,7 @@ import org.workcraft.util.XmlUtil;
  * @author Ivan Poliakov
  *
  */
-public abstract class MathNode implements HierarchyNode, XMLSerialisable {
+public abstract class MathNode implements HierarchyNode, XMLSerialisable, IntIdentifiable {
 	private int ID = -1;
 	private String label = "";
 	private XMLSerialisation serialisation = new XMLSerialisation();
