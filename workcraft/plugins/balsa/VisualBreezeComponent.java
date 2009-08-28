@@ -59,7 +59,7 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 		Element refElement = XmlUtil.getChildElement(VisualBreezeComponent.class.getSimpleName(), element);
 		int id = XmlUtil.readIntAttr(refElement, "ref", -1);
 
-		return (BreezeComponent)model.getMathModel().getComponentByRenamedID(id);
+		return (BreezeComponent)model.getMathModel().getComponentByID(id);
 	}
 
 	public VisualBreezeComponent(BreezeComponent refComponent, Element element) throws VisualConnectionCreationException, VisualComponentCreationException {

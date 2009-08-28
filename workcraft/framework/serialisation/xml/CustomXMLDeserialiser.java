@@ -6,5 +6,8 @@ import org.workcraft.framework.serialisation.ReferenceResolver;
 
 public interface CustomXMLDeserialiser extends XMLDeserialiser {
 	public Object initInstance (Element element) throws DeserialisationException;
-	public void finaliseInstance (Element element, Object instance, ReferenceResolver referenceResolver) throws DeserialisationException;
+	public void finaliseInstance(Element element, Object instance,
+			ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver)
+			throws DeserialisationException;
 }

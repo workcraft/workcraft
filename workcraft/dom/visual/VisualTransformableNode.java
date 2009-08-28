@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.Geometry;
@@ -37,7 +37,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 			}
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 				XmlUtil.writeDoubleAttr(element, "X", getX());
 				XmlUtil.writeDoubleAttr(element, "Y", getY());
 			}

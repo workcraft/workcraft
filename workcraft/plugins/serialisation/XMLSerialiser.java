@@ -13,11 +13,12 @@ import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginConsumer;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
 import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
@@ -26,21 +27,13 @@ import org.workcraft.util.XmlUtil;
 public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
-	class ReferenceResolver implements ExternalReferenceResolver
-	{
-		public String getReference(Object obj) {
-			if (obj instanceof MathNode)
-				return Integer.toString(((MathNode)obj).getID());
-			else
-				return "(null)";
-		}
-	}
-
-	private Element serialise(HierarchyNode node, Document doc, ExternalReferenceResolver inRef) throws SerialisationException {
+	private Element serialise(HierarchyNode node, Document doc,
+			ReferenceProducer internalReferences,
+			ReferenceProducer externalReferences) throws SerialisationException {
 		Element e = doc.createElement("node");
 		e.setAttribute("class", node.getClass().getName());
 
-		serialisation.serialise(e, node, inRef);
+		serialisation.serialise(e, node, internalReferences, externalReferences);
 
 		/* OLD WAY
 		 *
@@ -49,7 +42,7 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 
 		if (node instanceof Container)
 			for (HierarchyNode child : node.getChildren())
-				e.appendChild(serialise(child, doc, inRef));
+				e.appendChild(serialise(child, doc, internalReferences, externalReferences));
 
 		return e;
 	}
@@ -74,7 +67,7 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 		return ".xml";
 	}
 
-	public ExternalReferenceResolver export(Model model, OutputStream out, ExternalReferenceResolver incomingReferenceResolver)
+	public ReferenceProducer export(Model model, OutputStream out, ReferenceProducer externalReferences)
 	throws SerialisationException {
 		try{
 			Document doc = XmlUtil.createDocument();
@@ -82,7 +75,18 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 			Element root = doc.createElement("model");
 			root.setAttribute("class", model.getClass().getName());
 
-			serialisation.serialise(root, model, incomingReferenceResolver);
+			ReferenceProducer internalReferences = new ReferenceProducer() {
+				public String getReference(Object obj) {
+					if (obj instanceof MathNode)
+						return Integer.toString(((MathNode)obj).getID());
+					else if (obj instanceof VisualNode)
+						return Integer.toString(((VisualNode)obj).getID());
+					else
+						return null;
+				}
+			};
+
+			serialisation.serialise(root, model, internalReferences, externalReferences);
 
 			/*  OLD WAY
 			 *
@@ -90,16 +94,15 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 				((XMLSerialisable)model).serialise(root, refResolver); */
 
 			doc.appendChild(root);
-
-			root.appendChild(serialise(model.getRoot(), doc, incomingReferenceResolver));
-
+			root.appendChild(serialise(model.getRoot(), doc, internalReferences, externalReferences));
 			XmlUtil.writeDocument(doc, out);
+
+			return internalReferences;
 		} catch (ParserConfigurationException e) {
 			throw new SerialisationException(e);
 		} catch (IOException e) {
 			throw new SerialisationException(e);
 		}
-		return new ReferenceResolver();
 	}
 
 	public void processPlugins(PluginManager pluginManager) {

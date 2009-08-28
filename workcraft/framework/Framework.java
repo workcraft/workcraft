@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.SwingUtilities;
@@ -26,21 +27,24 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
-import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.DeserialisationResult;
+import org.workcraft.framework.serialisation.ModelDeserialiser;
 import org.workcraft.framework.serialisation.ModelSerialiser;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.workspace.Workspace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
+import org.workcraft.plugins.serialisation.XMLDeserialiser;
 import org.workcraft.plugins.serialisation.XMLSerialiser;
 import org.workcraft.util.XmlUtil;
+import org.xml.sax.SAXException;
 
 public class Framework {
 	public static final String FRAMEWORK_VERSION_MAJOR = "2";
@@ -186,7 +190,7 @@ public class Framework {
 	public void loadConfig(String fileName) {
 		config.load(fileName);
 
-		PluginInfo[] infos = pluginManager.getPluginsByInterface(PersistentPropertyEditable.class.getName());
+		PluginInfo[] infos = pluginManager.getPlugins(PersistentPropertyEditable.class.getName());
 
 		for (PluginInfo info : infos) {
 			try {
@@ -199,7 +203,7 @@ public class Framework {
 	}
 
 	public void saveConfig(String fileName) {
-		PluginInfo[] infos = pluginManager.getPluginsByInterface(PersistentPropertyEditable.class.getName());
+		PluginInfo[] infos = pluginManager.getPlugins(PersistentPropertyEditable.class.getName());
 
 		for (PluginInfo info : infos) {
 			try {
@@ -452,66 +456,100 @@ public class Framework {
 		Context.call(setargs);
 	}
 
-	public static Model load(String path) throws LoadFromXMLException {
+	public Model load(String path) throws DeserialisationException {
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(path);
 		} catch (FileNotFoundException e) {
-			throw new LoadFromXMLException(e);
+			throw new DeserialisationException(e);
 		}
 		return load(fis);
 	}
 
-	public static Model load(InputStream is) throws LoadFromXMLException {
-		throw new RuntimeException("Not implemented O_O");
+	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
+		ZipInputStream zis = new ZipInputStream(zippedData);
+
+		ZipEntry ze;
+
+		do {
+			ze = zis.getNextEntry();
+
+			if (ze.getName().equals(name))
+				return zis;
+
+			zis.closeEntry();
+		} while (ze != null);
+
+		zis.close();
+
+		return null;
 	}
-		/*try {
-			Document doc = XmlUtil.loadDocument(is);
 
-			Element xmlroot = doc.getDocumentElement();
+	public Model load(InputStream is) throws DeserialisationException   {
+		try {
+			InputStream metadata = getUncompressedEntry("meta", is);
 
-			if (xmlroot.getNodeName()!="workcraft")
-				throw new LoadFromXMLException("not a Workcraft document");
+			if (metadata == null)
+				throw new DeserialisationException("meta entry is missing in the ZIP file");
 
-			String[] ver = xmlroot.getAttribute("version").split("\\.", 2);
+			Document metaDoc = XmlUtil.loadDocument(metadata);
 
-			if (ver.length<2 || !ver[0].equals(FRAMEWORK_VERSION_MAJOR))
-				throw new LoadFromXMLException("Document was created by an incompatible version of Workcraft.");
+			metadata.close();
 
-			Element modelElement = XmlUtil.getChildElement("model", xmlroot);
 
-			if (modelElement == null)
-				throw new LoadFromXMLException("<model> section is missing.");
+			// load math model
 
-			MathModel model = ModelFactory.createModel(modelElement);
+			Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
+			//UUID mathFormatUUID = UUID.fromString(mathElement.getAttribute("format-uuid"));
 
-			Element visualModelElement = XmlUtil.getChildElement("visual-model", xmlroot);
+			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), is);
+			// TODO: get proper deserialiser for format
+			ModelDeserialiser mathDeserialiser = new XMLDeserialiser();
 
-			if (visualModelElement == null)
-				return model;
+			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
 
-			return ModelFactory.createVisualModel(model, visualModelElement);
-		} catch (ParserConfigurationException e) {
-			throw new LoadFromXMLException (e);
-		} catch (SAXException e) {
-			throw new LoadFromXMLException (e);
+			mathData.close();
+
+			// load visual model if present
+
+			Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
+
+			if (visualElement == null)
+				return mathResult.getModel();
+
+			//UUID visualFormatUUID = UUID.fromString(visualElement.getAttribute("format-uuid"));
+			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), is);
+
+			//TODO:get proper deserialiser
+			ModelDeserialiser visualDeserialiser = new XMLDeserialiser();
+
+			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.getReferenceResolver());
+			visualResult.getModel().getVisualModel().setMathModel(mathResult.getModel().getMathModel());
+			return visualResult.getModel();
+
 		} catch (IOException e) {
-			throw new LoadFromXMLException (e);
-		} catch (VisualModelInstantiationException e) {
-			throw new LoadFromXMLException (e);
-		} catch (ModelInstantiationException e) {
-			throw new LoadFromXMLException (e);
+			throw new DeserialisationException(e);
+		} catch (ParserConfigurationException e) {
+			throw new DeserialisationException(e);
+		} catch (SAXException e) {
+			throw new DeserialisationException(e);
 		}
-	}*/
-
-	public void save(Model model, String path) throws ModelValidationException, SerialisationException, IOException {
-		File file = new File(path);
-		FileOutputStream stream = new FileOutputStream(file);
-		save (model, stream);
-		stream.close();
 	}
 
-	public void save(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
+	public void save(Model model, String path) throws SerialisationException {
+		File file = new File(path);
+		try {
+			FileOutputStream stream = new FileOutputStream(file);
+			save (model, stream);
+			stream.close();
+		} catch (FileNotFoundException e) {
+			throw new SerialisationException(e);
+		} catch (IOException e) {
+			throw new SerialisationException(e);
+		}
+	}
+
+	public void save(Model model, OutputStream out) throws SerialisationException {
 		boolean haveVisual = model.getVisualModel() != null;
 
 		ZipOutputStream zos = new ZipOutputStream(out);
@@ -521,14 +559,12 @@ public class Framework {
 
 		try {
 			mathSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
-		} catch (PluginInstantiationException e) {
-			throw new SerialisationException(e);
-		}
+
 
 		String mathEntryName = "model" + mathSerialiser.getExtension();
 		ZipEntry ze = new ZipEntry(mathEntryName);
 		zos.putNextEntry(ze);
-		ExternalReferenceResolver refResolver = mathSerialiser.export(model.getMathModel(), zos, null);
+		ReferenceProducer refResolver = mathSerialiser.export(model.getMathModel(), zos, null);
 		zos.closeEntry();
 
 		String visualEntryName = null;
@@ -537,11 +573,7 @@ public class Framework {
 		if (haveVisual) {
 			// TODO: get appropiate serialiser from config
 
-			try {
 				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
-			} catch (PluginInstantiationException e) {
-				throw new SerialisationException(e);
-			}
 
 			visualEntryName = "visualModel" + visualSerialiser.getExtension();
 			ze = new ZipEntry(visualEntryName);
@@ -553,7 +585,6 @@ public class Framework {
 		ze = new ZipEntry("meta");
 		zos.putNextEntry(ze);
 
-		try {
 			Document doc;
 			doc = XmlUtil.createDocument();
 
@@ -576,12 +607,15 @@ public class Framework {
 
 			XmlUtil.writeDocument(doc, zos);
 
+			zos.closeEntry();
+			zos.close();
 		} catch (ParserConfigurationException e) {
-			throw new IOException(e);
+			throw new SerialisationException(e);
+		} catch (IOException e) {
+			throw new SerialisationException(e);
+		} catch (PluginInstantiationException e) {
+			throw new SerialisationException(e);
 		}
-
-		zos.closeEntry();
-		zos.close();
 	}
 
 	public void initPlugins() {
@@ -607,7 +641,7 @@ public class Framework {
 		return GUIRestartRequested;
 	}
 
-	public void loadWorkspace(File file) throws LoadFromXMLException {
+	public void loadWorkspace(File file) throws DeserialisationException {
 		workspace.load(file.getPath());
 	}
 

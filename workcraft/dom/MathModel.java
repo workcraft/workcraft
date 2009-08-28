@@ -1,98 +1,11 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.Set;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.util.XmlUtil;
 
-/**
- * A base class for all mathematical interpreted graph models. "Mathematical" in this
- * context means that this class only contains information about logical objects,
- * such as nodes and arcs, but does not carry any information regarding their
- * visual representation and layout.
- * @author Ivan Poliakov
- *
- */
-public abstract class MathModel implements Plugin, Model, XMLSerialisable {
-	private int nodeIDCounter = 0;
-
-	private Hashtable<Integer, Integer> connectionRenames = new Hashtable<Integer, Integer>();
-	private Hashtable<Integer, Integer> componentRenames = new Hashtable<Integer, Integer>();
-	private Hashtable<Integer, Component> components = new Hashtable<Integer, Component>();
-	private Hashtable<Integer, Connection> connections = new Hashtable<Integer, Connection>();
-
-	private LinkedList<MathModelListener> listeners = new LinkedList<MathModelListener>();
-
-	private HashSet<Class<? extends Component>> supportedComponents = new HashSet<Class<? extends Component>>();
-
-	private XMLSerialisation serialisation = new XMLSerialisation();
-
-	private String title = "";
-
-	private Group root = new Group();
-
-	private void addSerialisationObjects() {
-		serialisation.addSerialiser(new XMLSerialiser() {
-			public String getTagName() {
-				return MathModel.class.getSimpleName();
-			}
-			public void serialise(Element element, ExternalReferenceResolver refResolver) {
-				XmlUtil.writeStringAttr(element, "title", title);
-			}
-			public void deserialise(Element element, ReferenceResolver refResolver) throws DeserialisationException {
-				title = XmlUtil.readStringAttr(element, "title");
-			}
-		});
-	}
-
-
-	/**
-	 * Serialises a collection of nodes into an XML fragment.
-	 * @param parentElement -- the parent XML element to add child elements
-	 * representing nodes to.
-	 * @param nodes -- the collection of nodes to serialise.
-	 */
-	final public static void nodesToXML(Element parentElement,
-			Collection<? extends MathNode> nodes) {
-		Element element;
-
-		for (MathNode n : nodes)
-			if (n instanceof Component) {
-				element = XmlUtil.createChildElement("component",
-						parentElement);
-				element.setAttribute("class", n.getClass().getName());
-				n.serialise(element, null);
-			}
-
-		for (MathNode n : nodes)
-			if (n instanceof Connection) {
-				element = XmlUtil.createChildElement("connection",
-						parentElement);
-				element.setAttribute("class", n.getClass().getName());
-				n.serialise(element, null);
-			}
-	}
-
-
-	/**
-	 * Creates an empty model.
-	 */
-	public MathModel() {
-		addSerialisationObjects();
-	}
-
-
+public interface MathModel extends Model {
 
 	/**
 	 * Adds a component to the model. The component will be assigned
@@ -100,21 +13,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * @param component
 	 * @return
 	 */
-	final public int addComponent(Component component) {
-		component.setID(getNextNodeID());
-		components.put(component.getID(), component);
-		root.add(component);
-
-		fireComponentAdded(component);
-
-		return component.getID();
-	}
-
-	private void fireComponentAdded(Component component) {
-		for (MathModelListener l : listeners)
-			l.onComponentAdded(component);
-	}
-
+	public int addComponent(Component component);
 
 	/**
 	 * Adds a connection to the model.
@@ -122,68 +21,15 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * @return the unique ID of the connection node in this <type>MathModel</type>
 	 * @throws InvalidConnectionException
 	 */
-	final public int addConnection(Connection connection)
-	throws InvalidConnectionException {
-		// first validate that this connection is allowed, e.g. disallow user
-		// to connect Petri net place to another Petri net place
-		validateConnection(connection);
-
-		connection.getFirst().addConnection(connection);
-		connection.getFirst().addToPostset(connection.getSecond());
-		connection.getSecond().addConnection(connection);
-		connection.getSecond().addToPreset(connection.getFirst());
-
-		connection.setID(getNextNodeID());
-
-		connections.put(connection.getID(), connection);
-		root.add(connection);
-
-		fireConnectionAdded(connection);
-
-		return connection.getID();
-	}
-
-	private void fireConnectionAdded(Connection connection) {
-		for (MathModelListener l : listeners)
-			l.onConnectionAdded(connection);
-	}
-
+	public int addConnection(Connection connection)
+			throws InvalidConnectionException;
 
 	/**
 	 * Adds a <type>MathModelListener</type> to monitor
 	 * changes in this model.
 	 * @param listener -- the <type>MathModelListener</type> to add to the listener list.
 	 */
-	public void addListener(MathModelListener listener) {
-		listeners.add(listener);
-	}
-
-	/**
-	 * <p>Called by types that inherit from <type>MathModel</type> to declare
-	 * a support for a component class. The class will be included to subsequent
-	 * calls to <code>getSupportedComponents()</code></p>
-	 * <p><b>Note: </b>must be called from a constructor. </p>
-	 * @param componentClass
-	 */
-	final protected void addComponentSupport(Class<? extends Component> componentClass) {
-		supportedComponents.add(componentClass);
-	}
-
-	/**
-	 * <p>Called by types that inherit from <type>MathModel</type> to remove
-	 * a support for a component class. The class will not be listed in subsequent
-	 * calls to <code>getSupportedComponents()</code>. This may be required
-	 * when a model inherits from another model, but does not provide full support
-	 * for all of the components supported by the inherited model.</p>
-	 * <p>E.g.: STG inherits from Petri Net, but replaces Petri Net tranistions
-	 * with its own Signal transitions that inherit from Petri Net transitions. In this
-	 * case, support for plain Petri Net transition is not required in STG.
-	 * <p><b>Note: </b>must be called from a constructor. </p>
-	 * @param componentClass
-	 */
-	final protected void removeComponentSupport(Class<? extends Component> componentClass) {
-		supportedComponents.remove(componentClass);
-	}
+	public void addListener(MathModelListener listener);
 
 	/**
 	 * Checks if the given component class is present in this model's supported
@@ -192,9 +38,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * @return true if the component's class is supported by this model, false
 	 * otherwise
 	 */
-	final public boolean isComponentSupported(Component component) {
-		return supportedComponents.contains(component.getClass());
-	}
+	public boolean isComponentSupported(Component component);
 
 	/**
 	 * <p>Creates a connection between the two components and adds it to the model.</p>
@@ -208,154 +52,47 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * the specified components is not allowed by this model, or if the specified
 	 * components are not contained in this model.
 	 */
-	public final Connection connect(Component first, Component second)
-	throws InvalidConnectionException {
-		if ( !components.contains(first) || !components.contains(second))
-			throw new InvalidConnectionException("The specified components are not contained in this model.");
-		return createConnection(first, second);
-	}
+	public Connection connect(Component first, Component second)
+			throws InvalidConnectionException;
 
-	/**
-	 * <p>An overridable method that creates a connection between two components.</p>
-	 * <p>This method should be overriden by types inherited from <type>MathModel</type>
-	 * that require non-standard behaviour when a connection is being created.
-	 * @param first -- the component that the connection starts from.
-	 * @param second -- the component that the connection goes to.
-	 * @return the newly created <type>Connection</type> object that has been
-	 * added to the model.
-	 * @throws InvalidConnectionException
-	 */
-	protected Connection createConnection(Component first, Component second)
-	throws InvalidConnectionException {
-		Connection con = new Connection(first, second);
-		addConnection(con);
-		return con;
-	}
-
-	/**
-	 * <p>Calling this method will cause all registered listeners to receive a
-	 * <code>onPropertyChanged</code> event.</p>
-	 * <p>This method must be called manually whenever a change to the
-	 * node properties has been made.</p>
-	 * @param propertyName -- the name of the changed property
-	 * @param n -- the node that had its property changed
-	 */
-	public void fireNodePropertyChanged(String propertyName, MathNode n) {
-		for (MathModelListener l : listeners)
-			l.onNodePropertyChanged(propertyName, n);
-	}
+	public MathNode getNodeByID(int ID);
 
 	/**
 	 * @param ID -- the unique ID of the required component.
 	 * @return the component that is registered under the given ID.
 	 */
-	final public Component getComponentByID(int ID) {
-		return components.get(ID);
-	}
-
-	/**
-	 * <p>Finds a component given its old ID.</p>
-	 * <p>This operation is only valid immediately after <code>pasteFromXML</code>
-	 * operation, i.e. either after load from XML or paste from clipboard, and will
-	 * return a component using the ID listed in the XML source.</p>
-	 * <p>This is required because the IDs are non-persistent: every time a component
-	 * is being added to the model, it will be assigned a new ID, regardless of whether
-	 * its old ID was unique in context of this model.</p>
-	 * @param oldID -- the ID that is listed in the XML source used in the last
-	 * <code>pasteFromXML</code> operation.
-	 * @return the component that is referred to by the given ID.
-	 */
-	final public Component getComponentByRenamedID(int oldID) {
-		Integer newID = componentRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getComponentByID(newID);
-	}
+	public Component getComponentByID(int ID);
 
 	/**
 	 * @return a set of all components currently present in the model.
 	 */
-	final public Set<Component> getComponents() {
-		return new HashSet<Component>(components.values());
-	}
+	public Set<Component> getComponents();
 
 	/**
 	 * @param ID -- the unique ID of the required connection.
 	 * @return the connection that is registered under the given ID.
 	 */
-	final public Connection getConnectionByID(int ID) {
-		return connections.get(ID);
-	}
-
-	/**
-	 * <p>Finds a connection given its old ID.</p>
-	 * <p>This operation is only valid immediately after <code>pasteFromXML</code>
-	 * operation, i.e. either after load from XML or paste from clipboard, and will
-	 * return a component using the ID listed in the XML source.</p>
-	 * <p>This is required because the IDs are non-persistent: every time a connection
-	 * is being added to the model, it will be assigned a new ID, regardless of whether
-	 * its old ID was unique in context of this model.</p>
-	 * @param oldID -- the ID that is listed in the XML source used in the last
-	 * <code>pasteFromXML</code> operation.
-	 * @return the connection that is referred to by the given ID.
-	 */
-	final public Connection getConnectionByRenamedID(int oldID) {
-		Integer newID = connectionRenames.get(oldID);
-		if (newID == null)
-			return null;
-		return getConnectionByID(newID);
-	}
+	public Connection getConnectionByID(int ID);
 
 	/**
 	 * @return a set of all connections currently present in the model.
 	 */
-	final public Set<Connection> getConnections() {
-		return new HashSet<Connection>(connections.values());
-	}
+	public Set<Connection> getConnections();
 
 	/**
 	 * @see org.workcraft.dom.Model#getDisplayName()
 	 */
-	public String getDisplayName() {
-		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
-		if (name == null)
-			return this.getClass().getSimpleName();
-		else
-			return name.value();
-	}
-
-	/**
-	 * @see org.workcraft.dom.Model#getMathModel()
-	 */
-	final public MathModel getMathModel() {
-		return this;
-	}
-
-
-	final public int getNextNodeID() {
-		return nodeIDCounter++;
-	}
+	public String getDisplayName();
 
 	/**
 	 * @return a set of component classes supported by this model.
 	 */
-	final public Set<Class<? extends Component>> getSupportedComponents() {
-		return new HashSet<Class<? extends Component>>(supportedComponents);
-	}
+	public  Set<Class<? extends Component>> getSupportedComponents();
 
 	/**
 	 * @see org.workcraft.dom.Model#getTitle()
 	 */
-	final public String getTitle() {
-		return title;
-	}
-
-	/**
-	 * @see org.workcraft.dom.Model#getVisualModel()
-	 */
-	final public VisualModel getVisualModel() {
-		return null;
-	}
+	public String getTitle();
 
 	/**
 	 * <p>Removes a component from the model.</p>
@@ -365,24 +102,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * all registered listeners.</p>
 	 * @param component -- the component to be removed.
 	 */
-	public final void removeComponent(Component component) {
-		HashSet<Connection> connectionsToRemove = new HashSet<Connection>(
-				component.getConnections());
-
-		for (Connection con : connectionsToRemove)
-			removeConnection(con);
-
-		components.remove(component.getID());
-		root.remove(component);
-
-		fireComponentRemoved(component);
-	}
-
-	private void fireComponentRemoved(Component component) {
-		for (MathModelListener l : listeners)
-			l.onComponentRemoved(component);
-	}
-
+	public void removeComponent(Component component);
 
 	/**
 	 * <p>Removes a connection from the model.</p>
@@ -390,37 +110,19 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * all registered listeners.</p>
 	 * @param connection -- the connection to be removed.
 	 */
-	final public void removeConnection(Connection connection) {
-		connection.getFirst().removeFromPostset(connection.getSecond());
-		connection.getSecond().removeFromPreset(connection.getFirst());
-		connection.getFirst().removeConnection(connection);
-		connection.getSecond().removeConnection(connection);
-
-		connections.remove(connection.getID());
-		root.remove(connection);
-		fireConnectionRemoved(connection);
-	}
-
-	private void fireConnectionRemoved(Connection connection) {
-		for (MathModelListener l : listeners)
-			l.onConnectionRemoved(connection);
-	}
+	public void removeConnection(Connection connection);
 
 	/**
 	 * Remove a <type>MathModelListener</type> from the listener list.
 	 * @param listener -- the listener to be removed.
 	 */
-	final public void removeListener(MathModelListener listener) {
-		listeners.remove(listener);
-	}
+	public void removeListener(MathModelListener listener);
 
 	/**
 	 * Sets the title of this model.
 	 * @param title -- the model title.
 	 */
-	final public void setTitle(String title) {
-		this.title = title;
-	}
+	public void setTitle(String title);
 
 	/**
 	 * This method may be called to test that
@@ -432,7 +134,7 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * an explanation of the problem.
 	 *
 	 */
-	abstract public void validate() throws ModelValidationException;
+	public void validate() throws ModelValidationException;
 
 	/**
 	 * This method may be called to test that
@@ -444,20 +146,8 @@ public abstract class MathModel implements Plugin, Model, XMLSerialisable {
 	 * @throws InvalidConnectionException
 	 */
 	abstract public void validateConnection(Connection connection)
-	throws InvalidConnectionException;
+			throws InvalidConnectionException;
 
-	final protected void addXMLSerialiser(XMLSerialiser serialiser) {
-		serialisation.addSerialiser(serialiser);
-	}
+	public Group getRoot();
 
-	public final void serialise(Element element, ExternalReferenceResolver refResolver) {
-		serialisation.serialise(element, refResolver);
-	}
-
-	public final void deserialise(Element modelElement, ReferenceResolver refResolver) throws DeserialisationException {
-		serialisation.deserialise(modelElement, refResolver);
-	}
-	public Group getRoot() {
-		return root;
-	}
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.VisualClass;
@@ -15,7 +15,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 
 @DisplayName ("Petri Net")
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
-public class PetriNet extends MathModel {
+public class PetriNet extends AbstractMathModel {
 
 	public class Listener implements MathModelListener {
 		public void onComponentAdded(Component component) {

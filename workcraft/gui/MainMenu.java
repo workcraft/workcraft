@@ -314,7 +314,7 @@ public class MainMenu extends JMenuBar {
 
 		Framework framework = mainWindow.getFramework();
 
-		PluginInfo[] layoutPluginInfo = framework.getPluginManager().getPluginsByInterface(Layout.class.getName());
+		PluginInfo[] layoutPluginInfo = framework.getPluginManager().getPlugins(Layout.class.getName());
 
 		try {
 			for (PluginInfo info : layoutPluginInfo) {
@@ -331,7 +331,7 @@ public class MainMenu extends JMenuBar {
 			mnTools.add(mnLayout);
 
 
-		PluginInfo[] modelCheckerPluginInfo = framework.getPluginManager().getPluginsByInterface(ModelChecker.class.getName());
+		PluginInfo[] modelCheckerPluginInfo = framework.getPluginManager().getPlugins(ModelChecker.class.getName());
 
 		try {
 			for (PluginInfo info : modelCheckerPluginInfo) {
@@ -356,7 +356,7 @@ public class MainMenu extends JMenuBar {
 		mnExport.removeAll();
 		mnExport.setEnabled(false);
 
-		PluginInfo[] exportPluginInfo = framework.getPluginManager().getPluginsByInterface(Exporter.class.getName());
+		PluginInfo[] exportPluginInfo = framework.getPluginManager().getPlugins(Exporter.class.getName());
 
 		boolean haveVisual = false;
 

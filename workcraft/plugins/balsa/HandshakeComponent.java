@@ -7,7 +7,7 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.util.XmlUtil;
@@ -32,7 +32,7 @@ public class HandshakeComponent extends Component {
 
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 				element.setAttribute("name", handshakeName);
 				element.setAttribute("owner", owner.getID()+"");
 			}

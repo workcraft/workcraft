@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
@@ -15,7 +15,7 @@ public class XMLSerialisation {
 		serialisers.add(serialiser);
 	}
 
-	final public void serialise(Element componentElement, ExternalReferenceResolver refResolver) {
+	final public void serialise(Element componentElement, ReferenceProducer refResolver) {
 		for (XMLSerialiser s: serialisers) {
 			Element e = XmlUtil.createChildElement(s.getTagName(), componentElement);
 			s.serialise(e, refResolver);

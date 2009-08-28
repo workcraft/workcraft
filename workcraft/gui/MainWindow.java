@@ -37,19 +37,18 @@ import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelFactory;
-import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.LayoutFailedException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.serialisation.Exporter;
@@ -627,7 +626,7 @@ public class MainWindow extends JFrame {
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				MathModel mathModel = (MathModel)framework.getPluginManager().getInstance(info);
+				AbstractMathModel mathModel = (AbstractMathModel)framework.getPluginManager().getInstance(info);
 
 				if (!dialog.getModelTitle().isEmpty())
 					mathModel.setTitle(dialog.getModelTitle());
@@ -689,7 +688,7 @@ public class MainWindow extends JFrame {
 					WorkspaceEntry we = framework.getWorkspace().add(f.getPath(), true);
 					if (we.getModel() instanceof VisualModel)
 						createEditorWindow(we);
-				} catch (LoadFromXMLException e) {
+				} catch (DeserialisationException e) {
 					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
 							+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
@@ -720,15 +719,9 @@ public class MainWindow extends JFrame {
 		}
 		try {
 			framework.save(we.getModel(), we.getFile().getPath());
-		} catch (ModelValidationException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
 		}
 		we.setUnsaved(false);
 		lastSavePath = we.getFile().getParent();
@@ -785,15 +778,9 @@ public class MainWindow extends JFrame {
 			we.setFile(new File(path));
 			we.setUnsaved(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
-		} catch (ModelValidationException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Model validation failed", JOptionPane.ERROR_MESSAGE);
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -805,7 +792,7 @@ public class MainWindow extends JFrame {
 			fc.setCurrentDirectory(new File(lastOpenPath));
 
 
-		PluginInfo[] importerInfo = framework.getPluginManager().getPluginsByInterface(Importer.class.getName());
+		PluginInfo[] importerInfo = framework.getPluginManager().getPlugins(Importer.class.getName());
 		Importer[] importers = new Importer[importerInfo.length];
 
 		int cnt = 0;

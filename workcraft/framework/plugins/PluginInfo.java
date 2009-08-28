@@ -1,6 +1,7 @@
 package org.workcraft.framework.plugins;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -11,11 +12,21 @@ import org.workcraft.util.XmlUtil;
 
 public class PluginInfo implements Comparable<PluginInfo> {
 	private String displayName;
-
 	private String className;
 	private String[] interfaceNames;
-	private String[] superclassNames;
 
+	private void addInterfaces (Class<?> cls, Set<String> set) {
+		if (cls == null || cls.equals(Object.class))
+			return;
+
+		for (Class<?> interf : cls.getInterfaces())
+		{
+			set.add(interf.getName());
+			addInterfaces (interf, set);
+		}
+
+		addInterfaces(cls.getSuperclass(), set);
+	}
 
 	public PluginInfo(Class<?> cls) {
 		className = cls.getName();
@@ -27,25 +38,13 @@ public class PluginInfo implements Comparable<PluginInfo> {
 		else
 			displayName = name.value();
 
-		Class<?>[] interfaces = cls.getInterfaces();
-		interfaceNames = new String[interfaces.length];
-		int j = 0;
+		HashSet<String> interfaces = new HashSet<String>();
+		addInterfaces (cls, interfaces);
+		interfaceNames = interfaces.toArray(new String[0]);
 
-		for (Class<?> i : interfaces)
-			interfaceNames[j++] = i.getName();
-
-		LinkedList<String> list = new LinkedList<String>();
-		addSuperclass(cls, list);
-		superclassNames = list.toArray(new String[0]);
 	}
 
-	protected void addSuperclass(Class<?> cls, LinkedList<String> list) {
-		Class<?> scls = cls.getSuperclass();
-		if (scls != null && !scls.equals(Object.class)) {
-			list.add(scls.getName());
-			addSuperclass(scls, list);
-		}
-	}
+
 
 	public PluginInfo(Element element) throws DocumentFormatException {
 		className = XmlUtil.readStringAttr(element, "class");
@@ -61,12 +60,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
 		for (int i=0; i<nl.getLength(); i++)
 			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
-
-		nl = element.getElementsByTagName("superclass");
-		superclassNames = new String[nl.getLength()];
-
-		for (int i=0; i<nl.getLength(); i++)
-			superclassNames[i] = ((Element)nl.item(i)).getAttribute("name");
 	}
 
 	public void toXml(Element element) {
@@ -75,12 +68,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
 		for (String i : interfaceNames) {
 			Element e = element.getOwnerDocument().createElement("interface");
-			e.setAttribute("name", i);
-			element.appendChild(e);
-		}
-
-		for (String i : superclassNames) {
-			Element e = element.getOwnerDocument().createElement("superclass");
 			e.setAttribute("name", i);
 			element.appendChild(e);
 		}
@@ -99,10 +86,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
 			if (s.equals(interfaceClassName))
 				return true;
 		return false;
-	}
-
-	public String[] getSuperclasses() {
-		return superclassNames.clone();
 	}
 
 	public String getDisplayName() {

@@ -9,5 +9,5 @@ public interface ModelSerialiser extends Plugin, SerialFormat {
 	public String getDescription();
 	public String getExtension();
 	public boolean isApplicableTo (Model model);
-	public ExternalReferenceResolver export (Model model, OutputStream out, ExternalReferenceResolver incomingRefrences) throws SerialisationException;
+	public ReferenceProducer export (Model model, OutputStream out, ReferenceProducer externalReferences) throws SerialisationException;
 }

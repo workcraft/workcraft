@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.util.XmlUtil;
 
@@ -24,7 +24,7 @@ public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 
 	private void addSerialisationObjects() {
 		addXMLSerialiser(new XMLSerialiser() {
-			public void serialise(Element element, ExternalReferenceResolver refResolver) {
+			public void serialise(Element element, ReferenceProducer refResolver) {
 				XmlUtil.writeIntAttr(element, "ID", getID());
 				XmlUtil.writeStringAttr(element, "label", getLabel());
 			}
@@ -112,7 +112,7 @@ public abstract class MathNode implements HierarchyNode, XMLSerialisable {
 	 * objects registered by all the types in hierarchy.
 	 * @param element
 	 */
-	final public void serialise(Element element, ExternalReferenceResolver refResolver) {
+	final public void serialise(Element element, ReferenceProducer refResolver) {
 		serialisation.serialise(element, refResolver);
 	}
 

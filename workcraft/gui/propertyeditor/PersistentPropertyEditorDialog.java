@@ -105,7 +105,7 @@ public class PersistentPropertyEditorDialog extends JDialog {
 	}
 
 	private void loadSections() {
-		PluginInfo[] infos = framework.getPluginManager().getPluginsByInterface(PersistentPropertyEditable.class.getName());
+		PluginInfo[] infos = framework.getPluginManager().getPlugins(PersistentPropertyEditable.class.getName());
 		for (PluginInfo info : infos) {
 			try {
 				PersistentPropertyEditable e = (PersistentPropertyEditable)framework.getPluginManager().getSingleton(info);

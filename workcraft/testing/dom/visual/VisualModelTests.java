@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -20,7 +20,7 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
 
-	private class MockMathModel extends MathModel {
+	private class MockMathModel extends AbstractMathModel {
 
 		public MockMathModel() {
 			super();

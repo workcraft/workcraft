@@ -8,7 +8,7 @@ import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.circuit.Contact.IOType;
 
@@ -50,7 +50,7 @@ public class CircuitComponent extends Component {
 				return CircuitComponent.class.getSimpleName();
 			}
 
-			public void serialise(Element element, ExternalReferenceResolver refResolver) {
+			public void serialise(Element element, ReferenceProducer refResolver) {
 			}
 
 			public void deserialise(Element element,

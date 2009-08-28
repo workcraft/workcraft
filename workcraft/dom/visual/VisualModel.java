@@ -21,7 +21,7 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.Model;
@@ -38,8 +38,9 @@ import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.util.XmlUtil;
 
@@ -127,7 +128,7 @@ public class VisualModel implements Plugin, Model {
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
 
-	private MathModel mathModel;
+	private AbstractMathModel mathModel;
 	private VisualGroup root;
 
 	private LinkedList<HierarchyNode> selection = new LinkedList<HierarchyNode>();
@@ -165,7 +166,7 @@ public class VisualModel implements Plugin, Model {
 		}
 	}
 
-	public VisualModel(MathModel model) throws VisualModelInstantiationException {
+	public VisualModel(AbstractMathModel model) throws VisualModelInstantiationException {
 		mathModel = model;
 
 		root = new VisualGroup();
@@ -305,8 +306,12 @@ public class VisualModel implements Plugin, Model {
 		selection.remove(so);
 	}
 
+	@NoAutoSerialisation
+	public void setMathModel(AbstractMathModel mathModel) {
+		this.mathModel = mathModel;
+	}
 
-	public MathModel getMathModel() {
+	public AbstractMathModel getMathModel() {
 		return mathModel;
 	}
 
@@ -738,7 +743,7 @@ public class VisualModel implements Plugin, Model {
 		serialiser.addSerialiser(serialisable);
 	}
 
-	public final void serialise(Element componentElement, ExternalReferenceResolver refResolver) {
+	public final void serialise(Element componentElement, ReferenceProducer refResolver) {
 		serialiser.serialise(componentElement, refResolver);
 	}
 
@@ -776,5 +781,4 @@ public class VisualModel implements Plugin, Model {
 			}
 		};
 	}
-
 }

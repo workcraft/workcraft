@@ -1,5 +1,5 @@
 package org.workcraft.framework.serialisation;
 
-public interface ExternalReferenceResolver {
+public interface ReferenceProducer {
 	public String getReference(Object obj);
 }

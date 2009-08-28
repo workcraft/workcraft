@@ -5,7 +5,7 @@ import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 
 
@@ -32,7 +32,7 @@ public class Joint extends CircuitComponent {
 			}
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 				// TODO Auto-generated method stub
 			}
 		});

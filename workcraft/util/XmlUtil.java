@@ -92,7 +92,6 @@ public class XmlUtil {
 			transformer.transform(source, result);
 			fos.close();
 		} catch (TransformerException e) {
-			System.err.println(e.getMessage());
 			throw new IOException(e);
 		}
 	}

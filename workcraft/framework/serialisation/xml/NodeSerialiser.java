@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 
 public class NodeSerialiser {
 	SerialiserFactory fac;
@@ -63,9 +63,16 @@ public class NodeSerialiser {
 		}
 	}
 
-	private void doSerialisation (Element parentElement, Object object, ExternalReferenceResolver referenceResolver, Class<?> currentLevel) throws InstantiationException, IllegalAccessException, IllegalArgumentException, IntrospectionException, SerialisationException, InvocationTargetException {
-		Element curLevelElement = parentElement.getOwnerDocument().createElement(currentLevel.getSimpleName());
-		parentElement.appendChild(curLevelElement);
+	private void doSerialisation(Element parentElement, Object object,
+			ReferenceProducer internalReferences,
+			ReferenceProducer externalReferences, Class<?> currentLevel)
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, IntrospectionException,
+			SerialisationException, InvocationTargetException {
+
+		Element curLevelElement = parentElement.getOwnerDocument()
+				.createElement(currentLevel.getSimpleName());
+
 
 		autoSerialiseProperties(curLevelElement, object, currentLevel);
 
@@ -75,15 +82,20 @@ public class NodeSerialiser {
 			if (serialiser instanceof BasicXMLSerialiser)
 				((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
 			else if (serialiser instanceof ReferencingXMLSerialiser)
-				((ReferencingXMLSerialiser)serialiser).serialise(curLevelElement, object, referenceResolver);
+				((ReferencingXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences);
+
+		if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0)
+			parentElement.appendChild(curLevelElement);
 
 		if (currentLevel.getSuperclass() != Object.class)
-			doSerialisation(parentElement, object, referenceResolver, currentLevel.getSuperclass());
+			doSerialisation(parentElement, object, internalReferences, externalReferences, currentLevel.getSuperclass());
 	}
 
-	public void serialise (Element parentElement, Object object, ExternalReferenceResolver referenceResolver) throws SerialisationException {
+	public void serialise(Element parentElement, Object object,
+			ReferenceProducer internalReferences,
+			ReferenceProducer externalReferences) throws SerialisationException {
 		try {
-			doSerialisation(parentElement, object, referenceResolver, object.getClass());
+			doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
 		} catch (IllegalArgumentException e) {
 			throw new SerialisationException(e);
 		} catch (InstantiationException e) {

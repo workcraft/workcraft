@@ -5,16 +5,11 @@ import java.awt.Component;
 import javax.swing.JFileChooser;
 
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.LayoutFailedException;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.layout.Layout;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.plugins.stg.VisualSignalTransition;
 
 @DisplayName ("by Template")
 public class TemplateLayout extends Component implements Layout{
@@ -22,7 +17,7 @@ public class TemplateLayout extends Component implements Layout{
 	private static final long serialVersionUID = 1L;
 
 
-	private void positionByTemplate(VisualSTG model, VisualSTG template) {
+	/*private void positionByTemplate(VisualSTG model, VisualSTG template) {
 		for (VisualComponent vc: model.getVisualComponents()) {
 			if (vc instanceof VisualSignalTransition) {
 				for (VisualComponent vc2: template.getVisualComponents()) {
@@ -38,7 +33,7 @@ public class TemplateLayout extends Component implements Layout{
 				}
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public void doLayout(VisualModel model) throws LayoutFailedException {
@@ -48,6 +43,7 @@ public class TemplateLayout extends Component implements Layout{
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 
+		/*
 		try {
 //			if (lastOpenPath != null)
 //			fc.setCurrentDirectory(new File("D:/workspace/async_router"));
@@ -63,7 +59,7 @@ public class TemplateLayout extends Component implements Layout{
 
 		} catch (LoadFromXMLException e) {
 			throw new LayoutFailedException(e);
-		}
+		} */
 		fc.setMultiSelectionEnabled(false);
 		fc.setDialogTitle("Select template file");
 

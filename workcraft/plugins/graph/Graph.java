@@ -2,7 +2,7 @@ package org.workcraft.plugins.graph;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -10,7 +10,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 
 @DisplayName ("Directed Graph")
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
-public class Graph extends MathModel {
+public class Graph extends AbstractMathModel {
 
 	public Graph() {
 	}

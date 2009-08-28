@@ -8,13 +8,11 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.exceptions.ComponentCreationException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
 import org.workcraft.framework.util.ConstructorParametersMatcher;
-import org.workcraft.util.XmlUtil;
 
 public class ComponentFactory {
 	public static int getHotKeyCodeForClass (Class <? extends Component> cls) {
@@ -151,11 +149,4 @@ public class ComponentFactory {
 		}
 	}
 
-	public static VisualNode createVisualComponent (Element element, VisualModel refModel) throws VisualComponentCreationException {
-		// Find the component
-		int ref = XmlUtil.readIntAttr(element, "ref", -1);
-		Component component = refModel.getMathModel().getComponentByRenamedID(ref);
-
-		return createVisualComponentInternal(component, element);
-	}
 }

@@ -19,7 +19,7 @@ import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.PropertySupport;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
@@ -46,13 +46,7 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		return ID;
 	}
 
-	// return true if component refers to a particular mathematical node
-	public boolean isReferring(int refID) {
-		return false;
-	}
-
-
-	private Color colorisation = null;
+		private Color colorisation = null;
 	private HierarchyNode parent = null;
 	private boolean hidden = false;
 
@@ -124,7 +118,7 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 		serialisation.addSerialiser(serialiser);
 	}
 
-	public final void serialise(Element componentElement, ExternalReferenceResolver refResolver) {
+	public final void serialise(Element componentElement, ReferenceProducer refResolver) {
 		serialisation.serialise(componentElement, refResolver);
 	}
 

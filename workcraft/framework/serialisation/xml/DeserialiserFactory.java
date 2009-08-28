@@ -1,5 +1,5 @@
 package org.workcraft.framework.serialisation.xml;
 
-public interface DeserialiserFactory {
+interface DeserialiserFactory {
 	public XMLDeserialiser getDeserialiserFor(String className) throws InstantiationException, IllegalAccessException;
 }

@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 
 
 
@@ -56,7 +56,7 @@ public class ModelManager {
 	}
 
 	public static boolean isValidModelClass(Class<?> cls) {
-		boolean if_ok = MathModel.class.isAssignableFrom(cls);
+		boolean if_ok = AbstractMathModel.class.isAssignableFrom(cls);
 		return if_ok;
 	}
 

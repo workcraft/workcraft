@@ -222,33 +222,20 @@ public class PluginManager {
 	}
 
 	public PluginInfo[] getModels() {
-		return getPlugins (MathModel.class);
+		return getPlugins (MathModel.class.getName());
 	}
 
-	public PluginInfo[] getPluginsByInterface(String interfaceName) {
+	public PluginInfo[] getPlugins(Class<?> interf) {
+		return getPlugins(interf.getName());
+	}
+
+	public PluginInfo[] getPlugins(String interfaceName) {
 		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
 		for(PluginInfo info : plugins)
 			for (String s: info.getInterfaces())
 				if (s.equals(interfaceName))
 					list.add(info);
 		return list.toArray(new PluginInfo[0]);
-	}
-
-	public PluginInfo[] getPluginsBySuperclass(String superclassName) {
-		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
-		for(PluginInfo info : plugins)
-			for (String s: info.getSuperclasses())
-				if (s.equals(superclassName))
-					list.add(info);
-		return list.toArray(new PluginInfo[0]);
-	}
-
-	public PluginInfo[] getPlugins (Class<?> parent) {
-		if (parent.isInterface())
-			return getPluginsByInterface(parent.getName());
-		else
-			return getPluginsBySuperclass(parent.getName());
-
 	}
 
 	public Object getInstance(PluginInfo info) throws PluginInstantiationException {

@@ -11,7 +11,7 @@ public interface Model {
 	/**
 	 * @return the mathematical model. This value cannot be null.
 	 */
-	public MathModel getMathModel();
+	public AbstractMathModel getMathModel();
 
 	/**
 	 * @return the associated visual model. This value may be null if the underlying

@@ -13,7 +13,7 @@ import org.workcraft.dom.Component;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
@@ -51,7 +51,7 @@ public class BreezeComponent extends Component {
 			public String getTagName() {
 				return "breeze";
 			}
-			public void serialise(Element element, ExternalReferenceResolver refResolver) {
+			public void serialise(Element element, ReferenceProducer refResolver) {
 				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 				XMLEncoder q = new XMLEncoder(bytes);
 				q.writeObject(underlyingComponent);

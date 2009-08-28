@@ -15,7 +15,7 @@ import org.workcraft.dom.MathNode;
 import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -58,7 +58,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			}
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 
 				if (refComponent != null)
 					element.setAttribute("refID", refResolver.getReference(refComponent));

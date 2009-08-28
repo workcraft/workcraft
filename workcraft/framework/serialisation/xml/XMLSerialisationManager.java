@@ -7,7 +7,7 @@ import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginManager;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 
 public class XMLSerialisationManager implements SerialiserFactory, DeserialiserFactory {
@@ -76,30 +76,32 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 
 	@SuppressWarnings("unchecked")
 	public void processPlugins(PluginManager manager) {
-		PluginInfo[] serialiserInfos = manager.getPluginsByInterface(BasicXMLSerialiser.class.getName());
+		PluginInfo[] serialiserInfos = manager.getPlugins(XMLSerialiser.class.getName());
 
 		for (PluginInfo info : serialiserInfos) {
 			try {
-				registerSerialiser( (Class<? extends BasicXMLSerialiser>) info.loadClass());
+				registerSerialiser( (Class<? extends XMLSerialiser>) info.loadClass());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 
-		PluginInfo[] deserialiserInfos = manager.getPluginsByInterface(BasicXMLDeserialiser.class.getName());
+		PluginInfo[] deserialiserInfos = manager.getPlugins(XMLDeserialiser.class.getName());
 
 		for (PluginInfo info : deserialiserInfos) {
 			try {
-				registerDeserialiser( (Class<? extends BasicXMLDeserialiser>) Class.forName(info.getClassName()));
+				registerDeserialiser( (Class<? extends XMLDeserialiser>) Class.forName(info.getClassName()));
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void serialise (Element element, Object object, ExternalReferenceResolver referenceResolver) throws SerialisationException
+	public void serialise(Element element, Object object,
+			ReferenceProducer internalReferences,
+			ReferenceProducer externalReferences) throws SerialisationException
 	{
-		nodeSerialiser.serialise(element, object, referenceResolver);
+		nodeSerialiser.serialise(element, object, internalReferences, externalReferences);
 	}
 
 	public Object initInstance (Element element) throws DeserialisationException
@@ -107,7 +109,8 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 		return nodeDeserialiser.initInstance(element);
 	}
 
-	public void finalise(Element element, Object instance, ReferenceResolver referenceResolver) throws DeserialisationException {
-		nodeDeserialiser.finaliseInstance(element, instance, referenceResolver);
+	public void finalise(Element element, Object instance, ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+		nodeDeserialiser.finaliseInstance(element, instance, internalReferenceResolver, externalReferenceResolver);
 	}
 }

@@ -19,7 +19,7 @@ import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.VisualNodeSerialiser;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 
@@ -209,7 +209,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return new VisualNodeSerialiser()
 		{
 			public void serialise(HierarchyNode node, Element element,
-					ExternalReferenceResolver referenceResolver) {
+					ReferenceProducer referenceResolver) {
 				((VisualGroup)node).serialise(element, referenceResolver);
 			}
 		};

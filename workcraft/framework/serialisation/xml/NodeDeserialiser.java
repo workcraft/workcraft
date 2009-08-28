@@ -123,22 +123,16 @@ class NodeDeserialiser {
 		{
 			autoDeserialiseProperties(currentLevelElement, instance, currentLevel);
 
-			try {
-				XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
-				if (deserialiser instanceof AbstractXMLDeserialiser)
-					((AbstractXMLDeserialiser)deserialiser).deserialise(currentLevelElement, instance);
-			} catch (InstantiationException e) {
-				throw new DeserialisationException(e);
-			} catch (IllegalAccessException e) {
-				throw new DeserialisationException(e);
-			}
-
 			if (currentLevel.getSuperclass() != Object.class)
 				doInitialisation(element, instance, currentLevel.getSuperclass());
 		}
 	}
 
-	private void doFinalisation (Element element, Object instance, ReferenceResolver referenceResolver, Class<?> currentLevel) throws DeserialisationException	{
+	private void doFinalisation(Element element, Object instance,
+			ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver,
+			Class<?> currentLevel)
+			throws DeserialisationException {
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
 
 		if (currentLevelElement != null)
@@ -146,9 +140,9 @@ class NodeDeserialiser {
 			try {
 				XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 				if (deserialiser instanceof CustomXMLDeserialiser)
-					((CustomXMLDeserialiser)deserialiser).finaliseInstance(element, instance, referenceResolver);
+					((CustomXMLDeserialiser)deserialiser).finaliseInstance(element, instance, internalReferenceResolver, externalReferenceResolver);
 				else if (deserialiser instanceof ReferencingXMLDeserialiser)
-					((ReferencingXMLDeserialiser)deserialiser).deserialise(element, instance, referenceResolver);
+					((ReferencingXMLDeserialiser)deserialiser).deserialise(element, instance, internalReferenceResolver, externalReferenceResolver);
 			} catch (InstantiationException e) {
 				throw new DeserialisationException(e);
 			} catch (IllegalAccessException e) {
@@ -160,7 +154,8 @@ class NodeDeserialiser {
 		}
 	}
 
-	public void finaliseInstance (Element element, Object instance, ReferenceResolver referenceResolver) throws DeserialisationException {
-		doFinalisation(element, instance, referenceResolver, instance.getClass());
+	public void finaliseInstance (Element element, Object instance, ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+		doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, instance.getClass());
 	}
 }

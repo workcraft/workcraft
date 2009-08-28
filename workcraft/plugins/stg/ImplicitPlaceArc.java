@@ -17,7 +17,7 @@ import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -65,7 +65,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 			}
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 				XmlUtil.writeIntAttr(element, "refCon1", refCon1.getID());
 				XmlUtil.writeIntAttr(element, "refCon2", refCon2.getID());
 				XmlUtil.writeIntAttr(element, "placeRef", implicitPlace.getID());

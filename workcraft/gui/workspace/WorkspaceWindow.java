@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.framework.workspace.WorkspaceListener;
@@ -258,7 +258,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 			for(File file : fc.getSelectedFiles())
 				try {
 					framework.getWorkspace().add(file.getPath(), false);
-				} catch (LoadFromXMLException e) {
+				} catch (DeserialisationException e) {
 					JOptionPane.showMessageDialog(null, "The file \"" + file.getName() + "\" could not be loaded. Please refer to the Problems window for details.", "Load error", JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
@@ -355,7 +355,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
 			try {
 				framework.loadWorkspace(fc.getSelectedFile());
-			} catch (LoadFromXMLException e) {
+			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(mainWindow, "Workspace load failed. Please see the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.MathModelListener;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.VisualClass;
@@ -24,7 +24,7 @@ import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 
 @VisualClass ("org.workcraft.plugins.balsa.VisualBalsaCircuit")
 @DisplayName ("Balsa circuit")
-public final class BalsaCircuit extends MathModel {
+public final class BalsaCircuit extends AbstractMathModel {
 
 	public BalsaCircuit() {
 		super();

@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.LoadFromXMLException;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -34,7 +34,7 @@ public class Workspace {
 		this.framework = framework;
 	}
 
-	public WorkspaceEntry add(String path, boolean temporary) throws LoadFromXMLException {
+	public WorkspaceEntry add(String path, boolean temporary) throws DeserialisationException {
 		for(WorkspaceEntry we : workspace)
 			if(we.getFile() != null && we.getFile().getPath().equals(path))
 				return we;
@@ -48,7 +48,7 @@ public class Workspace {
 			we.setTemporary(temporary);
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
-				Model model = Framework.load(f.getPath());
+				Model model = framework.load(f.getPath());
 				we.setModel(model);
 			}
 			workspace.add(we);
@@ -76,8 +76,8 @@ public class Workspace {
 		return Collections.unmodifiableList(workspace);
 	}
 
-	public Model loadModel(WorkspaceEntry we) throws LoadFromXMLException {
-		Model model = Framework.load(we.getFile().getPath());
+	public Model loadModel(WorkspaceEntry we) throws DeserialisationException {
+		Model model = framework.load(we.getFile().getPath());
 		fireModelLoaded(we);
 		return model;
 	}
@@ -94,7 +94,7 @@ public class Workspace {
 		return changed;
 	}
 
-	public void load(String path) throws LoadFromXMLException {
+	public void load(String path) throws DeserialisationException {
 		workspace.clear();
 
 		try {
@@ -102,7 +102,7 @@ public class Workspace {
 			Element xmlroot = doc.getDocumentElement();
 
 			if (xmlroot.getNodeName()!="workcraft-workspace")
-				throw new LoadFromXMLException("not a Workcraft workspace file");
+				throw new DeserialisationException("not a Workcraft workspace file");
 
 
 			List<Element> entries = XmlUtil.getChildElements("entry", xmlroot);
@@ -118,11 +118,11 @@ public class Workspace {
 			setTemporary (false);
 
 		} catch (ParserConfigurationException e) {
-			throw new LoadFromXMLException (e);
+			throw new DeserialisationException (e);
 		} catch (SAXException e) {
-			throw new LoadFromXMLException (e);
+			throw new DeserialisationException (e);
 		} catch (IOException e) {
-			throw new LoadFromXMLException (e);
+			throw new DeserialisationException (e);
 		}
 	}
 

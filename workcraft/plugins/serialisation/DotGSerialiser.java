@@ -13,7 +13,7 @@ import java.util.UUID;
 import org.workcraft.dom.Component;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
 import org.workcraft.plugins.petri.Place;
@@ -21,7 +21,7 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 
 public class DotGSerialiser implements ModelSerialiser, Plugin {
-	class ReferenceResolver implements ExternalReferenceResolver {
+	class ReferenceResolver implements ReferenceProducer {
 		HashMap<Object, String> refMap = new HashMap<Object, String>();
 
 		public String getReference(Object obj) {
@@ -87,7 +87,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 
 
 
-	public ExternalReferenceResolver export(Model model, OutputStream outStream, ExternalReferenceResolver inRef) {
+	public ReferenceProducer export(Model model, OutputStream outStream, ReferenceProducer inRef) {
 		STG stg = (STG)model.getMathModel();
 
 		stg.assignInstances();

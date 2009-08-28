@@ -29,7 +29,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.EventListener1;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.serialisation.ExternalReferenceResolver;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -132,7 +132,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			}
 
 			public void serialise(Element element,
-					ExternalReferenceResolver refResolver) {
+					ReferenceProducer refResolver) {
 				if (refConnection != null)
 					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
 
