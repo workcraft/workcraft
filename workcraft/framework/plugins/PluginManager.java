@@ -1,16 +1,15 @@
 package org.workcraft.framework.plugins;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,17 +25,10 @@ import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
-// TODO check for all documents to be closed before loadManifest or reconfigure
-
 public class PluginManager {
 	public static final String DEFAULT_MANIFEST = "config"+File.separator+"plugins.xml";
-	public static final String INTERNAL_PLUGINS_PATH[] = {
-		"bin"+ File.separator + "org" + File.separator + "workcraft" + File.separator + "plugins",
-		"org" + File.separator + "workcraft" + File.separator + "plugins",
-	};
 
 	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
-
 	private Framework framework;
 	private HashMap <String, Object> singletons;
 
@@ -52,11 +44,13 @@ public class PluginManager {
 		}
 	}
 
-	private class PluginClassLoader extends ClassLoader {
+	/*private class PluginClassLoader extends ClassLoader {
 		protected Class<?> findClass(File f) throws ClassNotFoundException, ClassFormatError,
 		IOException {
 			InputStream in = null;
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
+
+			ClassLoader.getSystemClassLoader().
 
 			try {
 				in = new BufferedInputStream(new FileInputStream(f));
@@ -73,13 +67,13 @@ public class PluginManager {
 
 			return defineClass(null, data.toByteArray(), 0, data.size());
 		}
-	}
+	}*/
 
 	private ClassFileFilter classFilter = new ClassFileFilter();
 	private LinkedList<PluginInfo> plugins = new LinkedList<PluginInfo>();
 	private HashMap<String, PluginInfo> nameToInfoMap = new HashMap<String, PluginInfo>();
 
-	private PluginClassLoader activeLoader = null;
+	//private PluginClassLoader activeLoader = null;
 
 	public PluginManager(Framework framework) {
 		this.framework = framework;
@@ -93,11 +87,11 @@ public class PluginManager {
 		System.out.println(""+plugins.size()+" plugin(s) total");
 	}
 
-	public void loadManifest() throws IOException, DocumentFormatException {
+	public void loadManifest() throws IOException, DocumentFormatException, PluginInstantiationException {
 		loadManifest(DEFAULT_MANIFEST);
 	}
 
-	public void loadManifest(String path) throws IOException, DocumentFormatException {
+	public void loadManifest(String path) throws IOException, DocumentFormatException, PluginInstantiationException {
 		File f = new File(path);
 		if(!f.exists()) {
 			System.out.println("Plugin manifest \"" + f.getPath() + "\" does not exist.");
@@ -162,54 +156,87 @@ public class PluginManager {
 		XmlUtil.saveDocument(doc, new File(path));
 	}
 
-	private void search(File root) {
-		if(!root.exists())
+	private void processPathEntry (String path) throws PluginInstantiationException {
+		if (!path.endsWith(".class"))
 			return;
 
-		if(root.isDirectory()) {
-			File[] list = root.listFiles(classFilter);
+
+		String className;
+
+		if (path.startsWith(File.separator))
+			className = path.substring(File.separator.length());
+		else
+			className = path;
+
+		className = className.replace(File.separator, ".");
+
+		if (!className.startsWith("org.workcraft.plugins"))
+			return;
+
+		System.out.print(".class file found: " + path + ", ");
+
+
+		className = className.substring(0, className.length() - ".class".length());
+
+		try {
+			Class<?> cls = Class.forName(className);
+
+
+			if(Plugin.class.isAssignableFrom(cls)) {
+				PluginInfo info = new PluginInfo(cls);
+				plugins.add(info);
+				System.out.println("plugin " + cls.getName());
+			} else
+				System.out.println("not a plugin class, ignored");
+
+		} catch (ClassFormatError e) {
+			System.out.println ("bad class: " + e.getMessage());
+		} catch (LinkageError e) {
+			System.out.println ("bad class: " + e.getMessage());
+		} catch(ClassNotFoundException e) {
+			throw new PluginInstantiationException(e);
+		}
+	}
+
+	private void search(File starting, File current) throws PluginInstantiationException {
+		if(!current.exists())
+			return;
+
+		if(current.isDirectory()) {
+			File[] list = current.listFiles(classFilter);
 
 			for(File f : list)
 				if(f.isDirectory())
-					search(f);
-				else {
-					System.out.print("Class file found: " + f.getPath() +", ");
-					Class<?> cls;
-					try {
-						cls = activeLoader.findClass(f);
+					search(starting, f);
+				else
+					processPathEntry(f.getPath().substring(starting.getPath().length()));
+		} else if (current.isFile()) {
+			if (current.getPath().endsWith(".jar"))
+				try {
+					JarFile jf = new JarFile(current);
+					Enumeration<JarEntry> entries = jf.entries();
 
-						if(Plugin.class.isAssignableFrom(cls)) {
-							PluginInfo info = new PluginInfo(cls);
-							plugins.add(info);
-							System.out.println("plugin " + cls.getName());
-						} else
-							System.out.println("not a plugin class, ignored");
-
-					} catch(ClassFormatError e) {
-						System.out.println("error loading class \"" + f.getName() + "\": "
-								+ e.getMessage());
-					} catch(ClassNotFoundException e) {
-						System.out.println("error loading class \"" + f.getName() + "\": "
-								+ e.getMessage());
-					} catch(IOException e) {
-						System.out.println("error loading class \"" + f.getName() + "\": "
-								+ e.getMessage());
-					} catch(Throwable e){
-						System.out.println("error loading class \"" + f.getName() + "\": "
-								+ e.getMessage());
+					while (entries.hasMoreElements()) {
+						JarEntry entry = entries.nextElement();
+						processPathEntry (entry.getName());
 					}
+
+				} catch (IOException e) {
+					throw new PluginInstantiationException(e);
 				}
 		}
 	}
 
-	public void reconfigure() {
+	public void reconfigure() throws PluginInstantiationException {
 		System.out.println("Reconfiguring plugins...");
 		plugins.clear();
-		activeLoader = new PluginClassLoader();
-		for (String path : INTERNAL_PLUGINS_PATH)
-			search(new File(path));
-		search(new File(EXTERNAL_PLUGINS_PATH));
-		activeLoader = null;
+
+		String[] classPathLocations = System.getProperty("java.class.path").split(File.pathSeparator);
+
+		for (String s: classPathLocations) {
+			System.out.println (s);
+			search(new File(s), new File(s));
+		}
 
 		System.out.println("" + plugins.size() + " plugin(s) found");
 

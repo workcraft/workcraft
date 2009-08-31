@@ -534,7 +534,13 @@ public class MainWindow extends JFrame {
 		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
-			FileOutputStream os = new FileOutputStream(new File ("./config/uilayout.xml"));
+			File file = new File("config/uilayout.xml");
+			File parentDir = file.getParentFile();
+			if (parentDir != null)
+				if (!parentDir.exists())
+					parentDir.mkdirs();
+
+			FileOutputStream os = new FileOutputStream(file);
 			pers.store(os, pmodel);
 			os.close();
 		} catch (FileNotFoundException e) {

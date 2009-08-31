@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -39,20 +40,27 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 		}
 
 		public void puts(String s) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					Container parent = 	getParent().getParent().getParent();
+					if (parent instanceof JTabbedPane) {
+						JTabbedPane tab = (JTabbedPane) parent;
+						for (int i=0; i<tab.getComponentCount(); i++)
+							if (tab.getComponentAt(i) == getParent().getParent())
+								if (tab.getForegroundAt(i) != Color.RED) {
+									colorBack = tab.getForegroundAt(i);
+									tab.setForegroundAt(i, Color.RED);
+									tab.removeChangeListener(ErrorStreamView.this);
+									tab.addChangeListener(ErrorStreamView.this);
+								}
+					}
+				}
+
+			});
+
 			target.append(s);
 
-			Container parent = 	getParent().getParent().getParent();
-			if (parent instanceof JTabbedPane) {
-				JTabbedPane tab = (JTabbedPane) parent;
-				for (int i=0; i<tab.getComponentCount(); i++)
-					if (tab.getComponentAt(i) == getParent().getParent())
-						if (tab.getForegroundAt(i) != Color.RED) {
-							colorBack = tab.getForegroundAt(i);
-							tab.setForegroundAt(i, Color.RED);
-							tab.removeChangeListener(this);
-							tab.addChangeListener(this);
-						}
-			}
+
 		}
 
 		@Override

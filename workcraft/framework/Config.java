@@ -129,7 +129,6 @@ public class Config {
 			e.printStackTrace();
 			return;
 		} catch (IOException e) {
-			System.err.println ("! Warning: cannot open config file "+fileName);
 			return;
 		} catch (SAXException e) {
 			e.printStackTrace();
@@ -212,10 +211,10 @@ public class Config {
 
 			File file = new File(fileName);
 
-			File parentDir = file.getParentFile();
+			/*File parentDir = file.getParentFile();
 			if (parentDir != null)
 				if (!parentDir.exists())
-					parentDir.mkdirs();
+					parentDir.mkdirs(); */
 
 			file.createNewFile();
 

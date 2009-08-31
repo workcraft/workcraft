@@ -37,6 +37,16 @@ public class Console {
 		if (!silent)
 			System.out.println ("Initialising framework...");
 
+		File f = new File("config");
+
+		if (f.exists() && !f.isDirectory()) {
+			System.out.println("\n!!! Error: Workcraft needs to create a directory named 'config' to store configuration files, but a file already exists with such name and is not a directory. Please delete the file and run Workcraft again.");
+			return;
+		}
+
+		if (!f.exists())
+			f.mkdirs();
+
 		final Framework framework  = new Framework();
 
 		framework.setSilent(silent);
@@ -54,7 +64,7 @@ public class Console {
 			framework.execJavaScript(new File ("scripts/startup.js"));
 
 		} catch (FileNotFoundException e2) {
-			System.err.println ("System script file not found: "+e2.getMessage());
+			System.err.println ("! Warning: System script file not found: "+e2.getMessage());
 		}
 
 		if (!silent)

@@ -628,6 +628,8 @@ public class Framework {
 			e.printStackTrace();
 		} catch (DocumentFormatException e) {
 			e.printStackTrace();
+		} catch (PluginInstantiationException e) {
+			e.printStackTrace();
 		}
 
 	}
