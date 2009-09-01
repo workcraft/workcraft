@@ -7,16 +7,16 @@ import net.sf.jga.fn.UnaryFunctor;
 public class HierarchyHelper {
 
 	public static HierarchyNode [] getPath(HierarchyNode node) {
-		HierarchyNode n = node.getParent();
+		HierarchyNode n = node;
 			int i = 0;
 			while(n!=null)
 			{
 				i++;
 				n = n.getParent();
 			}
-			HierarchyNode [] result = new VisualGroup[i];
+			HierarchyNode [] result = new HierarchyNode[i];
 
-			n = node.getParent();
+			n = node;
 			while(n!=null)
 			{
 				result[--i] = n;

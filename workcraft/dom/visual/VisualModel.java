@@ -468,7 +468,7 @@ public class VisualModel implements Plugin, Model {
 		}
 
 		ArrayList<VisualConnection> connectionsToGroup = new ArrayList<VisualConnection>();
-		for(VisualConnection connection : currentLevel.getChildrenOfType(VisualConnection.class))
+		for(VisualConnection connection : NodeHelper.getChildrenOfType(currentLevel, VisualConnection.class))
 		{
 			if(connection.getFirst().isDescendantOf(group) &&
 					connection.getSecond().isDescendantOf(group)) {

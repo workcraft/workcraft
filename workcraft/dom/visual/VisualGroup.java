@@ -34,24 +34,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	//private Element deferredGroupElement = null;
 	//private String label = "";
 
-	private static Rectangle2D.Double mergeRect(Rectangle2D.Double rect, VisualNode node)
-	{
-		Rectangle2D addedRect = node.getBoundingBox();
-
-		if(addedRect == null)
-			return rect;
-
-		if(rect==null) {
-			rect = new Rectangle2D.Double();
-			rect.setRect(addedRect);
-		}
-		else
-			rect.add(addedRect);
-
-		return rect;
-	}
-
-
 
 	public VisualGroup () {
 		super();
@@ -103,18 +85,12 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	@Override
 	public void clearColorisation() {
 		setColorisation(null);
-		for (Colorisable node : getChildrenOfType(Colorisable.class))
+		for (Colorisable node : NodeHelper.getChildrenOfType(this, Colorisable.class))
 			node.clearColorisation();
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D.Double rect = null;
-		for(VisualComponent comp : getChildrenOfType(VisualComponent.class))
-			rect = mergeRect(rect, comp);
-		for(VisualGroup grp : getChildrenOfType(VisualGroup.class))
-			rect = mergeRect(rect, grp);
-
-		return rect;
+		return BoundingBoxHelper.mergeBoundingBoxes(NodeHelper.getChildrenOfType(this, Touchable.class));
 	}
 
 	public final Collection<HierarchyNode> getChildren() {
@@ -122,11 +98,11 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	}
 
 	public final Collection<VisualComponent> getComponents() {
-		return getChildrenOfType(VisualComponent.class);
+		return NodeHelper.getChildrenOfType(this, VisualComponent.class);
 	}
 
 	public final Collection<VisualConnection> getConnections() {
-		return getChildrenOfType(VisualConnection.class);
+		return NodeHelper.getChildrenOfType(this, VisualConnection.class);
 	}
 
 	public LinkedList<Touchable> hitObjects(Point2D p1 , Point2D p2) {
@@ -143,7 +119,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 				Math.abs(p1local.getX()-p2local.getX()),
 				Math.abs(p1local.getY()-p2local.getY()));
 
-		for (Touchable n : getChildrenOfType(Touchable.class)) {
+		for (Touchable n : NodeHelper.getChildrenOfType(this, Touchable.class)) {
 			if (p1local.getX()<=p2local.getX()) {
 				if (TouchableHelper.insideRectangle(n, rect))
 					hit.add(n);
@@ -163,7 +139,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	public void setColorisation(Color color) {
 		super.setColorisation(color);
-		for (Colorisable node : getChildrenOfType(Colorisable.class))
+		for (Colorisable node : NodeHelper.getChildrenOfType(this, Colorisable.class))
 			node.setColorisation(color);
 	}
 
@@ -185,22 +161,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Collection<T> getChildrenOfType(Class<T> type)
-	{
-		ArrayList<T> result = new ArrayList<T>();
-
-		for(HierarchyNode node : children)
-		{
-			if(type.isInstance(node))
-				result.add((T)node);
-		}
-		return result;
-	}
-
 	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
-		for (DependentNode n: getChildrenOfType(DependentNode.class))
+		for (DependentNode n: NodeHelper.getChildrenOfType(this, DependentNode.class))
 			ret.addAll(n.getMathReferences());
 		return ret;
 	}

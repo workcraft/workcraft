@@ -22,7 +22,10 @@ import java.util.Map;
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
@@ -121,6 +124,7 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 			Handshake handshake = handshakes.get(name);
 			Ray ray = visualLayout.positions.get(handshake);
 			VisualHandshake visual = new VisualHandshake(handshakeComponents.get(handshake));
+			visual.setParent(this);
 			visualHandshakes.put(name, visual);
 			Direction dir = ray.direction;
 			int quadrants =
@@ -139,9 +143,10 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 
-		Rectangle2D parentBB = null;//TODO: include children bounding boxes (was super.getBoundingBoxInLocalSpace();)
-		if(parentBB != null)
-			result.add(parentBB);
+		Rectangle2D children = BoundingBoxHelper.mergeBoundingBoxes(NodeHelper.getChildrenOfType(this, Touchable.class));
+
+		if(children != null)
+			result.add(children);
 
 		return result;
 	}
