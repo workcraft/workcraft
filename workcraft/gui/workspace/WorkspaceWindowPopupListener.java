@@ -64,7 +64,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 					if (we.getFile() != null) {
 						// add WorkspaceEntry menu items
 						PluginInfo[] handlersInfo = framework.getPluginManager()
-						.getPlugins(FileHandler.class);
+						.getPluginsImplementing(FileHandler.class.getName());
 
 						for (PluginInfo info : handlersInfo)
 							try {

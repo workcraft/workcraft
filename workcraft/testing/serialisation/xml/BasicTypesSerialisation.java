@@ -19,7 +19,7 @@ import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
 import org.workcraft.util.XmlUtil;
 
-public class BasicTypesTest {
+public class BasicTypesSerialisation {
 	public enum TestEnum {
 		ONE,
 		TWO,

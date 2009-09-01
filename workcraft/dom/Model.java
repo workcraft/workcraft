@@ -31,5 +31,8 @@ public interface Model {
 	 */
 	public String getDisplayName();
 
+	public String getReference();
+
 	public HierarchyNode getRoot();
+	public void setRoot(HierarchyNode root);
 }

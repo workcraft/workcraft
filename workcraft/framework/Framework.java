@@ -1,5 +1,6 @@
 package org.workcraft.framework;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,6 +44,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.plugins.serialisation.XMLDeserialiser;
 import org.workcraft.plugins.serialisation.XMLSerialiser;
+import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -190,7 +192,7 @@ public class Framework {
 	public void loadConfig(String fileName) {
 		config.load(fileName);
 
-		PluginInfo[] infos = pluginManager.getPlugins(PersistentPropertyEditable.class.getName());
+		PluginInfo[] infos = pluginManager.getPluginsImplementing(PersistentPropertyEditable.class.getName());
 
 		for (PluginInfo info : infos) {
 			try {
@@ -203,7 +205,7 @@ public class Framework {
 	}
 
 	public void saveConfig(String fileName) {
-		PluginInfo[] infos = pluginManager.getPlugins(PersistentPropertyEditable.class.getName());
+		PluginInfo[] infos = pluginManager.getPluginsImplementing(PersistentPropertyEditable.class.getName());
 
 		for (PluginInfo info : infos) {
 			try {
@@ -457,13 +459,12 @@ public class Framework {
 	}
 
 	public Model load(String path) throws DeserialisationException {
-		FileInputStream fis;
 		try {
-			fis = new FileInputStream(path);
+			FileInputStream fis = new FileInputStream(path);
+			return load(fis);
 		} catch (FileNotFoundException e) {
 			throw new DeserialisationException(e);
 		}
-		return load(fis);
 	}
 
 	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
@@ -487,7 +488,9 @@ public class Framework {
 
 	public Model load(InputStream is) throws DeserialisationException   {
 		try {
-			InputStream metadata = getUncompressedEntry("meta", is);
+			byte[] bufferedInput = DataAccumulator.loadStream(is);
+
+			InputStream metadata = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
 
 			if (metadata == null)
 				throw new DeserialisationException("meta entry is missing in the ZIP file");
@@ -496,13 +499,12 @@ public class Framework {
 
 			metadata.close();
 
-
 			// load math model
 
 			Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
 			//UUID mathFormatUUID = UUID.fromString(mathElement.getAttribute("format-uuid"));
 
-			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), is);
+			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 			// TODO: get proper deserialiser for format
 			ModelDeserialiser mathDeserialiser = new XMLDeserialiser();
 
@@ -515,17 +517,17 @@ public class Framework {
 			Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
 
 			if (visualElement == null)
-				return mathResult.getModel();
+				return mathResult.model;
 
 			//UUID visualFormatUUID = UUID.fromString(visualElement.getAttribute("format-uuid"));
-			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), is);
+			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 
 			//TODO:get proper deserialiser
 			ModelDeserialiser visualDeserialiser = new XMLDeserialiser();
 
-			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.getReferenceResolver());
-			visualResult.getModel().getVisualModel().setMathModel(mathResult.getModel().getMathModel());
-			return visualResult.getModel();
+			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
+			visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
+			return visualResult.model;
 
 		} catch (IOException e) {
 			throw new DeserialisationException(e);

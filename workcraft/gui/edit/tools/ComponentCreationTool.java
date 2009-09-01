@@ -59,7 +59,7 @@ public class ComponentCreationTool extends AbstractTool {
 			}
 
 			e.getEditor().getModel().getCurrentLevel().add(vComp);
-			e.getEditor().getModel().addNode(vComp);
+			e.getEditor().getModel().registerNode(vComp);
 
 		} catch (ComponentCreationException e1) {
 			JOptionPane.showMessageDialog(null, "Cannot create component:\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

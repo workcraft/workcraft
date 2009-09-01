@@ -798,7 +798,7 @@ public class MainWindow extends JFrame {
 			fc.setCurrentDirectory(new File(lastOpenPath));
 
 
-		PluginInfo[] importerInfo = framework.getPluginManager().getPlugins(Importer.class.getName());
+		PluginInfo[] importerInfo = framework.getPluginManager().getPluginsImplementing(Importer.class.getName());
 		Importer[] importers = new Importer[importerInfo.length];
 
 		int cnt = 0;

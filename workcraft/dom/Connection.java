@@ -1,12 +1,6 @@
 package org.workcraft.dom;
 
 
-/**
- * <p>Base class for all mathematical objects that act
- * as a graph arc.</p>
- * @author Ivan Poliakov
- *
- */
 @VisualClass("org.workcraft.dom.visual.connections.VisualConnection")
 public class Connection extends MathNode {
 	private Component first;
@@ -20,16 +14,10 @@ public class Connection extends MathNode {
 		setComponents(first, second);
 	}
 
-	/**
-	 * @return the component that this connection starts from.
-	 */
 	final public Component getFirst() {
 		return first;
 	}
 
-	/**
-	 * @return the component that this connection goes to.
-	 */
 	final public Component getSecond() {
 		return second;
 	}

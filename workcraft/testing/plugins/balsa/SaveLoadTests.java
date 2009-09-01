@@ -194,15 +194,15 @@ public class SaveLoadTests {
 
 		VisualBreezeComponent whVis = new VisualBreezeComponent(wh);
 		whVis.setX(10);
-		visual.addNode(whVis);
+		visual.registerNode(whVis);
 		visual.getRoot().add(whVis);
 		VisualBreezeComponent loopVis = new VisualBreezeComponent(loop);
-		visual.addNode(loopVis);
+		visual.registerNode(loopVis);
 		visual.getRoot().add(loopVis);
 
 		VisualConnection conVis = new VisualConnection(con, getVisualHandshakeByName(loopVis, "activateOut"),
 				getVisualHandshakeByName(whVis, "activate"));
-		visual.addNode(conVis);
+		visual.registerNode(conVis);
 		visual.getRoot().add(conVis);
 
 		return visual;

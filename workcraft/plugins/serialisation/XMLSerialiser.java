@@ -14,16 +14,15 @@ import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.plugins.PluginConsumer;
-import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.plugins.PluginProvider;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
-public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
+public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
 	private Element serialise(HierarchyNode node, Document doc,
@@ -78,6 +77,8 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 				public String getReference(Object obj) {
 					if (obj instanceof IntIdentifiable)
 						return Integer.toString(((IntIdentifiable)obj).getID());
+					else if (obj instanceof Model)
+						return ((Model)obj).getReference();
 					else
 						return null;
 				}
@@ -102,7 +103,7 @@ public class XMLSerialiser implements ModelSerialiser, Plugin, PluginConsumer {
 		}
 	}
 
-	public void processPlugins(PluginManager pluginManager) {
+	public void processPlugins(PluginProvider pluginManager) {
 		serialisation.processPlugins(pluginManager);
 	}
 }

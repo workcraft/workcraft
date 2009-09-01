@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
 import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Transition;
@@ -38,14 +39,11 @@ public class VisualSignalTransition extends VisualTransition {
 
 	public VisualSignalTransition() {
 		addPropertyDeclarations();
-		updateText();
 	}
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
 		addPropertyDeclarations();
-
-		updateText();
 	}
 
 	private void addPropertyDeclarations() {
@@ -166,7 +164,9 @@ public class VisualSignalTransition extends VisualTransition {
 	}
 
 	private void updateText() {
-		if (getSignalName().isEmpty()) {
+		String signalName = getSignalName();
+
+		if (signalName == null || signalName.isEmpty()) {
 			text = null;
 		} else {
 			text = getText();
@@ -176,9 +176,16 @@ public class VisualSignalTransition extends VisualTransition {
 		textBB = null;
 	}
 
+	@NoAutoSerialisation
 	public SignalTransition getReferencedTransition() {
 		return (SignalTransition)getReferencedComponent();
 	}
+
+	@NoAutoSerialisation
+	public void setReferencedTransition(SignalTransition t) {
+
+	}
+
 
 	public SignalTransition.Type getType() {
 		return getReferencedTransition().getType();

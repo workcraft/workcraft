@@ -25,7 +25,7 @@ import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
-public class PluginManager {
+public class PluginManager implements PluginProvider {
 	public static final String DEFAULT_MANIFEST = "config"+File.separator+"plugins.xml";
 
 	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
@@ -249,14 +249,17 @@ public class PluginManager {
 	}
 
 	public PluginInfo[] getModels() {
-		return getPlugins (MathModel.class.getName());
+		return getPluginsImplementing (MathModel.class.getName());
 	}
 
 	public PluginInfo[] getPlugins(Class<?> interf) {
-		return getPlugins(interf.getName());
+		return getPluginsImplementing(interf.getName());
 	}
 
-	public PluginInfo[] getPlugins(String interfaceName) {
+	/* (non-Javadoc)
+	 * @see org.workcraft.framework.plugins.PluginProvider#getPlugins(java.lang.String)
+	 */
+	public PluginInfo[] getPluginsImplementing(String interfaceName) {
 		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
 		for(PluginInfo info : plugins)
 			for (String s: info.getInterfaces())
@@ -265,6 +268,9 @@ public class PluginManager {
 		return list.toArray(new PluginInfo[0]);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.framework.plugins.PluginProvider#getInstance(org.workcraft.framework.plugins.PluginInfo)
+	 */
 	public Object getInstance(PluginInfo info) throws PluginInstantiationException {
 		try {
 			Class<?> cls = info.loadClass();
@@ -300,6 +306,9 @@ public class PluginManager {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.framework.plugins.PluginProvider#getSingleton(org.workcraft.framework.plugins.PluginInfo)
+	 */
 	public Object getSingleton(PluginInfo info) throws PluginInstantiationException {
 		Object ret = singletons.get(info.getClassName());
 		if (ret == null) {
@@ -310,6 +319,9 @@ public class PluginManager {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.framework.plugins.PluginProvider#getSingletonByName(java.lang.String)
+	 */
 	public Object getSingletonByName(String className) throws PluginInstantiationException {
 		PluginInfo info = nameToInfoMap.get(className);
 		if (info == null)

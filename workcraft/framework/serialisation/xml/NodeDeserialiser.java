@@ -120,19 +120,17 @@ class NodeDeserialiser {
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
 
 		if (currentLevelElement != null)
-		{
 			autoDeserialiseProperties(currentLevelElement, instance, currentLevel);
 
-			if (currentLevel.getSuperclass() != Object.class)
-				doInitialisation(element, instance, currentLevel.getSuperclass());
-		}
+		if (currentLevel.getSuperclass() != Object.class)
+			doInitialisation(element, instance, currentLevel.getSuperclass());
 	}
 
 	private void doFinalisation(Element element, Object instance,
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver,
 			Class<?> currentLevel)
-			throws DeserialisationException {
+	throws DeserialisationException {
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
 
 		if (currentLevelElement != null)
@@ -140,9 +138,9 @@ class NodeDeserialiser {
 			try {
 				XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 				if (deserialiser instanceof CustomXMLDeserialiser)
-					((CustomXMLDeserialiser)deserialiser).finaliseInstance(element, instance, internalReferenceResolver, externalReferenceResolver);
+					((CustomXMLDeserialiser)deserialiser).finaliseInstance(currentLevelElement, instance, internalReferenceResolver, externalReferenceResolver);
 				else if (deserialiser instanceof ReferencingXMLDeserialiser)
-					((ReferencingXMLDeserialiser)deserialiser).deserialise(element, instance, internalReferenceResolver, externalReferenceResolver);
+					((ReferencingXMLDeserialiser)deserialiser).deserialise(currentLevelElement, instance, internalReferenceResolver, externalReferenceResolver);
 			} catch (InstantiationException e) {
 				throw new DeserialisationException(e);
 			} catch (IllegalAccessException e) {

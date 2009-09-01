@@ -6,7 +6,7 @@ import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.PluginInfo;
-import org.workcraft.framework.plugins.PluginManager;
+import org.workcraft.framework.plugins.PluginProvider;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 
@@ -75,8 +75,8 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 	}
 
 	@SuppressWarnings("unchecked")
-	public void processPlugins(PluginManager manager) {
-		PluginInfo[] serialiserInfos = manager.getPlugins(XMLSerialiser.class.getName());
+	public void processPlugins(PluginProvider manager) {
+		PluginInfo[] serialiserInfos = manager.getPluginsImplementing(XMLSerialiser.class.getName());
 
 		for (PluginInfo info : serialiserInfos) {
 			try {
@@ -86,7 +86,7 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 			}
 		}
 
-		PluginInfo[] deserialiserInfos = manager.getPlugins(XMLDeserialiser.class.getName());
+		PluginInfo[] deserialiserInfos = manager.getPluginsImplementing(XMLDeserialiser.class.getName());
 
 		for (PluginInfo info : deserialiserInfos) {
 			try {

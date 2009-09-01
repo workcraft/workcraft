@@ -16,6 +16,7 @@ import javax.swing.JPopupMenu;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -77,18 +78,22 @@ public class VisualPlace extends VisualComponent {
 		return (Place)getReferencedComponent();
 	}
 
+	@NoAutoSerialisation
 	public int getTokens() {
 		return getPlace().getTokens();
 	}
 
+	@NoAutoSerialisation
 	public void setTokens(int tokens) {
 		getPlace().setTokens(tokens);
 	}
 
+	@NoAutoSerialisation
 	public int getCapacity() {
 		return getPlace().getCapacity();
 	}
 
+	@NoAutoSerialisation
 	public void setCapacity(int c) {
 		getPlace().setCapacity(c);
 	}

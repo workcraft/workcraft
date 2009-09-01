@@ -8,6 +8,7 @@ import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
@@ -58,29 +59,35 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		VisualTransformableNodeDeserialiser.initTransformableNode(visualNodeElement, this);
 	}
 
+	@NoAutoSerialisation
 	public double getX() {
 		return localToParentTransform.getTranslateX();
 	}
 
+	@NoAutoSerialisation
 	public double getY() {
 		return localToParentTransform.getTranslateY();
 	}
 
+	@NoAutoSerialisation
 	public void setX(double x) {
 		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
 		transformChanged();
 	}
 
+	@NoAutoSerialisation
 	public void setY(double y) {
 		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
 
+	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
 		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
 
+	@NoAutoSerialisation
 	public Point2D getPosition() {
 		return new Point2D.Double(getX(), getY());
 	}
@@ -131,14 +138,17 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		transformChanged();
 	}
 
+	@NoAutoSerialisation
 	public double getRotation() {
 		return 0;
 	}
 
+	@NoAutoSerialisation
 	public double getScaleX() {
 		return 0;
 	}
 
+	@NoAutoSerialisation
 	public double getScaleY() {
 		return 0;
 	}
@@ -147,14 +157,17 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return getLocalToParentTransform();
 	}
 
+	@NoAutoSerialisation
 	public void setRotation(double rotation) {
 
 	}
 
+	@NoAutoSerialisation
 	public void setScaleX(double scaleX) {
 
 	}
 
+	@NoAutoSerialisation
 	public void setScaleY(double scaleY) {
 
 	}

@@ -1,15 +1,16 @@
 package org.workcraft.dom;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Group implements HierarchyNode, Container {
-	private Set<HierarchyNode> children = new HashSet<HierarchyNode> ();
+	private Set<HierarchyNode> children = new LinkedHashSet<HierarchyNode> ();
 	private HierarchyNode parent = null;
 
 	public Collection<HierarchyNode> getChildren() {
-		return new HashSet<HierarchyNode>(children);
+		return Collections.unmodifiableCollection(children);
 	}
 
 	public HierarchyNode getParent() {

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -111,16 +112,13 @@ public class VisualModel implements Plugin, Model {
 
 	private VisualPropertyChangeListener propertyChangeListener = new VisualPropertyChangeListener();
 
-	private MathModel mathModel;
-	private VisualGroup root;
+	private MathModel mathModel = null;
+	private VisualGroup root = new VisualGroup();
+	VisualGroup currentLevel = root;
 
-	private LinkedList<HierarchyNode> selection = new LinkedList<HierarchyNode>();
+	private Set<HierarchyNode> selection = new HashSet<HierarchyNode>();
 	private LinkedList<VisualModelEventListener> listeners = new LinkedList<VisualModelEventListener>();
-
-//	private HashMap<Integer, VisualComponent> refIDToVisualComponentMap = new HashMap<Integer, VisualComponent>();
-//	protected HashMap<Integer, VisualConnection> refIDToVisualConnectionMap = new HashMap<Integer, VisualConnection>();
 	private HashMap<Integer, HierarchyNode> visualComponents = new HashMap<Integer, HierarchyNode>();
-
 	private ModelListener mathModelListener = new ModelListener();
 
 	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
@@ -130,7 +128,7 @@ public class VisualModel implements Plugin, Model {
 
 			if (visualComponent != null) {
 				root.add(visualComponent);
-				addNode(visualComponent);
+				registerNode(visualComponent);
 			}
 		}
 
@@ -142,18 +140,18 @@ public class VisualModel implements Plugin, Model {
 			HierarchyHelper.getNearestAncestor(
 					HierarchyHelper.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
 					Container.class).add(visualConnection);
-			addNode(visualConnection);
+			registerNode(visualConnection);
 
 		}
 	}
 
-	public VisualModel(MathModel model) throws VisualModelInstantiationException {
-		mathModel = model;
-
-		root = new VisualGroup();
-		currentLevel = root;
-		mathModel.addListener(mathModelListener);
+	public VisualModel() {
 		addListener(new Listener());
+	}
+
+	public VisualModel(MathModel model) throws VisualModelInstantiationException {
+		this();
+		setMathModel(model);
 	}
 
 	/*private void gatherReferences(Collection<HierarchyNode> nodes, HashSet<MathNode> referenceds) {
@@ -240,7 +238,7 @@ public class VisualModel implements Plugin, Model {
 	 * Get the list of selected objects. Returned list is modifiable!
 	 * @return the selection.
 	 */
-	public LinkedList<HierarchyNode> selection() {
+	public Set<HierarchyNode> selection() {
 		return selection;
 	}
 
@@ -259,54 +257,37 @@ public class VisualModel implements Plugin, Model {
 		selection.clear();
 	}
 
-	/**
-	 * Check if the object is selected.<br/>
-	 * <i>Important!</i> Slow function. It searches through all the selected objects,
-	 * so it should not be called frequently.
-	 * @param so selectable object
-	 * @return if <code>so</code> is selected
-	 */
 	public boolean isObjectSelected(HierarchyNode so) {
 		return selection.contains(so);
 	}
 
-	/**
-	 * Add an object to the selection if it is not already selected.
-	 * @param so an object to select
-	 */
 	public void addToSelection(HierarchyNode so) {
-		if(!isObjectSelected(so))
-			selection.add(so);
+		selection.add(so);
 	}
 
-	/**
-	 * Remove an object from the selection if it is selected.
-	 * @param so an object to deselect.
-	 */
 	public void removeFromSelection(HierarchyNode so) {
 		selection.remove(so);
 	}
 
 	@NoAutoSerialisation
 	public void setMathModel(MathModel mathModel) {
+		if (this.mathModel != null)
+			this.mathModel.removeListener(mathModelListener);
 		this.mathModel = mathModel;
+		mathModel.addListener(mathModelListener);
 	}
-
 
 	public MathModel getMathModel() {
 		return mathModel;
 	}
 
-
 	public VisualModel getVisualModel() {
 		return this;
 	}
 
-
 	public String getTitle() {
 		return mathModel.getTitle();
 	}
-
 
 	public String getDisplayName() {
 		return mathModel.getDisplayName();
@@ -375,36 +356,26 @@ public class VisualModel implements Plugin, Model {
 			Container.class);
 
 		group.add(ret);
-		addNode(ret);
+		registerNode(ret);
 
 		return ret;
 	}
 
-	public final void addNode(HierarchyNode component) {
-		if(component instanceof PropertyEditable)
-			((PropertyEditable)component).addPropertyChangeListener(propertyChangeListener);
+	public final void registerNode(HierarchyNode node) {
+		if(node instanceof PropertyEditable)
+			((PropertyEditable)node).addPropertyChangeListener(propertyChangeListener);
 
-		if(component instanceof IntIdentifiable)
+		if(node instanceof IntIdentifiable)
 		{
 			int id = getNextNodeID();
-
-			((IntIdentifiable)component).setID(id);
-
-			visualComponents.put(id, component);
+			((IntIdentifiable)node).setID(id);
+			visualComponents.put(id, node);
 		}
 
-		if(component instanceof VisualConnection)
-		{
-			VisualConnection connection = (VisualConnection)component;
-			connection.getFirst().addConnection(connection);
-			connection.getSecond().addConnection(connection);
-		}
+		for(HierarchyNode subnode : node.getChildren())
+				registerNode(subnode);
 
-		if(component instanceof Container)
-			for(HierarchyNode subnode : ((Container)component).getChildren())
-				addNode(subnode);
-
-		fireNodeAdded(component);
+		fireNodeAdded(node);
 	}
 
 	private int nodeIDCounter = 0;
@@ -430,7 +401,7 @@ public class VisualModel implements Plugin, Model {
 		root.clearColorisation();
 	}
 
-	VisualGroup currentLevel;
+
 
 	public VisualGroup getCurrentLevel() {
 		return currentLevel;
@@ -539,6 +510,7 @@ public class VisualModel implements Plugin, Model {
 		for (VisualModelEventListener l : listeners)
 			l.onComponentRemoved(component);
 	}
+
 	protected void removeConnection(VisualConnection connection) {
 		connection.getFirst().removeConnection(connection);
 		connection.getSecond().removeConnection(connection);
@@ -735,4 +707,21 @@ public class VisualModel implements Plugin, Model {
 		};
 	}
 
+	public void setRoot(HierarchyNode root) {
+		if (root instanceof VisualGroup)
+		{
+			this.root = (VisualGroup)root;
+			//TODO: unregister old root
+		}
+		else
+			throw new RuntimeException("The root node of a visual model must be a visual group.");
+	}
+
+	public String getReference() {
+		return "#visualModel";
+	}
+
+	public void setReference(String reference) {
+
+	}
 }
