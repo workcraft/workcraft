@@ -18,9 +18,13 @@ public class AffineTransformSerialiser implements BasicXMLSerialiser {
 		double[] matrix = new double[6];
 		t.getMatrix(matrix);
 
-		element.setAttribute("matrix", String.format("%f %f %f %f %f %f",
-				matrix[0], matrix[1], matrix[2],
-				matrix[3], matrix[4], matrix[5])
+		element.setAttribute("matrix", String.format("%s %s %s %s %s %s",
+				DoubleSerialiser.doubleToString(matrix[0]),
+				DoubleSerialiser.doubleToString(matrix[1]),
+				DoubleSerialiser.doubleToString(matrix[2]),
+				DoubleSerialiser.doubleToString(matrix[3]),
+				DoubleSerialiser.doubleToString(matrix[4]),
+				DoubleSerialiser.doubleToString(matrix[5]))
 			);
 	}
 }

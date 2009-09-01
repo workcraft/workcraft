@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.visual.HierarchyHelper;
+import org.workcraft.util.Hierarchy;
 
 public class HierarchyHelperTests {
 
@@ -37,9 +37,9 @@ public class HierarchyHelperTests {
 		MockHierarchyNode node3 = new MockHierarchyNode(node2);
 		MockHierarchyNode node3_ = new MockHierarchyNode(node2);
 
-		Assert.assertArrayEquals(new HierarchyNode[]{node1}, HierarchyHelper.getPath(node1));
-		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2}, HierarchyHelper.getPath(node2));
-		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2, node3}, HierarchyHelper.getPath(node3));
-		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2, node3_}, HierarchyHelper.getPath(node3_));
+		Assert.assertArrayEquals(new HierarchyNode[]{node1}, Hierarchy.getPath(node1));
+		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2}, Hierarchy.getPath(node2));
+		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2, node3}, Hierarchy.getPath(node3));
+		Assert.assertArrayEquals(new HierarchyNode[]{node1, node2, node3_}, Hierarchy.getPath(node3_));
 	}
 }

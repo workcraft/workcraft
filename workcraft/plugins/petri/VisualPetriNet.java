@@ -16,10 +16,6 @@ public class VisualPetriNet extends VisualModel {
 		return list;
 	}
 
-	public VisualPetriNet() {
-		super();
-	}
-
 	public VisualPetriNet(PetriNet model)
 	throws VisualModelInstantiationException {
 		super(model);

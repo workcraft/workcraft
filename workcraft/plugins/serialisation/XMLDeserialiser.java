@@ -38,20 +38,30 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 	};
 
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
-	HashMap <Object, Element> instances = new HashMap<Object, Element>();
+	HashMap <Object, Element> instances;
+	// LinkedHashMap <Container, LinkedList<HierarchyNode>> children;
+
 	InternalRefrenceResolver internalReferenceResolver;
 
-	private Object initInstance(Element element) throws DeserialisationException {
-		Object instance = serialisation.initInstance(element);
+	private Object initInstance(Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+		Object instance = serialisation.initInstance(element, externalReferenceResolver);
 		instances.put(instance, element);
 
 		if (instance instanceof IntIdentifiable)
 			internalReferenceResolver.addObject(instance, Integer.toString(((IntIdentifiable)instance).getID()));
 
 		if (instance instanceof Container) {
+
+			/* LinkedList<HierarchyNode> ch = children.get(instance);
+			if (ch == null)
+				ch = new LinkedList<HierarchyNode>(); */
+
 			for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
-				Object subNode = initInstance (subNodeElement);
-				if (subNode instanceof HierarchyNode)
+				Object subNode = initInstance (subNodeElement, externalReferenceResolver);
+
+
+				 if (subNode instanceof HierarchyNode)
+					 //ch.add((HierarchyNode)subNode);
 					((Container)instance).add((HierarchyNode)subNode);
 			}
 		}
@@ -63,21 +73,27 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 			ReferenceResolver externalReferenceResolver)
 	throws DeserialisationException {
 		try {
+
+			instances = new HashMap<Object, Element>();
+			// children = new LinkedHashMap <Container, LinkedList<HierarchyNode>>();
+
 			internalReferenceResolver = new InternalRefrenceResolver();
 
 			Document doc = XmlUtil.loadDocument(inputStream);
 			Element modelElement = doc.getDocumentElement();
 
 			// 1st pass -- init instances
-			Model model = (Model)serialisation.initInstance(modelElement);
+			Model model = (Model)serialisation.initInstance(modelElement, externalReferenceResolver);
 			Element rootElement = XmlUtil.getChildElement("node", modelElement);
-			HierarchyNode root = (HierarchyNode) initInstance(rootElement);
+			HierarchyNode root = (HierarchyNode) initInstance(rootElement, externalReferenceResolver);
 
 			// 2nd pass -- finalise instances
 			for (Object o : instances.keySet())
 				serialisation.finalise(instances.get(o), o, internalReferenceResolver, externalReferenceResolver);
 
 			model.setRoot(root);
+
+			internalReferenceResolver.addObject(model, "$model");
 
 			return new DeserialisationResult(model, internalReferenceResolver);
 		} catch (ParserConfigurationException e) {

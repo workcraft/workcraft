@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 
 public class TransformHelper {
 
@@ -36,7 +37,7 @@ public class TransformHelper {
 	}
 
 	public static AffineTransform getTransform(HierarchyNode node1, HierarchyNode node2) {
-		HierarchyNode parent = HierarchyHelper.getCommonParent(node1, node2);
+		HierarchyNode parent = Hierarchy.getCommonParent(node1, node2);
 		AffineTransform node1ToParent = getTransformToAncestor(node1, parent);
 		AffineTransform node2ToParent = getTransformToAncestor(node2, parent);
 		AffineTransform parentToNode2 = Geometry.optimisticInverse(node2ToParent);

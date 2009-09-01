@@ -22,6 +22,7 @@ import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.util.Hierarchy;
 
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Container {
@@ -146,7 +147,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public List<HierarchyNode> unGroup() {
 		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>(children.size());
 
-		Container parent = HierarchyHelper.getNearestAncestor(getParent(), Container.class);
+		Container parent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 
 		for (HierarchyNode node : children) {
 			node.setParent(null);

@@ -77,8 +77,6 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 				public String getReference(Object obj) {
 					if (obj instanceof IntIdentifiable)
 						return Integer.toString(((IntIdentifiable)obj).getID());
-					else if (obj instanceof Model)
-						return ((Model)obj).getReference();
 					else
 						return null;
 				}

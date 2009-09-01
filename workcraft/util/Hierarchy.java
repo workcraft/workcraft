@@ -1,11 +1,47 @@
-package org.workcraft.dom.visual;
+package org.workcraft.util;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.dom.HierarchyNode;
 
 import net.sf.jga.fn.UnaryFunctor;
 
-public class HierarchyHelper {
+public class Hierarchy {
+	@SuppressWarnings("serial")
+	public static <T> UnaryFunctor<HierarchyNode, Boolean> getTypeFilter(
+			final Class<T> type) {
+		return new UnaryFunctor<HierarchyNode, Boolean> (){
+			public Boolean fn(HierarchyNode node) {
+				if (type.isInstance(node))
+					return true;
+				else
+					return false;
+			}
+		};
+	}
 
+	public static  Collection<HierarchyNode> fillterNodes (Collection<HierarchyNode> nodes, UnaryFunctor<HierarchyNode, Boolean> filter) {
+		LinkedList<HierarchyNode> result = new LinkedList<HierarchyNode>();
+
+		for (HierarchyNode node : nodes) {
+			if (filter.fn(node))
+				result.add(node);
+		}
+
+		return result;
+	}
+
+
+	public static <T extends HierarchyNode> Collection <T> filterNodesByType (Collection<HierarchyNode> nodes, final Class<T> type) {
+		LinkedList<T> result = new LinkedList<T>();
+
+		for (HierarchyNode node : nodes) {
+			if (type.isInstance(node))
+				result.add(type.cast(node));
+		}
+		return result;
+	}
 	public static HierarchyNode [] getPath(HierarchyNode node) {
 		HierarchyNode n = node;
 			int i = 0;

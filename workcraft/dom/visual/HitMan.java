@@ -12,6 +12,7 @@ import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 
 public class HitMan
 {
@@ -92,7 +93,7 @@ public class HitMan
 
 	@SuppressWarnings("unchecked")
 	public static <T extends HierarchyNode> T hitFirstNodeOfType(Point2D point, HierarchyNode node, Class<T> type) {
-		return (T) hitFirst(point, node, getTypeFilter(type));
+		return (T) hitFirst(point, node, Hierarchy.getTypeFilter(type));
 	}
 
 	public static HierarchyNode hitFirstChild(Point2D point,
@@ -108,7 +109,7 @@ public class HitMan
 
 	@SuppressWarnings("unchecked")
 	public static <T extends HierarchyNode> T hitFirstChildOfType(Point2D point, HierarchyNode node, Class<T> type) {
-		return (T) hitFirstChild(point, node, getTypeFilter(type));
+		return (T) hitFirstChild(point, node, Hierarchy.getTypeFilter(type));
 	}
 
 	private static Point2D transformToChildSpace(Point2D point,
@@ -151,21 +152,9 @@ public class HitMan
 
 	@SuppressWarnings("unchecked")
 	public static <T extends HierarchyNode> T hitDeepestNodeOfType(Point2D point, VisualGroup group, final Class<T> type) {
-		return (T)hitDeepest(point, group, getTypeFilter(type));
+		return (T)hitDeepest(point, group, Hierarchy.getTypeFilter(type));
 	}
 
-	@SuppressWarnings("serial")
-	private static <T> UnaryFunctor<HierarchyNode, Boolean> getTypeFilter(
-			final Class<T> type) {
-		return new UnaryFunctor<HierarchyNode, Boolean> (){
-			public Boolean fn(HierarchyNode node) {
-				if (type.isInstance(node))
-					return true;
-				else
-					return false;
-			}
-		};
-	}
 
 	@SuppressWarnings("serial")
 	public static HierarchyNode hitTestForSelection(Point2D point, HierarchyNode node) {

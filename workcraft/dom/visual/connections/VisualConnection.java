@@ -18,7 +18,6 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
-import org.workcraft.dom.XMLSerialiser;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.TouchableHelper;
@@ -27,10 +26,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.EventListener1;
-import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
@@ -112,37 +108,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		hm.put("Bezier", ConnectionType.BEZIER);
 
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
-
-		addXMLSerialiser(new XMLSerialiser() {
-
-			public String getTagName() {
-				return VisualConnection.class.getSimpleName();
-			}
-
-			public void deserialise(Element element,
-					ReferenceResolver referenceResolver) throws DeserialisationException {
-				setID(XmlUtil.readIntAttr(element, "ID", -1));
-
-				refConnection = (Connection) referenceResolver.getObject(element.getAttribute("refID"));
-
-				first = (VisualComponent) referenceResolver.getObject(element.getAttribute("first"));
-				second = (VisualComponent) referenceResolver.getObject(element.getAttribute("second"));
-
-				readXMLConnectionProperties(element);
-			}
-
-			public void serialise(Element element,
-					ReferenceProducer refResolver) {
-				if (refConnection != null)
-					XmlUtil.writeIntAttr(element, "refID", refConnection.getID());
-
-				XmlUtil.writeIntAttr(element, "ID", getID());
-				XmlUtil.writeIntAttr(element, "first", first.getID());
-				XmlUtil.writeIntAttr(element, "second", second.getID());
-
-				writeXMLConnectionProperties(element);
-			}
-		});
 	}
 
 	private void addListeners() {
@@ -152,10 +117,18 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		update();
 	}
 
-	protected VisualConnection() {
+	public VisualConnection() {
 
 	}
 
+	public void setVisualConnection(VisualComponent first, VisualComponent second, Connection refConnection) {
+		this.first = first;
+		this.second = second;
+		this.refConnection = refConnection;
+
+		initialise();
+		addListeners();
+	}
 
 	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
@@ -409,12 +382,6 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	public void onPropertyChanged(String propertyName, Object sender) {
 		if (propertyName.equals("X") || propertyName.equals("Y") || propertyName.equals("transform") || propertyName.equals("shape"));
-		update();
-	}
-
-	@Override
-	public void setParent(HierarchyNode parent) {
-		super.setParent(parent);
 		update();
 	}
 

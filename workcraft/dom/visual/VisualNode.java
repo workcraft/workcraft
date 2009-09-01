@@ -25,6 +25,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 
 
 public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable, IntIdentifiable {
@@ -103,7 +104,7 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Dep
 	}
 
 	public final boolean isDescendantOf(VisualGroup group) {
-		return HierarchyHelper.isDescendant(this, group);
+		return Hierarchy.isDescendant(this, group);
 	}
 	protected final void addPopupMenuSegment (PopupMenuSegment segment) {
 		popupMenuBuilder.addSegment(segment);

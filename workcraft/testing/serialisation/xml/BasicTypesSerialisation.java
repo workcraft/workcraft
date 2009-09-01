@@ -1,5 +1,7 @@
 package org.workcraft.testing.serialisation.xml;
 
+import java.awt.geom.AffineTransform;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.Assert;
@@ -9,6 +11,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
+import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
 import org.workcraft.plugins.serialisation.xml.DoubleDeserialiser;
 import org.workcraft.plugins.serialisation.xml.DoubleSerialiser;
 import org.workcraft.plugins.serialisation.xml.EnumDeserialiser;
@@ -43,11 +47,11 @@ public class BasicTypesSerialisation {
 
 
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DeserialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -69,11 +73,11 @@ public class BasicTypesSerialisation {
 
 
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DeserialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -90,16 +94,49 @@ public class BasicTypesSerialisation {
 			Element e2 = doc.createElement("property");
 			s.serialise(e2, 123.456);
 
+			double r = Math.random();
+			Element e3 = doc.createElement("property");
+			s.serialise(e3, r);
+
+
 			Assert.assertEquals(-1E8, ds.deserialise(e));
 			Assert.assertEquals(123.456, ds.deserialise(e2));
+			Assert.assertEquals(r, ds.deserialise(e3));
 
 
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DeserialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Test
+	public void TransformTest() {
+		try {
+			Document doc = XmlUtil.createDocument();
+			AffineTransformSerialiser s = new AffineTransformSerialiser();
+			AffineTransformDeserialiser ds = new AffineTransformDeserialiser();
+
+			AffineTransform t = new AffineTransform
+			(
+					Math.random(), Math.random(), Math.random(),
+					Math.random(), Math.random(), Math.random()
+				) ;
+
+			Element e = doc.createElement("property");
+			s.serialise(e, t);
+
+			Assert.assertEquals(t, ds.deserialise(e));
+
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (SerialisationException e) {
+			throw new RuntimeException(e);
+		} catch (DeserialisationException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -131,11 +168,11 @@ public class BasicTypesSerialisation {
 			Assert.assertEquals("\" <xml", ds.deserialise(e3));
 
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DeserialisationException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 }

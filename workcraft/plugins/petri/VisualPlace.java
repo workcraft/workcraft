@@ -103,10 +103,6 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclarations();
 	}
 
-	public VisualPlace() {
-		addPropertyDeclarations();
-	}
-
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
 		addPropertyDeclaration(new PropertyDeclaration ("Capacity", "getCapacity", "setCapacity", int.class));

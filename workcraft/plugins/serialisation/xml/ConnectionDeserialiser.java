@@ -16,6 +16,9 @@ public class ConnectionDeserialiser implements ReferencingXMLDeserialiser {
 		Component first = (Component)internalReferenceResolver.getObject(element.getAttribute("first"));
 		Component second = (Component)internalReferenceResolver.getObject(element.getAttribute("second"));
 
+		first.addToPostset(second);
+		second.addToPreset(first);
+
 		con.setComponents(first, second);
 	}
 

@@ -42,6 +42,7 @@ import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.edit.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 
 public class VisualModel implements Plugin, Model {
@@ -137,20 +138,15 @@ public class VisualModel implements Plugin, Model {
 		for (Connection connection : mathModel.getConnections()) {
 			VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection, refRes);
 
-			HierarchyHelper.getNearestAncestor(
-					HierarchyHelper.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
+			Hierarchy.getNearestAncestor(
+					Hierarchy.getCommonParent(visualConnection.getFirst(), visualConnection.getSecond()),
 					Container.class).add(visualConnection);
 			registerNode(visualConnection);
 
 		}
 	}
 
-	public VisualModel() {
-		addListener(new Listener());
-	}
-
 	public VisualModel(MathModel model) throws VisualModelInstantiationException {
-		this();
 		setMathModel(model);
 	}
 
@@ -351,8 +347,8 @@ public class VisualModel implements Plugin, Model {
 		VisualConnection ret = new VisualConnection(con, firstComponent, secondComponent);
 
 		Container group =
-			HierarchyHelper.getNearestAncestor(
-			HierarchyHelper.getCommonParent(first, second),
+			Hierarchy.getNearestAncestor(
+			Hierarchy.getCommonParent(first, second),
 			Container.class);
 
 		group.add(ret);
@@ -715,13 +711,5 @@ public class VisualModel implements Plugin, Model {
 		}
 		else
 			throw new RuntimeException("The root node of a visual model must be a visual group.");
-	}
-
-	public String getReference() {
-		return "#visualModel";
-	}
-
-	public void setReference(String reference) {
-
 	}
 }

@@ -19,10 +19,6 @@ public class VisualTransition extends VisualComponent {
 		super(transition);
 	}
 
-	public VisualTransition() {
-
-	}
-
 	public Transition getTransition() {
 		return (Transition)getReferencedComponent();
 	}

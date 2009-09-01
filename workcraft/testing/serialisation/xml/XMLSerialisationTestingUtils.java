@@ -6,6 +6,8 @@ import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginProvider;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.VisualPlaceDeserialiser;
+import org.workcraft.plugins.petri.VisualPlaceSerialiser;
 import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
 import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
 import org.workcraft.plugins.serialisation.xml.BooleanDeserialiser;
@@ -20,8 +22,13 @@ import org.workcraft.plugins.serialisation.xml.IntDeserialiser;
 import org.workcraft.plugins.serialisation.xml.IntSerialiser;
 import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
+import org.workcraft.plugins.serialisation.xml.VisualConnectionDeserialiser;
+import org.workcraft.plugins.serialisation.xml.VisualConnectionSerialiser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.VisualSTGDeserialiser;
+import org.workcraft.plugins.stg.VisualSignalTransitionDeserialiser;
+import org.workcraft.plugins.stg.VisualSignalTransitionSerialiser;
 
 public class XMLSerialisationTestingUtils {
 	static class MockPluginManager implements PluginProvider {
@@ -37,7 +44,10 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (ConnectionSerialiser.class),
 						new PluginInfo (IntSerialiser.class),
 						new PluginInfo (EnumSerialiser.class),
-						new PluginInfo (AffineTransformSerialiser.class)
+						new PluginInfo (AffineTransformSerialiser.class),
+						new PluginInfo (VisualPlaceSerialiser.class),
+						new PluginInfo (VisualSignalTransitionSerialiser.class),
+						new PluginInfo (VisualConnectionSerialiser.class)
 				};
 			} else if (interfaceName.equals(org.workcraft.framework.serialisation.xml.XMLDeserialiser.class.getName()))
 			{
@@ -49,7 +59,11 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (ConnectionDeserialiser.class),
 						new PluginInfo (IntDeserialiser.class),
 						new PluginInfo (EnumDeserialiser.class),
-						new PluginInfo (AffineTransformDeserialiser.class)
+						new PluginInfo (AffineTransformDeserialiser.class),
+						new PluginInfo (VisualSTGDeserialiser.class),
+						new PluginInfo (VisualPlaceDeserialiser.class),
+						new PluginInfo (VisualSignalTransitionDeserialiser.class),
+						new PluginInfo (VisualConnectionDeserialiser.class)
 				};
 			} else
 				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceName);

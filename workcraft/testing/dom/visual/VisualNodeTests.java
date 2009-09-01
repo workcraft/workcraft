@@ -5,10 +5,10 @@ import java.awt.geom.Rectangle2D;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
+import org.workcraft.util.Hierarchy;
 
 public class VisualNodeTests {
 
@@ -88,11 +88,11 @@ public class VisualNodeTests {
 	public void TestGetPath()
 	{
 		VisualGroup root = createGroup(null);
-		Assert.assertEquals(1, HierarchyHelper.getPath(root).length);
+		Assert.assertEquals(1, Hierarchy.getPath(root).length);
 		VisualGroup node1 = createGroup(root);
-		Assert.assertArrayEquals(new VisualGroup[]{root, node1}, HierarchyHelper.getPath(node1));
+		Assert.assertArrayEquals(new VisualGroup[]{root, node1}, Hierarchy.getPath(node1));
 		VisualGroup node2 = createGroup(node1);
-		Assert.assertArrayEquals(new VisualGroup[]{root, node1, node2}, HierarchyHelper.getPath(node2));
+		Assert.assertArrayEquals(new VisualGroup[]{root, node1, node2}, Hierarchy.getPath(node2));
 	}
 
 	@Test
@@ -106,25 +106,25 @@ public class VisualNodeTests {
 		VisualGroup node21 = createGroup(node2);
 		VisualGroup node22 = createGroup(node2);
 
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node1, node2));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node1, node21));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node1, node22));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node2));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node21));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node22));
 
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node11, node2));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node11, node21));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node11, node22));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node2));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node21));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node22));
 
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node12, node2));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node12, node21));
-		Assert.assertEquals(root, HierarchyHelper.getCommonParent(node12, node22));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node2));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node21));
+		Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node22));
 
-		Assert.assertEquals(node1, HierarchyHelper.getCommonParent(node11, node1));
+		Assert.assertEquals(node1, Hierarchy.getCommonParent(node11, node1));
 
-		Assert.assertEquals(node1, HierarchyHelper.getCommonParent(node11, node12));
-		Assert.assertEquals(node11, HierarchyHelper.getCommonParent(node11, node11));
+		Assert.assertEquals(node1, Hierarchy.getCommonParent(node11, node12));
+		Assert.assertEquals(node11, Hierarchy.getCommonParent(node11, node11));
 
-		Assert.assertEquals(node1, HierarchyHelper.getCommonParent(node12, node11));
-		Assert.assertEquals(node12, HierarchyHelper.getCommonParent(node12, node12));
+		Assert.assertEquals(node1, Hierarchy.getCommonParent(node12, node11));
+		Assert.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
 	}
 
 	private void ensureShiftX(VisualGroup node,

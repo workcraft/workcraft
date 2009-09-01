@@ -37,10 +37,6 @@ public class VisualSignalTransition extends VisualTransition {
 	private Rectangle2D emptyBB = new Rectangle2D.Double(-size/2, -size/2, size, size);
 	private float textX, textY;
 
-	public VisualSignalTransition() {
-		addPropertyDeclarations();
-	}
-
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
 		addPropertyDeclarations();
@@ -186,28 +182,33 @@ public class VisualSignalTransition extends VisualTransition {
 
 	}
 
-
+	@NoAutoSerialisation
 	public SignalTransition.Type getType() {
 		return getReferencedTransition().getType();
 	}
 
+	@NoAutoSerialisation
 	public void setType(SignalTransition.Type type) {
 		getReferencedTransition().setType(type);
 	}
 
+	@NoAutoSerialisation
 	public SignalTransition.Direction getDirection() {
 		return getReferencedTransition().getDirection();
 	}
 
+	@NoAutoSerialisation
 	public void setDirection(SignalTransition.Direction direction) {
 		getReferencedTransition().setDirection(direction);
 		updateText();
 	}
 
+	@NoAutoSerialisation
 	public String getSignalName() {
 		return getReferencedTransition().getSignalName();
 	}
 
+	@NoAutoSerialisation
 	public void setSignalName(String name) {
 		getReferencedTransition().setSignalName(name);
 		updateText();

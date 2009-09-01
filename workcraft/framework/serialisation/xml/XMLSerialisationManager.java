@@ -104,9 +104,9 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 		nodeSerialiser.serialise(element, object, internalReferences, externalReferences);
 	}
 
-	public Object initInstance (Element element) throws DeserialisationException
+	public Object initInstance (Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException
 	{
-		return nodeDeserialiser.initInstance(element);
+		return nodeDeserialiser.initInstance(element, externalReferenceResolver);
 	}
 
 	public void finalise(Element element, Object instance, ReferenceResolver internalReferenceResolver,

@@ -6,7 +6,7 @@ import org.workcraft.framework.serialisation.xml.BasicXMLDeserialiser;
 
 public class DoubleDeserialiser implements BasicXMLDeserialiser {
 	public Object deserialise(Element element) throws DeserialisationException {
-		return Double.parseDouble(element.getAttribute("value"));
+		return DoubleSerialiser.doubleFromString(element.getAttribute("value"));
 	}
 	public String getClassName() {
 		return double.class.getName();

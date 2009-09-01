@@ -8,7 +8,6 @@ import java.util.Set;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModelEventListener;
@@ -19,6 +18,7 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.util.Hierarchy;
 
 public class VisualSTG extends VisualPetriNet  {
 	class Listener implements VisualModelEventListener {
@@ -141,8 +141,8 @@ public class VisualSTG extends VisualPetriNet  {
 				ImplicitPlaceArc connection = new ImplicitPlaceArc((VisualComponent)first, (VisualComponent)second, con1, con2, implicitPlace);
 
 				Container group =
-					HierarchyHelper.getNearestAncestor(
-					HierarchyHelper.getCommonParent(first, second),
+					Hierarchy.getNearestAncestor(
+					Hierarchy.getCommonParent(first, second),
 					Container.class);
 
 				group.add(connection);
@@ -151,7 +151,7 @@ public class VisualSTG extends VisualPetriNet  {
 				return connection;
 			} else if (second instanceof ImplicitPlaceArc) {
 				ImplicitPlaceArc con = (ImplicitPlaceArc)second;
-				Container group = HierarchyHelper.getNearestAncestor(con, Container.class);
+				Container group = Hierarchy.getNearestAncestor(con, Container.class);
 
 				Place implicitPlace = con.getImplicitPlace();
 
@@ -179,7 +179,7 @@ public class VisualSTG extends VisualPetriNet  {
 		if (first instanceof ImplicitPlaceArc)
 			if (second instanceof VisualSignalTransition) {
 				ImplicitPlaceArc con = (ImplicitPlaceArc)first;
-				Container group = HierarchyHelper.getNearestAncestor(con, Container.class);
+				Container group = Hierarchy.getNearestAncestor(con, Container.class);
 
 				Place implicitPlace = con.getImplicitPlace();
 
@@ -257,8 +257,8 @@ public class VisualSTG extends VisualPetriNet  {
 
 		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
 
-		HierarchyHelper.getNearestAncestor(
-				HierarchyHelper.getCommonParent(first, second), Container.class)
+		Hierarchy.getNearestAncestor(
+				Hierarchy.getCommonParent(first, second), Container.class)
 					.add(con);
 		registerNode(con);
 
@@ -305,10 +305,6 @@ public class VisualSTG extends VisualPetriNet  {
 			lockedPlaces.add((VisualPlace)component);
 		super.removeComponent(component);
 		lockedPlaces.clear();
-	}
-
-	public VisualSTG() {
-		super();
 	}
 
 	public VisualSTG(STG model) throws VisualModelInstantiationException {

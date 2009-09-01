@@ -45,9 +45,9 @@ public class VisualModelSerialisation {
 		DataAccumulator visualData = new DataAccumulator();
 		serialiser.export(visualstg, visualData, mathModelReferences);
 
-		System.out.println (new String (mathData.getData()));
+		/* System.out.println (new String (mathData.getData()));
 		System.out.println ("---------------");
-		System.out.println (new String (visualData.getData()));
+		System.out.println (new String (visualData.getData())); */
 
 		// deserialise
 		XMLDeserialiser deserialiser = new XMLDeserialiser();

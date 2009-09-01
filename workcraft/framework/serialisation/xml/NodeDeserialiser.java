@@ -20,7 +20,10 @@ class NodeDeserialiser {
 		this.fac = factory;
 	}
 
-	private void autoDeserialiseProperties (Element currentLevelElement, Object instance, Class<? > currentLevel) throws DeserialisationException {
+	private void autoDeserialiseProperties(Element currentLevelElement,
+			Object instance, Class<?> currentLevel,
+			ReferenceResolver externalReferenceResolver)
+			throws DeserialisationException {
 		if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
 			return;
 
@@ -77,7 +80,7 @@ class NodeDeserialiser {
 		} catch (IllegalAccessException e) {
 			throw new DeserialisationException(e);
 		} catch (InvocationTargetException e) {
-			throw new DeserialisationException(e);
+			throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getClass().getName(), e);
 		} catch (InstantiationException e) {
 			throw new DeserialisationException(e);
 		} catch (IntrospectionException e) {
@@ -85,7 +88,7 @@ class NodeDeserialiser {
 		}
 	}
 
-	public Object initInstance (Element element) throws DeserialisationException {
+	public Object initInstance (Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
 		String className = element.getAttribute("class");
 
 		if (className == null || className.isEmpty())
@@ -93,17 +96,22 @@ class NodeDeserialiser {
 
 		try {
 			XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
+
+			String shortClassName = Class.forName(className).getSimpleName();
+
+			Element currentLevelElement = XmlUtil.getChildElement(shortClassName, element);
+
 			Object instance;
 
 			if (deserialiser instanceof CustomXMLDeserialiser) {
-				instance = ((CustomXMLDeserialiser)deserialiser).initInstance(element);
+				instance = ((CustomXMLDeserialiser)deserialiser).initInstance(currentLevelElement, externalReferenceResolver);
 			} else if (deserialiser instanceof BasicXMLDeserialiser) {
-				instance = ((BasicXMLDeserialiser)deserialiser).deserialise(element);
+				instance = ((BasicXMLDeserialiser)deserialiser).deserialise(currentLevelElement);
 			} else {
 				instance = Class.forName(className).newInstance();
 			}
 
-			doInitialisation(element, instance, instance.getClass());
+			doInitialisation(element, instance, instance.getClass(), externalReferenceResolver);
 
 			return instance;
 
@@ -116,14 +124,14 @@ class NodeDeserialiser {
 		}
 	}
 
-	private void doInitialisation (Element element, Object instance, Class<?> currentLevel) throws DeserialisationException {
+	private void doInitialisation (Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
 
 		if (currentLevelElement != null)
-			autoDeserialiseProperties(currentLevelElement, instance, currentLevel);
+			autoDeserialiseProperties(currentLevelElement, instance, currentLevel, externalReferenceResolver);
 
 		if (currentLevel.getSuperclass() != Object.class)
-			doInitialisation(element, instance, currentLevel.getSuperclass());
+			doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
 	}
 
 	private void doFinalisation(Element element, Object instance,
@@ -148,7 +156,7 @@ class NodeDeserialiser {
 			}
 
 			if (currentLevel.getSuperclass() != Object.class)
-				doInitialisation(element, instance, currentLevel.getSuperclass());
+				doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
 		}
 	}
 

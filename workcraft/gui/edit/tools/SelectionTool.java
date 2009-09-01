@@ -18,7 +18,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.Colorisable;
-import org.workcraft.dom.visual.HierarchyHelper;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.Touchable;
@@ -32,6 +31,7 @@ import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.util.Hierarchy;
 
 public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
@@ -372,7 +372,7 @@ public class SelectionTool extends AbstractTool {
 
 	private void currentLevelUp(GraphEditorKeyEvent e) {
 		VisualGroup level = e.getModel().getCurrentLevel();
-		VisualGroup parent = HierarchyHelper.getNearestAncestor(level.getParent(), VisualGroup.class);
+		VisualGroup parent = Hierarchy.getNearestAncestor(level.getParent(), VisualGroup.class);
 		if(parent!=null)
 		{
 			e.getModel().setCurrentLevel(parent);

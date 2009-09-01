@@ -5,9 +5,11 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
+import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Group;
 import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.Place;
@@ -39,6 +41,56 @@ public class SerialisationTestingUtils {
 		compareNodes (con1.getSecond(), con2.getSecond());
 	}
 
+	public static void comparePreAndPostSets(VisualComponent c1, VisualComponent c2) {
+		assertEquals(c1.getPreset().size(),c2.getPreset().size());
+		assertEquals(c1.getPostset().size(),c2.getPostset().size());
+
+		Iterator<VisualComponent> i1 = c1.getPreset().iterator();
+		Iterator<VisualComponent> i2 = c2.getPreset().iterator();
+
+		while ( i1.hasNext() ) {
+			VisualComponent n1 = i1.next();
+			VisualComponent n2 = i2.next();
+
+			assertEquals (n1.getClass(), n2.getClass());
+		}
+
+		i1 = c1.getPostset().iterator();
+		i2 = c2.getPostset().iterator();
+
+		while ( i1.hasNext() ) {
+			VisualComponent n1 = i1.next();
+			VisualComponent n2 = i2.next();
+
+			assertEquals (n1.getClass(), n2.getClass());
+		}
+	}
+
+	public static void comparePreAndPostSets( Component c1, Component c2) {
+		assertEquals(c1.getPreset().size(),c2.getPreset().size());
+		assertEquals(c1.getPostset().size(),c2.getPostset().size());
+
+		Iterator<Component> i1 = c1.getPreset().iterator();
+		Iterator<Component> i2 = c2.getPreset().iterator();
+
+		while ( i1.hasNext() ) {
+			Component n1 = i1.next();
+			Component n2 = i2.next();
+
+			assertEquals (n1.getClass(), n2.getClass());
+		}
+
+		i1 = c1.getPostset().iterator();
+		i2 = c2.getPostset().iterator();
+
+		while ( i1.hasNext() ) {
+			Component n1 = i1.next();
+			Component n2 = i2.next();
+
+			assertEquals (n1.getClass(), n2.getClass());
+		}
+	}
+
 	public static void compareVisualPlaces (VisualPlace p1, VisualPlace p2) {
 		assertEquals(p1.getID(), p2.getID());
 		assertEquals(p1.getTransform(), p2.getTransform());
@@ -61,6 +113,11 @@ public class SerialisationTestingUtils {
 
 	public static void compareNodes (HierarchyNode node1, HierarchyNode node2) {
 		assertEquals(node1.getClass(), node2.getClass());
+
+		if (node1 instanceof Component)
+			comparePreAndPostSets( (Component) node1, (Component) node2 );
+		else if (node1 instanceof VisualComponent)
+			comparePreAndPostSets( (VisualComponent) node1, (VisualComponent) node2 );
 
 		if (node1 instanceof Place)
 			comparePlaces ((Place)node1, (Place)node2);
@@ -94,4 +151,6 @@ public class SerialisationTestingUtils {
 			compareNodes (n1, n2);
 		}
 	}
+
+	//public
 }
