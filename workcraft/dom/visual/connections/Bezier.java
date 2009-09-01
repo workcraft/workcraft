@@ -25,21 +25,21 @@ class Bezier implements ConnectionGraphic {
 	private double ax, bx, cx, ay, by, cy;
 	private Rectangle2D boundingBox = null;
 
-	private VisualConnection parentConnection;
+	private ConnectionInfo parentConnection;
 
-	public Bezier(VisualConnection parentConnection) {
+	public Bezier(ConnectionInfo parentConnection) {
 		this.parentConnection = parentConnection;
 
-		cp1 = new BezierAnchorPoint(parentConnection, parentConnection.getFirst());
-		cp2 = new BezierAnchorPoint(parentConnection, parentConnection.getSecond());
+		cp1 = new BezierAnchorPoint(parentConnection, true);
+		cp2 = new BezierAnchorPoint(parentConnection, false);
 
-		cp1.setPosition(cp1.getParentConnection().getFirst().getPosition());
-		cp2.setPosition(cp2.getParentConnection().getSecond().getPosition());
+		cp1.setPosition(parentConnection.getPoint1());
+		cp2.setPosition(parentConnection.getPoint2());
 	}
 
 	private void updateCoefficients() {
-		Point2D p1 = parentConnection.getFirst().getPosition();
-		Point2D p2 = parentConnection.getSecond().getPosition();
+		Point2D p1 = parentConnection.getPoint1();
+		Point2D p2 = parentConnection.getPoint2();
 
 		cx = 3.0f * (cp1.getX() - p1.getX());
 		bx = 3.0f * (cp2.getX() - cp1.getX()) - cx;
@@ -155,9 +155,11 @@ class Bezier implements ConnectionGraphic {
 
 		LinkedList<Double> ROOTS;
 
+		Point2D point1 = parentConnection.getPoint1();
+
 //		boolean found = false;
 //		System.out.printf("X=%6.5f Y=%6.5f\n", rect.getMinX(), rect.getMinY());
-		ROOTS = solveCubic(ax, bx, cx, parentConnection.getFirst().getX()-rect.getMinX());
+		ROOTS = solveCubic(ax, bx, cx, point1.getX()-rect.getMinX());
 		for (Double r : ROOTS) {
 			Point2D P = getPointOnConnection(r);
 			double Y = P.getY();
@@ -168,7 +170,7 @@ class Bezier implements ConnectionGraphic {
 //		if (found) return true;
 
 
-		ROOTS = solveCubic(ax, bx, cx, parentConnection.getFirst().getX()-rect.getMaxX());
+		ROOTS = solveCubic(ax, bx, cx, point1.getX()-rect.getMaxX());
 		for (Double r : ROOTS) {
 			Point2D P = getPointOnConnection(r);
 			double Y = P.getY();
@@ -177,7 +179,7 @@ class Bezier implements ConnectionGraphic {
 			if (Y>=rect.getMinY()&&Y<=rect.getMaxY()) return true;
 		}
 
-		ROOTS = solveCubic(ay, by, cy, parentConnection.getFirst().getY()-rect.getMinY());
+		ROOTS = solveCubic(ay, by, cy, point1.getY()-rect.getMinY());
 		for (Double r : ROOTS) {
 			Point2D P = getPointOnConnection(r);
 //			double Y = P.getY();
@@ -186,7 +188,7 @@ class Bezier implements ConnectionGraphic {
 			if (X>=rect.getMinX()&&X<=rect.getMaxX()) return true;
 		}
 
-		ROOTS = solveCubic(ay, by, cy, parentConnection.getFirst().getY()-rect.getMaxY());
+		ROOTS = solveCubic(ay, by, cy, point1.getY()-rect.getMaxY());
 		for (Double r : ROOTS) {
 			Point2D P = getPointOnConnection(r);
 //			double Y = P.getY();
@@ -203,13 +205,13 @@ class Bezier implements ConnectionGraphic {
 		double tSquared = t * t;
 		double tCubed = tSquared * t;
 
-		double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + parentConnection.getFirst().getX();
-		double y = (ay * tCubed) + (by * tSquared) + (cy * t) + parentConnection.getFirst().getY();
+		double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + parentConnection.getPoint1().getX();
+		double y = (ay * tCubed) + (by * tSquared) + (cy * t) + parentConnection.getPoint1().getY();
 
 		return new Point2D.Double(x, y);
 	}
 
-	public void readFromXML(Element element, VisualConnection parent) {
+	public void readFromXML(Element element, ConnectionInfo parent) {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;
@@ -247,13 +249,13 @@ class Bezier implements ConnectionGraphic {
 	}
 
 	public void removeAllAnchorPoints() {
-		cp1.setPosition(cp1.getParentConnection().getFirst().getPosition());
-		cp2.setPosition(cp2.getParentConnection().getSecond().getPosition());
+		cp1.setPosition(parentConnection.getPoint1());
+		cp2.setPosition(parentConnection.getPoint2());
 	}
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
-		if (anchor==cp1) cp1.setPosition(cp1.getParentConnection().getFirst().getPosition());
-		if (anchor==cp2) cp2.setPosition(cp2.getParentConnection().getSecond().getPosition());
+		if (anchor==cp1) cp1.setPosition(parentConnection.getPoint1());
+		if (anchor==cp2) cp2.setPosition(parentConnection.getPoint2());
 	}
 
 	private CubicCurve2D getPartialCurve(double tStart, double tEnd)
@@ -261,7 +263,7 @@ class Bezier implements ConnectionGraphic {
 		CubicCurve2D result = new CubicCurve2D.Double();
 
 		CubicCurve2D fullCurve = new CubicCurve2D.Double();
-		fullCurve.setCurve(cp1.getParentConnection().getFirst().getPosition(), cp1.getPosition(), cp2.getPosition(), cp2.getParentConnection().getSecond().getPosition());
+		fullCurve.setCurve(parentConnection.getPoint1(), cp1.getPosition(), cp2.getPosition(), parentConnection.getPoint2());
 
 		CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
 		CurveSplitResult secondSplit = Geometry.splitCubicCurve(fullCurve, tEnd);

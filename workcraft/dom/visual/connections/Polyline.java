@@ -16,7 +16,7 @@ import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.util.XmlUtil;
 
 class Polyline implements ConnectionGraphic {
-	private VisualConnection parentConnection;
+	private ConnectionInfo parentConnection;
 
 	ArrayList<PolylineAnchorPoint> anchorPoints = new ArrayList<PolylineAnchorPoint>();
 
@@ -26,7 +26,7 @@ class Polyline implements ConnectionGraphic {
 	private double polylineLengthSq;
 	private Rectangle2D boundingBox = null;
 
-	public Polyline(VisualConnection parentConnection) {
+	public Polyline(ConnectionInfo parentConnection) {
 		this.parentConnection = parentConnection;
 	}
 
@@ -146,7 +146,7 @@ class Polyline implements ConnectionGraphic {
 			currentOffsetSq += polylineSegmentLengthsSq[i];
 		}
 
-		return parentConnection.getSecond().getPosition();
+		return parentConnection.getPoint2();
 	}
 
 	public Point2D getNearestPointOnConnection(Point2D pt) {
@@ -196,9 +196,9 @@ class Polyline implements ConnectionGraphic {
 
 	private Point2D getAnchorPointLocation(int index) {
 		if (index == 0)
-			return parentConnection.getFirst().getPosition();
+			return parentConnection.getPoint1();
 		if (index > anchorPoints.size())
-			return parentConnection.getSecond().getPosition();
+			return parentConnection.getPoint2();
 		return anchorPoints.get(index-1).getPosition();
 	}
 
@@ -254,7 +254,6 @@ class Polyline implements ConnectionGraphic {
 
 		parentConnection.update();
 
-		parentConnection.firePropertyChanged("anchors");
 		return ap;
 	}
 
@@ -284,14 +283,12 @@ class Polyline implements ConnectionGraphic {
 	public void removeAllAnchorPoints() {
 		anchorPoints.clear();
 		parentConnection.update();
-		parentConnection.firePropertyChanged("anchors");
 	}
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
 		anchorPoints.remove(anchor);
 
 		parentConnection.update();
-		parentConnection.firePropertyChanged("anchors");
 	}
 
 	public boolean touchesRectangle(Rectangle2D rect) {
@@ -314,7 +311,7 @@ class Polyline implements ConnectionGraphic {
 		return anchorPoints.size();
 	}
 
-	public void readFromXML(Element element, VisualConnection parent) {
+	public void readFromXML(Element element, ConnectionInfo parent) {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;

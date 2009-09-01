@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -16,10 +17,10 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 	private double size = 0.25;
 	private Color fillColor = Color.BLUE.darker();
 
-	private VisualConnection parentConnection;
+	protected ConnectionInfo connectionInfo;
 
-	public VisualConnection getParentConnection() {
-		return parentConnection;
+	public HierarchyNode getParentConnection() {
+		return connectionInfo.getConnection();
 	}
 
 	Shape shape = new Rectangle2D.Double(
@@ -28,12 +29,12 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 			size,
 			size);
 
-	public VisualConnectionAnchorPoint(VisualConnection parent) {
-		parentConnection = parent;
+	public VisualConnectionAnchorPoint(ConnectionInfo parent) {
+		connectionInfo = parent;
 
 		addPropertyChangeListener(new PropertyChangeListener() {
 			public void onPropertyChanged(String propertyName, Object sender) {
-				parentConnection.update();
+				connectionInfo.update();
 			}
 		});
 	}

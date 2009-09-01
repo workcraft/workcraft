@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -66,8 +67,9 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	protected void clearSelection(VisualModel model) {
-		for (VisualNode so : model.getSelection()) {
-			so.clearColorisation();
+		for (HierarchyNode so : model.getSelection()) {
+			if(so instanceof Colorisable)
+				((Colorisable)so).clearColorisation();
 		}
 		model.selectNone();
 	}
@@ -162,7 +164,7 @@ public class SelectionTool extends AbstractTool {
 			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
 			e.getEditor().snap(pos);
 			//
-			if (model.getSelection().length==1) {
+			if (model.getSelection().size()==1) {
 				/*for (VisualNode vn : model.getSelection()) {
 					if (vn instanceof VisualConnection) {
 						VisualConnection vc = (VisualConnection)vn;
@@ -271,8 +273,9 @@ public class SelectionTool extends AbstractTool {
 			((Colorisable)root).setColorisation(grayOutColor);
 
 		model.getCurrentLevel().clearColorisation();
-		for(VisualNode node : model.getSelection())
-			node.setColorisation(selectionColor);
+		for(HierarchyNode node : model.getSelection())
+			if(node instanceof Colorisable)
+				((Colorisable)node).setColorisation(selectionColor);
 	}
 
 	@Override
@@ -360,10 +363,10 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	private void currentLevelDown(GraphEditorKeyEvent e) {
-		VisualNode[] selection = e.getModel().getSelection();
-		if(selection.length == 1)
+		List<HierarchyNode> selection = e.getModel().getSelection();
+		if(selection.size() == 1)
 		{
-			VisualNode selectedNode = selection[0];
+			HierarchyNode selectedNode = selection.get(0);
 			if(selectedNode instanceof VisualGroup)
 				e.getModel().setCurrentLevel((VisualGroup)selectedNode);
 		}

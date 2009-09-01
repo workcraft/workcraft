@@ -26,5 +26,5 @@ public interface ConnectionGraphic {
 	public boolean touchesRectangle(Rectangle2D rect);
 
 	public void writeToXML(Element element);
-	public void readFromXML(Element element, VisualConnection parent);
+	public void readFromXML(Element element, ConnectionInfo parent);
 }

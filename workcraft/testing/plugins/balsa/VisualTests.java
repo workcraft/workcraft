@@ -2,13 +2,23 @@ package org.workcraft.testing.plugins.balsa;
 
 import static org.junit.Assert.*;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
+import org.workcraft.plugins.balsa.VisualBalsaCircuit;
 import org.workcraft.plugins.balsa.VisualBreezeComponent;
+import org.workcraft.plugins.balsa.VisualHandshake;
 import org.workcraft.plugins.balsa.components.Concur;
 import org.workcraft.plugins.balsa.components.While;
 
@@ -52,4 +62,44 @@ public class VisualTests {
 		assertTrue(-0.49 > box.getMinY());
 		assertTrue(-0.61 < box.getMinY());
 	}
+
+
+	@Test
+	public void connectionsTest() throws InvalidConnectionException, VisualModelInstantiationException
+	{
+		BalsaCircuit circuit = new BalsaCircuit();
+		BreezeComponent mathComp1 = new BreezeComponent();
+		BreezeComponent mathComp2 = new BreezeComponent();
+		mathComp1.setUnderlyingComponent(new Concur());
+		mathComp2.setUnderlyingComponent(new Concur());
+		circuit.addComponent(mathComp1);
+		circuit.addComponent(mathComp2);
+		VisualBreezeComponent visual1 = new VisualBreezeComponent(mathComp1);
+		VisualBreezeComponent visual2 = new VisualBreezeComponent(mathComp2);
+		visual1.setX(10);
+
+		VisualBalsaCircuit visualCircuit = new VisualBalsaCircuit(circuit);
+
+		VisualGroup root = visualCircuit.getRoot();
+		root.add(visual1);
+		root.add(visual2);
+		visualCircuit.registerNode(visual1);
+		visualCircuit.registerNode(visual2);
+
+		VisualHandshake hs1 = visual1.getHandshake("activate");
+		VisualHandshake hs2 = visual2.getHandshake("activateOut1");
+		VisualConnection connection = visualCircuit.connect(hs1, hs2);
+
+		AffineTransform transform1 = TransformHelper.getTransform(hs1, root);
+		Point2D p1 = hs1.getPosition();
+		transform1.transform(p1, p1);
+
+		AffineTransform transform2 = TransformHelper.getTransform(hs2, root);
+		Point2D p2 = hs2.getPosition();
+		transform2.transform(p2, p2);
+
+		Assert.assertEquals(p1, connection.getPoint1());
+		Assert.assertEquals(p2, connection.getPoint2());
+	}
+
 }

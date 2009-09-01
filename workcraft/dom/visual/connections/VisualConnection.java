@@ -31,7 +31,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable {
+public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable, ConnectionInfo {
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -410,5 +410,27 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	public Collection<HierarchyNode> getChildren() {
 		return this.graphic.getControls();
+	}
+
+	@Override
+	public HierarchyNode getConnection() {
+		return this;
+	}
+
+	@Override
+	public Point2D getPoint1() {
+		return getPosition(getFirst());
+	}
+
+	private Point2D getPosition(VisualComponent node) {
+		AffineTransform transform = TransformHelper.getTransform(node, this);
+		Point2D position = node.getPosition();
+		transform.transform(position, position);
+		return position;
+	}
+
+	@Override
+	public Point2D getPoint2() {
+		return getPosition(getSecond());
 	}
 }

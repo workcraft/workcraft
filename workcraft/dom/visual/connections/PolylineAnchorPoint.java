@@ -33,7 +33,7 @@ class PolylineAnchorPoint extends VisualConnectionAnchorPoint {
 		}
 
 
-		public PolylineAnchorPoint(Polyline polyline, VisualConnection parent) {
+		public PolylineAnchorPoint(Polyline polyline, ConnectionInfo parent) {
 			super(parent);
 			this.polyline = polyline;
 

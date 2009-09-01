@@ -325,8 +325,17 @@ public class VisualModel implements Plugin, Model {
 		mathModel.removeListener(listener);
 	}
 
-	public VisualNode[] getSelection() {
-		return selection.toArray(new VisualNode[0]);
+	/**
+	 * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
+	 */
+	public List<HierarchyNode> getSelection() {
+		List<HierarchyNode> result = new ArrayList<HierarchyNode>();
+		for(HierarchyNode node : currentLevel.getChildren())
+		{
+			if(selection.contains(node))
+			result.add(node);
+		}
+		return result;
 	}
 
 	public void validateConnection(HierarchyNode first, HierarchyNode second) throws InvalidConnectionException {
@@ -409,9 +418,9 @@ public class VisualModel implements Plugin, Model {
 		fireSelectionChanged();
 	}
 
-	private List<VisualTransformableNode> getTransformableSelection()
+	private Collection<HierarchyNode> getGroupableSelection()
 	{
-		ArrayList<VisualTransformableNode> result = new ArrayList<VisualTransformableNode>();
+		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>();
 		for(HierarchyNode node : selection)
 			if(node instanceof VisualTransformableNode)
 				result.add((VisualTransformableNode)node);
@@ -423,12 +432,12 @@ public class VisualModel implements Plugin, Model {
 	 * @author Arseniy Alekseyev
 	 */
 	public void groupSelection() {
-		List<VisualTransformableNode> selected = getTransformableSelection();
+		Collection<HierarchyNode> selected = getGroupableSelection();
 		if(selected.size() <= 1)
 			return;
 		VisualGroup group = new VisualGroup();
 		currentLevel.add(group);
-		for(VisualNode node : selected)
+		for(HierarchyNode node : selected)
 		{
 			currentLevel.remove(node);
 			group.add(node);
@@ -459,22 +468,24 @@ public class VisualModel implements Plugin, Model {
 	 * @author Arseniy Alekseyev
 	 */
 	public void ungroupSelection() {
-		ArrayList<HierarchyNode> unGrouped = new ArrayList<HierarchyNode>();
+		ArrayList<HierarchyNode> toSelect = new ArrayList<HierarchyNode>();
 
-		for(VisualNode node : getSelection())
+		for(HierarchyNode node : getSelection())
 		{
 			if(node instanceof VisualGroup)
 			{
 				VisualGroup group = (VisualGroup)node;
 				for(HierarchyNode subNode : group.unGroup())
-					unGrouped.add(subNode);
+					toSelect.add(subNode);
 				currentLevel.remove(group);
 			}
+			else
+				toSelect.add(node);
 		}
 
 		selection.clear();
 
-		for(HierarchyNode node : unGrouped)
+		for(HierarchyNode node : toSelect)
 			selection.add(node);
 		fireSelectionChanged();
 	}

@@ -14,8 +14,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +40,6 @@ import org.workcraft.util.XmlUtil;
 
 public class VisualBreezeComponent extends VisualTransformableNode implements Drawable
 {
-
 	HandshakeComponentLayout layout;
 	Map<String, VisualHandshake> visualHandshakes;
 	Map<Handshake,HandshakeComponent> handshakeComponents;
@@ -111,7 +110,11 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 
 	@Override
 	public Collection<HierarchyNode> getChildren() {
-		return new ArrayList<HierarchyNode>(visualHandshakes.values());
+		return Collections.<HierarchyNode>unmodifiableCollection(visualHandshakes.values());
+	}
+
+	public VisualHandshake getHandshake(String name) {
+		return visualHandshakes.get(name);
 	}
 
 	private void buildVisualHandshakes() {

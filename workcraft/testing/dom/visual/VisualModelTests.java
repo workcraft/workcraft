@@ -1,5 +1,7 @@
 package org.workcraft.testing.dom.visual;
 
+import static org.workcraft.testing.dom.visual.Tools.*;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -117,8 +119,8 @@ public class VisualModelTests {
 		VisualModel model = new VisualModel(new MockMathModel());
 
 		VisualGroup root = model.getCurrentLevel();
-		VisualGroup node1 = Tools.createGroup(root);
-		VisualGroup node2 = Tools.createGroup(root);
+		VisualGroup node1 = createGroup(root);
+		VisualGroup node2 = createGroup(root);
 
 		TestGroup(model, new VisualNode[] { node1, node2 });
 	}
@@ -128,7 +130,7 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getCurrentLevel();
-		VisualGroup node1 = Tools.createGroup(root);
+		VisualGroup node1 = createGroup(root);
 
 		model.addToSelection(node1);
 		model.groupSelection();
@@ -272,22 +274,37 @@ public class VisualModelTests {
 		VisualGroup node3 = new VisualGroup();
 		VisualGroup node4 = new VisualGroup();
 
+		VisualGroup node1c = new VisualGroup();
+		VisualGroup node2c = new VisualGroup();
+		VisualGroup node3c = new VisualGroup();
+		VisualGroup node4c = new VisualGroup();
+
 		root.add(node1);
 		root.add(node2);
+		root.add(node3);
+		root.add(node4);
 
-		node1.add(node3);
-		node2.add(node4);
+		node1.add(node1c);
+		node2.add(node2c);
+		node3.add(node3c);
+		node4.add(node4c);
 
-		model.addToSelection(node2);
+		model.addToSelection(node4);
+		model.addToSelection(node3);
 		model.addToSelection(node1);
+		model.addToSelection(node2);
 		model.ungroupSelection();
 
 		VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
-		Assert.assertEquals(2, newList.length);
-		Assert.assertSame(node4, newList[0]);
-		Assert.assertSame(node3, newList[1]);
+		Assert.assertEquals(4, newList.length);
+		Assert.assertSame(node1c, newList[0]);
+		Assert.assertSame(node2c, newList[1]);
+		Assert.assertSame(node3c, newList[2]);
+		Assert.assertSame(node4c, newList[3]);
 
+		Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
+		Assert.assertEquals(0, node2.getChildren().toArray(new VisualNode[0]).length);
 		Assert.assertEquals(0, node3.getChildren().toArray(new VisualNode[0]).length);
 		Assert.assertEquals(0, node4.getChildren().toArray(new VisualNode[0]).length);
 	}
@@ -297,13 +314,14 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualConnection con = Tools.createConnection(c1, c2, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualConnection con = createConnection(c1, c2, root);
 
 		model.addToSelection(c1);
 		model.addToSelection(c2);
 		model.groupSelection();
+
 		Assert.assertArrayEquals(
 				new Object[] { new GroupNodeEqualityTest(new VisualNode[] {c1, c2, con}) },
 				root.getChildren().toArray(new VisualNode[0]));
@@ -314,9 +332,9 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualConnection con = Tools.createConnection(c1, c2, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualConnection con = createConnection(c1, c2, root);
 
 		model.addToSelection(con);
 		model.addToSelection(c1);
@@ -331,14 +349,14 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualConnection con1 = Tools.createConnection(c1, c2, root);
-		VisualConnection con2 = Tools.createConnection(c1, c2, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualConnection con1 = createConnection(c1, c2, root);
+		VisualConnection con2 = createConnection(c1, c2, root);
 
-		model.addToSelection(c1);
-		model.addToSelection(c2);
 		model.addToSelection(con1);
+		model.addToSelection(c2);
+		model.addToSelection(c1);
 		model.addToSelection(con2);
 		model.groupSelection();
 		Assert.assertArrayEquals(
@@ -351,10 +369,10 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualGroup node1 = Tools.createGroup(root);
-		VisualComponent c1 = Tools.createComponent(node1);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualConnection con = Tools.createConnection(c1, c2, root);
+		VisualGroup node1 = createGroup(root);
+		VisualComponent c1 = createComponent(node1);
+		VisualComponent c2 = createComponent(root);
+		VisualConnection con = createConnection(c1, c2, root);
 
 		model.addToSelection(node1);
 		model.addToSelection(c2);
@@ -369,11 +387,11 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualComponent c3 = Tools.createComponent(root);
-		VisualConnection con1 = Tools.createConnection(c1, c2, root);
-		VisualConnection con2 = Tools.createConnection(c2, c3, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualComponent c3 = createComponent(root);
+		VisualConnection con1 = createConnection(c1, c2, root);
+		VisualConnection con2 = createConnection(c2, c3, root);
 
 		model.addToSelection(con1);
 		model.addToSelection(con2);
@@ -390,18 +408,17 @@ public class VisualModelTests {
 			this.expected = expected;
 		}
 
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof VisualGroup))
-				return false;
-			VisualGroup group = (VisualGroup) obj;
-			VisualNode[] my = expected;
+		public void assertEquals(HierarchyNode node) {
+			Assert.assertTrue("Should be a visual group", node instanceof VisualGroup);
+			VisualGroup group = (VisualGroup) node;
 			VisualNode[] their = group.getChildren().toArray(new VisualNode[0]);;
-			if (my.length != their.length)
-				return false;
-			for (int i = 0; i < my.length; i++)
-				if (!(my[i].equals(their[i])))
-					return false;
+			Assert.assertArrayEquals(expected, their);
+		}
+
+		public boolean equals(Object obj)
+		{
+			Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
+			assertEquals((HierarchyNode)obj);
 			return true;
 		}
 	}
@@ -411,10 +428,10 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualComponent c3 = Tools.createComponent(root);
-		VisualConnection con1 = Tools.createConnection(c1, c2, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualComponent c3 = createComponent(root);
+		VisualConnection con1 = createConnection(c1, c2, root);
 
 		model.addToSelection(con1);
 		model.addToSelection(c2);
@@ -431,9 +448,9 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualComponent c1 = Tools.createComponent(root);
-		VisualComponent c2 = Tools.createComponent(root);
-		VisualConnection con = Tools.createConnection(c1, c2, root);
+		VisualComponent c1 = createComponent(root);
+		VisualComponent c2 = createComponent(root);
+		VisualConnection con = createConnection(c1, c2, root);
 
 		model.addToSelection(c1);
 		model.addToSelection(con);
@@ -456,7 +473,7 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualGroup group1 = Tools.createGroup(root);
+		VisualGroup group1 = createGroup(root);
 		group1.setX(101);
 		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
 		group1.add(sq);
@@ -474,7 +491,7 @@ public class VisualModelTests {
 		VisualModel model = createModel();
 
 		VisualGroup root = model.getRoot();
-		VisualGroup group1 = Tools.createGroup(root);
+		VisualGroup group1 = createGroup(root);
 		group1.setX(101);
 		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
 		group1.add(sq);

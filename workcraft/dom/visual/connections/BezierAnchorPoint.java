@@ -10,21 +10,26 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 
 class BezierAnchorPoint extends VisualConnectionAnchorPoint {
-	private VisualComponent parentComponent;
 
-	public BezierAnchorPoint(VisualConnection parentConnection, VisualComponent parentC) {
+	boolean isFirst;
+
+	public BezierAnchorPoint(ConnectionInfo parentConnection, boolean isFirst) {
 		super(parentConnection);
-
-		parentComponent = parentC;
+		this.isFirst = isFirst;
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
-		Point2D p = parentComponent.getPosition();
+		Point2D p;
+
+		if(isFirst)
+			p = connectionInfo.getPoint1();
+		else
+			p = connectionInfo.getPoint2();
+
 		AffineTransform at = getParentToLocalTransform();
 
 		at.transform(p, p);
