@@ -28,7 +28,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
-public abstract class VisualNode implements PropertyEditable, HierarchyNode, DependentNode, Touchable, Colorisable, IntIdentifiable {
+public abstract class VisualNode implements PropertyEditable, HierarchyNode, Hidable, DependentNode, Touchable, Colorisable, IntIdentifiable {
 
 	public Rectangle2D getBoundingBox() {
 		return null;

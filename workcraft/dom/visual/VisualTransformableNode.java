@@ -94,7 +94,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	protected void transformChanged() {
 		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
-		firePropertyChanged("transform");
+		TransformEventPropagator.fireTransformChanged(this);
 	}
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);

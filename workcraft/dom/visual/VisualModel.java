@@ -421,7 +421,7 @@ public class VisualModel implements Plugin, Model {
 	private Collection<HierarchyNode> getGroupableSelection()
 	{
 		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>();
-		for(HierarchyNode node : selection)
+		for(HierarchyNode node : getSelection())
 			if(node instanceof VisualTransformableNode)
 				result.add((VisualTransformableNode)node);
 		return result;

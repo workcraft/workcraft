@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -20,13 +19,13 @@ import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.MathNode;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TouchableHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.EventListener1;
-import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
@@ -233,7 +232,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		graphic.click(point);
 	}
 
-	private double getBorderPoint (VisualComponent collisionComponent, AffineTransform toComponentParent, double tStart, double tEnd)
+	private double getBorderPoint (Touchable collisionNode, double tStart, double tEnd)
 	{
 		Point2D point = new Point2D.Double();
 
@@ -242,8 +241,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 			double t = (tStart + tEnd)*0.5;
 			point = getPointOnConnection(t);
 
-			toComponentParent.transform(point, point);
-			if (collisionComponent.hitTest(point))
+			if (collisionNode.hitTest(point))
 				tStart = t;
 			else
 				tEnd = t;
@@ -255,44 +253,23 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	public void update() {
 		if (getParent() == null)
 			return;
-		AffineTransform t1,t2;
-		try {
-			t1 = TransformHelper.getTransform(first, this);
-			t2 = TransformHelper.getTransform(second, this);
-		} catch (NotAnAncestorException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
 
-		// get centres of the two components in this connection's parent space
-		Rectangle2D firstBB = first.getBoundingBox();
-		Rectangle2D secondBB = second.getBoundingBox();
+		Touchable firstTouchable = TransformHelper.transform(first, TransformHelper.getTransform(first, this));
+		Touchable secondTouchable = TransformHelper.transform(second, TransformHelper.getTransform(second, this));
+
+		Rectangle2D firstBB = firstTouchable.getBoundingBox();
+		Rectangle2D secondBB = secondTouchable.getBoundingBox();
 
 		firstCenter.setLocation(firstBB.getCenterX(), firstBB.getCenterY());
 		secondCenter.setLocation(secondBB.getCenterX(), secondBB.getCenterY());
-
-		t1.transform(firstCenter, firstCenter);
-		t2.transform(secondCenter, secondCenter);
-
-		// create transforms from this connection's parent space to
-		// components' parent spaces, for hit testing
-		AffineTransform it1;
-		AffineTransform it2;
-		try {
-			it1 = t1.createInverse();
-			it2 = t2.createInverse();
-		} catch (NoninvertibleTransformException e) {
-			e.printStackTrace();
-			return;
-		}
 
 		Point2D pt = new Point2D.Double();
 
 		graphic.update();
 
 		// find connection curve starting point
-		double tStart = getBorderPoint(first, it1, 0, 1);
-		double tEnd = getBorderPoint(second, it2, 1, 0);
+		double tStart = getBorderPoint(firstTouchable, 0, 1);
+		double tEnd = getBorderPoint(secondTouchable, 1, 0);
 
 		Point2D pointEnd = getPointOnConnection(tEnd);
 
@@ -314,6 +291,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 		graphic.updateVisibleRange(tStart, t);
 	}
+
+	@Override
+	public void setParent(HierarchyNode parent) {
+		super.setParent(parent);
+		update();
+	};
 
 	@Override
 	public void draw(Graphics2D g) {
@@ -419,18 +402,11 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	@Override
 	public Point2D getPoint1() {
-		return getPosition(getFirst());
-	}
-
-	private Point2D getPosition(VisualComponent node) {
-		AffineTransform transform = TransformHelper.getTransform(node, this);
-		Point2D position = node.getPosition();
-		transform.transform(position, position);
-		return position;
+		return firstCenter;
 	}
 
 	@Override
 	public Point2D getPoint2() {
-		return getPosition(getSecond());
+		return secondCenter;
 	}
 }

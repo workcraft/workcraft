@@ -46,4 +46,8 @@ public class TransformHelper {
 		return parentToNode2;
 	}
 
+	public static Touchable transform(Touchable touchable, AffineTransform transform)
+	{
+		return new TouchableTransformer(touchable, transform);
+	}
 }

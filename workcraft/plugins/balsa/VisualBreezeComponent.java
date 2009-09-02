@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
@@ -118,6 +119,7 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	}
 
 	private void buildVisualHandshakes() {
+		Map<String, VisualHandshake> oldHandshakes = visualHandshakes;
 
 		visualLayout = new VisualLayouter().getVisualLayout(layout);
 		visualHandshakes = new HashMap<String, VisualHandshake>();
@@ -126,9 +128,20 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 		{
 			Handshake handshake = handshakes.get(name);
 			Ray ray = visualLayout.positions.get(handshake);
-			VisualHandshake visual = new VisualHandshake(handshakeComponents.get(handshake));
-			visual.setParent(this);
+			VisualHandshake visual;
+			if(oldHandshakes!=null && oldHandshakes.containsKey(name))
+			{
+				visual = oldHandshakes.get(name);
+				MovableHelper.resetTransform(visual);
+			}
+			else
+			{
+				visual = new VisualHandshake(handshakeComponents.get(handshake));
+				visual.setParent(this);
+			}
+
 			visualHandshakes.put(name, visual);
+
 			Direction dir = ray.direction;
 			int quadrants =
 				dir == Direction.Right ? 0 :

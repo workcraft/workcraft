@@ -21,7 +21,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.VisualNodeSerialiser;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Hierarchy;
 
 
@@ -32,27 +31,8 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	protected Set<HierarchyNode> children = new LinkedHashSet<HierarchyNode>();
 
-	//private Element deferredGroupElement = null;
-	//private String label = "";
-
-
 	public VisualGroup () {
 		super();
-		addPropertyChangeListener();
-	}
-
-	private void addPropertyChangeListener() {
-		this.addPropertyChangeListener(new PropertyChangeListener(){
-			public void onPropertyChanged(String propertyName, Object sender) {
-				if(propertyName == "transform")
-					for(HierarchyNode node : children)
-					{
-						if(node instanceof Movable && node instanceof PropertyEditable)
-							((PropertyEditable)node).firePropertyChanged("transform");
-					}
-
-			}
-		});
 	}
 
 	public void draw(Graphics2D g) {

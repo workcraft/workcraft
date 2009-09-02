@@ -22,6 +22,7 @@ import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.TransformEventPropagator;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -31,7 +32,6 @@ import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.util.Hierarchy;
 
 public class SelectionTool extends AbstractTool {
@@ -193,9 +193,9 @@ public class SelectionTool extends AbstractTool {
 
 			for(Touchable so : hit)
 				if(selectionMode==SELECTION_ADD)
-					addToSelection(model, so);
+					addToSelection(model, (HierarchyNode)so);
 				else if(selectionMode==SELECTION_REMOVE)
-					removeFromSelection(model, so);
+					removeFromSelection(model, (HierarchyNode)so);
 			prevPosition = e.getPosition();
 			e.getEditor().repaint();
 		}
@@ -392,8 +392,7 @@ public class SelectionTool extends AbstractTool {
 				Movable mv = (Movable) node;
 				MovableHelper.translate(mv, dx, dy);
 
-				if(node instanceof PropertyEditable)
-					((PropertyEditable)node).firePropertyChanged("transform");
+				TransformEventPropagator.fireTransformChanged(mv);
 			}
 
 		model.fireLayoutChanged();
