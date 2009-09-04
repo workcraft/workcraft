@@ -10,6 +10,7 @@ import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
+import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 
 public class CallMux_NoDataPath extends
 		ComponentStgBuilder<CallMux> {
@@ -34,8 +35,8 @@ public class CallMux_NoDataPath extends
 
 		StgPlace releaseInput = builder.buildPlace();
 		StgPlace releaseSel = builder.buildPlace();
-		builder.addConnection(out.getDeactivationNotificator(), releaseInput);
-		builder.addConnection(out.getDeactivationNotificator(), releaseSel);
+		builder.addConnection(out.getDeactivate(), releaseInput);
+		builder.addConnection(out.getDeactivate(), releaseSel);
 
 		StgPlace ready = builder.buildPlace(1);
 
@@ -43,8 +44,9 @@ public class CallMux_NoDataPath extends
 		{
 			PassivePushStg in = (PassivePushStg)handshakes.get("inp"+i);
 
-			builder.addConnection(ready, in.getActivationNotificator());
-			builder.addConnection(in.getDataReleaser(), ready);
+			//TODO! Move environment specification somewhere else
+			builder.addConnection(ready, (StgTransition)in.getActivate());
+			builder.addConnection(in.getDataReleased(), ready);
 
 			StgSignal selRq = builder.buildSignal(new SignalId(component, "sel"+i+"Rq"), true);
 			StgPlace selReady = builder.buildPlace(1);
@@ -59,11 +61,11 @@ public class CallMux_NoDataPath extends
 			builder.addConnection(selRq.getMinus(), selRtz);
 			builder.addConnection(selAckReset, selRq.getPlus());
 
-			builder.addConnection(in.getActivationNotificator(), selRq.getPlus());
+			builder.addConnection(in.getActivate(), selRq.getPlus());
 			builder.addConnection(releaseSel, selRq.getMinus());
-			builder.addConnection(releaseInput, in.getDataReleaser());
+			builder.addConnection(releaseInput, in.getDataReleased());
 		}
 
-		builder.addConnection(selAc.getPlus(), out.getActivator());
+		builder.addConnection(selAc.getPlus(), out.getActivate());
 	}
 }

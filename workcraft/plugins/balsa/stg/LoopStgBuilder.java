@@ -20,11 +20,11 @@ public class LoopStgBuilder extends ComponentStgBuilder<org.workcraft.plugins.ba
 
 		StgPlace never = builder.buildPlace();
 
-		builder.addConnection(activate.getActivationNotificator(), activated);
-		builder.addConnection(activated, activateOut.getActivator());
-		builder.addConnection(activateOut.getDeactivationNotificator(), activated);
+		builder.addConnection(activate.getActivate(), activated);
+		builder.addConnection(activated, activateOut.getActivate());
+		builder.addConnection(activateOut.getDeactivate(), activated);
 
-		builder.addConnection(never, activate.getDeactivator());
+		builder.addConnection(never, activate.getDeactivate());
 	}
 
 }

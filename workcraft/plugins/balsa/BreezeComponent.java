@@ -86,7 +86,10 @@ public class BreezeComponent extends Component {
 	}
 
 	public final HandshakeComponent getHandshakeComponentByName(String name) {
-		return getHandshakeComponents().get(getHandshakes().get(name));
+		final Handshake hc = getHandshakes().get(name);
+		if(hc == null)
+			return null;
+		return getHandshakeComponents().get(hc);
 	}
 
 	public Map<Handshake, HandshakeComponent> getHandshakeComponents() {

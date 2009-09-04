@@ -19,6 +19,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
@@ -56,10 +57,10 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 		return new ActiveSyncStg()
 		{
-			public StgTransition getActivator() {
+			public StgTransition getActivate() {
 				return activator;
 			}
-			public StgTransition getDeactivationNotificator() {
+			public TransitionOutput getDeactivate() {
 				return deactivation;
 			}
 		};
@@ -106,10 +107,10 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 		return new PassiveSyncStg()
 		{
-			public StgTransition getActivationNotificator() {
+			public StgTransition getActivate() {
 				return activation;
 			}
-			public StgTransition getDeactivator() {
+			public StgTransition getDeactivate() {
 				return deactivator;
 			}
 		};
@@ -127,18 +128,23 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 		return new ActivePullStg()
 		{
-			public StgTransition getActivator() {
-				return sync.getActivator();
-			}
-			public StgTransition getDeactivationNotificator() {
-				return sync.getDeactivationNotificator();
-			}
-			public StgTransition getDataReleaser() {
-				return getActivator();
-			}
+			//TODO: think where to stick data signals
+			@SuppressWarnings("unused")
 			public ReadablePlace getData(int index, boolean value) {
 				InputDataSignal signal = dataSignals[index];
 				return value ? signal.p1 : signal.p0;
+			}
+			@Override
+			public TransitionOutput getDataReady() {
+				return sync.getDeactivate();
+			}
+			@Override
+			public StgTransition getDataRelease() {
+				return sync.getActivate();
+			}
+			@Override
+			public StgTransition getActivate() {
+				return sync.getActivate();
 			}
 		};
 	}
@@ -150,18 +156,21 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 		return new PassivePushStg()
 		{
+			//TODO: think where to stick data signals
+			@SuppressWarnings("unused")
 			public ReadablePlace getData(int index, boolean value) {
 				InputDataSignal signal = dataSignals[index];
 				return value ? signal.p1 : signal.p0;
 			}
-			public StgTransition getActivationNotificator() {
-				return sync.getActivationNotificator();
+			public TransitionOutput getActivate() {
+				return sync.getActivate();
 			}
-			public StgTransition getDeactivator() {
-				return sync.getDeactivator();
+			public StgTransition getDeactivate() {
+				return sync.getDeactivate();
 			}
-			public StgTransition getDataReleaser() {
-				return getDeactivator();
+			@Override
+			public StgTransition getDataReleased() {
+				return sync.getDeactivate();
 			}
 		};
 	}

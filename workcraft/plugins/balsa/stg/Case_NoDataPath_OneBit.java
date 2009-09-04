@@ -10,6 +10,7 @@ import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
+import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 
 public class Case_NoDataPath_OneBit extends ComponentStgBuilder<Case> {
 
@@ -30,29 +31,30 @@ public class Case_NoDataPath_OneBit extends ComponentStgBuilder<Case> {
 		builder.addConnection(dataZero, dataSignal.getPlus());
 		builder.addConnection(dataSignal.getPlus(), dataOne);
 
-		builder.addConnection(in.getDataReleaser(), guardChangeAllowed);
-		builder.addConnection(guardChangeAllowed, in.getActivationNotificator());
+		builder.addConnection(in.getDataReleased(), guardChangeAllowed);
+		//TODO: Externalise the enviromnent specification
+		builder.addConnection(guardChangeAllowed, (StgTransition)in.getActivate());
 		builder.addReadArc(guardChangeAllowed, dataSignal.getMinus());
 		builder.addReadArc(guardChangeAllowed, dataSignal.getPlus());
 
 		StgPlace activationFinished = builder.buildPlace();
 
 		StgPlace activated = builder.buildPlace();
-		builder.addConnection(in.getActivationNotificator(), activated);
+		builder.addConnection(in.getActivate(), activated);
 
 		for(int i=0;i<component.getOutputCount();i++)
 		{
 			ActiveSyncStg activateOut = (ActiveSyncStg)handshakes.get("activateOut"+i);
 
-			builder.addConnection(activated, activateOut.getActivator());
+			builder.addConnection(activated, activateOut.getActivate());
 			if(i == 1)
-				builder.addReadArc(dataOne, activateOut.getActivator());
+				builder.addReadArc(dataOne, activateOut.getActivate());
 			else
-				builder.addReadArc(dataZero, activateOut.getActivator());
+				builder.addReadArc(dataZero, activateOut.getActivate());
 
-			builder.addConnection(activateOut.getDeactivationNotificator(), activationFinished);
+			builder.addConnection(activateOut.getDeactivate(), activationFinished);
 		}
 
-		builder.addConnection(activationFinished, in.getDeactivator());
+		builder.addConnection(activationFinished, in.getDeactivate());
 	}
 }

@@ -19,7 +19,7 @@ public class ConnectionFactory {
 		throws VisualConnectionCreationException {
 
 		VisualComponent first = getReferencingVisualComponent(connection.getFirst().getID(), mathIDtoVisualObjectResolver);
-		VisualComponent second = getReferencingVisualComponent(connection.getFirst().getID(), mathIDtoVisualObjectResolver);
+		VisualComponent second = getReferencingVisualComponent(connection.getSecond().getID(), mathIDtoVisualObjectResolver);
 
 		// Find the corresponding visual class
 		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);

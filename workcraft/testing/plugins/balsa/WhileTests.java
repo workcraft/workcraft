@@ -10,12 +10,12 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.framework.ModelSaveFailedException;
-import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LayoutFailedException;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.balsa.BalsaCircuit;
@@ -24,12 +24,12 @@ import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
-import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol;
+import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
-import org.workcraft.plugins.serialisation.BalsaToStgExporter_TwoPhase;
+import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -62,7 +62,7 @@ public class WhileTests {
 				return names.get(handshake);
 			}
 		});
-		FourPhaseProtocol handshakeBuilder = new FourPhaseProtocol();
+		FourPhaseProtocol_NoDataPath handshakeBuilder = new FourPhaseProtocol_NoDataPath();
 		handshakeBuilder.setStgBuilder(stgBuilder);
 		MainStgBuilder.buildStg(wh, handshakes, handshakeBuilder);
 
@@ -90,7 +90,7 @@ public class WhileTests {
 		balsa.addConnection(new Connection(wh1Out, wh2In));
 
 		File stgFile = new File("while_while.g");
-		new BalsaToStgExporter_TwoPhase().export(balsa, new FileOutputStream(stgFile));
+		new BalsaToStgExporter_FourPhase().export(balsa, new FileOutputStream(stgFile));
 
 		final STG stg = (STG) Import.importFromFile(new DotGImporter(), stgFile);
 

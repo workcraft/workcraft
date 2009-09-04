@@ -24,11 +24,11 @@ public class Fetch_NoDataPath extends
 		ActivePushStg out = (ActivePushStg)handshakes.get("out");
 
 		//First, make sure input sets up the correct data
-		builder.addConnection(activate.getActivationNotificator(), in.getActivator());
+		builder.addConnection(activate.getActivate(), in.getActivate());
 		//After it does, activate output
-		builder.addConnection(in.getDeactivationNotificator(), out.getActivator());
+		builder.addConnection(in.getDataReady(), out.getActivate());
 		//After out acknowledges, RTZ input and acknowledge back
-		builder.addConnection(out.getDeactivationNotificator(), in.getDataReleaser());
-		builder.addConnection(out.getDeactivationNotificator(), activate.getDeactivator());
+		builder.addConnection(out.getDeactivate(), in.getDataRelease());
+		builder.addConnection(out.getDeactivate(), activate.getDeactivate());
 	}
 }

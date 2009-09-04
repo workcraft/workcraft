@@ -18,8 +18,18 @@ public class MainStgBuilder {
 
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> map = fillMap();
 
+	@SuppressWarnings("unchecked")
 	private static ComponentStgBuilder<?> getComponentStgBuilder(Component component) {
-		return map.get(component.getClass());
+		Class<? extends Component> type = component.getClass();
+		ComponentStgBuilder<?> result = map.get(type);
+		while(result == null)
+		{
+			type = (Class<? extends Component>) type.getSuperclass();
+			if(type == null)
+				return null;
+			result = map.get(type);
+		}
+		return result;
 	}
 
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> fillMap() {

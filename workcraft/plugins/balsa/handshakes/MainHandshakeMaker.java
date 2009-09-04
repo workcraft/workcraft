@@ -9,11 +9,20 @@ import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 public class MainHandshakeMaker {
 	static Map<Class<? extends Component>, HandshakeMaker<?>> map = getMap();
 
+	@SuppressWarnings("unchecked")
 	public static Map<String, Handshake> getHandshakes(Component component)
 	{
-		HandshakeMaker<?> maker = map.get(component.getClass());
-		if(maker == null)
-			return  new HashMap<String, Handshake>();
+		Class<? extends Component> type = component.getClass();
+		HandshakeMaker<?> maker;
+
+		maker = map.get(type);
+		while(maker == null)
+		{
+			type = (Class<? extends Component>)type.getSuperclass();
+			if(type == null)
+				return new HashMap<String, Handshake>();
+			maker = map.get(type);
+		}
 
 		return maker.getComponentHandshakes(component);
 	}

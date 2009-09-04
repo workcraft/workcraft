@@ -1,9 +1,10 @@
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
 import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 public interface PassiveSyncStg extends StgHandshake
 {
-	public StgTransition getActivationNotificator();
-	public StgTransition getDeactivator();
+	public TransitionOutput getActivate();
+	public StgTransition getDeactivate();
 }

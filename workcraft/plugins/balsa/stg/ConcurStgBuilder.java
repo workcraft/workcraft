@@ -17,8 +17,8 @@ public class ConcurStgBuilder extends ComponentStgBuilder<Concur> {
 		for(int i=0;i<component.getOutputCount();i++)
 		{
 			ActiveSyncStg out = (ActiveSyncStg)handshakes.get("activateOut"+i);
-			builder.addConnection(activate.getActivationNotificator(), out.getActivator());
-			builder.addConnection(out.getDeactivationNotificator(), activate.getDeactivator());
+			builder.addConnection(activate.getActivate(), out.getActivate());
+			builder.addConnection(out.getDeactivate(), activate.getDeactivate());
 		}
 	}
 

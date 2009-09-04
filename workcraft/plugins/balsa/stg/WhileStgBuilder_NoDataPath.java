@@ -64,33 +64,32 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 			builder.addConnection(guardZero, guardSignal.getPlus());
 			builder.addConnection(guardSignal.getPlus(), guardOne);
 
-			builder.addConnection(guard.getDataReleaser(), guardChangeAllowed);
-			builder.addConnection(guardChangeAllowed, guard.getDeactivationNotificator());
+			builder.addConnection(guard.getDataRelease(), guardChangeAllowed);
+			//TODO: Move environment specification somewhere else
+			builder.addConnection(guardChangeAllowed, (StgTransition)guard.getDataReady());
 			builder.addReadArc(guardChangeAllowed, guardSignal.getMinus());
 			builder.addReadArc(guardChangeAllowed, guardSignal.getPlus());
 
 			// Call guard
-			builder.addConnection(activate.getActivationNotificator(), activated);
-			builder.addConnection(activated, guard.getActivator());
-			builder.addConnection(guard.getDeactivationNotificator(), dataReady);
+			builder.addConnection(activate.getActivate(), activated);
+			builder.addConnection(activated, guard.getActivate());
+			builder.addConnection(guard.getDataReady(), dataReady);
 
 			// Activate and repeatedly call guard
-			builder.addConnection(dataReady, activateOut.getActivator());
-			builder.addReadArc(guardOne, activateOut.getActivator());
-			builder.addConnection(activateOut.getDeactivationNotificator(), activated);
+			builder.addConnection(dataReady, activateOut.getActivate());
+			builder.addReadArc(guardOne, activateOut.getActivate());
+			builder.addConnection(activateOut.getDeactivate(), activated);
 
 			// Return
-			builder.addConnection(dataReady, activate.getDeactivator());
-			builder.addReadArc(guardZero, activate.getDeactivator());
+			builder.addConnection(dataReady, activate.getDeactivate());
+			builder.addReadArc(guardZero, activate.getDeactivate());
 
-			StgTransition dataRelease = guard.getDataReleaser();
-			if(dataRelease != null)
-			{
-				StgPlace releaseAllowed = builder.buildPlace();
-				builder.addConnection(activateOut.getActivator(), releaseAllowed);
-				builder.addConnection(activate.getDeactivator(), releaseAllowed);
-				builder.addConnection(releaseAllowed, dataRelease);
-			}
+			StgTransition dataRelease = guard.getDataRelease();
+
+			StgPlace releaseAllowed = builder.buildPlace();
+			builder.addConnection(activateOut.getActivate(), releaseAllowed);
+			builder.addConnection(activate.getDeactivate(), releaseAllowed);
+			builder.addConnection(releaseAllowed, dataRelease);
 		}
 	}
 

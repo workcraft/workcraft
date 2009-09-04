@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
@@ -69,7 +68,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		VisualNode node = HitMan.hitDeepestNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualComponent.class);
+		VisualNode node = HitMan.hitDeepestNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualTransition.class);
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;

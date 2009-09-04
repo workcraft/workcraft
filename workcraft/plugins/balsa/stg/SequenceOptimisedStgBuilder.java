@@ -18,16 +18,16 @@ public class SequenceOptimisedStgBuilder extends
 
 		PassiveSyncStg activate = (PassiveSyncStg)handshakes.get("activate");
 
-		TransitionOutput lastHandshake = activate.getActivationNotificator();
+		TransitionOutput lastHandshake = activate.getActivate();
 
 		for(int i=0;i<component.getOutputCount();i++)
 		{
 			ActiveSyncStg out = (ActiveSyncStg)handshakes.get("activateOut"+i);
-			builder.addConnection(lastHandshake, out.getActivator());
-			lastHandshake = out.getDeactivationNotificator();
+			builder.addConnection(lastHandshake, out.getActivate());
+			lastHandshake = out.getDeactivate();
 		}
 
-		builder.addConnection(lastHandshake, activate.getDeactivator());
+		builder.addConnection(lastHandshake, activate.getDeactivate());
 	}
 
 }

@@ -32,7 +32,7 @@ public class Variable_NoDataPath extends
 		builder.addConnection(latchRq.getMinus(), latchAc.getMinus());
 		builder.addConnection(latchAc.getMinus(), latchReady);
 
-		builder.addConnection(write.getActivationNotificator(), latchRq.getPlus());
-		builder.addConnection(latchAc.getPlus(), write.getDeactivator());
+		builder.addConnection(write.getActivate(), latchRq.getPlus());
+		builder.addConnection(latchAc.getPlus(), write.getDeactivate());
 	}
 }

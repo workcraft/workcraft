@@ -47,7 +47,8 @@ public class HitMan
 
 		for (HierarchyNode n : getFilteredChildren(transformedPoint, node)) {
 			HierarchyNode result = hitDeepest(transformedPoint, n, filter);
-			return result;
+			if(result!=null)
+				return result;
 		}
 
 		if (filter.fn(node) && hitBranch (point, node))
@@ -75,7 +76,7 @@ public class HitMan
 	public static HierarchyNode hitFirst(Point2D point, HierarchyNode node) {
 		return hitFirst(point, node, new UnaryFunctor<HierarchyNode, Boolean>(){
 			public Boolean fn(HierarchyNode arg0) {
-				return true; // its a kind of magic
+				return true;
 			}
 		});
 	}
@@ -151,7 +152,7 @@ public class HitMan
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends HierarchyNode> T hitDeepestNodeOfType(Point2D point, VisualGroup group, final Class<T> type) {
+	public static <T extends HierarchyNode> T hitDeepestNodeOfType(Point2D point, HierarchyNode group, final Class<T> type) {
 		return (T)hitDeepest(point, group, Hierarchy.getTypeFilter(type));
 	}
 
