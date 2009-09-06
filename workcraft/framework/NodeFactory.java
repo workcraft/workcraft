@@ -5,15 +5,48 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.NodeCreationException;
-import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.framework.util.ConstructorParametersMatcher;
 
 public class NodeFactory {
 
+	public static VisualConnection createVisualConnection (MathConnection connection)
+	throws NodeCreationException {
+
+		// Find the corresponding visual class
+		VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
+
+		// The component/connection does not define a visual representation
+		if (vcat == null)
+			return null;
+
+		try {
+			Class<?> visualClass = Class.forName(vcat.value());
+			Constructor<?> ctor = visualClass.getConstructor();
+			VisualConnection visual = (VisualConnection)ctor.newInstance();
+			return visual;
+
+		} catch (ClassNotFoundException e) {
+			throw new NodeCreationException (e);
+		} catch (SecurityException e) {
+			throw new NodeCreationException (e);
+		} catch (NoSuchMethodException e) {
+			throw new NodeCreationException (e);
+		} catch (IllegalArgumentException e) {
+			throw new NodeCreationException (e);
+		} catch (InstantiationException e) {
+			throw new NodeCreationException (e);
+		} catch (IllegalAccessException e) {
+			throw new NodeCreationException (e);
+		} catch (InvocationTargetException e) {
+			throw new NodeCreationException (e);
+		}
+	}
 
 	public static MathNode createNode (Class<?> cls) throws NodeCreationException {
 		try {
@@ -59,8 +92,8 @@ public class NodeFactory {
 			} catch (Exception e) {
 				throw new NodeCreationException (e);
 			}
-		else
-			return createVisualComponentSimple(component, constructorParameters);
+			else
+				return createVisualComponentSimple(component, constructorParameters);
 	}
 
 	private static VisualComponent createVisualComponentSimple (MathNode component, Object ... constructorParameters) throws NodeCreationException {

@@ -7,8 +7,7 @@ import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.framework.DefaultCreateButtons;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.VisualComponentCreationException;
-import org.workcraft.framework.exceptions.VisualConnectionCreationException;
+import org.workcraft.framework.exceptions.NodeCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 
 @DisplayName ("Petri Net")
@@ -20,9 +19,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 		super(model);
 		try {
 			createDefaultFlatStructure();
-		} catch (VisualComponentCreationException e) {
-			throw new VisualModelInstantiationException(e);
-		} catch (VisualConnectionCreationException e) {
+		} catch (NodeCreationException e) {
 			throw new VisualModelInstantiationException(e);
 		}
 	}

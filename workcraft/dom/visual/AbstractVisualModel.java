@@ -26,11 +26,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.framework.NodeFactory;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.NodeCreationException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.exceptions.PasteException;
-import org.workcraft.framework.exceptions.VisualComponentCreationException;
-import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.observation.SelectionChangeEvent;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
@@ -60,51 +60,35 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		eventPropagator.attach(root);
 	}
 
-	protected final void createDefaultFlatStructure() throws VisualComponentCreationException, VisualConnectionCreationException {
-		HashMap <MathNode, VisualNode> createdNodes = new HashMap <MathNode, VisualNode>();
+	protected final void createDefaultFlatStructure() throws NodeCreationException {
+		HashMap <MathNode, VisualComponent> createdNodes = new HashMap <MathNode, VisualComponent>();
 		HashMap <VisualConnection, MathConnection> createdConnections = new	HashMap <VisualConnection, MathConnection>();
 
-		//TODO: reproduce mathematical hierarchy
-		/*
-		for (HierarchyNode n : mathModel.getRoot().getChildren()) {
-			if (n instanceof MathNode)
-			{
-				MathNode node = (MathNode)n;
-				VisualNode visualNode;
-
-				if (n instanceof MathConnection)
-					visualNode = ComponentFactory.createVisualComponent(node);
-
-				if (visualNode != null) {
-					addComponent(visualNode);
-					createdNodes.put(node, visualNode);
-
-					if (n instanceof MathConnection)
-						createdConnections.put(visualConnection, connection);
-				}
-			}
-
-			(n instanceof MathConnection) {
+		for (Node n : mathModel.getRoot().getChildren()) {
+			if (n instanceof MathConnection) {
 				MathConnection connection = (MathConnection)n;
-				VisualConnection visualConnection = ConnectionFactory.createVisualConnection(connection);
 
+				// Will create incomplete instance, setConnection() needs to be called later to finalise.
+				// This is to avoid cross-reference problems.
+				VisualConnection visualConnection = NodeFactory.createVisualConnection(connection);
+				createdConnections.put(visualConnection, connection);
+			} else {
+				MathNode node = (MathNode)n;
+				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(node);
+
+				if (visualComponent != null) {
+					getRoot().add(visualComponent);
+					createdNodes.put(node, visualComponent);
+				}
 			}
 		}
 
 		for (VisualConnection vc : createdConnections.keySet()) {
 			MathConnection mc = createdConnections.get(vc);
-			vc.setVisualConnection(createdComponents.get(mc.getFirst()),
-					createdComponents.get(mc.getSecond()),
-					mc);
-		}*/
+			vc.setVisualConnection(createdNodes.get(mc.getFirst()),
+					createdNodes.get(mc.getSecond()), mc);
+		}
 	}
-
-
-	/*private void gatherReferences(Collection<HierarchyNode> nodes, HashSet<MathNode> referenceds) {
-		for (HierarchyNode n : nodes)
-			if(n instanceof DependentNode)
-				referenceds.addAll(((DependentNode)n).getMathReferences());
-	}*/
 
 	private static Rectangle2D bbUnion(Rectangle2D bb1, Rectangle2D bb2)
 	{
