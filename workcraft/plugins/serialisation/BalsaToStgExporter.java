@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;

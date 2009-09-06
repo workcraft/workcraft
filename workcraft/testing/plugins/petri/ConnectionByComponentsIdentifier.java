@@ -2,8 +2,6 @@ package org.workcraft.testing.plugins.petri;
 
 import java.util.HashMap;
 
-import org.workcraft.dom.Node;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 
