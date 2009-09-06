@@ -676,6 +676,13 @@ public class MainWindow extends JFrame {
 		return toolboxWindow;
 	}
 
+	private void printCause (Throwable e) {
+		e.printStackTrace();
+		System.err.println ("-------------" + e);
+		if (e.getCause() != null)
+			printCause(e.getCause());
+	}
+
 	public void openWork() throws OperationCancelledException {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
@@ -696,7 +703,8 @@ public class MainWindow extends JFrame {
 				} catch (DeserialisationException e) {
 					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
 							+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
-					e.printStackTrace();
+					printCause(e);
+
 				}
 			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();

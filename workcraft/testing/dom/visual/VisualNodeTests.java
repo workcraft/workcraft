@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.observation.StateEvent;

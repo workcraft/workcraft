@@ -14,6 +14,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 public class Graph extends AbstractMathModel {
 
 	public Graph() {
+		super(null);
 	}
 
 	public void validate() throws ModelValidationException {

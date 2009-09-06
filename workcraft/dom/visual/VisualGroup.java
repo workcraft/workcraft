@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -113,10 +113,7 @@ ObservableHierarchy, Colorisable {
 	}
 
 	public Set<MathNode> getMathReferences() {
-		Set<MathNode> ret = new HashSet<MathNode>();
-		for (DependentNode n: Hierarchy.getChildrenOfType(this, DependentNode.class))
-			ret.addAll(n.getMathReferences());
-		return ret;
+		return Collections.emptySet();
 	}
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return false;

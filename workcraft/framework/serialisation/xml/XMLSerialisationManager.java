@@ -1,14 +1,19 @@
 package org.workcraft.framework.serialisation.xml;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginProvider;
 import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.framework.util.ConstructorParametersMatcher;
 
 public class XMLSerialisationManager implements SerialiserFactory, DeserialiserFactory {
 	private HashMap<String, Class<? extends XMLSerialiser>> serialisers = new HashMap<String, Class<? extends XMLSerialiser>>();
@@ -107,6 +112,51 @@ public class XMLSerialisationManager implements SerialiserFactory, DeserialiserF
 	public Object initInstance (Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException
 	{
 		return nodeDeserialiser.initInstance(element, externalReferenceResolver);
+	}
+
+	public Model createModel (Element element, Node root,
+			ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+
+		String className = element.getAttribute("class");
+
+		if (className == null || className.isEmpty())
+			throw new DeserialisationException("Class name attribute is not set\n" + element.toString());
+
+		Model result;
+		Class<?> cls;
+
+		try {
+			org.workcraft.framework.serialisation.xml.XMLDeserialiser deserialiser  = getDeserialiserFor(className);
+			cls = Class.forName(className);
+
+			if (deserialiser instanceof ModelXMLDeserialiser) {
+				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, root, internalReferenceResolver, externalReferenceResolver);
+			} else if (deserialiser != null) {
+				throw new DeserialisationException ("Deserialiser for model class must implement ModelXMLDesiraliser interface");
+			} else {
+				Constructor<?> ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
+				result = (Model) ctor.newInstance(root);
+			}
+
+		} catch (InstantiationException e) {
+			throw new DeserialisationException(e);
+		} catch (IllegalAccessException e) {
+			throw new DeserialisationException(e);
+		} catch (ClassNotFoundException e) {
+			throw new DeserialisationException(e);
+		} catch (NoSuchMethodException e) {
+			throw new DeserialisationException("In order to be deserialised automatically, the model must declare a constructor with parameter " + root.getClass(), e);
+		} catch (IllegalArgumentException e) {
+			throw new DeserialisationException(e);
+		} catch (InvocationTargetException e) {
+			throw new DeserialisationException(e);
+		}
+
+		nodeDeserialiser.doInitialisation(element, result, cls, externalReferenceResolver);
+		nodeDeserialiser.doFinalisation(element, result, internalReferenceResolver, externalReferenceResolver, cls.getSuperclass());
+
+		return result;
 	}
 
 	public void finalise(Element element, Object instance, ReferenceResolver internalReferenceResolver,

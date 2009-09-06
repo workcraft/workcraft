@@ -10,7 +10,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.framework.exceptions.DeserialisationException;
@@ -47,8 +46,7 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 		Object instance = serialisation.initInstance(element, externalReferenceResolver);
 		instances.put(instance, element);
 
-		if (instance instanceof IntIdentifiable)
-			internalReferenceResolver.addObject(instance, Integer.toString(((IntIdentifiable)instance).getID()));
+		internalReferenceResolver.addObject(instance, element.getAttribute("ref"));
 
 		if (instance instanceof Container) {
 
@@ -65,25 +63,24 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 					((Container)instance).add((Node)subNode);
 			}
 		}
-
 		return instance;
 	}
+
+
 
 	public DeserialisationResult deserialise(InputStream inputStream,
 			ReferenceResolver externalReferenceResolver)
 	throws DeserialisationException {
 		try {
-
 			instances = new HashMap<Object, Element>();
-			// children = new LinkedHashMap <Container, LinkedList<HierarchyNode>>();
 
 			internalReferenceResolver = new InternalRefrenceResolver();
 
 			Document doc = XmlUtil.loadDocument(inputStream);
+
 			Element modelElement = doc.getDocumentElement();
 
 			// 1st pass -- init instances
-			Model model = (Model)serialisation.initInstance(modelElement, externalReferenceResolver);
 			Element rootElement = XmlUtil.getChildElement("node", modelElement);
 			Node root = (Node) initInstance(rootElement, externalReferenceResolver);
 
@@ -91,9 +88,9 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 			for (Object o : instances.keySet())
 				serialisation.finalise(instances.get(o), o, internalReferenceResolver, externalReferenceResolver);
 
-
-
-			//model.setRoot(root);
+			// create model
+			Model model = (Model)serialisation.createModel(modelElement, root, internalReferenceResolver,
+					externalReferenceResolver);
 
 			internalReferenceResolver.addObject(model, "$model");
 

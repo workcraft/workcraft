@@ -40,6 +40,7 @@ public class VisualSignalTransition extends VisualTransition {
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
 		addPropertyDeclarations();
+		updateText();
 	}
 
 	private void addPropertyDeclarations() {

@@ -14,7 +14,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 public class SDFS extends AbstractMathModel {
 
 	public SDFS() {
-		super();
+		super(null);
 
 		new DefaultHangingConnectionRemover(this).attach(getRoot());
 	}

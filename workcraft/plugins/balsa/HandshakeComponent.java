@@ -1,9 +1,5 @@
 package org.workcraft.plugins.balsa;
 
-import java.util.Set;
-
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 

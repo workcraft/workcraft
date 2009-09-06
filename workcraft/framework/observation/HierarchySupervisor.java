@@ -37,6 +37,15 @@ public abstract class HierarchySupervisor implements HierarchyObserver {
 		this.root = null;
 	}
 
+	public void handleInternal (HierarchyEvent e) {
+		/*for (Node n : e.getAffectedNodes()) {
+			if (n instanceof Container)
+				for (Node n2 : ((Container)n).getChildren())
+					handleEvent (new Hiera)
+			handleEvent (e);
+		}*/
+	}
+
 	@Override
 	public void notify(HierarchyEvent e) {
 		if (e instanceof NodesDeletedEvent) {

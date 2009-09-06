@@ -31,7 +31,7 @@ import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 public final class BalsaCircuit extends AbstractMathModel {
 
 	public BalsaCircuit() {
-		super();
+		super(null);
 
 		((MathGroup)getRoot()).addObserver(new HierarchyObserver(){
 			@Override

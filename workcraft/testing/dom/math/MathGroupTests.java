@@ -24,7 +24,6 @@ public class MathGroupTests {
 	private MockNode n2 = new MockNode();
 
 	private MathGroup group;
-	private MathGroup group2;
 
 	@Test
 	public void ObservationTest() {

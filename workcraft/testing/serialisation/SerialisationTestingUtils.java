@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.ImplicitPlaceArc;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
@@ -107,9 +108,18 @@ public class SerialisationTestingUtils {
 	}
 
 	public static void compareVisualConnections (VisualConnection vc1, VisualConnection vc2) {
-		//assertEquals(vc1.getID(), vc2.getID());
+		compareNodes (vc1.getFirst(), vc2.getFirst());
+		compareNodes (vc1.getSecond(), vc2.getSecond());
 
 		compareConnections (vc1.getReferencedConnection(), vc2.getReferencedConnection());
+	}
+
+	public static void compareImplicitPlaceArcs (ImplicitPlaceArc vc1, ImplicitPlaceArc vc2) {
+		compareNodes (vc1.getFirst(), vc2.getFirst());
+		compareNodes (vc1.getSecond(), vc2.getSecond());
+		comparePlaces (vc1.getImplicitPlace(), vc2.getImplicitPlace());
+		compareConnections (vc1.getRefCon1(), vc2.getRefCon1());
+		compareConnections (vc1.getRefCon2(), vc2.getRefCon2());
 	}
 
 	public static void compareNodes (Node node1, Node node2) {
@@ -130,6 +140,8 @@ public class SerialisationTestingUtils {
 			compareVisualPlaces ( (VisualPlace)node1, (VisualPlace)node2 );
 		else if (node1 instanceof VisualSignalTransition)
 			compareVisualSignalTransitions ( (VisualSignalTransition)node1, (VisualSignalTransition)node2 );
+		else if (node1 instanceof ImplicitPlaceArc)
+			compareImplicitPlaceArcs ( (ImplicitPlaceArc)node1, (ImplicitPlaceArc)node2 );
 		else if (node1 instanceof VisualConnection)
 			compareVisualConnections ( (VisualConnection)node1, (VisualConnection)node2 );
 		else if (node1 instanceof MathGroup);

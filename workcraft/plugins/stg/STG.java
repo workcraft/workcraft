@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.plugins.petri.PetriNet;
@@ -13,8 +14,11 @@ import org.workcraft.util.Hierarchy;
 public class STG extends PetriNet {
 
 	public STG() {
-		super();
+		this(null);
+	}
 
+	public STG(Container root) {
+		super(root);
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
 

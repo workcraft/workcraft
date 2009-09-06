@@ -10,6 +10,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Place;
@@ -46,6 +47,19 @@ public class ImplicitPlaceArc extends VisualConnection {
 		});*/
 	}
 
+	public ImplicitPlaceArc () {
+		super();
+		addPropertyDeclarations();
+	}
+
+	public void setImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
+		super.setVisualConnection(first, second, null);
+		this.refCon1 = refCon1;
+		this.refCon2 = refCon2;
+		this.implicitPlace = implicitPlace;
+
+	}
+
 	public ImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
 		super(null, first, second);
 		this.refCon1 = refCon1;
@@ -66,22 +80,27 @@ public class ImplicitPlaceArc extends VisualConnection {
 		VisualPlace.drawTokens(tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, Coloriser.colorise(tokenColor, getColorisation()), g);
 	}
 
+	@NoAutoSerialisation
 	public int getTokens() {
 		return implicitPlace.getTokens();
 	}
 
+	@NoAutoSerialisation
 	public void setTokens(int tokens) {
 		implicitPlace.setTokens(tokens);
 	}
 
+	@NoAutoSerialisation
 	public int getCapacity() {
 		return implicitPlace.getCapacity();
 	}
 
+	@NoAutoSerialisation
 	public void setCapacity(int c) {
 		implicitPlace.setCapacity(c);
 	}
 
+	@NoAutoSerialisation
 	public Place getImplicitPlace() {
 		return implicitPlace;
 	}

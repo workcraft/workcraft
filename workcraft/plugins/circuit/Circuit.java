@@ -13,7 +13,7 @@ import org.workcraft.framework.exceptions.ModelValidationException;
 public class Circuit extends AbstractMathModel {
 
 	public Circuit() {
-		super();
+		super(null);
 	}
 
 	public void validate() throws ModelValidationException {

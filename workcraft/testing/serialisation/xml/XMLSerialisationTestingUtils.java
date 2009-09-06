@@ -1,8 +1,8 @@
 package org.workcraft.testing.serialisation.xml;
 
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginProvider;
 import org.workcraft.plugins.petri.Place;
@@ -26,9 +26,13 @@ import org.workcraft.plugins.serialisation.xml.VisualConnectionDeserialiser;
 import org.workcraft.plugins.serialisation.xml.VisualConnectionSerialiser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.VisualSTGDeserialiser;
-import org.workcraft.plugins.stg.VisualSignalTransitionDeserialiser;
-import org.workcraft.plugins.stg.VisualSignalTransitionSerialiser;
+import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.serialisation.ImplicitArcSerialiser;
+import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
+import org.workcraft.plugins.stg.serialisation.VisualSTGDeserialiser;
+import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionDeserialiser;
+import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionSerialiser;
 
 public class XMLSerialisationTestingUtils {
 	static class MockPluginManager implements PluginProvider {
@@ -47,7 +51,8 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (AffineTransformSerialiser.class),
 						new PluginInfo (VisualPlaceSerialiser.class),
 						new PluginInfo (VisualSignalTransitionSerialiser.class),
-						new PluginInfo (VisualConnectionSerialiser.class)
+						new PluginInfo (VisualConnectionSerialiser.class),
+						new PluginInfo (ImplicitArcSerialiser.class)
 				};
 			} else if (interfaceName.equals(org.workcraft.framework.serialisation.xml.XMLDeserialiser.class.getName()))
 			{
@@ -63,7 +68,11 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (VisualSTGDeserialiser.class),
 						new PluginInfo (VisualPlaceDeserialiser.class),
 						new PluginInfo (VisualSignalTransitionDeserialiser.class),
-						new PluginInfo (VisualConnectionDeserialiser.class)
+						new PluginInfo (VisualConnectionDeserialiser.class),
+						new PluginInfo (ImplicitPlaceArcDeserialiser.class),
+						new PluginInfo (VisualSTGDeserialiser.class)
+
+
 				};
 			} else
 				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceName);
@@ -117,19 +126,48 @@ public class XMLSerialisationTestingUtils {
 
 			MathGroup g1 = new MathGroup();
 
-			Place p3 = stg.createPlace();
-			SignalTransition t3 = stg.createSignalTransition();
-			MathConnection con = (MathConnection) stg.connect(p3, t3);
+			Place p3 = new Place();
+			SignalTransition t3 = new SignalTransition();
 
-			g1.add(p3);
-			g1.add(t3);
-			g1.add(con);
+			g1.add(p3); g1.add(t3);
 
-			stg.getRoot().add(g1);
+			stg.connect(p3, t3);
 
 			return stg;
 		}
 		catch (InvalidConnectionException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static VisualSTG createTestSTG3() {
+		try {
+			STG stg = new STG();
+
+			SignalTransition t1 = stg.createSignalTransition();
+			SignalTransition t2 = stg.createSignalTransition();
+			SignalTransition t3 = stg.createSignalTransition();
+			SignalTransition t4 = stg.createSignalTransition();
+
+			VisualSTG visualSTG = new VisualSTG(stg);
+
+			VisualSignalTransition vt1 = new VisualSignalTransition(t1);
+			VisualSignalTransition vt2 = new VisualSignalTransition(t2);
+			VisualSignalTransition vt3 = new VisualSignalTransition(t3);
+			VisualSignalTransition vt4 = new VisualSignalTransition(t4);
+
+			visualSTG.add(vt1);visualSTG.add(vt2);visualSTG.add(vt3);visualSTG.add(vt4);
+
+			visualSTG.connect(vt1, vt2);
+			visualSTG.connect(vt2, vt3);
+			visualSTG.connect(vt3, vt4);
+			visualSTG.connect(vt4, vt1);
+
+			return visualSTG;
+		}
+		catch (InvalidConnectionException e) {
+			throw new RuntimeException(e);
+		} catch (VisualModelInstantiationException e) {
 			throw new RuntimeException(e);
 		}
 	}

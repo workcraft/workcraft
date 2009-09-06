@@ -507,7 +507,8 @@ public class Framework {
 
 			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 			// TODO: get proper deserialiser for format
-			ModelDeserialiser mathDeserialiser = new XMLDeserialiser();
+
+			ModelDeserialiser mathDeserialiser = (ModelDeserialiser) pluginManager.getSingletonByName(XMLDeserialiser.class.getName());
 
 			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
 
@@ -524,7 +525,7 @@ public class Framework {
 			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 
 			//TODO:get proper deserialiser
-			ModelDeserialiser visualDeserialiser = new XMLDeserialiser();
+			ModelDeserialiser visualDeserialiser = (ModelDeserialiser) pluginManager.getSingletonByName(XMLDeserialiser.class.getName());
 
 			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
 			//visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
@@ -535,6 +536,8 @@ public class Framework {
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {
+			throw new DeserialisationException(e);
+		} catch (PluginInstantiationException e) {
 			throw new DeserialisationException(e);
 		}
 	}

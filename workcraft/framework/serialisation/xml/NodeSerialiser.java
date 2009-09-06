@@ -96,6 +96,8 @@ public class NodeSerialiser {
 			ReferenceProducer externalReferences) throws SerialisationException {
 		try {
 			doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
+
+			parentElement.setAttribute("ref", internalReferences.getReference(object));
 		} catch (IllegalArgumentException e) {
 			throw new SerialisationException(e);
 		} catch (InstantiationException e) {

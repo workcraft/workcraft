@@ -9,12 +9,7 @@ import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 	public AbstractMathModel(Container root) {
-		super(root);
-	}
-
-	public AbstractMathModel()
-	{
-		super (new MathGroup());
+		super( (root == null) ? new MathGroup() : root);
 	}
 
 	public Connection connect(Node first, Node second)

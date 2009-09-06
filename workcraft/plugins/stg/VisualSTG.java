@@ -11,6 +11,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.DefaultCreateButtons;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -176,7 +177,11 @@ public class VisualSTG extends AbstractVisualModel {
 	} */
 
 	public VisualSTG(STG model) throws VisualModelInstantiationException {
-		super(model);
+		this (model, null);
+	}
+
+	public VisualSTG(STG model, VisualGroup root) {
+		super(model, root);
 
 		new DefaultHangingConnectionRemover(this).attach(getRoot());
 		mathNodeRemover.attach(getRoot());

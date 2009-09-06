@@ -130,7 +130,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		this.refConnection = refConnection;
 
 		initialise();
-		addListeners();
 	}
 
 	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
@@ -255,7 +254,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	}
 
 	public void update() {
-		if (getParent() == null)
+		if (getParent() == null || first == null || second == null)
 			return;
 
 		Touchable firstTouchable = TransformHelper.transform(first, TransformHelper.getTransform(first, this));
@@ -299,7 +298,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	@Override
 	public void setParent(Node parent) {
 		super.setParent(parent);
+
 		update();
+
 	};
 
 	@Override

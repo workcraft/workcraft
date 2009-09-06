@@ -86,6 +86,7 @@ public class SaveLoadTests {
 	public void GenerateSample() throws Exception
 	{
 		Framework f = new Framework();
+		f.getPluginManager().loadManifest();
 		StringWriter writer = new StringWriter();
 		f.save(buildSamplePetri(), new Base16Writer(writer));
 		System.err.print("\"");

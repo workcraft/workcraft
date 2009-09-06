@@ -10,7 +10,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.SerialisationException;
@@ -65,7 +64,7 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 		return ".xml";
 	}
 
-	public ReferenceProducer export(Model model, OutputStream out, ReferenceProducer externalReferences)
+	public ReferenceProducer export(final Model model, OutputStream out, ReferenceProducer externalReferences)
 	throws SerialisationException {
 		try{
 			Document doc = XmlUtil.createDocument();
@@ -75,8 +74,8 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 
 			ReferenceProducer internalReferences = new ReferenceProducer() {
 				public String getReference(Object obj) {
-					if (obj instanceof IntIdentifiable)
-						return Integer.toString(((IntIdentifiable)obj).getID());
+					if (obj instanceof Node)
+						return Integer.toString(model.getNodeID((Node)obj));
 					else
 						return null;
 				}

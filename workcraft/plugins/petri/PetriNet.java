@@ -2,6 +2,7 @@ package org.workcraft.plugins.petri;
 
 import java.util.Collection;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
@@ -16,7 +17,11 @@ import org.workcraft.util.Hierarchy;
 public class PetriNet extends AbstractMathModel {
 
 	public PetriNet() {
-		super();
+		this(null);
+	}
+
+	public PetriNet(Container root) {
+		super(root);
 		new DefaultHangingConnectionRemover(this).attach(getRoot());
 	}
 
