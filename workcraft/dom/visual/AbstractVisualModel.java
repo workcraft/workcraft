@@ -31,7 +31,10 @@ import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.NodeCreationException;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
 import org.workcraft.framework.exceptions.PasteException;
+import org.workcraft.framework.observation.ObservableStateImpl;
 import org.workcraft.framework.observation.SelectionChangeEvent;
+import org.workcraft.framework.observation.StateEvent;
+import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 
@@ -39,7 +42,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private Model mathModel;
 	private VisualGroup currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
-	private TransformEventPropagator eventPropagator = new TransformEventPropagator();
+	private ObservableStateImpl observableState = new ObservableStateImpl();
 
 	public AbstractVisualModel(VisualGroup root) {
 		this (null, root);
@@ -57,7 +60,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		super(root);
 		this.mathModel = mathModel;
 		currentLevel = root;
-		eventPropagator.attach(root);
+
+		new TransformEventPropagator().attach(root);
+		new RemovedNodeDeselector(this).attach(root);
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {
@@ -169,7 +174,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	private void notifySelectionChanged() {
-		notify(new SelectionChangeEvent(this));
+		sendNotification(new SelectionChangeEvent(this));
 	}
 
 	/**
@@ -222,6 +227,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void select(Node node) {
+		if (selection.contains(node) && selection.size() == 1)
+			return;
+
 		validateSelection(node);
 
 		selection.clear();
@@ -231,6 +239,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void addToSelection(Node node) {
+		if (selection.contains(node))
+			return;
+
 		validateSelection(node);
 		selection.add(node);
 
@@ -239,21 +250,29 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	public void addToSelection(Collection<Node> nodes) {
 		validateSelection(nodes);
+
+		int sizeBefore = selection.size();
+
 		selection.addAll(nodes);
 
-		notifySelectionChanged();
+		if (sizeBefore != selection.size())
+			notifySelectionChanged();
 	}
 
 	public void removeFromSelection(Node node) {
-		selection.remove(node);
+		if (selection.contains(node))
+			selection.remove(node);
 
 		notifySelectionChanged();
 	}
 
 	public void removeFromSelection(Collection<Node> nodes) {
+		int sizeBefore = selection.size();
+
 		selection.removeAll(nodes);
 
-		notifySelectionChanged();
+		if (sizeBefore != selection.size())
+			notifySelectionChanged();
 	}
 
 	public Model getMathModel() {
@@ -369,7 +388,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		select(toSelect);
 	}
 
-/*protected void removeGroup(VisualGroup group) {
+	/*protected void removeGroup(VisualGroup group) {
 		removeNodes(group.getChildren());
 
 		((Container)group.getParent()).remove(group);
@@ -474,6 +493,18 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		selectionRect.setRect(min.getX(), min.getY(), max.getX()-min.getX(), max.getY()-min.getY());
 
 		return currentLevel.hitObjects(selectionRect);
+	}
+
+	public void addObserver(StateObserver obs) {
+		observableState.addObserver(obs);
+	}
+
+	public void removeObserver(StateObserver obs) {
+		observableState.removeObserver(obs);
+	}
+
+	public void sendNotification(StateEvent e) {
+		observableState.sendNotification(e);
 	}
 
 }

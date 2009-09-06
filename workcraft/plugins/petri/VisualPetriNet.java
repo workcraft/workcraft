@@ -1,6 +1,8 @@
 package org.workcraft.plugins.petri;
 
+import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
@@ -14,14 +16,18 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 @DefaultCreateButtons ( { Place.class, Transition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
 public class VisualPetriNet extends AbstractVisualModel {
-	public VisualPetriNet(PetriNet model)
-	throws VisualModelInstantiationException {
+	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {
+
 		super(model);
+
 		try {
 			createDefaultFlatStructure();
 		} catch (NodeCreationException e) {
 			throw new VisualModelInstantiationException(e);
 		}
+
+		new DefaultHangingConnectionRemover(this).attach(getRoot());
+		new DefaultMathNodeRemover().attach(getRoot());
 	}
 
 	public void validate() throws ModelValidationException {

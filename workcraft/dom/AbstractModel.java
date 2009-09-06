@@ -6,12 +6,6 @@ import java.util.Set;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchyObserver;
-import org.workcraft.framework.observation.ObservableHierarchyImpl;
-import org.workcraft.framework.observation.ObservableStateImpl;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.framework.plugins.Plugin;
 
 /**
@@ -19,13 +13,9 @@ import org.workcraft.framework.plugins.Plugin;
  * @author Ivan Poliakov
  *
  */
-public abstract class AbstractModel implements Plugin, Model {
-	private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
-	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
-
+public abstract class AbstractModel implements Plugin, Model, NodeContext {
 	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private NodeIDManager nodeIDManager = new NodeIDManager();
-	private HangingConnectionRemover hangingConnectionRemover = new HangingConnectionRemover(nodeContextTracker);
 
 	private String title = "";
 
@@ -34,7 +24,6 @@ public abstract class AbstractModel implements Plugin, Model {
 	public AbstractModel(Container root) {
 		nodeContextTracker.attach(root);
 		nodeIDManager.attach(root);
-		hangingConnectionRemover.attach(root);
 
 		this.root = root;
 	}
@@ -87,22 +76,6 @@ public abstract class AbstractModel implements Plugin, Model {
 		return root;
 	}
 
-	public void addObserver(HierarchyObserver obs) {
-		observableHierarchyImpl.addObserver(obs);
-	}
-
-	public void removeObserver(HierarchyObserver obs) {
-		observableHierarchyImpl.removeObserver(obs);
-	}
-
-	public void addObserver(StateObserver obs) {
-		observableStateImpl.addObserver(obs);
-	}
-
-	public void removeObserver(StateObserver obs) {
-		observableStateImpl.removeObserver(obs);
-	}
-
 	public Set<Connection> getConnections(Node component) {
 		return nodeContextTracker.getConnections(component);
 	}
@@ -113,14 +86,6 @@ public abstract class AbstractModel implements Plugin, Model {
 
 	public Set<Node> getPreset(Node component) {
 		return nodeContextTracker.getPreset(component);
-	}
-
-	public void notify(HierarchyEvent e) {
-		observableHierarchyImpl.sendNotification(e);
-	}
-
-	public void notify(StateEvent e) {
-		observableStateImpl.sendNotification(e);
 	}
 
 	public Node getNodeByID(int ID) {

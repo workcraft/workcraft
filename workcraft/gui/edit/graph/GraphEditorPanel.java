@@ -30,11 +30,13 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	class Repainter extends StateSupervisor {
 		@Override
 		public void handleHierarchyEvent(HierarchyEvent e) {
+			System.out.println ("Repainting " + e + " " + e.getSender());
 			repaint();
 		}
 
 		@Override
 		public void handleEvent(StateEvent e) {
+			System.out.println ("Repainting " + e + " " + e.getSender());
 			repaint();
 		}
 	}

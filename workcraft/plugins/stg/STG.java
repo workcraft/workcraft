@@ -1,27 +1,25 @@
 package org.workcraft.plugins.stg;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Transition;
+import org.workcraft.util.Hierarchy;
 
-@DisplayName("Signal Transition Graph")
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
-
+@DisplayName("Signal Transition Graph")
 public class STG extends PetriNet {
 
-	public Set<SignalTransition>getSignalTransitions() {
-		HashSet<SignalTransition> ret = new HashSet<SignalTransition>();
+	public STG() {
+		super();
 
-		for (Transition t : getTransitions())
-			if (t instanceof SignalTransition)
-				ret.add((SignalTransition)t);
+		new SignalTypeConsistencySupervisor(this).attach(getRoot());
+	}
 
-		return ret;
+	public Collection<SignalTransition> getSignalTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
 	}
 
 	public void assignInstances() {

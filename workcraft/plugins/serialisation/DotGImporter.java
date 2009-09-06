@@ -81,7 +81,7 @@ public class DotGImporter implements Importer {
 					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
-					((SignalTransition)be1).setType(Type.INPUT);
+					((SignalTransition)be1).setSignalType(Type.INPUT);
 					((SignalTransition)be1).setDirection(direction);
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
@@ -89,7 +89,7 @@ public class DotGImporter implements Importer {
 					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
-					((SignalTransition)be1).setType(Type.OUTPUT);
+					((SignalTransition)be1).setSignalType(Type.OUTPUT);
 					((SignalTransition)be1).setDirection(direction);
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
@@ -97,7 +97,7 @@ public class DotGImporter implements Importer {
 					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
-					((SignalTransition)be1).setType(Type.INTERNAL);
+					((SignalTransition)be1).setSignalType(Type.INTERNAL);
 					((SignalTransition)be1).setDirection(direction);
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 
@@ -105,7 +105,7 @@ public class DotGImporter implements Importer {
 					be1 = doc.createSignalTransition();
 
 					((SignalTransition)be1).setSignalName(name);
-					((SignalTransition)be1).setType(Type.DUMMY);
+					((SignalTransition)be1).setSignalType(Type.DUMMY);
 					((SignalTransition)be1).setDirection(direction);
 					if (instance!=0) ((SignalTransition)be1).setInstance(instance);
 				} else {

@@ -7,10 +7,10 @@ import org.workcraft.framework.observation.HierarchyEvent;
 import org.workcraft.framework.observation.HierarchySupervisor;
 import org.workcraft.framework.observation.NodesDeletingEvent;
 
-public class HangingConnectionRemover extends HierarchySupervisor {
+public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	private NodeContext nct;
 
-	public HangingConnectionRemover (NodeContext nct) {
+	public DefaultHangingConnectionRemover (NodeContext nct) {
 		this.nct = nct;
 	}
 

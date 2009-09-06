@@ -7,8 +7,9 @@ import java.util.Collection;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.framework.observation.ObservableState;
 
-public interface VisualModel extends Model {
+public interface VisualModel extends Model, ObservableState {
 	public void draw (Graphics2D g);
 
 	public VisualGroup getCurrentLevel();

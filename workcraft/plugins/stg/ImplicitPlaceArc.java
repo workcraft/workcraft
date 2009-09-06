@@ -15,7 +15,6 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 
-
 public class ImplicitPlaceArc extends VisualConnection {
 	private Place implicitPlace;
 	private MathConnection refCon1;

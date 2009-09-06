@@ -184,12 +184,12 @@ public class VisualSignalTransition extends VisualTransition {
 
 	@NoAutoSerialisation
 	public SignalTransition.Type getType() {
-		return getReferencedTransition().getType();
+		return getReferencedTransition().getSignalType();
 	}
 
 	@NoAutoSerialisation
 	public void setType(SignalTransition.Type type) {
-		getReferencedTransition().setType(type);
+		getReferencedTransition().setSignalType(type);
 	}
 
 	@NoAutoSerialisation

@@ -31,7 +31,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 	}
 
 	private String getTypeLetter(SignalTransition st) {
-		switch (st.getType()) {
+		switch (st.getSignalType()) {
 		case INTERNAL:
 			return "i";
 		case INPUT:
@@ -71,7 +71,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 	private String getTransitionName(STG stg, HashSet<String> names, SignalTransition st) {
 
 		String sname = getName(stg, names, st);
-		if (st.getType()!= SignalTransition.Type.DUMMY) {
+		if (st.getSignalType()!= SignalTransition.Type.DUMMY) {
 			switch (st.getDirection()) {
 			case PLUS:
 				sname+="+";
@@ -119,7 +119,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		for (SignalTransition st: transitions) {
 			sname = getName(stg, allnames, st);
 
-			switch (st.getType()) {
+			switch (st.getSignalType()) {
 			case INTERNAL:
 				if (!internal.contains(sname)) internal.add(sname);
 				break;

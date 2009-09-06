@@ -5,11 +5,9 @@ import java.util.Set;
 
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.observation.ObservableHierarchy;
-import org.workcraft.framework.observation.ObservableState;
 
 
-public interface Model extends ObservableHierarchy, ObservableState {
+public interface Model {
 	/**
 	 * Sets the title of this model.
 	 * @param title -- the model title.

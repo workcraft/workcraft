@@ -97,8 +97,8 @@ public class StgModelStgBuilder implements StgBuilder {
 
 		Type type = isOutput ? Type.OUTPUT : Type.INPUT;
 
-		transitionP.getModelTransition().setType(type);
-		transitionM.getModelTransition().setType(type);
+		transitionP.getModelTransition().setSignalType(type);
+		transitionM.getModelTransition().setSignalType(type);
 
 		final StgSignal result = new StgSignal()
 		{
