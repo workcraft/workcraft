@@ -364,7 +364,7 @@ public class MainMenu extends JMenuBar {
 			for (PluginInfo info : exportPluginInfo) {
 				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
 
-				if (exporter.isApplicableTo(model.getVisualModel())) {
+				if (exporter.isApplicableTo(model)) {
 					if (!haveVisual)
 						addExportSeparator("Visual");
 					addExporter(exporter);

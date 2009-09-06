@@ -10,36 +10,36 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Touchable;
 
 public class HitmanTests {
-	class DummyNode implements HierarchyNode
+	class DummyNode implements Node
 	{
-		Collection<HierarchyNode> children;
+		Collection<Node> children;
 		public DummyNode()
 		{
 			children = Collections.emptyList();
 		}
-		public DummyNode(HierarchyNode[] children)
+		public DummyNode(Node[] children)
 		{
-			this.children = new ArrayList<HierarchyNode>(Arrays.asList(children));
+			this.children = new ArrayList<Node>(Arrays.asList(children));
 		}
-		public DummyNode(Collection<HierarchyNode> children)
+		public DummyNode(Collection<Node> children)
 		{
 			this.children = children;
 		}
 
-		public Collection<HierarchyNode> getChildren() {
+		public Collection<Node> getChildren() {
 			return children;
 		}
 
-		public HierarchyNode getParent() {
+		public Node getParent() {
 			throw new RuntimeException("Not Implemented");
 		}
 
-		public void setParent(HierarchyNode parent) {
+		public void setParent(Node parent) {
 			throw new RuntimeException("Not Implemented");
 		}
 	}
@@ -59,9 +59,9 @@ public class HitmanTests {
 	public void TestHitDeepestSkipNulls()
 	{
 		final HitableNode toHit = new HitableNode();
-		HierarchyNode node = new DummyNode(
-			new HierarchyNode[]{
-					new DummyNode(new HierarchyNode[]{ toHit }),
+		Node node = new DummyNode(
+			new Node[]{
+					new DummyNode(new Node[]{ toHit }),
 					new DummyNode(),
 			}
 		);

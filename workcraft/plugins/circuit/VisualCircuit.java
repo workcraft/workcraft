@@ -1,22 +1,15 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.ArrayList;
-
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.VisualComponentCreationException;
 import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
 
 
-public class VisualCircuit extends VisualModel {
-
-	@Override
-	public ArrayList<GraphEditorTool> getAdditionalTools() {
-		ArrayList<GraphEditorTool> list = new ArrayList<GraphEditorTool>(super.getAdditionalTools());
-//		list.add(new SimulationTool());
-		return list;
-	}
+public class VisualCircuit extends AbstractVisualModel {
 
 	public VisualCircuit(Circuit model)
 	throws VisualModelInstantiationException {
@@ -30,4 +23,12 @@ public class VisualCircuit extends VisualModel {
 		}
 	}
 
+	@Override
+	public void validate() throws ModelValidationException {
+	}
+
+	@Override
+	public void validateConnection(Node first, Node second)
+			throws InvalidConnectionException {
+	}
 }

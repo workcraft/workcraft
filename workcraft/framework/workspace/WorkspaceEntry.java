@@ -3,6 +3,7 @@ package org.workcraft.framework.workspace;
 import java.io.File;
 
 import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceEntry {
 	private File file = null;
@@ -34,7 +35,7 @@ public class WorkspaceEntry {
 	}
 
 	public void renameModel(String title) {
-		model.getMathModel().setTitle(title);
+		model.setTitle(title);
 		workspace.fireEntryChanged(this);
 	}
 
@@ -77,7 +78,7 @@ public class WorkspaceEntry {
 		String res = getTitle();
 
 		if (model != null)
-			if (model.getVisualModel() != null)
+			if (model instanceof VisualModel)
 				res = res + " [V]";
 
 		if (unsaved)

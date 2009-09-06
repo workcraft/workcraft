@@ -6,30 +6,17 @@ import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
-import org.workcraft.dom.MathNode;
-import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.framework.observation.ObservableState;
+import org.workcraft.framework.observation.StateEvent;
+import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.XmlUtil;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable {
-	private Component refComponent = null;
-	private HashSet<VisualConnection> connections = new HashSet<VisualConnection>();
-
-
-	private HashSet<VisualComponent> preset = new HashSet<VisualComponent>();
-	private HashSet<VisualComponent> postset = new HashSet<VisualComponent>();
-
+	private MathNode refNode = null;
 
 	private String label = "";
 
@@ -41,36 +28,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
-	private void addXMLSerialiser() {
-		addXMLSerialiser(new XMLSerialiser(){
-			public String getTagName() {
-				return VisualComponent.class.getSimpleName();
-			}
-
-			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws DeserialisationException {
-
-				refComponent = (Component) refResolver.getObject(element.getAttribute("refID"));
-				setID(XmlUtil.readIntAttr(element, "ID", -1));
-				setLabelColor(XmlUtil.readColorAttr(element, "labelColor", CommonVisualSettings.getForegroundColor()));
-				setFillColor(XmlUtil.readColorAttr(element, "fillColor", CommonVisualSettings.getFillColor()));
-				setForegroundColor(XmlUtil.readColorAttr(element, "foregroundColor", CommonVisualSettings.getForegroundColor()));
-			}
-
-			public void serialise(Element element,
-					ReferenceProducer refResolver) {
-
-				if (refComponent != null)
-					element.setAttribute("refID", refResolver.getReference(refComponent));
-
-				XmlUtil.writeIntAttr(element, "ID", getID());
-				XmlUtil.writeColorAttr(element, "labelColor", getLabelColor());
-				XmlUtil.writeColorAttr(element, "foregroundColor", getForegroundColor());
-				XmlUtil.writeColorAttr(element, "fillColor", getFillColor());
-			}
-		});
-	}
-
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration("Label", "getLabel", "setLabel", String.class));
 		addPropertyDeclaration(new PropertyDeclaration("Label color", "getLabelColor", "setLabelColor", Color.class));
@@ -78,12 +35,18 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		addPropertyDeclaration(new PropertyDeclaration("Fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
-	public VisualComponent(Component refComponent) {
+	public VisualComponent(MathNode refNode) {
 		super();
-		this.refComponent = refComponent;
+		this.refNode = refNode;
+
+		if (refNode instanceof ObservableState)
+			((ObservableState)refNode).addObserver( new StateObserver() {
+				public void notify(StateEvent e) {
+					observableStateImpl.sendNotification(e);
+				}
+			});
 
 		addPropertyDeclarations();
-		addXMLSerialiser();
 
 		setFillColor (CommonVisualSettings.getFillColor());
 		setForegroundColor(CommonVisualSettings.getForegroundColor());
@@ -92,36 +55,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public VisualComponent() {
 		addPropertyDeclarations();
-		addXMLSerialiser();
-	}
-
-	public Set<VisualConnection> getConnections() {
-		return new HashSet<VisualConnection>(connections);
-
-	}
-
-	final public void addConnection(VisualConnection connection) {
-		connections.add(connection);
-
-		if (connection.getFirst() == this)
-			postset.add(connection.getSecond());
-		else
-			preset.add(connection.getFirst());
-
-	}
-
-	final public void removeConnection(VisualConnection connection) {
-		connections.remove(connection);
-
-		if (connection.getFirst() == this)
-			postset.remove(connection.getSecond());
-		else
-			preset.remove(connection.getFirst());
-
-	}
-
-	final public Component getReferencedComponent() {
-		return refComponent;
 	}
 
 	public String getLabel() {
@@ -131,20 +64,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public void setLabel(String label) {
 		this.label = label;
 		labelGlyphs = null;
-	}
-
-	final public Set<VisualComponent> getPreset() {
-		return new HashSet<VisualComponent>(preset);
-	}
-
-	final public Set<VisualComponent> getPostset() {
-		return new HashSet<VisualComponent>(postset);
-	}
-
-	public Set<MathNode> getMathReferences() {
-		Set<MathNode> ret = new HashSet<MathNode>();
-		ret.add(getReferencedComponent());
-		return ret;
 	}
 
 	public GlyphVector getLabelGlyphs(Graphics2D g) {
@@ -200,5 +119,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	public void draw(java.awt.Graphics2D g) {
+	}
+
+	public MathNode getReferencedComponent() {
+		return refNode;
 	}
 }

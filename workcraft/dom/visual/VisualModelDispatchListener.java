@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.EventListener0;
 import org.workcraft.framework.EventListener1;
@@ -160,7 +160,7 @@ class VisualModelDispatchListener implements VisualModelEventListener, VisualMod
 	}
 
 	@Override
-	public void onSelectionChanged(Collection<HierarchyNode> selection) {
+	public void onSelectionChanged(Collection<Node> selection) {
 		// TODO Auto-generated method stub
 
 	}

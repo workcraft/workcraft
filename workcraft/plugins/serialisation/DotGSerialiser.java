@@ -10,12 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.framework.plugins.Plugin;
-import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.ModelSerialiser;
+import org.workcraft.framework.serialisation.ReferenceProducer;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -44,18 +45,18 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 	}
 
 	// returns non-empty name for a transition
-	private String getName(HashSet<String> names, Component st) {
+	private String getName(STG stg, HashSet<String> names, MathNode st) {
 
 		String sname = "_";
 
 		if (st instanceof Place) {
-			sname = "p" + st.getID();
+			sname = "p" + stg.getNodeID(st);
 		} else if (st instanceof SignalTransition) {
 
 			sname = ((SignalTransition)st).getSignalName();
 
 			if (sname.equals("")) {
-				sname=getTypeLetter((SignalTransition)st)+st.getID();
+				sname=getTypeLetter((SignalTransition)st)+stg.getNodeID(st);
 			} else return sname;
 		}
 
@@ -67,9 +68,9 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		return sname;
 	}
 
-	private String getTransitionName(HashSet<String> names, SignalTransition st) {
+	private String getTransitionName(STG stg, HashSet<String> names, SignalTransition st) {
 
-		String sname = getName(names, st);
+		String sname = getName(stg, names, st);
 		if (st.getType()!= SignalTransition.Type.DUMMY) {
 			switch (st.getDirection()) {
 			case PLUS:
@@ -88,7 +89,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 
 
 	public ReferenceProducer export(Model model, OutputStream outStream, ReferenceProducer inRef) {
-		STG stg = (STG)model.getMathModel();
+		STG stg = (STG)model;
 
 		stg.assignInstances();
 
@@ -116,7 +117,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		String sname;
 		// sort out all the transitions
 		for (SignalTransition st: transitions) {
-			sname = getName(allnames, st);
+			sname = getName(stg, allnames, st);
 
 			switch (st.getType()) {
 			case INTERNAL:
@@ -149,16 +150,16 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 
 		for (SignalTransition st : transitions) {
 			List<String> ts = new ArrayList<String>();
-			for (Component c : st.getPostset()) {
+			for (Node c : stg.getPostset(st)) {
 				if (c instanceof Place) {
-					ts.add(getName(allnames, (Place)c));
+					ts.add(getName(stg, allnames, (Place)c));
 				}
 			}
 			Collections.sort(ts);
 
 			String ts2 = "";
 			for (String s: ts) ts2+=" "+s;
-			connections1.add(getTransitionName(allnames, st)+ts2);
+			connections1.add(getTransitionName(stg, allnames, st)+ts2);
 		}
 
 
@@ -166,25 +167,25 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		for (Place p :  places) {
 			List<String> ts = new ArrayList<String>();
 
-			for (Component c : p.getPostset()) {
+			for (Node c : stg.getPostset(p)) {
 				if (c instanceof SignalTransition) {
-					ts.add(getTransitionName(allnames, (SignalTransition)c));
+					ts.add(getTransitionName(stg, allnames, (SignalTransition)c));
 				}
 			}
 			Collections.sort(ts);
 
 			String ts2 = "";
 			for (String s: ts) ts2+=" "+s;
-			connections2.add(getName(allnames, p)+ts2);
+			connections2.add(getName(stg, allnames, p)+ts2);
 
 			if (p.getTokens()>0) {
-				tokens+=" "+getName(allnames, p);
+				tokens+=" "+getName(stg, allnames, p);
 				if (p.getTokens()>1)
 					tokens+="="+p.getTokens();
 			}
 
 			if (p.getCapacity()!=1) {
-				capacity+=" "+getName(allnames, p)+"="+p.getCapacity();
+				capacity+=" "+getName(stg, allnames, p)+"="+p.getCapacity();
 			}
 
 		}

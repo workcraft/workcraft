@@ -1,7 +1,7 @@
 package org.workcraft.plugins.serialisation.xml;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Connection;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.DeserialisationException;
@@ -22,7 +22,7 @@ public class VisualConnectionDeserialiser implements ReferencingXMLDeserialiser 
 		vcon.setVisualConnection(
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("first")),
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("second")),
-				(Connection)externalReferenceResolver.getObject(element.getAttribute("ref"))
+				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))
 		);
 	}
 }

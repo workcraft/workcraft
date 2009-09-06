@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -29,10 +29,10 @@ public class DotLayout implements Layout {
 		out.println("node [shape=box];");
 
 
-		for (HierarchyNode n : model.getRoot().getChildren()) {
+		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualComponent) {
 				VisualComponent comp = (VisualComponent) n;
-				Integer id = comp.getID();
+				Integer id = model.getNodeID(comp);
 				if(id!=null) {
 					Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
 					if(bb!=null) {
@@ -41,10 +41,10 @@ public class DotLayout implements Layout {
 						out.println("\""+id+"\" [width=\""+width+"\", height=\""+height+"\"];");
 					}
 
-					Set<VisualComponent> postset = comp.getPostset();
+					Set<Node> postset = model.getPostset(comp);
 
-					for(VisualComponent target : postset) {
-						Integer targetId = target.getID();
+					for(Node target : postset) {
+						Integer targetId = model.getNodeID(target);
 						if(targetId!=null) {
 							out.println("\""+id+"\" -> \""+targetId+"\";");
 						}
@@ -70,7 +70,7 @@ public class DotLayout implements Layout {
 		while(matcher.find()) {
 			Integer id = Integer.parseInt(matcher.group(1));
 
-			HierarchyNode comp = model.getVisualComponentByID(id);
+			Node comp = model.getNodeByID(id);
 
 			if(comp==null || !(comp instanceof Movable))
 				continue;

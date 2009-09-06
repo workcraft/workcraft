@@ -1,23 +1,20 @@
 package org.workcraft.dom;
 
-import org.workcraft.dom.visual.VisualModel;
+import java.util.Collection;
+import java.util.Set;
 
-/**
- * A convenience type that integrates a MathModel and a VisualModel.
- * @author Ivan Poliakov
- *
- */
-public interface Model {
-	/**
-	 * @return the mathematical model. This value cannot be null.
-	 */
-	public MathModel getMathModel();
+import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.observation.ObservableHierarchy;
+import org.workcraft.framework.observation.ObservableState;
 
+
+public interface Model extends ObservableHierarchy, ObservableState {
 	/**
-	 * @return the associated visual model. This value may be null if the underlying
-	 * mathematical model does not have an associated visual model.
+	 * Sets the title of this model.
+	 * @param title -- the model title.
 	 */
-	public VisualModel getVisualModel();
+	public void setTitle(String title);
 
 	/**
 	 * @return the title of the model as specified by the user.
@@ -31,6 +28,60 @@ public interface Model {
 	 */
 	public String getDisplayName();
 
-	public HierarchyNode getRoot();
-	public void setRoot(HierarchyNode root);
+	/**
+	 * <p>Creates a connection between the two nodes and adds it to the model.</p>
+	 * <p>This is the preferred method to use by client code, instead of manually adding
+	 * connections to the model using <code>addConnection</code></p>
+	 * @param first -- the component that the connection starts from.
+	 * @param second -- the component that the connection goes to.
+	 * @return the newly created <type>Connection</type> object that has been
+	 * added to the model.
+	 * @throws InvalidConnectionException thrown when the connection between
+	 * the specified components is not allowed by this model, or if the specified
+	 * components are not contained in this model.
+	 */
+	public Connection connect(Node first, Node second)
+			throws InvalidConnectionException;
+
+	public Node getNodeByID(int ID);
+
+	public int getNodeID(Node node);
+
+	/**
+	 * This method may be called to test that
+	 * the model is in a valid state (which is defined by the inheriting
+	 * types) before some operations take place.</p>
+	 * <p>If a model is valid, then this method does nothing. Otherwise,
+	 * a <type>ModelValidationException</type> is thrown.</p>
+	 * @throws ModelValidationException an exception giving
+	 * an explanation of the problem.
+	 *
+	 */
+	public void validate() throws ModelValidationException;
+
+	/**
+	 * This method may be called to test that
+	 * the connection is allowed by the model (which is defined by the inheriting
+	 * types) before it is added.</p>
+	 * <p>If a connection is valid, then this method does nothing. Otherwise,
+	 * an <type>InvalidConnectionException</type> is thrown.</p>
+	 * @param connection
+	 * @throws InvalidConnectionException
+	 */
+	abstract public void validateConnection(Node first, Node second)
+		throws InvalidConnectionException;
+
+	public void add (Node node);
+
+	public void remove (Node node);
+
+	public void remove (Collection<Node> nodes);
+
+	public Container getRoot();
+
+	public Set<Node> getPostset(Node node);
+
+	public Set<Node> getPreset(Node node);
+
+	public Set<Connection> getConnections(Node node);
 }

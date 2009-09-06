@@ -2,18 +2,20 @@ package org.workcraft.testing.plugins.petri;
 
 import java.util.HashMap;
 
-import org.workcraft.dom.Component;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 
 interface KeyProvider<T>
 {
 	public Object getKey(T item);
 }
 
-class ComponentLabelExtractor implements KeyProvider<Component>
+class ComponentLabelExtractor implements KeyProvider<MathNode>
 {
-	public Object getKey(Component component) {
-		return component.getLabel();
+	public Object getKey(MathNode node) {
+		return node.getLabel();
 	}
 }
 
@@ -37,9 +39,9 @@ class Finder<T>
 }
 
 class ConnectionByComponentsIdentifier implements
-		KeyProvider<Connection> {
+		KeyProvider<MathConnection> {
 
-	private final KeyProvider<Component> componentKeyProvider;
+	private final KeyProvider<MathNode> componentKeyProvider;
 
 	class Pair
 	{
@@ -68,11 +70,11 @@ class ConnectionByComponentsIdentifier implements
 	}
 
 	public ConnectionByComponentsIdentifier(
-			KeyProvider<Component> componentKeyProvider) {
+			KeyProvider<MathNode> componentKeyProvider) {
 				this.componentKeyProvider = componentKeyProvider;
 	}
 
-	public Object getKey(Connection item) {
+	public Object getKey(MathConnection item) {
 
 		return new Pair(componentKeyProvider.getKey(item.getFirst()),
 				componentKeyProvider.getKey(item.getSecond()));

@@ -18,7 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.PluginInstantiationException;
@@ -249,7 +249,7 @@ public class PluginManager implements PluginProvider {
 	}
 
 	public PluginInfo[] getModels() {
-		return getPluginsImplementing (MathModel.class.getName());
+		return getPluginsImplementing (Model.class.getName());
 	}
 
 	public PluginInfo[] getPlugins(Class<?> interf) {

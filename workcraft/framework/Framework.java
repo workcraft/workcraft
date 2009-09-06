@@ -28,6 +28,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.OperationCancelledException;
@@ -526,7 +527,7 @@ public class Framework {
 			ModelDeserialiser visualDeserialiser = new XMLDeserialiser();
 
 			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
-			visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
+			//visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
 			return visualResult.model;
 
 		} catch (IOException e) {
@@ -552,7 +553,8 @@ public class Framework {
 	}
 
 	public void save(Model model, OutputStream out) throws SerialisationException {
-		boolean haveVisual = model.getVisualModel() != null;
+		VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
+		Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
 
 		ZipOutputStream zos = new ZipOutputStream(out);
 
@@ -566,13 +568,13 @@ public class Framework {
 		String mathEntryName = "model" + mathSerialiser.getExtension();
 		ZipEntry ze = new ZipEntry(mathEntryName);
 		zos.putNextEntry(ze);
-		ReferenceProducer refResolver = mathSerialiser.export(model.getMathModel(), zos, null);
+		ReferenceProducer refResolver = mathSerialiser.export(mathModel, zos, null);
 		zos.closeEntry();
 
 		String visualEntryName = null;
 		ModelSerialiser visualSerialiser = null;
 
-		if (haveVisual) {
+		if (visualModel != null) {
 			// TODO: get appropiate serialiser from config
 
 				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
@@ -580,7 +582,7 @@ public class Framework {
 			visualEntryName = "visualModel" + visualSerialiser.getExtension();
 			ze = new ZipEntry(visualEntryName);
 			zos.putNextEntry(ze);
-			visualSerialiser.export(model.getVisualModel(), zos, refResolver);
+			visualSerialiser.export(visualModel, zos, refResolver);
 			zos.closeEntry();
 		}
 
@@ -598,14 +600,12 @@ public class Framework {
 			math.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
 			root.appendChild(math);
 
-			if (haveVisual) {
+			if (visualModel != null) {
 				Element visual = doc.createElement("visual");
 				visual.setAttribute("entry-name", visualEntryName);
 				visual.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
 				root.appendChild(visual);
 			}
-
-
 
 			XmlUtil.writeDocument(doc, zos);
 

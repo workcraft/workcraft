@@ -11,16 +11,16 @@ import java.util.Set;
 
 import javax.swing.JPopupMenu;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.IntIdentifiable;
-import org.workcraft.dom.MathNode;
-import org.workcraft.dom.XMLSerialisation;
-import org.workcraft.dom.XMLSerialiser;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.PropertySupport;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
+import org.workcraft.framework.observation.ObservableState;
+import org.workcraft.framework.observation.ObservableStateImpl;
+import org.workcraft.framework.observation.PropertyChangedEvent;
+import org.workcraft.framework.observation.StateEvent;
+import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
@@ -28,39 +28,29 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
-public abstract class VisualNode implements PropertyEditable, HierarchyNode, Hidable, DependentNode, Touchable, Colorisable, IntIdentifiable {
+public abstract class VisualNode implements PropertyEditable, Node, DependentNode, Touchable, Colorisable, ObservableState {
+	ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
 		return null;
 	}
 
-	private int ID = -1;
-
-	public Collection<HierarchyNode> getChildren() {
+	public Collection<Node> getChildren() {
 		return Collections.emptyList();
 	}
 
-	final public void setID(int id) {
-		ID = id;
-	}
-
-	final public int getID() {
-		return ID;
-	}
-
-		private Color colorisation = null;
-	private HierarchyNode parent = null;
+	private Color colorisation = null;
+	private Node parent = null;
 	private boolean hidden = false;
 
-	private XMLSerialisation serialisation = new XMLSerialisation();
 	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
 	private PropertySupport propertySupport = new PropertySupport();
 
-	public HierarchyNode getParent() {
+	public Node getParent() {
 		return parent;
 	}
 
-	public void setParent(HierarchyNode parent) {
+	public void setParent(Node parent) {
 		this.parent = parent;
 	}
 
@@ -114,16 +104,6 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Hid
 		return popupMenuBuilder.build(actionListener);
 	}
 
-
-
-	public final void addXMLSerialiser(XMLSerialiser serialiser) {
-		serialisation.addSerialiser(serialiser);
-	}
-
-	public final void serialise(Element componentElement, ReferenceProducer refResolver) {
-		serialisation.serialise(componentElement, refResolver);
-	}
-
 	public Set<MathNode> getMathReferences() {
 		return new HashSet<MathNode>();
 	}
@@ -154,5 +134,19 @@ public abstract class VisualNode implements PropertyEditable, HierarchyNode, Hid
 
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
+
+		sendNotification(new PropertyChangedEvent(this, "hidden"));
+	}
+
+	public void addObserver(StateObserver obs) {
+		observableStateImpl.addObserver(obs);
+	}
+
+	public void sendNotification(StateEvent e) {
+		observableStateImpl.sendNotification(e);
+	}
+
+	public void removeObserver(StateObserver obs) {
+		observableStateImpl.removeObserver(obs);
 	}
 }

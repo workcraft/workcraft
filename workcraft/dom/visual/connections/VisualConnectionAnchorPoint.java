@@ -6,7 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -19,7 +19,7 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 
 	protected ConnectionInfo connectionInfo;
 
-	public HierarchyNode getParentConnection() {
+	public Node getParentConnection() {
 		return connectionInfo.getConnection();
 	}
 

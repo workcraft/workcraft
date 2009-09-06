@@ -1,6 +1,7 @@
 package org.workcraft.testing.plugins.balsa;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -9,8 +10,8 @@ import java.awt.geom.Rectangle2D;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
@@ -30,7 +31,7 @@ public class VisualTests {
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent mathComp = new BreezeComponent();
 		mathComp.setUnderlyingComponent(new While());
-		circuit.addComponent(mathComp);
+		circuit.add(mathComp);
 		VisualBreezeComponent visual = new VisualBreezeComponent(mathComp);
 
 		assertTrue(visual.hitTest(new Point2D.Double(0, 0)));
@@ -45,7 +46,7 @@ public class VisualTests {
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent mathComp = new BreezeComponent();
 		mathComp.setUnderlyingComponent(new Concur());
-		circuit.addComponent(mathComp);
+		circuit.add(mathComp);
 		VisualBreezeComponent visual = new VisualBreezeComponent(mathComp);
 
 		Rectangle2D box = visual.getBoundingBoxInLocalSpace();
@@ -72,23 +73,21 @@ public class VisualTests {
 		BreezeComponent mathComp2 = new BreezeComponent();
 		mathComp1.setUnderlyingComponent(new Concur());
 		mathComp2.setUnderlyingComponent(new Concur());
-		circuit.addComponent(mathComp1);
-		circuit.addComponent(mathComp2);
+		circuit.add(mathComp1);
+		circuit.add(mathComp2);
 		VisualBreezeComponent visual1 = new VisualBreezeComponent(mathComp1);
 		VisualBreezeComponent visual2 = new VisualBreezeComponent(mathComp2);
 		visual1.setX(10);
 
 		VisualBalsaCircuit visualCircuit = new VisualBalsaCircuit(circuit);
 
-		VisualGroup root = visualCircuit.getRoot();
+		Container root = visualCircuit.getRoot();
 		root.add(visual1);
 		root.add(visual2);
-		visualCircuit.registerNode(visual1);
-		visualCircuit.registerNode(visual2);
 
 		VisualHandshake hs1 = visual1.getHandshake("activate");
 		VisualHandshake hs2 = visual2.getHandshake("activateOut1");
-		VisualConnection connection = visualCircuit.connect(hs1, hs2);
+		VisualConnection connection = (VisualConnection)visualCircuit.connect(hs1, hs2);
 
 		AffineTransform transform1 = TransformHelper.getTransform(hs1, root);
 		Point2D p1 = hs1.getPosition();

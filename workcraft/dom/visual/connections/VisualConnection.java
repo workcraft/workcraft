@@ -8,6 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -15,22 +16,25 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.MathNode;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.TouchableHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.framework.EventListener1;
+import org.workcraft.framework.observation.TransformChangedEvent;
+import org.workcraft.framework.observation.TransformObserver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode implements PropertyChangeListener, HierarchyNode, Drawable, ConnectionInfo {
+public class VisualConnection extends VisualNode
+implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, TransformObserver {
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -64,7 +68,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		}
 	};
 
-	protected Connection refConnection;
+	protected MathConnection refConnection;
 	protected VisualComponent first;
 	protected VisualComponent second;
 
@@ -120,7 +124,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 
 	}
 
-	public void setVisualConnection(VisualComponent first, VisualComponent second, Connection refConnection) {
+	public void setVisualConnection(VisualComponent first, VisualComponent second, MathConnection refConnection) {
 		this.first = first;
 		this.second = second;
 		this.refConnection = refConnection;
@@ -129,7 +133,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		addListeners();
 	}
 
-	public VisualConnection(Connection refConnection, VisualComponent first, VisualComponent second) {
+	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
 		this.first = first;
 		this.second = second;
@@ -293,7 +297,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	}
 
 	@Override
-	public void setParent(HierarchyNode parent) {
+	public void setParent(Node parent) {
 		super.setParent(parent);
 		update();
 	};
@@ -336,7 +340,7 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		g.fill(transformedArrowShape);
 	}
 
-	public Connection getReferencedConnection() {
+	public MathConnection getReferencedConnection() {
 		return refConnection;
 	}
 
@@ -345,17 +349,18 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 //	}
 
 	public boolean hitTest(Point2D pointInParentSpace) {
-		Rectangle2D rect = new Rectangle2D.Double(
+/*		Rectangle2D rect = new Rectangle2D.Double(
 				pointInParentSpace.getX()-hitThreshold,
 				pointInParentSpace.getY()-hitThreshold,
 				2*hitThreshold,
 				2*hitThreshold
 				);
-		return TouchableHelper.touchesRectangle(this, rect);
-//		if (distanceToConnection(pointInParentSpace) < hitThreshold)
-//			return 1;
-//		else
-//			return 0;
+		return TouchableHelper.touchesRectangle(this, rect); */
+
+		if (graphic.getNearestPointOnConnection(pointInParentSpace).distance(pointInParentSpace) < hitThreshold)
+			return true;
+		else
+			return false;
 	}
 
 	@Override
@@ -391,12 +396,12 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 		eventDispatcher.removeSelectionChangedListener(selectionListener);
 	}
 
-	public Collection<HierarchyNode> getChildren() {
+	public Collection<Node> getChildren() {
 		return this.graphic.getControls();
 	}
 
 	@Override
-	public HierarchyNode getConnection() {
+	public Node getConnection() {
 		return this;
 	}
 
@@ -408,5 +413,15 @@ public class VisualConnection extends VisualNode implements PropertyChangeListen
 	@Override
 	public Point2D getPoint2() {
 		return secondCenter;
+	}
+
+	@Override
+	public Collection<Node> getObservedNodes() {
+		return Arrays.asList(new Node[] {first, second});
+	}
+
+	@Override
+	public void notify(TransformChangedEvent e) {
+		update();
 	}
 }

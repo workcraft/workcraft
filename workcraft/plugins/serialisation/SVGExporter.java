@@ -13,6 +13,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.Document;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.serialisation.Exporter;
@@ -25,7 +26,7 @@ public class SVGExporter implements Exporter {
 	public void export(Model model, OutputStream out) throws IOException,
 			ModelValidationException, SerialisationException {
 
-		if (model.getVisualModel() == null)
+		if (model == null)
 			throw new SerialisationException ("Not a visual model");
 
 			try {
@@ -35,12 +36,12 @@ public class SVGExporter implements Exporter {
 
 				g2d.scale(50, 50);
 
-				Rectangle2D bounds = ((VisualGroup)model.getVisualModel().getRoot()).getBoundingBoxInLocalSpace();
+				Rectangle2D bounds = ((VisualGroup)model.getRoot()).getBoundingBoxInLocalSpace();
 
 				g2d.translate(-bounds.getMinX(), -bounds.getMinY());
 				g2d.setSVGCanvasSize(new Dimension((int)bounds.getWidth()*50, (int)bounds.getHeight()*50));
 
-				model.getVisualModel().draw(g2d);
+				((VisualModel)model).draw(g2d);
 
 				g2d.stream(new OutputStreamWriter(out));
 
@@ -59,7 +60,7 @@ public class SVGExporter implements Exporter {
 	}
 
 	public boolean isApplicableTo(Model model) {
-		if (model.getVisualModel() != null)
+		if (model instanceof VisualModel)
 			return true;
 		else
 			return false;

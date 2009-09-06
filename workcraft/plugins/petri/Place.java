@@ -1,24 +1,18 @@
 package org.workcraft.plugins.petri;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.Component;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.framework.observation.ObservableState;
+import org.workcraft.framework.observation.ObservableStateImpl;
+import org.workcraft.framework.observation.PropertyChangedEvent;
+import org.workcraft.framework.observation.StateObserver;
 
-@DisplayName("Place")
 @VisualClass("org.workcraft.plugins.petri.VisualPlace")
-public class Place extends Component {
+public class Place extends MathNode implements ObservableState {
+	ObservableStateImpl observableStateImpl = new ObservableStateImpl();
+
 	protected int tokens = 0;
 	protected int capacity = 1;
-
-	public Place() {
-		addXMLSerialisable();
-	}
 
 	public int getCapacity() {
 		return capacity;
@@ -34,25 +28,15 @@ public class Place extends Component {
 
 	public void setTokens(int tokens) {
 		this.tokens = tokens;
+
+		observableStateImpl.sendNotification( new PropertyChangedEvent(this, "tokens") );
 	}
 
-	private void addXMLSerialisable() {
-		addXMLSerialiser(new XMLSerialiser(){
-			public String getTagName() {
-				return Place.class.getSimpleName();
-			}
-			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws DeserialisationException {
-				tokens = XmlUtil.readIntAttr(element, "tokens", 0);
-				capacity = XmlUtil.readIntAttr(element, "capacity", 1);
-			}
-			@Override
-			public void serialise(Element element,
-					ReferenceProducer refResolver) {
-				XmlUtil.writeIntAttr(element, "tokens", tokens);
-				if (capacity!=1)
-					XmlUtil.writeIntAttr(element, "capacity", capacity);
-			}
-		});
+	public void addObserver(StateObserver obs) {
+		observableStateImpl.addObserver(obs);
+	}
+
+	public void removeObserver(StateObserver obs) {
+		observableStateImpl.removeObserver(obs);
 	}
 }

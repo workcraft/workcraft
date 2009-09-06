@@ -12,8 +12,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualComponent;
+import javax.swing.Icon;
+
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -75,11 +75,7 @@ public class ConnectionTool extends AbstractTool {
 		g.draw(line);
 	}
 
-	public String getIconPath() {
-		return null;
-	}
-
-	public String getName() {
+	public String getLabel() {
 		return "Connect";
 	}
 
@@ -87,10 +83,7 @@ public class ConnectionTool extends AbstractTool {
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
 
-		VisualGroup root = e.getModel().getRoot();
-		VisualNode newMouseOverObject = HitMan.hitDeepestNodeOfType(e.getPosition(), root, VisualComponent.class);
-		if (newMouseOverObject == null)
-			newMouseOverObject = HitMan.hitDeepestNodeOfType(e.getPosition(), root, VisualConnection.class);
+		VisualNode newMouseOverObject = e.getModel().hitTest(e.getPosition());
 
 		if (mouseOverObject != newMouseOverObject) {
 			if (mouseOverObject != null) {
@@ -124,7 +117,7 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else if (mouseOverObject != null) {
 				try {
-					VisualConnection vcon = e.getModel().connect(first, mouseOverObject);
+					VisualConnection vcon = (VisualConnection)e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
 						first.clearColorisation();
@@ -175,5 +168,10 @@ public class ConnectionTool extends AbstractTool {
 	@Override
 	public int getHotKeyCode() {
 		return KeyEvent.VK_C;
+	}
+
+	@Override
+	public Icon getIcon() {
+		return null;
 	}
 }

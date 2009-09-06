@@ -1,18 +1,20 @@
 package org.workcraft.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.NodeHelper;
 
 import net.sf.jga.fn.UnaryFunctor;
 
 public class Hierarchy {
 	@SuppressWarnings("serial")
-	public static <T> UnaryFunctor<HierarchyNode, Boolean> getTypeFilter(
+	public static <T> UnaryFunctor<Node, Boolean> getTypeFilter(
 			final Class<T> type) {
-		return new UnaryFunctor<HierarchyNode, Boolean> (){
-			public Boolean fn(HierarchyNode node) {
+		return new UnaryFunctor<Node, Boolean> (){
+			public Boolean fn(Node node) {
 				if (type.isInstance(node))
 					return true;
 				else
@@ -21,10 +23,10 @@ public class Hierarchy {
 		};
 	}
 
-	public static  Collection<HierarchyNode> fillterNodes (Collection<HierarchyNode> nodes, UnaryFunctor<HierarchyNode, Boolean> filter) {
-		LinkedList<HierarchyNode> result = new LinkedList<HierarchyNode>();
+	public static  Collection<Node> fillterNodes (Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
+		LinkedList<Node> result = new LinkedList<Node>();
 
-		for (HierarchyNode node : nodes) {
+		for (Node node : nodes) {
 			if (filter.fn(node))
 				result.add(node);
 		}
@@ -33,24 +35,24 @@ public class Hierarchy {
 	}
 
 
-	public static <T extends HierarchyNode> Collection <T> filterNodesByType (Collection<HierarchyNode> nodes, final Class<T> type) {
+	public static <T extends Node> Collection <T> filterNodesByType (Collection<Node> nodes, final Class<T> type) {
 		LinkedList<T> result = new LinkedList<T>();
 
-		for (HierarchyNode node : nodes) {
+		for (Node node : nodes) {
 			if (type.isInstance(node))
 				result.add(type.cast(node));
 		}
 		return result;
 	}
-	public static HierarchyNode [] getPath(HierarchyNode node) {
-		HierarchyNode n = node;
+	public static Node [] getPath(Node node) {
+		Node n = node;
 			int i = 0;
 			while(n!=null)
 			{
 				i++;
 				n = n.getParent();
 			}
-			HierarchyNode [] result = new HierarchyNode[i];
+			Node [] result = new Node[i];
 
 			n = node;
 			while(n!=null)
@@ -62,11 +64,11 @@ public class Hierarchy {
 			return result;
 	}
 
-	public static HierarchyNode getCommonParent(HierarchyNode node1, HierarchyNode node2) {
-		HierarchyNode [] path1 = getPath(node1);
-		HierarchyNode [] path2 = getPath(node2);
+	public static Node getCommonParent(Node node1, Node node2) {
+		Node [] path1 = getPath(node1);
+		Node [] path2 = getPath(node2);
 		int size = Math.min(path1.length, path2.length);
-		HierarchyNode result = null;
+		Node result = null;
 		for(int i=0;i<size;i++)
 			if(path1[i]==path2[i])
 				result = path1[i];
@@ -75,8 +77,8 @@ public class Hierarchy {
 		return result;
 	}
 
-	public static boolean isDescendant(HierarchyNode descendant, HierarchyNode parent) {
-		HierarchyNode node = descendant;
+	public static boolean isDescendant(Node descendant, Node parent) {
+		Node node = descendant;
 		while(node != parent)
 		{
 			if(node == null)
@@ -87,18 +89,18 @@ public class Hierarchy {
 	}
 
 	@SuppressWarnings({ "unchecked", "serial" })
-	public static <T> T getNearestAncestor(HierarchyNode node, final Class<T> type)
+	public static <T> T getNearestAncestor(Node node, final Class<T> type)
 	{
-		return (T)getNearestAncestor(node, new UnaryFunctor<HierarchyNode, Boolean>()
+		return (T)getNearestAncestor(node, new UnaryFunctor<Node, Boolean>()
 				{
-					public Boolean fn(HierarchyNode node) {
+					public Boolean fn(Node node) {
 						return type.isInstance(node);
 					}
 				});
 	}
 
-	public static HierarchyNode getNearestAncestor(HierarchyNode node, UnaryFunctor<HierarchyNode, Boolean> filter) {
-		HierarchyNode parent = node;
+	public static Node getNearestAncestor(Node node, UnaryFunctor<Node, Boolean> filter) {
+		Node parent = node;
 		while(parent != null)
 		{
 			if(filter.fn(parent))
@@ -106,5 +108,19 @@ public class Hierarchy {
 			parent = parent.getParent();
 		}
 		return null;
+	}
+
+	public static <T> Collection<T> getChildrenOfType(Node node, Class<T> type)
+	{
+		return NodeHelper.filterByType(node.getChildren(), type);
+	}
+
+	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type)
+	{
+		ArrayList<T> result = new ArrayList<T>();
+		result.addAll(getChildrenOfType(node, type));
+		for(Node n : node.getChildren())
+			result.addAll(getDescendantsOfType(n, type));
+		return result;
 	}
 }

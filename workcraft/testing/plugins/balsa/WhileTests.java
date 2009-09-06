@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.workcraft.dom.Connection;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -81,13 +80,13 @@ public class WhileTests {
 		BreezeComponent while2 = new BreezeComponent();
 		while2.setUnderlyingComponent(new While());
 
-		balsa.addComponent(while1);
-		balsa.addComponent(while2);
+		balsa.add(while1);
+		balsa.add(while2);
 
 		HandshakeComponent wh1Out = while1.getHandshakeComponents().get(while1.getHandshakes().get("activateOut"));
 		HandshakeComponent wh2In = while2.getHandshakeComponents().get(while2.getHandshakes().get("activate"));
 
-		balsa.addConnection(new Connection(wh1Out, wh2In));
+		balsa.connect(wh1Out, wh2In);
 
 		File stgFile = new File("while_while.g");
 		new BalsaToStgExporter_FourPhase().export(balsa, new FileOutputStream(stgFile));

@@ -1,3 +1,4 @@
+
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;

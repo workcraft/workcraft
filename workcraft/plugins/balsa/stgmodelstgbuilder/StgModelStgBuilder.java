@@ -3,15 +3,14 @@ package org.workcraft.plugins.balsa.stgmodelstgbuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.dom.Component;
-import org.workcraft.dom.Connection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
+import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
+import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
 import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
@@ -40,10 +39,10 @@ public class StgModelStgBuilder implements StgBuilder {
 		addConnection(source.getModelTransition(), destination.getPetriPlace());
 	}
 
-	public void addConnection(Component source, Component destination)
+	public void addConnection(MathNode source, MathNode destination)
 	{
 		try {
-			model.addConnection(new Connection(source, destination));
+			model.connect(source, destination);
 		} catch (InvalidConnectionException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Invalid connection o_O");
@@ -75,14 +74,14 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	public StgModelStgTransition buildTransition() {
 		SignalTransition transition = new SignalTransition();
-		model.addComponent(transition);
+		model.add(transition);
 		return new StgModelStgTransition(transition);
 	}
 
 	public StgPlace buildPlace(int tokenCount) {
 		Place place = new Place();
 		place.setTokens(tokenCount);
-		model.addComponent(place);
+		model.add(place);
 		return new StgModelStgPlace(place);
 	}
 

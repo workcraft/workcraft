@@ -8,9 +8,11 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.AbstractMathModel;
+import org.workcraft.dom.math.MathGroup;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -22,10 +24,10 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
 
-	private class MockMathModel extends AbstractMathModel {
+	private class MockMathModel extends AbstractModel {
 
 		public MockMathModel() {
-			super();
+			super(new MathGroup());
 		}
 
 		@Override
@@ -34,18 +36,45 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public void validateConnection(Connection connection)
+		public Connection connect(Node first, Node second)
 				throws InvalidConnectionException {
-			return;
+			// TODO Auto-generated method stub
+			return null;
 		}
 
+		@Override
+		public void validateConnection(Node first, Node second)
+				throws InvalidConnectionException {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
+	private class MockConcreteVisualModel extends AbstractVisualModel {
+
+		public MockConcreteVisualModel() {
+			super(new MockMathModel());
+		}
+
+		@Override
+		public void validate() throws ModelValidationException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void validateConnection(Node first, Node second)
+				throws InvalidConnectionException {
+			// TODO Auto-generated method stub
+
+		}
 
 	}
 
 	@Test
 	public void TestGroupWithEmptySelection()
 			throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		model.getCurrentLevel().add(new VisualGroup());
 
@@ -105,8 +134,8 @@ public class VisualModelTests {
 		Assert.assertFalse(oldList.contains(newGroup));
 		Assert.assertTrue(newGroup instanceof VisualGroup);
 
-		ArrayList<HierarchyNode> newNodeList = new ArrayList<HierarchyNode>();
-		for (HierarchyNode node : newGroup.getChildren())
+		ArrayList<Node> newNodeList = new ArrayList<Node>();
+		for (Node node : newGroup.getChildren())
 			newNodeList.add(node);
 
 		Assert.assertEquals(toGroup.length, newNodeList.size());
@@ -116,7 +145,7 @@ public class VisualModelTests {
 
 	@Test
 	public void TestGroup2Items() throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		VisualGroup root = model.getCurrentLevel();
 		VisualGroup node1 = createGroup(root);
@@ -174,7 +203,7 @@ public class VisualModelTests {
 
 	@Test
 	public void TestUngroupRoot() throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		VisualGroup root = model.getCurrentLevel();
 
@@ -207,7 +236,7 @@ public class VisualModelTests {
 
 	@Test
 	public void TestUngroupNonRoot() throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		VisualGroup root = model.getCurrentLevel();
 
@@ -242,7 +271,7 @@ public class VisualModelTests {
 
 	@Test
 	public void TestUngroupEmpty() throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		VisualGroup root = model.getCurrentLevel();
 
@@ -265,7 +294,7 @@ public class VisualModelTests {
 
 	@Test
 	public void TestUngroupTwoGroups() throws VisualModelInstantiationException {
-		VisualModel model = new VisualModel(new MockMathModel());
+		VisualModel model = new MockConcreteVisualModel();
 
 		VisualGroup root = model.getCurrentLevel();
 
@@ -313,7 +342,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnections() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualConnection con = createConnection(c1, c2, root);
@@ -331,7 +360,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnectionsIgnoreSelection() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualConnection con = createConnection(c1, c2, root);
@@ -348,7 +377,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupTwoConnections() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualConnection con1 = createConnection(c1, c2, root);
@@ -368,7 +397,7 @@ public class VisualModelTests {
 	public void testGrouping_AutoGroupConnectionsPointingDeep() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualGroup node1 = createGroup(root);
 		VisualComponent c1 = createComponent(node1);
 		VisualComponent c2 = createComponent(root);
@@ -386,7 +415,7 @@ public class VisualModelTests {
 	public void testGrouping_DontGroupConnectionsSimple() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualComponent c3 = createComponent(root);
@@ -408,7 +437,7 @@ public class VisualModelTests {
 			this.expected = expected;
 		}
 
-		public void assertEquals(HierarchyNode node) {
+		public void assertEquals(Node node) {
 			Assert.assertTrue("Should be a visual group", node instanceof VisualGroup);
 			VisualGroup group = (VisualGroup) node;
 			VisualNode[] their = group.getChildren().toArray(new VisualNode[0]);;
@@ -418,7 +447,7 @@ public class VisualModelTests {
 		public boolean equals(Object obj)
 		{
 			Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
-			assertEquals((HierarchyNode)obj);
+			assertEquals((Node)obj);
 			return true;
 		}
 	}
@@ -427,7 +456,7 @@ public class VisualModelTests {
 	public void testGrouping_DontGroupConnections() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualComponent c3 = createComponent(root);
@@ -447,7 +476,7 @@ public class VisualModelTests {
 	public void testGrouping_DontCountConnections() {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualComponent c1 = createComponent(root);
 		VisualComponent c2 = createComponent(root);
 		VisualConnection con = createConnection(c1, c2, root);
@@ -460,11 +489,7 @@ public class VisualModelTests {
 	}
 
 	private VisualModel createModel() {
-		try {
-			return new VisualModel(new MockMathModel());
-		} catch (VisualModelInstantiationException e) {
-			throw new RuntimeException("error!");
-		}
+		return new MockConcreteVisualModel();
 	}
 
 	@Test
@@ -472,17 +497,17 @@ public class VisualModelTests {
 	{
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualGroup group1 = createGroup(root);
 		group1.setX(101);
 		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
 		group1.add(sq);
 
-		Assert.assertNull(model.hitNode(new Point2D.Double(0.5, 0.5)));
-		Assert.assertEquals(group1, model.hitNode(new Point2D.Double(101.5, 0.5)));
+		Assert.assertNull(model.hitTest(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(group1, model.hitTest(new Point2D.Double(101.5, 0.5)));
 		model.setCurrentLevel(group1);
-		Assert.assertNull(model.hitNode(new Point2D.Double(0.5, 0.5)));
-		Assert.assertEquals(sq, model.hitNode(new Point2D.Double(101.5, 0.5)));
+		Assert.assertNull(model.hitTest(new Point2D.Double(0.5, 0.5)));
+		Assert.assertEquals(sq, model.hitTest(new Point2D.Double(101.5, 0.5)));
 	}
 
 	@Test
@@ -490,7 +515,7 @@ public class VisualModelTests {
 	{
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getRoot();
+		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualGroup group1 = createGroup(root);
 		group1.setX(101);
 		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
@@ -499,15 +524,15 @@ public class VisualModelTests {
 		SquareNode sq2 = new SquareNode(root, new Rectangle2D.Double(0, 5, 1, 1));
 		root.add(sq2);
 
-		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(group1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).get(0));
-		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
-		Assert.assertEquals(sq2, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).get(0));
+		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(group1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+		Assert.assertEquals(sq2, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).iterator().next());
 		model.setCurrentLevel(group1);
-		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(1, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(sq, model.hitObjects(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).get(0));
-		Assert.assertEquals(0, model.hitObjects(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(sq, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
 	}
 }

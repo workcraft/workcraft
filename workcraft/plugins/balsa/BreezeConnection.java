@@ -1,8 +1,8 @@
 package org.workcraft.plugins.balsa;
 
-import org.workcraft.dom.Connection;
+import org.workcraft.dom.math.MathConnection;
 
-public class BreezeConnection extends Connection {
+public class BreezeConnection extends MathConnection {
 
 	private String handshake1;
 	private String handshake2;

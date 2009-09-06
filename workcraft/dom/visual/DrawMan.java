@@ -3,7 +3,7 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 
 
 class DrawMan
@@ -16,7 +16,7 @@ class DrawMan
 		simpleDraw(graphics, node);
 	}
 
-	public static void draw(Graphics2D graphics, HierarchyNode node)
+	public static void draw(Graphics2D graphics, Node node)
 	{
 		AffineTransform oldTransform = graphics.getTransform();
 		if(node instanceof Movable)
@@ -26,11 +26,11 @@ class DrawMan
 		graphics.setTransform(oldTransform);
 	}
 
-	private static void simpleDraw(Graphics2D graphics, HierarchyNode node)
+	private static void simpleDraw(Graphics2D graphics, Node node)
 	{
 		if(node instanceof Drawable)
 			((Drawable)node).draw(graphics);
-		for(HierarchyNode n : node.getChildren())
+		for(Node n : node.getChildren())
 		{
 			draw(graphics, n);
 		}

@@ -6,25 +6,39 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualModelEventListener;
-import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.framework.observation.HierarchyEvent;
+import org.workcraft.framework.observation.StateEvent;
+import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.framework.observation.StateSupervisor;
 import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.ToolboxWindow;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-public class GraphEditorPanel extends JPanel implements ComponentListener, VisualModelEventListener, GraphEditor {
+public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
+
+	class Repainter extends StateSupervisor {
+		@Override
+		public void handleHierarchyEvent(HierarchyEvent e) {
+			repaint();
+		}
+
+		@Override
+		public void handleEvent(StateEvent e) {
+			repaint();
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	protected VisualModel visualModel;
@@ -44,10 +58,11 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
-		visualModel = workspaceEntry.getModel().getVisualModel();
+		visualModel = (VisualModel) workspaceEntry.getModel();
 		toolboxWindow = mainWindow.getToolboxWindow();
 
-		visualModel.addListener(this);
+		new Repainter().attach(visualModel.getRoot());
+		visualModel.addObserver(this);
 
 		view = new Viewport(0, 0, getWidth(), getHeight());
 		grid = new Grid();
@@ -55,7 +70,6 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		ruler = new Ruler();
 		view.addListener(grid);
 		grid.addListener(ruler);
-		addComponentListener(this);
 
 		GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxWindow);
 		GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxWindow);
@@ -150,53 +164,27 @@ public class GraphEditorPanel extends JPanel implements ComponentListener, Visua
 		return workspaceEntry;
 	}
 
-	public void onSelectionChanged(Collection<HierarchyNode> selection) {
+	public void onSelectionChanged(Collection<Node> selection) {
 		repaint();
-
-		if (selection.size() == 1 && selection.iterator().next() instanceof PropertyEditable) {
-			mainWindow.getPropertyView().setObject((PropertyEditable)selection.iterator().next());
-		} else {
-			mainWindow.getPropertyView().clearObject();
-		}
 	}
 
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}
 
-	public void onComponentAdded(VisualComponent component) {
+	public void notify(HierarchyEvent e) {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}
 
-	public void onComponentPropertyChanged(String propertyName,
-			VisualComponent component) {
-		repaint();
-		workspaceEntry.setUnsaved(true);
-	}
+	public void notify(StateEvent e) {
+		Collection<Node> selection = visualModel.getSelection();
+		if (selection.size() == 1 && selection.iterator().next() instanceof PropertyEditable) {
+			mainWindow.getPropertyView().setObject((PropertyEditable)selection.iterator().next());
+		} else {
+			mainWindow.getPropertyView().clearObject();
+		}
 
-	public void onComponentRemoved(VisualComponent component) {
-		repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onConnectionAdded(VisualConnection connection) {
-		repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onConnectionPropertyChanged(String propertyName,
-			VisualConnection connection) {
-		repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onConnectionRemoved(VisualConnection connection) {
-		repaint();
-		workspaceEntry.setUnsaved(true);
-	}
-
-	public void onLayoutChanged() {
 		repaint();
 		workspaceEntry.setUnsaved(true);
 	}

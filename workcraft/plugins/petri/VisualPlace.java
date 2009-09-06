@@ -10,23 +10,18 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-
-import org.workcraft.dom.visual.PopupMenuBuilder;
+import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.actions.ScriptedAction;
-import org.workcraft.gui.actions.ScriptedActionListener;
-import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-@HotKeyDeclaration(KeyEvent.VK_P)
+@DisplayName("Place")
+@Hotkey(KeyEvent.VK_P)
 public class VisualPlace extends VisualComponent {
-	static public class AddTokenAction extends ScriptedAction {
+	/*static public class AddTokenAction extends ScriptedAction {
 		private int placeID;
 		public AddTokenAction(Place place) {
 			super();
@@ -67,7 +62,7 @@ public class VisualPlace extends VisualComponent {
 		public String getText() {
 			return "Remove token";
 		}
-	}
+	}	*/
 
 	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
@@ -108,7 +103,7 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclaration(new PropertyDeclaration ("Capacity", "getCapacity", "setCapacity", int.class));
 		addPropertyDeclaration(new PropertyDeclaration ("Token color", "getTokenColor", "setTokenColor", Color.class));
 
-		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
+	/*	addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,
 					ScriptedActionListener actionListener) {
 				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
@@ -122,7 +117,7 @@ public class VisualPlace extends VisualComponent {
 				menu.add(addToken);
 				menu.add(removeToken);
 			}
-		});
+		});*/
 	}
 
 	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
@@ -182,7 +177,7 @@ public class VisualPlace extends VisualComponent {
 	{
 
 		// some debug info
-		int postv = getPostset().size();
+		/*int postv = getPostset().size();
 		int postm = getReferencedPlace().getPostset().size();
 		int prev = getPreset().size();
 		int prem = getReferencedPlace().getPreset().size();
@@ -198,7 +193,7 @@ public class VisualPlace extends VisualComponent {
 
 			g.drawString("ERROR:"+str, 1, 0);
 
-		}
+		}*/
 		/*
 		g.setColor(Color.red);
 	    Font font = new Font("Courier", Font.PLAIN, 1);

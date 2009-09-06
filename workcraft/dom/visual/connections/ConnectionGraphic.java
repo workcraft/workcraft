@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 
 public interface ConnectionGraphic {
 	public void update();
@@ -16,7 +16,7 @@ public interface ConnectionGraphic {
 	public Point2D getPointOnConnection(double t);
 	public Point2D getNearestPointOnConnection(Point2D pt);
 
-	public Collection<HierarchyNode> getControls();
+	public Collection<Node> getControls();
 
 	public Rectangle2D getBoundingBox();
 

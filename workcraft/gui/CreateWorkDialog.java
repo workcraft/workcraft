@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.plugins.PluginInfo;
 
@@ -104,7 +105,7 @@ public class CreateWorkDialog extends JDialog {
 			}
 		});
 
-		PluginInfo[] modelsInfo = framework.getPluginManager().getModels();
+		PluginInfo[] modelsInfo = framework.getPluginManager().getPluginsImplementing(MathModel.class.getName());
 		Arrays.sort(modelsInfo);
 		for (PluginInfo info : modelsInfo)
 			listModel.addElement(info);

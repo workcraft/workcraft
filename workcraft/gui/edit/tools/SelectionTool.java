@@ -3,33 +3,23 @@ package org.workcraft.gui.edit.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.swing.Icon;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.TransformEventPropagator;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnectionAnchorPoint;
-import org.workcraft.gui.edit.graph.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.Hierarchy;
@@ -41,6 +31,8 @@ public class SelectionTool extends AbstractTool {
 
 	private static final int SELECTION_ADD = 0;
 	private static final int SELECTION_REMOVE = 1;
+	private static final int SELECTION_REPLACE = 2;
+
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
@@ -51,45 +43,75 @@ public class SelectionTool extends AbstractTool {
 	private Point2D prevPosition;
 	private Point2D startPosition;
 	private Point2D snapOffset;
-	private LinkedList<HierarchyNode> savedSelection = new LinkedList<HierarchyNode>();
+	private LinkedList<Node> selected = new LinkedList<Node>();
 	private int selectionMode;
 
-	private GraphEditor currentEditor = null;
 
 	@Override
 	public void activated(GraphEditor editor) {
-		currentEditor = editor;
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
-		currentEditor = null;
 	}
 
-	protected void clearSelection(VisualModel model) {
-		for (HierarchyNode so : model.getSelection()) {
-			if(so instanceof Colorisable)
-				((Colorisable)so).clearColorisation();
-		}
+	private void selectNone(VisualModel model) {
+		uncolorise (model.getSelection());
 		model.selectNone();
 	}
 
-	protected void addToSelection(VisualModel model, HierarchyNode so) {
+	private void colorise(Collection<Node> nodes) {
+		for (Node n : nodes)
+			if (n instanceof Colorisable)
+				((Colorisable)n).setColorisation(selectionColor);
+	}
+
+	private void colorise(Node node) {
+		if (node instanceof Colorisable)
+			((Colorisable)node).setColorisation(selectionColor);
+	}
+
+	private void uncolorise(Collection<Node> nodes) {
+		for (Node n : nodes)
+			if (n instanceof Colorisable)
+				((Colorisable)n).clearColorisation();
+	}
+
+	private void uncolorise(Node node) {
+		if (node instanceof Colorisable)
+			((Colorisable)node).clearColorisation();
+	}
+
+	private void select (VisualModel model, VisualNode node) {
+		uncolorise(model.getSelection());
+		colorise(node);
+		model.select(node);
+	}
+
+	private void select (VisualModel model, Collection<Node> nodes) {
+		uncolorise(model.getSelection());
+		colorise (nodes);
+		model.select(nodes);
+	}
+
+	protected void addToSelection(VisualModel model, Node so) {
+		colorise(so);
 		model.addToSelection(so);
-		if(so instanceof Colorisable)
-			((Colorisable)so).setColorisation(selectionColor);
 	}
 
-	protected void addToSelection(VisualModel model, Collection<HierarchyNode> s) {
-		for (HierarchyNode n : s) {
-			addToSelection(model, n);
-		}
+	protected void addToSelection(VisualModel model, Collection<Node> s) {
+		colorise(s);
+		model.addToSelection(s);
 	}
 
-	protected void removeFromSelection(VisualModel model, HierarchyNode so) {
+	protected void removeFromSelection(VisualModel model, VisualNode so) {
+		uncolorise(so);
 		model.removeFromSelection(so);
-		if(so instanceof Colorisable)
-			((Colorisable)so).setColorisation(selectionColor);
+	}
+
+	protected void removeFromSelection(VisualModel model, Collection<Node> so) {
+		uncolorise(so);
+		model.removeFromSelection(so);
 	}
 
 	@Override
@@ -100,59 +122,33 @@ public class SelectionTool extends AbstractTool {
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			if(drag!=DRAG_NONE)
-				cancelDrag(e);
+				stopDrag(e);
 
-			HierarchyNode node = model.hitNode(e.getPosition());
+			VisualNode node = (VisualNode) model.hitTest(e.getPosition());
 
-			if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0) {
-				if (node != null) {
-					if (model.isObjectSelected(node) && node instanceof VisualConnection && e.getClickCount() == 2) {
-						/*
-						VisualConnectionAnchorPoint ap = ((VisualConnection)node).addAnchorPoint(e.getPosition());
-
-						clearSelection(model);
-						addToSelection(model, ap.getParentConnection());
-						ap.getParentConnection().getParent().add(ap);
-						addToSelection(model, ap);
-						*/
-
-					} else {
-						clearSelection(model);
-						addToSelection(model, node);
-//						if (node instanceof VisualConnectionAnchorPoint) {
-//							addToSelection(model, ((VisualConnectionAnchorPoint)node).getParentConnection());
-//						}
-					}
+			if (node != null)
+			{
+				if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
+					// if node is selected and it is the only node in selection, do nothing
+					if (!(e.getModel().getSelection().size() == 1 & e.getModel().getSelection().contains(node)))
+						// else select only this node
+						select(e.getModel(), node);
 				} else
-					clearSelection(model);
+					if ( (e.getModifiers()&MouseEvent.SHIFT_DOWN_MASK) != 0)
+						addToSelection(e.getModel(), node);
+					else if ( (e.getModifiers()&MouseEvent.CTRL_DOWN_MASK) != 0)
+						removeFromSelection(e.getModel(), node);
 			} else {
-				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
-					removeFromSelection(model, node);
-				else {
-					addToSelection(model, node);
-				}
+				if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0)
+					selectNone (e.getModel());
 			}
-
-			model.fireSelectionChanged();
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3) {
-			HierarchyNode so = model.hitNode(e.getPosition());
 
-			if (so!=null) {
-				Point2D screenPoint = e.getEditor().getViewport().userToScreen(e.getPosition());
 
-				if(so instanceof VisualNode)
-				{
-					JPopupMenu popup = ((VisualNode)so).createPopupMenu( ((GraphEditorPanel)currentEditor).getMainWindow().getDefaultActionListener() );
+			/* POPUP MENU */
 
-					if (popup.getComponentCount() != 0) {
-						popup.setFocusable(false);
-						popup.show((GraphEditorPanel)e.getEditor(), (int)screenPoint.getX(), (int) screenPoint.getY());
-					}
-				}
-			}
 		}
-
 		//System.out.println ("mouseClicked >_>");
 	}
 
@@ -163,39 +159,27 @@ public class SelectionTool extends AbstractTool {
 		if(drag==DRAG_MOVE) {
 			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
 			e.getEditor().snap(pos);
-			//
-			if (model.getSelection().size()==1) {
-				/*for (VisualNode vn : model.getSelection()) {
-					if (vn instanceof VisualConnection) {
-						VisualConnection vc = (VisualConnection)vn;
-						if (vc.getConnectionType()!=VisualConnection.ConnectionType.POLYLINE||
-								vc.getAnchorPointCount()==0) {
-							vc.setConnectionType(VisualConnection.ConnectionType.BEZIER);
-							vc.showAnchorPoints();
-							for (VisualConnectionAnchorPoint ap: vc.getAnchorPointComponents()) {
-								addToSelection(model, ap);
-							}
-						}
-					}
-				}*/
-			}
 
 			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
-			model.fireLayoutChanged();
+
 			prevPosition = pos;
 		}
 		else if(drag==DRAG_SELECT) {
-			LinkedList<Touchable> hit = model.hitObjects(startPosition, e.getPosition());
+			Collection<Node> hit = model.boxHitTest(startPosition, e.getPosition());
 
-			clearSelection(model);
-			for (HierarchyNode so: savedSelection)
-				addToSelection(model, so);
+			uncolorise(selected);
 
-			for(Touchable so : hit)
-				if(selectionMode==SELECTION_ADD)
-					addToSelection(model, (HierarchyNode)so);
-				else if(selectionMode==SELECTION_REMOVE)
-					removeFromSelection(model, (HierarchyNode)so);
+			selected.clear();
+			selected.addAll(hit);
+
+			colorise(e.getModel().getSelection());
+
+			if (selectionMode == SELECTION_ADD || selectionMode == SELECTION_REPLACE) {
+				colorise(selected);
+			} else {
+				uncolorise(selected);
+			}
+
 			prevPosition = e.getPosition();
 			e.getEditor().repaint();
 		}
@@ -206,48 +190,67 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		// System.out.println ("mousePressing ^_^");
 
-		//System.out.println ("mousePressing ^_^");
+		// TODO: drag should start only if mouse is indeed moved, otherwise it interferes
+		// with correct onclick behaviour
+
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			HierarchyNode so = model.hitNode(e.getPosition());
-			if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so!=null) {
-				if(!model.isObjectSelected(so)) {
-					clearSelection(model);
+			VisualNode hitNode = model.hitTest(e.getPosition());
 
-					addToSelection(model, so);
-					if (so instanceof VisualConnectionAnchorPoint) {
-						addToSelection(model, ((VisualConnectionAnchorPoint)so).getParentConnection());
-					}
-					model.fireSelectionChanged();
-				}
-				drag = DRAG_MOVE;
-				if(so instanceof VisualTransformableNode) {
-					VisualTransformableNode node = (VisualTransformableNode) so;
-					snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
-					prevPosition = new Point2D.Double(node.getX(), node.getY());
-				}
-				else
-					snapOffset = new Point2D.Double(0, 0);
-			}
-			else {
-				savedSelection.clear();
-				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.ALT_DOWN_MASK))==0 && so==null)
-					clearSelection(model);
-				if((e.getModifiers()&MouseEvent.ALT_DOWN_MASK)!=0)
-					selectionMode = SELECTION_REMOVE;
-				else
-					selectionMode = SELECTION_ADD;
-				savedSelection.addAll(model.selection());
+			if (hitNode == null) {
+				// hit nothing, so start select-drag
+				// selection will not actually be changed until drag completes
 				drag = DRAG_SELECT;
+				selected.clear();
+
+				// System.out.println ("Drag-select");
+
+				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
+					// no modifiers, start new selection
+					selectNone(model);
+					selectionMode = SELECTION_REPLACE;
+				} else {
+					// remember what was selected when drag started to modify the selection accordingly
+					selected.addAll(model.getSelection());
+
+					if((e.getModifiers()&MouseEvent.CTRL_DOWN_MASK)!=0)
+						// alt held
+						selectionMode = SELECTION_REMOVE;
+					else
+						// shift held
+						selectionMode = SELECTION_ADD;
+				}
+			} else {
+				// hit something
+
+				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
+					// mouse down without modifiers, begin move-drag
+
+					if(!model.getSelection().contains(hitNode))
+						select(e.getModel(), hitNode);
+
+					drag = DRAG_MOVE;
+
+					if(hitNode instanceof VisualTransformableNode) {
+						VisualTransformableNode node = (VisualTransformableNode) hitNode;
+						snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
+						prevPosition = new Point2D.Double(node.getX(), node.getY());
+					}
+
+					else
+						snapOffset = new Point2D.Double(0, 0);
+				}
+				// do nothing if pressed on a node with modifiers
 			}
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3)
 			if(drag!=DRAG_NONE)
-				cancelDrag(e);
+				stopDrag(e);
 
 		//System.out.println ("mousePressed d^_^b");
 	}
@@ -255,25 +258,32 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
 		//System.out.println ("mouseReleasing T_T");
-		VisualModel model = e.getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			if (drag == DRAG_SELECT)
-				model.fireSelectionChanged();
-
+			{
+				if (selectionMode == SELECTION_REPLACE)
+					select(e.getModel(), selected);
+				else if (selectionMode == SELECTION_ADD)
+					addToSelection(e.getModel(), selected);
+				else if (selectionMode == SELECTION_REMOVE)
+					removeFromSelection(e.getModel(), selected);
+			}
 			drag = DRAG_NONE;
+
+			e.getEditor().repaint();
 		}
 		//System.out.println ("mouseReleased X_X");
 	}
 
 	private void grayOutNotActive(VisualModel model)
 	{
-		HierarchyNode root = model.getRoot();
+		Node root = model.getRoot();
 		if (root instanceof Colorisable)
 			((Colorisable)root).setColorisation(grayOutColor);
 
 		model.getCurrentLevel().clearColorisation();
-		for(HierarchyNode node : model.getSelection())
+		for(Node node : model.getSelection())
 			if(node instanceof Colorisable)
 				((Colorisable)node).setColorisation(selectionColor);
 	}
@@ -296,32 +306,32 @@ public class SelectionTool extends AbstractTool {
 					currentLevelDown(e);
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
-					e.getModel().rotateSelection(-Math.PI/2);
+					//e.getModel().rotateSelection(-Math.PI/2);
 					break;
 				case KeyEvent.VK_CLOSE_BRACKET:
-					e.getModel().rotateSelection(Math.PI/2);
+					//e.getModel().rotateSelection(Math.PI/2);
 					break;
 				case KeyEvent.VK_LEFT:
-					e.getModel().translateSelection(-1,0);
+					//e.getModel().translateSelection(-1,0);
 					break;
 				case KeyEvent.VK_RIGHT:
-					e.getModel().translateSelection(1,0);
+					//e.getModel().translateSelection(1,0);
 					break;
 				case KeyEvent.VK_UP:
-					e.getModel().translateSelection(0,-1);
+					//e.getModel().translateSelection(0,-1);
 					break;
 				case KeyEvent.VK_DOWN:
-					e.getModel().translateSelection(0,1);
+					//	e.getModel().translateSelection(0,1);
 					break;
 				}
 			} else { // Shift is pressed
 
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					e.getModel().scaleSelection(-1,1);
+					//e.getModel().scaleSelection(-1,1);
 					break;
 				case KeyEvent.VK_UP:
-					e.getModel().scaleSelection(1,-1);
+					//e.getModel().scaleSelection(1,-1);
 					break;
 				}
 			}
@@ -338,35 +348,23 @@ public class SelectionTool extends AbstractTool {
 				e.getEditor().repaint();
 				break;
 			case KeyEvent.VK_C:
-				try {
-						e.getModel().copy(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
-					} catch (ParserConfigurationException e2) {
-						JOptionPane.showMessageDialog(null, "Copy failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
-						e2.printStackTrace();
-					}
 				break;
 			case KeyEvent.VK_X:
-				try {
-						e.getModel().cut(Toolkit.getDefaultToolkit().getSystemClipboard(), null);
-					} catch (ParserConfigurationException e2) {
-						JOptionPane.showMessageDialog(null, "Copy failed. Please refer to the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
-						e2.printStackTrace();
-					}
 				break;
 			case KeyEvent.VK_V:
-				clearSelection(e.getModel());
-					//addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
-					e.getModel().fireSelectionChanged();
-					e.getEditor().repaint();
+				selectNone(e.getModel());
+				//addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
+				//e.getModel().fireSelectionChanged();
+				e.getEditor().repaint();
 			}
 		}
 	}
 
 	private void currentLevelDown(GraphEditorKeyEvent e) {
-		List<HierarchyNode> selection = e.getModel().getSelection();
+		Collection<Node> selection = e.getModel().getSelection();
 		if(selection.size() == 1)
 		{
-			HierarchyNode selectedNode = selection.get(0);
+			Node selectedNode = selection.iterator().next();
 			if(selectedNode instanceof VisualGroup)
 				e.getModel().setCurrentLevel((VisualGroup)selectedNode);
 		}
@@ -385,31 +383,27 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
-		VisualModel model = e.getEditor().getModel().getVisualModel();
+		VisualModel model = e.getEditor().getModel();
 
-		for(HierarchyNode node : model.selection())
+		for(Node node : model.getSelection())
 			if(node instanceof Movable) {
 				Movable mv = (Movable) node;
 				MovableHelper.translate(mv, dx, dy);
-
-				TransformEventPropagator.fireTransformChanged(mv);
 			}
-
-		model.fireLayoutChanged();
 	}
 
-	private void cancelDrag(GraphEditorMouseEvent e) {
+	private void stopDrag(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
 		if(drag==DRAG_MOVE) {
 			offsetSelection(e, startPosition.getX()-e.getX(), startPosition.getY()-e.getY());
 		}
 		else if(drag == DRAG_SELECT) {
-			clearSelection(model);
-			for (HierarchyNode so: savedSelection)
+			selectNone(model);
+			for (Node so: selected)
 				addToSelection(model, so);
-			savedSelection.clear();
-			model.fireSelectionChanged();
+			selected.clear();
+			// model.fireSelectionChanged();
 		}
 		drag = DRAG_NONE;
 
@@ -424,57 +418,28 @@ public class SelectionTool extends AbstractTool {
 		);
 	}
 
-
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		//VisualModel model = editor.getModel();
-		g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
-
-		Rectangle2D.Double rect = null;
-		/*for(VisualNode vo : model.getSelection()) {
-
-			if(vo==null)
-				continue;
-
-
-			Rectangle2D bb = vo.getBoundingBoxInUserSpace();
-
-			if (bb == null) {
-				System.err.println (vo.getClass().getName());
-				return;
-			}
-
-			if(rect==null) {
-				rect = new Rectangle2D.Double();
-				rect.setRect(bb);
-			}
-			else
-				rect.add(bb);
-		}*/
-
-		if(rect!=null) {
-			g.setColor(new Color(255, 0, 0, 128));
-			g.draw(rect);
-		}
-
 		if(drag==DRAG_SELECT) {
+			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
+
 			Rectangle2D bb = selectionRect(prevPosition);
 			g.setColor(selectionFillColor);
 			g.fill(bb);
 			g.setColor(selectionBorderColor);
 			g.draw(bb);
-
 		}
 	}
 
-	public String getIconPath() {
-		return "org" + File.separator + "workcraft" + File.separator + "gui" + File.separator + "icons" + File.separator + "select.png";
-	}
-
-	public String getName() {
+	public String getLabel() {
 		return "Select";
 	}
 
 	public int getHotKeyCode() {
 		return KeyEvent.VK_S;
+	}
+
+	@Override
+	public Icon getIcon() {
+		return null;
 	}
 }

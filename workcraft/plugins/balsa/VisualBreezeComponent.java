@@ -19,25 +19,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.dom.visual.VisualTransformableNodeDeserialiser;
-import org.workcraft.framework.exceptions.VisualComponentCreationException;
-import org.workcraft.framework.exceptions.VisualConnectionCreationException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.layouts.MainLayouter;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.Hierarchy;
 
 public class VisualBreezeComponent extends VisualTransformableNode implements Drawable
 {
@@ -52,25 +46,6 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	private static final double componentRadius = 0.5;
 	private static final double handshakeRadius = componentRadius/5;
 	private final BreezeComponent refComponent;
-
-	public VisualBreezeComponent(Element element, VisualModel model) throws VisualConnectionCreationException, VisualComponentCreationException {
-		this(getRefComponent(element, model), element);
-	}
-
-	private static BreezeComponent getRefComponent(Element element,
-			VisualModel model) {
-		Element refElement = XmlUtil.getChildElement(VisualBreezeComponent.class.getSimpleName(), element);
-		int id = XmlUtil.readIntAttr(refElement, "ref", -1);
-
-		return (BreezeComponent)model.getMathModel().getComponentByID(id);
-	}
-
-	public VisualBreezeComponent(BreezeComponent refComponent, Element element) throws VisualConnectionCreationException, VisualComponentCreationException {
-		VisualTransformableNodeDeserialiser.initTransformableNode(element, this);
-
-		this.refComponent = refComponent;
-		init();
-	}
 
 	private void init() {
 		balsaComponent = refComponent.getUnderlyingComponent();
@@ -106,12 +81,12 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 		}
 	}
 
-	Collection<HierarchyNode> subNodes;
+	Collection<Node> subNodes;
 
 
 	@Override
-	public Collection<HierarchyNode> getChildren() {
-		return Collections.<HierarchyNode>unmodifiableCollection(visualHandshakes.values());
+	public Collection<Node> getChildren() {
+		return Collections.<Node>unmodifiableCollection(visualHandshakes.values());
 	}
 
 	public VisualHandshake getHandshake(String name) {
@@ -159,7 +134,7 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 
-		Rectangle2D children = BoundingBoxHelper.mergeBoundingBoxes(NodeHelper.getChildrenOfType(this, Touchable.class));
+		Rectangle2D children = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
 
 		if(children != null)
 			result.add(children);

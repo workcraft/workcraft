@@ -2,7 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.util.Collection;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public interface VisualModelEventListener {
@@ -12,6 +12,6 @@ public interface VisualModelEventListener {
 	public void onComponentRemoved(VisualComponent component);
 	public void onConnectionAdded (VisualConnection connection);
 	public void onConnectionRemoved (VisualConnection connection);
-	public void onSelectionChanged(Collection<HierarchyNode> selection);
+	public void onSelectionChanged(Collection<Node> selection);
 	public void onLayoutChanged();
 }

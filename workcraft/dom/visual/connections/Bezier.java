@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
@@ -296,8 +296,8 @@ class Bezier implements ConnectionGraphic {
 
 	}
 
-	public Collection<HierarchyNode> getControls() {
-		ArrayList<HierarchyNode> result = new ArrayList<HierarchyNode>();
+	public Collection<Node> getControls() {
+		ArrayList<Node> result = new ArrayList<Node>();
 		result.add(cp1);
 		result.add(cp2);
 		return result;

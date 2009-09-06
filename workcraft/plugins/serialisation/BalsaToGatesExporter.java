@@ -148,7 +148,7 @@ public class BalsaToGatesExporter implements Exporter {
 	}
 
 	public boolean isApplicableTo(Model model) {
-		return model.getMathModel() instanceof BalsaCircuit;
+		return model instanceof BalsaCircuit;
 	}
 
 }

@@ -10,9 +10,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.plugins.PluginConsumer;
 import org.workcraft.framework.plugins.PluginProvider;
@@ -60,9 +60,9 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 				Object subNode = initInstance (subNodeElement, externalReferenceResolver);
 
 
-				 if (subNode instanceof HierarchyNode)
+				 if (subNode instanceof Node)
 					 //ch.add((HierarchyNode)subNode);
-					((Container)instance).add((HierarchyNode)subNode);
+					((Container)instance).add((Node)subNode);
 			}
 		}
 
@@ -85,13 +85,15 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 			// 1st pass -- init instances
 			Model model = (Model)serialisation.initInstance(modelElement, externalReferenceResolver);
 			Element rootElement = XmlUtil.getChildElement("node", modelElement);
-			HierarchyNode root = (HierarchyNode) initInstance(rootElement, externalReferenceResolver);
+			Node root = (Node) initInstance(rootElement, externalReferenceResolver);
 
 			// 2nd pass -- finalise instances
 			for (Object o : instances.keySet())
 				serialisation.finalise(instances.get(o), o, internalReferenceResolver, externalReferenceResolver);
 
-			model.setRoot(root);
+
+
+			//model.setRoot(root);
 
 			internalReferenceResolver.addObject(model, "$model");
 

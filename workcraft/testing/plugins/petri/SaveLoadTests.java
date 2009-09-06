@@ -10,20 +10,24 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.dom.Component;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.framework.Framework;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.util.Hierarchy;
 
 public class SaveLoadTests {
 
@@ -47,9 +51,8 @@ public class SaveLoadTests {
 		framework.getPluginManager().loadManifest();
 
 		Model model = framework.load(new Base16Reader(testDataMathModel));
-		PetriNet petri = (PetriNet)model.getMathModel();
+		PetriNet petri = (PetriNet)model;
 
-		Assert.assertNull(model.getVisualModel());
 		Assert.assertNotNull(petri);
 
 		assertPetriEquals(petri, buildSamplePetri());
@@ -62,8 +65,8 @@ public class SaveLoadTests {
 		framework.getPluginManager().loadManifest();
 
 		Model model = framework.load(new Base16Reader(testDataVisualModel));
-		VisualPetriNet petriVisual = (VisualPetriNet)model.getVisualModel();
-		PetriNet petri = (PetriNet)model.getMathModel();
+		VisualPetriNet petriVisual = (VisualPetriNet)model;
+		PetriNet petri = (PetriNet)petriVisual.getMathModel();
 
 		Assert.assertNotNull(petriVisual);
 		Assert.assertNotNull(petri);
@@ -90,20 +93,32 @@ public class SaveLoadTests {
 		System.err.println("\"");
 	}
 
-	private void assertPetriEquals(PetriNet expected, PetriNet actual) {
-		Finder<Component> componentFinder = new Finder<Component>(actual.getComponents(), new ComponentLabelExtractor());
+	private Collection<MathNode> getComponents(PetriNet net)
+	{
+		ArrayList<MathNode> result = new ArrayList<MathNode>(net.getTransitions());
+		result.addAll(net.getPlaces());
+		return result;
+	}
 
-		Assert.assertEquals(expected.getComponents().size(), actual.getComponents().size());
-		for(Component component : expected.getComponents())
+	private Collection<MathConnection> getConnections(PetriNet net)
+	{
+		return Hierarchy.getChildrenOfType(net.getRoot(), MathConnection.class);
+	}
+
+	private void assertPetriEquals(PetriNet expected, PetriNet actual) {
+		Finder<MathNode> componentFinder = new Finder<MathNode>(getComponents(actual), new ComponentLabelExtractor());
+
+		Assert.assertEquals(getComponents(expected).size(), getComponents(actual).size());
+		for(MathNode component : getComponents(expected))
 			assertComponentEquals(component, componentFinder.getMatching(component));
 
-		Finder<Connection> connectionFinder = new Finder<Connection>(actual.getConnections(), new ConnectionByComponentsIdentifier(new ComponentLabelExtractor()));
-		Assert.assertEquals(expected.getConnections().size(), actual.getConnections().size());
-		for(Connection connection : expected.getConnections())
+		Finder<MathConnection> connectionFinder = new Finder<MathConnection>(getConnections(actual), new ConnectionByComponentsIdentifier(new ComponentLabelExtractor()));
+		Assert.assertEquals(getConnections(expected).size(), getConnections(actual).size());
+		for(MathConnection connection : getConnections(expected))
 			assertConnectionEquals(connection, connectionFinder.getMatching(connection));
 	}
 
-	private void assertConnectionEquals(Connection expected, Connection actual) {
+	private void assertConnectionEquals(MathConnection expected, MathConnection actual) {
 		assertComponentEquals(expected.getFirst(), actual.getFirst());
 		assertComponentEquals(expected.getSecond(), actual.getSecond());
 	}
@@ -169,24 +184,24 @@ public class SaveLoadTests {
 		}
 	}
 
-	public void assertComponentEquals(Component expected, Component actual)
+	public void assertComponentEquals(MathNode node, MathNode node2)
 	{
-		if(expected == null)
+		if(node == null)
 		{
-			Assert.assertNull(actual);
+			Assert.assertNull(node2);
 			return;
 		}
-		Assert.assertNotNull(actual);
+		Assert.assertNotNull(node2);
 
-		Class<? extends Component> type = expected.getClass();
-		Assert.assertEquals(type, actual.getClass());
+		Class<? extends Node> type = node.getClass();
+		Assert.assertEquals(type, node2.getClass());
 
-		Assert.assertEquals(expected.getLabel(), actual.getLabel());
+		Assert.assertEquals(node.getLabel(), node2.getLabel());
 
 		if(type == Transition.class)
-			assertTransitionEquals((Transition)expected, (Transition)actual);
+			assertTransitionEquals((Transition)node, (Transition)node2);
 		if(type == Place.class)
-			assertPlaceEquals((Place)expected, (Place)actual);
+			assertPlaceEquals((Place)node, (Place)node2);
 	}
 
 	private void assertTransitionEquals(Transition expected, Transition actual) {
@@ -210,11 +225,11 @@ public class SaveLoadTests {
 		place2.setTokens(3);
 		Place place3 = new Place();
 		place3.setTokens(2);
-		petri.addComponent(place1);
+		petri.add(place1);
 		place1.setLabel("place1");
-		petri.addComponent(place2);
+		petri.add(place2);
 		place2.setLabel("place2");
-		petri.addComponent(place3);
+		petri.add(place3);
 		place3.setLabel("place3");
 
 		Transition trans1 = new Transition();
@@ -222,18 +237,14 @@ public class SaveLoadTests {
 		Transition trans2 = new Transition();
 		trans2.setLabel("trans2");
 
-		petri.addComponent(trans1);
-		petri.addComponent(trans2);
+		petri.add(trans1);
+		petri.add(trans2);
 
-		Connection con1 = new Connection(place1, trans1);
-		Connection con2 = new Connection(trans1, place2);
-		Connection con3 = new Connection(trans1, place3);
-		Connection con4 = new Connection(place3, trans2);
+		petri.connect(place1, trans1);
+		petri.connect(trans1, place2);
+		petri.connect(trans1, place3);
+		petri.connect(place3, trans2);
 
-		petri.addConnection(con1);
-		petri.addConnection(con2);
-		petri.addConnection(con3);
-		petri.addConnection(con4);
 
 		VisualPetriNet visual = new VisualPetriNet(petri);
 /*		VisualPlace vp1 = new VisualPlace(place1);
@@ -273,7 +284,7 @@ public class SaveLoadTests {
 
 		r = new Random(1);
 
-		for(VisualComponent component : visual.getRoot().getComponents())
+		for(Node component : visual.getRoot().getChildren())
 			randomPosition(component);
 
 		/*randomPosition(vp1);
@@ -291,8 +302,8 @@ public class SaveLoadTests {
 	}
 	Random r;
 
-	private void randomPosition(VisualTransformableNode node) {
-		node.setX(r.nextDouble()*10);
-		node.setY(r.nextDouble()*10);
+	private void randomPosition(Node node) {
+		if(node instanceof Movable)
+			MovableHelper.translate((Movable)node, r.nextDouble()*10, r.nextDouble()*10);
 	}
 }

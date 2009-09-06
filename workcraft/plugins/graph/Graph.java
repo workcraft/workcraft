@@ -2,8 +2,9 @@ package org.workcraft.plugins.graph;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.AbstractMathModel;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualClass;
+import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.framework.exceptions.InvalidComponentException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -25,10 +26,14 @@ public class Graph extends AbstractMathModel {
 		Vertex v = new Vertex();
 		v.setLabel(label);
 		try {
-			addComponent(v);
+			add(v);
 		} catch (InvalidComponentException e) {
 
 		}
 		return v;
+	}
+
+	public void validateConnection(Node first, Node second)
+			throws InvalidConnectionException {
 	}
 }

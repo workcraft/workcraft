@@ -9,7 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.IntIdentifiable;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
@@ -25,7 +25,7 @@ import org.workcraft.util.XmlUtil;
 public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
-	private Element serialise(HierarchyNode node, Document doc,
+	private Element serialise(Node node, Document doc,
 			ReferenceProducer internalReferences,
 			ReferenceProducer externalReferences) throws SerialisationException {
 		Element e = doc.createElement("node");
@@ -39,7 +39,7 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 			((XMLSerialisable)node).serialise(e, refResolver);*/
 
 		if (node instanceof Container)
-			for (HierarchyNode child : node.getChildren())
+			for (Node child : node.getChildren())
 				e.appendChild(serialise(child, doc, internalReferences, externalReferences));
 
 		return e;

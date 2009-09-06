@@ -3,15 +3,12 @@ package org.workcraft.dom.visual;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.w3c.dom.Element;
-import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.framework.observation.TransformChangedEvent;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.XmlUtil;
 
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable {
@@ -25,36 +22,14 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		addPropertyDeclaration(new PropertyDeclaration("Y", "getY", "setY", double.class));
 	}
 
-	private void addXMLSerialiser() {
-		addXMLSerialiser(new XMLSerialiser(){
-			public String getTagName() {
-				return VisualTransformableNode.class.getSimpleName();
-			}
-
-			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws DeserialisationException {
-				setX (XmlUtil.readDoubleAttr(element, "X", 0));
-				setY (XmlUtil.readDoubleAttr(element, "Y", 0));
-			}
-
-			public void serialise(Element element,
-					ReferenceProducer refResolver) {
-				XmlUtil.writeDoubleAttr(element, "X", getX());
-				XmlUtil.writeDoubleAttr(element, "Y", getY());
-			}
-		});
-	}
-
 	public VisualTransformableNode() {
 		super();
 		addPropertyDeclarations();
-		addXMLSerialiser();
 	}
 
 	public VisualTransformableNode (Element visualNodeElement) {
 		super();
 		addPropertyDeclarations();
-		addXMLSerialiser();
 
 		VisualTransformableNodeDeserialiser.initTransformableNode(visualNodeElement, this);
 	}
@@ -94,7 +69,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	protected void transformChanged() {
 		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
-		TransformEventPropagator.fireTransformChanged(this);
+
+		sendNotification(new TransformChangedEvent(this));
+
 	}
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);

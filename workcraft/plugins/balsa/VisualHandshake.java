@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.workcraft.dom.MathNode;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;

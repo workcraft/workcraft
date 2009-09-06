@@ -8,6 +8,9 @@ import org.junit.Test;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
+import org.workcraft.framework.observation.StateEvent;
+import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.framework.observation.TransformChangedEvent;
 import org.workcraft.util.Hierarchy;
 
 public class VisualNodeTests {
@@ -22,11 +25,13 @@ public class VisualNodeTests {
 	{
 		final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
 		final Boolean[] hit = new Boolean[]{false};
-		node.addPropertyChangeListener(new PropertyChangeListener()
-				{
-					public void onPropertyChanged(String propertyName, Object sender) {
-						if(propertyName=="transform" && node == sender)
-							hit[0] = true;
+		node.addObserver( new StateObserver() {
+					public void notify(StateEvent e) {
+						if (e instanceof TransformChangedEvent) {
+							if (e.getSender() == node)
+								hit[0] = true;
+
+						}
 					}
 				});
 		Assert.assertFalse("already hit o_O", hit[0]);

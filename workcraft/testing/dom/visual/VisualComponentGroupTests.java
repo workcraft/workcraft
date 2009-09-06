@@ -3,19 +3,57 @@ package org.workcraft.testing.dom.visual;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.TransformEventPropagator;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-
-import junit.framework.Assert;
+import org.workcraft.framework.observation.TransformChangedEvent;
+import org.workcraft.framework.observation.TransformObserver;
 
 public class VisualComponentGroupTests {
+	class MockTransformObservingNode implements Node, TransformObserver {
+		Node parent = null;
+
+		public boolean notified = false;
+
+		@Override
+		public Collection<Node> getChildren() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public Node getParent() {
+			return parent;
+		}
+
+		@Override
+		public void setParent(Node parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Collection<Node> getObservedNodes() {
+			ArrayList<Node> result = new ArrayList<Node>();
+			result.add(parent);
+			return result;
+		}
+
+		@Override
+		public void notify(TransformChangedEvent e) {
+			notified = true;
+		}
+	}
+
+
 
 	@Test
 	public void TestHitComponent()
@@ -147,9 +185,9 @@ public class VisualComponentGroupTests {
 		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
 		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
 
-		Iterable<HierarchyNode> unGroup = node1.unGroup();
-		ArrayList<HierarchyNode> list = new ArrayList<HierarchyNode>();
-		for(HierarchyNode node: unGroup)
+		Iterable<Node> unGroup = node1.unGroup();
+		ArrayList<Node> list = new ArrayList<Node>();
+		for(Node node: unGroup)
 			list.add(node);
 
 		Assert.assertEquals(4, list.size());
@@ -177,19 +215,18 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestTransformChangeNotification()
 	{
+		TransformEventPropagator p = new TransformEventPropagator();
+
 		VisualGroup root = createGroup(null);
-		final VisualGroup node1 = createGroup(root);
-		final Boolean[] hit = new Boolean[]{false};
-		node1.addPropertyChangeListener(new PropertyChangeListener()
-				{
-					public void onPropertyChanged(String propertyName, Object sender) {
-						if(propertyName.equals("transform") && node1 == sender)
-							hit[0] = true;
-					}
-				});
-		Assert.assertFalse("already hit o_O", hit[0]);
+
+		MockTransformObservingNode node1 = new MockTransformObservingNode();
+		root.add(node1);
+
+		p.attach(root);
+
+		Assert.assertFalse("already hit o_O", node1.notified);
 		root.setX(8);
-		Assert.assertTrue("not hit", hit[0]);
+		Assert.assertTrue("not hit", node1.notified);
 	}
 
 	class MyConnection extends VisualConnection
@@ -199,7 +236,7 @@ public class VisualComponentGroupTests {
 			parent.add(this);
 		}
 		@Override
-		public void setParent(HierarchyNode parent) {
+		public void setParent(Node parent) {
 			super.setParent(parent);
 			uptodate = false;
 		};
@@ -233,11 +270,16 @@ public class VisualComponentGroupTests {
 	@Test
 	public void TestConnectionUpdate()
 	{
+		TransformEventPropagator p = new TransformEventPropagator();
 		VisualGroup root = createGroup(null);
+		p.attach(root);
+
 		VisualGroup group1 = createGroup(root);
 		DummyNode node1 = new DummyNode(group1);
 		DummyNode node2 = new DummyNode(group1);
 		MyConnection connection = new MyConnection(node1, node2, group1);
+
+
 
 		group1.unGroup();
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.dom.MathModel;
+import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
@@ -19,7 +19,7 @@ import org.workcraft.util.DataAccumulator;
 
 public class MathModelSerialisation {
 
-	public static void compareMathModels(MathModel model1, MathModel model2) {
+	public static void compareMathModels(Model model1, Model model2) {
 		Assert.assertTrue(model1.getTitle().equals(model2.getTitle()));
 		SerialisationTestingUtils.compareNodes (model1.getRoot(), model2.getRoot());
 	}

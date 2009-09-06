@@ -10,9 +10,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.plugins.Hotkey;
 
-@HotKeyDeclaration(KeyEvent.VK_P)
+@Hotkey(KeyEvent.VK_P)
 public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;

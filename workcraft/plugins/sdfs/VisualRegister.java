@@ -12,7 +12,7 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -20,15 +20,13 @@ import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-@HotKeyDeclaration(KeyEvent.VK_R)
+@Hotkey(KeyEvent.VK_R)
 public class VisualRegister extends VisualComponent {
 	static public class ToggleMarkedAction extends ScriptedAction {
-		private int regID;
 		String text;
 
 		public ToggleMarkedAction(Register register) {
 			super();
-			this.regID = register.getID();
 
 			if (register.isMarked())
 				text = "Unmark";
@@ -36,7 +34,7 @@ public class VisualRegister extends VisualComponent {
 				text = "Mark";
 		}
 		public String getScript() {
-			return "r=model.getComponentByID("+regID+");\nr.setMarked(!r.isMarked());\nmodel.fireNodePropertyChanged(\"Marked\", r);";
+			throw new RuntimeException("Not implemented");
 		}
 		public String getUndoScript() {
 			return getScript();
@@ -50,12 +48,10 @@ public class VisualRegister extends VisualComponent {
 	}
 
 	static public class ToggleEnabledAction extends ScriptedAction {
-		private int regID;
 		String text;
 
 		public ToggleEnabledAction(Register register) {
 			super();
-			this.regID = register.getID();
 
 			if (register.isEnabled())
 				text = "Disable";
@@ -63,7 +59,8 @@ public class VisualRegister extends VisualComponent {
 				text = "Enable";
 		}
 		public String getScript() {
-			return "r=model.getComponentByID("+regID+");\nr.setEnabled(!r.isEnabled());\nmodel.fireNodePropertyChanged(\"Enabled\", r);";
+			throw new RuntimeException("Not implemented");
+			//return "r=model.getComponentByID("+regID+");\nr.setEnabled(!r.isEnabled());\nmodel.fireNodePropertyChanged(\"Enabled\", r);";
 		}
 		public String getUndoScript() {
 			return getScript();

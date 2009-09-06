@@ -9,20 +9,19 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.dom.Component;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.HierarchyNode;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.Framework;
 import org.workcraft.framework.ModelSaveFailedException;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.LoadFromXMLException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.PluginInstantiationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
@@ -46,14 +45,13 @@ public class SaveLoadTests {
 		Framework framework = new Framework();
 		framework.getPluginManager().loadManifest();
 
-		Model model = framework.load(input);
-		BalsaCircuit circuit = (BalsaCircuit)model.getMathModel();
+		BalsaCircuit circuit = (BalsaCircuit)framework.load(input);
 
-		Assert.assertNull(model.getVisualModel());
 		Assert.assertNotNull(circuit);
 
-		Component[] components = circuit.getComponents().toArray(new Component[0]);
+		Node[] components = circuit.getRoot().getChildren().toArray(new Node[0]);
 
+		//TODO: fix the test, considering hierarchical math model structure
 		Assert.assertEquals(7, components.length);
 
 		ArrayList<BreezeComponent> brz = new ArrayList<BreezeComponent>();
@@ -85,7 +83,7 @@ public class SaveLoadTests {
 		Assert.assertEquals(While.class, wh.getUnderlyingComponent().getClass());
 
 		Assert.assertTrue(
-			loop.getHandshakeComponentByName("activateOut").getConnectedHandshake() == wh.getHandshakeComponentByName("activate")
+			circuit.getConnectedHandshake(loop.getHandshakeComponentByName("activateOut")) == wh.getHandshakeComponentByName("activate")
 		);
 	}
 
@@ -97,8 +95,8 @@ public class SaveLoadTests {
 	}
 
 	private void testVisualModelLoopWhile(Model model) {
-		BalsaCircuit circuit = (BalsaCircuit)model.getMathModel();
-		VisualBalsaCircuit visual = (VisualBalsaCircuit)model.getVisualModel();
+		VisualBalsaCircuit visual = (VisualBalsaCircuit)model;
+		BalsaCircuit circuit = (BalsaCircuit)visual.getMathModel();
 
 		Assert.assertNotNull(circuit);
 		Assert.assertNotNull(visual);
@@ -109,7 +107,7 @@ public class SaveLoadTests {
 		VisualBreezeComponent wh = null;
 		VisualBreezeComponent loop = null;
 
-		for(HierarchyNode node : visual.getRoot().getChildren())
+		for(Node node : visual.getRoot().getChildren())
 			if(node instanceof VisualConnection)
 				con = (VisualConnection)node;
 			else if(node instanceof VisualBreezeComponent)
@@ -141,7 +139,7 @@ public class SaveLoadTests {
 	}
 
 	private VisualHandshake getVisualHandshakeByName(VisualBreezeComponent wh, String name) {
-		for(HierarchyNode component : wh.getChildren())
+		for(Node component : wh.getChildren())
 		{
 			VisualHandshake handshake = (VisualHandshake) component;
 			if(((HandshakeComponent)handshake.getReferencedComponent()).getHandshakeName().equals(name))
@@ -188,21 +186,18 @@ public class SaveLoadTests {
 		wh.setUnderlyingComponent(new While());
 		BreezeComponent loop = new BreezeComponent();
 		loop.setUnderlyingComponent(new Loop());
-		math.addComponent(wh);
-		math.addComponent(loop);
-		Connection con = math.connect(loop.getHandshakeComponentByName("activateOut"), wh.getHandshakeComponentByName("activate"));
+		math.add(wh);
+		math.add(loop);
+		MathConnection con = (MathConnection)math.connect(loop.getHandshakeComponentByName("activateOut"), wh.getHandshakeComponentByName("activate"));
 
 		VisualBreezeComponent whVis = new VisualBreezeComponent(wh);
 		whVis.setX(10);
-		visual.registerNode(whVis);
 		visual.getRoot().add(whVis);
 		VisualBreezeComponent loopVis = new VisualBreezeComponent(loop);
-		visual.registerNode(loopVis);
 		visual.getRoot().add(loopVis);
 
 		VisualConnection conVis = new VisualConnection(con, getVisualHandshakeByName(loopVis, "activateOut"),
 				getVisualHandshakeByName(whVis, "activate"));
-		visual.registerNode(conVis);
 		visual.getRoot().add(conVis);
 
 		return visual;
@@ -216,8 +211,8 @@ public class SaveLoadTests {
 		wh.setUnderlyingComponent(new While());
 		BreezeComponent loop = new BreezeComponent();
 		loop.setUnderlyingComponent(new Loop());
-		circuit.addComponent(wh);
-		circuit.addComponent(loop);
+		circuit.add(wh);
+		circuit.add(loop);
 		circuit.connect(loop.getHandshakeComponentByName("activateOut"), wh.getHandshakeComponentByName("activate"));
 		return circuit;
 	}

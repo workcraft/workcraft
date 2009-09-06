@@ -37,7 +37,6 @@ import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
-import org.workcraft.dom.AbstractMathModel;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.framework.Framework;
@@ -59,7 +58,6 @@ import org.workcraft.framework.workspace.WorkspaceEntry;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.edit.graph.GraphEditorPanel;
-import org.workcraft.gui.edit.graph.ToolboxWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.layout.Layout;
@@ -316,11 +314,11 @@ public class MainWindow extends JFrame {
 			return;
 		}
 
-		VisualModel visualModel = we.getModel().getVisualModel();
+		VisualModel visualModel = (we.getModel() instanceof VisualModel) ? (VisualModel) we.getModel() : null;
 
 		if (visualModel == null)
 			try {
-				visualModel = ModelFactory.createVisualModel(we.getModel().getMathModel());
+				visualModel = ModelFactory.createVisualModel(we.getModel());
 				we.setModel(visualModel);
 			} catch (VisualModelInstantiationException e) {
 				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
@@ -632,7 +630,7 @@ public class MainWindow extends JFrame {
 		if (dialog.getModalResult() == 1) {
 			PluginInfo info = dialog.getSelectedModel();
 			try {
-				AbstractMathModel mathModel = (AbstractMathModel)framework.getPluginManager().getInstance(info);
+				Model mathModel = (Model)framework.getPluginManager().getInstance(info);
 
 				if (!dialog.getModelTitle().isEmpty())
 					mathModel.setTitle(dialog.getModelTitle());
@@ -647,9 +645,10 @@ public class MainWindow extends JFrame {
 				} else
 					framework.getWorkspace().add(mathModel, false);
 			} catch (PluginInstantiationException e) {
-				System.err.println(e.getMessage());
+				e.printStackTrace();
+				//throw new RuntimeException(e);
 			} catch (VisualModelInstantiationException e) {
-				System.err.println(e.getMessage());
+				e.printStackTrace(); //throw new RuntimeException(e);
 			}
 		} else
 			throw new OperationCancelledException("Create operation cancelled by user.");

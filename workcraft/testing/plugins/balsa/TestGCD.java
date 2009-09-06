@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.workcraft.dom.Node;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.SerialisationException;
@@ -32,7 +33,7 @@ public class TestGCD {
 	{
 		BreezeComponent comp = new BreezeComponent();
 		comp.setUnderlyingComponent(component);
-		circuit.addComponent(comp);
+		circuit.add(comp);
 		return comp;
 	}
 
@@ -106,7 +107,7 @@ public class TestGCD {
 		}
 	}
 
-	private org.workcraft.dom.Component getHc(BreezeComponent comp, String hc) {
+	private Node getHc(BreezeComponent comp, String hc) {
 		HandshakeComponent hcc = comp.getHandshakeComponentByName(hc);
 		assertTrue("Handshake "+ hc +" not found in component " + comp.getUnderlyingComponent().getClass().toString(), hcc != null);
 

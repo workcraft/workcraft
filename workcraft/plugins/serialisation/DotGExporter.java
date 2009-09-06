@@ -3,7 +3,7 @@ package org.workcraft.plugins.serialisation;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.workcraft.dom.AbstractMathModel;
+import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -15,7 +15,7 @@ public class DotGExporter implements Exporter, Plugin {
 
 	public void export(Model model, OutputStream out)
 			throws IOException, ModelValidationException, SerialisationException {
-		serialiser.export(model.getMathModel(), out, null);
+		serialiser.export(model, out, null);
 	}
 
 	public String getDescription() {
@@ -27,8 +27,8 @@ public class DotGExporter implements Exporter, Plugin {
 	}
 
 	public boolean isApplicableTo(Model model) {
-		if (model instanceof AbstractMathModel)
-			return serialiser.isApplicableTo((AbstractMathModel)model);
+		if (model instanceof AbstractModel)
+			return serialiser.isApplicableTo((AbstractModel)model);
 		else
 			return false;
 	}

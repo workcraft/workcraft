@@ -7,9 +7,10 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 
-import org.workcraft.dom.HierarchyNode;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualNode;
+import javax.swing.Icon;
+
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -19,38 +20,32 @@ public class SimulationTool extends AbstractTool {
 	private VisualPetriNet visualNet;
 	private PetriNet net;
 
-	HashMap<Integer, Integer> tokens = new HashMap<Integer, Integer>();
+	HashMap<Place, Integer> tokens = new HashMap<Place, Integer>();
 
 	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
 
-	private void highlightEnabledTransitions() {
-		/*
-		for (Transition t : net.getTransitions())
-			if (t.isEnabled())
-				visualNet.getComponentByRefID(t.getID()).setColorisation(enabledColor);
-			else
-				visualNet.getComponentByRefID(t.getID()).clearColorisation();
-		*/
-
-		for (HierarchyNode n : visualNet.getVisualComponents()) {
-			if (n instanceof VisualTransition) {
-				VisualTransition t = (VisualTransition)n;
-				if (t.isEnabled())
-					t.setColorisation(enabledColor);
+	private void highlightEnabledTransitions(Container root) {
+		for (Node n : root.getChildren())
+		{
+			if (n instanceof VisualTransition)
+			{
+				VisualTransition vt = (VisualTransition)n;
+				if (net.isEnabled(vt.getTransition()))
+						vt.setColorisation(enabledColor);
 				else
-					t.clearColorisation();
+					vt.clearColorisation();
 			}
+
+			if (n instanceof Container)
+				highlightEnabledTransitions((Container)n);
 		}
-
-
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor)
 	{
-
 		for (Place p : net.getPlaces()) {
-			p.setTokens(tokens.get(p.getID()));
+			p.setTokens(tokens.get(p));
 		}
 	}
 
@@ -59,29 +54,24 @@ public class SimulationTool extends AbstractTool {
 	{
 		visualNet = (VisualPetriNet)editor.getModel();
 		net = (PetriNet)visualNet.getMathModel();
+
 		for (Place p : net.getPlaces()) {
-			tokens.put(p.getID(), p.getTokens());
+			tokens.put(p, p.getTokens());
 		}
 
-		highlightEnabledTransitions();
+		highlightEnabledTransitions(visualNet.getRoot());
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		VisualNode node = HitMan.hitDeepestNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualTransition.class);
+		Node node = visualNet.hitTest(e.getPosition());
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;
-
-			if (vt.isEnabled()) {
-				vt.fire();
-				highlightEnabledTransitions();
-				e.getEditor().repaint();
-			}
-
+			net.fire(vt.getTransition());
+			highlightEnabledTransitions(visualNet.getRoot());
 		}
 	}
-
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
@@ -95,11 +85,17 @@ public class SimulationTool extends AbstractTool {
 		return null;
 	}
 
-	public String getName() {
+	public String getLabel() {
 		return "Simulation";
 	}
 
 	public int getHotKeyCode() {
 		return KeyEvent.VK_M;
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -11,16 +11,8 @@ import org.workcraft.plugins.petri.Transition;
 
 @DisplayName("Signal Transition Graph")
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
-public class STG extends PetriNet {
-	public STG() {
-		super();
-		addSupportedComponents();
-	}
 
-	private void addSupportedComponents() {
-		addComponentSupport(SignalTransition.class);
-		removeComponentSupport(Transition.class);
-	}
+public class STG extends PetriNet {
 
 	public Set<SignalTransition>getSignalTransitions() {
 		HashSet<SignalTransition> ret = new HashSet<SignalTransition>();
@@ -61,7 +53,7 @@ public class STG extends PetriNet {
 
 	final public SignalTransition createSignalTransition() {
 		SignalTransition ret = new SignalTransition();
-		addComponent(ret);
+		getRoot().add(ret);
 		return ret;
 	}
 }

@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.framework.util.Export;
 import org.workcraft.plugins.balsa.BalsaCircuit;
@@ -24,6 +24,7 @@ import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.util.Hierarchy;
 
 public abstract class BalsaToStgExporter {
 
@@ -40,25 +41,22 @@ public abstract class BalsaToStgExporter {
 
 	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 
-		BalsaCircuit balsa = (BalsaCircuit)model.getMathModel();
+		BalsaCircuit balsa = (BalsaCircuit)model;
 
 		ArrayList<File> tempFiles = new ArrayList<File>();
 
-		for(Component component : balsa.getComponents())
+		for(BreezeComponent component : Hierarchy.getDescendantsOfType(balsa.getRoot(), BreezeComponent.class))
 		{
-			if(component instanceof BreezeComponent)
-			{
-				final BreezeComponent breezeComponent = (BreezeComponent) component;
+			final BreezeComponent breezeComponent = (BreezeComponent) component;
 
-				STG stg = buildStg(breezeComponent);
+			STG stg = buildStg(balsa, breezeComponent);
 
-				File tempFile = File.createTempFile("brz_", ".g");
-				tempFiles.add(tempFile);
+			File tempFile = File.createTempFile("brz_", ".g");
+			tempFiles.add(tempFile);
 
-				DotGExporter exporter = new DotGExporter();
+			DotGExporter exporter = new DotGExporter();
 
-				Export.exportToFile(exporter, stg, tempFile);
-			}
+			Export.exportToFile(exporter, stg, tempFile);
 		}
 
 		String [] args = new String [tempFiles.size() + 2];
@@ -98,7 +96,7 @@ public abstract class BalsaToStgExporter {
 	}
 
 
-	private STG buildStg(final BreezeComponent breezeComponent) {
+	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent) {
 		STG stg = new STG();
 
 		final Map<Handshake, HandshakeComponent> handshakeComponents = breezeComponent.getHandshakeComponents();
@@ -112,15 +110,15 @@ public abstract class BalsaToStgExporter {
 				names = new HashMap<Object, String>();
 				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
-					names.put(entry.getValue(), "c" + breezeComponent.getID() + "_" + entry.getKey());
+					names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
 				}
 				for(Entry<Handshake, HandshakeComponent> entry : handshakeComponents.entrySet())
 				{
-					Connection connection = entry.getValue().getConnection();
+					Connection connection = circuit.getConnection(entry.getValue());
 					if(connection != null)
-						names.put(entry.getKey(), "cn_" + connection.getID());
+						names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
 				}
-				names.put(breezeComponent.getUnderlyingComponent(), "c" + breezeComponent.getID());
+				names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
 			}
 
 			public String getName(Object handshake) {
@@ -142,7 +140,7 @@ public abstract class BalsaToStgExporter {
 	}
 
 	public boolean isApplicableTo(Model model) {
-		return model.getMathModel() instanceof BalsaCircuit;
+		return model instanceof BalsaCircuit;
 	}
 
 }

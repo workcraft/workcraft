@@ -17,8 +17,9 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.dom.Component;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.serialisation.Format;
 import org.workcraft.framework.serialisation.Importer;
@@ -50,7 +51,7 @@ public class DotGImporter implements Importer {
 	HashSet<String> outputs		= new HashSet<String>();
 	HashSet<String> dummy		= new HashSet<String>();
 
-	public Component createComponent(String nameid, STG doc, SortedMap<String, Component> bem) {
+	public MathNode createComponent(String nameid, STG doc, SortedMap<String, MathNode> bem) {
 
 
 		// get the name of the first component
@@ -59,7 +60,7 @@ public class DotGImporter implements Importer {
 		Matcher m1 = p.matcher(nameid);
 
 		// check whether this element is created already
-		Component be1 = bem.get(nameid);
+		MathNode be1 = bem.get(nameid);
 
 
 		if (be1==null) {
@@ -180,10 +181,10 @@ public class DotGImporter implements Importer {
 					if (inputs.isEmpty()&&outputs.isEmpty()&&internal.isEmpty()&&dummy.isEmpty()) return stg;
 
 
-					Component be1, be2; // first and second connection candidates
+					MathNode be1, be2; // first and second connection candidates
 					Pattern p;
 					Matcher m;
-					SortedMap<String, Component> bem = new TreeMap<String, Component>();
+					SortedMap<String, MathNode> bem = new TreeMap<String, MathNode>();
 
 					// read connections
 					while ((str=br.readLine())!=null) {
@@ -226,10 +227,10 @@ public class DotGImporter implements Importer {
 										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
 
 										if (et1!=null&&et2!=null) {
-											Collection<Component> ep = et1.getPostset();
-											ep.retainAll(et2.getPreset());
+											Collection<Node> ep = stg.getPostset(et1);
+											ep.retainAll(stg.getPreset(et2));
 
-											Iterator<Component> it = ep.iterator();
+											Iterator<Node> it = ep.iterator();
 
 											if (m.group(m.groupCount())!=null) {
 												((Place)it.next()).setCapacity(Integer.valueOf(m.group(m.groupCount())));
@@ -282,10 +283,10 @@ public class DotGImporter implements Importer {
 										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
 
 										if (et1!=null&&et2!=null) {
-											Collection<Component> ep = et1.getPostset();
-											ep.retainAll(et2.getPreset());
+											Collection<Node> ep = stg.getPostset(et1);
+											ep.retainAll(stg.getPreset(et2));
 
-											Iterator<Component> it = ep.iterator();
+											Iterator<Node> it = ep.iterator();
 
 											if (m.group(m.groupCount())!=null) {
 												((Place)it.next()).setTokens(Integer.valueOf(m.group(m.groupCount())));

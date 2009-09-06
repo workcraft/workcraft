@@ -19,7 +19,7 @@ public class BalsaToGatesExporterTests {
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent component = new BreezeComponent();
 		component.setUnderlyingComponent(new While());
-		circuit.addComponent(component);
+		circuit.add(component);
 		File file = new File("balsaWhileToGates");
 		FileOutputStream stream = new FileOutputStream(file);
 

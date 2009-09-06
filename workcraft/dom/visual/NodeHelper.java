@@ -3,7 +3,6 @@ package org.workcraft.dom.visual;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.dom.HierarchyNode;
 
 public class NodeHelper {
 	@SuppressWarnings("unchecked")
@@ -15,10 +14,5 @@ public class NodeHelper {
 			if(type.isInstance(node))
 				result.add((T)node);
 		return result;
-	}
-
-	public static <T> Collection<T> getChildrenOfType(HierarchyNode node, Class<T> type)
-	{
-		return filterByType(node.getChildren(), type);
 	}
 }

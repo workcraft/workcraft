@@ -1,7 +1,7 @@
 package org.workcraft.testing.serialisation.xml;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Group;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.plugins.PluginInfo;
 import org.workcraft.framework.plugins.PluginProvider;
@@ -115,11 +115,11 @@ public class XMLSerialisationTestingUtils {
 			stg.connect(t2, p2);
 			stg.connect(p2, t1);
 
-			Group g1 = new Group();
+			MathGroup g1 = new MathGroup();
 
 			Place p3 = stg.createPlace();
 			SignalTransition t3 = stg.createSignalTransition();
-			Connection con = stg.connect(p3, t3);
+			MathConnection con = (MathConnection) stg.connect(p3, t3);
 
 			g1.add(p3);
 			g1.add(t3);

@@ -9,14 +9,15 @@ import java.util.Iterator;
 import net.sf.jga.algorithms.Filter;
 import net.sf.jga.fn.UnaryFunctor;
 
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 public class HitMan
 {
-	private static <T extends HierarchyNode> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
+	private static <T extends Node> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
 		return
 		Filter.filter(nodes, new UnaryFunctor<T, Boolean>()
 				{
@@ -37,16 +38,16 @@ public class HitMan
 		);
 	}
 
-	private static Iterable<HierarchyNode> getFilteredChildren(Point2D point, HierarchyNode node)
+	private static Iterable<Node> getFilteredChildren(Point2D point, Node node)
 	{
 		return reverse(filterByBB(node.getChildren(), point));
 	}
 
-	public static HierarchyNode hitDeepest(Point2D point, HierarchyNode node, UnaryFunctor<HierarchyNode, Boolean> filter) {
+	public static Node hitDeepest(Point2D point, Node node, UnaryFunctor<Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
-		for (HierarchyNode n : getFilteredChildren(transformedPoint, node)) {
-			HierarchyNode result = hitDeepest(transformedPoint, n, filter);
+		for (Node n : getFilteredChildren(transformedPoint, node)) {
+			Node result = hitDeepest(transformedPoint, n, filter);
 			if(result!=null)
 				return result;
 		}
@@ -57,14 +58,14 @@ public class HitMan
 		return null;
 	}
 
-	public static boolean hitBranch (Point2D point, HierarchyNode node) {
+	public static boolean hitBranch (Point2D point, Node node) {
 
 		if (node instanceof Touchable && ((Touchable)node).hitTest(point))
 			return true;
 
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
-		for (HierarchyNode n : getFilteredChildren(transformedPoint, node)) {
+		for (Node n : getFilteredChildren(transformedPoint, node)) {
 			if (hitBranch(transformedPoint, n))
 				return true;
 		}
@@ -73,15 +74,15 @@ public class HitMan
 	}
 
 	@SuppressWarnings("serial")
-	public static HierarchyNode hitFirst(Point2D point, HierarchyNode node) {
-		return hitFirst(point, node, new UnaryFunctor<HierarchyNode, Boolean>(){
-			public Boolean fn(HierarchyNode arg0) {
+	public static Node hitFirst(Point2D point, Node node) {
+		return hitFirst(point, node, new UnaryFunctor<Node, Boolean>(){
+			public Boolean fn(Node arg0) {
 				return true;
 			}
 		});
 	}
 
-	public static HierarchyNode hitFirst(Point2D point, HierarchyNode node, UnaryFunctor<HierarchyNode, Boolean> filter) {
+	public static Node hitFirst(Point2D point, Node node, UnaryFunctor<Node, Boolean> filter) {
 		if (filter.fn(node)) {
 			if (hitBranch(point, node))
 				return node;
@@ -93,15 +94,15 @@ public class HitMan
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends HierarchyNode> T hitFirstNodeOfType(Point2D point, HierarchyNode node, Class<T> type) {
+	public static <T extends Node> T hitFirstNodeOfType(Point2D point, Node node, Class<T> type) {
 		return (T) hitFirst(point, node, Hierarchy.getTypeFilter(type));
 	}
 
-	public static HierarchyNode hitFirstChild(Point2D point,
-			HierarchyNode node, UnaryFunctor<HierarchyNode, Boolean> filter) {
+	public static Node hitFirstChild(Point2D point,
+			Node node, UnaryFunctor<Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
-		for (HierarchyNode n : getFilteredChildren(transformedPoint, node)) {
-			HierarchyNode hit = hitFirst(transformedPoint, n, filter);
+		for (Node n : getFilteredChildren(transformedPoint, node)) {
+			Node hit = hitFirst(transformedPoint, n, filter);
 			if (hit != null)
 				return hit;
 		}
@@ -109,12 +110,12 @@ public class HitMan
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends HierarchyNode> T hitFirstChildOfType(Point2D point, HierarchyNode node, Class<T> type) {
+	public static <T extends Node> T hitFirstChildOfType(Point2D point, Node node, Class<T> type) {
 		return (T) hitFirstChild(point, node, Hierarchy.getTypeFilter(type));
 	}
 
 	private static Point2D transformToChildSpace(Point2D point,
-			HierarchyNode node) {
+			Node node) {
 		Point2D transformedPoint;
 
 		if (node instanceof Movable) {
@@ -152,15 +153,16 @@ public class HitMan
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends HierarchyNode> T hitDeepestNodeOfType(Point2D point, HierarchyNode group, final Class<T> type) {
+	public static <T extends Node> T hitDeepestNodeOfType(Point2D point, Node group, final Class<T> type) {
+
 		return (T)hitDeepest(point, group, Hierarchy.getTypeFilter(type));
 	}
 
 
 	@SuppressWarnings("serial")
-	public static HierarchyNode hitTestForSelection(Point2D point, HierarchyNode node) {
-		HierarchyNode nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<HierarchyNode, Boolean>() {
-			public Boolean fn(HierarchyNode n) {
+	public static Node hitTestForSelection(Point2D point, Node node) {
+		Node nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
+			public Boolean fn(Node n) {
 				if (n instanceof Movable)
 					return true;
 				else
@@ -169,8 +171,8 @@ public class HitMan
 		});
 
 		if (nd == null)
-			nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<HierarchyNode, Boolean>() {
-				public Boolean fn(HierarchyNode n) {
+			nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
+				public Boolean fn(Node n) {
 					if (n instanceof VisualConnection)
 						return true;
 					else

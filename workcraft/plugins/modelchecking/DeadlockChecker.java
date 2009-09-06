@@ -1,13 +1,11 @@
 package org.workcraft.plugins.modelchecking;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+
 import org.workcraft.dom.Model;
 import org.workcraft.framework.exceptions.ModelCheckingFailedException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
-import org.workcraft.plugins.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.STG;
 
 public class DeadlockChecker implements ModelChecker
@@ -25,7 +23,7 @@ public class DeadlockChecker implements ModelChecker
 
 	public boolean isApplicableTo(Model model)
 	{
-		if (STG.class.isAssignableFrom(model.getMathModel().getClass()))
+		if (STG.class.isAssignableFrom(model.getClass()))
 				return true;
 		return false;
 	}
@@ -38,7 +36,7 @@ public class DeadlockChecker implements ModelChecker
 
 	private void exportNet(Model model)
 	{
-		DotGSerialiser exporter = new DotGSerialiser();
+		/*DotGSerialiser exporter = new DotGSerialiser();
 		FileOutputStream ch;
 		try {
 			ch = new FileOutputStream(new File(tmpNetFilePath));
@@ -48,7 +46,7 @@ public class DeadlockChecker implements ModelChecker
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void run(Model model) throws ModelCheckingFailedException

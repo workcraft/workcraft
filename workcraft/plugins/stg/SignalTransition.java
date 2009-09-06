@@ -1,14 +1,8 @@
 package org.workcraft.plugins.stg;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.dom.XMLSerialiser;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.util.XmlUtil;
 
 @DisplayName("Signal transition")
 @VisualClass("org.workcraft.plugins.stg.VisualSignalTransition")
@@ -31,35 +25,6 @@ public class SignalTransition extends Transition {
 	private String signalName = "";
 	private int instance = 0;
 
-
-	private void addXMLSerialiser() {
-		addXMLSerialiser(new XMLSerialiser() {
-			public String getTagName() {
-				return SignalTransition.class.getSimpleName();
-			}
-
-			public void deserialise(Element element,
-					ReferenceResolver refResolver) throws DeserialisationException {
-				setSignalName(XmlUtil.readStringAttr(element, "signalName"));
-				setDirection(Direction.valueOf(XmlUtil.readStringAttr(element, "direction")));
-				setType(Type.valueOf(XmlUtil.readStringAttr(element, "type")));
-				setInstance(XmlUtil.readIntAttr(element, "instance", 0));
-			}
-
-			@Override
-			public void serialise(Element element,
-					ReferenceProducer refResolver) {
-				XmlUtil.writeStringAttr(element, "signalName", signalName);
-				XmlUtil.writeStringAttr(element, "direction", direction.name());
-				XmlUtil.writeStringAttr(element, "type", type.name());
-				XmlUtil.writeIntAttr(element, "instance", instance);
-			}
-		});
-	}
-
-	public SignalTransition() {
-		addXMLSerialiser();
-	}
 
 	public Type getType() {
 		return type;

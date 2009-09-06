@@ -10,14 +10,14 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
-import org.workcraft.framework.plugins.HotKeyDeclaration;
+import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
 
-@HotKeyDeclaration(KeyEvent.VK_T)
+@Hotkey(KeyEvent.VK_T)
 public class VisualSignalTransition extends VisualTransition {
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;
@@ -65,7 +65,7 @@ public class VisualSignalTransition extends VisualTransition {
 
 
 		// some debug info
-		int postv = getPostset().size();
+		/* int postv = getPostset().size();
 		int postm = getReferencedTransition().getPostset().size();
 		int prev = getPreset().size();
 		int prem = getReferencedTransition().getPreset().size();
@@ -81,7 +81,7 @@ public class VisualSignalTransition extends VisualTransition {
 
 			g.drawString("ERROR:"+str, 1, 0);
 
-		}
+		}*/
 
 
 		if (text == null) {

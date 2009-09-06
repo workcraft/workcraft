@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.HierarchyNode;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.util.XmlUtil;
 
@@ -365,9 +365,9 @@ class Polyline implements ConnectionGraphic {
 
 	}
 
-	Collection<HierarchyNode> controls = new ArrayList<HierarchyNode>();
+	Collection<Node> controls = new ArrayList<Node>();
 
-	public Collection<HierarchyNode> getControls() {
+	public Collection<Node> getControls() {
 		return controls;
 	}
 }
