@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.workcraft.dom.Connection;
 import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.petri.Place;
@@ -15,8 +16,6 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Hierarchy;
-
-import com.sun.corba.se.pept.transport.Connection;
 
 public class DotGImporterTests {
 	@Test
