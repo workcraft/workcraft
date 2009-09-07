@@ -53,16 +53,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public AbstractVisualModel(Model mathModel) {
-		this(mathModel, new VisualGroup());
+		this(mathModel, null);
 	}
 
 	public AbstractVisualModel(Model mathModel, VisualGroup root) {
-		super(root);
+		super(root == null? new VisualGroup() : root);
 		this.mathModel = mathModel;
-		currentLevel = root;
 
-		new TransformEventPropagator().attach(root);
-		new RemovedNodeDeselector(this).attach(root);
+		currentLevel =  (VisualGroup)getRoot();
+		new TransformEventPropagator().attach(getRoot());
+		new RemovedNodeDeselector(this).attach(getRoot());
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {
