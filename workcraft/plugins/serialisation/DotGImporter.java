@@ -283,7 +283,7 @@ public class DotGImporter implements Importer {
 										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
 
 										if (et1!=null&&et2!=null) {
-											Collection<Node> ep = stg.getPostset(et1);
+											Collection<Node> ep = new HashSet<Node>(stg.getPostset(et1));
 											ep.retainAll(stg.getPreset(et2));
 
 											Iterator<Node> it = ep.iterator();

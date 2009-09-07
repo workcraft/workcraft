@@ -55,6 +55,6 @@ public class Case_NoDataPath_OneBit extends ComponentStgBuilder<Case> {
 			builder.addConnection(activateOut.getDeactivate(), activationFinished);
 		}
 
-		builder.addConnection(activationFinished, in.getDeactivate());
+		builder.addConnection(activationFinished, in.getDataReleased());
 	}
 }

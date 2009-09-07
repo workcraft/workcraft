@@ -22,6 +22,17 @@ public class BalsaToGatesExporter implements Exporter {
 		File original = new File(tempDir, "composition.g");
 		exportOriginal(model, original);
 
+		File synthesised = new File(tempDir, "RESULT");
+
+		synthesiseStg(original, synthesised);
+
+		FileUtils.copyFileToStream(synthesised, out);
+	}
+
+	public static void synthesiseStg(File original, File synthesised)
+			throws IOException {
+		File tempDir = createTempDirectory();
+
 		File unfolding = new File(tempDir, "composition.mci");
 
 		makeUnfolding(original, unfolding);
@@ -30,14 +41,10 @@ public class BalsaToGatesExporter implements Exporter {
 
 		resolveConflicts(unfolding, csc_resolved_mci);
 
-		File synthesised = new File(tempDir, "RESULT");
-
 		synthesise(csc_resolved_mci, synthesised);
-
-		FileUtils.copyFileToStream(synthesised, out);
 	}
 
-	private void synthesise(File cscResolvedMci, File synthesised) throws IOException {
+	private static void synthesise(File cscResolvedMci, File synthesised) throws IOException {
 
 		String mpsatFullPath = new File(mpsatPath).getAbsolutePath();
 
@@ -58,7 +65,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 	}
 
-	private void resolveConflicts(File unfolding, File cscResolvedMci) throws IOException {
+	private static void resolveConflicts(File unfolding, File cscResolvedMci) throws IOException {
 		File resolutionDir = createTempDirectory();
 
 		String mpsatFullPath = new File(mpsatPath).getAbsolutePath();
@@ -77,12 +84,15 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.println("MPSAT CSC resolution errors: ");
 		System.out.write(process.getErrorData());
 
+		if(process.getReturnCode() != 0)
+			throw new RuntimeException("MPSAT SCS resolution failed!");
+
 		FileUtils.copyFile(new File(resolutionDir, "mpsat.mci"), cscResolvedMci);
 
 		deleteDirectory(resolutionDir);
 	}
 
-	private void deleteDirectory(File dir) {
+	private static void deleteDirectory(File dir) {
 		File [] files = dir.listFiles();
 		if(files != null)
 			for(File file : files)
@@ -91,7 +101,7 @@ public class BalsaToGatesExporter implements Exporter {
 		dir.delete();
 	}
 
-	private void makeUnfolding(File original, File unfolding) throws IOException {
+	private static void makeUnfolding(File original, File unfolding) throws IOException {
 		String punfFullPath = new File(punfPath).getAbsolutePath();
 		SynchronousExternalProcess process =
 			new SynchronousExternalProcess(
@@ -105,6 +115,8 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.write(process.getOutputData());
 		System.out.println("Unfolding errors: ");
 		System.out.write(process.getErrorData());
+		if(process.getReturnCode() != 0)
+			throw new RuntimeException("PUNF Failed!");
 	}
 
 	private void exportOriginal(Model model, File original)
@@ -121,7 +133,7 @@ public class BalsaToGatesExporter implements Exporter {
 		}
 	}
 
-	private File createTempDirectory() {
+	private static File createTempDirectory() {
 		File tempDir;
 		try {
 			tempDir = File.createTempFile("balsaExport", "");
@@ -134,9 +146,9 @@ public class BalsaToGatesExporter implements Exporter {
 		return tempDir;
 	}
 
-	private String punfPath = "../Util/punf";
-	private String mpsatPath = "../Util/mpsat";
-	private String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
+	private static String punfPath = "../Util/punf";
+	private static String mpsatPath = "../Util/mpsat";
+	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
 
 
 	public String getDescription() {

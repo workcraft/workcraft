@@ -4,13 +4,23 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.framework.util.Export;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
@@ -24,7 +34,9 @@ import org.workcraft.plugins.balsa.components.Fetch;
 import org.workcraft.plugins.balsa.components.SequenceOptimised;
 import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
+import org.workcraft.plugins.serialisation.BalsaToGatesExporter;
 import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
+import org.workcraft.util.Hierarchy;
 
 public class TestGCD {
 	BalsaCircuit circuit;
@@ -35,6 +47,145 @@ public class TestGCD {
 		comp.setUnderlyingComponent(component);
 		circuit.add(comp);
 		return comp;
+	}
+
+	private void synthesizeAllPossibilities()
+	{
+		Collection<BreezeComponent> allComponents = Hierarchy.getDescendantsOfType(circuit.getRoot(), BreezeComponent.class);
+
+		Chunk ch = new Chunk(new ArrayList<BreezeComponent>());
+
+		Collection<Chunk> chunks = new ArrayList<Chunk>();
+		chunks.add(ch);
+
+		while(chunks.size()>0)
+		{
+			System.out.println("Next size: " + chunks.size() + " different chunks");
+			synthesiseAll(chunks);
+			chunks = getChunks(allComponents, chunks);
+		}
+	}
+
+	private void synthesiseAll(Iterable<Chunk> chunks) {
+		for(Chunk chunk : chunks)
+			synthesize(chunk);
+	}
+
+	static class Chunk
+	{
+		public Chunk(Collection<BreezeComponent> components)
+		{
+			this.components = new HashSet<BreezeComponent>();
+			this.components.addAll(components);
+		}
+		private Set<BreezeComponent> components;
+		public Set<BreezeComponent> getComponents()
+		{
+			return components;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(obj == this)
+				return true;
+			if(!(obj instanceof Chunk))
+				return false;
+			Chunk ch =(Chunk)obj;
+
+			if(this.components.size() != ch.components.size())
+				return false;
+			HashSet<BreezeComponent> comparingSet = new HashSet<BreezeComponent>(components);
+			comparingSet.removeAll(ch.components);
+
+			return comparingSet.size() == 0;
+		};
+
+		@Override
+		public int hashCode() {
+			Object [] comps = components.toArray();
+
+			int [] hcs = new int[components.size()];
+			for(int i=0;i<comps.length;i++)
+				hcs[i] = comps[i].hashCode();
+
+			Arrays.sort(hcs);
+			return Arrays.hashCode(hcs);
+		}
+		public Chunk addComponent(BreezeComponent component)
+		{
+			HashSet<BreezeComponent> newSet = new HashSet<BreezeComponent>(components);
+			newSet.add(component);
+			return new Chunk(newSet);
+		}
+	}
+
+	private Collection<Chunk> getChunks(Iterable<BreezeComponent> allComponents, Iterable<Chunk> smallerChunks)
+	{
+		HashSet<Chunk> result = new HashSet<Chunk>();
+
+		for(BreezeComponent component : allComponents)
+			for(Chunk chunk : smallerChunks)
+				if(isConnected(chunk, component))
+					result.add(chunk.addComponent(component));
+
+		return result;
+	}
+
+	private boolean isConnected(Chunk chunk, BreezeComponent component) {
+		return chunk.components.size() == 0 || !contains(chunk, component) && containsAny(chunk, getConnected(component));
+	}
+
+	private boolean containsAny(Chunk chunk, Iterable<BreezeComponent> connected) {
+		for(BreezeComponent c : connected)
+			if(contains(chunk, c))
+				return true;
+		return false;
+	}
+
+	private boolean contains(Chunk chunk, BreezeComponent c) {
+		return chunk.components.contains(c);
+	}
+
+	private Iterable<BreezeComponent> getConnected(BreezeComponent comp) {
+		HashSet<BreezeComponent> result = new HashSet<BreezeComponent>();
+
+		for(HandshakeComponent hs : comp.getHandshakeComponents().values()) {
+			HandshakeComponent otherHs = circuit.getConnectedHandshake(hs);
+			if(otherHs != null)
+				result.add(otherHs.getOwner());
+		}
+
+		return result;
+	}
+
+	private int getId(BreezeComponent comp) {
+		return circuit.getNodeID(comp);
+	}
+
+	class BcComparator implements Comparator<BreezeComponent> {
+		@Override
+		public int compare(BreezeComponent comp1, BreezeComponent comp2) {
+			return getId(comp1) - getId(comp2);
+		}
+
+	}
+
+	private String getChunkName(Chunk chunk)
+	{
+		ArrayList<BreezeComponent> list = new ArrayList<BreezeComponent>(chunk.getComponents());
+
+		Collections.sort(list, new BcComparator());
+
+		String result = "_";
+		for(BreezeComponent comp : list)
+			result+="c"+getId(comp)+"_";
+		return result;
+	}
+
+	private void synthesize(Chunk chunk) {
+		String chunkName = getChunkName(chunk);
+		System.out.println("synthesising " + chunkName);
+		exportPartial(chunk.components.toArray(new BreezeComponent[0]), chunkName+".g", chunkName+".eqn");
 	}
 
 	@Test
@@ -59,6 +210,24 @@ public class TestGCD {
 		BreezeComponent bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.GREATER_THAN); } });
 		BreezeComponent whilE = addComponent(new While());
 		BreezeComponent casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
+
+		System.out.println("seq - " + getId(seq));
+		System.out.println("concur - " + getId(concur));
+		System.out.println("fetchA - " + getId(fetchA));
+		System.out.println("fetchB - " + getId(fetchB));
+		System.out.println("fetchAmB - " + getId(fetchAmB));
+		System.out.println("fetchBmA - " + getId(fetchBmA));
+		System.out.println("fetchGT - " + getId(fetchGT));
+		System.out.println("varA - " + getId(varA));
+		System.out.println("varB - " + getId(varB));
+		System.out.println("muxB - " + getId(muxB));
+		System.out.println("muxA - " + getId(muxA));
+		System.out.println("bfNotEquals - " + getId(bfNotEquals));
+		System.out.println("bfAmB - " + getId(bfAmB));
+		System.out.println("bfBmA - " + getId(bfBmA));
+		System.out.println("bfGreater - " + getId(bfGreater));
+		System.out.println("whilE - " + getId(whilE));
+		System.out.println("casE - " + getId(casE));
 
 		connect(seq, "activateOut0", concur, "activate");
 		connect(seq, "activateOut1", whilE, "activate");
@@ -88,6 +257,8 @@ public class TestGCD {
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
 
+		//synthesizeAllPossibilities();
+		/*
 		File file = new File("gcd.g");
 		if(file.exists())
 			file.delete();
@@ -95,7 +266,38 @@ public class TestGCD {
 
 		new BalsaToStgExporter_FourPhase().export(circuit, stream);
 
-		stream.close();
+		exportPartial(new BreezeComponent[]{seq, concur, fetchA, fetchB}, "gcd_partial.g");
+
+		stream.close();*/
+	}
+
+	private void exportPartial(final BreezeComponent[] components, String stgPath, String eqnPath){
+		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
+		{
+		@Override
+			protected Iterable<BreezeComponent> getComponentsToSave(
+					BalsaCircuit balsa) {
+				return Arrays.asList(components);
+			}
+		};
+		try {
+			Export.exportToFile(exporter, circuit, stgPath);
+
+			try
+			{
+
+				BalsaToGatesExporter.synthesiseStg(new File(stgPath), new File(eqnPath));
+			}
+			catch(RuntimeException e)
+			{
+				FileWriter writer  = new FileWriter(eqnPath+".err");
+				writer.write(e.getMessage());
+				writer.close();
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void connect(BreezeComponent comp1, String hc1,

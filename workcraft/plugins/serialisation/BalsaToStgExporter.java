@@ -44,11 +44,9 @@ public abstract class BalsaToStgExporter {
 
 		ArrayList<File> tempFiles = new ArrayList<File>();
 
-		for(BreezeComponent component : Hierarchy.getDescendantsOfType(balsa.getRoot(), BreezeComponent.class))
+		for(BreezeComponent component : getComponentsToSave(balsa))
 		{
-			final BreezeComponent breezeComponent = (BreezeComponent) component;
-
-			STG stg = buildStg(balsa, breezeComponent);
+			STG stg = buildStg(balsa, component);
 
 			File tempFile = File.createTempFile("brz_", ".g");
 			tempFiles.add(tempFile);
@@ -87,6 +85,10 @@ public abstract class BalsaToStgExporter {
 
 		for(File f : tempFiles)
 			f.delete();
+	}
+
+	protected Iterable<BreezeComponent> getComponentsToSave(BalsaCircuit balsa) {
+		return Hierarchy.getDescendantsOfType(balsa.getRoot(), BreezeComponent.class);
 	}
 
 	public static void saveData(byte [] outputData, OutputStream out) throws IOException

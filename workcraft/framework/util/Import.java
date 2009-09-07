@@ -18,7 +18,7 @@ public class Import {
 		return model;
 	}
 
-	static public Model exportToFile (Importer importer, String fileName) throws IOException, DeserialisationException {
+	static public Model importFromFile (Importer importer, String fileName) throws IOException, DeserialisationException {
 		ReadableByteChannel ch = Channels.newChannel(new FileInputStream(new File(fileName)));
 		Model model = importer.importFrom(ch);
 		ch.close();
