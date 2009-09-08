@@ -31,7 +31,6 @@ public interface VisualModel extends Model, ObservableState {
 
 	public void setCurrentLevel (VisualGroup group);
 
-	public VisualNode hitTest(Point2D p);
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 	public Collection<Node> boxHitTest(Rectangle2D rect);
 }

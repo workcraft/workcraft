@@ -9,6 +9,7 @@ import java.util.Iterator;
 import net.sf.jga.algorithms.Filter;
 import net.sf.jga.fn.UnaryFunctor;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Geometry;
@@ -126,6 +127,7 @@ public class HitMan
 		return transformedPoint;
 	}
 
+
 	private static <T> Iterable<T> reverse(Iterable<T> original)
 	{
 		final ArrayList<T> list = new ArrayList<T>();
@@ -181,4 +183,43 @@ public class HitMan
 
 		return nd;
 	}
+
+	@SuppressWarnings("serial")
+	public static Node hitTestForConnection(Point2D point, Node node) {
+		Node nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
+			public Boolean fn(Node n) {
+				if (n instanceof Movable && ! (n instanceof Container))
+					return true;
+				else
+					return false;
+			}
+		});
+
+		if (nd == null)
+			nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
+				public Boolean fn(Node n) {
+					if (n instanceof VisualConnection)
+						return true;
+					else
+						return false;
+				}
+			});
+
+		return nd;
+	}
+
+	public static Node hitTestForConnection (Point2D point, VisualModel model) {
+		AffineTransform t = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
+		Point2D pt = new Point2D.Double();
+		t.transform(point, pt);
+		return hitTestForConnection(pt, model.getCurrentLevel());
+	}
+
+	public static Node hitTestForSelection (Point2D point, VisualModel model) {
+		AffineTransform t = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
+		Point2D pt = new Point2D.Double();
+		t.transform(point, pt);
+		return hitTestForSelection(pt, model.getCurrentLevel());
+	}
+
 }

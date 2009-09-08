@@ -10,6 +10,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformEventPropagator;
@@ -263,6 +264,12 @@ public class VisualComponentGroupTests {
 		@Override
 		public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 			return false;
+		}
+
+		@Override
+		public Collection<MathNode> getMathReferences() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 

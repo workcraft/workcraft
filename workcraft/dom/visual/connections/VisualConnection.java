@@ -18,6 +18,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
@@ -34,7 +35,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.util.XmlUtil;
 
 public class VisualConnection extends VisualNode
-implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, TransformObserver {
+implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, TransformObserver, DependentNode {
 	public enum ConnectionType
 	{
 		POLYLINE,

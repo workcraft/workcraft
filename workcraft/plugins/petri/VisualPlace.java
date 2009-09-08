@@ -9,8 +9,11 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
@@ -245,5 +248,12 @@ public class VisualPlace extends VisualComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		LinkedList<MathNode> result = new LinkedList<MathNode>();
+		result.add(getReferencedPlace());
+		return result;
 	}
 }

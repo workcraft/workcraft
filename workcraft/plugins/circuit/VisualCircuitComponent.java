@@ -5,8 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 import java.util.HashSet;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -104,6 +106,12 @@ public class VisualCircuitComponent extends VisualComponent {
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

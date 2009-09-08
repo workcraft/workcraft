@@ -14,6 +14,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -83,7 +84,7 @@ public class ConnectionTool extends AbstractTool {
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
 
-		VisualNode newMouseOverObject = e.getModel().hitTest(e.getPosition());
+		VisualNode newMouseOverObject = (VisualNode) HitMan.hitTestForConnection(e.getPosition(), e.getModel());
 
 		if (mouseOverObject != newMouseOverObject) {
 			if (mouseOverObject != null) {

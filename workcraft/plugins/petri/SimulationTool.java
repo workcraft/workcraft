@@ -11,6 +11,7 @@ import javax.swing.Icon;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
@@ -65,7 +66,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = visualNet.hitTest(e.getPosition());
+		Node node = HitMan.hitTestForSelection(e.getPosition(), e.getModel());
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;

@@ -8,7 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.Hotkey;
 
@@ -43,5 +45,11 @@ public class VisualVertex extends VisualComponent {
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return pointInLocalSpace.distanceSq(0,0) < size * size;
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

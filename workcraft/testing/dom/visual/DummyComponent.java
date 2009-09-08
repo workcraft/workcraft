@@ -2,7 +2,9 @@ package org.workcraft.testing.dom.visual;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 
@@ -34,6 +36,12 @@ class SquareNode extends VisualComponent
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return rectInner.contains(pointInLocalSpace);
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

@@ -6,8 +6,11 @@ import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.dom.DisplayName;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.gui.Coloriser;
@@ -51,5 +54,12 @@ public class VisualTransition extends VisualComponent {
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		LinkedList<MathNode> result = new LinkedList<MathNode>();
+		result.add(getReferencedComponent());
+		return result;
 	}
 }

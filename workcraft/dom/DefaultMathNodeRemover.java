@@ -3,7 +3,7 @@ package org.workcraft.dom;
 import java.util.HashMap;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.framework.observation.HierarchyEvent;
 import org.workcraft.framework.observation.HierarchySupervisor;
 import org.workcraft.framework.observation.NodesAddedEvent;
@@ -41,8 +41,8 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	}
 
 	private void nodeAdded(Node node) {
-		if (node instanceof VisualNode)
-			for (MathNode mn : ((VisualNode)node).getMathReferences())
+		if (node instanceof DependentNode)
+			for (MathNode mn : ((DependentNode)node).getMathReferences())
 				incRef(mn);
 
 		for (Node n : node.getChildren())
@@ -50,8 +50,8 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	}
 
 	private void nodeRemoved(Node node) {
-		if (node instanceof VisualNode)
-			for (MathNode mn : ((VisualNode)node).getMathReferences())
+		if (node instanceof DependentNode)
+			for (MathNode mn : ((DependentNode)node).getMathReferences())
 				decRef(mn);
 
 		for (Node n : node.getChildren())

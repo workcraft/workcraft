@@ -6,13 +6,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.framework.PropertySupport;
 import org.workcraft.framework.exceptions.NotAnAncestorException;
@@ -28,7 +25,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
-public abstract class VisualNode implements PropertyEditable, Node, DependentNode, Touchable, Colorisable, ObservableState {
+public abstract class VisualNode implements PropertyEditable, Node, Touchable, Colorisable, ObservableState {
 	ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
@@ -102,10 +99,6 @@ public abstract class VisualNode implements PropertyEditable, Node, DependentNod
 
 	public final JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
 		return popupMenuBuilder.build(actionListener);
-	}
-
-	public Set<MathNode> getMathReferences() {
-		return new HashSet<MathNode>();
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {

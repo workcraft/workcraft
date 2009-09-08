@@ -14,6 +14,7 @@ import javax.swing.Icon;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Colorisable;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualGroup;
@@ -124,7 +125,7 @@ public class SelectionTool extends AbstractTool {
 			if(drag!=DRAG_NONE)
 				stopDrag(e);
 
-			VisualNode node = (VisualNode) model.hitTest(e.getPosition());
+			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
 			if (node != null)
 			{
@@ -200,7 +201,8 @@ public class SelectionTool extends AbstractTool {
 		if(e.getButton()==MouseEvent.BUTTON1) {
 			startPosition = e.getPosition();
 			prevPosition = e.getPosition();
-			VisualNode hitNode = model.hitTest(e.getPosition());
+
+			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag

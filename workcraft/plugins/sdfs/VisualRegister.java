@@ -6,10 +6,12 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.framework.plugins.Hotkey;
@@ -186,5 +188,11 @@ public class VisualRegister extends VisualComponent {
 
 	public void setMarked(boolean marked) {
 		getReferencedRegister().setMarked(marked);
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

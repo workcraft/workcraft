@@ -15,7 +15,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-public abstract class VisualComponent extends VisualTransformableNode implements Drawable {
+public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	private MathNode refNode = null;
 
 	private String label = "";

@@ -13,6 +13,7 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -503,11 +504,13 @@ public class VisualModelTests {
 		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
 		group1.add(sq);
 
-		Assert.assertNull(model.hitTest(new Point2D.Double(0.5, 0.5)));
-		Assert.assertEquals(group1, model.hitTest(new Point2D.Double(101.5, 0.5)));
+
+
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), model.getRoot()));
+		Assert.assertEquals(group1, HitMan.hitTestForSelection(new Point2D.Double(101.5, 0.5), model.getRoot()));
 		model.setCurrentLevel(group1);
-		Assert.assertNull(model.hitTest(new Point2D.Double(0.5, 0.5)));
-		Assert.assertEquals(sq, model.hitTest(new Point2D.Double(101.5, 0.5)));
+		Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), model.getRoot()));
+		Assert.assertEquals(sq, HitMan.hitTestForSelection(new Point2D.Double(101.5, 0.5), model.getRoot()));
 	}
 
 	@Test
