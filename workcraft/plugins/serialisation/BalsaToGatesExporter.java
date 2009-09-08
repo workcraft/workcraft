@@ -52,20 +52,21 @@ public class BalsaToGatesExporter implements Exporter {
 		synthesise(csc_resolved_mci, synthesised);
 	}
 
-	private static void synthesise(File cscResolvedMci, File synthesised) throws IOException {
-
+	private static void synthesise(File cscResolvedMci, File synthesised) throws IOException
+	{
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
 						PetriNetToolsSettings.getMpsatCommand(),
 						"-E",
-						cscResolvedMci.getAbsolutePath(),
-						synthesised.getAbsolutePath()
+						cscResolvedMci.getAbsolutePath()
 				}, ".");
 
 		process.start(100000);
 
-		System.out.println("MPSAT complex gate synthesis output: ");
-		System.out.write(process.getOutputData());
+		FileOutputStream outStream = new FileOutputStream(synthesised);
+		outStream.write(process.getOutputData());
+		outStream.close();
+
 		System.out.println("MPSAT complex gate synthesis errors: ");
 		System.out.write(process.getErrorData());
 	}

@@ -27,9 +27,6 @@ public class DotGExporter implements Exporter, Plugin {
 	}
 
 	public boolean isApplicableTo(Model model) {
-		if (model instanceof AbstractModel)
-			return serialiser.isApplicableTo((AbstractModel)model);
-		else
-			return false;
+		return serialiser.isApplicableTo(model);
 	}
 }

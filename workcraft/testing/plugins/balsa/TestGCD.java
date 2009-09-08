@@ -2,16 +2,24 @@ package org.workcraft.testing.plugins.balsa;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.junit.Test;
@@ -38,6 +46,7 @@ import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.serialisation.BalsaToGatesExporter;
 import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
+import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Hierarchy;
 
 public class TestGCD {
@@ -53,24 +62,29 @@ public class TestGCD {
 
 	private void synthesizeAllPossibilities()
 	{
-		Collection<BreezeComponent> allComponents = Hierarchy.getDescendantsOfType(circuit.getRoot(), BreezeComponent.class);
+		for(Chunk chunk : getAllChunks())
+			synthesize(chunk);
+	}
+
+	private Collection<Chunk> getAllChunks() {
+		Collection<BreezeComponent> allComponents = getAllComponents();
+
+		Collection<Chunk> allChunks = new ArrayList<Chunk>();
 
 		Chunk ch = new Chunk(new ArrayList<BreezeComponent>());
-
 		Collection<Chunk> chunks = new ArrayList<Chunk>();
 		chunks.add(ch);
 
 		while(chunks.size()>0)
 		{
-			System.out.println("Next size: " + chunks.size() + " different chunks");
-			synthesiseAll(chunks);
 			chunks = getChunks(allComponents, chunks);
+			allChunks.addAll(chunks);
 		}
+		return allChunks;
 	}
 
-	private void synthesiseAll(Iterable<Chunk> chunks) {
-		for(Chunk chunk : chunks)
-			synthesize(chunk);
+	private Collection<BreezeComponent> getAllComponents() {
+		return Hierarchy.getDescendantsOfType(circuit.getRoot(), BreezeComponent.class);
 	}
 
 	static class Chunk
@@ -118,6 +132,18 @@ public class TestGCD {
 			HashSet<BreezeComponent> newSet = new HashSet<BreezeComponent>(components);
 			newSet.add(component);
 			return new Chunk(newSet);
+		}
+
+		public boolean isSubSetOf(Chunk superChunk) {
+			HashSet<BreezeComponent> our = new HashSet<BreezeComponent>(components);
+			our.removeAll(superChunk.components);
+			return our.size() == 0;
+		}
+
+		public static Chunk subtract(Chunk toSplit, Chunk chunk) {
+			HashSet<BreezeComponent> result = new HashSet<BreezeComponent>(toSplit.components);
+			result.removeAll(chunk.components);
+			return new Chunk(result);
 		}
 	}
 
@@ -178,16 +204,22 @@ public class TestGCD {
 
 		Collections.sort(list, new BcComparator());
 
-		String result = "_";
+		String result = null;
 		for(BreezeComponent comp : list)
-			result+="c"+getId(comp)+"_";
+		{
+			String name = componentNames.get(comp);
+			if(result == null)
+				result = name;
+			else
+				result+="-"+name;
+		}
 		return result;
 	}
 
 	private void synthesize(Chunk chunk) {
 		String chunkName = getChunkName(chunk);
 		System.out.println("synthesising " + chunkName);
-		exportPartial(chunk.components.toArray(new BreezeComponent[0]), chunkName+".g", chunkName+".eqn");
+		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File(chunkName+".g"), getEqnFile(chunk));
 	}
 
 	@Test
@@ -217,23 +249,23 @@ public class TestGCD {
 		BreezeComponent whilE = addComponent(new While());
 		BreezeComponent casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
 
-		System.out.println("seq - " + getId(seq));
-		System.out.println("concur - " + getId(concur));
-		System.out.println("fetchA - " + getId(fetchA));
-		System.out.println("fetchB - " + getId(fetchB));
-		System.out.println("fetchAmB - " + getId(fetchAmB));
-		System.out.println("fetchBmA - " + getId(fetchBmA));
-		System.out.println("fetchGT - " + getId(fetchGT));
-		System.out.println("varA - " + getId(varA));
-		System.out.println("varB - " + getId(varB));
-		System.out.println("muxB - " + getId(muxB));
-		System.out.println("muxA - " + getId(muxA));
-		System.out.println("bfNotEquals - " + getId(bfNotEquals));
-		System.out.println("bfAmB - " + getId(bfAmB));
-		System.out.println("bfBmA - " + getId(bfBmA));
-		System.out.println("bfGreater - " + getId(bfGreater));
-		System.out.println("whilE - " + getId(whilE));
-		System.out.println("casE - " + getId(casE));
+		registerName("seq", seq);
+		registerName("concur", concur);
+		registerName("fetchA", fetchA);
+		registerName("fetchB", fetchB);
+		registerName("fetchAmB", fetchAmB);
+		registerName("fetchBmA", fetchBmA);
+		registerName("fetchGT", fetchGT);
+		registerName("varA", varA);
+		registerName("varB", varB);
+		registerName("muxB", muxB);
+		registerName("muxA", muxA);
+		registerName("bfNotEquals", bfNotEquals);
+		registerName("bfAmB", bfAmB);
+		registerName("bfBmA", bfBmA);
+		registerName("bfGreater", bfGreater);
+		registerName("whilE", whilE);
+		registerName("casE", casE);
 
 		connect(seq, "activateOut0", concur, "activate");
 		connect(seq, "activateOut1", whilE, "activate");
@@ -263,7 +295,9 @@ public class TestGCD {
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
 
-		synthesizeAllPossibilities();
+		//synthesizeAllPossibilities();
+
+		findBestSplit();
 
 		/*
 		File file = new File("gcd.g");
@@ -278,7 +312,211 @@ public class TestGCD {
 		stream.close();*/
 	}
 
-	private void exportPartial(final BreezeComponent[] components, String stgPath, String eqnPath){
+	Map<BreezeComponent, String> componentNames = new HashMap<BreezeComponent, String>();
+
+	private void registerName(String name, BreezeComponent component) {
+		componentNames.put(component, name);
+	}
+
+	private void findBestSplit() throws NumberFormatException, IOException {
+		ChunkSplitter splitter = new ChunkSplitter(readAllCosts());
+		Chunk fullChunk = new Chunk(getAllComponents());
+		Result bestSplit = splitter.getBestSplit(fullChunk);
+		System.out.println("Cost of best split is: " +
+				bestSplit.cost);
+		System.out.println("The best split is: ");
+		for(Chunk ch : bestSplit.chunks)
+			System.out.println(getChunkName(ch));
+	}
+
+	private Map<Chunk, Integer> readAllCosts() throws NumberFormatException, IOException {
+		Map<Chunk, Integer> costs = new HashMap<Chunk, Integer>();
+		Collection<Chunk> allChunks = getAllChunks();
+		System.out.println("total chunks: " + allChunks.size());
+		for(Chunk chunk : allChunks)
+		{
+			Integer cost = readCost(chunk);
+			if(cost != null)
+				costs.put(chunk, cost);
+		}
+		return costs;
+	}
+
+	private Integer readCost(Chunk chunk) throws NumberFormatException, IOException {
+		File eqnFile = getEqnFile(chunk);
+		BufferedReader reader;
+		try
+		{
+			reader = new BufferedReader(new FileReader(eqnFile));
+		}
+		catch(FileNotFoundException ex)
+		{
+			return null;
+		}
+		try
+		{
+			String line;
+			String literalsPrefix = "literals=";
+			while((line = reader.readLine()) != null)
+				if(line.contains(literalsPrefix))
+				{
+					int index = line.indexOf(literalsPrefix) + literalsPrefix.length();
+					int index2 = line.indexOf(")", index);
+					String literalsString = line.substring(index, index2);
+					return new Integer(literalsString);
+				}
+		}
+		finally
+		{
+			reader.close();
+		}
+		return null;
+	}
+
+	private File getEqnFile(Chunk chunk) {
+		return new File(getChunkName(chunk)+".eqn");
+	}
+
+	static int cc = 0;
+
+	class ChunkSplitter
+	{
+		public ChunkSplitter(Map<Chunk, Integer> availableFullCosts)
+		{
+			optimal = new HashMap<Chunk, Result>();
+
+			for(Chunk chunk : availableFullCosts.keySet())
+				optimal.put(chunk, new Result(availableFullCosts.get(chunk), Arrays.asList(new Chunk[]{chunk})));
+
+			boolean needChechOptimality = true;
+
+			while(needChechOptimality)
+			{
+				needChechOptimality = false;
+				for(Chunk chunk : availableFullCosts.keySet())
+				{
+					if(chunk.getComponents().size() > 1)
+						if(findBestSplit(chunk).betterThan(getBestSplit(chunk)))
+						{
+							System.out.println("Everything is stupid! " + getChunkName(chunk) + " full has more literals than its parts.");
+							optimal.remove(chunk);
+							needChechOptimality = true;
+						}
+				}
+			}
+		}
+
+
+		Map<Chunk, Result> optimal = new HashMap<Chunk, Result>();
+
+		public Result getBestSplit(Chunk toSplit) {
+			Result result = optimal.get(toSplit);
+			if(result == null)
+			{
+				result = findBestSplit(toSplit);
+				optimal.put(toSplit, result);
+			}
+			return result;
+		}
+
+		class Result
+		{
+			public Result(int cost, List<Chunk> chunks)
+			{
+				if(chunks == null)
+					throw new RuntimeException("Null o_O");
+				this.cost = cost;
+				this.chunks = chunks;
+			}
+			public final int cost;
+			public final List<Chunk> chunks;
+
+			public final boolean betterThan(Result other)
+			{
+				return other == null || other.cost > cost;
+			}
+		}
+
+
+		private Result findBestSplit(Chunk toSplit) {
+			Result best = null;
+
+			for(Chunk chunk : new ArrayList<Chunk>(optimal.keySet()))
+				if(chunk.isSubSetOf(toSplit))
+				{
+					Chunk remainder = Chunk.subtract(toSplit, chunk);
+					if(remainder.getComponents().size() > 0)
+					{
+						List<Chunk> remainderParts = getConnectedParts(remainder);
+						Result preResult = optimal.get(chunk);
+
+						int cost = preResult.cost;
+						List<Chunk> parts = new ArrayList<Chunk>(preResult.chunks);
+
+						for(Chunk ch : remainderParts)
+						{
+							Result remRes = getBestSplit(ch);
+							cost += remRes.cost;
+							parts.addAll(remRes.chunks);
+						}
+
+						Result result = new Result(cost, parts);
+						if(result.betterThan(best))
+							best = result;
+					}
+				}
+
+			if(best == null)
+				throw new RuntimeException("can't find any split for " + getChunkName(toSplit));
+
+			cc++;
+			System.out.print("+");
+			if(cc%100 == 0)
+				System.out.println( " (size: " + optimal.size() +")" );
+
+			return best;
+		}
+
+		private List<Chunk> getConnectedParts(Chunk remainder) {
+			List<Chunk> result = new ArrayList<Chunk>();
+			while(remainder.getComponents().size() != 0)
+			{
+				Chunk connectedChunk = getConnectedChunk(remainder);
+				remainder = Chunk.subtract(remainder, connectedChunk);
+				result.add(connectedChunk);
+			}
+			return result;
+		}
+
+		private Chunk getConnectedChunk(Chunk remainder) {
+			HashSet<BreezeComponent> result = new HashSet<BreezeComponent>();
+			HashSet<BreezeComponent> available = new HashSet<BreezeComponent>(remainder.getComponents());
+
+			Queue<BreezeComponent> q = new ArrayDeque<BreezeComponent>();
+
+			BreezeComponent first = remainder.getComponents().iterator().next();
+			available.remove(first);
+			q.add(first);
+
+			while(!q.isEmpty())
+			{
+				BreezeComponent comp = q.poll();
+
+				result.add(comp);
+
+				for(BreezeComponent connected : getConnected(comp))
+					if(available.contains(connected))
+					{
+						q.add(connected);
+						available.remove(connected);
+					}
+			}
+
+			return new Chunk(result);
+		}
+	}
+
+	private void exportPartial(final BreezeComponent[] components, File stgFile, File eqnFile){
 
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
 		{
@@ -289,16 +527,16 @@ public class TestGCD {
 			}
 		};
 		try {
-			Export.exportToFile(exporter, circuit, stgPath);
+			Export.exportToFile(exporter, circuit, stgFile);
 
 			try
 			{
 
-				BalsaToGatesExporter.synthesiseStg(new File(stgPath), new File(eqnPath));
+				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile);
 			}
 			catch(RuntimeException e)
 			{
-				FileWriter writer  = new FileWriter(eqnPath+".err");
+				FileWriter writer  = new FileWriter(eqnFile.getAbsolutePath()+".err");
 				if (e.getMessage() != null)
 					writer.write(e.getMessage());
 				e.printStackTrace(new PrintWriter(writer));
