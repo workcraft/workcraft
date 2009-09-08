@@ -43,6 +43,10 @@ public class BalsaToGatesExporter implements Exporter {
 
 		DummyRenamer.rename(original, renamed);
 
+		File contracted = new File(tempDir, "contracted.g");
+
+		contractDummies(renamed, contracted);
+
 		makeUnfolding(renamed, unfolding);
 
 		File csc_resolved_mci = new File(tempDir, "resolved.mci");
@@ -50,6 +54,26 @@ public class BalsaToGatesExporter implements Exporter {
 		resolveConflicts(unfolding, csc_resolved_mci);
 
 		synthesise(csc_resolved_mci, synthesised);
+	}
+
+	private static void contractDummies(File original, File contracted) throws IOException {
+
+		SynchronousExternalProcess process = new SynchronousExternalProcess(
+				new String[]{
+						"D:\\Work\\petrify-4.1\\petrify4.1.exe",
+						"-hide",
+						".dummy",
+						original.getAbsolutePath()
+				}, ".");
+
+		process.start(100000);
+
+		FileOutputStream outStream = new FileOutputStream(contracted);
+		outStream.write(process.getOutputData());
+		outStream.close();
+
+		System.out.println("Petrify Dummy contraction errors: ");
+		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
 	}
 
 	private static void synthesise(File cscResolvedMci, File synthesised) throws IOException
@@ -68,7 +92,7 @@ public class BalsaToGatesExporter implements Exporter {
 		outStream.close();
 
 		System.out.println("MPSAT complex gate synthesis errors: ");
-		System.out.write(process.getErrorData());
+		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
 	}
 
 	private static void resolveConflicts(File unfolding, File cscResolvedMci) throws IOException {
@@ -85,9 +109,9 @@ public class BalsaToGatesExporter implements Exporter {
 
 		process.start(100000);
 		System.out.println("MPSAT CSC resolution output: ");
-		System.out.write(process.getOutputData());
+		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
 		System.out.println("MPSAT CSC resolution errors: ");
-		System.out.write(process.getErrorData());
+		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
 
 		if(process.getReturnCode() != 0)
 			throw new RuntimeException("MPSAT SCS resolution failed: " + new String(process.getErrorData()));
@@ -117,9 +141,9 @@ public class BalsaToGatesExporter implements Exporter {
 							".");
 		process.start(100000);
 		System.out.println("Unfolding output: ");
-		System.out.write(process.getOutputData());
+		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
 		System.out.println("Unfolding errors: ");
-		System.out.write(process.getErrorData());
+		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
 		if(process.getReturnCode() != 0)
 			throw new RuntimeException("PUNF Failed: " + new String(process.getErrorData()));
 	}

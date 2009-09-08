@@ -60,11 +60,13 @@ public class TestGCD {
 		return comp;
 	}
 
-	private void synthesizeAllPossibilities()
+/*	@Test
+	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
+		init();
 		for(Chunk chunk : getAllChunks())
 			synthesize(chunk);
-	}
+	}*/
 
 	private Collection<Chunk> getAllChunks() {
 		Collection<BreezeComponent> allComponents = getAllComponents();
@@ -219,12 +221,38 @@ public class TestGCD {
 	private void synthesize(Chunk chunk) {
 		String chunkName = getChunkName(chunk);
 		System.out.println("synthesising " + chunkName);
-		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File(chunkName+".g"), getEqnFile(chunk));
+		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File("../out/" + chunkName+".g"), getEqnFile(chunk));
 	}
 
 	@Test
-	public void Test() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
+	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
 	{
+		init();
+
+		ChunkSplitter splitter = new ChunkSplitter(readAllCosts());
+		Chunk fullChunk = new Chunk(getAllComponents());
+		Result bestSplit = splitter.getBestSplit(fullChunk);
+		System.out.println("Cost of best split is: " +
+				bestSplit.cost);
+		System.out.println("The best split is: ");
+		for(Chunk ch : bestSplit.chunks)
+			System.out.println(getChunkName(ch));
+
+		/*
+		File file = new File("gcd.g");
+		if(file.exists())
+			file.delete();
+		FileOutputStream stream = new FileOutputStream(file);
+
+		new BalsaToStgExporter_FourPhase().export(circuit, stream);
+
+		exportPartial(new BreezeComponent[]{seq, concur, fetchA, fetchB}, "gcd_partial.g");
+
+		stream.close();*/
+	}
+
+	private void init() throws IOException, DocumentFormatException,
+			PluginInstantiationException {
 		Framework f = new Framework();
 		f.getPluginManager().loadManifest();
 		f.loadConfig("config/config.xml");
@@ -294,39 +322,12 @@ public class TestGCD {
 
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
-
-		//synthesizeAllPossibilities();
-
-		findBestSplit();
-
-		/*
-		File file = new File("gcd.g");
-		if(file.exists())
-			file.delete();
-		FileOutputStream stream = new FileOutputStream(file);
-
-		new BalsaToStgExporter_FourPhase().export(circuit, stream);
-
-		exportPartial(new BreezeComponent[]{seq, concur, fetchA, fetchB}, "gcd_partial.g");
-
-		stream.close();*/
 	}
 
 	Map<BreezeComponent, String> componentNames = new HashMap<BreezeComponent, String>();
 
 	private void registerName(String name, BreezeComponent component) {
 		componentNames.put(component, name);
-	}
-
-	private void findBestSplit() throws NumberFormatException, IOException {
-		ChunkSplitter splitter = new ChunkSplitter(readAllCosts());
-		Chunk fullChunk = new Chunk(getAllComponents());
-		Result bestSplit = splitter.getBestSplit(fullChunk);
-		System.out.println("Cost of best split is: " +
-				bestSplit.cost);
-		System.out.println("The best split is: ");
-		for(Chunk ch : bestSplit.chunks)
-			System.out.println(getChunkName(ch));
 	}
 
 	private Map<Chunk, Integer> readAllCosts() throws NumberFormatException, IOException {
@@ -374,7 +375,7 @@ public class TestGCD {
 	}
 
 	private File getEqnFile(Chunk chunk) {
-		return new File(getChunkName(chunk)+".eqn");
+		return new File("../out/" + getChunkName(chunk)+".eqn");
 	}
 
 	static int cc = 0;
