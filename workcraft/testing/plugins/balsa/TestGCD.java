@@ -60,13 +60,13 @@ public class TestGCD {
 		return comp;
 	}
 
-/*	@Test
+	@Test
 	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
 		for(Chunk chunk : getAllChunks())
 			synthesize(chunk);
-	}*/
+	}
 
 	private Collection<Chunk> getAllChunks() {
 		Collection<BreezeComponent> allComponents = getAllComponents();

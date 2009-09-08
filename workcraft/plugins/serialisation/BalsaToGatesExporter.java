@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.workcraft.dom.Model;
+import org.workcraft.framework.exceptions.DeserialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.framework.serialisation.Exporter;
+import org.workcraft.framework.util.Export;
+import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
+import org.workcraft.testing.serialisation.xml.STGSerialisationTests;
 import org.workcraft.util.DummyRenamer;
 
 public class BalsaToGatesExporter implements Exporter {
@@ -41,7 +45,26 @@ public class BalsaToGatesExporter implements Exporter {
 		File unfolding = new File(tempDir, "composition.mci");
 		File renamed = new File(tempDir, "renamed.g");
 
+
+
 		DummyRenamer.rename(original, renamed);
+
+
+
+
+		try {
+			Model stg = Import.importFromFile(new DotGImporter(), renamed);
+			Export.exportToFile(new DotGExporter(), stg, renamed);
+		} catch (ModelValidationException e) {
+			throw new RuntimeException(e);
+		} catch (SerialisationException e) {
+			throw new RuntimeException(e);
+		} catch (DeserialisationException e) {
+			throw new RuntimeException(e);
+		}
+
+		FileUtils.copyFile(renamed, new File(original.getAbsolutePath()+".ren"));
+
 
 		File contracted = new File(tempDir, "contracted.g");
 
@@ -60,7 +83,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
-						"D:\\Work\\petrify-4.1\\petrify4.1.exe",
+						"petrify",
 						"-hide",
 						".dummy",
 						original.getAbsolutePath()

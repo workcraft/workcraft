@@ -144,22 +144,21 @@ public class VisualSTG extends VisualPetriNet {
 		VisualComponent second = (VisualComponent) getPostset(place).iterator().next();
 
 		Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
-		for (Connection con: connections) {
+		for (Connection con: connections)
 			if (con.getFirst() == place)
 				refCon2 = ((VisualConnection)con).getReferencedConnection();
 			else if (con.getSecond() == place)
 				refCon1 = ((VisualConnection)con).getReferencedConnection();
 
-			remove(con);
-		}
 
 		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
-
-		remove(place);
 
 		Hierarchy.getNearestAncestor(
 				Hierarchy.getCommonParent(first, second), Container.class)
 				.add(con);
+
+		remove(place);
+		// connections will get removed automatically by the hanging connection remover
 
 		return con;
 	}
