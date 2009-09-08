@@ -2,12 +2,13 @@ package org.workcraft.dom;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+
+import net.sf.jga.fn.UnaryFunctor;
 
 import org.workcraft.framework.observation.HierarchyEvent;
 import org.workcraft.framework.observation.HierarchySupervisor;
 import org.workcraft.framework.observation.NodesDeletingEvent;
+import org.workcraft.util.Hierarchy;
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	private NodeContext nct;
@@ -16,27 +17,46 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 		this.nct = nct;
 	}
 
+	@SuppressWarnings("serial")
 	@Override
-	public void handleEvent(HierarchyEvent e) {
+	public void handleEvent(final HierarchyEvent e) {
 		if (e instanceof NodesDeletingEvent) {
-			for (Node n: e.getAffectedNodes()) {
-				nodeDeleting(n);
-			}
+			HashSet<Connection> hangingConnections = new HashSet<Connection>();
+
+			UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
+				@Override
+				public Boolean fn(Connection arg0) {
+					return !isConnectionInside (e.getAffectedNodes(), arg0);
+				}
+			};
+
+			for (Node node : e.getAffectedNodes())
+				findHangingConnections(node, hangingConnections, hanging);
+			for (Connection con : hangingConnections)
+				if (con.getParent() instanceof Container)
+					((Container)con.getParent()).remove(con);
+				else
+					throw new RuntimeException ("Cannot remove a hanging connection because its parent is not a Container.");
+
 		}
 	}
 
-	private void nodeDeleting(Node n) {
-		Set<Connection> connectionsToDelete = new HashSet<Connection>(nct.getConnections((Node)n));
-		for (Connection con : connectionsToDelete)
-			if (con.getParent() instanceof Container)
-				((Container)con.getParent()).remove(con);
-			else
-				throw new RuntimeException ("Hanging connection cannot be removed because its parent is not a Container.");
+	private static boolean isConnectionInside (Collection<Node> nodes, Connection con) {
+		for (Node node : nodes)
+			if (node == con || Hierarchy.isDescendant(con, node))
+				return true;
+		return false;
+	}
 
-		Collection<Node> children = new LinkedList<Node>(n.getChildren());
+	private void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
+		// need only to remove those connections that are not already being deleted
 
-		for (Node nn : children)
-			nodeDeleting (nn);
+		for (Connection con : nct.getConnections(node))
+			if (hanging.fn(con))
+				hangingConnections.add(con);
+
+		for (Node nn : node.getChildren())
+			findHangingConnections (nn, hangingConnections, hanging);
 	}
 
 }

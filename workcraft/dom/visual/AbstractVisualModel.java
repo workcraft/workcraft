@@ -402,7 +402,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 * @author Ivan Poliakov
 	 */
 	public void deleteSelection() {
-		remove(selection);
+		getCurrentLevel().remove(selection);
 		selectNone();
 	}
 
