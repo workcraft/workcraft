@@ -52,6 +52,9 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 			connections.get(c1).add(con);
 			connections.get(c2).add(con);
 		}
+
+		for (Node nn : n.getChildren())
+			nodeAdded(nn);
 	}
 
 	private void nodeRemoved(Node n) {
@@ -85,6 +88,9 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 			if (conSet != null)
 				connections.get(c2).remove(con);
 		}
+
+		for (Node nn : n.getChildren())
+			nodeRemoved(nn);
 	}
 
 	public Set<Node> getPreset(Node node) {

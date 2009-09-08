@@ -12,8 +12,13 @@ import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.interop.SynchronousExternalProcess;
 import org.workcraft.framework.serialisation.Exporter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.plugins.layout.PetriNetToolsSettings;
+import org.workcraft.util.DummyRenamer;
 
 public class BalsaToGatesExporter implements Exporter {
+	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
+
+
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
 			ModelValidationException, SerialisationException {
@@ -34,8 +39,11 @@ public class BalsaToGatesExporter implements Exporter {
 		File tempDir = createTempDirectory();
 
 		File unfolding = new File(tempDir, "composition.mci");
+		File renamed = new File(tempDir, "renamed.g");
 
-		makeUnfolding(original, unfolding);
+		DummyRenamer.rename(original, renamed);
+
+		makeUnfolding(renamed, unfolding);
 
 		File csc_resolved_mci = new File(tempDir, "resolved.mci");
 
@@ -46,11 +54,9 @@ public class BalsaToGatesExporter implements Exporter {
 
 	private static void synthesise(File cscResolvedMci, File synthesised) throws IOException {
 
-		String mpsatFullPath = new File(mpsatPath).getAbsolutePath();
-
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
-						mpsatFullPath,
+						PetriNetToolsSettings.getMpsatCommand(),
 						"-E",
 						cscResolvedMci.getAbsolutePath(),
 						synthesised.getAbsolutePath()
@@ -62,16 +68,14 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.write(process.getOutputData());
 		System.out.println("MPSAT complex gate synthesis errors: ");
 		System.out.write(process.getErrorData());
-
 	}
 
 	private static void resolveConflicts(File unfolding, File cscResolvedMci) throws IOException {
 		File resolutionDir = createTempDirectory();
 
-		String mpsatFullPath = new File(mpsatPath).getAbsolutePath();
 		String[] split = mpsatArgsFormat.split(" ");
 		String[] args = new String[split.length + 2];
-		args[0] = mpsatFullPath;
+		args[0] = PetriNetToolsSettings.getMpsatCommand();
 		for(int i=0;i<split.length;i++)
 			args[i+1] = split[i];
 		args[split.length+1] = unfolding.getAbsolutePath();
@@ -85,7 +89,7 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.write(process.getErrorData());
 
 		if(process.getReturnCode() != 0)
-			throw new RuntimeException("MPSAT SCS resolution failed!");
+			throw new RuntimeException("MPSAT SCS resolution failed: " + new String(process.getErrorData()));
 
 		FileUtils.copyFile(new File(resolutionDir, "mpsat.mci"), cscResolvedMci);
 
@@ -102,11 +106,11 @@ public class BalsaToGatesExporter implements Exporter {
 	}
 
 	private static void makeUnfolding(File original, File unfolding) throws IOException {
-		String punfFullPath = new File(punfPath).getAbsolutePath();
+
 		SynchronousExternalProcess process =
 			new SynchronousExternalProcess(
 					new String[]{
-							punfFullPath,
+							PetriNetToolsSettings.getPunfCommand(),
 							"-f="+original.getAbsolutePath(),
 							"-m="+unfolding.getAbsolutePath()},
 							".");
@@ -116,7 +120,7 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.println("Unfolding errors: ");
 		System.out.write(process.getErrorData());
 		if(process.getReturnCode() != 0)
-			throw new RuntimeException("PUNF Failed!");
+			throw new RuntimeException("PUNF Failed: " + new String(process.getErrorData()));
 	}
 
 	private void exportOriginal(Model model, File original)
@@ -145,11 +149,6 @@ public class BalsaToGatesExporter implements Exporter {
 			throw new RuntimeException("can't create a temp directory");
 		return tempDir;
 	}
-
-	private static String punfPath = "../Util/punf";
-	private static String mpsatPath = "../Util/mpsat";
-	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
-
 
 	public String getDescription() {
 		return "To Gates";

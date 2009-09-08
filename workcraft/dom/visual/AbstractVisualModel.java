@@ -92,6 +92,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			MathConnection mc = createdConnections.get(vc);
 			vc.setVisualConnection(createdNodes.get(mc.getFirst()),
 					createdNodes.get(mc.getSecond()), mc);
+			getRoot().add(vc);
 		}
 	}
 

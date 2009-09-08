@@ -5,6 +5,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.exceptions.DeserialisationException;
+import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.framework.serialisation.ReferenceResolver;
 import org.workcraft.framework.serialisation.xml.ModelXMLDeserialiser;
 import org.workcraft.plugins.stg.STG;
@@ -19,6 +20,10 @@ public class VisualSTGDeserialiser implements ModelXMLDeserialiser {
 	public Model deserialise(Element modelElement, Node hierarchyRoot,
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
-		return new VisualSTG((STG)externalReferenceResolver.getObject("$model"), (VisualGroup)hierarchyRoot);
+		try {
+			return new VisualSTG((STG)externalReferenceResolver.getObject("$model"), (VisualGroup)hierarchyRoot);
+		} catch (VisualModelInstantiationException e) {
+			throw new DeserialisationException(e);
+		}
 	}
 }

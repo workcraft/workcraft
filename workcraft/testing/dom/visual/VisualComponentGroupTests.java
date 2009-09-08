@@ -11,6 +11,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformEventPropagator;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -41,15 +42,13 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public Collection<Node> getObservedNodes() {
-			ArrayList<Node> result = new ArrayList<Node>();
-			result.add(parent);
-			return result;
+		public void notify(TransformChangedEvent e) {
+			notified = true;
 		}
 
 		@Override
-		public void notify(TransformChangedEvent e) {
-			notified = true;
+		public void subscribe(TransformDispatcher dispatcher) {
+			dispatcher.subscribe(this, parent);
 		}
 	}
 
@@ -278,8 +277,6 @@ public class VisualComponentGroupTests {
 		DummyNode node1 = new DummyNode(group1);
 		DummyNode node2 = new DummyNode(group1);
 		MyConnection connection = new MyConnection(node1, node2, group1);
-
-
 
 		group1.unGroup();
 

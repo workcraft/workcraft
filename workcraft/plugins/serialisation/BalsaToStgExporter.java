@@ -22,6 +22,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
+import org.workcraft.plugins.layout.PetriNetToolsSettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Hierarchy;
 
@@ -35,8 +36,6 @@ public abstract class BalsaToStgExporter {
 		this.protocol = protocol;
 		this.protocolName = protocolName;
 	}
-
-	private String pcompPath = "../Util/pcomp";
 
 	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 
@@ -57,7 +56,7 @@ public abstract class BalsaToStgExporter {
 		}
 
 		String [] args = new String [tempFiles.size() + 2];
-		args[0] = pcompPath;
+		args[0] = PetriNetToolsSettings.getPcompCommand();
 		args[1] = "-d";
 		for(int i=0;i<tempFiles.size();i++)
 			args[i+2] = tempFiles.get(i).getPath();

@@ -30,16 +30,29 @@ public class NodeIDManager extends HierarchySupervisor {
 		if (e instanceof NodesAddedEvent)
 		{
 			for (Node n : e.getAffectedNodes()) {
-				int id = idGenerator.getNextID();
-
-				nodes.put(id, n);
-				nodeIdentifiers.put(n, id);
+				nodeAdded(n);
 			}
 		} else if (e instanceof NodesDeletedEvent) {
 			for (Node n: e.getAffectedNodes()) {
-				nodes.remove(nodeIdentifiers.get(n));
-				nodeIdentifiers.remove(n);
+				nodeRemoved(n);
 			}
 		}
+	}
+
+	private void nodeRemoved(Node n) {
+		nodes.remove(nodeIdentifiers.get(n));
+		nodeIdentifiers.remove(n);
+
+		for (Node nn: n.getChildren())
+			nodeRemoved(nn);
+	}
+
+	private void nodeAdded(Node n) {
+		int id = idGenerator.getNextID();
+		nodes.put(id, n);
+		nodeIdentifiers.put(n, id);
+
+		for (Node nn : n.getChildren())
+			nodeAdded(nn);
 	}
 }

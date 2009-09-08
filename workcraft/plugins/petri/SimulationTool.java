@@ -11,13 +11,14 @@ import javax.swing.Icon;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.edit.tools.AbstractTool;
 import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public class SimulationTool extends AbstractTool {
 
-	private VisualPetriNet visualNet;
+	private VisualModel visualNet;
 	private PetriNet net;
 
 	HashMap<Place, Integer> tokens = new HashMap<Place, Integer>();
@@ -52,7 +53,7 @@ public class SimulationTool extends AbstractTool {
 	@Override
 	public void activated(GraphEditor editor)
 	{
-		visualNet = (VisualPetriNet)editor.getModel();
+		visualNet = editor.getModel();
 		net = (PetriNet)visualNet.getMathModel();
 
 		for (Place p : net.getPlaces()) {

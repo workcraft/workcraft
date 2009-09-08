@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +18,11 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
+import org.workcraft.framework.Framework;
+import org.workcraft.framework.exceptions.DocumentFormatException;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.PluginInstantiationException;
 import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.util.Export;
 import org.workcraft.plugins.balsa.BalsaCircuit;
@@ -189,8 +193,12 @@ public class TestGCD {
 	}
 
 	@Test
-	public void Test() throws IOException, ModelValidationException, SerialisationException
+	public void Test() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
 	{
+		Framework f = new Framework();
+		f.getPluginManager().loadManifest();
+		f.loadConfig("config/config.xml");
+
 		circuit = new BalsaCircuit();
 
 		BreezeComponent seq = addComponent(new SequenceOptimised() { { setOutputCount(2); } });
@@ -257,7 +265,8 @@ public class TestGCD {
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
 
-		//synthesizeAllPossibilities();
+		synthesizeAllPossibilities();
+
 		/*
 		File file = new File("gcd.g");
 		if(file.exists())
@@ -272,6 +281,7 @@ public class TestGCD {
 	}
 
 	private void exportPartial(final BreezeComponent[] components, String stgPath, String eqnPath){
+
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
 		{
 		@Override
@@ -291,7 +301,9 @@ public class TestGCD {
 			catch(RuntimeException e)
 			{
 				FileWriter writer  = new FileWriter(eqnPath+".err");
-				writer.write(e.getMessage());
+				if (e.getMessage() != null)
+					writer.write(e.getMessage());
+				e.printStackTrace(new PrintWriter(writer));
 				writer.close();
 			}
 

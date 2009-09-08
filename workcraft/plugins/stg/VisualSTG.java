@@ -1,6 +1,8 @@
 package org.workcraft.plugins.stg;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -16,17 +18,18 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.framework.DefaultCreateButtons;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.NodeCreationException;
 import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.SimulationTool;
+import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
 @DefaultCreateButtons ( { Place.class,  SignalTransition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
-public class VisualSTG extends AbstractVisualModel {
-	private STGMathNodeRemover mathNodeRemover = new STGMathNodeRemover();
+public class VisualSTG extends VisualPetriNet {
 
 	@Override
 	public void validateConnection(Node first, Node second)
@@ -102,7 +105,7 @@ public class VisualSTG extends AbstractVisualModel {
 				group.add(con1);
 				group.add(con2);
 
-				removeVisualConnectionOnly(con);
+				remove(con);
 
 				return super.connect(first, place);
 			}
@@ -126,7 +129,7 @@ public class VisualSTG extends AbstractVisualModel {
 				group.add(con1);
 				group.add(con2);
 
-				removeVisualConnectionOnly(con);
+				remove(con);
 
 				return super.connect(place, second);
 			}
@@ -134,19 +137,7 @@ public class VisualSTG extends AbstractVisualModel {
 		return super.connect(first, second);
 	}
 
-	private void removeVisualConnectionOnly(VisualConnection connection) {
-		mathNodeRemover.keepMathNodesFor(connection);
-		remove(connection);
-	}
-
-	 /*
-	private void removeVisualComponentOnly(VisualComponent component) {
-		((Container)component.getParent()).remove(component);
-		removeFromSelection(component);
-		//component.removePropertyChangeListener(getPropertyChangeListener());
-	}
-
-	 private VisualConnection maybeMakeImplicit (VisualPlace place) {
+	private VisualConnection maybeMakeImplicit (VisualPlace place) {
 		if (getPreset(place).size() != 1 || getPostset(place).size() != 1)
 			return null; // not an implicit place
 
@@ -155,36 +146,38 @@ public class VisualSTG extends AbstractVisualModel {
 		VisualComponent first = (VisualComponent) getPreset(place).iterator().next();
 		VisualComponent second = (VisualComponent) getPostset(place).iterator().next();
 
-
-		for (Connection con:	getConnections(place)) {
+		Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
+		for (Connection con: connections) {
 			if (con.getFirst() == place)
 				refCon2 = ((VisualConnection)con).getReferencedConnection();
 			else if (con.getSecond() == place)
 				refCon1 = ((VisualConnection)con).getReferencedConnection();
 
-			removeVisualConnectionOnly((VisualConnection)con);
+			remove(con);
 		}
 
-		removeVisualComponentOnly(place);
-
 		ImplicitPlaceArc con = new ImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedPlace());
+
+		remove(place);
 
 		Hierarchy.getNearestAncestor(
 				Hierarchy.getCommonParent(first, second), Container.class)
 				.add(con);
 
 		return con;
-	} */
+	}
 
 	public VisualSTG(STG model) throws VisualModelInstantiationException {
 		this (model, null);
+
 	}
 
-	public VisualSTG(STG model, VisualGroup root) {
+	public VisualSTG(STG model, VisualGroup root) throws VisualModelInstantiationException {
 		super(model, root);
 
-		new DefaultHangingConnectionRemover(this).attach(getRoot());
-		mathNodeRemover.attach(getRoot());
+		Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
+		for(VisualPlace place : places)
+			maybeMakeImplicit(place);
 	}
 
 	@Override

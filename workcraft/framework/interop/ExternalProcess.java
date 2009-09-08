@@ -82,6 +82,7 @@ public class ExternalProcess {
 
 	private final ProcessBuilder processBuilder;
 	private Process process = null;
+	private boolean finished = false;
 
 	private ReadableByteChannel inputStream = null;
 	private ReadableByteChannel errorStream = null;
@@ -108,15 +109,11 @@ public class ExternalProcess {
 		for (ExternalProcessListener l : listeners){
 			l.processFinished(process.exitValue());
 		}
-
-		process = null;
-		inputStream = null;
-		errorStream = null;
-		outputStream = null;
+		finished = true;
 	}
 
 	public boolean isRunning() {
-		return (process != null);
+		return process != null && !finished;
 	}
 
 	public void start() throws IOException {
@@ -128,6 +125,9 @@ public class ExternalProcess {
 		outputStream = Channels.newChannel(process.getOutputStream());
 		errorStream = Channels.newChannel(process.getErrorStream());
 		inputStream = Channels.newChannel(process.getInputStream());
+
+		if (outputStream == null)
+			throw new RuntimeException ("WTF?");
 
 		new InputReaderThread().start();
 		new ErrorReaderThread().start();

@@ -46,7 +46,7 @@ public class CallMux_NoDataPath extends
 
 			//TODO! Move environment specification somewhere else
 			builder.addConnection(ready, (StgTransition)in.getActivate());
-			builder.addConnection(in.getDataReleased(), ready);
+			builder.addConnection(in.getDeactivate(), ready);
 
 			StgSignal selRq = builder.buildSignal(new SignalId(component, "sel"+i+"Rq"), true);
 			StgPlace selReady = builder.buildPlace(1);

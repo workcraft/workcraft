@@ -1,9 +1,8 @@
 package org.workcraft.framework.observation;
 
-import java.util.Collection;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.TransformDispatcher;
 
 public interface TransformObserver {
-	public Collection<Node> getObservedNodes();
+	public void subscribe (TransformDispatcher dispatcher);
 	public void notify (TransformChangedEvent e);
 }

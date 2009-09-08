@@ -14,60 +14,98 @@ import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.framework.observation.TransformChangedEvent;
 import org.workcraft.framework.observation.TransformObserver;
 
-public class TransformEventPropagator extends HierarchySupervisor implements StateObserver {
-	HashMap <Node, LinkedList<TransformObserver>> transformObservers
+public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
+	HashMap <Node, LinkedList<TransformObserver>> nodeToObservers
 	= new HashMap<Node, LinkedList<TransformObserver>>();
 
-	private void putObserver (Node node, TransformObserver to) {
-		LinkedList<TransformObserver> list = transformObservers.get(node);
+	HashMap <TransformObserver, LinkedList<Node>> observerToNodes
+	= new HashMap<TransformObserver, LinkedList<Node>>();
+
+	private void addObserver (Node node, TransformObserver to) {
+		LinkedList<TransformObserver> list = nodeToObservers.get(node);
 		if ( list == null ) {
 			list = new LinkedList<TransformObserver>();
-			transformObservers.put(node, list);
+			nodeToObservers.put(node, list);
 		}
 		list.add(to);
 	}
 
 	private void removeObserver (Node node, TransformObserver to) {
-		LinkedList<TransformObserver> list = transformObservers.get(node);
+		LinkedList<TransformObserver> list = nodeToObservers.get(node);
 		list.remove(to);
 		if (list.isEmpty())
-			transformObservers.remove(node);
+			nodeToObservers.remove(node);
 	}
+
+	private void addObservedNode (TransformObserver to, Node node) {
+		LinkedList<Node> list = observerToNodes.get(to);
+		if ( list == null ) {
+			list = new LinkedList<Node>();
+			observerToNodes.put(to, list);
+		}
+		list.add(node);
+	}
+
+	private void removeObservedNode (TransformObserver to, Node node) {
+		LinkedList<Node> list = observerToNodes.get(to);
+		list.remove(node);
+
+		if (list.isEmpty())
+			observerToNodes.remove(to);
+	}
+
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
 		if (e instanceof NodesAddedEvent) {
 			for (Node n:e.getAffectedNodes())
-				initialiseNode(n);
+				nodeAdded(n);
 		} else if (e instanceof NodesDeletedEvent) {
 			for (Node n:e.getAffectedNodes())
-				removeNode(n);
+				nodeRemoved(n);
 		}
 	}
 
-	private void removeNode(Node node) {
-		if (node instanceof ObservableState)
+	private void nodeRemoved(Node node) {
+		if (node instanceof ObservableState) {
 			((ObservableState)node).removeObserver(this);
 
-		if (node instanceof TransformObserver) {
-			for ( Node n : ((TransformObserver)node).getObservedNodes() ) {
-				removeObserver (n, (TransformObserver)node);
-			}
+			// remove node from all observer lists
+			LinkedList<TransformObserver> observers = nodeToObservers.get(node);
+			if (observers != null)
+				for (TransformObserver to : observers)
+					removeObservedNode(to, node);
+
+			nodeToObservers.remove(node);
 		}
+
+		if (node instanceof TransformObserver) {
+			TransformObserver to = (TransformObserver)node;
+			LinkedList<Node> nodes = observerToNodes.get(to);
+			if (nodes != null)
+				for (Node n : nodes)
+					removeObserver(n, to);
+		}
+
+		for (Node n : node.getChildren())
+			nodeRemoved(n);
 	}
 
-	private void initialiseNode(Node node) {
+	private void nodeAdded(Node node) {
 		if (node instanceof ObservableState)
 			((ObservableState)node).addObserver(this);
+
 		if (node instanceof TransformObserver) {
 			TransformObserver to = (TransformObserver) node;
-			for (Node n : to.getObservedNodes())
-				putObserver(n, to);
+			to.subscribe(this);
 		}
+
+		for (Node n : node.getChildren())
+			nodeAdded(n);
 	}
 
 	private void propagate(Node node, TransformChangedEvent e) {
-		LinkedList<TransformObserver> list = transformObservers.get(node);
+		LinkedList<TransformObserver> list = nodeToObservers.get(node);
 		if (list != null)
 			for (TransformObserver to : list)
 				to.notify(e);
@@ -80,5 +118,17 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 	public void notify(StateEvent e) {
 		if (e instanceof TransformChangedEvent)
 			propagate(((TransformChangedEvent)e).getSender(), ((TransformChangedEvent)e));
+	}
+
+	@Override
+	public void subscribe(TransformObserver observer, Node observed) {
+		addObserver(observed, observer);
+		addObservedNode(observer, observed);
+	}
+
+	@Override
+	public void unsubscribe(TransformObserver observer, Node observed) {
+		removeObserver(observed, observer);
+		removeObservedNode(observer, observed);
 	}
 }

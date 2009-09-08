@@ -8,7 +8,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -22,6 +21,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModelEventDispatcher;
@@ -68,6 +68,8 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		}
 	};
 
+	private TransformDispatcher transformDispatcher = null;
+
 	protected MathConnection refConnection;
 	protected VisualComponent first;
 	protected VisualComponent second;
@@ -93,7 +95,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	private double arrowLength = defaultArrowLength;
 
 	protected void initialise() {
-		addListeners();
+		update();
 
 		addPropertyDeclaration(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
 		addPropertyDeclaration(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
@@ -113,13 +115,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
 	}
 
-	private void addListeners() {
-		first.addPropertyChangeListener(this);
-		second.addPropertyChangeListener(this);
-
-		update();
-	}
-
 	public VisualConnection() {
 
 	}
@@ -128,6 +123,11 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		this.first = first;
 		this.second = second;
 		this.refConnection = refConnection;
+
+		if (transformDispatcher!=null) {
+			transformDispatcher.subscribe(this, first);
+			transformDispatcher.subscribe(this, second);
+		}
 
 		initialise();
 	}
@@ -417,12 +417,16 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	}
 
 	@Override
-	public Collection<Node> getObservedNodes() {
-		return Arrays.asList(new Node[] {first, second});
+	public void notify(TransformChangedEvent e) {
+		update();
 	}
 
 	@Override
-	public void notify(TransformChangedEvent e) {
-		update();
+	public void subscribe(TransformDispatcher dispatcher) {
+		if (first != null && second != null) {
+			dispatcher.subscribe(this, first);
+			dispatcher.subscribe(this, second);
+		} else
+			this.transformDispatcher = dispatcher;
 	}
 }

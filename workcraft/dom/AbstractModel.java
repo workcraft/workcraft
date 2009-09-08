@@ -1,6 +1,7 @@
 package org.workcraft.dom;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.dom.visual.VisualModel;
@@ -48,7 +49,8 @@ public abstract class AbstractModel implements Plugin, Model, NodeContext {
 	}
 
 	public void remove (Collection<Node> nodes) {
-		for (Node node : nodes)
+		LinkedList<Node> toRemove = new LinkedList<Node>(nodes);
+		for (Node node : toRemove)
 			remove (node);
 	}
 

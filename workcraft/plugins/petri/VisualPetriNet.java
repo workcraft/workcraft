@@ -6,6 +6,7 @@ import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.framework.DefaultCreateButtons;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.exceptions.ModelValidationException;
@@ -17,14 +18,18 @@ import org.workcraft.framework.exceptions.VisualModelInstantiationException;
 @CustomToolButtons ( { SimulationTool.class } )
 public class VisualPetriNet extends AbstractVisualModel {
 	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {
+		this (model, null);
+	}
 
-		super(model);
+	public VisualPetriNet (PetriNet model, VisualGroup root) throws VisualModelInstantiationException {
+		super(model, root);
 
-		try {
-			createDefaultFlatStructure();
-		} catch (NodeCreationException e) {
-			throw new VisualModelInstantiationException(e);
-		}
+		if (root == null)
+			try {
+				createDefaultFlatStructure();
+			} catch (NodeCreationException e) {
+				throw new VisualModelInstantiationException(e);
+			}
 
 		new DefaultHangingConnectionRemover(this).attach(getRoot());
 		new DefaultMathNodeRemover().attach(getRoot());
@@ -35,7 +40,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 	}
 
 	public void validateConnection(Node first, Node second)
-			throws InvalidConnectionException {
+	throws InvalidConnectionException {
 		if (first instanceof VisualPlace && second instanceof VisualPlace)
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		if (first instanceof VisualTransition && second instanceof VisualTransition)
