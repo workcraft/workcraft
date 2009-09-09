@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
@@ -224,6 +225,19 @@ public class TestGCD {
 		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File("../out/" + chunkName+".g"), getEqnFile(chunk));
 	}
 
+
+	@Test
+	public void printTable() throws NumberFormatException, IOException, DocumentFormatException, PluginInstantiationException
+	{
+		init();
+		for(Entry<Chunk, Integer> entry : readAllCosts().entrySet())
+		{
+			Chunk chunk = entry.getKey();
+			if(chunk.getComponents().size() == 1)
+				System.out.println(getChunkName(chunk) + "\t" + entry.getValue());
+		}
+	}
+
 	@Test
 	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
 	{
@@ -391,6 +405,8 @@ public class TestGCD {
 
 			boolean needChechOptimality = true;
 
+			full = optimal;
+
 			while(needChechOptimality)
 			{
 				needChechOptimality = false;
@@ -405,10 +421,13 @@ public class TestGCD {
 						}
 				}
 			}
+
+			full = new HashMap<Chunk, Result>(optimal);
 		}
 
 
-		Map<Chunk, Result> optimal = new HashMap<Chunk, Result>();
+		Map<Chunk, Result> optimal;
+		Map<Chunk, Result> full;
 
 		public Result getBestSplit(Chunk toSplit) {
 			Result result = optimal.get(toSplit);
@@ -442,7 +461,7 @@ public class TestGCD {
 		private Result findBestSplit(Chunk toSplit) {
 			Result best = null;
 
-			for(Chunk chunk : new ArrayList<Chunk>(optimal.keySet()))
+			for(Chunk chunk : new ArrayList<Chunk>(full.keySet()))
 				if(chunk.isSubSetOf(toSplit))
 				{
 					Chunk remainder = Chunk.subtract(toSplit, chunk);
