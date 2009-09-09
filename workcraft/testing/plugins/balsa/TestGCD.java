@@ -226,16 +226,21 @@ public class TestGCD {
 	}
 
 
-	@Test
 	public void printTable() throws NumberFormatException, IOException, DocumentFormatException, PluginInstantiationException
 	{
-		init();
+		System.out.println("");
+		System.out.println("Separate components: ");
+		int totalCost = 0;
 		for(Entry<Chunk, Integer> entry : readAllCosts().entrySet())
 		{
 			Chunk chunk = entry.getKey();
-			if(chunk.getComponents().size() == 1)
-				System.out.println(getChunkName(chunk) + "\t" + entry.getValue());
+			if(chunk.getComponents().size() == 1) {
+				Integer cost = entry.getValue();
+				System.out.println(getChunkName(chunk) + "\t" + cost);
+				totalCost += cost;
+			}
 		}
+		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
 	@Test
@@ -243,14 +248,20 @@ public class TestGCD {
 	{
 		init();
 
-		ChunkSplitter splitter = new ChunkSplitter(readAllCosts());
+		Map<Chunk, Integer> costs = readAllCosts();
+		ChunkSplitter splitter = new ChunkSplitter(costs);
 		Chunk fullChunk = new Chunk(getAllComponents());
 		Result bestSplit = splitter.getBestSplit(fullChunk);
-		System.out.println("Cost of best split is: " +
-				bestSplit.cost);
+		System.out.println("");
+		System.out.println("Cost of best split is: " + bestSplit.cost);
+		System.out.println("");
 		System.out.println("The best split is: ");
 		for(Chunk ch : bestSplit.chunks)
-			System.out.println(getChunkName(ch));
+			System.out.println(getChunkName(ch) + "\t"+costs.get(ch));
+
+		System.out.println("");
+
+		printTable();
 
 		/*
 		File file = new File("gcd.g");
