@@ -61,7 +61,7 @@ public class TestGCD {
 		return comp;
 	}
 
-	@Test
+	//@Test
 	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
@@ -361,14 +361,15 @@ public class TestGCD {
 		System.out.println("total chunks: " + allChunks.size());
 		for(Chunk chunk : allChunks)
 		{
-			Integer cost = readCost(chunk);
+			Integer cost = readCost(chunk, "# Estimated area = ");
 			if(cost != null)
 				costs.put(chunk, cost);
 		}
 		return costs;
 	}
 
-	private Integer readCost(Chunk chunk) throws NumberFormatException, IOException {
+
+	private Integer readCost(Chunk chunk, String literalsPrefix) throws NumberFormatException, IOException {
 		File eqnFile = getEqnFile(chunk);
 		BufferedReader reader;
 		try
@@ -382,12 +383,14 @@ public class TestGCD {
 		try
 		{
 			String line;
-			String literalsPrefix = "literals=";
+
 			while((line = reader.readLine()) != null)
 				if(line.contains(literalsPrefix))
 				{
 					int index = line.indexOf(literalsPrefix) + literalsPrefix.length();
-					int index2 = line.indexOf(")", index);
+					int index2 = index;
+					while(line.length()>index2 && Character.isDigit(line.charAt(index2)))
+						index2++;
 					String literalsString = line.substring(index, index2);
 					return new Integer(literalsString);
 				}
