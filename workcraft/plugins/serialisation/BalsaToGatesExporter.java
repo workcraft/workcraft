@@ -16,7 +16,6 @@ import org.workcraft.framework.util.Export;
 import org.workcraft.framework.util.Import;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
-import org.workcraft.testing.serialisation.xml.STGSerialisationTests;
 import org.workcraft.util.DummyRenamer;
 
 public class BalsaToGatesExporter implements Exporter {
@@ -44,17 +43,13 @@ public class BalsaToGatesExporter implements Exporter {
 
 		File unfolding = new File(tempDir, "composition.mci");
 		File renamed = new File(tempDir, "renamed.g");
-
-
+		File renamed2 = new File(tempDir, "renamed2.g");
 
 		DummyRenamer.rename(original, renamed);
 
-
-
-
 		try {
 			Model stg = Import.importFromFile(new DotGImporter(), renamed);
-			Export.exportToFile(new DotGExporter(), stg, renamed);
+			Export.exportToFile(new DotGExporter(), stg, renamed2);
 		} catch (ModelValidationException e) {
 			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
@@ -64,13 +59,13 @@ public class BalsaToGatesExporter implements Exporter {
 		}
 
 		FileUtils.copyFile(renamed, new File(original.getAbsolutePath()+".ren"));
-
+		FileUtils.copyFile(renamed2, new File(original.getAbsolutePath()+".ren2"));
 
 		File contracted = new File(tempDir, "contracted.g");
 
-		contractDummies(renamed, contracted);
+		contractDummies(renamed2, contracted);
 
-		makeUnfolding(renamed, unfolding);
+		makeUnfolding(contracted, unfolding);
 
 		File csc_resolved_mci = new File(tempDir, "resolved.mci");
 

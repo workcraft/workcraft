@@ -3,10 +3,9 @@ package org.workcraft.plugins.serialisation;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.framework.exceptions.SerialisationException;
 import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.framework.serialisation.Exporter;
 

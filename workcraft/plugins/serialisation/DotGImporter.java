@@ -8,9 +8,10 @@ import java.io.InputStreamReader;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -18,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.framework.exceptions.InvalidConnectionException;
 import org.workcraft.framework.serialisation.Format;
@@ -43,6 +43,11 @@ public class DotGImporter implements Importer {
 	public String getDescription() {
         return ".g files (Petrify, PUNF)";
     }
+
+	public DotGImporter()
+	{
+		System.out.println("hello!");
+	}
 
 
 	// create the lists of all of the transition types
@@ -124,11 +129,13 @@ public class DotGImporter implements Importer {
 	}
 
 	public Model importFrom (ReadableByteChannel in) {
+		dummy.clear();
+		internal.clear();
+		outputs.clear();
+		inputs.clear();
+		implicitArcs.clear();
+
 		STG stg = new STG();
-
-//		File file = new File(path);
-
-//		Scanner scanner = new Scanner(file);
 
 		BufferedReader br;
 		try {
@@ -220,20 +227,16 @@ public class DotGImporter implements Importer {
 									m = p.matcher(s[i]);
 
 									if (m.find()) {
-//									for (int j=0;j<=m.groupCount();j++)
-//										System.out.println(m.group(j));
 										// groups 1 and 6 correspond to full transition names
 										SignalTransition et1 = (SignalTransition)bem.get(m.group(1));
 										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
 
 										if (et1!=null&&et2!=null) {
-											Collection<Node> ep = stg.getPostset(et1);
-											ep.retainAll(stg.getPreset(et2));
 
-											Iterator<Node> it = ep.iterator();
+											Place place = getImplicitPlace(et1, et2);
 
 											if (m.group(m.groupCount())!=null) {
-												((Place)it.next()).setCapacity(Integer.valueOf(m.group(m.groupCount())));
+												place.setCapacity(Integer.valueOf(m.group(m.groupCount())));
 											}
 										}
 
@@ -283,15 +286,12 @@ public class DotGImporter implements Importer {
 										SignalTransition et2 = (SignalTransition)bem.get(m.group(6));
 
 										if (et1!=null&&et2!=null) {
-											Collection<Node> ep = new HashSet<Node>(stg.getPostset(et1));
-											ep.retainAll(stg.getPreset(et2));
-
-											Iterator<Node> it = ep.iterator();
+											Place implicitPlace = getImplicitPlace(et1, et2);
 
 											if (m.group(m.groupCount())!=null) {
-												((Place)it.next()).setTokens(Integer.valueOf(m.group(m.groupCount())));
+												(implicitPlace).setTokens(Integer.valueOf(m.group(m.groupCount())));
 											} else {
-												((Place)it.next()).setTokens(1);
+												(implicitPlace).setTokens(1);
 											}
 										}
 
@@ -308,7 +308,6 @@ public class DotGImporter implements Importer {
 
 						be1 = createComponent(s[0], stg, bem);
 
-//					System.out.print(s[0] + " connects to:");
 						for (int i=1;i<s.length;i++) {
 
 							if (s[i].charAt(0)=='#') break;
@@ -317,13 +316,7 @@ public class DotGImporter implements Importer {
 
 							if (be1 instanceof SignalTransition && be2 instanceof SignalTransition)
 							{
-								Place implicitPlace = stg.createPlace();
-								try {
-									stg.connect(be1, implicitPlace);
-									stg.connect(implicitPlace, be2);
-								} catch (InvalidConnectionException e) {
-									e.printStackTrace();
-								}
+								connectTransitions(stg, (SignalTransition)be1, (SignalTransition)be2);
 							}
 							else
 							{
@@ -349,6 +342,51 @@ public class DotGImporter implements Importer {
 		}
 
 		return stg;
+	}
+
+	private void connectTransitions(STG stg, SignalTransition be1, SignalTransition be2) {
+		Place implicitPlace = stg.createPlace();
+
+		implicitArcs.put(new ImplicitArc(be1, be2), implicitPlace);
+
+		try {
+			stg.connect(be1, implicitPlace);
+			stg.connect(implicitPlace, be2);
+		} catch (InvalidConnectionException e) {
+			e.printStackTrace();
+		}
+	}
+
+	class ImplicitArc
+	{
+		private SignalTransition first;
+		private SignalTransition second;
+		public ImplicitArc(SignalTransition first, SignalTransition second)
+		{
+			if(first == null || second == null)
+				throw new NullPointerException();
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(!(obj instanceof ImplicitArc))
+				return false;
+			ImplicitArc other = (ImplicitArc)obj;
+			return first.equals(other.first) && second.equals(other.second);
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(new Object[]{first, second});
+		}
+	}
+
+	Map<ImplicitArc, Place> implicitArcs = new HashMap<ImplicitArc, Place> ();
+
+	private Place getImplicitPlace(SignalTransition et1, SignalTransition et2) {
+		return implicitArcs.get(new ImplicitArc(et1, et2));
 	}
 
 	private static String[] splitToTokens(String str) {

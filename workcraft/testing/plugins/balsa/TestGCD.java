@@ -222,7 +222,7 @@ public class TestGCD {
 	private void synthesize(Chunk chunk) {
 		String chunkName = getChunkName(chunk);
 		System.out.println("synthesising " + chunkName);
-		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File("../out/" + chunkName+".g"), getEqnFile(chunk));
+		exportPartial(chunk.components.toArray(new BreezeComponent[0]), new File(outDir, chunkName+".g"), getEqnFile(chunk));
 	}
 
 
@@ -241,6 +241,15 @@ public class TestGCD {
 			}
 		}
 		System.out.println("Total cost of separate components: " + totalCost);
+	}
+
+	@Test
+	public void deleteme() throws IOException, DocumentFormatException, PluginInstantiationException
+	{
+		init();
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{
+			fetchA, fetchAmB, varA, muxA
+		})));
 	}
 
 	@Test
@@ -276,6 +285,24 @@ public class TestGCD {
 		stream.close();*/
 	}
 
+	BreezeComponent seq;
+	BreezeComponent bfGreater;
+	BreezeComponent whilE;
+	BreezeComponent casE;
+	BreezeComponent concur;
+	BreezeComponent fetchA;
+	BreezeComponent fetchB;
+	BreezeComponent fetchAmB;
+	BreezeComponent fetchBmA;
+	BreezeComponent fetchGT;
+	BreezeComponent varB;
+	BreezeComponent varA;
+	BreezeComponent muxB;
+	BreezeComponent muxA;
+	BreezeComponent bfNotEquals;
+	BreezeComponent bfAmB;
+	BreezeComponent bfBmA;
+
 	private void init() throws IOException, DocumentFormatException,
 			PluginInstantiationException {
 		Framework f = new Framework();
@@ -284,23 +311,23 @@ public class TestGCD {
 
 		circuit = new BalsaCircuit();
 
-		BreezeComponent seq = addComponent(new SequenceOptimised() { { setOutputCount(2); } });
-		BreezeComponent concur = addComponent(new Concur() { { setOutputCount(2); } });
-		BreezeComponent fetchA = addComponent(new Fetch() { { setWidth(8); } });
-		BreezeComponent fetchB = addComponent(new Fetch() { { setWidth(8); } });
-		BreezeComponent fetchAmB = addComponent(new Fetch() { { setWidth(8); } });
-		BreezeComponent fetchBmA = addComponent(new Fetch() { { setWidth(8); } });
-		BreezeComponent fetchGT = addComponent(new Fetch() { { setWidth(1); } });
-		BreezeComponent varA = addComponent(new Variable() { { setWidth(8); setName("A"); setReadPortCount(5); } });
-		BreezeComponent varB = addComponent(new Variable() { { setWidth(8); setName("B"); setReadPortCount(4); } });
-		BreezeComponent muxB = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
-		BreezeComponent muxA = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
-		BreezeComponent bfNotEquals = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.NOT_EQUALS); } });
-		BreezeComponent bfAmB = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
-		BreezeComponent bfBmA = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
-		BreezeComponent bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.GREATER_THAN); } });
-		BreezeComponent whilE = addComponent(new While());
-		BreezeComponent casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
+		seq = addComponent(new SequenceOptimised() { { setOutputCount(2); } });
+		concur = addComponent(new Concur() { { setOutputCount(2); } });
+		fetchA = addComponent(new Fetch() { { setWidth(8); } });
+		fetchB = addComponent(new Fetch() { { setWidth(8); } });
+		fetchAmB = addComponent(new Fetch() { { setWidth(8); } });
+		fetchBmA = addComponent(new Fetch() { { setWidth(8); } });
+		fetchGT = addComponent(new Fetch() { { setWidth(1); } });
+		varA = addComponent(new Variable() { { setWidth(8); setName("A"); setReadPortCount(5); } });
+		varB = addComponent(new Variable() { { setWidth(8); setName("B"); setReadPortCount(4); } });
+		muxB = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
+		muxA = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
+		bfNotEquals = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.NOT_EQUALS); } });
+		bfAmB = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
+		bfBmA = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
+		bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.GREATER_THAN); } });
+		whilE = addComponent(new While());
+		casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
 
 		registerName("seq", seq);
 		registerName("concur", concur);
@@ -345,6 +372,9 @@ public class TestGCD {
 		connect(casE, "activateOut0", fetchBmA, "activate");
 		connect(casE, "activateOut1", fetchAmB, "activate");
 
+		//connect(bfAmB, "out", fetchAmB, "inp");
+		//connect(bfBmA, "out", fetchBmA, "inp");
+
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
 	}
@@ -355,22 +385,30 @@ public class TestGCD {
 		componentNames.put(component, name);
 	}
 
+	static final File outDir = new File("../Out");
+
 	private Map<Chunk, Integer> readAllCosts() throws NumberFormatException, IOException {
 		Map<Chunk, Integer> costs = new HashMap<Chunk, Integer>();
 		Collection<Chunk> allChunks = getAllChunks();
 		System.out.println("total chunks: " + allChunks.size());
 		for(Chunk chunk : allChunks)
 		{
-			Integer cost = readCost(chunk, "# Estimated area = ");
+			Integer petrifyCost = readCost(new File(outDir, "petrify/" + getChunkName(chunk) + ".eqn"), "# Estimated area = ");
+			Integer mpsatCost = readCost(getEqnFile(chunk), "literals=");
+			Integer cost = petrifyCost;
+			if(cost == null)
+				cost = mpsatCost;
+			else
+				if(mpsatCost != null && mpsatCost < cost)
+					cost = mpsatCost;
+
 			if(cost != null)
 				costs.put(chunk, cost);
 		}
 		return costs;
 	}
 
-
-	private Integer readCost(Chunk chunk, String literalsPrefix) throws NumberFormatException, IOException {
-		File eqnFile = getEqnFile(chunk);
+	private Integer readCost(File eqnFile, String literalsPrefix) throws NumberFormatException, IOException {
 		BufferedReader reader;
 		try
 		{
@@ -403,7 +441,7 @@ public class TestGCD {
 	}
 
 	private File getEqnFile(Chunk chunk) {
-		return new File("../out/" + getChunkName(chunk)+".eqn");
+		return new File(outDir, getChunkName(chunk)+".eqn");
 	}
 
 	static int cc = 0;
