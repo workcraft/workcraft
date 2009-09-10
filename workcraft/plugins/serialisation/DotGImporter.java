@@ -44,12 +44,6 @@ public class DotGImporter implements Importer {
         return ".g files (Petrify, PUNF)";
     }
 
-	public DotGImporter()
-	{
-		System.out.println("hello!");
-	}
-
-
 	// create the lists of all of the transition types
 	HashSet<String> internal	= new HashSet<String>();
 	HashSet<String> inputs		= new HashSet<String>();
@@ -57,11 +51,8 @@ public class DotGImporter implements Importer {
 	HashSet<String> dummy		= new HashSet<String>();
 
 	public MathNode createComponent(String nameid, STG doc, SortedMap<String, MathNode> bem) {
-
-
 		// get the name of the first component
 		Pattern p = Pattern.compile(signalPattern);
-//		Pattern p2 = Pattern.compile("^p([0-9]+)$");
 		Matcher m1 = p.matcher(nameid);
 
 		// check whether this element is created already

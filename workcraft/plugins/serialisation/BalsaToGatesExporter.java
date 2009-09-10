@@ -84,7 +84,7 @@ public class BalsaToGatesExporter implements Exporter {
 						original.getAbsolutePath()
 				}, ".");
 
-		process.start(100000);
+		process.start(200000);
 
 		FileOutputStream outStream = new FileOutputStream(contracted);
 		outStream.write(process.getOutputData());
@@ -103,7 +103,7 @@ public class BalsaToGatesExporter implements Exporter {
 						cscResolvedMci.getAbsolutePath()
 				}, ".");
 
-		process.start(100000);
+		process.start(300000);
 
 		FileOutputStream outStream = new FileOutputStream(synthesised);
 		outStream.write(process.getOutputData());
@@ -125,7 +125,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 		SynchronousExternalProcess process = new SynchronousExternalProcess(args, resolutionDir.getAbsolutePath());
 
-		process.start(100000);
+		process.start(300000);
 		System.out.println("MPSAT CSC resolution output: ");
 		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
 		System.out.println("MPSAT CSC resolution errors: ");

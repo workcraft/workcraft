@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
@@ -61,12 +63,40 @@ public class TestGCD {
 		return comp;
 	}
 
-	//@Test
-	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException
+	Queue<Chunk> queue = new ArrayBlockingQueue<Chunk>(50000);
+
+	@Test
+	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException, InterruptedException
 	{
 		init();
-		for(Chunk chunk : getAllChunks())
-			synthesize(chunk);
+		Collection<Chunk> allChunks = getAllChunks();
+		Chunk [] chunks = allChunks.toArray(new Chunk[0]);
+
+		for(Chunk ch : chunks)
+		{
+			if(!queue.add(ch))
+				throw new RuntimeException("dermo");
+		}
+
+		System.out.println("Total count of all chunks: " + allChunks.size());
+
+		launchThread();
+		launchThread();
+	}
+
+	private void launchThread() {
+		Thread th = new Thread(new Runnable()
+		{
+			@Override
+			public void run() {
+				while(true)
+				{
+					Chunk chunk = queue.poll();
+					synthesize(chunk);
+				}
+			}
+		});
+		th.run();
 	}
 
 	private Collection<Chunk> getAllChunks() {
@@ -244,15 +274,6 @@ public class TestGCD {
 	}
 
 	@Test
-	public void deleteme() throws IOException, DocumentFormatException, PluginInstantiationException
-	{
-		init();
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{
-			fetchA, fetchAmB, varA, muxA
-		})));
-	}
-
-	@Test
 	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
@@ -271,18 +292,6 @@ public class TestGCD {
 		System.out.println("");
 
 		printTable();
-
-		/*
-		File file = new File("gcd.g");
-		if(file.exists())
-			file.delete();
-		FileOutputStream stream = new FileOutputStream(file);
-
-		new BalsaToStgExporter_FourPhase().export(circuit, stream);
-
-		exportPartial(new BreezeComponent[]{seq, concur, fetchA, fetchB}, "gcd_partial.g");
-
-		stream.close();*/
 	}
 
 	BreezeComponent seq;
@@ -372,8 +381,8 @@ public class TestGCD {
 		connect(casE, "activateOut0", fetchBmA, "activate");
 		connect(casE, "activateOut1", fetchAmB, "activate");
 
-		//connect(bfAmB, "out", fetchAmB, "inp");
-		//connect(bfBmA, "out", fetchBmA, "inp");
+		connect(bfAmB, "out", fetchAmB, "inp");
+		connect(bfBmA, "out", fetchBmA, "inp");
 
 		connect(fetchAmB, "out", muxA, "inp1");
 		connect(fetchBmA, "out", muxB, "inp1");
@@ -385,7 +394,7 @@ public class TestGCD {
 		componentNames.put(component, name);
 	}
 
-	static final File outDir = new File("../Out");
+	static final File outDir = new File("H:/Out");
 
 	private Map<Chunk, Integer> readAllCosts() throws NumberFormatException, IOException {
 		Map<Chunk, Integer> costs = new HashMap<Chunk, Integer>();
