@@ -24,9 +24,9 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 	@Override
 	public void generate(VisualModel model, Point2D where) throws NodeCreationException {
 		MathNode mn = createMathNode();
-		VisualNode vc = NodeFactory.createVisualComponent(mn);
-
 		model.getMathModel().add(mn);
+
+		VisualNode vc = NodeFactory.createVisualComponent(mn);
 		model.getCurrentLevel().add(vc);
 
 		if (vc instanceof Movable)

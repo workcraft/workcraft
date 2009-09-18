@@ -1,5 +1,6 @@
 package org.workcraft.util;
 
+import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -7,6 +8,7 @@ import org.workcraft.annotations.NoDefaultCreateButtons;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -55,6 +57,14 @@ public class Annotations {
 			} catch (ClassNotFoundException e) {
 				return null;
 			}
+	}
+
+	public static Class<? extends CustomToolsProvider> getCustomToolsProvider(Class<?> cls) {
+		CustomTools ctb = cls.getAnnotation(CustomTools.class);
+		if (ctb == null)
+			return null;
+		else
+			return ctb.value();
 	}
 
 	@SuppressWarnings("unchecked")

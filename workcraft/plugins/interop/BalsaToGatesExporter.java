@@ -13,12 +13,15 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.plugins.interop.BalsaToStgExporter_FourPhase;
+import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
+import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.DummyRenamer;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
-
 public class BalsaToGatesExporter implements Exporter {
 	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
 
@@ -26,16 +29,27 @@ public class BalsaToGatesExporter implements Exporter {
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
 			ModelValidationException, SerialisationException {
-		File tempDir = createTempDirectory();
+		if(model instanceof STG)
+			exportFromStg((STG)model, out);
 
-		File original = new File(tempDir, "composition.g");
+		File original = File.createTempFile("composition", ".g");
 		exportOriginal(model, original);
 
-		File synthesised = new File(tempDir, "RESULT");
+		File synthesised = File.createTempFile("result", ".eqn");
 
 		synthesiseStg(original, synthesised, false);
 
 		FileUtils.copyFileToStream(synthesised, out);
+	}
+
+	private void exportFromStg(STG model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
+		File dotG = File.createTempFile("original", ".g");
+		File eqn = File.createTempFile("result", ".eqn");
+		Export.exportToFile(new DotGExporter(), model, dotG);
+
+		synthesiseStg(dotG, eqn, true);
+
+		FileUtils.copyFileToStream(eqn, out);
 	}
 
 	public static void synthesiseStg(File original, File synthesised, boolean withMpsat)
@@ -229,11 +243,11 @@ public class BalsaToGatesExporter implements Exporter {
 	}
 
 	public String getExtenstion() {
-		return ".gates";
+		return ".eqn";
 	}
 
 	public boolean isApplicableTo(Model model) {
-		return model instanceof BalsaCircuit;
+		return model instanceof BalsaCircuit || model instanceof STG;
 	}
 
 }

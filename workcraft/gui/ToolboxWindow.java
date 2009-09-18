@@ -18,6 +18,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -171,6 +172,19 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
 			NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
 			addTool(tool, false);
+		}
+		Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
+		if(customTools != null)
+		{
+			CustomToolsProvider provider = null;
+			try {
+				provider = customTools.getConstructor().newInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if(provider != null)
+				for(GraphEditorTool tool : provider.getTools())
+					addTool(tool, false);
 		}
 
 		for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass()))

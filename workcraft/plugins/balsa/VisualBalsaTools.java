@@ -53,9 +53,8 @@ import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.components.WireFork;
 
-class VisualBalsaTools implements CustomToolsProvider
+public class VisualBalsaTools implements CustomToolsProvider
 {
-
 	GraphEditorTool getComponentTool(final Class<? extends org.workcraft.plugins.balsa.components.Component> balsaClass)
 	{
 		return new NodeGeneratorTool(new AbstractNodeGenerator(){

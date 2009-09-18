@@ -18,6 +18,8 @@ public class MainLayouter {
 
 	public static HandshakeComponentLayout getLayout(Component component, Map<String, Handshake> handshakes)
 	{
+		if(handshakes == null)
+			throw new NullPointerException("handshakes argument is null");
 		Layouter<?> layouter = map.get(component.getClass());
 		if(layouter == null)
 			return getDefaultLayout(handshakes);

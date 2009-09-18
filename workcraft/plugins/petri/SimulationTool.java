@@ -73,6 +73,8 @@ public class SimulationTool extends AbstractTool {
 			net.fire(vt.getTransition());
 			highlightEnabledTransitions(visualNet.getRoot());
 		}
+
+		e.getEditor().repaint();
 	}
 
 	@Override

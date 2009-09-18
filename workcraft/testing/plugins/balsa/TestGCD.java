@@ -64,7 +64,7 @@ public class TestGCD {
 
 	Queue<Chunk> queue = new ArrayBlockingQueue<Chunk>(50000);
 
-//	@Test
+	//@Test
 	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException, InterruptedException
 	{
 		init();
@@ -270,6 +270,18 @@ public class TestGCD {
 			}
 		}
 		System.out.println("Total cost of separate components: " + totalCost);
+	}
+
+	@Test
+	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
+	{
+		init();
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, whilE})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{bfNotEquals, whilE})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{muxA})));
 	}
 
 	@Test

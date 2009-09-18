@@ -44,8 +44,9 @@ public class DummyRenamer {
 
 				writer.print(".marking {");
 
-				for(String place : stripped.split(" "))
-					writer.print(" " + renamePlace(dummySet, place));
+				if(stripped.length()>0)
+					for(String place : stripped.split(" "))
+						writer.print(" " + renamePlace(dummySet, place));
 
 				writer.println(" }");
 			}
