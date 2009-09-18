@@ -12,8 +12,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;

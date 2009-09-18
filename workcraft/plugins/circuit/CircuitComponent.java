@@ -2,8 +2,8 @@ package org.workcraft.plugins.circuit;
 
 import java.util.HashSet;
 
-import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.circuit.Contact.IOType;
 

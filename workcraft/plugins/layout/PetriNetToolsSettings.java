@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.Plugin;
-import org.workcraft.dom.DisplayName;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;

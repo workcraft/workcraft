@@ -1,4 +1,4 @@
-package org.workcraft.serialisation;
+package org.workcraft.interop;
 import java.io.IOException;
 import java.io.OutputStream;
 

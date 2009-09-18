@@ -1,4 +1,4 @@
-package org.workcraft.plugins.serialisation;
+package org.workcraft.plugins.interop;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,10 +10,10 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
-import org.workcraft.serialisation.Exporter;
 import org.workcraft.util.DummyRenamer;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;

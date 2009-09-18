@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg;
 
-import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.PropertyChangedEvent;

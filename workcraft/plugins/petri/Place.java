@@ -1,6 +1,6 @@
 package org.workcraft.plugins.petri;
 
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;

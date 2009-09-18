@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.dom.DisplayName;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;

@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.CustomToolButtons;

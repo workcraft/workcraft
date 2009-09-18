@@ -1,4 +1,4 @@
-package org.workcraft.plugins.serialisation;
+package org.workcraft.plugins.interop;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,8 +7,8 @@ import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.serialisation.dotg.DotGSerialiser;
-import org.workcraft.serialisation.Exporter;
 
 public class DotGExporter implements Exporter, Plugin {
 	DotGSerialiser serialiser = new DotGSerialiser();

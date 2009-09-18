@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.Plugin;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;

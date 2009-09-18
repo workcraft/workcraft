@@ -7,7 +7,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.serialisation.Exporter;
+import org.workcraft.interop.Exporter;
 
 public class Export {
 	static public void exportToFile (Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {

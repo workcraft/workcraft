@@ -1,4 +1,4 @@
-package org.workcraft.dom;
+package org.workcraft.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

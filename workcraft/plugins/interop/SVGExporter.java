@@ -1,4 +1,4 @@
-package org.workcraft.plugins.serialisation;
+package org.workcraft.plugins.interop;
 
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
@@ -16,7 +16,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.serialisation.Exporter;
+import org.workcraft.interop.Exporter;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.XmlUtil;
 

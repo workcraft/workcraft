@@ -10,8 +10,8 @@ import java.util.Set;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Import;
 

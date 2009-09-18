@@ -1,0 +1,68 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+}
+
+PARSER_BEGIN(LispParser)
+package org.workcraft.parsers.lisp;
+import java.io.InputStream;
+import java.util.List;
+import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+ 
+@SuppressWarnings("all")
+public class LispParser {
+	public static List<Object> parse (InputStream is) throws ParseException {
+		LispParser parser = new LispParser(new BufferedReader(new InputStreamReader(is)));
+		return everything();
+	}
+}
+PARSER_END(LispParser)
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+|	"\n"
+|	<";" (~["\r","\n"])*>
+}
+
+TOKEN :
+{
+	<OBR : "(" >
+	|<CBR :")" > 
+    |< VALUE: ( ~[" ","\r","\t","\n","(",")"] )+ >
+}
+
+List<Object> everything() : 
+{
+	LinkedList<Object> result = new LinkedList<Object>();
+	Object o;
+}
+{
+  ( o = listElement() {result.add(o);})*
+  {
+   return result;
+  }
+}
+
+List<Object> list() : 
+{
+	List<Object> result;
+}
+{
+  <OBR> result = everything() <CBR>
+  {
+   return result;
+  }
+}
+
+Object listElement() : { Token t; List<Object> l;}
+{
+	t = <VALUE> { return t.image; } | l = list() { return l; } 
+}

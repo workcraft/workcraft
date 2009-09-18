@@ -1,12 +1,11 @@
-package org.workcraft.plugins.serialisation;
+package org.workcraft.plugins.interop;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,13 +20,13 @@ import java.util.regex.Pattern;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
-import org.workcraft.serialisation.Importer;
 
 public class DotGImporter implements Importer {
 	private static String signalPattern = "([a-zA-Z\\_][a-zA-Z\\_0-9]*)(\\+|\\*|\\-|~|\\^[01])?(\\/([0-9]+))?";
@@ -41,7 +40,7 @@ public class DotGImporter implements Importer {
 	}
 
 	public String getDescription() {
-        return ".g files (Petrify, PUNF)";
+        return "Signal Transition Graph (.g)";
     }
 
 	// create the lists of all of the transition types
@@ -119,7 +118,7 @@ public class DotGImporter implements Importer {
 		return be1;
 	}
 
-	public Model importFrom (ReadableByteChannel in) {
+	public Model importFrom (InputStream in) {
 		dummy.clear();
 		internal.clear();
 		outputs.clear();
@@ -130,7 +129,7 @@ public class DotGImporter implements Importer {
 
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(Channels.newInputStream(in)));
+			br = new BufferedReader(new InputStreamReader(in));
 
 			//		BufferedReader br = new BufferedReader(new FileReader(file));
 					String str;

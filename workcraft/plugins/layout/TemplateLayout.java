@@ -4,7 +4,7 @@ import java.awt.Component;
 
 import javax.swing.JFileChooser;
 
-import org.workcraft.dom.DisplayName;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.LayoutFailedException;
 import org.workcraft.gui.FileFilters;

@@ -1,10 +1,10 @@
 package org.workcraft.util;
 
 import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.NoDefaultCreateButtons;
-import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.graph.tools.GraphEditorTool;

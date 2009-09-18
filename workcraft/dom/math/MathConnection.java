@@ -1,7 +1,7 @@
 package org.workcraft.dom.math;
 
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.VisualClass;
 
 
 @VisualClass("org.workcraft.dom.visual.connections.VisualConnection")

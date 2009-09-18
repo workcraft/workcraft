@@ -2,11 +2,11 @@ package org.workcraft.plugins.petri;
 
 import java.util.Collection;
 
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;

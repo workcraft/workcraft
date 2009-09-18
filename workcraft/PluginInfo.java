@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.dom.DisplayName;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.exceptions.DocumentFormatException;
 import org.workcraft.util.XmlUtil;
 

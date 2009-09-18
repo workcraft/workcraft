@@ -23,7 +23,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import org.junit.Test;
 import org.workcraft.Framework;
@@ -46,8 +45,8 @@ import org.workcraft.plugins.balsa.components.Fetch;
 import org.workcraft.plugins.balsa.components.SequenceOptimised;
 import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
-import org.workcraft.plugins.serialisation.BalsaToGatesExporter;
-import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
+import org.workcraft.plugins.interop.BalsaToGatesExporter;
+import org.workcraft.plugins.interop.BalsaToStgExporter_FourPhase;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;

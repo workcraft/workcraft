@@ -3,8 +3,8 @@ package org.workcraft;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelInstantiationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;

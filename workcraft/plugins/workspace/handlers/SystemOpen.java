@@ -4,7 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import org.workcraft.dom.DisplayName;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.workspace.FileHandler;
 
 @DisplayName("Open")

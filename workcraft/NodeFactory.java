@@ -3,7 +3,7 @@ package org.workcraft;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;

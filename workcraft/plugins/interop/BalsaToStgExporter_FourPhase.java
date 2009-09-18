@@ -1,9 +1,9 @@
-package org.workcraft.plugins.serialisation;
+package org.workcraft.plugins.interop;
 
 import java.util.UUID;
 
+import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
-import org.workcraft.serialisation.Exporter;
 import org.workcraft.serialisation.Format;
 
 public class BalsaToStgExporter_FourPhase extends BalsaToStgExporter implements Exporter {

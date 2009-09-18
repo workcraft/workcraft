@@ -1,7 +1,7 @@
 package org.workcraft.plugins.graph;
 
-import org.workcraft.dom.DisplayName;
-import org.workcraft.dom.VisualClass;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
 @DisplayName("Vertex")
