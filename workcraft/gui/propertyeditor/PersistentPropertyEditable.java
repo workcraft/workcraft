@@ -1,6 +1,6 @@
 package org.workcraft.gui.propertyeditor;
 
-import org.workcraft.framework.Config;
+import org.workcraft.Config;
 
 public interface PersistentPropertyEditable extends PropertyEditable  {
 	public void storePersistentProperties (Config config);

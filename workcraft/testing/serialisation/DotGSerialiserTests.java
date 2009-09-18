@@ -7,13 +7,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.util.Import;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.util.Import;
 
 public class DotGSerialiserTests {
 	//@Test

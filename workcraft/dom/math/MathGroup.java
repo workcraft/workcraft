@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.GroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.framework.observation.HierarchyObserver;
-import org.workcraft.framework.observation.ObservableHierarchy;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 
 public class MathGroup extends MathNode implements ObservableHierarchy, Container {
 	GroupImpl groupImpl = new GroupImpl(this);

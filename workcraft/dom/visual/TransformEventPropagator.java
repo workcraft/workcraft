@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesAddedEvent;
-import org.workcraft.framework.observation.NodesDeletedEvent;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateObserver;
-import org.workcraft.framework.observation.TransformChangedEvent;
-import org.workcraft.framework.observation.TransformObserver;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformObserver;
 
 public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
 	HashMap <Node, LinkedList<TransformObserver>> nodeToObservers

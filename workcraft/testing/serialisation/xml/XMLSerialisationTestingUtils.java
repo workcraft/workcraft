@@ -1,10 +1,10 @@
 package org.workcraft.testing.serialisation.xml;
 
+import org.workcraft.PluginInfo;
+import org.workcraft.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
-import org.workcraft.framework.plugins.PluginInfo;
-import org.workcraft.framework.plugins.PluginProvider;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlaceDeserialiser;
 import org.workcraft.plugins.petri.VisualPlaceSerialiser;
@@ -38,7 +38,7 @@ public class XMLSerialisationTestingUtils {
 	static class MockPluginManager implements PluginProvider {
 		public PluginInfo[] getPluginsImplementing(String interfaceName) {
 
-			if (interfaceName.equals(org.workcraft.framework.serialisation.xml.XMLSerialiser.class.getName()))
+			if (interfaceName.equals(org.workcraft.serialisation.xml.XMLSerialiser.class.getName()))
 			{
 				return new PluginInfo[] {
 						new PluginInfo (IntSerialiser.class),
@@ -54,7 +54,7 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (VisualConnectionSerialiser.class),
 						new PluginInfo (ImplicitArcSerialiser.class)
 				};
-			} else if (interfaceName.equals(org.workcraft.framework.serialisation.xml.XMLDeserialiser.class.getName()))
+			} else if (interfaceName.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class.getName()))
 			{
 				return new PluginInfo[] {
 						new PluginInfo (IntDeserialiser.class),

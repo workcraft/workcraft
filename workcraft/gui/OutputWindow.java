@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.workcraft.framework.Framework;
+import org.workcraft.Framework;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {

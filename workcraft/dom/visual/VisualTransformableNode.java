@@ -5,9 +5,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.observation.TransformChangedEvent;
-import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 
 

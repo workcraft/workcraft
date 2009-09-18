@@ -8,8 +8,8 @@ import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")

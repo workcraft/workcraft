@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesAddedEvent;
-import org.workcraft.framework.observation.NodesDeletedEvent;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
 	HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<Node, LinkedHashSet<Node>>();

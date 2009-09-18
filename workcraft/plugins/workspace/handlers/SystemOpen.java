@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.workcraft.dom.DisplayName;
-import org.workcraft.framework.workspace.FileHandler;
+import org.workcraft.workspace.FileHandler;
 
 @DisplayName("Open")
 public class SystemOpen implements FileHandler {

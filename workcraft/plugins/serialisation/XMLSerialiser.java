@@ -8,17 +8,17 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.PluginConsumer;
+import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.plugins.PluginConsumer;
-import org.workcraft.framework.plugins.PluginProvider;
-import org.workcraft.framework.serialisation.Format;
-import org.workcraft.framework.serialisation.ModelSerialiser;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.serialisation.Format;
+import org.workcraft.serialisation.ModelSerialiser;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialiser implements ModelSerialiser, PluginConsumer {

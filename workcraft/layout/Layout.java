@@ -1,8 +1,8 @@
 package org.workcraft.layout;
 
+import org.workcraft.Plugin;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.LayoutFailedException;
-import org.workcraft.framework.plugins.Plugin;
+import org.workcraft.exceptions.LayoutFailedException;
 
 public interface Layout extends Plugin {
 	public boolean isApplicableTo (VisualModel model);

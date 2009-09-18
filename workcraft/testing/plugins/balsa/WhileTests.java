@@ -8,15 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.workcraft.framework.ModelSaveFailedException;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.LayoutFailedException;
-import org.workcraft.framework.exceptions.ModelCheckingFailedException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
-import org.workcraft.framework.util.Import;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.LayoutFailedException;
+import org.workcraft.exceptions.ModelCheckingFailedException;
+import org.workcraft.exceptions.ModelSaveFailedException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
@@ -32,6 +31,7 @@ import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.serialisation.DotGImporter;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.util.Import;
 
 
 public class WhileTests {
@@ -67,7 +67,7 @@ public class WhileTests {
 
 		new DeadlockChecker().run(stg);
 
-		new org.workcraft.framework.Framework().save(new VisualSTG(stg), "while.stg.work");
+		new org.workcraft.Framework().save(new VisualSTG(stg), "while.stg.work");
 	}
 
 	@Test
@@ -95,6 +95,6 @@ public class WhileTests {
 
 		VisualSTG visualStg = new VisualSTG(stg);
 
-		new org.workcraft.framework.Framework().save(visualStg, "while_while.stg.work");
+		new org.workcraft.Framework().save(visualStg, "while_while.stg.work");
 	}
 }

@@ -26,14 +26,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 import org.junit.Test;
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.DocumentFormatException;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.util.Export;
+import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
@@ -50,6 +49,7 @@ import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.serialisation.BalsaToGatesExporter;
 import org.workcraft.plugins.serialisation.BalsaToStgExporter_FourPhase;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
+import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
 
 public class TestGCD {
@@ -65,7 +65,7 @@ public class TestGCD {
 
 	Queue<Chunk> queue = new ArrayBlockingQueue<Chunk>(50000);
 
-	@Test
+//	@Test
 	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException, InterruptedException
 	{
 		init();
@@ -278,6 +278,8 @@ public class TestGCD {
 	{
 		init();
 
+		printTable();
+
 		Map<Chunk, Integer> costs = readAllCosts();
 		ChunkSplitter splitter = new ChunkSplitter(costs);
 		Chunk fullChunk = new Chunk(getAllComponents());
@@ -291,7 +293,7 @@ public class TestGCD {
 
 		System.out.println("");
 
-		printTable();
+
 	}
 
 	BreezeComponent seq;
@@ -394,7 +396,7 @@ public class TestGCD {
 		componentNames.put(component, name);
 	}
 
-	static final File outDir = new File("H:/Out");
+	static final File outDir = new File("../out");
 
 	private Map<Chunk, Integer> readAllCosts() throws NumberFormatException, IOException {
 		Map<Chunk, Integer> costs = new HashMap<Chunk, Integer>();
@@ -402,8 +404,8 @@ public class TestGCD {
 		System.out.println("total chunks: " + allChunks.size());
 		for(Chunk chunk : allChunks)
 		{
-			Integer petrifyCost = readCost(new File(outDir, "petrify/" + getChunkName(chunk) + ".eqn"), "# Estimated area = ");
-			Integer mpsatCost = readCost(getEqnFile(chunk), "literals=");
+			Integer petrifyCost = null;//readCost(getEqnFile(chunk), "# Estimated area = ");
+			Integer mpsatCost = readCost(new File(outDir, "mpsat/" + getChunkName(chunk) + ".eqn"), "literals=");
 			Integer cost = petrifyCost;
 			if(cost == null)
 				cost = mpsatCost;
@@ -612,8 +614,7 @@ public class TestGCD {
 
 			try
 			{
-
-				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile);
+				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, false);
 			}
 			catch(RuntimeException e)
 			{

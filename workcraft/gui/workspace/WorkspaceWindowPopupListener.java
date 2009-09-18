@@ -13,12 +13,12 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.OperationCancelledException;
-import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.plugins.PluginInfo;
-import org.workcraft.framework.workspace.FileHandler;
-import org.workcraft.framework.workspace.WorkspaceEntry;
+import org.workcraft.Framework;
+import org.workcraft.PluginInfo;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.workspace.FileHandler;
+import org.workcraft.workspace.WorkspaceEntry;
 
 class WorkspaceWindowPopupListener extends MouseAdapter {
 	private Framework framework;

@@ -22,9 +22,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import org.workcraft.Framework;
+import org.workcraft.PluginInfo;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.plugins.PluginInfo;
 
 public class CreateWorkDialog extends JDialog {
 

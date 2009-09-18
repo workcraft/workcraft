@@ -4,9 +4,9 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.ReferencingXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.ReferencingXMLDeserialiser;
 
 public class VisualConnectionDeserialiser implements ReferencingXMLDeserialiser {
 	public String getClassName() {

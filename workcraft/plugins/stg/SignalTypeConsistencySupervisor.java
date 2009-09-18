@@ -3,9 +3,9 @@
  */
 package org.workcraft.plugins.stg;
 
-import org.workcraft.framework.observation.PropertyChangedEvent;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateSupervisor;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateSupervisor;
 import org.workcraft.util.Hierarchy;
 
 class SignalTypeConsistencySupervisor extends StateSupervisor {

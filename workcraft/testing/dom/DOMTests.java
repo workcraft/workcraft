@@ -2,7 +2,7 @@ package org.workcraft.testing.dom;
 
 import org.junit.Test;
 import org.workcraft.dom.Connection;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

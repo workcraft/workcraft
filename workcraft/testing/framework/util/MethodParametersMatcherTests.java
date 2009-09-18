@@ -7,9 +7,9 @@ import java.util.Collection;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.workcraft.framework.util.AmbiguousMethodException;
-import org.workcraft.framework.util.MethodParametersMatcher;
-import org.workcraft.framework.util.MethodParametersMatcher.MethodInfo;
+import org.workcraft.util.AmbiguousMethodException;
+import org.workcraft.util.MethodParametersMatcher;
+import org.workcraft.util.MethodParametersMatcher.MethodInfo;
 
 public class MethodParametersMatcherTests {
 	class A

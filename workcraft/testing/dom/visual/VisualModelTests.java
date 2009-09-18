@@ -19,9 +19,9 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
 

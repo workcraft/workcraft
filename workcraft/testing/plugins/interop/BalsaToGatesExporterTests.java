@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.SerialisationException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.components.While;

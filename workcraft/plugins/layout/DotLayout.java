@@ -15,8 +15,8 @@ import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.LayoutFailedException;
-import org.workcraft.framework.interop.SynchronousExternalProcess;
+import org.workcraft.exceptions.LayoutFailedException;
+import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.layout.Layout;
 
 @DisplayName ("Dot")

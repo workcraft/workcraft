@@ -6,10 +6,10 @@ import java.awt.geom.Rectangle2D;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateObserver;
-import org.workcraft.framework.observation.TransformChangedEvent;
+import org.workcraft.exceptions.NotAnAncestorException;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
+import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.util.Hierarchy;
 
 public class VisualNodeTests {

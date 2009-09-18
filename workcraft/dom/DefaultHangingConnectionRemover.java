@@ -5,9 +5,9 @@ import java.util.HashSet;
 
 import net.sf.jga.fn.UnaryFunctor;
 
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesDeletingEvent;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {

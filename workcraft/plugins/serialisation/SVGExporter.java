@@ -14,10 +14,10 @@ import org.w3c.dom.Document;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.serialisation.Exporter;
-import org.workcraft.framework.serialisation.Format;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.serialisation.Exporter;
+import org.workcraft.serialisation.Format;
 import org.workcraft.util.XmlUtil;
 
 public class SVGExporter implements Exporter {

@@ -18,8 +18,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.observation.TransformChangedEvent;
-import org.workcraft.framework.observation.TransformObserver;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformObserver;
 
 public class VisualComponentGroupTests {
 	class MockTransformObservingNode implements Node, TransformObserver {

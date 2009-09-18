@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri;
 
+import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
@@ -7,11 +8,10 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.framework.DefaultCreateButtons;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.exceptions.NodeCreationException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 
 @DisplayName ("Petri Net")
 @DefaultCreateButtons ( { Place.class, Transition.class } )

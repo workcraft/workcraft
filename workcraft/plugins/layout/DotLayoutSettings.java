@@ -3,10 +3,10 @@ package org.workcraft.plugins.layout;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.workcraft.Config;
+import org.workcraft.Plugin;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.framework.Config;
-import org.workcraft.framework.plugins.Plugin;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;

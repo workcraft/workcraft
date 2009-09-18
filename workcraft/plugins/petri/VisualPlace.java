@@ -12,14 +12,14 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.workcraft.annotations.Hotkey;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.Hotkey;
-import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)

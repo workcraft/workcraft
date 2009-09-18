@@ -1,8 +1,8 @@
 package org.workcraft.dom.visual;
 
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesDeletedEvent;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesDeletedEvent;
 
 public class RemovedNodeDeselector extends HierarchySupervisor {
 	private VisualModel visualModel;

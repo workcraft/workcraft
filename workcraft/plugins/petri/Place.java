@@ -2,10 +2,10 @@ package org.workcraft.plugins.petri;
 
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.ObservableStateImpl;
-import org.workcraft.framework.observation.PropertyChangedEvent;
-import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateObserver;
 
 @VisualClass("org.workcraft.plugins.petri.VisualPlace")
 public class Place extends MathNode implements ObservableState {

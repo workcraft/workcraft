@@ -9,17 +9,17 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.PluginConsumer;
+import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.plugins.PluginConsumer;
-import org.workcraft.framework.plugins.PluginProvider;
-import org.workcraft.framework.serialisation.DeserialisationResult;
-import org.workcraft.framework.serialisation.Format;
-import org.workcraft.framework.serialisation.ModelDeserialiser;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.XMLSerialisationManager;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.DeserialisationResult;
+import org.workcraft.serialisation.Format;
+import org.workcraft.serialisation.ModelDeserialiser;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 

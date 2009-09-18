@@ -14,15 +14,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.exceptions.OperationCancelledException;
-import org.workcraft.framework.workspace.WorkspaceEntry;
-import org.workcraft.framework.workspace.WorkspaceListener;
+import org.workcraft.Framework;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceListener;
 
 
 @SuppressWarnings("serial")

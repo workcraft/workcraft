@@ -3,8 +3,8 @@ package org.workcraft.dom;
 import java.util.Collection;
 import java.util.Set;
 
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
 
 
 public interface Model {

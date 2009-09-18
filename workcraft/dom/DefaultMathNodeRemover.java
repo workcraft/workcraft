@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DependentNode;
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesAddedEvent;
-import org.workcraft.framework.observation.NodesDeletedEvent;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
 
 public class DefaultMathNodeRemover extends HierarchySupervisor {
 	private HashMap<MathNode, Integer> refCount = new HashMap<MathNode, Integer>();

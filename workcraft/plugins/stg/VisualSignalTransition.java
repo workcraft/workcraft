@@ -10,12 +10,12 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
-import org.workcraft.framework.plugins.Hotkey;
-import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.annotations.Hotkey;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
 public class VisualSignalTransition extends VisualTransition {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import org.workcraft.framework.HistoryEvent;
+import org.workcraft.history.HistoryEvent;
 
 
 @SuppressWarnings("serial")

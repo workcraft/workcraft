@@ -17,9 +17,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.plugins.PluginInfo;
+import org.workcraft.Framework;
+import org.workcraft.PluginInfo;
+import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.MainWindow;
 
 public class PersistentPropertyEditorDialog extends JDialog {

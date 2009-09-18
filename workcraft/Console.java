@@ -11,8 +11,7 @@ import java.util.LinkedList;
 import javax.swing.SwingUtilities;
 
 import org.mozilla.javascript.Context;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.OperationCancelledException;
+import org.workcraft.exceptions.OperationCancelledException;
 
 
 public class Console {

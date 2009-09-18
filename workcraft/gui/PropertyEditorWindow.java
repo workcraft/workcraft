@@ -5,8 +5,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.framework.Framework;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 

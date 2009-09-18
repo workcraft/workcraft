@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.serialisation.Format;
-import org.workcraft.framework.serialisation.Importer;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.serialisation.Format;
+import org.workcraft.serialisation.Importer;
 
 public class DotGImporter implements Importer {
 	private static String signalPattern = "([a-zA-Z\\_][a-zA-Z\\_0-9]*)(\\+|\\*|\\-|~|\\^[01])?(\\/([0-9]+))?";

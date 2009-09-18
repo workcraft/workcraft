@@ -10,11 +10,15 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class ImplicitPlaceArc extends VisualConnection {
 	private Place implicitPlace;
@@ -58,6 +62,16 @@ public class ImplicitPlaceArc extends VisualConnection {
 		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;
 
+
+		addPlaceObserver(implicitPlace);
+	}
+
+	private void addPlaceObserver(Place implicitPlace) {
+		implicitPlace.addObserver( new StateObserver() {
+				public void notify(StateEvent e) {
+					observableStateImpl.sendNotification(e);
+				}
+			});
 	}
 
 	public ImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
@@ -65,6 +79,9 @@ public class ImplicitPlaceArc extends VisualConnection {
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;
+
+		addPlaceObserver(implicitPlace);
+
 
 		addPropertyDeclarations();
 	}

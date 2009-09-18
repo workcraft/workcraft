@@ -11,22 +11,22 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
-import org.workcraft.framework.PropertySupport;
-import org.workcraft.framework.exceptions.NotAnAncestorException;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.ObservableStateImpl;
-import org.workcraft.framework.observation.PropertyChangedEvent;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.gui.propertyeditor.PropertySupport;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
 public abstract class VisualNode implements PropertyEditable, Node, Touchable, Colorisable, ObservableState {
-	ObservableStateImpl observableStateImpl = new ObservableStateImpl();
+	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
 		return null;

@@ -25,13 +25,11 @@ import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModelEventDispatcher;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.framework.EventListener1;
-import org.workcraft.framework.observation.TransformChangedEvent;
-import org.workcraft.framework.observation.TransformObserver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformObserver;
 import org.workcraft.util.XmlUtil;
 
 public class VisualConnection extends VisualNode
@@ -40,33 +38,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	{
 		POLYLINE,
 		BEZIER
-	};
-
-	private EventListener1<Set<VisualNode>> selectionListener = new EventListener1<Set<VisualNode>> () {
-		//private Set<VisualNode> editorControls;
-
-		public void eventFired(Set<VisualNode> selection) {
-/*			boolean needsEditor;
-
-			if(selection.contains(VisualConnection.this))
-				needsEditor = true;
-			else
-				if(editorVisible)
-				{
-					for(VisualNode control : VisualConnection.this.graphic.getControls())
-						if(selection.contains(control))
-							needsEditor = true;
-					needsEditor = false;
-				}
-				else
-					needsEditor =  false;
-
-			if(!editorVisible && needsEditor)
-			{
-				editorControls = VisualConnection.this.graphic.getControls();
-			}
-		*/
-		}
 	};
 
 	private TransformDispatcher transformDispatcher = null;
@@ -387,15 +358,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		Set<MathNode> ret = new HashSet<MathNode>();
 		ret.add(getReferencedConnection());
 		return ret;
-	}
-
-	public void subscribeEvents(VisualModelEventDispatcher eventDispatcher) {
-		eventDispatcher.addSelectionChangedListener(selectionListener);
-
-	}
-
-	public void unsubscribeEvents(VisualModelEventDispatcher eventDispatcher) {
-		eventDispatcher.removeSelectionChangedListener(selectionListener);
 	}
 
 	public Collection<Node> getChildren() {

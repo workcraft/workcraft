@@ -16,13 +16,13 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.framework.Framework;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

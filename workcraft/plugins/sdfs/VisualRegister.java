@@ -11,10 +11,10 @@ import java.util.Collection;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.annotations.Hotkey;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.Hotkey;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;

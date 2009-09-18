@@ -4,7 +4,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.edit.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
 	GraphEditor editor;

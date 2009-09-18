@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.ModelCheckingFailedException;
-import org.workcraft.framework.interop.SynchronousExternalProcess;
+import org.workcraft.exceptions.ModelCheckingFailedException;
+import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.stg.STG;
 
 public class DeadlockChecker implements ModelChecker

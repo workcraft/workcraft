@@ -3,9 +3,9 @@ package org.workcraft.plugins.serialisation.xml;
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.ReferencingXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.ReferencingXMLDeserialiser;
 
 public class ConnectionDeserialiser implements ReferencingXMLDeserialiser {
 	public void deserialise(Element element, Object instance,

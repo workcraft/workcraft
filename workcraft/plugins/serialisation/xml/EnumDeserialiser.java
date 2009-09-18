@@ -1,8 +1,8 @@
 package org.workcraft.plugins.serialisation.xml;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.xml.BasicXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class EnumDeserialiser implements BasicXMLDeserialiser {
 	@SuppressWarnings("unchecked")

@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.workcraft.Plugin;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
-import org.workcraft.framework.exceptions.ModelValidationException;
-import org.workcraft.framework.plugins.Plugin;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.ModelValidationException;
 
 /**
  * A base class for all interpreted graph models.

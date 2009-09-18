@@ -4,12 +4,12 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.exceptions.VisualModelInstantiationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.ModelXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.ModelXMLDeserialiser;
 
 public class VisualSTGDeserialiser implements ModelXMLDeserialiser {
 	public String getClassName() {

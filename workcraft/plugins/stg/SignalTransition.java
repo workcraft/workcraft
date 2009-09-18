@@ -2,10 +2,10 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.ObservableStateImpl;
-import org.workcraft.framework.observation.PropertyChangedEvent;
-import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
 
 @DisplayName("Signal transition")

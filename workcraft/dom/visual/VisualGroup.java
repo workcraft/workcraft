@@ -17,9 +17,9 @@ import org.workcraft.dom.GroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.framework.observation.HierarchyObserver;
-import org.workcraft.framework.observation.ObservableHierarchy;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.util.Hierarchy;
 
 

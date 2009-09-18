@@ -13,10 +13,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.HistoryEvent;
-import org.workcraft.framework.HistoryListener;
-import org.workcraft.framework.HistoryProvider;
+import org.workcraft.Framework;
+import org.workcraft.history.HistoryEvent;
+import org.workcraft.history.HistoryListener;
+import org.workcraft.history.HistoryProvider;
 
 @SuppressWarnings("serial")
 public class HistoryView extends JInternalFrame implements HistoryListener {

@@ -1,11 +1,11 @@
 package org.workcraft.plugins.stg.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.CustomXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 
 public class VisualSignalTransitionDeserialiser implements
 		CustomXMLDeserialiser {

@@ -3,11 +3,11 @@ package org.workcraft.plugins.stg.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.CustomXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.ImplicitPlaceArc;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 
 public class ImplicitPlaceArcDeserialiser implements CustomXMLDeserialiser {
 

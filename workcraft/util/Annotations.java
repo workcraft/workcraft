@@ -1,14 +1,14 @@
 package org.workcraft.util;
 
+import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.NoDefaultCreateButtons;
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.VisualClass;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.DefaultCreateButtons;
-import org.workcraft.framework.NoDefaultCreateButtons;
-import org.workcraft.framework.plugins.Hotkey;
-import org.workcraft.framework.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class Annotations {
 	public static boolean doAutoSerialisation(Class<?> cls) {

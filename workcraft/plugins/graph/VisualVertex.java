@@ -10,9 +10,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import org.workcraft.annotations.Hotkey;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.framework.plugins.Hotkey;
 
 @Hotkey(KeyEvent.VK_P)
 public class VisualVertex extends VisualComponent {

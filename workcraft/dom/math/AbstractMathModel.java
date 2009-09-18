@@ -4,7 +4,7 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {

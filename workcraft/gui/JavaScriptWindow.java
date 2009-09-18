@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import org.mozilla.javascript.Context;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.tokenmarker.JavaScriptTokenMarker;
-import org.workcraft.framework.Framework;
+import org.workcraft.Framework;
 
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {

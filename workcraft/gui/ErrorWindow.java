@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.workcraft.framework.Framework;
+import org.workcraft.Framework;
 
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {

@@ -13,9 +13,9 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.edit.tools.AbstractTool;
-import org.workcraft.gui.edit.tools.GraphEditor;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class SimulationTool extends AbstractTool {
 

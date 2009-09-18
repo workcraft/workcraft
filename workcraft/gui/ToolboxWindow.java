@@ -13,17 +13,17 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.DefaultNodeGenerator;
-import org.workcraft.framework.Framework;
-import org.workcraft.gui.edit.tools.ConnectionTool;
-import org.workcraft.gui.edit.tools.GraphEditorKeyListener;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.gui.edit.tools.NodeGeneratorTool;
-import org.workcraft.gui.edit.tools.SelectionTool;
-import org.workcraft.gui.edit.tools.ToolProvider;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
+import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.util.Annotations;
 
 @SuppressWarnings("serial")

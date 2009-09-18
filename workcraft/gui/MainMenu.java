@@ -11,18 +11,18 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.workcraft.Framework;
+import org.workcraft.PluginInfo;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.Framework;
-import org.workcraft.framework.exceptions.OperationCancelledException;
-import org.workcraft.framework.exceptions.PluginInstantiationException;
-import org.workcraft.framework.plugins.PluginInfo;
-import org.workcraft.framework.serialisation.Exporter;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.layout.Layout;
 import org.workcraft.plugins.modelchecking.ModelChecker;
+import org.workcraft.serialisation.Exporter;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {

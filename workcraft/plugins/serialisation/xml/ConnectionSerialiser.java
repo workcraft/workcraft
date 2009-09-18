@@ -3,9 +3,9 @@ package org.workcraft.plugins.serialisation.xml;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.xml.ReferencingXMLSerialiser;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
 
 public class ConnectionSerialiser implements ReferencingXMLSerialiser {
 	public String getClassName() {

@@ -8,11 +8,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.StateEvent;
-import org.workcraft.framework.observation.StateObserver;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {

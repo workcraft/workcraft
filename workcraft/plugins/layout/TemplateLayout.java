@@ -6,7 +6,7 @@ import javax.swing.JFileChooser;
 
 import org.workcraft.dom.DisplayName;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.framework.exceptions.LayoutFailedException;
+import org.workcraft.exceptions.LayoutFailedException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.layout.Layout;
 import org.workcraft.plugins.stg.VisualSTG;

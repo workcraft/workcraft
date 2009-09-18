@@ -5,18 +5,18 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.workcraft.framework.observation.HierarchyObserver;
-import org.workcraft.framework.observation.NodesAddedEvent;
-import org.workcraft.framework.observation.NodesAddingEvent;
-import org.workcraft.framework.observation.NodesDeletedEvent;
-import org.workcraft.framework.observation.NodesDeletingEvent;
-import org.workcraft.framework.observation.NodesReparentedEvent;
-import org.workcraft.framework.observation.NodesReparentingEvent;
-import org.workcraft.framework.observation.ObservableHierarchy;
-import org.workcraft.framework.observation.ObservableHierarchyImpl;
-import org.workcraft.framework.observation.ObservableState;
-import org.workcraft.framework.observation.ObservableStateImpl;
-import org.workcraft.framework.observation.StateObserver;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesAddingEvent;
+import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesDeletingEvent;
+import org.workcraft.observation.NodesReparentedEvent;
+import org.workcraft.observation.NodesReparentingEvent;
+import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.ObservableHierarchyImpl;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.StateObserver;
 
 public class GroupImpl implements ObservableHierarchy, ObservableState, Container {
 	private Node parent = null;

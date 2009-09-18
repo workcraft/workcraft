@@ -3,8 +3,8 @@ package org.workcraft.plugins.serialisation.xml;
 import java.awt.geom.AffineTransform;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.serialisation.xml.BasicXMLSerialiser;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.serialisation.xml.BasicXMLSerialiser;
 
 public class AffineTransformSerialiser implements BasicXMLSerialiser {
 	public String getClassName() {

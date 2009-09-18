@@ -1,9 +1,9 @@
 package org.workcraft.plugins.petri;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.SerialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.xml.ReferencingXMLSerialiser;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
 
 public class VisualPlaceSerialiser implements ReferencingXMLSerialiser {
 

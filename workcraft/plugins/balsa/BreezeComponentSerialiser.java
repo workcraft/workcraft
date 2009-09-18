@@ -8,9 +8,9 @@ import java.io.UnsupportedEncodingException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceProducer;
-import org.workcraft.framework.serialisation.ReferenceResolver;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.ReferenceResolver;
 
 // TODO: Stick this class somewhere
 public class BreezeComponentSerialiser {

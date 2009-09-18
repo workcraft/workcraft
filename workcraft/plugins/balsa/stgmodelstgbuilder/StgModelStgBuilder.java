@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.framework.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;

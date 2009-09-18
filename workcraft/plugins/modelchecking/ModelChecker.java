@@ -1,8 +1,8 @@
 package org.workcraft.plugins.modelchecking;
 
+import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
-import org.workcraft.framework.exceptions.ModelCheckingFailedException;
-import org.workcraft.framework.plugins.Plugin;
+import org.workcraft.exceptions.ModelCheckingFailedException;
 
 public interface ModelChecker extends Plugin {
 	public String getDisplayName();

@@ -2,10 +2,10 @@ package org.workcraft.plugins.balsa;
 
 import java.util.ArrayList;
 
-import org.workcraft.framework.AbstractNodeGenerator;
-import org.workcraft.framework.CustomToolsProvider;
-import org.workcraft.gui.edit.tools.GraphEditorTool;
-import org.workcraft.gui.edit.tools.NodeGeneratorTool;
+import org.workcraft.gui.graph.tools.AbstractNodeGenerator;
+import org.workcraft.gui.graph.tools.CustomToolsProvider;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.balsa.components.ActiveEagerFalseVariable;
 import org.workcraft.plugins.balsa.components.Adapt;
 import org.workcraft.plugins.balsa.components.Arbiter;

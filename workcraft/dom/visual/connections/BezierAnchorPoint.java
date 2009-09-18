@@ -10,8 +10,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
-import org.workcraft.dom.visual.VisualModelEventDispatcher;
-
 class BezierAnchorPoint extends VisualConnectionAnchorPoint {
 
 	boolean isFirst;
@@ -41,13 +39,5 @@ class BezierAnchorPoint extends VisualConnectionAnchorPoint {
 		g.draw(l);
 
 		super.draw(g);
-	}
-
-	public void subscribeEvents(VisualModelEventDispatcher eventDispatcher) {
-
-	}
-
-	public void unsubscribeEvents(VisualModelEventDispatcher eventDispatcher) {
-
 	}
 }

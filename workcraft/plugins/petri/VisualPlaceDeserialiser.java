@@ -1,9 +1,9 @@
 package org.workcraft.plugins.petri;
 
 import org.w3c.dom.Element;
-import org.workcraft.framework.exceptions.DeserialisationException;
-import org.workcraft.framework.serialisation.ReferenceResolver;
-import org.workcraft.framework.serialisation.xml.CustomXMLDeserialiser;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 
 public class VisualPlaceDeserialiser implements CustomXMLDeserialiser {
 

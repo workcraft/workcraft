@@ -2,10 +2,10 @@ package org.workcraft.dom;
 
 import java.util.HashMap;
 
-import org.workcraft.framework.observation.HierarchyEvent;
-import org.workcraft.framework.observation.HierarchySupervisor;
-import org.workcraft.framework.observation.NodesAddedEvent;
-import org.workcraft.framework.observation.NodesDeletedEvent;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
 
 public class NodeIDManager extends HierarchySupervisor {
 	private IDGenerator idGenerator = new IDGenerator();
