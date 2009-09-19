@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import net.sf.jga.fn.UnaryFunctor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -13,7 +15,7 @@ import org.workcraft.util.Hierarchy;
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	private NodeContext nct;
 
-	public DefaultHangingConnectionRemover (NodeContext nct) {
+	public DefaultHangingConnectionRemover (NodeContext nct, String id) {
 		this.nct = nct;
 	}
 
@@ -32,6 +34,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 
 			for (Node node : e.getAffectedNodes())
 				findHangingConnections(node, hangingConnections, hanging);
+
 			for (Connection con : hangingConnections)
 				if (con.getParent() instanceof Container)
 					((Container)con.getParent()).remove(con);
@@ -54,7 +57,6 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 		for (Connection con : nct.getConnections(node))
 			if (hanging.fn(con))
 				hangingConnections.add(con);
-
 		for (Node nn : node.getChildren())
 			findHangingConnections (nn, hangingConnections, hanging);
 	}

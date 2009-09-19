@@ -99,7 +99,7 @@ public class DotLayout implements Layout {
 			}
 			else {
 				cleanUp();
-				throw new LayoutFailedException("External process (dot) failed (code " + p.getReturnCode() +")");
+				throw new LayoutFailedException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
 			}
 		} catch(IOException e) {
 			cleanUp();

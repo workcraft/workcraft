@@ -28,6 +28,7 @@ import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
+import org.flexdock.docking.drag.effects.RubberBand;
 import org.flexdock.docking.drag.preview.AlphaPreview;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;
@@ -417,6 +418,7 @@ public class MainWindow extends JFrame {
 
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
+
 
 		workspaceWindow.startup();
 

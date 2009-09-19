@@ -16,7 +16,7 @@ public class SDFS extends AbstractMathModel {
 	public SDFS() {
 		super(null);
 
-		new DefaultHangingConnectionRemover(this).attach(getRoot());
+		new DefaultHangingConnectionRemover(this, "SDFS").attach(getRoot());
 	}
 
 	public void validate() throws ModelValidationException {

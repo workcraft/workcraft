@@ -21,17 +21,17 @@ public class VisualPetriNet extends AbstractVisualModel {
 		this (model, null);
 	}
 
-	public VisualPetriNet (PetriNet model, VisualGroup root) throws VisualModelInstantiationException {
+	public VisualPetriNet (PetriNet model, VisualGroup root) {
 		super(model, root);
 
 		if (root == null)
 			try {
 				createDefaultFlatStructure();
 			} catch (NodeCreationException e) {
-				throw new VisualModelInstantiationException(e);
+				throw new RuntimeException(e);
 			}
 
-		new DefaultHangingConnectionRemover(this).attach(getRoot());
+		new DefaultHangingConnectionRemover(this, "VPN").attach(getRoot());
 		new DefaultMathNodeRemover().attach(getRoot());
 	}
 

@@ -167,8 +167,6 @@ public class XMLSerialisationTestingUtils {
 		}
 		catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
-		} catch (VisualModelInstantiationException e) {
-			throw new RuntimeException(e);
 		}
 	}
 }

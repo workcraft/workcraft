@@ -22,7 +22,7 @@ public class PetriNet extends AbstractMathModel {
 
 	public PetriNet(Container root) {
 		super(root);
-		new DefaultHangingConnectionRemover(this).attach(getRoot());
+		new DefaultHangingConnectionRemover(this, "PN").attach(getRoot());
 	}
 
 	public void validate() throws ModelValidationException {

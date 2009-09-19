@@ -28,4 +28,8 @@ public class MathConnection extends MathNode implements Connection {
 	final public void setComponents(MathNode first, MathNode second) {
 		this.first = first;	 this.second = second;
 	}
+
+	public String toString() {
+		return "MathConnection " + this.hashCode() + " (" + first +", " + second +")";
+	}
 }

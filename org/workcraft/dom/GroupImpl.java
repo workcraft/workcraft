@@ -3,6 +3,7 @@ package org.workcraft.dom;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.observation.HierarchyObserver;
@@ -78,6 +79,10 @@ public class GroupImpl implements ObservableHierarchy, ObservableState, Containe
 		if (notify)
 			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, node));
 
+		if (node.getParent() != groupRef)
+			throw new RuntimeException
+			("Failed to remove a node frome a group because it is not a child of that group ("+node+", parent is " + node.getParent() +")");
+
 		children.remove(node);
 		node.setParent(null);
 
@@ -90,12 +95,14 @@ public class GroupImpl implements ObservableHierarchy, ObservableState, Containe
 	}
 
 	public void remove (Collection<Node> nodes) {
-		observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, nodes));
+		LinkedList<Node> nodesToRemove = new LinkedList<Node>(nodes);
 
-		for (Node node : nodes)
+		observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, nodesToRemove));
+
+		for (Node node : nodesToRemove)
 			removeInternal(node, false);
 
-		observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, nodes));
+		observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, nodesToRemove));
 	}
 
 	public void reparent(Collection<Node> nodes, Container newParent) {

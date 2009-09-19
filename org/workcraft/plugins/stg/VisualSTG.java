@@ -163,12 +163,11 @@ public class VisualSTG extends VisualPetriNet {
 		return con;
 	}
 
-	public VisualSTG(STG model) throws VisualModelInstantiationException {
+	public VisualSTG(STG model) {
 		this (model, null);
-
 	}
 
-	public VisualSTG(STG model, VisualGroup root) throws VisualModelInstantiationException {
+	public VisualSTG(STG model, VisualGroup root) {
 		super(model, root);
 
 		Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));

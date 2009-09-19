@@ -272,7 +272,7 @@ public class TestGCD {
 		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
-	@Test
+	//@Test
 	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
@@ -284,7 +284,7 @@ public class TestGCD {
 		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{muxA})));
 	}
 
-	@Test
+	//@Test
 	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
