@@ -16,7 +16,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.SimulationTool;
 import org.workcraft.plugins.petri.VisualPetriNet;

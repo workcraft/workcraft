@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /** Token Manager. */
+@SuppressWarnings("all")
 public class LispParserTokenManager implements LispParserConstants
 {
 

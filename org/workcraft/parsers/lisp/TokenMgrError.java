@@ -3,6 +3,7 @@
 package org.workcraft.parsers.lisp;
 
 /** Token Manager Error. */
+@SuppressWarnings("all")
 public class TokenMgrError extends Error
 {
 

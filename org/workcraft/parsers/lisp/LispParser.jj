@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
  
-@SuppressWarnings("all")
 public class LispParser {
 	public static List<Object> parse (InputStream is) throws ParseException {
 		LispParser parser = new LispParser(new BufferedReader(new InputStreamReader(is)));

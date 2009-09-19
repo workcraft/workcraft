@@ -5,8 +5,6 @@ import java.util.HashSet;
 
 import net.sf.jga.fn.UnaryFunctor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;

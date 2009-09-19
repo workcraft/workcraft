@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DocumentFormatException;

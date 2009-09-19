@@ -11,6 +11,7 @@ package org.workcraft.parsers.lisp;
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
+@SuppressWarnings("all")
 public class ParseException extends Exception {
 
   /**

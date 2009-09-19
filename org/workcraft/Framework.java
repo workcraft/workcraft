@@ -19,8 +19,6 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ImporterTopLevel;
@@ -153,7 +151,6 @@ public class Framework {
 	private MainWindow mainWindow;
 
 	public Framework() {
-		PropertyConfigurator.configure("config/logging.properties");
 		pluginManager = new PluginManager(this);
 		modelManager = new ModelManager();
 		config = new Config();

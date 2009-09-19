@@ -2,7 +2,6 @@ package org.workcraft.testing.dom;
 
 import java.util.LinkedList;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DependentNode;

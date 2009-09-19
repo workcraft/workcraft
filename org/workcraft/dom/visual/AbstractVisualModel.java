@@ -16,8 +16,6 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.NodeFactory;
@@ -45,7 +43,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private VisualGroup currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
 	private ObservableStateImpl observableState = new ObservableStateImpl();
-	private Log log = LogFactory.getLog(AbstractVisualModel.class);
 
 	public AbstractVisualModel(VisualGroup root) {
 		this (null, root);

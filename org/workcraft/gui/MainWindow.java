@@ -28,7 +28,6 @@ import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
-import org.flexdock.docking.drag.effects.RubberBand;
 import org.flexdock.docking.drag.preview.AlphaPreview;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;

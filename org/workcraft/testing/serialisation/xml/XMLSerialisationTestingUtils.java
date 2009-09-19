@@ -4,7 +4,6 @@ import org.workcraft.PluginInfo;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlaceDeserialiser;
 import org.workcraft.plugins.petri.VisualPlaceSerialiser;
