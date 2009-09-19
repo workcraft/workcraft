@@ -175,4 +175,11 @@ public class ConnectionTool extends AbstractTool {
 	public Icon getIcon() {
 		return null;
 	}
+
+	@Override
+	public void deactivated(GraphEditor editor) {
+		super.deactivated(editor);
+		first = null;
+		mouseOverObject = null;
+	}
 }
