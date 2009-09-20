@@ -19,14 +19,14 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateObserver;
 
-public class GroupImpl implements ObservableHierarchy, ObservableState, Container {
+public class DefaultGroupImpl implements ObservableHierarchy, ObservableState, Container {
 	private Node parent = null;
 	private Set<Node> children = new LinkedHashSet<Node> ();
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 	private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 	private Container groupRef;
 
-	public GroupImpl (Container groupRef) {
+	public DefaultGroupImpl (Container groupRef) {
 		this.groupRef = groupRef;
 	}
 

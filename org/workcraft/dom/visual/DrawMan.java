@@ -18,6 +18,9 @@ class DrawMan
 
 	public static void draw(Graphics2D graphics, Node node)
 	{
+		if (node instanceof Hidable && ((Hidable)node).isHidden())
+			return;
+
 		AffineTransform oldTransform = graphics.getTransform();
 		if(node instanceof Movable)
 			transformAndDraw(graphics, (Movable)node);
@@ -28,8 +31,11 @@ class DrawMan
 
 	private static void simpleDraw(Graphics2D graphics, Node node)
 	{
+		AffineTransform oldTransform = graphics.getTransform();
 		if(node instanceof Drawable)
 			((Drawable)node).draw(graphics);
+		graphics.setTransform(oldTransform);
+
 		for(Node n : node.getChildren())
 		{
 			draw(graphics, n);

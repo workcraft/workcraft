@@ -14,6 +14,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import org.workcraft.Framework;
+import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -25,7 +26,6 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
-import org.workcraft.util.Annotations;
 
 @SuppressWarnings("serial")
 public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKeyListener {

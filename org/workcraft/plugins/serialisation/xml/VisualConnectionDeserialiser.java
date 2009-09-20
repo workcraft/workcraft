@@ -19,7 +19,7 @@ public class VisualConnectionDeserialiser implements ReferencingXMLDeserialiser 
 	throws DeserialisationException {
 		VisualConnection vcon = (VisualConnection)instance;
 
-		vcon.setVisualConnection(
+		vcon.setDependencies(
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("first")),
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("second")),
 				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))

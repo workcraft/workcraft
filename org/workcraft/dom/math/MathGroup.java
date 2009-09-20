@@ -3,13 +3,13 @@ package org.workcraft.dom.math;
 import java.util.Collection;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.GroupImpl;
+import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 
 public class MathGroup extends MathNode implements ObservableHierarchy, Container {
-	GroupImpl groupImpl = new GroupImpl(this);
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	public void add(Node node) {
 		groupImpl.add(node);

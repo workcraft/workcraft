@@ -6,38 +6,21 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.Coloriser;
 
 
-public abstract class VisualConnectionAnchorPoint extends VisualTransformableNode implements Drawable {
+public abstract class VisualConnectionAnchorPoint extends VisualTransformableNode implements Drawable, Touchable {
 	private double size = 0.25;
 	private Color fillColor = Color.BLUE.darker();
-
-	protected ConnectionInfo connectionInfo;
-
-	public Node getParentConnection() {
-		return connectionInfo.getConnection();
-	}
 
 	Shape shape = new Rectangle2D.Double(
 			-size / 2,
 			-size / 2,
 			size,
 			size);
-
-	public VisualConnectionAnchorPoint(ConnectionInfo parent) {
-		connectionInfo = parent;
-
-		addPropertyChangeListener(new PropertyChangeListener() {
-			public void onPropertyChanged(String propertyName, Object sender) {
-				connectionInfo.update();
-			}
-		});
-	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);

@@ -1,9 +1,9 @@
 package org.workcraft.gui.graph.tools;
 
 import org.workcraft.NodeFactory;
+import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.util.Annotations;
 
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 

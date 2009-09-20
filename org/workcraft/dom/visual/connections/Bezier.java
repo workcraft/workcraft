@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.util.Geometry.CurveSplitResult;
@@ -25,21 +24,16 @@ class Bezier implements ConnectionGraphic {
 	private double ax, bx, cx, ay, by, cy;
 	private Rectangle2D boundingBox = null;
 
-	private ConnectionInfo parentConnection;
+	private Point2D start, end;
 
-	public Bezier(ConnectionInfo parentConnection) {
-		this.parentConnection = parentConnection;
-
-		cp1 = new BezierAnchorPoint(parentConnection, true);
-		cp2 = new BezierAnchorPoint(parentConnection, false);
-
-		cp1.setPosition(parentConnection.getPoint1());
-		cp2.setPosition(parentConnection.getPoint2());
+	public Bezier() {
+		cp1 = new BezierAnchorPoint();
+		cp2 = new BezierAnchorPoint();
 	}
 
 	private void updateCoefficients() {
-		Point2D p1 = parentConnection.getPoint1();
-		Point2D p2 = parentConnection.getPoint2();
+		Point2D p1 = start;
+		Point2D p2 = end;
 
 		cx = 3.0f * (cp1.getX() - p1.getX());
 		bx = 3.0f * (cp2.getX() - cp1.getX()) - cx;
@@ -155,7 +149,7 @@ class Bezier implements ConnectionGraphic {
 
 		LinkedList<Double> ROOTS;
 
-		Point2D point1 = parentConnection.getPoint1();
+		Point2D point1 = start;
 
 //		boolean found = false;
 //		System.out.printf("X=%6.5f Y=%6.5f\n", rect.getMinX(), rect.getMinY());
@@ -205,13 +199,13 @@ class Bezier implements ConnectionGraphic {
 		double tSquared = t * t;
 		double tCubed = tSquared * t;
 
-		double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + parentConnection.getPoint1().getX();
-		double y = (ay * tCubed) + (by * tSquared) + (cy * t) + parentConnection.getPoint1().getY();
+		double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + start.getX();
+		double y = (ay * tCubed) + (by * tSquared) + (cy * t) + start.getY();
 
 		return new Point2D.Double(x, y);
 	}
 
-	public void readFromXML(Element element, ConnectionInfo parent) {
+	public void readFromXML(Element element) {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;
@@ -221,21 +215,10 @@ class Bezier implements ConnectionGraphic {
 		Element eap = xap.get(0);
 		cp1.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 		cp1.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-		cp1.addPropertyChangeListener(new PropertyChangeListener() {
-			public void onPropertyChanged(String propertyName, Object sender) {
-				parentConnection.update();
-			}
-		});
+
 		eap=xap.get(1);
 		cp2.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 		cp2.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-		cp2.addPropertyChangeListener(new PropertyChangeListener() {
-			public void onPropertyChanged(String propertyName, Object sender) {
-				parentConnection.update();
-			}
-		});
-		parent.update();
-
 	}
 
 	public void writeToXML(Element element) {
@@ -248,22 +231,12 @@ class Bezier implements ConnectionGraphic {
 		XmlUtil.writeDoubleAttr(xap, "Y", cp2.getY());
 	}
 
-	public void removeAllAnchorPoints() {
-		cp1.setPosition(parentConnection.getPoint1());
-		cp2.setPosition(parentConnection.getPoint2());
-	}
-
-	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
-		if (anchor==cp1) cp1.setPosition(parentConnection.getPoint1());
-		if (anchor==cp2) cp2.setPosition(parentConnection.getPoint2());
-	}
-
 	private CubicCurve2D getPartialCurve(double tStart, double tEnd)
 	{
 		CubicCurve2D result = new CubicCurve2D.Double();
 
 		CubicCurve2D fullCurve = new CubicCurve2D.Double();
-		fullCurve.setCurve(parentConnection.getPoint1(), cp1.getPosition(), cp2.getPosition(), parentConnection.getPoint2());
+		fullCurve.setCurve(start, cp1.getPosition(), cp2.getPosition(), end);
 
 		CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
 		CurveSplitResult secondSplit = Geometry.splitCubicCurve(fullCurve, tEnd);
@@ -278,18 +251,14 @@ class Bezier implements ConnectionGraphic {
 	}
 
 
-	public void update() {
+	public void update(Point2D start, Point2D end) {
 		updateCoefficients();
 
 		boundingBox = curve.getBounds2D();
-		boundingBox.add(boundingBox.getMinX()-VisualConnection.hitThreshold, boundingBox.getMinY()-VisualConnection.hitThreshold);
-		boundingBox.add(boundingBox.getMinX()-VisualConnection.hitThreshold, boundingBox.getMaxY()+VisualConnection.hitThreshold);
-		boundingBox.add(boundingBox.getMaxX()+VisualConnection.hitThreshold, boundingBox.getMinY()-VisualConnection.hitThreshold);
-		boundingBox.add(boundingBox.getMaxX()+VisualConnection.hitThreshold, boundingBox.getMaxY()+VisualConnection.hitThreshold);
-	}
-
-	public void cleanup() {
-		removeAllAnchorPoints();
+		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
+		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
+		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
+		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
 	}
 
 	public void click(Point2D point) {
@@ -301,5 +270,30 @@ class Bezier implements ConnectionGraphic {
 		result.add(cp1);
 		result.add(cp2);
 		return result;
+	}
+
+	@Override
+	public Collection<Node> getChildren() {
+		throw new RuntimeException ("Not implemented");
+	}
+
+	@Override
+	public Node getParent() {
+		throw new RuntimeException ("Not implemented");
+	}
+
+	@Override
+	public void setParent(Node parent) {
+		throw new RuntimeException ("Not implemented");
+	}
+
+	@Override
+	public boolean hitTest(Point2D point) {
+		throw new RuntimeException ("Not implemented");
+	}
+
+	@Override
+	public void update() {
+		throw new RuntimeException ("Not implemented");
 	}
 }

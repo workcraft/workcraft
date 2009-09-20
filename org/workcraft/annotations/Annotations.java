@@ -3,6 +3,7 @@ package org.workcraft.annotations;
 import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
+import org.workcraft.gui.graph.tools.GraphEditorMouseListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -59,6 +60,14 @@ public class Annotations {
 			return null;
 		else
 			return ctb.value();
+	}
+
+	public static Class<? extends GraphEditorMouseListener>[] getMouseListeners(Class<?> cls) {
+		MouseListeners ml = cls.getAnnotation(MouseListeners.class);
+		if (ml == null)
+			return null;
+		else
+			return ml.value();
 	}
 
 	@SuppressWarnings("unchecked")

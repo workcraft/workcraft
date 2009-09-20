@@ -11,26 +11,19 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 class BezierAnchorPoint extends VisualConnectionAnchorPoint {
+	private Point2D origin;
 
-	boolean isFirst;
-
-	public BezierAnchorPoint(ConnectionInfo parentConnection, boolean isFirst) {
-		super(parentConnection);
-		this.isFirst = isFirst;
+	public void update (Point2D origin) {
+		this.origin = origin;
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
-		Point2D p;
-
-		if(isFirst)
-			p = connectionInfo.getPoint1();
-		else
-			p = connectionInfo.getPoint2();
-
 		AffineTransform at = getParentToLocalTransform();
 
-		at.transform(p, p);
+		Point2D p = new Point2D.Double();
+
+		at.transform(origin, p);
 
 		g.setColor(Color.RED);
 		g.setStroke(new BasicStroke(0.02f));

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.GroupImpl;
+import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -29,7 +29,7 @@ ObservableHierarchy, Colorisable {
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
 
-	GroupImpl groupImpl = new GroupImpl(this);
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	public void draw(Graphics2D g) {
 		Rectangle2D bb = getBoundingBoxInLocalSpace();

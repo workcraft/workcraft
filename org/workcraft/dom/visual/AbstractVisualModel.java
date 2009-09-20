@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.NodeFactory;
+import org.workcraft.annotations.MouseListeners;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -26,6 +28,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -38,6 +41,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 
+@MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
 	private Model mathModel;
 	private VisualGroup currentLevel;
@@ -90,7 +94,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		for (VisualConnection vc : createdConnections.keySet()) {
 			MathConnection mc = createdConnections.get(vc);
-			vc.setVisualConnection(createdNodes.get(mc.getFirst()),
+			vc.setDependencies(createdNodes.get(mc.getFirst()),
 					createdNodes.get(mc.getSecond()), mc);
 			getRoot().add(vc);
 		}
@@ -200,8 +204,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	private void validateSelection (Node node) {
-		if (!Hierarchy.isDescendant(node, getRoot()))
-			throw new RuntimeException ("Cannot select a node that belongs to another model");
+		if (!Hierarchy.isDescendant(node, getCurrentLevel()))
+			throw new RuntimeException ("Cannot select a node that is not in the current editing level");
 	}
 
 	private void validateSelection (Collection<Node> nodes) {
@@ -288,6 +292,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
 	 */
 	public Collection<Node> getSelection() {
+		return Collections.unmodifiableSet(selection);
+	}
+
+	public Collection<Node> getOrderedCurrentLevelSelection() {
 		List<Node> result = new ArrayList<Node>();
 		for(Node node : currentLevel.getChildren())
 		{
@@ -330,7 +338,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private Collection<Node> getGroupableSelection()
 	{
 		ArrayList<Node> result = new ArrayList<Node>();
-		for(Node node : getSelection())
+		for(Node node : getOrderedCurrentLevelSelection())
 			if(node instanceof VisualTransformableNode)
 				result.add((VisualTransformableNode)node);
 		return result;
@@ -373,7 +381,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 
-		for(Node node : getSelection())
+		for(Node node : getOrderedCurrentLevelSelection())
 		{
 			if(node instanceof VisualGroup)
 			{

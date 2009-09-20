@@ -12,10 +12,6 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.gui.Coloriser;
 
 class PolylineAnchorPoint extends VisualConnectionAnchorPoint {
-
-		/**
-		 *
-		 */
 		private final Polyline polyline;
 		private int index;
 		private double size = 0.25;
@@ -32,15 +28,9 @@ class PolylineAnchorPoint extends VisualConnectionAnchorPoint {
 		}
 
 
-		public PolylineAnchorPoint(Polyline polyline, ConnectionInfo parent) {
-			super(parent);
+		public PolylineAnchorPoint(Polyline polyline) {
 			this.polyline = polyline;
-
 		}
-
-//		public PolylineAnchorPoint(int index) {
-//			this.index = index;
-//		}
 
 		public Rectangle2D getBoundingBoxInLocalSpace() {
 			return new Rectangle2D.Double(-size/2, -size/2, size, size);
@@ -62,5 +52,4 @@ class PolylineAnchorPoint extends VisualConnectionAnchorPoint {
 		public int getIndex() {
 			return index;
 		}
-
 	}

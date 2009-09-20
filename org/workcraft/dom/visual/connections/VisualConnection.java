@@ -3,17 +3,14 @@ package org.workcraft.dom.visual.connections;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -26,14 +23,14 @@ import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformObserver;
-import org.workcraft.util.XmlUtil;
 
-public class VisualConnection extends VisualNode
-implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, TransformObserver, DependentNode {
+public class VisualConnection extends VisualNode implements
+		PropertyChangeListener, Node, Drawable, Connection,
+		TransformObserver, DependentNode, VisualConnectionInfo {
+
 	public enum ConnectionType
 	{
 		POLYLINE,
@@ -42,9 +39,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 
 	private TransformDispatcher transformDispatcher = null;
 
-	protected MathConnection refConnection;
-	protected VisualComponent first;
-	protected VisualComponent second;
+	private MathConnection refConnection;
+	private VisualComponent first;
+	private VisualComponent second;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
 
@@ -58,7 +55,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 	private static double defaultLineWidth = 0.02;
 	private static double defaultArrowWidth = 0.15;
 	private static double defaultArrowLength = 0.4;
-	public static double hitThreshold = 0.2;
+	public static double HIT_THRESHOLD = 0.2;
 	private static Color defaultColor = Color.BLACK;
 
 	private Color color = defaultColor;
@@ -91,7 +88,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 
 	}
 
-	public void setVisualConnection(VisualComponent first, VisualComponent second, MathConnection refConnection) {
+	public void setDependencies(VisualComponent first, VisualComponent second, MathConnection refConnection) {
 		this.first = first;
 		this.second = second;
 		this.refConnection = refConnection;
@@ -112,44 +109,26 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		initialise();
 	}
 
-	protected void writeXMLConnectionProperties(Element element) {
-		XmlUtil.writeDoubleAttr(element, "arrowLength", getArrowLength());
-		XmlUtil.writeDoubleAttr(element, "arrowWidth", getArrowWidth());
-		XmlUtil.writeDoubleAttr(element, "lineWidth", getLineWidth());
-		XmlUtil.writeStringAttr(element, "type", getConnectionType().name());
-		graphic.writeToXML(element);
-	}
-
-	protected void readXMLConnectionProperties(Element element) {
-		String strConnectionType = XmlUtil.readStringAttr(element, "type");
-		if (!strConnectionType.equals("")) {
-			setConnectionType(ConnectionType.valueOf(strConnectionType));
-		}
-		setArrowLength(XmlUtil.readDoubleAttr(element, "arrowLength", defaultArrowLength));
-		setArrowWidth(XmlUtil.readDoubleAttr(element, "arrowWidth", defaultArrowWidth));
-		setLineWidth(XmlUtil.readDoubleAttr(element, "lineWidth", defaultLineWidth));
-
-		graphic.readFromXML(element, VisualConnection.this);
-	}
-
 	public ConnectionType getConnectionType() {
 		return connectionType;
-
 	}
 
 	public void setConnectionType(ConnectionType t) {
 		if (connectionType!=t) {
-			graphic.cleanup();
 			if (t==ConnectionType.POLYLINE) {
 				graphic = new Polyline(this);
 			}
 			if (t==ConnectionType.BEZIER) {
-				graphic = new Bezier(this);
+				graphic = new Bezier();
 			}
 			connectionType = t;
+			graphic.setParent(this);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getColor()
+	 */
 	public Color getColor() {
 		return color;
 	}
@@ -158,6 +137,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		this.color = color;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getLineWidth()
+	 */
 	public double getLineWidth() {
 		return lineWidth;
 	}
@@ -170,6 +152,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		this.lineWidth = lineWidth;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getArrowWidth()
+	 */
 	public double getArrowWidth() {
 		return arrowWidth;
 	}
@@ -182,6 +167,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		this.arrowWidth = arrowWidth;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getArrowLength()
+	 */
 	public double getArrowLength() {
 		return arrowLength;
 	}
@@ -201,10 +189,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 
 	public Point2D getNearestPointOnConnection(Point2D pt) {
 		return graphic.getNearestPointOnConnection(pt);
-	}
-
-	public void click (Point2D point) {
-		graphic.click(point);
 	}
 
 	private double getBorderPoint (Touchable collisionNode, double tStart, double tEnd)
@@ -242,7 +226,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 
 		graphic.update();
 
-		// find connection curve starting point
 		double tStart = getBorderPoint(firstTouchable, 0, 1);
 		double tEnd = getBorderPoint(secondTouchable, 1, 0);
 
@@ -277,40 +260,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 
 	@Override
 	public void draw(Graphics2D g) {
-		g.setColor(Coloriser.colorise(color, getColorisation()));
 		g.setStroke(new BasicStroke((float)lineWidth));
-
-		Path2D.Double arrowShape = new Path2D.Double();
-		arrowShape.moveTo(-arrowLength, -arrowWidth / 2);
-		arrowShape.lineTo(-arrowLength, arrowWidth / 2);
-		arrowShape.lineTo(0,0);
-		arrowShape.closePath();
-
-		Rectangle2D arrowBounds = arrowShape.getBounds2D();
-		arrowBounds.setRect(arrowBounds.getMinX()+0.05f, arrowBounds.getMinY(), arrowBounds.getWidth(), arrowBounds.getHeight());
-
-		AffineTransform arrowTransform = new AffineTransform();
-		arrowTransform.translate(arrowHeadPosition.getX(), arrowHeadPosition.getY());
-		arrowTransform.rotate(arrowOrientation);
-
-		Shape transformedArrowShape = arrowTransform.createTransformedShape(arrowShape);
-		//Shape transformedArrowBounds = arrowTransform.createTransformedShape(arrowBounds);
-
-		graphic.draw(g);
-
-		/*Shape clip = g.getClip();
-
-		if (clip == null)
-			throw new RuntimeException ("waazup");
-
-		Area clipArea = new Area(clip);
-		clipArea.subtract(new Area(transformedArrowBounds));
-
-
-		g.setClip(clipArea);*/
-		//g.setClip(clip);
-
-		g.fill(transformedArrowShape);
 	}
 
 	public MathConnection getReferencedConnection() {
@@ -330,7 +280,7 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 				);
 		return TouchableHelper.touchesRectangle(this, rect); */
 
-		if (graphic.getNearestPointOnConnection(pointInParentSpace).distance(pointInParentSpace) < hitThreshold)
+		if (graphic.getNearestPointOnConnection(pointInParentSpace).distance(pointInParentSpace) < HIT_THRESHOLD)
 			return true;
 		else
 			return false;
@@ -350,6 +300,9 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		return first;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getSecond()
+	 */
 	public VisualComponent getSecond() {
 		return second;
 	}
@@ -358,25 +311,6 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 		Set<MathNode> ret = new HashSet<MathNode>();
 		ret.add(getReferencedConnection());
 		return ret;
-	}
-
-	public Collection<Node> getChildren() {
-		return this.graphic.getControls();
-	}
-
-	@Override
-	public Node getConnection() {
-		return this;
-	}
-
-	@Override
-	public Point2D getPoint1() {
-		return firstCenter;
-	}
-
-	@Override
-	public Point2D getPoint2() {
-		return secondCenter;
 	}
 
 	@Override
@@ -391,5 +325,25 @@ implements PropertyChangeListener, Node, Drawable, ConnectionInfo, Connection, T
 			dispatcher.subscribe(this, second);
 		} else
 			this.transformDispatcher = dispatcher;
+	}
+
+	public ConnectionGraphic getGraphic() {
+		return graphic;
+	}
+
+	@Override
+	public Collection<Node> getChildren() {
+		return Arrays.asList(new Node[] { graphic });
+	}
+
+	/* (non-Javadoc)
+	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getFirstCenter()
+	 */
+	public Point2D getFirstCenter() {
+		return firstCenter;
+	}
+
+	public Point2D getSecondCenter() {
+		return secondCenter;
 	}
 }

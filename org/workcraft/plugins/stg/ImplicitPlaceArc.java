@@ -55,7 +55,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 	}
 
 	public void setImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
-		super.setVisualConnection(first, second, null);
+		super.setDependencies(first, second, null);
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;

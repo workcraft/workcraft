@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual.connections;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -11,14 +10,18 @@ import java.util.Collection;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.PropertyChangeListener;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.util.XmlUtil;
 
-class Polyline implements ConnectionGraphic {
-	private ConnectionInfo parentConnection;
-
+class Polyline implements ConnectionGraphic, Container {
 	ArrayList<PolylineAnchorPoint> anchorPoints = new ArrayList<PolylineAnchorPoint>();
+
+	private DefaultGroupImpl groupImpl;
+	private VisualConnectionInfo connectionInfo;
 
 	private double tStart = 0.0, tEnd = 1.0;
 
@@ -26,13 +29,14 @@ class Polyline implements ConnectionGraphic {
 	private double polylineLengthSq;
 	private Rectangle2D boundingBox = null;
 
-	public Polyline(ConnectionInfo parentConnection) {
-		this.parentConnection = parentConnection;
+	public Polyline(VisualConnection parent) {
+		groupImpl = new DefaultGroupImpl(this);
+		groupImpl.setParent(parent);
+
+		connectionInfo = parent;
 	}
 
 	public void draw(Graphics2D g) {
-
-
 		Path2D connectionPath = new Path2D.Double();
 
 		//System.out.println ("tStart = " + tStart + ", tEnd = " + tEnd);
@@ -110,6 +114,7 @@ class Polyline implements ConnectionGraphic {
 	}
 
 	public void update() {
+
 		int segments = getSegmentCount();
 		polylineSegmentLengthsSq = new double[segments];
 		polylineLengthSq = 0;
@@ -146,7 +151,7 @@ class Polyline implements ConnectionGraphic {
 			currentOffsetSq += polylineSegmentLengthsSq[i];
 		}
 
-		return parentConnection.getPoint2();
+		return connectionInfo.getSecondCenter();
 	}
 
 	public Point2D getNearestPointOnConnection(Point2D pt) {
@@ -196,9 +201,9 @@ class Polyline implements ConnectionGraphic {
 
 	private Point2D getAnchorPointLocation(int index) {
 		if (index == 0)
-			return parentConnection.getPoint1();
+			return connectionInfo.getFirstCenter();
 		if (index > anchorPoints.size())
-			return parentConnection.getPoint2();
+			return connectionInfo.getSecondCenter();
 		return anchorPoints.get(index-1).getPosition();
 	}
 
@@ -224,7 +229,7 @@ class Polyline implements ConnectionGraphic {
 		if (mag==0)
 			return bb;
 
-		lineVec.setLocation(lineVec.getY()*VisualConnection.hitThreshold/mag, -lineVec.getX()*VisualConnection.hitThreshold/mag);
+		lineVec.setLocation(lineVec.getY()*VisualConnection.HIT_THRESHOLD/mag, -lineVec.getX()*VisualConnection.HIT_THRESHOLD/mag);
 		bb.add(pt1.getX() + lineVec.getX(), pt1.getY() + lineVec.getY());
 		bb.add(pt2.getX() + lineVec.getX(), pt2.getY() + lineVec.getY());
 		bb.add(pt1.getX() - lineVec.getX(), pt1.getY() - lineVec.getY());
@@ -237,22 +242,15 @@ class Polyline implements ConnectionGraphic {
 		Point2D pointOnConnection = new Point2D.Double();
 		int nearestSegment = getNearestSegment(userLocation, pointOnConnection);
 
-//		PolylineAnchorPoint ap = new PolylineAnchorPoint(nearestSegment);
-		PolylineAnchorPoint ap = new PolylineAnchorPoint(this, parentConnection);
-
+		PolylineAnchorPoint ap = new PolylineAnchorPoint(this);
 		ap.setPosition(pointOnConnection);
 
-		ap.addPropertyChangeListener(new PropertyChangeListener() {
-			public void onPropertyChanged(String propertyName, Object sender) {
-				parentConnection.update();
-			}
-		});
 		if (anchorPoints.size() == 0)
 			anchorPoints.add(ap);
 		else
 			anchorPoints.add(nearestSegment, ap);
 
-		parentConnection.update();
+		add(ap);
 
 		return ap;
 	}
@@ -282,13 +280,10 @@ class Polyline implements ConnectionGraphic {
 
 	public void removeAllAnchorPoints() {
 		anchorPoints.clear();
-		parentConnection.update();
 	}
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
 		anchorPoints.remove(anchor);
-
-		parentConnection.update();
 	}
 
 	public boolean touchesRectangle(Rectangle2D rect) {
@@ -311,7 +306,7 @@ class Polyline implements ConnectionGraphic {
 		return anchorPoints.size();
 	}
 
-	public void readFromXML(Element element, ConnectionInfo parent) {
+	public void readFromXML(Element element) {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;
@@ -321,19 +316,12 @@ class Polyline implements ConnectionGraphic {
 		PolylineAnchorPoint pap;
 		anchorPoints.clear();
 		for (Element eap: xap) {
-			pap = new PolylineAnchorPoint(this, parent);
+			pap = new PolylineAnchorPoint(this);
 			pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 			pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
 
-			pap.addPropertyChangeListener(new PropertyChangeListener() {
-				public void onPropertyChanged(String propertyName, Object sender) {
-					parentConnection.update();
-				}
-			});
 			anchorPoints.add(pap);
 		}
-		parent.update();
-
 	}
 
 	public void writeToXML(Element element) {
@@ -353,21 +341,61 @@ class Polyline implements ConnectionGraphic {
 		tEnd = end;
 	}
 
-	public void cleanup() {
-		removeAllAnchorPoints();
+	@Override
+	public boolean hitTest(Point2D point) {
+		return getDistanceToConnection(point) < VisualConnection.HIT_THRESHOLD;
 	}
 
-	public void click(Point2D point) {
-
+	public Collection<Node> getChildren() {
+		return groupImpl.getChildren();
 	}
 
-	public void applyTransform(AffineTransform transform) {
-
+	public Node getParent() {
+		return groupImpl.getParent();
 	}
 
-	Collection<Node> controls = new ArrayList<Node>();
-
-	public Collection<Node> getControls() {
-		return controls;
+	public void setParent(Node parent) {
+		throw new RuntimeException ("Node does not support reparenting");
 	}
+
+	public void add(Collection<Node> nodes) {
+		groupImpl.add(nodes);
+	}
+
+	public void add(Node node) {
+		groupImpl.add(node);
+	}
+
+	public void addObserver(HierarchyObserver obs) {
+		groupImpl.addObserver(obs);
+	}
+
+	public void addObserver(StateObserver obs) {
+		groupImpl.addObserver(obs);
+	}
+
+	public void remove(Collection<Node> nodes) {
+		groupImpl.remove(nodes);
+	}
+
+	public void remove(Node node) {
+		groupImpl.remove(node);
+	}
+
+	public void removeObserver(HierarchyObserver obs) {
+		groupImpl.removeObserver(obs);
+	}
+
+	public void removeObserver(StateObserver obs) {
+		groupImpl.removeObserver(obs);
+	}
+
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		groupImpl.reparent(nodes, newParent);
+	}
+
+	public void reparent(Collection<Node> nodes) {
+		groupImpl.reparent(nodes);
+	}
+
 }

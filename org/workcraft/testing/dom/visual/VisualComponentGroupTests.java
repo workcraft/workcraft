@@ -18,6 +18,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnectionInfo;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformObserver;
 
@@ -82,7 +83,7 @@ public class VisualComponentGroupTests {
 		SquareNode sqr2 = new SquareNode(root, new Rectangle2D.Double(3, 3, 1, 1));
 		root.add(sqr1);
 		root.add(sqr2);
-		VisualConnection connectionR = Tools.createConnection(sqr1, sqr2, root);
+		VisualConnectionInfo connectionR = Tools.createConnection(sqr1, sqr2, root);
 
 		SquareNode sqg1 = new SquareNode(group, new Rectangle2D.Double(1, 1, 1, 1));
 		SquareNode sqg2 = new SquareNode(group, new Rectangle2D.Double(3, 3, 1, 1));

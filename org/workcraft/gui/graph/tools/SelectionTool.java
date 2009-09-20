@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
@@ -47,13 +48,17 @@ public class SelectionTool extends AbstractTool {
 	private LinkedList<Node> selected = new LinkedList<Node>();
 	private int selectionMode;
 
+	private static ListenerResolver listenerResolver = new ListenerResolver();
+	private static Collection<GraphEditorMouseListener> listeners = Collections.emptyList();
 
 	@Override
 	public void activated(GraphEditor editor) {
+		listeners = listenerResolver.getMouseListenersFor(editor.getModel().getClass());
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
+		listeners = Collections.emptyList();
 	}
 
 	private void selectNone(VisualModel model) {
@@ -150,6 +155,10 @@ public class SelectionTool extends AbstractTool {
 			/* POPUP MENU */
 
 		}
+
+		for (GraphEditorMouseListener listener : listeners)
+			listener.mouseClicked(e);
+
 		//System.out.println ("mouseClicked >_>");
 	}
 
@@ -233,8 +242,10 @@ public class SelectionTool extends AbstractTool {
 				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
 					// mouse down without modifiers, begin move-drag
 
-					if(!model.getSelection().contains(hitNode))
-						select(e.getModel(), hitNode);
+					//if(!model.getSelection().contains(hitNode))
+					//System.out.println (e.getModel().getSelection().size() + " trying");
+					select(e.getModel(), hitNode);
+					//System.out.println (e.getModel().getSelection().iterator().next());
 
 					drag = DRAG_MOVE;
 
@@ -254,7 +265,7 @@ public class SelectionTool extends AbstractTool {
 			if(drag!=DRAG_NONE)
 				stopDrag(e);
 
-		//System.out.println ("mousePressed d^_^b");
+		//		System.out.println ("mousePressed d^_^b");
 	}
 
 	@Override
@@ -386,12 +397,14 @@ public class SelectionTool extends AbstractTool {
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
 		VisualModel model = e.getEditor().getModel();
+		//System.out.println (model.getSelection().size());
 
-		for(Node node : model.getSelection())
+		for(Node node : model.getSelection()){
 			if(node instanceof Movable) {
 				Movable mv = (Movable) node;
 				MovableHelper.translate(mv, dx, dy);
 			}
+		}
 	}
 
 	private void stopDrag(GraphEditorMouseEvent e) {

@@ -221,5 +221,4 @@ public class HitMan
 		t.transform(point, pt);
 		return hitTestForSelection(pt, model.getCurrentLevel());
 	}
-
 }
