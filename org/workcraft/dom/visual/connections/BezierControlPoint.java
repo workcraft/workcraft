@@ -11,11 +11,11 @@ import java.awt.geom.Point2D;
 
 import org.workcraft.dom.Node;
 
-class BezierAnchorPoint extends VisualConnectionAnchorPoint {
+class BezierControlPoint extends ControlPoint {
 	private Point2D origin;
 	private Node parent;
 
-	public BezierAnchorPoint(Node parent) {
+	public BezierControlPoint(Node parent) {
 		this.parent = parent;
 	}
 

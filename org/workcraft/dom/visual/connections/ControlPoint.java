@@ -12,7 +12,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.Coloriser;
 
 
-public abstract class VisualConnectionAnchorPoint extends VisualTransformableNode implements Drawable, Touchable {
+public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
 	private double size = 0.25;
 	private Color fillColor = Color.BLUE.darker();
 

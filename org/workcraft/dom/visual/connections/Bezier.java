@@ -27,13 +27,13 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
 	private VisualConnectionInfo connectionInfo;
 
 	private Node parent;
-	private BezierAnchorPoint cp1, cp2;
+	private BezierControlPoint cp1, cp2;
 
 	private Rectangle2D boundingBox = null;
 
 	public Bezier(VisualConnection parent) {
-		cp1 = new BezierAnchorPoint(this);
-		cp2 = new BezierAnchorPoint(this);
+		cp1 = new BezierControlPoint(this);
+		cp2 = new BezierControlPoint(this);
 
 		cp1.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.3));
 		cp2.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.6));
@@ -67,7 +67,7 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;
-		List<Element> xap = XmlUtil.getChildElements(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+		List<Element> xap = XmlUtil.getChildElements(ControlPoint.class.getSimpleName(), anchors);
 		if (xap==null) return;
 
 		Element eap = xap.get(0);
@@ -81,10 +81,10 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
 
 	public void writeToXML(Element element) {
 		Element anchors = XmlUtil.createChildElement("anchorPoints", element);
-		Element xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+		Element xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
 		XmlUtil.writeDoubleAttr(xap, "X", cp1.getX());
 		XmlUtil.writeDoubleAttr(xap, "Y", cp1.getY());
-		xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+		xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
 		XmlUtil.writeDoubleAttr(xap, "X", cp2.getX());
 		XmlUtil.writeDoubleAttr(xap, "Y", cp2.getY());
 	}

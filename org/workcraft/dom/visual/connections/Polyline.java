@@ -6,8 +6,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -15,15 +15,17 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
+import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 
-class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, StateObserver {
-	ArrayList<PolylineAnchorPoint> anchorPoints = new ArrayList<PolylineAnchorPoint>();
+class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, StateObserver, HierarchyObserver {
+	LinkedList<ControlPoint> controlPoints = new LinkedList<ControlPoint>();
 
 	private DefaultGroupImpl groupImpl;
 	private VisualConnectionInfo connectionInfo;
@@ -34,6 +36,7 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 	public Polyline(VisualConnection parent) {
 		groupImpl = new DefaultGroupImpl(this);
 		groupImpl.setParent(parent);
+		groupImpl.addObserver((HierarchyObserver)this);
 		connectionInfo = parent;
 	}
 
@@ -133,15 +136,15 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 	}
 
 	private int getSegmentCount() {
-		return anchorPoints.size() + 1;
+		return controlPoints.size() + 1;
 	}
 
 	private Point2D getAnchorPointLocation(int index) {
 		if (index == 0)
 			return connectionInfo.getFirstCenter();
-		if (index > anchorPoints.size())
+		if (index > controlPoints.size())
 			return connectionInfo.getSecondCenter();
-		return anchorPoints.get(index-1).getPosition();
+		return controlPoints.get(index-1).getPosition();
 	}
 
 	private Line2D getSegment(int index) {
@@ -175,27 +178,16 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 		return bb;
 	}
 
-	public VisualConnectionAnchorPoint addAnchorPoint(Point2D userLocation) {
+	public ControlPoint addAnchorPoint(Point2D userLocation) {
 		Point2D pointOnConnection = new Point2D.Double();
 		int nearestSegment = getNearestSegment(userLocation, pointOnConnection);
 
 		//System.out.println ("nearestSegment = " + nearestSegment);
 
-		PolylineAnchorPoint ap = new PolylineAnchorPoint();
+		ControlPoint ap = new ControlPoint();
 		ap.setPosition(pointOnConnection);
 
-		if (anchorPoints.size() == 0)
-			anchorPoints.add(ap);
-		else
-			anchorPoints.add(nearestSegment, ap);
-
-		//System.out.println ("start (" + connectionInfo.getFirstCenter().getX() +"," + connectionInfo.getFirstCenter().getY() +")");
-
-		for (PolylineAnchorPoint pap : anchorPoints)
-			System.out.println ("(" + pap.getX() +"," + pap.getY() +")");
-
-		//System.out.println ("end (" + connectionInfo.getSecondCenter().getX() +"," + connectionInfo.getSecondCenter().getY() +")");
-
+		controlPoints.add(nearestSegment, ap);
 		add(ap);
 		ap.addObserver(this);
 
@@ -204,47 +196,30 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 		return ap;
 	}
 
-	public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
-		return anchorPoints.toArray(new VisualConnectionAnchorPoint[0]);
-	}
-
-
-	public void removeAllAnchorPoints() {
-		anchorPoints.clear();
-	}
-
-	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
-		anchorPoints.remove(anchor);
-	}
-
-	public int getAnchorPointCount() {
-		return anchorPoints.size();
-	}
-
 	public void readFromXML(Element element) {
 		Element anchors;
 		anchors = XmlUtil.getChildElement("anchorPoints", element);
 		if (anchors==null) return;
-		List<Element> xap = XmlUtil.getChildElements(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+		List<Element> xap = XmlUtil.getChildElements(ControlPoint.class.getSimpleName(), anchors);
 		if (xap==null) return;
 
-		PolylineAnchorPoint pap;
-		anchorPoints.clear();
+		ControlPoint pap;
+		controlPoints.clear();
 		for (Element eap: xap) {
-			pap = new PolylineAnchorPoint();
+			pap = new ControlPoint();
 			pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 			pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
 
-			anchorPoints.add(pap);
+			controlPoints.add(pap);
 		}
 	}
 
 	public void writeToXML(Element element) {
-		if (anchorPoints.size()>0) {
+		if (controlPoints.size()>0) {
 			Element anchors = XmlUtil.createChildElement("anchorPoints", element);
 			Element xap;
-			for (VisualConnectionAnchorPoint ap: anchorPoints) {
-				xap = XmlUtil.createChildElement(VisualConnectionAnchorPoint.class.getSimpleName(), anchors);
+			for (ControlPoint ap: controlPoints) {
+				xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
 				XmlUtil.writeDoubleAttr(xap, "X", ap.getX());
 				XmlUtil.writeDoubleAttr(xap, "Y", ap.getY());
 			}
@@ -343,4 +318,15 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 		update();
 	}
 
+	@Override
+	public void notify(HierarchyEvent e) {
+		if (e instanceof NodesDeletingEvent)
+			for (Node n : e.getAffectedNodes())
+				if (n instanceof ControlPoint) {
+					ControlPoint cp = (ControlPoint)n;
+					cp.removeObserver(this);
+					controlPoints.remove(cp);
+				}
+		update();
+	}
 }
