@@ -242,9 +242,9 @@ public class SelectionTool extends AbstractTool {
 				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
 					// mouse down without modifiers, begin move-drag
 
-					//if(!model.getSelection().contains(hitNode))
+					if(!model.getSelection().contains(hitNode))
+						select(e.getModel(), hitNode);
 					//System.out.println (e.getModel().getSelection().size() + " trying");
-					select(e.getModel(), hitNode);
 					//System.out.println (e.getModel().getSelection().iterator().next());
 
 					drag = DRAG_MOVE;
