@@ -12,7 +12,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
