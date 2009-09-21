@@ -31,14 +31,12 @@ class DrawMan
 
 	private static void simpleDraw(Graphics2D graphics, Node node)
 	{
+		for(Node n : node.getChildren())
+			draw(graphics, n);
+
 		AffineTransform oldTransform = graphics.getTransform();
 		if(node instanceof Drawable)
 			((Drawable)node).draw(graphics);
 		graphics.setTransform(oldTransform);
-
-		for(Node n : node.getChildren())
-		{
-			draw(graphics, n);
-		}
 	}
 }
