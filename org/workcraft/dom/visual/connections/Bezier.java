@@ -1,208 +1,67 @@
 package org.workcraft.dom.visual.connections;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawHelper;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.util.Geometry.CurveSplitResult;
 
-class Bezier implements ConnectionGraphic {
+class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
+
 	private CubicCurve2D curve = new CubicCurve2D.Double();
 	private CubicCurve2D visibleCurve = new CubicCurve2D.Double();
 
+	private PartialCurveInfo curveInfo;
+	private VisualConnectionInfo connectionInfo;
+
+	private Node parent;
 	private BezierAnchorPoint cp1, cp2;
 
-	private double ax, bx, cx, ay, by, cy;
 	private Rectangle2D boundingBox = null;
 
-	private Point2D start, end;
+	public Bezier(VisualConnection parent) {
+		cp1 = new BezierAnchorPoint(this);
+		cp2 = new BezierAnchorPoint(this);
 
-	public Bezier() {
-		cp1 = new BezierAnchorPoint();
-		cp2 = new BezierAnchorPoint();
-	}
+		cp1.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.3));
+		cp2.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.6));
 
-	private void updateCoefficients() {
-		Point2D p1 = start;
-		Point2D p2 = end;
+		cp1.addObserver(this);
+		cp2.addObserver(this);
 
-		cx = 3.0f * (cp1.getX() - p1.getX());
-		bx = 3.0f * (cp2.getX() - cp1.getX()) - cx;
-		ax = p2.getX() - p1.getX() - cx - bx;
-
-		cy = 3.0f * (cp1.getY() - p1.getY());
-		by = 3.0f * (cp2.getY() - cp1.getY()) - cy;
-		ay = p2.getY() - p1.getY() - cy - by;
-
-//		System.out.printf("ax=%8.4f bx=%8.4f cx=%8.4f\n", ax, bx, cx);
-
-	//	coeff_valid = true;
+		this.connectionInfo = parent;
+		this.parent = parent;
 	}
 
 	public void draw(Graphics2D g) {
-		g.draw(visibleCurve);
-	}
+		g.setColor(connectionInfo.getDrawColor());
+		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 
-	public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
-		VisualConnectionAnchorPoint[] ret = {cp1, cp2};
-		return ret;
+		g.draw(visibleCurve);
+
+		DrawHelper
+				.drawArrowHead(g, connectionInfo.getDrawColor(),
+						curveInfo.arrowHeadPosition,
+						curveInfo.arrowOrientation, connectionInfo
+								.getArrowLength(), connectionInfo
+								.getArrowWidth());
 	}
 
 	public Rectangle2D getBoundingBox() {
 		return boundingBox;
-	}
-
-
-	public Point2D getNearestPointOnConnection(Point2D pt) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	// finds cubic root in real numbers
-	public double curt(double a) {
-		if (a==0) return 0;
-		double s = Math.signum(a);
-		return s*Math.exp(Math.log(s*a)/3);
-	}
-
-	public LinkedList<Double> solveCubic(double a, double b, double c, double d) {
-
-		LinkedList<Double> ret= new LinkedList<Double>();
-		double epsilon = 0.00000000001;
-
-		if (a==0) {
-			if (b==0) {
-				if (c!=0)
-					ret.add(-d/c);
-				return ret;
-			}
-
-			// solveQuadratic(b, c, d)
-			double D = c*c-4*b*d;
-			if (Math.abs(D)<epsilon) {
-				ret.add(-c/(2*b));
-				return ret;
-			}
-
-			if (D>0) {
-				ret.add((-c+Math.sqrt(D))/(2*b));
-				ret.add((-c-Math.sqrt(D))/(2*b));
-			}
-			return ret;
-
-		}
-
-		double f = ((3*c/a)-(b*b/(a*a)))/3;
-		double g = ((2*b*b*b/(a*a*a)) - (9*b*c/(a*a)) + (27*d/a))/27;
-		double h = (g*g/4)+(f*f*f/27);
-
-		if (h<=0) {
-			if (g==0&&f==0) {
-//				System.out.printf("all in same position\n");
-				// all roots in the same position
-				double x = curt(d/a);
-				ret.add(x);
-				return ret;
-			}
-//			System.out.printf("3 roots\n");
-			// all three real roots
-			double i= Math.sqrt(g*g/4-h);
-			double j= curt(i);
-			double K= Math.acos(-(g/(2*i)));
-			double L= j*-1;
-			double M= Math.cos(K/3);
-			double N= Math.sqrt(3)*Math.sin(K/3);
-			double P= -(b/(3*a));
-			double x1 = 2*j* Math.cos(K/3) - (b/(3*a));
-			double x2 = L*(M+N)+P;
-			double x3 = L*(M-N)+P;
-			ret.add(x1);
-			ret.add(x2);
-			ret.add(x3);
-			return ret;
-		} else {
-//			System.out.printf("only one real root\n");
-			// only one root is real
-			double R = -(g/2)+Math.sqrt(h);
-			double S = curt(R);
-			double T = -(g/2)-Math.sqrt(h);
-			double U = curt(T);
-			double x = (S+U)-(b/(3*a));
-			ret.add(x);
-			return ret;
-		}
-	}
-
-	public boolean touchesRectangle(Rectangle2D rect) {
-
-		if (!curve.intersects(rect)) return false;
-
-		LinkedList<Double> ROOTS;
-
-		Point2D point1 = start;
-
-//		boolean found = false;
-//		System.out.printf("X=%6.5f Y=%6.5f\n", rect.getMinX(), rect.getMinY());
-		ROOTS = solveCubic(ax, bx, cx, point1.getX()-rect.getMinX());
-		for (Double r : ROOTS) {
-			Point2D P = getPointOnConnection(r);
-			double Y = P.getY();
-//			double X = P.getX();
-//			System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
-			if (Y>=rect.getMinY()&&Y<=rect.getMaxY()) return true;
-		}
-//		if (found) return true;
-
-
-		ROOTS = solveCubic(ax, bx, cx, point1.getX()-rect.getMaxX());
-		for (Double r : ROOTS) {
-			Point2D P = getPointOnConnection(r);
-			double Y = P.getY();
-//			double X = P.getX();
-//			System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
-			if (Y>=rect.getMinY()&&Y<=rect.getMaxY()) return true;
-		}
-
-		ROOTS = solveCubic(ay, by, cy, point1.getY()-rect.getMinY());
-		for (Double r : ROOTS) {
-			Point2D P = getPointOnConnection(r);
-//			double Y = P.getY();
-			double X = P.getX();
-//			System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
-			if (X>=rect.getMinX()&&X<=rect.getMaxX()) return true;
-		}
-
-		ROOTS = solveCubic(ay, by, cy, point1.getY()-rect.getMaxY());
-		for (Double r : ROOTS) {
-			Point2D P = getPointOnConnection(r);
-//			double Y = P.getY();
-			double X = P.getX();
-//			System.out.printf("      R=%14.5f X(R)=%14.5f Y(R)=%14.5f\n", r, X, Y);
-			if (X>=rect.getMinX()&&X<=rect.getMaxX()) return true;
-		}
-
-		return false;
-	}
-
-	public Point2D getPointOnConnection(double t) {
-
-		double tSquared = t * t;
-		double tCubed = tSquared * t;
-
-		double x = (ax * tCubed) + (bx * tSquared) + (cx * t) + start.getX();
-		double y = (ay * tCubed) + (by * tSquared) + (cy * t) + start.getY();
-
-		return new Point2D.Double(x, y);
 	}
 
 	public void readFromXML(Element element) {
@@ -236,7 +95,7 @@ class Bezier implements ConnectionGraphic {
 		CubicCurve2D result = new CubicCurve2D.Double();
 
 		CubicCurve2D fullCurve = new CubicCurve2D.Double();
-		fullCurve.setCurve(start, cp1.getPosition(), cp2.getPosition(), end);
+		fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
 		CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
 		CurveSplitResult secondSplit = Geometry.splitCubicCurve(fullCurve, tEnd);
@@ -246,54 +105,88 @@ class Bezier implements ConnectionGraphic {
 		return result;
 	}
 
-	public void updateVisibleRange(double tStart, double tEnd) {
-		visibleCurve = getPartialCurve(tStart, tEnd);
+	private void updateVisibleRange() {
+		visibleCurve = getPartialCurve(curveInfo.tStart, curveInfo.tEnd);
 	}
 
+	@Override
+	public Collection<Node> getChildren() {
+		return Arrays.asList( new Node[] { cp1, cp2 });
+	}
 
-	public void update(Point2D start, Point2D end) {
-		updateCoefficients();
+	@Override
+	public Node getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(Node parent) {
+		throw new RuntimeException ("Node does not support reparenting");
+	}
+
+	@Override
+	public boolean hitTest(Point2D point) {
+		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
+	}
+
+	@Override
+	public void update() {
+		curve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
 		boundingBox = curve.getBounds2D();
 		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
 		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
 		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
 		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
-	}
 
-	public void click(Point2D point) {
 
-	}
+		Point2D origin1 = new Point2D.Double();
+		origin1.setLocation(connectionInfo.getFirstCenter());
+		cp1.getParentToLocalTransform().transform(origin1, origin1);
 
-	public Collection<Node> getControls() {
-		ArrayList<Node> result = new ArrayList<Node>();
-		result.add(cp1);
-		result.add(cp2);
-		return result;
-	}
+		Point2D origin2 = new Point2D.Double();
+		origin2.setLocation(connectionInfo.getSecondCenter());
+		cp2.getParentToLocalTransform().transform(origin2, origin2);
 
-	@Override
-	public Collection<Node> getChildren() {
-		throw new RuntimeException ("Not implemented");
-	}
+		cp1.update(origin1);
+		cp2.update(origin2);
 
-	@Override
-	public Node getParent() {
-		throw new RuntimeException ("Not implemented");
+		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
+
+		updateVisibleRange();
 	}
 
 	@Override
-	public void setParent(Node parent) {
-		throw new RuntimeException ("Not implemented");
+	public double getDistanceToCurve(Point2D pt) {
+		return pt.distance(getNearestPointOnCurve(pt));
 	}
 
 	@Override
-	public boolean hitTest(Point2D point) {
-		throw new RuntimeException ("Not implemented");
+	public Point2D getNearestPointOnCurve(Point2D pt) {
+		// FIXME: should be done using some proper algorithm
+
+		Point2D nearest = new Point2D.Double(curve.getX1(), curve.getY1());
+		double nearestDist = Double.MAX_VALUE;
+
+		for (double t=0.01; t<=1.0; t+=0.01) {
+			Point2D samplePoint = Geometry.getPointOnCubicCurve(curve, t);
+			double distance = pt.distance(samplePoint);
+			if (distance < nearestDist)	{
+				nearestDist = distance;
+				nearest = samplePoint;
+			}
+		}
+
+		return nearest;
 	}
 
 	@Override
-	public void update() {
-		throw new RuntimeException ("Not implemented");
+	public Point2D getPointOnCurve(double t) {
+		return Geometry.getPointOnCubicCurve(curve, t);
+	}
+
+	@Override
+	public void notify(StateEvent e) {
+		update();
 	}
 }

@@ -23,7 +23,7 @@ public abstract class VisualConnectionAnchorPoint extends VisualTransformableNod
 			size);
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
+		return new Rectangle2D.Double(-size, -size, size*2, size*2);
 	}
 
 	@Override

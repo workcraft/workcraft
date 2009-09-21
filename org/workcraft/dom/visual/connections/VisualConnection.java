@@ -23,13 +23,21 @@ import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesDeletingEvent;
+import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.ObservableHierarchyImpl;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class VisualConnection extends VisualNode implements
 		PropertyChangeListener, Node, Drawable, Connection,
-		TransformObserver, DependentNode, VisualConnectionInfo {
+		TransformObserver, DependentNode, VisualConnectionInfo, ObservableHierarchy {
 
 	public enum ConnectionType
 	{
@@ -38,6 +46,7 @@ public class VisualConnection extends VisualNode implements
 	};
 
 	private TransformDispatcher transformDispatcher = null;
+	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private MathConnection refConnection;
 	private VisualComponent first;
@@ -47,8 +56,9 @@ public class VisualConnection extends VisualNode implements
 
 	private Point2D firstCenter = new Point2D.Double();
 	private Point2D secondCenter = new Point2D.Double();
-	private Point2D arrowHeadPosition = new Point2D.Double();
-	private double arrowOrientation = 0;
+
+	private Touchable firstShape;
+	private Touchable secondShape;
 
 	private ConnectionGraphic graphic = new Polyline(this);
 
@@ -115,14 +125,21 @@ public class VisualConnection extends VisualNode implements
 
 	public void setConnectionType(ConnectionType t) {
 		if (connectionType!=t) {
+			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, graphic));
+			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, graphic));
+
 			if (t==ConnectionType.POLYLINE) {
 				graphic = new Polyline(this);
 			}
 			if (t==ConnectionType.BEZIER) {
-				graphic = new Bezier();
+				graphic = new Bezier(this);
 			}
+
+			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, graphic));
+
+			graphic.update();
 			connectionType = t;
-			graphic.setParent(this);
+			observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
 		}
 	}
 
@@ -184,70 +201,27 @@ public class VisualConnection extends VisualNode implements
 	}
 
 	public Point2D getPointOnConnection(double t) {
-		return graphic.getPointOnConnection(t);
+		return graphic.getPointOnCurve(t);
 	}
 
 	public Point2D getNearestPointOnConnection(Point2D pt) {
-		return graphic.getNearestPointOnConnection(pt);
-	}
-
-	private double getBorderPoint (Touchable collisionNode, double tStart, double tEnd)
-	{
-		Point2D point = new Point2D.Double();
-
-		while(Math.abs(tEnd-tStart) > 1e-6)
-		{
-			double t = (tStart + tEnd)*0.5;
-			point = getPointOnConnection(t);
-
-			if (collisionNode.hitTest(point))
-				tStart = t;
-			else
-				tEnd = t;
-		}
-
-		return tStart;
+		return graphic.getNearestPointOnCurve(pt);
 	}
 
 	public void update() {
 		if (getParent() == null || first == null || second == null)
 			return;
 
-		Touchable firstTouchable = TransformHelper.transform(first, TransformHelper.getTransform(first, this));
-		Touchable secondTouchable = TransformHelper.transform(second, TransformHelper.getTransform(second, this));
+		firstShape = TransformHelper.transform(first, TransformHelper.getTransform(first, this));
+		secondShape = TransformHelper.transform(second, TransformHelper.getTransform(second, this));
 
-		Rectangle2D firstBB = firstTouchable.getBoundingBox();
-		Rectangle2D secondBB = secondTouchable.getBoundingBox();
+		Rectangle2D firstBB = firstShape.getBoundingBox();
+		Rectangle2D secondBB = secondShape.getBoundingBox();
 
 		firstCenter.setLocation(firstBB.getCenterX(), firstBB.getCenterY());
 		secondCenter.setLocation(secondBB.getCenterX(), secondBB.getCenterY());
 
-		Point2D pt = new Point2D.Double();
-
 		graphic.update();
-
-		double tStart = getBorderPoint(firstTouchable, 0, 1);
-		double tEnd = getBorderPoint(secondTouchable, 1, 0);
-
-		Point2D pointEnd = getPointOnConnection(tEnd);
-
-		arrowHeadPosition = pointEnd;
-
-		double dt = tEnd;
-		double t = 0.0;
-
-		while(dt > 1e-6)
-		{
-			dt /= 2.0;
-			t += dt;
-			pt = getPointOnConnection(t);
-			if (arrowHeadPosition.distanceSq(pt) < arrowLength*arrowLength)
-				t-=dt;
-		}
-
-		arrowOrientation = Math.atan2(arrowHeadPosition.getY() - pt.getY() , arrowHeadPosition.getX() - pt.getX());
-
-		graphic.updateVisibleRange(tStart, t);
 	}
 
 	@Override
@@ -255,7 +229,6 @@ public class VisualConnection extends VisualNode implements
 		super.setParent(parent);
 
 		update();
-
 	};
 
 	@Override
@@ -267,23 +240,8 @@ public class VisualConnection extends VisualNode implements
 		return refConnection;
 	}
 
-//	public double distanceToConnection (Point2D pointInParentSpace) {
-//		return impl.getDistanceToConnection(pointInParentSpace);
-//	}
-
 	public boolean hitTest(Point2D pointInParentSpace) {
-/*		Rectangle2D rect = new Rectangle2D.Double(
-				pointInParentSpace.getX()-hitThreshold,
-				pointInParentSpace.getY()-hitThreshold,
-				2*hitThreshold,
-				2*hitThreshold
-				);
-		return TouchableHelper.touchesRectangle(this, rect); */
-
-		if (graphic.getNearestPointOnConnection(pointInParentSpace).distance(pointInParentSpace) < HIT_THRESHOLD)
-			return true;
-		else
-			return false;
+		return graphic.hitTest(pointInParentSpace);
 	}
 
 	@Override
@@ -300,9 +258,6 @@ public class VisualConnection extends VisualNode implements
 		return first;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getSecond()
-	 */
 	public VisualComponent getSecond() {
 		return second;
 	}
@@ -336,14 +291,34 @@ public class VisualConnection extends VisualNode implements
 		return Arrays.asList(new Node[] { graphic });
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getFirstCenter()
-	 */
 	public Point2D getFirstCenter() {
 		return firstCenter;
 	}
 
 	public Point2D getSecondCenter() {
 		return secondCenter;
+	}
+
+	@Override
+	public Touchable getFirstShape() {
+		return firstShape;
+	}
+
+	@Override
+	public Touchable getSecondShape() {
+		return secondShape;
+	}
+
+	@Override
+	public Color getDrawColor() {
+		return Coloriser.colorise(color, getColorisation());
+	}
+
+	public void addObserver(HierarchyObserver obs) {
+		observableHierarchyImpl.addObserver(obs);
+	}
+
+	public void removeObserver(HierarchyObserver obs) {
+		observableHierarchyImpl.removeObserver(obs);
 	}
 }

@@ -1,5 +1,6 @@
 package org.workcraft.dom.visual.connections;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -13,100 +14,53 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 
-class Polyline implements ConnectionGraphic, Container {
+class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, StateObserver {
 	ArrayList<PolylineAnchorPoint> anchorPoints = new ArrayList<PolylineAnchorPoint>();
 
 	private DefaultGroupImpl groupImpl;
 	private VisualConnectionInfo connectionInfo;
+	private PartialCurveInfo curveInfo;
 
-	private double tStart = 0.0, tEnd = 1.0;
-
-	private double[] polylineSegmentLengthsSq;
-	private double polylineLengthSq;
 	private Rectangle2D boundingBox = null;
 
 	public Polyline(VisualConnection parent) {
 		groupImpl = new DefaultGroupImpl(this);
 		groupImpl.setParent(parent);
-
 		connectionInfo = parent;
 	}
 
 	public void draw(Graphics2D g) {
 		Path2D connectionPath = new Path2D.Double();
 
-		//System.out.println ("tStart = " + tStart + ", tEnd = " + tEnd);
+		int start = getSegmentIndex(curveInfo.tStart);
+		int end = getSegmentIndex(curveInfo.tEnd);
 
-		double toSkipSq = polylineLengthSq * tStart * tStart;
-		double toCoverSq = polylineLengthSq * tEnd * tEnd - toSkipSq;
-		double skippedSq = 0;
+		Point2D startPt = getPointOnCurve(curveInfo.tStart);
+		Point2D endPt = getPointOnCurve(curveInfo.tEnd);
 
-		if (toCoverSq <= 0)
-			return;
+		connectionPath.moveTo(startPt.getX(), startPt.getY());
 
-		int segment = 0;
-
-		while(segment < getSegmentCount()) {
-		//	System.out.println ("Segment: " + segment);
-
-			if (toSkipSq < polylineSegmentLengthsSq[segment])
-			{
-				double part = Math.sqrt(toSkipSq / polylineSegmentLengthsSq[segment]);
-			//	System.out.println ("Skipping " + part);
-				Line2D seg = getSegment(segment);
-				connectionPath.moveTo(seg.getX1() + (seg.getX2()-seg.getX1()) * part,
-										seg.getY1() + (seg.getY2()-seg.getY1()) * part);
-
-				double lengthLeftSq = polylineSegmentLengthsSq[segment] - toSkipSq;
-
-			//	System.out.println ("Length left " + lengthLeftSq + ", to cover " + toCoverSq);
-
-				if (lengthLeftSq < toCoverSq) {
-					connectionPath.lineTo(seg.getX2(), seg.getY2());
-					toCoverSq -= lengthLeftSq;
-					segment++;
-				} else {
-					skippedSq = toSkipSq;
-				}
-
-				break;
-			} else
-			{
-		//		System.out.println ("Skipping segment " + segment);
-				toSkipSq -= polylineSegmentLengthsSq[segment];
-				segment++;
-			}
+		for (int i=start; i<end; i++) {
+			Line2D segment = getSegment(i);
+			connectionPath.lineTo(segment.getX2(), segment.getY2());
 		}
 
-	//	System.out.println ("------");
+		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-		while (segment < getSegmentCount()) {
-			//System.out.println ("Segment: " + segment);
-			if (toCoverSq > polylineSegmentLengthsSq[segment]) {
-				//System.out.println ("Drawing segment " + segment);
-				toCoverSq -= polylineSegmentLengthsSq[segment];
-				segment++;
-				connectionPath.lineTo(getSegment(segment).getX2(), getSegment(segment).getY2());
-			} else {
-				double part = Math.sqrt ((toCoverSq + skippedSq) / polylineSegmentLengthsSq[segment]);
-
-				//System.out.println ("Drawing " + part);
-
-				Line2D seg = getSegment(segment);
-				connectionPath.lineTo(seg.getX1() + (seg.getX2()-seg.getX1()) * part,
-										seg.getY1() + (seg.getY2()-seg.getY1()) * part);
-
-				break;
-			}
-		}
-
-	//	System.out.println ("======");
-
+		g.setColor(connectionInfo.getDrawColor());
+		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.draw(connectionPath);
+
+		DrawHelper.drawArrowHead(g, connectionInfo.getDrawColor(), curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
+				connectionInfo.getArrowLength(), connectionInfo.getArrowWidth());
 	}
 
 	public Rectangle2D getBoundingBox() {
@@ -114,10 +68,7 @@ class Polyline implements ConnectionGraphic, Container {
 	}
 
 	public void update() {
-
 		int segments = getSegmentCount();
-		polylineSegmentLengthsSq = new double[segments];
-		polylineLengthSq = 0;
 
 		for (int i=0; i < segments; i++) {
 			Line2D seg = getSegment(i);
@@ -126,39 +77,25 @@ class Polyline implements ConnectionGraphic, Container {
 				boundingBox = getSegmentBoundsWithThreshold(seg);
 			else
 				boundingBox.add(getSegmentBoundsWithThreshold(seg));
-
-			double a = seg.getP2().getX() - seg.getP1().getX();
-			double b = seg.getP2().getY() - seg.getP1().getY();
-			double lensq = a*a + b*b;
-			polylineSegmentLengthsSq[i] = lensq;
-			polylineLengthSq += lensq;
 		}
+
+		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
 	}
 
-	public Point2D getPointOnConnection(double t) {
-		double targetOffsetSq = t * t * polylineLengthSq;
-		double currentOffsetSq = 0;
-
+	private int getSegmentIndex(double t) {
 		int segments = getSegmentCount();
+		double l = 1.0 / segments;
+		double t_l = t/l;
 
-		for (int i=0; i <segments; i++) {
-			if (currentOffsetSq + polylineSegmentLengthsSq[i] > targetOffsetSq) {
-				double t2 = Math.sqrt((targetOffsetSq - currentOffsetSq) / polylineSegmentLengthsSq[i]);
-				Line2D segment = getSegment(i);
-				return new Point2D.Double(segment.getP1().getX() * (1-t2) + segment.getP2().getX() * t2,
-						segment.getP1().getY() * (1-t2) + segment.getP2().getY() * t2);
-			}
-			currentOffsetSq += polylineSegmentLengthsSq[i];
-		}
-
-		return connectionInfo.getSecondCenter();
+		int n = (int)Math.floor(t_l);
+		if (n==segments) n -= 1;
+		return n;
 	}
 
-	public Point2D getNearestPointOnConnection(Point2D pt) {
-		Point2D result = new Point2D.Double();
-		getNearestSegment(pt, result);
-		return result;
+	private double getParameterOnSegment (double t, int segmentIndex) {
+		return t * getSegmentCount() - segmentIndex;
 	}
+
 
 	private int getNearestSegment (Point2D pt, Point2D pointOnSegment) {
 		double min = Double.MAX_VALUE;
@@ -242,7 +179,9 @@ class Polyline implements ConnectionGraphic, Container {
 		Point2D pointOnConnection = new Point2D.Double();
 		int nearestSegment = getNearestSegment(userLocation, pointOnConnection);
 
-		PolylineAnchorPoint ap = new PolylineAnchorPoint(this);
+		//System.out.println ("nearestSegment = " + nearestSegment);
+
+		PolylineAnchorPoint ap = new PolylineAnchorPoint();
 		ap.setPosition(pointOnConnection);
 
 		if (anchorPoints.size() == 0)
@@ -250,27 +189,19 @@ class Polyline implements ConnectionGraphic, Container {
 		else
 			anchorPoints.add(nearestSegment, ap);
 
+		//System.out.println ("start (" + connectionInfo.getFirstCenter().getX() +"," + connectionInfo.getFirstCenter().getY() +")");
+
+		for (PolylineAnchorPoint pap : anchorPoints)
+			System.out.println ("(" + pap.getX() +"," + pap.getY() +")");
+
+		//System.out.println ("end (" + connectionInfo.getSecondCenter().getX() +"," + connectionInfo.getSecondCenter().getY() +")");
+
 		add(ap);
+		ap.addObserver(this);
+
+		update();
 
 		return ap;
-	}
-
-//	public void removeAnchorPoint (int index) {
-//
-//		anchorPoints.remove(index);
-//		VisualConnection.this.update();
-//		firePropertyChanged("anchors");
-//	}
-
-	public double getDistanceToConnection(Point2D pt) {
-		double min = Double.MAX_VALUE;
-		for (int i=0; i<getSegmentCount(); i++) {
-			Line2D segment = getSegment(i);
-			double dist = segment.ptSegDist(pt);
-			if (dist < min)
-				min = dist;
-		}
-		return min;
 	}
 
 	public VisualConnectionAnchorPoint[] getAnchorPointComponents() {
@@ -284,22 +215,6 @@ class Polyline implements ConnectionGraphic, Container {
 
 	public void removeAnchorPoint(VisualConnectionAnchorPoint anchor) {
 		anchorPoints.remove(anchor);
-	}
-
-	public boolean touchesRectangle(Rectangle2D rect) {
-		if (!rect.intersects(getBoundingBox())) return false;
-
-		for (VisualConnectionAnchorPoint ap: anchorPoints) {
-			if (rect.contains(ap.getPosition())) return true;
-		}
-
-		for (int i=0;i<getSegmentCount();i++) {
-			if (rect.intersectsLine(getSegment(i))) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public int getAnchorPointCount() {
@@ -316,7 +231,7 @@ class Polyline implements ConnectionGraphic, Container {
 		PolylineAnchorPoint pap;
 		anchorPoints.clear();
 		for (Element eap: xap) {
-			pap = new PolylineAnchorPoint(this);
+			pap = new PolylineAnchorPoint();
 			pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
 			pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
 
@@ -336,14 +251,9 @@ class Polyline implements ConnectionGraphic, Container {
 		}
 	}
 
-	public void updateVisibleRange(double start, double end) {
-		tStart = start;
-		tEnd = end;
-	}
-
 	@Override
 	public boolean hitTest(Point2D point) {
-		return getDistanceToConnection(point) < VisualConnection.HIT_THRESHOLD;
+		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
 	}
 
 	public Collection<Node> getChildren() {
@@ -396,6 +306,41 @@ class Polyline implements ConnectionGraphic, Container {
 
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
+	}
+
+	@Override
+	public Point2D getNearestPointOnCurve(Point2D pt) {
+		Point2D result = new Point2D.Double();
+		getNearestSegment(pt, result);
+		return result;
+	}
+
+	@Override
+	public Point2D getPointOnCurve(double t) {
+		int segmentIndex = getSegmentIndex(t);
+		double t2 = getParameterOnSegment(t, segmentIndex);
+
+		Line2D segment = getSegment(segmentIndex);
+
+		return new Point2D.Double(segment.getP1().getX() * (1-t2) + segment.getP2().getX() * t2,
+				segment.getP1().getY() * (1-t2) + segment.getP2().getY() * t2);
+	}
+
+	@Override
+	public double getDistanceToCurve(Point2D pt) {
+		double min = Double.MAX_VALUE;
+		for (int i=0; i<getSegmentCount(); i++) {
+			Line2D segment = getSegment(i);
+			double dist = segment.ptSegDist(pt);
+			if (dist < min)
+				min = dist;
+		}
+		return min;
+	}
+
+	@Override
+	public void notify(StateEvent e) {
+		update();
 	}
 
 }
