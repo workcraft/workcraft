@@ -411,8 +411,26 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 */
 	public void deleteSelection() {
 		//System.out.println ("Deleting selection (" + selection.size()+" nodes)");
-		getCurrentLevel().remove(selection);
-		selectNone();
+		HashMap<Container, LinkedList<Node>> batches = new HashMap<Container, LinkedList<Node>>();
+		LinkedList<Node> remainingSelection = new LinkedList<Node>();
+
+
+		for (Node n : selection) {
+			if (n.getParent() instanceof Container) {
+				Container c = (Container)n.getParent();
+				LinkedList<Node> batch = batches.get(c);
+				if (batch == null) {
+					batch = new LinkedList<Node>();
+					batches.put(c, batch);
+				}
+				batch.add(n);
+			} else remainingSelection.add(n);
+		}
+
+		for (Container c : batches.keySet())
+			c.remove(batches.get(c));
+
+		select(remainingSelection);
 	}
 
 	/**
