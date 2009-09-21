@@ -81,7 +81,7 @@ public class DefaultGroupImpl implements ObservableHierarchy, ObservableState, C
 
 		if (node.getParent() != groupRef)
 			throw new RuntimeException
-			("Failed to remove a node frome a group because it is not a child of that group ("+node+", parent is " + node.getParent() +")");
+			("Failed to remove a node frome a group because it is not a child of that group ("+node+", parent is " + node.getParent() +", expected " + groupRef + ")");
 
 		children.remove(node);
 		node.setParent(null);
