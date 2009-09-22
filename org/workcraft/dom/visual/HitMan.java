@@ -4,7 +4,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import net.sf.jga.algorithms.Filter;
 import net.sf.jga.fn.UnaryFunctor;
@@ -60,8 +62,12 @@ public class HitMan
 
 	public static boolean hitBranch (Point2D point, Node node) {
 
-		if (node instanceof Touchable && ((Touchable)node).hitTest(point))
-			return true;
+		if (node instanceof Touchable && ((Touchable)node).hitTest(point))	{
+			if (node instanceof Hidable)
+				return !((Hidable)node).isHidden();
+			else
+				return true;
+		}
 
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
@@ -164,8 +170,11 @@ public class HitMan
 	public static Node hitTestForSelection(Point2D point, Node node) {
 		Node nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
 			public Boolean fn(Node n) {
-				if (n instanceof Movable)
-					return true;
+				if (!(n instanceof Movable))
+					return false;
+
+				if (n instanceof Hidable)
+					return !((Hidable)n).isHidden();
 				else
 					return false;
 			}
@@ -174,8 +183,12 @@ public class HitMan
 		if (nd == null)
 			nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
 				public Boolean fn(Node n) {
-					if (n instanceof VisualConnection)
-						return true;
+					if (n instanceof VisualConnection) {
+						if (n instanceof Hidable)
+							return !((Hidable)n).isHidden();
+						else
+							return true;
+					}
 					else
 						return false;
 				}
@@ -188,8 +201,12 @@ public class HitMan
 	public static Node hitTestForConnection(Point2D point, Node node) {
 		Node nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
 			public Boolean fn(Node n) {
-				if (n instanceof Movable && ! (n instanceof Container))
-					return true;
+				if (n instanceof Movable && ! (n instanceof Container)) {
+					if (n instanceof Hidable)
+						return !((Hidable)n).isHidden();
+					else
+						return true;
+				}
 				else
 					return false;
 			}
@@ -198,8 +215,12 @@ public class HitMan
 		if (nd == null)
 			nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
 				public Boolean fn(Node n) {
-					if (n instanceof VisualConnection)
-						return true;
+					if (n instanceof VisualConnection) {
+						if (n instanceof Hidable)
+							return !((Hidable)n).isHidden();
+						else
+							return true;
+					}
 					else
 						return false;
 				}
@@ -220,5 +241,34 @@ public class HitMan
 		Point2D pt = new Point2D.Double();
 		t.transform(point, pt);
 		return hitTestForSelection(pt, model.getCurrentLevel());
+	}
+
+	public static Collection<Node> boxHitTest (VisualGroup group, Point2D p1, Point2D p2) {
+		Point2D p1local = new Point2D.Double();
+		Point2D p2local = new Point2D.Double();
+		group.getParentToLocalTransform().transform(p1, p1local);
+		group.getParentToLocalTransform().transform(p2, p2local);
+
+		LinkedList<Node> hit = new LinkedList<Node>();
+
+		Rectangle2D rect = new Rectangle2D.Double(
+				Math.min(p1local.getX(), p2local.getX()),
+				Math.min(p1local.getY(), p2local.getY()),
+				Math.abs(p1local.getX()-p2local.getX()),
+				Math.abs(p1local.getY()-p2local.getY()));
+
+		for (Touchable n : Hierarchy.getChildrenOfType(group, Touchable.class)) {
+			if (n instanceof Hidable && ((Hidable)n).isHidden() )
+				continue;
+
+			if (p1local.getX()<=p2local.getX()) {
+				if (TouchableHelper.insideRectangle(n, rect))
+					hit.add((VisualNode)n);
+			} else {
+				if (TouchableHelper.touchesRectangle(n, rect))
+					hit.add((VisualNode)n);
+			}
+		}
+		return hit;
 	}
 }
