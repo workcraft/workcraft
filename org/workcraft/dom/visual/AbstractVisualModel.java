@@ -35,7 +35,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.exceptions.PasteException;
 import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.SelectionChangeEvent;
+import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Hierarchy;
@@ -66,6 +66,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		currentLevel =  (VisualGroup)getRoot();
 		new TransformEventPropagator().attach(getRoot());
+		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
 	}
 
@@ -179,7 +180,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	private void notifySelectionChanged() {
-		sendNotification(new SelectionChangeEvent(this));
+		sendNotification(new SelectionChangedEvent(this));
 	}
 
 	/**
@@ -507,13 +508,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return (VisualNode) HitMan.hitTestForSelection(transformToCurrentSpace(pointInRootSpace), currentLevel);
 	}
 
-	public LinkedList<Node> boxHitTest(Point2D p1, Point2D p2) {
+	public Collection<Node> boxHitTest(Point2D p1, Point2D p2) {
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);
 		return currentLevel.hitObjects(p1, p2);
 	}
 
-	public LinkedList<Node> boxHitTest(Rectangle2D selectionRect) {
+	public Collection<Node> boxHitTest(Rectangle2D selectionRect) {
 		Point2D min = new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY());
 		Point2D max = new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY());
 		min = transformToCurrentSpace(min);
