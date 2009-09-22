@@ -8,7 +8,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -61,33 +60,11 @@ ObservableHierarchy, Colorisable {
 		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
 	}
 
-	public LinkedList<Node> hitObjects(Point2D p1 , Point2D p2) {
-		Point2D p1local = new Point2D.Double();
-		Point2D p2local = new Point2D.Double();
-		this.getParentToLocalTransform().transform(p1, p1local);
-		this.getParentToLocalTransform().transform(p2, p2local);
-
-		LinkedList<Node> hit = new LinkedList<Node>();
-
-		Rectangle2D rect = new Rectangle2D.Double(
-				Math.min(p1local.getX(), p2local.getX()),
-				Math.min(p1local.getY(), p2local.getY()),
-				Math.abs(p1local.getX()-p2local.getX()),
-				Math.abs(p1local.getY()-p2local.getY()));
-
-		for (Touchable n : Hierarchy.getChildrenOfType(this, Touchable.class)) {
-			if (p1local.getX()<=p2local.getX()) {
-				if (TouchableHelper.insideRectangle(n, rect))
-					hit.add((VisualNode)n);
-			} else {
-				if (TouchableHelper.touchesRectangle(n, rect))
-					hit.add((VisualNode)n);
-			}
-		}
-		return hit;
+	public Collection<Node> hitObjects(Point2D p1 , Point2D p2) {
+		return HitMan.boxHitTest(this, p1, p2);
 	}
 
-	public LinkedList<Node> hitObjects(Rectangle2D rectInLocalSpace) {
+	public Collection<Node> hitObjects(Rectangle2D rectInLocalSpace) {
 		return hitObjects(
 				new Point2D.Double(rectInLocalSpace.getMinX(), rectInLocalSpace.getMinY()),
 				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
