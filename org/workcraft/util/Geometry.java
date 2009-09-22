@@ -19,16 +19,20 @@ public class Geometry {
 
 	public static class CurveSplitResult
 	{
-		public CurveSplitResult(Point2D splitPoint, Point2D control1, Point2D control2)
-		{
-			this.splitPoint = splitPoint;
-			this.control1 = control1;
-			this.control2 = control2;
-		}
+		public final CubicCurve2D curve1;
+		public final CubicCurve2D curve2;
 
-		public Point2D splitPoint;
-		public Point2D control1;
-		public Point2D control2;
+		public CurveSplitResult(CubicCurve2D curve1, CubicCurve2D curve2)
+		{
+			this.curve1 = curve1;
+			this.curve2 = curve2;
+		}
+	}
+
+	public static CubicCurve2D buildCurve(Point2D p1, Point2D cp1, Point2D cp2, Point2D p2) {
+		return new CubicCurve2D.Double(p1.getX(), p1.getY(), cp1.getX(), cp1.getY(), cp2.getX(), cp2.getY(),
+				p2.getX(), p2.getY()
+		);
 	}
 
 	public static CurveSplitResult splitCubicCurve(CubicCurve2D curve, double t) {
@@ -41,7 +45,7 @@ public class Geometry {
 
 		Point2D c = lerp(b1, b2, t);
 
-		return new CurveSplitResult(c, b1, b2);
+		return new CurveSplitResult(buildCurve(curve.getP1(), a1, b1, c), buildCurve(c, b2, a3, curve.getP2()));
 	}
 
 	public static Point2D getPointOnCubicCurve (CubicCurve2D curve, double t) {

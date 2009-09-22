@@ -37,7 +37,8 @@ import org.workcraft.observation.TransformObserver;
 
 public class VisualConnection extends VisualNode implements
 		PropertyChangeListener, Node, Drawable, Connection,
-		TransformObserver, DependentNode, VisualConnectionInfo, ObservableHierarchy {
+		TransformObserver, DependentNode, VisualConnectionInfo,
+		ObservableHierarchy {
 
 	public enum ConnectionType
 	{

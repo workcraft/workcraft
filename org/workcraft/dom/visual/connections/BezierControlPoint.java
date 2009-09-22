@@ -35,12 +35,12 @@ class BezierControlPoint extends ControlPoint {
 
 	@Override
 	public void draw(Graphics2D g) {
-		super.draw(g);
-
-		g.setColor(Color.RED);
+		g.setColor(Color.LIGHT_GRAY);
 		g.setStroke(new BasicStroke(0.02f));
 
 		Line2D l = new Line2D.Double(0, 0, origin.getX(), origin.getY());
 		g.draw(l);
+
+		super.draw(g);
 	}
 }

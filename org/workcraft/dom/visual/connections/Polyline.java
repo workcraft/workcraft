@@ -19,12 +19,14 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 
-class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, StateObserver, HierarchyObserver {
+class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
+StateObserver, HierarchyObserver, SelectionObserver {
 	LinkedList<ControlPoint> controlPoints = new LinkedList<ControlPoint>();
 
 	private DefaultGroupImpl groupImpl;
@@ -328,5 +330,24 @@ class Polyline implements ConnectionGraphic, Container, ObservableHierarchy, Sta
 					controlPoints.remove(cp);
 				}
 		update();
+	}
+
+	@Override
+	public void notify(SelectionChangedEvent event) {
+		//System.out.println ("Selection changed");
+		boolean controlsVisible = false;
+		for (Node n : event.getSelection())
+			if (n == getParent() || controlPoints.contains(n)) {
+				controlsVisible = true;
+				break;
+			}
+
+		/*if (controlsVisible)
+			System.out.println ("Showing controls");
+		else
+			System.out.println ("Hiding controls");*/
+
+		for (ControlPoint cp : controlPoints)
+			cp.setHidden(!controlsVisible);
 	}
 }

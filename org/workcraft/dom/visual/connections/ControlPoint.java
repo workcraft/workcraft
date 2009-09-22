@@ -3,6 +3,7 @@ package org.workcraft.dom.visual.connections;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -13,10 +14,10 @@ import org.workcraft.gui.Coloriser;
 
 
 public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
-	private double size = 0.25;
-	private Color fillColor = Color.BLUE.darker();
+	private double size = 0.15;
+	private Color fillColor = Color.BLUE;
 
-	Shape shape = new Rectangle2D.Double(
+	Shape shape = new Ellipse2D.Double(
 			-size / 2,
 			-size / 2,
 			size,

@@ -12,14 +12,14 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
+import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.util.Geometry.CurveSplitResult;
 
-class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
-
+class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
 	private CubicCurve2D curve = new CubicCurve2D.Double();
 	private CubicCurve2D visibleCurve = new CubicCurve2D.Double();
 
@@ -91,17 +91,13 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
 
 	private CubicCurve2D getPartialCurve(double tStart, double tEnd)
 	{
-		CubicCurve2D result = new CubicCurve2D.Double();
-
 		CubicCurve2D fullCurve = new CubicCurve2D.Double();
 		fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
 		CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
-		CurveSplitResult secondSplit = Geometry.splitCubicCurve(fullCurve, tEnd);
+		CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd-tStart)/(1-tStart) );
 
-		result.setCurve(firstSplit.splitPoint, firstSplit.control2, secondSplit.control1, secondSplit.splitPoint);
-
-		return result;
+		return secondSplit.curve1;
 	}
 
 	private void updateVisibleRange() {
@@ -187,5 +183,17 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver {
 	@Override
 	public void notify(StateEvent e) {
 		update();
+	}
+
+	@Override
+	public void notify(SelectionChangedEvent event) {
+		boolean controlsVisible = false;
+		for (Node n : event.getSelection())
+			if (n==cp1 || n == cp2 || n == parent) {
+				controlsVisible = true;
+				break;
+			}
+			cp1.setHidden(!controlsVisible);
+			cp2.setHidden(!controlsVisible);
 	}
 }
