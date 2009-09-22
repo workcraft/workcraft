@@ -135,10 +135,7 @@ public class SelectionTool extends AbstractTool {
 			if (node != null)
 			{
 				if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
-					// if node is selected and it is the only node in selection, do nothing
-					if (!(e.getModel().getSelection().size() == 1 & e.getModel().getSelection().contains(node)))
-						// else select only this node
-						select(e.getModel(), node);
+					// do nothing, mousePressed will handle the selection without modifiers
 				} else
 					if ( (e.getModifiers()&MouseEvent.SHIFT_DOWN_MASK) != 0)
 						addToSelection(e.getModel(), node);
@@ -202,7 +199,7 @@ public class SelectionTool extends AbstractTool {
 	public void mousePressed(GraphEditorMouseEvent e) {
 		// System.out.println ("mousePressing ^_^");
 
-		// TODO: drag should start only if mouse is indeed moved, otherwise it interferes
+		// FIXME: drag should start only if mouse is indeed moved, otherwise it interferes
 		// with correct onclick behaviour
 
 		VisualModel model = e.getEditor().getModel();
