@@ -25,7 +25,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
-public abstract class VisualNode implements PropertyEditable, Node, Touchable, Colorisable, ObservableState {
+public abstract class VisualNode implements PropertyEditable, Node, Touchable, Colorisable, ObservableState, Hidable {
 	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
