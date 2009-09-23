@@ -5,12 +5,12 @@ import java.util.Map;
 import org.workcraft.plugins.balsa.components.CallMux;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.Process;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
 public class CallMux_NoDataPath extends
 		ComponentStgBuilder<CallMux> {
@@ -19,53 +19,53 @@ public class CallMux_NoDataPath extends
 	{
 	}
 
-	public void buildStg(CallMux component, Map<String, StgHandshake> handshakes, StgBuilder builder) {
+	public void buildStg(CallMux component, Map<String, Process> handshakes, StgBuilder builder) {
 		ActivePushStg out = (ActivePushStg)handshakes.get("out");
 
 		StgSignal selAc = builder.buildSignal(new SignalId(component, "selAq"), false);
-		StgPlace selRequested = builder.buildPlace();
-		StgPlace selRtz = builder.buildPlace();
-		StgPlace selAcknowledged = builder.buildPlace();
-		StgPlace selAckReset = builder.buildPlace(1);
-		builder.addConnection(selAc.getPlus(), selAcknowledged);
-		builder.addConnection(selAc.getMinus(), selAckReset);
+		OutputPlace selRequested = builder.buildPlace();
+		OutputPlace selRtz = builder.buildPlace();
+		OutputPlace selAcknowledged = builder.buildPlace();
+		OutputPlace selAckReset = builder.buildPlace(1);
+		builder.connect(selAc.getPlus(), selAcknowledged);
+		builder.connect(selAc.getMinus(), selAckReset);
 
-		builder.addConnection(selRequested, selAc.getPlus());
-		builder.addConnection(selRtz, selAc.getMinus());
+		builder.connect(selRequested, selAc.getPlus());
+		builder.connect(selRtz, selAc.getMinus());
 
-		StgPlace releaseInput = builder.buildPlace();
-		StgPlace releaseSel = builder.buildPlace();
-		builder.addConnection(out.getDeactivate(), releaseInput);
-		builder.addConnection(out.getDeactivate(), releaseSel);
+		OutputPlace releaseInput = builder.buildPlace();
+		OutputPlace releaseSel = builder.buildPlace();
+		builder.connect(out.done(), releaseInput);
+		builder.connect(out.done(), releaseSel);
 
-		StgPlace ready = builder.buildPlace(1);
+		OutputPlace ready = builder.buildPlace(1);
 
 		for(int i=0;i<component.getInputCount();i++)
 		{
 			PassivePushStg in = (PassivePushStg)handshakes.get("inp"+i);
 
 			//TODO! Move environment specification somewhere else
-			builder.addConnection(ready, (StgTransition)in.getActivate());
-			builder.addConnection(in.getDeactivate(), ready);
+			builder.connect(ready, (OutputEvent)in.go());
+			builder.connect(in.done(), ready);
 
 			StgSignal selRq = builder.buildSignal(new SignalId(component, "sel"+i+"Rq"), true);
-			StgPlace selReady = builder.buildPlace(1);
-			StgPlace selActive = builder.buildPlace();
-			builder.addConnection(selReady, selRq.getPlus());
-			builder.addConnection(selRq.getPlus(), selActive);
-			builder.addConnection(selActive, selRq.getMinus());
-			builder.addConnection(selRq.getMinus(), selReady);
+			OutputPlace selReady = builder.buildPlace(1);
+			OutputPlace selActive = builder.buildPlace();
+			builder.connect(selReady, selRq.getPlus());
+			builder.connect(selRq.getPlus(), selActive);
+			builder.connect(selActive, selRq.getMinus());
+			builder.connect(selRq.getMinus(), selReady);
 
-			builder.addConnection(selRq.getPlus(), selRequested);
-			builder.addConnection(selAcknowledged, selRq.getMinus());
-			builder.addConnection(selRq.getMinus(), selRtz);
-			builder.addConnection(selAckReset, selRq.getPlus());
+			builder.connect(selRq.getPlus(), selRequested);
+			builder.connect(selAcknowledged, selRq.getMinus());
+			builder.connect(selRq.getMinus(), selRtz);
+			builder.connect(selAckReset, selRq.getPlus());
 
-			builder.addConnection(in.getActivate(), selRq.getPlus());
-			builder.addConnection(releaseSel, selRq.getMinus());
-			builder.addConnection(releaseInput, in.getDataReleased());
+			builder.connect(in.go(), selRq.getPlus());
+			builder.connect(releaseSel, selRq.getMinus());
+			builder.connect(releaseInput, in.dataRelease());
 		}
 
-		builder.addConnection(selAc.getPlus(), out.getActivate());
+		builder.connect(selAc.getPlus(), out.go());
 	}
 }

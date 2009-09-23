@@ -1,5 +1,5 @@
 package org.workcraft.plugins.balsa.stgbuilder;
 
-public interface ReadablePlace {
-
+public interface OutputEvent extends Event
+{
 }

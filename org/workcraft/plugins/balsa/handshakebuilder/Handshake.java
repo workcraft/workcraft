@@ -1,9 +1,9 @@
 package org.workcraft.plugins.balsa.handshakebuilder;
 
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.Process;
 
 public interface Handshake
 {
-	public StgHandshake buildStg(HandshakeStgBuilder builder);
+	public Process buildStg(HandshakeStgBuilder builder);
 }

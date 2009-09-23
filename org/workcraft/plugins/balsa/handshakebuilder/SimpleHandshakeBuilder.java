@@ -2,10 +2,10 @@ package org.workcraft.plugins.balsa.handshakebuilder;
 
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 
 public class SimpleHandshakeBuilder implements HandshakeBuilder {
@@ -42,7 +42,7 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
 	public ActiveSync CreateActiveSync() {
 		return new ActiveSync(){
-			public ActiveSyncStg buildStg(HandshakeStgBuilder builder) {
+			public ActiveProcess buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 		};
@@ -75,7 +75,7 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
 	public PassiveSync CreatePassiveSync() {
 		return new PassiveSync(){
-			public PassiveSyncStg buildStg(HandshakeStgBuilder builder) {
+			public PassiveProcess buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 		};

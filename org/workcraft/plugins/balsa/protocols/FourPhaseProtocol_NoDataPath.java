@@ -9,24 +9,26 @@ import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
 import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
 
 interface HandshakeSignals
 {
-	StgTransition getRqP();
-	StgTransition getRqM();
-	StgTransition getAcP();
-	StgTransition getAcM();
+	InputOutputEvent getRqP();
+	InputOutputEvent getRqM();
+	InputOutputEvent getAcP();
+	InputOutputEvent getAcM();
 }
 
 public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
@@ -38,34 +40,34 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 		final StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), active);
 		final StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), !active);
 
-		final StgPlace ready = builder.buildPlace(1);
+		final OutputPlace ready = builder.buildPlace(1);
 
-		final StgTransition rqP = rq.getPlus();
-		final StgTransition rqM = rq.getMinus();
-		final StgTransition acP = ac.getPlus();
-		final StgTransition acM = ac.getMinus();
+		final InputOutputEvent rqP = rq.getPlus();
+		final InputOutputEvent rqM = rq.getMinus();
+		final InputOutputEvent acP = ac.getPlus();
+		final InputOutputEvent acM = ac.getMinus();
 
-		builder.addConnection(ready, rqP);
-		builder.addConnection(rqP, acP);
-		builder.addConnection(acP, rqM);
-		builder.addConnection(rqM, acM);
-		builder.addConnection(acM, ready);
+		builder.connect(ready, rqP);
+		builder.connect(rqP, acP);
+		builder.connect(acP, rqM);
+		builder.connect(rqM, acM);
+		builder.connect(acM, ready);
 
 		return new HandshakeSignals()
 		{
-			public StgTransition getAcM() {
+			public InputOutputEvent getAcM() {
 				return acM;
 			}
 
-			public StgTransition getAcP() {
+			public InputOutputEvent getAcP() {
 				return acP;
 			}
 
-			public StgTransition getRqM() {
+			public InputOutputEvent getRqM() {
 				return rqM;
 			}
 
-			public StgTransition getRqP() {
+			public InputOutputEvent getRqP() {
 				return rqP;
 			}
 		};
@@ -76,15 +78,15 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 
 		return new ActivePullStg()
 		{
-			public StgTransition getActivate() {
+			public OutputEvent go() {
 				return signals.getRqP();
 			}
 
-			public TransitionOutput getDataReady() {
+			public InputEvent done() {
 				return signals.getAcP();
 			}
 
-			public StgTransition getDataRelease() {
+			public OutputEvent dataRelease() {
 				return signals.getRqM();
 			}
 		};
@@ -96,29 +98,29 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 
 		return new ActivePushStg()
 		{
-			public StgTransition getActivate() {
+			public OutputEvent go() {
 				return signals.getRqP();
 			}
 
-			public TransitionOutput getDataReleased() {
+			public Event dataRelease() {
 				return signals.getAcP();
 			}
 
-			public TransitionOutput getDeactivate() {
+			public InputEvent done() {
 				return signals.getAcM();
 			}
 		};
 	}
 
-	public ActiveSyncStg create(ActiveSync handshake) {
+	public ActiveProcess create(ActiveSync handshake) {
 		final HandshakeSignals signals = createSignals(handshake, true);
 
-		return new ActiveSyncStg(){
-			public StgTransition getActivate() {
+		return new ActiveProcess(){
+			public OutputEvent go() {
 				return signals.getRqP();
 			}
 
-			public TransitionOutput getDeactivate() {
+			public InputEvent done() {
 				return signals.getAcM();
 			}
 		};
@@ -129,15 +131,15 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 
 		return new PassivePullStg()
 		{
-			public StgTransition getActivate() {
+			public InputEvent go() {
 				return signals.getRqP();
 			}
 
-			public StgTransition getDataReady() {
+			public OutputEvent done() {
 				return signals.getAcP();
 			}
 
-			public TransitionOutput getDataRelease() {
+			public Event dataRelease() {
 				return signals.getRqM();
 			}
 		};
@@ -148,15 +150,15 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 
 		return new PassivePushStg()
 		{
-			public TransitionOutput getActivate() {
+			public InputEvent go() {
 				return signals.getRqP();
 			}
 
-			public StgTransition getDataReleased() {
+			public OutputEvent dataRelease() {
 				return signals.getAcP();
 			}
 
-			public StgTransition getDeactivate() {
+			public OutputEvent done() {
 				return signals.getAcM();
 			}
 		};
@@ -171,15 +173,15 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
 	}
 
 
-	public PassiveSyncStg create(PassiveSync handshake) {
+	public PassiveProcess create(PassiveSync handshake) {
 		final HandshakeSignals signals = createSignals(handshake, false);
 
-		return new PassiveSyncStg(){
-			public TransitionOutput getActivate() {
+		return new PassiveProcess(){
+			public InputEvent go() {
 				return signals.getRqP();
 			}
 
-			public StgTransition getDeactivate() {
+			public OutputEvent done() {
 				return signals.getAcP();
 			}
 		};

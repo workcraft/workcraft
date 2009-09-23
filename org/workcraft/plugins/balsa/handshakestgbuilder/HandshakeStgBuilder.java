@@ -12,8 +12,8 @@ public interface HandshakeStgBuilder
 {
 	public StgBuilder getStgBuilder();
 	void setStgBuilder(StgBuilder builder);
-	public ActiveSyncStg create(ActiveSync handshake);
-	public PassiveSyncStg create(PassiveSync handshake);
+	public ActiveProcess create(ActiveSync handshake);
+	public PassiveProcess create(PassiveSync handshake);
 	public PassivePullStg create(PassivePull handshake);
 	public ActivePullStg create(ActivePull handshake);
 	public PassivePushStg create(PassivePush handshake);

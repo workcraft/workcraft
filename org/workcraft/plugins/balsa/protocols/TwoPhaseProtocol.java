@@ -6,111 +6,112 @@ import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
 import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
 import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
 import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
+import org.workcraft.plugins.balsa.stgbuilder.AnyPlace;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.InputPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 public class TwoPhaseProtocol implements HandshakeStgBuilder {
 
 	private StgBuilder builder;
 
-	public ActiveSyncStg create(ActiveSync handshake) {
+	public ActiveProcess create(ActiveSync handshake) {
 		StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), true);
 		StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), false);
 
 		buildSignalAutoControl(rq);
 		buildSignalAutoControl(ac);
 
-		final StgTransition activator = builder.buildTransition();
-		final StgTransition deactivation = builder.buildTransition();
+		final OutputEvent activator = builder.buildTransition();
+		final InputEvent deactivation = builder.buildTransition();
 
-		StgPlace activated = builder.buildPlace();
+		OutputPlace activated = builder.buildPlace();
 
-		builder.addConnection(activator, activated);
-		builder.addConnection(activated, rq.getMinus());
-		builder.addConnection(activated, rq.getPlus());
+		builder.connect(activator, activated);
+		builder.connect(activated, rq.getMinus());
+		builder.connect(activated, rq.getPlus());
 
-		StgPlace working = builder.buildPlace();
+		OutputPlace working = builder.buildPlace();
 
-		builder.addConnection(rq.getMinus(), working);
-		builder.addConnection(rq.getPlus(), working);
-		builder.addConnection(working, ac.getMinus());
-		builder.addConnection(working, ac.getPlus());
+		builder.connect(rq.getMinus(), working);
+		builder.connect(rq.getPlus(), working);
+		builder.connect(working, ac.getMinus());
+		builder.connect(working, ac.getPlus());
 
-		StgPlace done = builder.buildPlace();
+		InputPlace done = builder.buildInputPlace();
 
-		builder.addConnection(ac.getMinus(), done);
-		builder.addConnection(ac.getPlus(), done);
-		builder.addConnection(done, deactivation);
+		builder.connect(ac.getMinus(), done);
+		builder.connect(ac.getPlus(), done);
+		builder.connect(done, deactivation);
 
 
-		return new ActiveSyncStg()
+		return new ActiveProcess()
 		{
-			public StgTransition getActivate() {
+			public OutputEvent go() {
 				return activator;
 			}
-			public TransitionOutput getDeactivate() {
+			public InputEvent done() {
 				return deactivation;
 			}
 		};
 	}
 
 	private void buildSignalAutoControl(StgSignal rq) {
-		StgPlace zero = builder.buildPlace(1);
-		StgPlace one = builder.buildPlace();
-		builder.addConnection(rq.getMinus(), zero);
-		builder.addConnection(rq.getPlus(), one);
-		builder.addConnection(zero, rq.getPlus());
-		builder.addConnection(one, rq.getMinus());
+		OutputPlace zero = builder.buildPlace(1);
+		OutputPlace one = builder.buildPlace();
+		builder.connect(rq.getMinus(), zero);
+		builder.connect(rq.getPlus(), one);
+		builder.connect(zero, rq.getPlus());
+		builder.connect(one, rq.getMinus());
 	}
 
-	public PassiveSyncStg create(PassiveSync handshake) {
+	public PassiveProcess create(PassiveSync handshake) {
 		StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), false);
 		StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), true);
 
 		buildSignalAutoControl(rq);
 		buildSignalAutoControl(ac);
 
-		final StgTransition activation = builder.buildTransition();
-		final StgTransition deactivator = builder.buildTransition();
+		final InputEvent activation = builder.buildTransition();
+		final OutputEvent deactivator = builder.buildTransition();
 
-		StgPlace deactivated = builder.buildPlace();
+		OutputPlace deactivated = builder.buildPlace();
 
-		builder.addConnection(deactivator, deactivated);
-		builder.addConnection(deactivated, ac.getMinus());
-		builder.addConnection(deactivated, ac.getPlus());
+		builder.connect(deactivator, deactivated);
+		builder.connect(deactivated, ac.getMinus());
+		builder.connect(deactivated, ac.getPlus());
 
-		StgPlace waiting = builder.buildPlace(1);
+		OutputPlace waiting = builder.buildPlace(1);
 
-		builder.addConnection(ac.getMinus(), waiting);
-		builder.addConnection(ac.getPlus(), waiting);
-		builder.addConnection(waiting, rq.getMinus());
-		builder.addConnection(waiting, rq.getPlus());
+		builder.connect(ac.getMinus(), waiting);
+		builder.connect(ac.getPlus(), waiting);
+		builder.connect(waiting, rq.getMinus());
+		builder.connect(waiting, rq.getPlus());
 
-		StgPlace requested = builder.buildPlace();
+		InputPlace requested = builder.buildInputPlace();
 
-		builder.addConnection(rq.getMinus(), requested);
-		builder.addConnection(rq.getPlus(), requested);
-		builder.addConnection(requested, activation);
+		builder.connect(rq.getMinus(), requested);
+		builder.connect(rq.getPlus(), requested);
+		builder.connect(requested, activation);
 
 
-		return new PassiveSyncStg()
+		return new PassiveProcess()
 		{
-			public StgTransition getActivate() {
+			public InputEvent go() {
 				return activation;
 			}
-			public StgTransition getDeactivate() {
+			public OutputEvent done() {
 				return deactivator;
 			}
 		};
@@ -122,7 +123,7 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 	}
 
 	public ActivePullStg create(ActivePull handshake) {
-		final ActiveSyncStg sync = create((ActiveSync)handshake);
+		final ActiveProcess sync = create((ActiveSync)handshake);
 
 		final InputDataSignal[] dataSignals = DataSignalBuilder.buildInputDataSignals(handshake, builder);
 
@@ -130,27 +131,27 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 		{
 			//TODO: think where to stick data signals
 			@SuppressWarnings("unused")
-			public ReadablePlace getData(int index, boolean value) {
+			public AnyPlace getData(int index, boolean value) {
 				InputDataSignal signal = dataSignals[index];
 				return value ? signal.p1 : signal.p0;
 			}
 			@Override
-			public TransitionOutput getDataReady() {
-				return sync.getDeactivate();
+			public InputEvent done() {
+				return sync.done();
 			}
 			@Override
-			public StgTransition getDataRelease() {
-				return sync.getActivate();
+			public OutputEvent dataRelease() {
+				return sync.go();
 			}
 			@Override
-			public StgTransition getActivate() {
-				return sync.getActivate();
+			public OutputEvent go() {
+				return sync.go();
 			}
 		};
 	}
 
 	public PassivePushStg create(PassivePush handshake) {
-		final PassiveSyncStg sync = create((PassiveSync)handshake);
+		final PassiveProcess sync = create((PassiveSync)handshake);
 
 		final InputDataSignal[] dataSignals = DataSignalBuilder.buildInputDataSignals(handshake, builder);
 
@@ -158,19 +159,19 @@ public class TwoPhaseProtocol implements HandshakeStgBuilder {
 		{
 			//TODO: think where to stick data signals
 			@SuppressWarnings("unused")
-			public ReadablePlace getData(int index, boolean value) {
+			public AnyPlace getData(int index, boolean value) {
 				InputDataSignal signal = dataSignals[index];
 				return value ? signal.p1 : signal.p0;
 			}
-			public TransitionOutput getActivate() {
-				return sync.getActivate();
+			public InputEvent go() {
+				return sync.go();
 			}
-			public StgTransition getDeactivate() {
-				return sync.getDeactivate();
+			public OutputEvent done() {
+				return sync.done();
 			}
 			@Override
-			public StgTransition getDataReleased() {
-				return sync.getDeactivate();
+			public OutputEvent dataRelease() {
+				return sync.done();
 			}
 		};
 	}

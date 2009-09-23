@@ -1,23 +1,23 @@
 package org.workcraft.plugins.balsa.protocols;
 
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
 
 class InputDataSignal
 {
-	StgPlace p0;
-	StgPlace p1;
+	OutputPlace p0;
+	OutputPlace p1;
 }
 
-interface ActiveSyncWithRtz extends ActiveSyncStg
+interface ActiveSyncWithRtz extends ActiveProcess
 {
-	public StgTransition getRtz();
+	public OutputEvent getRtz();
 }
 
-interface PassiveSyncWithRtz extends PassiveSyncStg
+interface PassiveSyncWithRtz extends PassiveProcess
 {
-	public TransitionOutput getRtz();
+	public Event getRtz();
 }

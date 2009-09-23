@@ -1,33 +1,34 @@
 package org.workcraft.plugins.balsa.stg;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.SequenceOptimised;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
+import org.workcraft.plugins.balsa.handshakestgbuilder.Process;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 public class SequenceOptimisedStgBuilder extends
 		ComponentStgBuilder<SequenceOptimised> {
-
+	ProcessOperations o;
 	@Override
 	public void buildStg(SequenceOptimised component,
-			Map<String, StgHandshake> handshakes, StgBuilder builder) {
+			Map<String, Process> handshakes, StgBuilder builder) {
 
-		PassiveSyncStg activate = (PassiveSyncStg)handshakes.get("activate");
+		PassiveProcess activate = (PassiveProcess)handshakes.get("activate");
+		Collection<ActiveProcess> arr = getHandshakeArray(handshakes, "activateOut", component.getOutputCount(), ActiveProcess.class);
+		o.multiple(o.enclosure(activate, o.sequence(arr)));
+	}
+	private static <T extends Process> Collection<T> getHandshakeArray(Map<String, Process> handshakes,
+			String arrayName, int arraySize, Class<T> handshakeType) {
+		Collection<T> result = new ArrayList<T>(arraySize);
 
-		TransitionOutput lastHandshake = activate.getActivate();
+		for(int i=0;i<arraySize;i++)
+			result.add(handshakeType.cast(handshakes.get("activateOut"+i)));
 
-		for(int i=0;i<component.getOutputCount();i++)
-		{
-			ActiveSyncStg out = (ActiveSyncStg)handshakes.get("activateOut"+i);
-			builder.addConnection(lastHandshake, out.getActivate());
-			lastHandshake = out.getDeactivate();
-		}
-
-		builder.addConnection(lastHandshake, activate.getDeactivate());
+		return result;
 	}
 
 }

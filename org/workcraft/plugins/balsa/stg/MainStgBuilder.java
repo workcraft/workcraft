@@ -6,12 +6,12 @@ import java.util.Map;
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.Process;
 
 public class MainStgBuilder {
 	public static void buildStg(Component component, Map<String, Handshake> handshakes, HandshakeStgBuilder builder)
 	{
-		Map<String, StgHandshake> handshakeStg = buildHandshakes(handshakes, builder);
+		Map<String, Process> handshakeStg = buildHandshakes(handshakes, builder);
 		ComponentStgBuilder<?> componentBuilder = getComponentStgBuilder(component);
 		componentBuilder.buildComponentStg(component, handshakeStg, builder.getStgBuilder());
 	}
@@ -47,8 +47,8 @@ public class MainStgBuilder {
 		return result;
 	}
 
-	private static Map<String, StgHandshake> buildHandshakes(Map<String, Handshake> handshakes, HandshakeStgBuilder builder) {
-		HashMap<String, StgHandshake> result = new HashMap<String, StgHandshake>();
+	private static Map<String, Process> buildHandshakes(Map<String, Handshake> handshakes, HandshakeStgBuilder builder) {
+		HashMap<String, Process> result = new HashMap<String, Process>();
 		for(String key : handshakes.keySet())
 			result.put(key, handshakes.get(key).buildStg(builder));
 		return result;

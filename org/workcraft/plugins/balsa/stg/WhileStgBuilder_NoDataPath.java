@@ -4,38 +4,38 @@ import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveProcess;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveProcess;
+import org.workcraft.plugins.balsa.handshakestgbuilder.Process;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
 public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 	static interface WhileStgHandshakes
 	{
 		public ActivePullStg getGuard();
-		public PassiveSyncStg getActivate();
-		public ActiveSyncStg getActivateOut();
+		public PassiveProcess getActivate();
+		public ActiveProcess getActivateOut();
 	}
 
 	class WhileStgHandshakesFromCollection implements WhileStgHandshakes
 	{
-		private final Map<String, StgHandshake> map;
+		private final Map<String, Process> map;
 
-		public WhileStgHandshakesFromCollection(Map<String, StgHandshake> map)
+		public WhileStgHandshakesFromCollection(Map<String, Process> map)
 		{
 			this.map = map;
 		}
 
-		public PassiveSyncStg getActivate() {
-			return (PassiveSyncStg)map.get("activate");
+		public PassiveProcess getActivate() {
+			return (PassiveProcess)map.get("activate");
 		}
 
-		public ActiveSyncStg getActivateOut() {
-			return (ActiveSyncStg)map.get("activateOut");
+		public ActiveProcess getActivateOut() {
+			return (ActiveProcess)map.get("activateOut");
 		}
 
 		public ActivePullStg getGuard() {
@@ -47,53 +47,53 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 	{
 		public static void buildStg(While component, WhileStgHandshakes handshakes, StgBuilder builder)
 		{
-			StgPlace activated = builder.buildPlace();
-			StgPlace dataReady = builder.buildPlace();
+			OutputPlace activated = builder.buildPlace();
+			OutputPlace dataReady = builder.buildPlace();
 
-			PassiveSyncStg activate = handshakes.getActivate();
-			ActiveSyncStg activateOut = handshakes.getActivateOut();
+			PassiveProcess activate = handshakes.getActivate();
+			ActiveProcess activateOut = handshakes.getActivateOut();
 			ActivePullStg guard = handshakes.getGuard();
 
-			StgPlace guardChangeAllowed = builder.buildPlace(1);
+			OutputPlace guardChangeAllowed = builder.buildPlace(1);
 
 			StgSignal guardSignal = builder.buildSignal(new SignalId(component, "dp"), false);
-			final StgPlace guardOne = builder.buildPlace();
-			final StgPlace guardZero = builder.buildPlace(1);
-			builder.addConnection(guardOne, guardSignal.getMinus());
-			builder.addConnection(guardSignal.getMinus(), guardZero);
-			builder.addConnection(guardZero, guardSignal.getPlus());
-			builder.addConnection(guardSignal.getPlus(), guardOne);
+			final OutputPlace guardOne = builder.buildPlace();
+			final OutputPlace guardZero = builder.buildPlace(1);
+			builder.connect(guardOne, guardSignal.getMinus());
+			builder.connect(guardSignal.getMinus(), guardZero);
+			builder.connect(guardZero, guardSignal.getPlus());
+			builder.connect(guardSignal.getPlus(), guardOne);
 
-			builder.addConnection(guard.getDataRelease(), guardChangeAllowed);
+			builder.connect(guard.dataRelease(), guardChangeAllowed);
 			//TODO: Move environment specification somewhere else
-			builder.addConnection(guardChangeAllowed, (StgTransition)guard.getDataReady());
+			builder.connect(guardChangeAllowed, (OutputEvent)guard.done());
 			builder.addReadArc(guardChangeAllowed, guardSignal.getMinus());
 			builder.addReadArc(guardChangeAllowed, guardSignal.getPlus());
 
 			// Call guard
-			builder.addConnection(activate.getActivate(), activated);
-			builder.addConnection(activated, guard.getActivate());
-			builder.addConnection(guard.getDataReady(), dataReady);
+			builder.connect(activate.go(), activated);
+			builder.connect(activated, guard.go());
+			builder.connect(guard.done(), dataReady);
 
 			// Activate and repeatedly call guard
-			builder.addConnection(dataReady, activateOut.getActivate());
-			builder.addReadArc(guardOne, activateOut.getActivate());
-			builder.addConnection(activateOut.getDeactivate(), activated);
+			builder.connect(dataReady, activateOut.go());
+			builder.addReadArc(guardOne, activateOut.go());
+			builder.connect(activateOut.done(), activated);
 
 			// Return
-			builder.addConnection(dataReady, activate.getDeactivate());
-			builder.addReadArc(guardZero, activate.getDeactivate());
+			builder.connect(dataReady, activate.done());
+			builder.addReadArc(guardZero, activate.done());
 
-			StgTransition dataRelease = guard.getDataRelease();
+			OutputEvent dataRelease = guard.dataRelease();
 
-			StgPlace releaseAllowed = builder.buildPlace();
-			builder.addConnection(activateOut.getActivate(), releaseAllowed);
-			builder.addConnection(activate.getDeactivate(), releaseAllowed);
-			builder.addConnection(releaseAllowed, dataRelease);
+			OutputPlace releaseAllowed = builder.buildPlace();
+			builder.connect(activateOut.go(), releaseAllowed);
+			builder.connect(activate.done(), releaseAllowed);
+			builder.connect(releaseAllowed, dataRelease);
 		}
 	}
 
-	public void buildStg(While component, Map<String, StgHandshake> handshakes, StgBuilder builder)
+	public void buildStg(While component, Map<String, Process> handshakes, StgBuilder builder)
 	{
 		WhileInternalStgBuilder.buildStg(component, new WhileStgHandshakesFromCollection(handshakes), builder);
 	}

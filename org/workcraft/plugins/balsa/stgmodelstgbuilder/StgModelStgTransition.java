@@ -1,9 +1,9 @@
 package org.workcraft.plugins.balsa.stgmodelstgbuilder;
 
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
+import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.stg.SignalTransition;
 
-public class StgModelStgTransition implements StgTransition
+public class StgModelStgTransition implements InputOutputEvent
 {
 	private final SignalTransition modelTransition;
 

@@ -5,13 +5,16 @@ import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
+import org.workcraft.plugins.balsa.stgbuilder.AnyPlace;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.InputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.OutputPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -49,26 +52,26 @@ public class StgModelStgBuilder implements StgBuilder {
 		}
 	}
 
-	public void addConnection(StgPlace place, StgTransition transition) {
+	private void connectInternal(AnyPlace place, Event transition) {
 		addConnection((StgModelStgPlace)place, (StgModelStgTransition)transition);
 	}
 
-	public void addConnection(StgTransition transition, StgPlace place) {
+	public void connectInternal(Event transition, AnyPlace place) {
 		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
 	}
 
-	public void addConnection(TransitionOutput transition, StgPlace place) {
+	public void connect(Event transition, OutputPlace place) {
 		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
 	}
 
-	public void addReadArc(ReadablePlace place, StgTransition transition) {
+	public void addReadArc(AnyPlace place, Event transition) {
 		StgModelStgTransition t = (StgModelStgTransition)transition;
 		StgModelStgPlace p = (StgModelStgPlace)place;
 		addConnection(p, t);
 		addConnection(t, p);
 	}
 
-	public StgPlace buildPlace() {
+	public OutputPlace buildPlace() {
 		return buildPlace(0);
 	}
 
@@ -78,7 +81,7 @@ public class StgModelStgBuilder implements StgBuilder {
 		return new StgModelStgTransition(transition);
 	}
 
-	public StgPlace buildPlace(int tokenCount) {
+	private StgModelStgPlace buildAnyPlace(int tokenCount) {
 		Place place = new Place();
 		place.setTokens(tokenCount);
 		model.add(place);
@@ -102,10 +105,10 @@ public class StgModelStgBuilder implements StgBuilder {
 
 		final StgSignal result = new StgSignal()
 		{
-			public StgTransition getMinus() {
+			public InputOutputEvent getMinus() {
 				return transitionM;
 			}
-			public StgTransition getPlus() {
+			public InputOutputEvent getPlus() {
 				return transitionP;
 			}
 		};
@@ -123,9 +126,59 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	HashMap<SignalId, StgSignal> exports = new HashMap<SignalId, StgSignal>();
 
-	public void addConnection(TransitionOutput t1, StgTransition t2) {
-		StgPlace place = this.buildPlace();
-		addConnection(t1, place);
-		addConnection(place, t2);
+	private void connectInternal(Event t1, Event t2) {
+		OutputPlace place = this.buildPlace();
+		connect(t1, place);
+		connectInternal(place, t2);
+	}
+
+	@Override
+	public void addReadArc(OutputPlace place, OutputEvent transition) {
+		addReadArc((AnyPlace)place, transition);
+	}
+
+	@Override
+	public void addReadArc(InputPlace place, InputEvent transition) {
+		addReadArc((AnyPlace)place, transition);
+	}
+
+	@Override
+	public InputPlace buildInputPlace() {
+		return buildAnyPlace(0);
+	}
+
+	@Override
+	public void connect(OutputPlace place, OutputEvent transition) {
+		connectInternal(place, transition);
+	}
+
+	@Override
+	public void connect(InputPlace place, InputEvent transition) {
+		connectInternal(place, transition);
+	}
+
+	@Override
+	public void connect(Event transition, InputPlace place) {
+		connectInternal(transition, place);
+	}
+
+	@Override
+	public void connect(Event t1, OutputEvent t2) {
+		connectInternal(t1, t2);
+	}
+
+	@Override
+	public void connect(Event t1, InputOutputEvent t2) {
+		connectInternal(t1, t2);
+	}
+
+	@Override
+	public void connect(Event t1, InputEvent t2) {
+		connectInternal(t1, t2);
+	}
+
+	@Override
+	public OutputPlace buildPlace(int tokenCount) {
+		return buildAnyPlace(tokenCount);
 	}
 }
