@@ -590,7 +590,7 @@ public class Framework {
 		String mathEntryName = "model" + mathSerialiser.getExtension();
 		ZipEntry ze = new ZipEntry(mathEntryName);
 		zos.putNextEntry(ze);
-		ReferenceProducer refResolver = mathSerialiser.export(mathModel, zos, null);
+		ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
 		zos.closeEntry();
 
 		String visualEntryName = null;
@@ -604,7 +604,7 @@ public class Framework {
 			visualEntryName = "visualModel" + visualSerialiser.getExtension();
 			ze = new ZipEntry(visualEntryName);
 			zos.putNextEntry(ze);
-			visualSerialiser.export(visualModel, zos, refResolver);
+			visualSerialiser.serialise(visualModel, zos, refResolver);
 			zos.closeEntry();
 		}
 

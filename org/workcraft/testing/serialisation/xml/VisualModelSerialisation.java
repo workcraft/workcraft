@@ -61,10 +61,10 @@ public class VisualModelSerialisation {
 		serialiser.processPlugins(mockPluginManager);
 
 		DataAccumulator mathData = new DataAccumulator();
-		ReferenceProducer mathModelReferences = serialiser.export(stg, mathData, null);
+		ReferenceProducer mathModelReferences = serialiser.serialise(stg, mathData, null);
 
 		DataAccumulator visualData = new DataAccumulator();
-		serialiser.export(visualstg, visualData, mathModelReferences);
+		serialiser.serialise(visualstg, visualData, mathModelReferences);
 
 		/* System.out.println (new String (mathData.getData()));
 		System.out.println ("---------------");

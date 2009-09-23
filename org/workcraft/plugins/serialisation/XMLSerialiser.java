@@ -31,9 +31,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.PluginConsumer;
 import org.workcraft.PluginProvider;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.Format;
@@ -44,26 +43,6 @@ import org.workcraft.util.XmlUtil;
 
 public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
-
-	private Element serialise(Node node, Document doc,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException {
-		Element e = doc.createElement("node");
-		e.setAttribute("class", node.getClass().getName());
-
-		serialisation.serialise(e, node, internalReferences, externalReferences);
-
-		/* OLD WAY
-		 *
-		 * if (node instanceof XMLSerialisable)
-			((XMLSerialisable)node).serialise(e, refResolver);*/
-
-		if (node instanceof Container)
-			for (Node child : node.getChildren())
-				e.appendChild(serialise(child, doc, internalReferences, externalReferences));
-
-		return e;
-	}
 
 	public String getDescription() {
 		return "Workcraft XML serialiser";
@@ -85,13 +64,9 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 		return ".xml";
 	}
 
-	public ReferenceProducer export(final Model model, OutputStream out, ReferenceProducer externalReferences)
+	public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer externalReferences)
 	throws SerialisationException {
 		try{
-			Document doc = XmlUtil.createDocument();
-
-			Element root = doc.createElement("model");
-			root.setAttribute("class", model.getClass().getName());
 
 			ReferenceProducer internalReferences = new ReferenceProducer() {
 				public String getReference(Object obj) {
@@ -102,15 +77,16 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 				}
 			};
 
-			serialisation.serialise(root, model, internalReferences, externalReferences);
+			Document doc = XmlUtil.createDocument();
 
-			/*  OLD WAY
-			 *
-			 *  if (model instanceof XMLSerialisable)
-				((XMLSerialisable)model).serialise(root, refResolver); */
+			Element modelElement = doc.createElement("model");
+			Element rootElement = doc.createElement("root");
 
-			doc.appendChild(root);
-			root.appendChild(serialise(model.getRoot(), doc, internalReferences, externalReferences));
+			serialisation.serialise(modelElement, model, internalReferences, externalReferences);
+			serialisation.serialise(rootElement, model.getRoot(), internalReferences, externalReferences);
+
+			doc.appendChild(modelElement);
+			modelElement.appendChild(rootElement);
 			XmlUtil.writeDocument(doc, out);
 
 			return internalReferences;

@@ -59,10 +59,10 @@ public class STGSerialisationTests {
 			serialiser.processPlugins(mockPluginManager);
 
 			DataAccumulator mathData = new DataAccumulator();
-			ReferenceProducer mathModelReferences = serialiser.export(stg.getMathModel(), mathData, null);
+			ReferenceProducer mathModelReferences = serialiser.serialise(stg.getMathModel(), mathData, null);
 
 			DataAccumulator visualData = new DataAccumulator();
-			serialiser.export(stg, visualData, mathModelReferences);
+			serialiser.serialise(stg, visualData, mathModelReferences);
 
 
 

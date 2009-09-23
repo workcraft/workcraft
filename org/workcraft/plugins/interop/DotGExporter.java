@@ -36,7 +36,7 @@ public class DotGExporter implements Exporter, Plugin {
 
 	public void export(Model model, OutputStream out)
 			throws IOException, ModelValidationException, SerialisationException {
-		serialiser.export(model, out, null);
+		serialiser.serialise(model, out, null);
 	}
 
 	public String getDescription() {
