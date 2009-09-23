@@ -27,6 +27,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
@@ -56,6 +59,39 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		@Override
 		public void handleEvent(StateEvent e) {
+			repaint();
+		}
+	}
+
+	class Resizer implements ComponentListener {
+
+		@Override
+		public void componentHidden(ComponentEvent e) {
+		}
+
+		@Override
+		public void componentMoved(ComponentEvent e) {
+		}
+
+		@Override
+		public void componentResized(ComponentEvent e) {
+			reshape();
+			repaint();
+		}
+
+		@Override
+		public void componentShown(ComponentEvent e) {
+		}
+	}
+
+	public class GraphEditorFocusListener implements FocusListener {
+		@Override
+		public void focusGained(FocusEvent e) {
+			repaint();
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
 			repaint();
 		}
 	}
@@ -98,9 +134,15 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		addMouseMotionListener(mouseListener);
 		addMouseListener(mouseListener);
 		addMouseWheelListener(mouseListener);
-		addFocusListener(new GraphEditorFocusListener(this));
+		addFocusListener(new GraphEditorFocusListener());
+		addComponentListener(new Resizer());
 
 		addKeyListener(keyListener);
+	}
+
+	private void reshape() {
+		view.setShape(15, 15, getWidth()-15, getHeight()-15);
+		ruler.setShape(0, 0, getWidth(), getHeight());
 	}
 
 	@Override
@@ -116,7 +158,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		g2d.setTransform(screenTransform);
 
 		if (firstPaint) {
-			componentResized(null);
+			reshape();
 			firstPaint = false;
 		}
 
@@ -143,24 +185,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		}
 	}
 
-
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-
-
-	public void componentResized(ComponentEvent e) {
-		view.setShape(15, 15, getWidth()-15, getHeight()-15);
-		ruler.setShape(0, 0, getWidth(), getHeight());
-		repaint();
-	}
-
-	public void componentShown(ComponentEvent e) {
-	}
-
 	public VisualModel getModel() {
 		return visualModel;
 	}
@@ -171,14 +195,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public void snap(Point2D point) {
 		point.setLocation(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
-	}
-
-	public void focusGained() {
-		this.repaint();
-	}
-
-	public void focusLost() {
-		this.repaint();
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {
