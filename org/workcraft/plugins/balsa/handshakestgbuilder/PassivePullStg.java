@@ -21,12 +21,9 @@
 
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 
-public interface PassivePullStg extends StgHandshake
+public interface PassivePullStg extends PassiveSync
 {
-	public TransitionOutput getActivate();
-	public StgTransition getDataReady();
-	public TransitionOutput getDataRelease();
+	public InputEvent dataRelease();
 }

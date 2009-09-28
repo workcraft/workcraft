@@ -19,14 +19,14 @@
 *
 */
 
-package org.workcraft.plugins.balsa.handshakestgbuilder;
+package org.workcraft.plugins.balsa.stgbuilder;
 
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
-
-
-public interface ActiveSyncStg extends StgHandshake
+public interface StrictPetriBuilder extends TypedStrictStgBuilder<OutputEvent, InputEvent, StgPlace, InputOutputEvent>
 {
-	public StgTransition getActivate();
-	public TransitionOutput getDeactivate();
+	StgPlace buildPlace(int tokenCount);
+	InputOutputEvent buildTransition();
+	void connect(StgPlace place, OutputEvent transition);
+	void connect(InputEvent transition, StgPlace place);
+	void addReadArc(StgPlace place, InputOutputEvent transition);
+	void connect(InputEvent t1, OutputEvent t2);
 }

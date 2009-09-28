@@ -26,13 +26,12 @@ import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.balsa.stgbuilder.ReadablePlace;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
+import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -70,19 +69,15 @@ public class StgModelStgBuilder implements StgBuilder {
 		}
 	}
 
-	public void addConnection(StgPlace place, StgTransition transition) {
+	public void connect(StgPlace place, Event transition) {
 		addConnection((StgModelStgPlace)place, (StgModelStgTransition)transition);
 	}
 
-	public void addConnection(StgTransition transition, StgPlace place) {
+	public void connect(Event transition, StgPlace place) {
 		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
 	}
 
-	public void addConnection(TransitionOutput transition, StgPlace place) {
-		addConnection((StgModelStgTransition)transition, (StgModelStgPlace)place);
-	}
-
-	public void addReadArc(ReadablePlace place, StgTransition transition) {
+	public void addReadArc(StgPlace place, Event transition) {
 		StgModelStgTransition t = (StgModelStgTransition)transition;
 		StgModelStgPlace p = (StgModelStgPlace)place;
 		addConnection(p, t);
@@ -99,7 +94,7 @@ public class StgModelStgBuilder implements StgBuilder {
 		return new StgModelStgTransition(transition);
 	}
 
-	public StgPlace buildPlace(int tokenCount) {
+	private StgModelStgPlace buildStgPlace(int tokenCount) {
 		Place place = new Place();
 		place.setTokens(tokenCount);
 		model.add(place);
@@ -123,10 +118,10 @@ public class StgModelStgBuilder implements StgBuilder {
 
 		final StgSignal result = new StgSignal()
 		{
-			public StgTransition getMinus() {
+			public InputOutputEvent getMinus() {
 				return transitionM;
 			}
-			public StgTransition getPlus() {
+			public InputOutputEvent getPlus() {
 				return transitionP;
 			}
 		};
@@ -144,9 +139,14 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	HashMap<SignalId, StgSignal> exports = new HashMap<SignalId, StgSignal>();
 
-	public void addConnection(TransitionOutput t1, StgTransition t2) {
+	public void connect(Event t1, Event t2) {
 		StgPlace place = this.buildPlace();
-		addConnection(t1, place);
-		addConnection(place, t2);
+		connect(t1, place);
+		connect(place, t2);
+	}
+
+	@Override
+	public StgPlace buildPlace(int tokenCount) {
+		return buildStgPlace(tokenCount);
 	}
 }

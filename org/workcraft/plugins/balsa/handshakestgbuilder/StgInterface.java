@@ -18,9 +18,8 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-package org.workcraft.plugins.balsa.stgbuilder;
-
-public interface ReadablePlace {
+public interface StgInterface {
 
 }

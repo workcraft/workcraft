@@ -18,18 +18,13 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.protocols;
 
-package org.workcraft.plugins.balsa.stgbuilder;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
-
-interface Transition
-{
-}
-
-public interface TransitionOutput
-{
-}
-
-interface ReadonlyTransition
-{
+public interface PassiveEvent extends Event, PassiveOut, ActiveIn {
+	InputEvent in();
+	OutputEvent out();
 }

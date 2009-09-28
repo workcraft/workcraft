@@ -34,11 +34,9 @@ import java.util.Set;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
-import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
+import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 
 public class VisualHandshake extends VisualComponent {
 
@@ -66,7 +64,7 @@ public class VisualHandshake extends VisualComponent {
 		g.setStroke(new BasicStroke(0.1f));
 		Ellipse2D.Double circle = new Ellipse2D.Double(-0.5, -0.5, 1, 1);
 		g.draw(circle);
-		if(handshake instanceof ActiveSync)
+		if(handshake.isActive())
 			g.fill(circle);
 
 
@@ -86,7 +84,7 @@ public class VisualHandshake extends VisualComponent {
 		double widthSpecificationX;
 		double lineStartX, lineEndX;
 
-		if(dataHandshake instanceof ActivePull || dataHandshake instanceof PassivePush)
+		if(dataHandshake.isActive() == dataHandshake instanceof PullHandshake)
 		{
 			arrowPointX = 0.5;
 			arrowBaseX = 2;

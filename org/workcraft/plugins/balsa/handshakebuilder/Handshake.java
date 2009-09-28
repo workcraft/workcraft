@@ -21,10 +21,11 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
+import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
 
 public interface Handshake
 {
-	public StgHandshake buildStg(HandshakeStgBuilder builder);
+	public TwoWayStg buildStg(HandshakeStgBuilder builder);
+	public boolean isActive();
 }

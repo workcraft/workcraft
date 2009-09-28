@@ -18,10 +18,11 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.protocols;
 
-package org.workcraft.plugins.balsa.handshakestgbuilder;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 
 
-public interface StgHandshake
-{
+public interface ActiveIn {
+	InputEvent in();
 }

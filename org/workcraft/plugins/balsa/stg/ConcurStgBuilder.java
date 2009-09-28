@@ -24,22 +24,22 @@ package org.workcraft.plugins.balsa.stg;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Concur;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class ConcurStgBuilder extends ComponentStgBuilder<Concur> {
 
 	@Override
-	public void buildStg(Concur component, Map<String, StgHandshake> handshakes, StgBuilder builder) {
-		PassiveSyncStg activate = (PassiveSyncStg)handshakes.get("activate");
+	public void buildStg(Concur component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
+		PassiveSync activate = (PassiveSync)handshakes.get("activate");
 
 		for(int i=0;i<component.getOutputCount();i++)
 		{
-			ActiveSyncStg out = (ActiveSyncStg)handshakes.get("activateOut"+i);
-			builder.addConnection(activate.getActivate(), out.getActivate());
-			builder.addConnection(out.getDeactivate(), activate.getDeactivate());
+			ActiveSync out = (ActiveSync)handshakes.get("activateOut"+i);
+			builder.connect(activate.go(), out.go());
+			builder.connect(out.done(), activate.done());
 		}
 	}
 

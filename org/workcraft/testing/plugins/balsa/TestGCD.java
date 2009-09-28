@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DocumentFormatException;
@@ -292,7 +293,7 @@ public class TestGCD {
 		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
-	//@Test
+	@Test
 	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();

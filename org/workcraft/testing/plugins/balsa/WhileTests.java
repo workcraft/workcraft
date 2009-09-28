@@ -83,8 +83,7 @@ public class WhileTests {
 			}
 		});
 		FourPhaseProtocol_NoDataPath handshakeBuilder = new FourPhaseProtocol_NoDataPath();
-		handshakeBuilder.setStgBuilder(stgBuilder);
-		MainStgBuilder.buildStg(wh, handshakes, handshakeBuilder);
+		MainStgBuilder.buildStg(wh, handshakes, stgBuilder, handshakeBuilder);
 
 		new DeadlockChecker().run(stg);
 

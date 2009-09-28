@@ -22,6 +22,6 @@
 package org.workcraft.plugins.balsa.stgbuilder;
 
 public interface StgSignal {
-	public StgTransition getPlus();
-	public StgTransition getMinus();
+	public InputOutputEvent getPlus();
+	public InputOutputEvent getMinus();
 }

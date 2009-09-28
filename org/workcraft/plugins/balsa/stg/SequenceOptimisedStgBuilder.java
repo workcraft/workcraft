@@ -21,34 +21,34 @@
 
 package org.workcraft.plugins.balsa.stg;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.SequenceOptimised;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class SequenceOptimisedStgBuilder extends
 		ComponentStgBuilder<SequenceOptimised> {
-
+	ProcessOperations o;
 	@Override
-	public void buildStg(SequenceOptimised component,
-			Map<String, StgHandshake> handshakes, StgBuilder builder) {
+	public void buildStg(SequenceOptimised component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
 
-		PassiveSyncStg activate = (PassiveSyncStg)handshakes.get("activate");
+		PassiveSync activate = (PassiveSync)handshakes.get("activate");
+		Collection<ActiveSync> arr = getHandshakeArray(handshakes, "activateOut", component.getOutputCount(), ActiveSync.class);
+		o.multiple(o.enclosure(activate, o.sequence(arr)));
+	}
+	private static <T extends StgInterface> Collection<T> getHandshakeArray(Map<String, StgInterface> handshakes,
+			String arrayName, int arraySize, Class<T> handshakeType) {
+		Collection<T> result = new ArrayList<T>(arraySize);
 
-		TransitionOutput lastHandshake = activate.getActivate();
+		for(int i=0;i<arraySize;i++)
+			result.add(handshakeType.cast(handshakes.get("activateOut"+i)));
 
-		for(int i=0;i<component.getOutputCount();i++)
-		{
-			ActiveSyncStg out = (ActiveSyncStg)handshakes.get("activateOut"+i);
-			builder.addConnection(lastHandshake, out.getActivate());
-			lastHandshake = out.getDeactivate();
-		}
-
-		builder.addConnection(lastHandshake, activate.getDeactivate());
+		return result;
 	}
 
 }

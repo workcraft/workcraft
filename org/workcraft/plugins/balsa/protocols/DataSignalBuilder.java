@@ -37,14 +37,14 @@ class DataSignalBuilder {
 		{
 			signals[i] = new InputDataSignal();
 			StgPlace d0 = builder.buildPlace(1);
-			StgPlace d1 = builder.buildPlace();
+			StgPlace d1 = builder.buildPlace(0);
 			signals[i].p0 = d0;
 			signals[i].p1 = d1;
 			StgSignal dataSignal = builder.buildSignal(new SignalId(handshake, "data"+i), false);
-			builder.addConnection(d0, dataSignal.getPlus());
-			builder.addConnection(dataSignal.getPlus(), d1);
-			builder.addConnection(d1, dataSignal.getMinus());
-			builder.addConnection(dataSignal.getMinus(), d0);
+			builder.connect(d0, dataSignal.getPlus());
+			builder.connect(dataSignal.getPlus(), d1);
+			builder.connect(d1, dataSignal.getMinus());
+			builder.connect(dataSignal.getMinus(), d0);
 		}
 		return signals;
 	}

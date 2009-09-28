@@ -18,9 +18,14 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-package org.workcraft.plugins.balsa.handshakebuilder;
+import java.util.List;
 
-public interface ActiveSync extends Handshake
-{
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
+
+public interface ActiveFullDataPushStg extends StgInterface {
+	public List<OutputEvent> data(); //i-th event means that the result i was returned
+	public InputEvent done();
 }

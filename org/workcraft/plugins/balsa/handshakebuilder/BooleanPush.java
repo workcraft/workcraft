@@ -21,6 +21,6 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-public interface PassiveSync extends Handshake
-{
+public interface BooleanPush extends Handshake {
+
 }
