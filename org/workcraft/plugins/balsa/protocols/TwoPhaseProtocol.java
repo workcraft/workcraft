@@ -21,8 +21,8 @@
 
 package org.workcraft.plugins.balsa.protocols;
 
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPull;
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPush;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
@@ -46,76 +46,94 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 			this.builder = stgBuilder;
 		}
 
-		private void buildSignalAutoControl(ActiveSignal rq) {
+		private ActiveEvent buildSignalToggle(ActiveSignal rq) {
+
+			ActiveDummy toggle = builder.buildActiveTransition();
+
+			ActiveState toggling = builder.buildActivePlace(0);
+			builder.connect(toggle, toggling);
+
 			ActiveState zero = builder.buildActivePlace(1);
 			ActiveState one = builder.buildActivePlace(0);
-			builder.connect(rq.getMinus(), zero);
-			builder.connect(rq.getPlus(), one);
-			builder.connect(zero, rq.getPlus());
-			builder.connect(one, rq.getMinus());
+			ActiveDummy setOne = builder.buildActiveTransition();
+			ActiveDummy setZero = builder.buildActiveTransition();
+			builder.connect(setZero, zero);
+			builder.connect(setOne, one);
+			builder.connect(zero, setOne);
+			builder.connect(one, setZero);
+			builder.connect(toggling, setOne);
+			builder.connect(toggling, setZero);
+
+			builder.connect(setOne, rq.getPlus());
+			builder.connect(setZero, rq.getMinus());
+
+			PassiveState toggled = builder.buildPassivePlace(0);
+
+			PassiveDummy detector = builder.buildPassiveTransition();
+
+			builder.connect(toggled, detector);
+
+			return builder.get(toggle, detector);
 		}
 
-		private void buildSignalAutoControl(PassiveSignal rq) {
+		private PassiveEvent buildSignalToggle(PassiveSignal rq) {
+
+			PassiveDummy toggle = builder.buildPassiveTransition();
+
+			PassiveState toggling = builder.buildPassivePlace(0);
+			builder.connect(toggle, toggling);
+
 			PassiveState zero = builder.buildPassivePlace(1);
 			PassiveState one = builder.buildPassivePlace(0);
-			builder.connect(rq.getMinus(), zero);
-			builder.connect(rq.getPlus(), one);
-			builder.connect(zero, rq.getPlus());
-			builder.connect(one, rq.getMinus());
+			PassiveDummy setOne = builder.buildPassiveTransition();
+			PassiveDummy setZero = builder.buildPassiveTransition();
+			builder.connect(setZero, zero);
+			builder.connect(setOne, one);
+			builder.connect(zero, setOne);
+			builder.connect(one, setZero);
+			builder.connect(toggling, setOne);
+			builder.connect(toggling, setZero);
+
+			builder.connect(setOne, rq.getPlus());
+			builder.connect(setZero, rq.getMinus());
+
+			ActiveState toggled = builder.buildActivePlace(0);
+
+			builder.connect(rq.getPlus(), toggled);
+			builder.connect(rq.getMinus(), toggled);
+
+			ActiveDummy detector = builder.buildActiveTransition();
+
+			builder.connect(toggled, detector);
+
+			return builder.get(toggle, detector);
 		}
 
-		@Override public SyncStg create(Sync handshake) {
-			ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
-			PassiveSignal ac = builder.buildPassiveSignal(new SignalId(handshake, "ac"));
-
-			buildSignalAutoControl(rq);
-			buildSignalAutoControl(ac);
-
-			final ActiveDummy go = builder.buildActiveTransition();
-			final PassiveDummy going = builder.buildPassiveTransition();
-			final ActiveDummy done = builder.buildActiveTransition();
+		@Override public SyncStg create(Sync handshake)
+		{
+			final ActiveEvent rqToggle = buildSignalToggle(builder.buildActiveSignal(new SignalId(handshake, "rq")));
+			final PassiveEvent acToggle = buildSignalToggle(builder.buildPassiveSignal(new SignalId(handshake, "ac")));
 
 			ActiveState ready = builder.buildActivePlace(1);
 
-			builder.connect(ready, go);
+			builder.connect(ready, rqToggle);
 
-			ActiveState requesting = builder.buildActivePlace(0);
+			builder.connect(rqToggle, acToggle);
 
-			builder.connect(requesting, rq.getMinus());
-			builder.connect(requesting, rq.getPlus());
-
-			PassiveState requested = builder.buildPassivePlace(0);
-
-			builder.connect(rq.getMinus(), requested);
-			builder.connect(rq.getPlus(), requested);
-			builder.connect(requested, going);
-
-			builder.connect(done, ready);
-
-			PassiveState deactivating = builder.buildPassivePlace(0);
-
-			builder.connect(going, deactivating);
-			builder.connect(deactivating, ac.getMinus());
-			builder.connect(deactivating, ac.getPlus());
-
-			ActiveState rtzFinished = builder.buildActivePlace(1);
-
-			builder.connect(ac.getMinus(), rtzFinished);
-			builder.connect(ac.getPlus(), rtzFinished);
-			builder.connect(rtzFinished, done);
+			builder.connect(acToggle, ready);
 
 			return new SyncStg()
 			{
 				@Override public ActiveEvent go() {
-					return builder.get(go, going);
+					return rqToggle;
 				}
 				@Override public PassiveEvent done() {
-					return builder.get(going, done);
+					return acToggle;
 				}
 			};
 		}
 
-		public DataPullStg create(PullHandshake handshake) {
+		@Override public DataPullStg create(PullHandshake handshake) {
 			final SyncStg sync = create((Sync)handshake);
 
 			return new DataPullStg()
@@ -150,12 +168,12 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 		}
 
 		@Override
-		public FullDataPullStg create(BooleanPull handshake) {
+		public FullDataPullStg create(FullDataPull handshake) {
 			throw new RuntimeException("Not implemented!");// TODO Implement
 		}
 
 		@Override
-		public FullDataPullStg create(BooleanPush handshake) {
+		public FullDataPullStg create(FullDataPush handshake) {
 			throw new RuntimeException("Not implemented!");// TODO Implement
 		}
 	}

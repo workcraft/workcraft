@@ -37,6 +37,8 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
@@ -130,6 +132,11 @@ public final class BalsaCircuit extends AbstractMathModel {
 
 		if(isData1)
 		{
+			boolean isFull1 = h1 instanceof FullDataPull || h1 instanceof FullDataPush;
+			boolean isFull2 = h2 instanceof FullDataPull || h2 instanceof FullDataPush;
+			if(isFull1 != isFull2)
+				throw new InvalidConnectionException("Cannot connect control-side data handshake with datapath-side data handshake");
+
 			DataHandshake dh1 = (DataHandshake)h1;
 			DataHandshake dh2 = (DataHandshake)h2;
 
@@ -149,6 +156,10 @@ public final class BalsaCircuit extends AbstractMathModel {
 		if (handshake instanceof PushHandshake)
 			return true;
 		if (handshake instanceof PullHandshake)
+			return false;
+		if (handshake instanceof FullDataPush)
+			return true;
+		if (handshake instanceof FullDataPull)
 			return false;
 		throw new RuntimeException("Unknown data handshake type"); // return !true && !false; %)
 	}

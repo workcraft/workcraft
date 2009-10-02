@@ -74,7 +74,7 @@ public class CaseStgBuilder extends DataPathComponentStgBuilder<Case> {
 	}
 
 	@Override
-	public Handshake getDataPathHandshake() {
+	public Handshake getDataPathHandshake(Case component) {
 		throw new RuntimeException("Not implemented!");// TODO Implement
 	}
 }

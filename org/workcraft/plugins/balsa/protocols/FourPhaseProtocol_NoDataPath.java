@@ -21,8 +21,11 @@
 
 package org.workcraft.plugins.balsa.protocols;
 
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPull;
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPush;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
@@ -127,7 +130,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 				}
 
 				public PassiveEvent done() {
-					return signals.getAcM();
+					return builder.get(signals.getAcP(), signals.getAcM());
 				}
 			};
 		}
@@ -141,18 +144,75 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 				}
 
 				public PassiveEvent done() {
-					return signals.getAcM();
+					return builder.get(signals.getAcP(), signals.getAcM());
 				}
 			};
 		}
 
 		@Override
-		public FullDataPullStg create(BooleanPull handshake) {
-			throw new RuntimeException("Not supported");
+		public FullDataPullStg create(FullDataPull handshake) {
+			//The encoding must be always one-hot (we are trying to preserve a DI protocol)
+
+			final ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
+
+			int wireCount = 1 << handshake.getWidth();
+			List<PassiveSignal> dataWires = new ArrayList<PassiveSignal>();
+			final List<PassiveEvent> result = new ArrayList<PassiveEvent>();
+
+
+			for(int i=0;i<wireCount;i++)
+			{
+				PassiveSignal signal = builder.buildPassiveSignal(new SignalId(handshake, "data"+i));
+				dataWires.add(signal);
+				result.add(signal.getPlus());
+			}
+
+			ActiveState ready = builder.buildActivePlace(1);
+			ActiveState resultSent = builder.buildActivePlace(0);
+			PassiveState releaseSent = builder.buildPassivePlace(0);
+
+
+			final ActiveEvent go = rq.getPlus();
+
+			final ActiveEvent release = rq.getMinus();
+
+			PassiveState resultChoice = builder.buildPassivePlace(0);
+
+			builder.connect(ready, go);
+			builder.connect(go, resultChoice);
+			builder.connect(resultSent, release);
+			builder.connect(release, releaseSent);
+
+			for(int i=0;i<wireCount;i++)
+			{
+				PassiveDummy produceResult = builder.buildPassiveTransition();
+				builder.connect(resultChoice, produceResult);
+				builder.connect(produceResult, result.get(i));
+				builder.connect(result.get(i), resultSent);
+
+				PassiveState resultHigh = builder.buildPassivePlace(0);
+				builder.connect(produceResult, resultHigh);
+
+				PassiveSignalTransition resetTransition = dataWires.get(i).getMinus();
+				builder.connect(releaseSent, resetTransition);
+				builder.connect(resultHigh, resetTransition);
+
+				builder.connect(resetTransition, ready);
+			}
+
+			return new FullDataPullStg()
+			{
+				@Override public ActiveEvent go() {
+					return go;
+				}
+				@Override public List<PassiveEvent> result() {
+					return result;
+				}
+			};
 		}
 
 		@Override
-		public FullDataPullStg create(BooleanPush handshake) {
+		public FullDataPullStg create(FullDataPush handshake) {
 			throw new RuntimeException("Not supported");
 		}
 	}

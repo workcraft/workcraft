@@ -20,6 +20,6 @@
 */
 package org.workcraft.plugins.balsa.protocols;
 
-public interface ActiveSignalTransition extends ActiveEvent, ActiveIn {
+public interface ActiveSignalTransition extends ActiveEvent {
 
 }

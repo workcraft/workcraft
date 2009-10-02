@@ -24,6 +24,7 @@ package org.workcraft.plugins.balsa.handshakebuilder;
 import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
 import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
+import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 
 public class SimpleHandshakeBuilder implements HandshakeBuilder {
@@ -87,7 +88,44 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 			}
 		};
 	}
-	public Handshake CreateFullDataPush() {
-		throw new RuntimeException("Not implemented!");// TODO Implement
+
+	@Override public FullDataPush CreateActiveFullDataPush(int width) { return createFullDataPush(width, true); }
+	@Override public FullDataPush CreatePassiveFullDataPush(int width) { return createFullDataPush(width, false); }
+
+	private FullDataPush createFullDataPush(final int width, final boolean active) {
+		return new FullDataPush()
+		{
+			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
+				return builder.create(this);
+			}
+
+			@Override public boolean isActive() {
+				return active;
+			}
+
+			@Override public int getWidth() {
+				return width;
+			}
+		};
+	}
+
+	@Override public FullDataPull CreateActiveFullDataPull(int width) { return createFullDataPull(width, true); }
+	@Override public FullDataPull CreatePassiveFullDataPull(int width) { return createFullDataPull(width, false); }
+
+	private FullDataPull createFullDataPull(final int width, final boolean active) {
+		return new FullDataPull()
+		{
+			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
+				return builder.create(this);
+			}
+
+			@Override public boolean isActive() {
+				return active;
+			}
+
+			@Override public int getWidth() {
+				return width;
+			}
+		};
 	}
 }

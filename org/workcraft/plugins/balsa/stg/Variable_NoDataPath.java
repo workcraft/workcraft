@@ -60,7 +60,7 @@ public class Variable_NoDataPath extends
 	}
 
 	@Override
-	public Handshake getDataPathHandshake() {
+	public Handshake getDataPathHandshake(Variable component) {
 		return SimpleHandshakeBuilder.getInstance().CreateActiveSync();
 	}
 }

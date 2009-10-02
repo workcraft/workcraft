@@ -46,7 +46,7 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 		properties.add(new PropertyDeclaration("PComp command", "getPcompCommand", "setPcompCommand", String.class));
 		properties.add(new PropertyDeclaration("PUNF command", "getPunfCommand", "setPunfCommand", String.class));
 		properties.add(new PropertyDeclaration("MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
-		properties.add(new PropertyDeclaration("Petrify command", "getPetrifyCommand", "setDummyRenameCommand", String.class));
+		properties.add(new PropertyDeclaration("Petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
 
 	}
 	public List<PropertyDescriptor> getPropertyDeclarations() {

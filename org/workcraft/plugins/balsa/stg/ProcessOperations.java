@@ -7,12 +7,13 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
 import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 
 public class ProcessOperations {
-	private final StgBuilder builder;
+	private final StrictPetriBuilder builder;
 
-	ProcessOperations(StgBuilder builder)
+	ProcessOperations(StrictPetriBuilder builder)
 	{
 		this.builder = builder;
 	}
@@ -46,8 +47,4 @@ public class ProcessOperations {
 		};
 	}
 
-	public void multiple(final PassiveSync process)
-	{
-		builder.connect(process.done(), process.go());
-	}
 }

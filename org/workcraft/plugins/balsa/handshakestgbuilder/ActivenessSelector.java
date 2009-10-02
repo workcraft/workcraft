@@ -35,10 +35,213 @@ import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
 public class ActivenessSelector {
+	private static final class ActiveSyncImpl implements ActiveSync {
+		private final SyncStg sync;
+
+		private ActiveSyncImpl(SyncStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public OutputEvent go() {
+			return active(sync.go());
+		}
+
+		@Override
+		public InputEvent done() {
+			return active(sync.done());
+		}
+	}
+
+	private static final class ActiveFullDataPullStgImpl implements
+			ActiveFullDataPullStg {
+		private final FullDataPullStg sync;
+
+		private ActiveFullDataPullStgImpl(FullDataPullStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public OutputEvent go() {
+			return active(sync.go());
+		}
+
+		@Override
+		public List<InputEvent> result() {
+			return active(sync.result());
+		}
+	}
+
+	private static final class ActiveFullDataPushStgImpl implements
+			ActiveFullDataPushStg {
+		private final FullDataPushStg sync;
+
+		private ActiveFullDataPushStgImpl(FullDataPushStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public InputEvent done() {
+			return active(sync.done());
+		}
+
+		@Override
+		public List<OutputEvent> data() {
+			return activeA(sync.data());
+		}
+	}
+
+	private static final class ActivePushStgImpl implements ActivePushStg {
+		private final DataPushStg sync;
+
+		private ActivePushStgImpl(DataPushStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public InputEvent done() {
+			return active(sync.done());
+		}
+
+		@Override
+		public OutputEvent go() {
+			return active(sync.go());
+		}
+
+		@Override
+		public InputEvent dataRelease() {
+			return active(sync.dataRelease());
+		}
+	}
+
+	private static final class ActivePullStgImpl implements ActivePullStg {
+		private final DataPullStg sync;
+
+		private ActivePullStgImpl(DataPullStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public InputEvent done() {
+			return active(sync.done());
+		}
+
+		@Override
+		public OutputEvent go() {
+			return active(sync.go());
+		}
+
+		@Override
+		public OutputEvent dataRelease() {
+			return active(sync.dataRelease());
+		}
+	}
+
+	private static final class PassiveSyncImpl implements PassiveSync {
+		private final SyncStg sync;
+
+		private PassiveSyncImpl(SyncStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public InputEvent go() {
+			return passive(sync.go());
+		}
+
+		@Override
+		public OutputEvent done() {
+			return passive(sync.done());
+		}
+	}
+
+	private static final class PassiveFullDataPullStgImpl implements
+			PassiveFullDataPullStg {
+		private final FullDataPullStg sync;
+
+		private PassiveFullDataPullStgImpl(FullDataPullStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public InputEvent go() {
+			return passive(sync.go());
+		}
+
+		@Override
+		public List<OutputEvent> result() {
+			return passive(sync.result());
+		}
+	}
+
+	private static final class PassiveFullDataPushStgImpl implements
+			PassiveFullDataPushStg {
+		private final FullDataPushStg sync;
+
+		private PassiveFullDataPushStgImpl(FullDataPushStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public OutputEvent done() {
+			return passive(sync.done());
+		}
+
+		@Override
+		public List<InputEvent> data() {
+			return passiveA(sync.data());
+		}
+	}
+
+	private static final class PassivePullStgImpl implements PassivePullStg {
+		private final DataPullStg sync;
+
+		private PassivePullStgImpl(DataPullStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public OutputEvent done() {
+			return passive(sync.done());
+		}
+
+		@Override
+		public InputEvent go() {
+			return passive(sync.go());
+		}
+
+		@Override
+		public InputEvent dataRelease() {
+			return passive(sync.dataRelease());
+		}
+	}
+
+	private static final class PassivePushStgImpl implements PassivePushStg {
+		private final DataPushStg sync;
+
+		private PassivePushStgImpl(DataPushStg sync) {
+			this.sync = sync;
+		}
+
+		@Override
+		public OutputEvent done() {
+			return passive(sync.done());
+		}
+
+		@Override
+		public InputEvent go() {
+			return passive(sync.go());
+		}
+
+		@Override
+		public OutputEvent dataRelease() {
+			return passive(sync.dataRelease());
+		}
+	}
+
 	public static StgInterface active(TwoWayStg stg)
 	{
-		if(stg instanceof SyncStg)
-			return active((SyncStg)stg);
+		//TODO: bad casting. I hate the idea to .
 		if(stg instanceof FullDataPullStg)
 			return active((FullDataPullStg)stg);
 		if(stg instanceof FullDataPushStg)
@@ -47,12 +250,12 @@ public class ActivenessSelector {
 			return active((DataPullStg)stg);
 		if(stg instanceof DataPushStg)
 			return active((DataPushStg)stg);
+		if(stg instanceof SyncStg)
+			return active((SyncStg)stg);
 		throw new RuntimeException("Not supported stg");
 	}
 	public static StgInterface passive(TwoWayStg stg)
 	{
-		if(stg instanceof SyncStg)
-			return passive((SyncStg)stg);
 		if(stg instanceof FullDataPullStg)
 			return passive((FullDataPullStg)stg);
 		if(stg instanceof FullDataPushStg)
@@ -61,6 +264,8 @@ public class ActivenessSelector {
 			return passive((DataPullStg)stg);
 		if(stg instanceof DataPushStg)
 			return passive((DataPushStg)stg);
+		if(stg instanceof SyncStg)
+			return passive((SyncStg)stg);
 		throw new RuntimeException("Not supported stg");
 	}
 
@@ -107,182 +312,53 @@ public class ActivenessSelector {
 		return result;
 	}
 
-
 	public static ActiveSync active(final SyncStg sync)
 	{
-		return new ActiveSync()
-		{
-			@Override
-			public OutputEvent go() {
-				return active(sync.go());
-			}
-
-			@Override
-			public InputEvent done() {
-				return active(sync.done());
-			}
-		};
+		return new ActiveSyncImpl(sync);
 	}
+
 	public static ActiveFullDataPullStg active(final FullDataPullStg sync)
 	{
-		return new ActiveFullDataPullStg()
-		{
-			@Override
-			public OutputEvent go() {
-				return active(sync.go());
-			}
-
-			@Override
-			public List<InputEvent> result() {
-				return active(sync.result());
-			}
-		};
+		return new ActiveFullDataPullStgImpl(sync);
 	}
+
 	public static ActiveFullDataPushStg active(final FullDataPushStg sync)
 	{
-		return new ActiveFullDataPushStg()
-		{
-			@Override
-			public InputEvent done() {
-				return active(sync.done());
-			}
-
-			@Override
-			public List<OutputEvent> data() {
-				return activeA(sync.data());
-			}
-		};
+		return new ActiveFullDataPushStgImpl(sync);
 	}
 
 	public static ActivePushStg active(final DataPushStg sync)
 	{
-		return new ActivePushStg()
-		{
-			@Override
-			public InputEvent done() {
-				return active(sync.done());
-			}
-
-			@Override
-			public OutputEvent go() {
-				return active(sync.go());
-			}
-
-			@Override
-			public InputEvent dataRelease() {
-				return active(sync.dataRelease());
-			}
-		};
+		return new ActivePushStgImpl(sync);
 	}
 
 	public static ActivePullStg active(final DataPullStg sync)
 	{
-		return new ActivePullStg()
-		{
-			@Override
-			public InputEvent done() {
-				return active(sync.done());
-			}
-
-			@Override
-			public OutputEvent go() {
-				return active(sync.go());
-			}
-
-			@Override
-			public OutputEvent dataRelease() {
-				return active(sync.dataRelease());
-			}
-		};
+		return new ActivePullStgImpl(sync);
 	}
-
 
 	public static PassiveSync passive(final SyncStg sync)
 	{
-		return new PassiveSync()
-		{
-			@Override
-			public InputEvent go() {
-				return passive(sync.go());
-			}
-
-			@Override
-			public OutputEvent done() {
-				return passive(sync.done());
-			}
-		};
+		return new PassiveSyncImpl(sync);
 	}
+
 	public static PassiveFullDataPullStg passive(final FullDataPullStg sync)
 	{
-		return new PassiveFullDataPullStg()
-		{
-			@Override
-			public InputEvent go() {
-				return passive(sync.go());
-			}
-
-			@Override
-			public List<OutputEvent> result() {
-				return passive(sync.result());
-			}
-		};
+		return new PassiveFullDataPullStgImpl(sync);
 	}
 	public static PassiveFullDataPushStg passive(final FullDataPushStg sync)
 	{
-		return new PassiveFullDataPushStg()
-		{
-			@Override
-			public OutputEvent done() {
-				return passive(sync.done());
-			}
-
-			@Override
-			public List<InputEvent> data() {
-				return passiveA(sync.data());
-			}
-		};
+		return new PassiveFullDataPushStgImpl(sync);
 	}
 
 	public static PassivePushStg passive(final DataPushStg sync)
 	{
-		return new PassivePushStg()
-		{
-			@Override
-			public OutputEvent done() {
-				return passive(sync.done());
-			}
-
-			@Override
-			public InputEvent go() {
-				return passive(sync.go());
-			}
-
-			@Override
-			public OutputEvent dataRelease() {
-				return passive(sync.dataRelease());
-			}
-		};
+		return new PassivePushStgImpl(sync);
 	}
 
 	public static PassivePullStg passive(final DataPullStg sync)
 	{
-		return new PassivePullStg()
-		{
-			@Override
-			public OutputEvent done() {
-				return passive(sync.done());
-			}
-
-			@Override
-			public InputEvent go() {
-				return passive(sync.go());
-			}
-
-			@Override
-			public InputEvent dataRelease() {
-				return passive(sync.dataRelease());
-			}
-		};
+		return new PassivePullStgImpl(sync);
 	}
 
 }

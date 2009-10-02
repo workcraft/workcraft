@@ -21,8 +21,8 @@
 
 package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPull;
-import org.workcraft.plugins.balsa.handshakebuilder.BooleanPush;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
@@ -36,6 +36,6 @@ public interface HandshakeStgBuilder
 	public abstract DataPullStg create(PullHandshake handshake);
 	public abstract DataPushStg create(PushHandshake handshake);
 	public abstract SyncStg create(Sync handshake);
-	public abstract FullDataPullStg create(BooleanPull handshake);
-	public abstract FullDataPullStg create(BooleanPush handshake);
+	public abstract FullDataPullStg create(FullDataPull handshake);
+	public abstract FullDataPullStg create(FullDataPush handshake);
 }

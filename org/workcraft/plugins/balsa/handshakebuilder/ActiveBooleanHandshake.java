@@ -21,6 +21,6 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-public interface ActiveBooleanHandshake extends BooleanPull {
+public interface ActiveBooleanHandshake extends FullDataPull {
 
 }

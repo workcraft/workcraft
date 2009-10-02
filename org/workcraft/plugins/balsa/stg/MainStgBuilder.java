@@ -48,7 +48,7 @@ public class MainStgBuilder {
 		if(componentBuilder instanceof DataPathComponentStgBuilder<?>)
 		{
 			DataPathComponentStgBuilder<?> dpComponentBuilder = (DataPathComponentStgBuilder<?>)componentBuilder;
-			Handshake hs = dpComponentBuilder.getDataPathHandshake();
+			Handshake hs = dpComponentBuilder.getDataPathHandshake(component);
 			handshakesCopy.put("dp", hs);
 		}
 

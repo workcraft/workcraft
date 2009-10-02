@@ -36,10 +36,10 @@ public class SequenceOptimisedStgBuilder extends
 	ProcessOperations o;
 	@Override
 	public void buildStg(SequenceOptimised component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
-
+		o = new ProcessOperations(builder);
 		PassiveSync activate = (PassiveSync)handshakes.get("activate");
 		Collection<ActiveSync> arr = getHandshakeArray(handshakes, "activateOut", component.getOutputCount(), ActiveSync.class);
-		o.multiple(o.enclosure(activate, o.sequence(arr)));
+		o.enclosure(activate, o.sequence(arr));
 	}
 	private static <T extends StgInterface> Collection<T> getHandshakeArray(Map<String, StgInterface> handshakes,
 			String arrayName, int arraySize, Class<T> handshakeType) {

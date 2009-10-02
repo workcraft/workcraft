@@ -104,7 +104,7 @@ public class CallMux_NoDataPath extends
 	}
 
 	@Override
-	public Handshake getDataPathHandshake() {
-		return SimpleHandshakeBuilder.getInstance().CreateFullDataPush(); // TODO: remove stupidity
+	public Handshake getDataPathHandshake(CallMux component) {
+		return SimpleHandshakeBuilder.getInstance().CreateActiveFullDataPush(component.getWidth()); // TODO: remove stupidity
 	}
 }

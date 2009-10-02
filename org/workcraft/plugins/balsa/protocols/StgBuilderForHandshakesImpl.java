@@ -149,7 +149,7 @@ public class StgBuilderForHandshakesImpl implements StgBuilderForHandshakes {
 	}
 	@Override
 	public PassiveSignal buildPassiveSignal(SignalId signalId) {
-		final StgSignal signal = builder.buildSignal(signalId, activeAsOutputs);
+		final StgSignal signal = builder.buildSignal(signalId, !activeAsOutputs);
 		return new PassiveSignal()
 		{
 			@Override public PassiveSignalTransition getMinus() {

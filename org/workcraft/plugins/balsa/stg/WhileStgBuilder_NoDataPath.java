@@ -34,9 +34,9 @@ import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 	static interface WhileStgHandshakes
 	{
-		public ActiveFullDataPullStg getGuard();
-		public PassiveSync getActivate();
-		public ActiveSync getActivateOut();
+		public ActiveFullDataPullStg guard();
+		public PassiveSync activate();
+		public ActiveSync activateOut();
 	}
 
 	class WhileStgHandshakesFromCollection implements WhileStgHandshakes
@@ -48,15 +48,15 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 			this.map = map;
 		}
 
-		public PassiveSync getActivate() {
+		public PassiveSync activate() {
 			return (PassiveSync)map.get("activate");
 		}
 
-		public ActiveSync getActivateOut() {
+		public ActiveSync activateOut() {
 			return (ActiveSync)map.get("activateOut");
 		}
 
-		public ActiveFullDataPullStg getGuard() {
+		public ActiveFullDataPullStg guard() {
 			return (ActiveFullDataPullStg)map.get("guard");
 		}
 	}
@@ -67,9 +67,9 @@ public class WhileStgBuilder_NoDataPath extends ComponentStgBuilder<While> {
 		{
 			StgPlace activated = builder.buildPlace(0);
 
-			PassiveSync activate = handshakes.getActivate();
-			ActiveSync activateOut = handshakes.getActivateOut();
-			ActiveFullDataPullStg guard = handshakes.getGuard();
+			PassiveSync activate = handshakes.activate();
+			ActiveSync activateOut = handshakes.activateOut();
+			ActiveFullDataPullStg guard = handshakes.guard();
 
 			// Call guard
 			builder.connect(activate.go(), activated);

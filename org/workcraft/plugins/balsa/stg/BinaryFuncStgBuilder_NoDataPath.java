@@ -62,7 +62,7 @@ public class BinaryFuncStgBuilder_NoDataPath extends
 	}
 
 	@Override
-	public Handshake getDataPathHandshake() {
+	public Handshake getDataPathHandshake(BinaryFunc component) {
 		return SimpleHandshakeBuilder.getInstance().CreateActiveSync(); //TODO: Remove stupidity
 	}
 }

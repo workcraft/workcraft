@@ -31,19 +31,34 @@ public class BinaryFuncHandshakes extends HandshakeMaker<BinaryFunc> {
 
 	@Override
 	protected void fillHandshakes(BinaryFunc component, Map<String, Handshake> handshakes) {
-		//if(isBoolean(component.getOp()))
+		boolean comparison = isComparison(component.getOp());
+		//boolean bool = isBoolean(component.getOp());
+
 		handshakes.put("inpA", builder.CreateActivePull(component.getInputAWidth()));
 		handshakes.put("inpB", builder.CreateActivePull(component.getInputAWidth()));
-		handshakes.put("out", builder.CreatePassivePull(component.getOutputWidth()));
+		if(comparison)
+			handshakes.put("out", builder.CreatePassiveFullDataPull(component.getOutputWidth()));
+		else
+			handshakes.put("out", builder.CreatePassivePull(component.getOutputWidth()));
 	}
 
-	private boolean isBoolean(BinaryOperator op) {
+	private static boolean isComparison(BinaryOperator op) {
 		return
 		op == BinaryOperator.EQUALS ||
+		op == BinaryOperator.NOT_EQUALS ||
 		op == BinaryOperator.GREATER_OR_EQUALS ||
 		op == BinaryOperator.GREATER_THAN ||
 		op == BinaryOperator.LESS_OR_EQUALS ||
 		op == BinaryOperator.LESS_THAN;
 	}
-
+/*
+	private static boolean isBoolean(BinaryOperator op) {
+		return
+		op == BinaryOperator.AND ||
+		op == BinaryOperator.OR ||
+		op == BinaryOperator.GREATER_THAN ||
+		op == BinaryOperator.LESS_OR_EQUALS ||
+		op == BinaryOperator.LESS_THAN;
+	}
+*/
 }

@@ -20,6 +20,6 @@
 */
 package org.workcraft.plugins.balsa.protocols;
 
-public interface PassiveSignalTransition extends PassiveEvent, PassiveIn {
+public interface PassiveSignalTransition extends PassiveEvent {
 
 }
