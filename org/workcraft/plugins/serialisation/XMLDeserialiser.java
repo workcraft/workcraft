@@ -40,7 +40,7 @@ import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.XMLSerialisationManager;
+import org.workcraft.serialisation.xml.XMLDeserialisationManager;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -57,14 +57,14 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 		}
 	};
 
-	XMLSerialisationManager serialisation = new XMLSerialisationManager();
+	XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
 	HashMap <Object, Element> instances;
 	// LinkedHashMap <Container, LinkedList<HierarchyNode>> children;
 
 	InternalRefrenceResolver internalReferenceResolver;
 
 	private Object initInstance(Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
-		Object instance = serialisation.initInstance(element, externalReferenceResolver);
+		Object instance = deserialisation.initInstance(element, externalReferenceResolver);
 		instances.put(instance, element);
 
 		internalReferenceResolver.addObject(instance, element.getAttribute("ref"));
@@ -107,10 +107,10 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 
 			// 2nd pass -- finalise instances
 			for (Object o : instances.keySet())
-				serialisation.finalise(instances.get(o), o, internalReferenceResolver, externalReferenceResolver);
+				deserialisation.finaliseInstance(instances.get(o), o, internalReferenceResolver, externalReferenceResolver);
 
 			// create model
-			Model model = (Model)serialisation.createModel(modelElement, root, internalReferenceResolver,
+			Model model = (Model)deserialisation.createModel(modelElement, root, internalReferenceResolver,
 					externalReferenceResolver);
 
 			internalReferenceResolver.addObject(model, "$model");
@@ -138,6 +138,6 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 	}
 
 	public void processPlugins(PluginProvider pluginManager) {
-		serialisation.processPlugins(pluginManager);
+		deserialisation.processPlugins(pluginManager);
 	}
 }

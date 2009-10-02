@@ -25,9 +25,13 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.xml.ChainXMLSerialiser;
+import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
+import org.workcraft.util.XmlUtil;
 
-public class VisualConnectionSerialiser implements ReferencingXMLSerialiser {
+public class VisualConnectionSerialiser implements ReferencingXMLSerialiser, ChainXMLSerialiser {
+	NodeSerialiser serialiser;
 
 	public void serialise(Element element, Object object,
 			ReferenceProducer internalReferences,
@@ -38,9 +42,18 @@ public class VisualConnectionSerialiser implements ReferencingXMLSerialiser {
 		element.setAttribute("first", internalReferences.getReference(vcon.getFirst()));
 		element.setAttribute("second", internalReferences.getReference(vcon.getSecond()));
 		element.setAttribute("ref", externalReferences.getReference(vcon.getReferencedConnection()));
+
+		Element graphicElement = XmlUtil.createChildElement("graphic", element);
+
+		serialiser.serialise(graphicElement, vcon.getGraphic(), internalReferences, externalReferences);
 	}
 
 	public String getClassName() {
 		return VisualConnection.class.getName();
+	}
+
+	@Override
+	public void setNodeSerialiser(NodeSerialiser serialiser) {
+		this.serialiser = serialiser;
 	}
 }

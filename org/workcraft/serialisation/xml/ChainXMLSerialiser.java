@@ -19,23 +19,8 @@
 *
 */
 
-package org.workcraft.gui.graph;
+package org.workcraft.serialisation.xml;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-public class GraphEditorFocusListener implements FocusListener {
-	private GraphEditorPanel editor;
-
-	public GraphEditorFocusListener(GraphEditorPanel editor) {
-		this.editor = editor;
-	}
-
-	public void focusGained(FocusEvent e) {
-		editor.focusGained();
-	}
-
-	public void focusLost(FocusEvent e) {
-		editor.focusLost();
-	}
+public interface ChainXMLSerialiser {
+	public void setNodeSerialiser (NodeSerialiser serialiser);
 }

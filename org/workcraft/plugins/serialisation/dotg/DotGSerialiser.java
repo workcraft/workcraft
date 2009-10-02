@@ -109,7 +109,7 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 
 
 
-	public ReferenceProducer export(Model model, OutputStream outStream, ReferenceProducer inRef) {
+	public ReferenceProducer serialise(Model model, OutputStream outStream, ReferenceProducer inRef) {
 		STG stg = (STG)model;
 
 		stg.assignInstances();

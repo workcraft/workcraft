@@ -54,7 +54,7 @@ public class MathModelSerialisation {
 			serialiser.processPlugins(mock);
 
 			DataAccumulator accum = new DataAccumulator();
-			serialiser.export(stg, accum, null);
+			serialiser.serialise(stg, accum, null);
 
 			System.out.println (new String(accum.getData()));
 
