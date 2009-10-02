@@ -35,14 +35,25 @@ public class Export {
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
 
-		if (model instanceof VisualModel)
-			if (!exporter.isApplicableTo(model))
-				if (!exporter.isApplicableTo(((VisualModel)model).getMathModel()))
-						throw new RuntimeException ("Exporter is not applicable to model.");
-				else
-					model = ((VisualModel)model).getMathModel();
-		exporter.export(model, fos);
-		fos.close();
+		boolean ok = false;
+
+		try
+		{
+			if (model instanceof VisualModel)
+				if (!exporter.isApplicableTo(model))
+					if (!exporter.isApplicableTo(((VisualModel)model).getMathModel()))
+							throw new RuntimeException ("Exporter is not applicable to model.");
+					else
+						model = ((VisualModel)model).getMathModel();
+			exporter.export(model, fos);
+			ok = true;
+		}
+		finally
+		{
+			fos.close();
+			if(!ok)
+				file.delete();
+		}
 	}
 
 	static public void exportToFile (Exporter exporter, Model model, String fileName) throws IOException, ModelValidationException, SerialisationException {

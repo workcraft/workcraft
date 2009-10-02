@@ -6,7 +6,6 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
 import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 

@@ -28,6 +28,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.TransformHelper;
@@ -116,8 +117,9 @@ public class VisualTests {
 		Point2D p2 = hs2.getPosition();
 		transform2.transform(p2, p2);
 
-		//Assert.assertEquals(p1, connection.g);
-		//Assert.assertEquals(p2, connection.getPoint2());
+
+		Assert.assertEquals(p1, connection.getFirstCenter());
+		Assert.assertEquals(p2, connection.getSecondCenter());
 	}
 
 }
