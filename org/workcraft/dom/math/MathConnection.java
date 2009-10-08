@@ -35,7 +35,7 @@ public class MathConnection extends MathNode implements Connection {
 
 	public MathConnection (MathNode first, MathNode second) {
 		super();
-		setComponents(first, second);
+		setDependencies(first, second);
 	}
 
 	final public MathNode getFirst() {
@@ -46,7 +46,7 @@ public class MathConnection extends MathNode implements Connection {
 		return second;
 	}
 
-	final public void setComponents(MathNode first, MathNode second) {
+	final public void setDependencies(MathNode first, MathNode second) {
 		this.first = first;	 this.second = second;
 	}
 
