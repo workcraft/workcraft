@@ -31,11 +31,13 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DefaultNodeSerialiser implements NodeSerialiser {
-	SerialiserFactory fac;
+public class DefaultNodeSerialiser {
+	private SerialiserFactory fac;
+	private NodeSerialiser serialiser;
 
-	public DefaultNodeSerialiser(SerialiserFactory factory) {
+	public DefaultNodeSerialiser(SerialiserFactory factory, NodeSerialiser serialiser) {
 		this.fac = factory;
+		this.serialiser = serialiser;
 	}
 
 	private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
@@ -102,8 +104,8 @@ public class DefaultNodeSerialiser implements NodeSerialiser {
 		if (serialiser != null)
 			if (serialiser instanceof BasicXMLSerialiser)
 				((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
-			else if (serialiser instanceof ReferencingXMLSerialiser)
-				((ReferencingXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences);
+			else if (serialiser instanceof CustomXMLSerialiser)
+				((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
 
 		if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0)
 			parentElement.appendChild(curLevelElement);

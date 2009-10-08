@@ -28,16 +28,20 @@ import java.util.HashMap;
 import org.w3c.dom.Element;
 import org.workcraft.PluginInfo;
 import org.workcraft.PluginProvider;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.util.ConstructorParametersMatcher;
+import org.workcraft.util.XmlUtil;
 
-public class XMLDeserialisationManager implements DeserialiserFactory, NodeDeserialiser {
+public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
 	private HashMap<String, Class<? extends XMLDeserialiser>> deserialisers = new HashMap<String, Class<? extends XMLDeserialiser>>();
 	private HashMap<String, XMLDeserialiser> deserialiserCache = new HashMap<String, XMLDeserialiser>();
-	private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this);
+	private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
+
+	private XMLDeserialiserState state = null;
 
 	private void registerDeserialiser (Class<? extends XMLDeserialiser> cls) {
 		XMLDeserialiser inst;
@@ -59,16 +63,21 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeDeser
 			if (deserialiserClass != null)
 			{
 				deserialiser = deserialiserClass.newInstance();
-
-				if (deserialiser instanceof ChainDeserialiser) {
-					((ChainDeserialiser)deserialiser).setNodeDeserialiser(nodeDeserialiser);
-				}
-
 				deserialiserCache.put(className, deserialiser);
 			}
 		}
 
 		return deserialiser;
+	}
+
+	public void begin(ReferenceResolver externalReferenceResolver) {
+		state = new XMLDeserialiserState(externalReferenceResolver);
+	}
+
+	public ReferenceResolver end() {
+		XMLDeserialiserState result = state;
+		state = null;
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,14 +93,25 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeDeser
 		}
 	}
 
-	public Object initInstance (Element element, ReferenceResolver externalReferenceResolver) throws DeserialisationException
+	public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException
 	{
-		return nodeDeserialiser.initInstance(element, externalReferenceResolver);
+		Object instance = nodeDeserialiser.initInstance(element, state.externalReferences, constructorParameters);
+
+		state.setInstanceElement(instance, element);
+		state.setObject(element.getAttribute("ref"), instance);
+
+		if (instance instanceof Container) {
+			for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
+				Object subNode = initInstance (subNodeElement);
+
+				 if (subNode instanceof Node)
+					 state.addChildNode((Container)instance, (Node)subNode);
+			}
+		}
+		return instance;
 	}
 
-	public Model createModel (Element element, Node root,
-			ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+	public Model createModel (Element element, Node root) throws DeserialisationException {
 
 		String className = element.getAttribute("class");
 
@@ -106,7 +126,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeDeser
 			cls = Class.forName(className);
 
 			if (deserialiser instanceof ModelXMLDeserialiser) {
-				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, root, internalReferenceResolver, externalReferenceResolver);
+				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, root, state.internalReferences, state.externalReferences);
 			} else if (deserialiser != null) {
 				throw new DeserialisationException ("Deserialiser for model class must implement ModelXMLDesiraliser interface");
 			} else {
@@ -128,14 +148,29 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeDeser
 			throw new DeserialisationException(e);
 		}
 
-		nodeDeserialiser.doInitialisation(element, result, cls, externalReferenceResolver);
-		nodeDeserialiser.doFinalisation(element, result, internalReferenceResolver, externalReferenceResolver, cls.getSuperclass());
+		nodeDeserialiser.doInitialisation(element, result, cls, state.externalReferences);
+		nodeDeserialiser.doFinalisation(element, result, state.internalReferences, state.externalReferences, cls.getSuperclass());
+
+		state.setObject("$model", result);
 
 		return result;
 	}
 
-	public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver) throws DeserialisationException {
-		nodeDeserialiser.finaliseInstance(element, instance, internalReferenceResolver, externalReferenceResolver);
+	public void finaliseInstances() throws DeserialisationException {
+		// finalise all instances
+		for (Object o : state.instanceElements.keySet())
+			finaliseInstance(o);
+
+		// now add children to their respective containers
+		for (Object o : state.instanceElements.keySet()) {
+			if (o instanceof Container) {
+				Container c = (Container)o;
+				c.add(state.getChildren(c));
+			}
+		}
+	}
+
+	public void finaliseInstance(Object instance) throws DeserialisationException {
+		nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.internalReferences, state.externalReferences);
 	}
 }

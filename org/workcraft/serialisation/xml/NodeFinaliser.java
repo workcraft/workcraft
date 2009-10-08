@@ -21,6 +21,8 @@
 
 package org.workcraft.serialisation.xml;
 
-public interface ChainXMLSerialiser {
-	public void setNodeSerialiser (NodeSerialiser serialiser);
+import org.workcraft.exceptions.DeserialisationException;
+
+public interface NodeFinaliser {
+	public void finaliseInstance(Object instance) throws DeserialisationException;
 }
