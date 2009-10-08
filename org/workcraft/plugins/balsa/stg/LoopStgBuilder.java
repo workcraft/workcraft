@@ -24,28 +24,28 @@ package org.workcraft.plugins.balsa.stg;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Loop;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class LoopStgBuilder extends ComponentStgBuilder<org.workcraft.plugins.balsa.components.Loop> {
 
 	@Override
-	public void buildStg(Loop component, Map<String, StgHandshake> handshakes, StgBuilder builder) {
-		PassiveSyncStg activate = (PassiveSyncStg)handshakes.get("activate");
-		ActiveSyncStg activateOut = (ActiveSyncStg)handshakes.get("activateOut");
+	public void buildStg(Loop component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
+		PassiveSync activate = (PassiveSync)handshakes.get("activate");
+		ActiveSync activateOut = (ActiveSync)handshakes.get("activateOut");
 
-		StgPlace activated = builder.buildPlace();
+		StgPlace activated = builder.buildPlace(0);
 
-		StgPlace never = builder.buildPlace();
+		StgPlace never = builder.buildPlace(0);
 
-		builder.addConnection(activate.getActivate(), activated);
-		builder.addConnection(activated, activateOut.getActivate());
-		builder.addConnection(activateOut.getDeactivate(), activated);
+		builder.connect(activate.go(), activated);
+		builder.connect(activated, activateOut.go());
+		builder.connect(activateOut.done(), activated);
 
-		builder.addConnection(never, activate.getDeactivate());
+		builder.connect(never, activate.done());
 	}
 
 }

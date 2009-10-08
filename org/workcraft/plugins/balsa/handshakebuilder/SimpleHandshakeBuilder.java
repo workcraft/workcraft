@@ -21,13 +21,11 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
+import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
+import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
+import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
+import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 
 public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
@@ -36,68 +34,97 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 		return new SimpleHandshakeBuilder();
 	}
 
-	public ActivePull CreateActivePull(final int width) {
-		return new ActivePull(){
-			public ActivePullStg buildStg(HandshakeStgBuilder builder) {
+	@Override public PullHandshake CreateActivePull(final int width) { return createPull(width, true); }
+	@Override public PullHandshake CreatePassivePull(final int width) { return createPull(width, false); }
+
+	public PullHandshake createPull(final int width, final boolean isActive) {
+		return new PullHandshake(){
+			@Override public DataPullStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 
-			public int getWidth() {
+			@Override public int getWidth() {
 				return width;
+			}
+
+			@Override public boolean isActive() {
+				return isActive;
 			}
 		};
 	}
 
-	public ActivePush CreateActivePush(final int width) {
-		return new ActivePush()
+	@Override public PushHandshake CreateActivePush(final int width) { return createPush(width, true); }
+	@Override public PushHandshake CreatePassivePush(final int width) { return createPush(width, false); }
+
+	public PushHandshake createPush(final int width, final boolean isActive) {
+		return new PushHandshake()
 		{
-			public ActivePushStg buildStg(HandshakeStgBuilder builder) {
+			@Override public DataPushStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 
-			public int getWidth() {
+			@Override public int getWidth() {
 				return width;
 			}
+
+			@Override public boolean isActive() {
+				return isActive;
+			}
 		};
 	}
 
-	public ActiveSync CreateActiveSync() {
-		return new ActiveSync(){
-			public ActiveSyncStg buildStg(HandshakeStgBuilder builder) {
+	@Override public Sync CreateActiveSync() { return createSync(true); }
+	@Override public Sync CreatePassiveSync() { return createSync(false); }
+
+	private Sync createSync(final boolean isActive) {
+		return new Sync(){
+			public SyncStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
-		};
-	}
 
-	public PassivePull CreatePassivePull(final int width) {
-		return new PassivePull(){
-			public PassivePullStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
-			}
-
-			public int getWidth() {
-				return width;
+			@Override
+			public boolean isActive() {
+				return isActive;
 			}
 		};
 	}
 
-	public PassivePush CreatePassivePush(final int width) {
-		return new PassivePush()
+	@Override public FullDataPush CreateActiveFullDataPush(int width) { return createFullDataPush(width, true); }
+	@Override public FullDataPush CreatePassiveFullDataPush(int width) { return createFullDataPush(width, false); }
+
+	private FullDataPush createFullDataPush(final int width, final boolean active) {
+		return new FullDataPush()
 		{
-			public PassivePushStg buildStg(HandshakeStgBuilder builder) {
+			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
 			}
 
-			public int getWidth() {
+			@Override public boolean isActive() {
+				return active;
+			}
+
+			@Override public int getWidth() {
 				return width;
 			}
 		};
 	}
 
-	public PassiveSync CreatePassiveSync() {
-		return new PassiveSync(){
-			public PassiveSyncStg buildStg(HandshakeStgBuilder builder) {
+	@Override public FullDataPull CreateActiveFullDataPull(int width) { return createFullDataPull(width, true); }
+	@Override public FullDataPull CreatePassiveFullDataPull(int width) { return createFullDataPull(width, false); }
+
+	private FullDataPull createFullDataPull(final int width, final boolean active) {
+		return new FullDataPull()
+		{
+			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
 				return builder.create(this);
+			}
+
+			@Override public boolean isActive() {
+				return active;
+			}
+
+			@Override public int getWidth() {
+				return width;
 			}
 		};
 	}

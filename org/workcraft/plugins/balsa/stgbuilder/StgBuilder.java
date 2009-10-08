@@ -23,13 +23,11 @@ package org.workcraft.plugins.balsa.stgbuilder;
 
 public interface StgBuilder
 {
-	StgPlace buildPlace();
 	StgPlace buildPlace(int tokenCount);
-	StgTransition buildTransition();
+	InputOutputEvent buildTransition();
 	StgSignal buildSignal(SignalId id, boolean isOutput);
-	void addConnection(StgPlace place, StgTransition transition);
-	void addConnection(StgTransition transition, StgPlace place);
-	void addConnection(TransitionOutput transition, StgPlace place);
-	void addReadArc(ReadablePlace place, StgTransition transition);
-	void addConnection(TransitionOutput t1, StgTransition t2);
+	void connect(StgPlace place, Event transition);
+	void connect(Event transition, StgPlace place);
+	void addReadArc(StgPlace place, Event transition);
+	void connect(Event t1, Event t2);
 }

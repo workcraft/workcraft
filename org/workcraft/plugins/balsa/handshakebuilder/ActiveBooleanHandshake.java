@@ -19,17 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.balsa.stgbuilder;
+package org.workcraft.plugins.balsa.handshakebuilder;
 
+public interface ActiveBooleanHandshake extends FullDataPull {
 
-interface Transition
-{
-}
-
-public interface TransitionOutput
-{
-}
-
-interface ReadonlyTransition
-{
 }

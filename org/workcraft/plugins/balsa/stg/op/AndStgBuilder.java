@@ -24,13 +24,13 @@ package org.workcraft.plugins.balsa.stg.op;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.BinaryFunc;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
+import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stg.ComponentStgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class AndStgBuilder extends ComponentStgBuilder<BinaryFunc> {
 
-	public void buildStg(BinaryFunc component, Map<String, StgHandshake> handshakes, StgBuilder builder) {
+	public void buildStg(BinaryFunc component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
 		throw new RuntimeException("Not implemented");
 /*		ActivePull inpA = (ActivePull)handshakes.get("inpA");
 		ActivePull inpB = (ActivePull)handshakes.get("inpB");

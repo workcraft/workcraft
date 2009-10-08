@@ -32,12 +32,12 @@ import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
-@DisplayName ("Dot")
+@DisplayName ("Tool locations")
 public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin {
 	protected static String pcompCommand = "pcomp";
 	protected static String punfCommand = "punf";
 	protected static String mpsatCommand = "mpsat";
-	protected static String dummyRenameCommand = "dummyRename";
+	protected static String petrifyCommand = "petrify";
 
 	private static LinkedList<PropertyDescriptor> properties;
 
@@ -46,7 +46,7 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 		properties.add(new PropertyDeclaration("PComp command", "getPcompCommand", "setPcompCommand", String.class));
 		properties.add(new PropertyDeclaration("PUNF command", "getPunfCommand", "setPunfCommand", String.class));
 		properties.add(new PropertyDeclaration("MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
-		properties.add(new PropertyDeclaration("Dummy rename command", "getDummyRenameCommand", "setDummyRenameCommand", String.class));
+		properties.add(new PropertyDeclaration("Petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
 
 	}
 	public List<PropertyDescriptor> getPropertyDeclarations() {
@@ -57,14 +57,14 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 		pcompCommand = config.getString("PetriTools.pcompCommand", "pcomp");
 		punfCommand = config.getString("PetriTools.punfCommand", "punf");
 		mpsatCommand = config.getString("PetriTools.mpsatCommand", "mpsat");
-		dummyRenameCommand = config.getString("PetriTools.dummyRenameCommand", "dummyRename");
+		petrifyCommand = config.getString("PetriTools.petrifyCommand", "petrify");
 	}
 
 	public void storePersistentProperties(Config config) {
 		config.set("PetriTools.pcompCommand", pcompCommand);
 		config.set("PetriTools.punfCommand", punfCommand);
 		config.set("PetriTools.mpsatCommand", mpsatCommand);
-		config.set("PetriTools.dummyRenameCommand", dummyRenameCommand);
+		config.set("PetriTools.petrifyCommand", petrifyCommand);
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -97,11 +97,11 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 	public static void setMpsatCommand(String mpsatCommand) {
 		PetriNetToolsSettings.mpsatCommand = mpsatCommand;
 	}
-	public static String getDummyRenameCommand() {
-		return dummyRenameCommand;
+	public static String getPetrifyCommand() {
+		return petrifyCommand;
 	}
-	public static void setDummyRenameCommand(String dummyRenameCommand) {
-		PetriNetToolsSettings.dummyRenameCommand = dummyRenameCommand;
+	public static void setPetrifyCommand(String petrifyCommand) {
+		PetriNetToolsSettings.petrifyCommand = petrifyCommand;
 	}
 }
 

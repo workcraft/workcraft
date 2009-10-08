@@ -28,9 +28,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
@@ -105,7 +107,7 @@ public class VisualTests {
 
 		VisualHandshake hs1 = visual1.getHandshake("activate");
 		VisualHandshake hs2 = visual2.getHandshake("activateOut1");
-		//VisualConnectionProperties connection = (VisualConnectionProperties)visualCircuit.connect(hs1, hs2);
+		VisualConnectionProperties connection = (VisualConnectionProperties)visualCircuit.connect(hs1, hs2);
 
 		AffineTransform transform1 = TransformHelper.getTransform(hs1, root);
 		Point2D p1 = hs1.getPosition();
@@ -115,8 +117,9 @@ public class VisualTests {
 		Point2D p2 = hs2.getPosition();
 		transform2.transform(p2, p2);
 
-		//Assert.assertEquals(p1, connection.g);
-		//Assert.assertEquals(p2, connection.getPoint2());
+
+		Assert.assertEquals(p1, connection.getFirstCenter());
+		Assert.assertEquals(p2, connection.getSecondCenter());
 	}
 
 }

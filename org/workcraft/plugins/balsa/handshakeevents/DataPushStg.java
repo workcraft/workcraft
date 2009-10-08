@@ -19,8 +19,10 @@
 *
 */
 
-package org.workcraft.plugins.balsa.stgbuilder;
+package org.workcraft.plugins.balsa.handshakeevents;
 
-public interface ReadablePlace {
+import org.workcraft.plugins.balsa.protocols.PassiveEvent;
 
+public interface DataPushStg extends DataHandshakeStg {
+	public PassiveEvent dataRelease();
 }

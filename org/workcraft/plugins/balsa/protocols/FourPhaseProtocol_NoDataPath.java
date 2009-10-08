@@ -21,188 +21,206 @@
 
 package org.workcraft.plugins.balsa.protocols;
 
-import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
-import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
-import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
-import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
-import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSyncStg;
+import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.Sync;
+import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
+import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
+import org.workcraft.plugins.balsa.handshakeevents.FullDataPullStg;
+import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSyncStg;
+import org.workcraft.plugins.balsa.stgbuilder.ActiveSignal;
+import org.workcraft.plugins.balsa.stgbuilder.PassiveSignal;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
-import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
 
 interface HandshakeSignals
 {
-	StgTransition getRqP();
-	StgTransition getRqM();
-	StgTransition getAcP();
-	StgTransition getAcM();
+	ActiveEvent getRqP();
+	ActiveEvent getRqM();
+	PassiveEvent getAcP();
+	PassiveEvent getAcM();
 }
 
-public class FourPhaseProtocol_NoDataPath implements HandshakeStgBuilder
+public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 {
-	private StgBuilder builder;
-
-	HandshakeSignals createSignals(Handshake handshake, boolean active)
+	class StgBuilder implements HandshakeStgBuilder
 	{
-		final StgSignal rq = builder.buildSignal(new SignalId(handshake, "rq"), active);
-		final StgSignal ac = builder.buildSignal(new SignalId(handshake, "ac"), !active);
+		private StgBuilderForHandshakes builder;
 
-		final StgPlace ready = builder.buildPlace(1);
+		public StgBuilder(StgBuilderForHandshakes stgBuilder) {
+			this.builder = stgBuilder;
+		}
 
-		final StgTransition rqP = rq.getPlus();
-		final StgTransition rqM = rq.getMinus();
-		final StgTransition acP = ac.getPlus();
-		final StgTransition acM = ac.getMinus();
-
-		builder.addConnection(ready, rqP);
-		builder.addConnection(rqP, acP);
-		builder.addConnection(acP, rqM);
-		builder.addConnection(rqM, acM);
-		builder.addConnection(acM, ready);
-
-		return new HandshakeSignals()
+		private HandshakeSignals createSignals(Handshake handshake)
 		{
-			public StgTransition getAcM() {
-				return acM;
+			final ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
+			final PassiveSignal ac = builder.buildPassiveSignal(new SignalId(handshake, "ac"));
+
+			final ActiveState ready = builder.buildActivePlace(1);
+
+			final ActiveEvent rqP = rq.getPlus();
+			final ActiveEvent rqM = rq.getMinus();
+			final PassiveEvent acP = ac.getPlus();
+			final PassiveEvent acM = ac.getMinus();
+
+			builder.connect(ready, rqP);
+			builder.connect(rqP, acP);
+			builder.connect(acP, rqM);
+			builder.connect(rqM, acM);
+			builder.connect(acM, ready);
+
+			return new HandshakeSignals()
+			{
+				public PassiveEvent getAcM() {
+					return acM;
+				}
+
+				public PassiveEvent getAcP() {
+					return acP;
+				}
+
+				public ActiveEvent getRqM() {
+					return rqM;
+				}
+
+				public ActiveEvent getRqP() {
+					return rqP;
+				}
+			};
+		}
+
+		public DataPullStg create(PullHandshake handshake) {
+			final HandshakeSignals signals = createSignals(handshake);
+
+			return new DataPullStg()
+			{
+				public ActiveEvent go() {
+					return signals.getRqP();
+				}
+
+				public PassiveEvent done() {
+					return signals.getAcP();
+				}
+
+				public ActiveEvent dataRelease() {
+					return signals.getRqM();
+				}
+			};
+		}
+
+
+		public DataPushStg create(PushHandshake handshake) {
+			final HandshakeSignals signals = createSignals(handshake);
+
+			return new DataPushStg()
+			{
+				public ActiveEvent go() {
+					return signals.getRqP();
+				}
+
+				public PassiveEvent dataRelease() {
+					return signals.getAcP();
+				}
+
+				public PassiveEvent done() {
+					return builder.get(signals.getAcP(), signals.getAcM());
+				}
+			};
+		}
+
+		public SyncStg create(Sync handshake) {
+			final HandshakeSignals signals = createSignals(handshake);
+
+			return new SyncStg(){
+				public ActiveEvent go() {
+					return signals.getRqP();
+				}
+
+				public PassiveEvent done() {
+					return builder.get(signals.getAcP(), signals.getAcM());
+				}
+			};
+		}
+
+		@Override
+		public FullDataPullStg create(FullDataPull handshake) {
+			//The encoding must be always one-hot (we are trying to preserve a DI protocol)
+
+			final ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
+
+			int wireCount = 1 << handshake.getWidth();
+			List<PassiveSignal> dataWires = new ArrayList<PassiveSignal>();
+			final List<PassiveEvent> result = new ArrayList<PassiveEvent>();
+
+
+			for(int i=0;i<wireCount;i++)
+			{
+				PassiveSignal signal = builder.buildPassiveSignal(new SignalId(handshake, "data"+i));
+				dataWires.add(signal);
+				result.add(signal.getPlus());
 			}
 
-			public StgTransition getAcP() {
-				return acP;
+			ActiveState ready = builder.buildActivePlace(1);
+			ActiveState resultSent = builder.buildActivePlace(0);
+			PassiveState releaseSent = builder.buildPassivePlace(0);
+
+
+			final ActiveEvent go = rq.getPlus();
+
+			final ActiveEvent release = rq.getMinus();
+
+			PassiveState resultChoice = builder.buildPassivePlace(0);
+
+			builder.connect(ready, go);
+			builder.connect(go, resultChoice);
+			builder.connect(resultSent, release);
+			builder.connect(release, releaseSent);
+
+			for(int i=0;i<wireCount;i++)
+			{
+				PassiveDummy produceResult = builder.buildPassiveTransition();
+				builder.connect(resultChoice, produceResult);
+				builder.connect(produceResult, result.get(i));
+				builder.connect(result.get(i), resultSent);
+
+				PassiveState resultHigh = builder.buildPassivePlace(0);
+				builder.connect(produceResult, resultHigh);
+
+				PassiveSignalTransition resetTransition = dataWires.get(i).getMinus();
+				builder.connect(releaseSent, resetTransition);
+				builder.connect(resultHigh, resetTransition);
+
+				builder.connect(resetTransition, ready);
 			}
 
-			public StgTransition getRqM() {
-				return rqM;
-			}
+			return new FullDataPullStg()
+			{
+				@Override public ActiveEvent go() {
+					return go;
+				}
+				@Override public List<PassiveEvent> result() {
+					return result;
+				}
+			};
+		}
 
-			public StgTransition getRqP() {
-				return rqP;
-			}
-		};
+		@Override
+		public FullDataPullStg create(FullDataPush handshake) {
+			throw new RuntimeException("Not supported");
+		}
 	}
 
-	public ActivePullStg create(ActivePull handshake) {
-		final HandshakeSignals signals = createSignals(handshake, true);
-
-		return new ActivePullStg()
-		{
-			public StgTransition getActivate() {
-				return signals.getRqP();
-			}
-
-			public TransitionOutput getDataReady() {
-				return signals.getAcP();
-			}
-
-			public StgTransition getDataRelease() {
-				return signals.getRqM();
-			}
-		};
+	@Override
+	public HandshakeStgBuilder get(
+			StgBuilderForHandshakes stgBuilder) {
+		return new StgBuilder(stgBuilder);
 	}
 
-
-	public ActivePushStg create(ActivePush handshake) {
-		final HandshakeSignals signals = createSignals(handshake, true);
-
-		return new ActivePushStg()
-		{
-			public StgTransition getActivate() {
-				return signals.getRqP();
-			}
-
-			public TransitionOutput getDataReleased() {
-				return signals.getAcP();
-			}
-
-			public TransitionOutput getDeactivate() {
-				return signals.getAcM();
-			}
-		};
-	}
-
-	public ActiveSyncStg create(ActiveSync handshake) {
-		final HandshakeSignals signals = createSignals(handshake, true);
-
-		return new ActiveSyncStg(){
-			public StgTransition getActivate() {
-				return signals.getRqP();
-			}
-
-			public TransitionOutput getDeactivate() {
-				return signals.getAcM();
-			}
-		};
-	}
-
-	public PassivePullStg create(PassivePull handshake) {
-		final HandshakeSignals signals = createSignals(handshake, false);
-
-		return new PassivePullStg()
-		{
-			public StgTransition getActivate() {
-				return signals.getRqP();
-			}
-
-			public StgTransition getDataReady() {
-				return signals.getAcP();
-			}
-
-			public TransitionOutput getDataRelease() {
-				return signals.getRqM();
-			}
-		};
-	}
-
-	public PassivePushStg create(PassivePush handshake) {
-		final HandshakeSignals signals = createSignals(handshake, false);
-
-		return new PassivePushStg()
-		{
-			public TransitionOutput getActivate() {
-				return signals.getRqP();
-			}
-
-			public StgTransition getDataReleased() {
-				return signals.getAcP();
-			}
-
-			public StgTransition getDeactivate() {
-				return signals.getAcM();
-			}
-		};
-	}
-
-	public StgBuilder getStgBuilder() {
-		return builder;
-	}
-
-	public void setStgBuilder(StgBuilder builder) {
-		this.builder = builder;
-	}
-
-
-	public PassiveSyncStg create(PassiveSync handshake) {
-		final HandshakeSignals signals = createSignals(handshake, false);
-
-		return new PassiveSyncStg(){
-			public TransitionOutput getActivate() {
-				return signals.getRqP();
-			}
-
-			public StgTransition getDeactivate() {
-				return signals.getAcP();
-			}
-		};
-	}
 }

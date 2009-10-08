@@ -18,13 +18,8 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-package org.workcraft.plugins.balsa.handshakebuilder;
+public interface StgInterface {
 
-import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
-
-public interface PassivePull extends PassiveSync, DataHandshake
-{
-	PassivePullStg buildStg(HandshakeStgBuilder builder);
 }

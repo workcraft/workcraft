@@ -34,33 +34,30 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
-import org.workcraft.plugins.interop.BalsaToStgExporter_FourPhase;
-import org.workcraft.plugins.interop.DotGExporter;
-import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.util.DummyRenamer;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 public class BalsaToGatesExporter implements Exporter {
 	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
 
-
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
 			ModelValidationException, SerialisationException {
 		if(model instanceof STG)
 			exportFromStg((STG)model, out);
+		else
+		{
+			File original = File.createTempFile("composition", ".g");
+			exportOriginal(model, original);
 
-		File original = File.createTempFile("composition", ".g");
-		exportOriginal(model, original);
+			File synthesised = File.createTempFile("result", ".eqn");
 
-		File synthesised = File.createTempFile("result", ".eqn");
+			synthesiseStg(original, synthesised, false);
 
-		synthesiseStg(original, synthesised, false);
-
-		FileUtils.copyFileToStream(synthesised, out);
+			FileUtils.copyFileToStream(synthesised, out);
+		}
 	}
 
 	private void exportFromStg(STG model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
@@ -77,14 +74,14 @@ public class BalsaToGatesExporter implements Exporter {
 			throws IOException {
 		File tempDir = createTempDirectory();
 
-		File renamed = new File(tempDir, "renamed.g");
+		//File renamed = new File(tempDir, "renamed.g");
 		File renamed2 = new File(tempDir, "renamed2.g");
 
 
-		DummyRenamer.rename(original, renamed);
+		//DummyRenamer.rename(original, renamed);
 
 		try {
-			Model stg = Import.importFromFile(new DotGImporter(), renamed);
+			Model stg = Import.importFromFile(new DotGImporter(), original);
 			Export.exportToFile(new DotGExporter(), stg, renamed2);
 		} catch (ModelValidationException e) {
 			throw new RuntimeException(e);
@@ -94,14 +91,14 @@ public class BalsaToGatesExporter implements Exporter {
 			throw new RuntimeException(e);
 		}
 
-		FileUtils.copyFile(renamed, new File(original.getAbsolutePath()+".ren"));
+		//FileUtils.copyFile(renamed, new File(original.getAbsolutePath()+".ren"));
 		FileUtils.copyFile(renamed2, new File(original.getAbsolutePath()+".ren2"));
 
 		if(withMpsat)
 		{
 			File contracted = new File(tempDir, "contracted.g");
 
-			contractDummies(renamed, contracted);
+			contractDummies(renamed2, contracted);
 
 			File unfolding = new File(tempDir, "composition.mci");
 
@@ -115,14 +112,14 @@ public class BalsaToGatesExporter implements Exporter {
 		}
 		else
 		{
-			petrifyMakeEqn(renamed, synthesised);
+			petrifyMakeEqn(renamed2, synthesised);
 		}
 	}
 
 	private static void petrifyMakeEqn(File original, File synthesised) throws IOException {
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
-						"petrify",
+						PetriNetToolsSettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						"-eqn",
@@ -144,7 +141,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
-						"petrify",
+						PetriNetToolsSettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						original.getAbsolutePath()

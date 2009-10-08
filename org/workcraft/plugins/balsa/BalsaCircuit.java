@@ -36,14 +36,12 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.plugins.balsa.handshakebuilder.ActivePull;
-import org.workcraft.plugins.balsa.handshakebuilder.ActivePush;
-import org.workcraft.plugins.balsa.handshakebuilder.ActiveSync;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakebuilder.PassivePull;
-import org.workcraft.plugins.balsa.handshakebuilder.PassivePush;
-import org.workcraft.plugins.balsa.handshakebuilder.PassiveSync;
+import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 
 @VisualClass ("org.workcraft.plugins.balsa.VisualBalsaCircuit")
@@ -124,8 +122,7 @@ public final class BalsaCircuit extends AbstractMathModel {
 		Handshake h1 = first.getHandshake();
 		Handshake h2 = second.getHandshake();
 
-		if(!(h1 instanceof ActiveSync && h2 instanceof PassiveSync ||
-			h2 instanceof ActiveSync && h1 instanceof PassiveSync))
+		if(h1.isActive() == h2.isActive())
 			throw new InvalidConnectionException("Must connect passive and active handshakes");
 
 		boolean isData1 = h1 instanceof DataHandshake;
@@ -135,6 +132,11 @@ public final class BalsaCircuit extends AbstractMathModel {
 
 		if(isData1)
 		{
+			boolean isFull1 = h1 instanceof FullDataPull || h1 instanceof FullDataPush;
+			boolean isFull2 = h2 instanceof FullDataPull || h2 instanceof FullDataPush;
+			if(isFull1 != isFull2)
+				throw new InvalidConnectionException("Cannot connect control-side data handshake with datapath-side data handshake");
+
 			DataHandshake dh1 = (DataHandshake)h1;
 			DataHandshake dh2 = (DataHandshake)h2;
 
@@ -151,11 +153,15 @@ public final class BalsaCircuit extends AbstractMathModel {
 
 	private boolean isPush(DataHandshake handshake)
 	{
-		if (handshake instanceof ActivePush || handshake instanceof PassivePush)
+		if (handshake instanceof PushHandshake)
 			return true;
-		if (handshake instanceof ActivePull || handshake instanceof PassivePull)
+		if (handshake instanceof PullHandshake)
 			return false;
-		throw new RuntimeException("Unknown data handshake type");
+		if (handshake instanceof FullDataPush)
+			return true;
+		if (handshake instanceof FullDataPull)
+			return false;
+		throw new RuntimeException("Unknown data handshake type"); // return !true && !false; %)
 	}
 
 	public Connection getConnection(HandshakeComponent handshake) {

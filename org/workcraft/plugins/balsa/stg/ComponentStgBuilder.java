@@ -24,15 +24,24 @@ package org.workcraft.plugins.balsa.stg;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Component;
-import org.workcraft.plugins.balsa.handshakestgbuilder.StgHandshake;
-import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public abstract class ComponentStgBuilder <T> {
 	@SuppressWarnings("unchecked")
-	public void buildComponentStg(Component component, Map<String, StgHandshake> handshakes, StgBuilder builder)
+	public void buildComponentStg(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
 	{
 		buildStg((T)component, handshakes, builder);
 	}
 
-	public abstract void buildStg(T component, Map<String, StgHandshake> handshakes, StgBuilder builder);
+	@SuppressWarnings("unchecked")
+	public void buildEnvironmentConstraint(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	{
+		buildEnvironment((T)component, handshakes, builder);
+	}
+
+	public abstract void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder);
+	public void buildEnvironment(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	{
+	}
 }

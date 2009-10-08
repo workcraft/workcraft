@@ -19,8 +19,14 @@
 *
 */
 
-package org.workcraft.plugins.balsa.handshakebuilder;
+package org.workcraft.plugins.balsa.stgbuilder;
 
-public interface PassiveSync extends Handshake
+public interface StrictPetriBuilder extends TypedStrictStgBuilder<OutputEvent, InputEvent, StgPlace, InputOutputEvent>
 {
+	StgPlace buildPlace(int tokenCount);
+	InputOutputEvent buildTransition();
+	void connect(StgPlace place, OutputEvent transition);
+	void connect(InputEvent transition, StgPlace place);
+	void addReadArc(StgPlace place, InputOutputEvent transition);
+	void connect(InputEvent t1, OutputEvent t2);
 }

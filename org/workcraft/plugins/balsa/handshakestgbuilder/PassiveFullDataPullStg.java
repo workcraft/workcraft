@@ -18,13 +18,14 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.handshakestgbuilder;
 
-package org.workcraft.plugins.balsa.handshakebuilder;
+import java.util.List;
 
-import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
-import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
+import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
+import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
-public interface PassivePush extends PassiveSync, DataHandshake
-{
-	PassivePushStg buildStg(HandshakeStgBuilder builder);
+public interface PassiveFullDataPullStg extends StgInterface{
+	public InputEvent go();
+	public List<OutputEvent> result(); //i-th event means that the result i was returned
 }

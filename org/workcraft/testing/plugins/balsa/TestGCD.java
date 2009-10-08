@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DocumentFormatException;
@@ -292,7 +293,7 @@ public class TestGCD {
 		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
-	//@Test
+	@Test
 	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
@@ -301,7 +302,21 @@ public class TestGCD {
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{bfNotEquals, whilE})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{muxA})));
+		System.out.println("----- seq:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq})));
+		System.out.println("----- concur:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{concur})));
+		System.out.println("----- fetchA:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA})));
+		System.out.println("----- fetchB:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchB})));
+		System.out.println("----- whilE:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
+		System.out.println("----- seq+whilE:  ");
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, whilE})));
+		//System.out.println("----- concur+fetches:  ");
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{concur, fetchA, fetchB})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, concur, fetchA, fetchB, whilE})));
 	}
 
 	//@Test
@@ -645,7 +660,7 @@ public class TestGCD {
 
 			try
 			{
-				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, false);
+				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, true);
 			}
 			catch(RuntimeException e)
 			{

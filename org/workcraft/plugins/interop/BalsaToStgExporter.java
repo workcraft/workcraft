@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Connection;
@@ -38,7 +37,7 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
@@ -49,10 +48,10 @@ import org.workcraft.util.Hierarchy;
 
 public abstract class BalsaToStgExporter {
 
-	private final HandshakeStgBuilder protocol;
+	private final HandshakeProtocol protocol;
 	private final String protocolName;
 
-	public BalsaToStgExporter(HandshakeStgBuilder protocol, String protocolName)
+	public BalsaToStgExporter(HandshakeProtocol protocol, String protocolName)
 	{
 		this.protocol = protocol;
 		this.protocolName = protocolName;
@@ -76,11 +75,12 @@ public abstract class BalsaToStgExporter {
 			Export.exportToFile(exporter, stg, tempFile);
 		}
 
-		String [] args = new String [tempFiles.size() + 2];
+		String [] args = new String [tempFiles.size() + 3];
 		args[0] = PetriNetToolsSettings.getPcompCommand();
 		args[1] = "-d";
+		args[2] = "-r";
 		for(int i=0;i<tempFiles.size();i++)
-			args[i+2] = tempFiles.get(i).getPath();
+			args[i+3] = tempFiles.get(i).getPath();
 
 		SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
 
@@ -120,36 +120,38 @@ public abstract class BalsaToStgExporter {
 	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent) {
 		STG stg = new STG();
 
-		final Map<Handshake, HandshakeComponent> handshakeComponents = breezeComponent.getHandshakeComponents();
-		final Map<String, Handshake> handshakes = breezeComponent.getHandshakes();
+		HandshakeNameProvider nameProvider = getNamesProvider(circuit, breezeComponent);
 
-		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
-		{
-			HashMap<Object, String> names;
+		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, nameProvider);
 
+		MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), breezeComponent.getHandshakes(), stgBuilder, protocol);
+		return stg;
+	}
+
+	private HandshakeNameProvider getNamesProvider(final BalsaCircuit circuit,
+			final BreezeComponent breezeComponent) {
+		final HashMap<Object, String> names;
+
+			names = new HashMap<Object, String>();
+			for(Entry<String, Handshake> entry : breezeComponent.getHandshakes().entrySet())
 			{
-				names = new HashMap<Object, String>();
-				for(Entry<String, Handshake> entry : handshakes.entrySet())
-				{
-					names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
-				}
-				for(Entry<Handshake, HandshakeComponent> entry : handshakeComponents.entrySet())
-				{
-					Connection connection = circuit.getConnection(entry.getValue());
-					if(connection != null)
-						names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
-				}
-				names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
+				names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
 			}
+			for(Entry<Handshake, HandshakeComponent> entry : breezeComponent.getHandshakeComponents().entrySet())
+			{
+				Connection connection = circuit.getConnection(entry.getValue());
+				if(connection != null)
+					names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
+			}
+			names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
 
+		HandshakeNameProvider nameProvider = new HandshakeNameProvider()
+		{
 			public String getName(Object handshake) {
 				return names.get(handshake);
 			}
-		});
-
-		protocol.setStgBuilder(stgBuilder);
-		MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), handshakes, protocol);
-		return stg;
+		};
+		return nameProvider;
 	}
 
 	public String getDescription() {

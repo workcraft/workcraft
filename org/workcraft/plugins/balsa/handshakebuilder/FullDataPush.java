@@ -19,13 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.balsa.handshakestgbuilder;
+package org.workcraft.plugins.balsa.handshakebuilder;
 
-import org.workcraft.plugins.balsa.stgbuilder.StgTransition;
-import org.workcraft.plugins.balsa.stgbuilder.TransitionOutput;
+public interface FullDataPush extends DataHandshake {
 
-public interface PassiveSyncStg extends StgHandshake
-{
-	public TransitionOutput getActivate();
-	public StgTransition getDeactivate();
 }

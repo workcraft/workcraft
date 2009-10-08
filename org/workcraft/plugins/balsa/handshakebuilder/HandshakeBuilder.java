@@ -21,14 +21,16 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-
-
 public interface HandshakeBuilder
 {
-	public ActiveSync CreateActiveSync();
-	public PassiveSync CreatePassiveSync();
-	public PassivePull CreatePassivePull(int width);
-	public ActivePull CreateActivePull(int width);
-	public PassivePush CreatePassivePush(int width);
-	public ActivePush CreateActivePush(int width);
+	public Sync CreateActiveSync();
+	public Sync CreatePassiveSync();
+	public PullHandshake CreatePassivePull(int width);
+	public PullHandshake CreateActivePull(int width);
+	public PushHandshake CreatePassivePush(int width);
+	public PushHandshake CreateActivePush(int width);
+	public FullDataPull CreateActiveFullDataPull(int width);
+	public FullDataPull CreatePassiveFullDataPull(int width);
+	public FullDataPush CreateActiveFullDataPush(int width);
+	public FullDataPush CreatePassiveFullDataPush(int width);
 }

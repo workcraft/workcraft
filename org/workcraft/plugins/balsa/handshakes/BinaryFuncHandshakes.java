@@ -24,15 +24,41 @@ package org.workcraft.plugins.balsa.handshakes;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.BinaryFunc;
+import org.workcraft.plugins.balsa.components.BinaryOperator;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
 public class BinaryFuncHandshakes extends HandshakeMaker<BinaryFunc> {
 
 	@Override
 	protected void fillHandshakes(BinaryFunc component, Map<String, Handshake> handshakes) {
+		boolean comparison = isComparison(component.getOp());
+		//boolean bool = isBoolean(component.getOp());
+
 		handshakes.put("inpA", builder.CreateActivePull(component.getInputAWidth()));
 		handshakes.put("inpB", builder.CreateActivePull(component.getInputAWidth()));
-		handshakes.put("out", builder.CreatePassivePull(component.getOutputWidth()));
+		if(comparison)
+			handshakes.put("out", builder.CreatePassiveFullDataPull(component.getOutputWidth()));
+		else
+			handshakes.put("out", builder.CreatePassivePull(component.getOutputWidth()));
 	}
 
+	private static boolean isComparison(BinaryOperator op) {
+		return
+		op == BinaryOperator.EQUALS ||
+		op == BinaryOperator.NOT_EQUALS ||
+		op == BinaryOperator.GREATER_OR_EQUALS ||
+		op == BinaryOperator.GREATER_THAN ||
+		op == BinaryOperator.LESS_OR_EQUALS ||
+		op == BinaryOperator.LESS_THAN;
+	}
+/*
+	private static boolean isBoolean(BinaryOperator op) {
+		return
+		op == BinaryOperator.AND ||
+		op == BinaryOperator.OR ||
+		op == BinaryOperator.GREATER_THAN ||
+		op == BinaryOperator.LESS_OR_EQUALS ||
+		op == BinaryOperator.LESS_THAN;
+	}
+*/
 }

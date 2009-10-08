@@ -18,9 +18,9 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.balsa.protocols;
 
-package org.workcraft.plugins.balsa.handshakebuilder;
+import org.workcraft.plugins.balsa.stgbuilder.Event;
 
-public interface ActiveSync extends Handshake
-{
+public interface ActiveEvent extends Event, ActiveOut, PassiveIn {
 }

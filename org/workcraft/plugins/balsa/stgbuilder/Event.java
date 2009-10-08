@@ -19,9 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.balsa.handshakestgbuilder;
+package org.workcraft.plugins.balsa.stgbuilder;
 
-
-public interface StgHandshake
+public interface Event
 {
 }
