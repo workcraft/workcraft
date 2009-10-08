@@ -25,14 +25,20 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.stg.ImplicitPlaceArc;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
+import org.workcraft.serialisation.xml.CustomXMLSerialiser;
+import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class ImplicitArcSerialiser implements ReferencingXMLSerialiser {
+public class ImplicitArcSerialiser implements CustomXMLSerialiser {
+	@Override
+	public String getClassName() {
+		return ImplicitPlaceArc.class.getName();
+	}
 
 	@Override
 	public void serialise(Element element, Object object,
 			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException {
+			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
+			throws SerialisationException {
 		ImplicitPlaceArc arc = (ImplicitPlaceArc) object;
 
 		element.setAttribute("first", internalReferences.getReference(arc.getFirst()));
@@ -42,10 +48,4 @@ public class ImplicitArcSerialiser implements ReferencingXMLSerialiser {
 		element.setAttribute("refCon2", externalReferences.getReference(arc.getRefCon2()));
 		element.setAttribute("refPlace", externalReferences.getReference(arc.getImplicitPlace()));
 	}
-
-	@Override
-	public String getClassName() {
-		return ImplicitPlaceArc.class.getName();
-	}
-
 }

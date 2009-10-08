@@ -25,17 +25,20 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
+import org.workcraft.serialisation.xml.CustomXMLSerialiser;
+import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class VisualSignalTransitionSerialiser implements ReferencingXMLSerialiser {
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException {
-		element.setAttribute("ref", externalReferences.getReference(((VisualSignalTransition)object).getReferencedTransition()));
-	}
-
+public class VisualSignalTransitionSerialiser implements CustomXMLSerialiser {
+	@Override
 	public String getClassName() {
 		return VisualSignalTransition.class.getName();
 	}
 
+	@Override
+	public void serialise(Element element, Object object,
+			ReferenceProducer internalReferences,
+			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
+			throws SerialisationException {
+		element.setAttribute("ref", externalReferences.getReference(((VisualSignalTransition)object).getReferencedTransition()));
+	}
 }

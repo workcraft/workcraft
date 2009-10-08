@@ -27,25 +27,34 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
+import org.workcraft.serialisation.xml.NodeFinaliser;
+import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class VisualSignalTransitionDeserialiser implements
 		CustomXMLDeserialiser {
-
-	public void finaliseInstance(Element element, Object instance,
-			ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver)
-			throws DeserialisationException {
-
-	}
-
-	public Object initInstance(Element element,
-			ReferenceResolver externalReferenceResolver)
-			throws DeserialisationException {
-		return new VisualSignalTransition ( ((SignalTransition) externalReferenceResolver.getObject(element.getAttribute("ref"))) );
-	}
-
+	@Override
 	public String getClassName() {
 		return VisualSignalTransition.class.getName();
 	}
 
+	@Override
+	public void finaliseInstance(Element element, Object instance,
+			ReferenceResolver internalReferenceResolver,
+			ReferenceResolver externalReferenceResolver,
+			NodeFinaliser nodeFinaliser) throws DeserialisationException {
+
+	}
+
+	@Override
+	public Object createInstance(Element element,
+			ReferenceResolver externalReferenceResolver,
+			Object... constructorParameters) {
+		return new VisualSignalTransition ( ((SignalTransition) externalReferenceResolver.getObject(element.getAttribute("ref"))) );
+	}
+
+	@Override
+	public void initInstance(Element element, Object instance,
+			ReferenceResolver externalReferenceResolver,
+			NodeInitialiser nodeInitialiser) throws DeserialisationException {
+	}
 }
