@@ -23,10 +23,8 @@ package org.workcraft.testing.util;
 
 import java.awt.geom.CubicCurve2D;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.Geometry.CurveSplitResult;
 
 public class GeometryTests {
 	@Test
@@ -35,10 +33,10 @@ public class GeometryTests {
 		Geometry.splitCubicCurve(new CubicCurve2D.Double(), 0.5);
 	}
 
-	private CubicCurve2D.Double getSimpleCurve()
-	{
-		return new CubicCurve2D.Double(0, 0, 0, 1, 1, 1, 1, 0);
-	}
+//	private CubicCurve2D.Double getSimpleCurve()
+//	{
+//		return new CubicCurve2D.Double(0, 0, 0, 1, 1, 1, 1, 0);
+//	}
 
 //	@Test
 //	public void BordersTest1()
