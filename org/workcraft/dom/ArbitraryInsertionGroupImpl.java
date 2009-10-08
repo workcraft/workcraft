@@ -21,21 +21,27 @@
 
 package org.workcraft.dom;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.workcraft.observation.ObservableHierarchy;
 
-public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
-	Collection<Node> children = new LinkedHashSet<Node> ();
+public class ArbitraryInsertionGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
+	LinkedList<Node> children = new LinkedList<Node> ();
 
-	public DefaultGroupImpl (Container groupRef) {
+	public ArbitraryInsertionGroupImpl (Container groupRef) {
 		super(groupRef);
 	}
 
-	public Collection<Node> getChildren() {
-		return Collections.unmodifiableCollection(children);
+	public List<Node> getChildren() {
+		return Collections.unmodifiableList(children);
+	}
+
+	public void add(int index, Node node) {
+		preAdd(node, true);
+		children.add(index, node);
+		postAdd(node, true);
 	}
 
 	@Override
