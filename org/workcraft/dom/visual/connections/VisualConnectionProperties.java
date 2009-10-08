@@ -26,13 +26,16 @@ import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.Touchable;
 
-public interface VisualConnectionInfo {
+public interface VisualConnectionProperties {
 	public Color getDrawColor();
 	public double getLineWidth();
 	public double getArrowWidth();
 	public double getArrowLength();
-	public Point2D getSecondCenter();
+	public boolean hasArrow();
+
 	public Point2D getFirstCenter();
 	public Touchable getFirstShape();
+
+	public Point2D getSecondCenter();
 	public Touchable getSecondShape();
 }

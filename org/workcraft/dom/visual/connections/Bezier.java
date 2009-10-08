@@ -40,12 +40,12 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.util.Geometry.CurveSplitResult;
 
-class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
+public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
 	private CubicCurve2D curve = new CubicCurve2D.Double();
 	private CubicCurve2D visibleCurve = new CubicCurve2D.Double();
 
 	private PartialCurveInfo curveInfo;
-	private VisualConnectionInfo connectionInfo;
+	private VisualConnectionProperties connectionInfo;
 
 	private Node parent;
 	private BezierControlPoint cp1, cp2;
@@ -145,7 +145,7 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, Selec
 		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
 	}
 
-	@Override
+
 	public void update() {
 		curve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
@@ -217,4 +217,10 @@ class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, Selec
 			cp1.setHidden(!controlsVisible);
 			cp2.setHidden(!controlsVisible);
 	}
+
+	@Override
+	public void invalidate() {
+		throw new RuntimeException ("Not implemented");
+	}
+
 }
