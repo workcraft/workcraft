@@ -50,6 +50,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -116,8 +117,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		for (VisualConnection vc : createdConnections.keySet()) {
 			MathConnection mc = createdConnections.get(vc);
-			vc.setDependencies(createdNodes.get(mc.getFirst()),
-					createdNodes.get(mc.getSecond()), mc);
+			vc.setVisualConnectionDependencies(createdNodes.get(mc.getFirst()),
+					createdNodes.get(mc.getSecond()), new Polyline(vc), mc);
 			getRoot().add(vc);
 		}
 	}
@@ -227,7 +228,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	private void validateSelection (Node node) {
 		if (!Hierarchy.isDescendant(node, getCurrentLevel()))
-			throw new RuntimeException ("Cannot select a node that is not in the current editing level");
+			throw new RuntimeException ("Cannot select a node that is not in the current editing level (" + node + "), parent (" + node.getParent() +")");
 	}
 
 	private void validateSelection (Collection<Node> nodes) {
