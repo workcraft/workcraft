@@ -24,26 +24,50 @@ package org.workcraft.plugins.serialisation.xml;
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.ReferencingXMLDeserialiser;
+import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
+import org.workcraft.serialisation.xml.NodeFinaliser;
+import org.workcraft.serialisation.xml.NodeInitialiser;
+import org.workcraft.util.XmlUtil;
 
-public class VisualConnectionDeserialiser implements ReferencingXMLDeserialiser {
+public class VisualConnectionDeserialiser implements CustomXMLDeserialiser {
+	@Override
 	public String getClassName() {
 		return VisualConnection.class.getName();
 	}
 
-	public void deserialise(Element element, Object instance,
+	@Override
+	public void finaliseInstance(Element element, Object instance,
 			ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver)
-	throws DeserialisationException {
+			ReferenceResolver externalReferenceResolver,
+			NodeFinaliser nodeFinaliser) throws DeserialisationException {
+
 		VisualConnection vcon = (VisualConnection)instance;
 
-		vcon.setDependencies(
+		vcon.setVisualConnectionDependencies(
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("first")),
 				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("second")),
+				(ConnectionGraphic)internalReferenceResolver.getObject(XmlUtil.getChildElement("graphic", element).getAttribute("ref")),
 				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))
 		);
+
+		nodeFinaliser.finaliseInstance(vcon.getGraphic());
+	}
+
+	@Override
+	public Object createInstance(Element element,
+			ReferenceResolver externalReferenceResolver,
+			Object... constructorParameters) {
+		return new VisualConnection();
+	}
+
+	@Override
+	public void initInstance(Element element, Object instance,
+			ReferenceResolver externalReferenceResolver,
+			NodeInitialiser nodeInitialiser) throws DeserialisationException {
+		nodeInitialiser.initInstance(XmlUtil.getChildElement("graphic", element), (VisualConnection)instance);
 	}
 }

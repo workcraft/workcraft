@@ -82,8 +82,12 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 			Element modelElement = doc.createElement("model");
 			Element rootElement = doc.createElement("root");
 
-			serialisation.serialise(modelElement, model, internalReferences, externalReferences);
-			serialisation.serialise(rootElement, model.getRoot(), internalReferences, externalReferences);
+			serialisation.begin(internalReferences, externalReferences);
+
+			serialisation.serialise(modelElement, model);
+			serialisation.serialise(rootElement, model.getRoot());
+
+			serialisation.end();
 
 			doc.appendChild(modelElement);
 			modelElement.appendChild(rootElement);
