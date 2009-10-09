@@ -23,11 +23,14 @@ package org.workcraft.plugins.serialisation.xml;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.visual.connections.Bezier;
+import org.workcraft.dom.visual.connections.BezierControlPoint;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
+import org.workcraft.util.XmlUtil;
 
 public class BezierDeserialiser implements CustomXMLDeserialiser {
 	@Override
@@ -40,20 +43,29 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver,
 			NodeFinaliser nodeFinaliser) throws DeserialisationException {
-		throw new RuntimeException ("Not implemented");
+		for (BezierControlPoint cp : ((Bezier)instance).getControlPoints())
+			nodeFinaliser.finaliseInstance(cp);
+		((Bezier)instance).finaliseControlPoints();
 	}
 
 	@Override
 	public Object createInstance(Element element,
 			ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters) {
-		throw new RuntimeException ("Not implemented");
+		return new Bezier ((VisualConnection)constructorParameters[0]);
 	}
 
 	@Override
 	public void initInstance(Element element, Object instance,
 			ReferenceResolver externalReferenceResolver,
 			NodeInitialiser nodeInitialiser) throws DeserialisationException {
-		throw new RuntimeException ("Not implemented");
+
+		Element cp1e = XmlUtil.getChildElement("cp1", element);
+		Element cp2e =  XmlUtil.getChildElement("cp2", element);
+
+		BezierControlPoint cp1 = (BezierControlPoint)nodeInitialiser.initInstance(cp1e);
+		BezierControlPoint cp2 = (BezierControlPoint)nodeInitialiser.initInstance(cp2e);
+
+		((Bezier)instance).initControlPoints(cp1, cp2);
 	}
 }

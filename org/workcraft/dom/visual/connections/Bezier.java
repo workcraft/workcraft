@@ -28,16 +28,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.XmlUtil;
 import org.workcraft.util.Geometry.CurveSplitResult;
 
 public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
@@ -51,29 +48,51 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	private BezierControlPoint cp1, cp2;
 
 	private Rectangle2D boundingBox = null;
+	private boolean valid = false;
 
 	public Bezier(VisualConnection parent) {
-		cp1 = new BezierControlPoint(this);
-		cp2 = new BezierControlPoint(this);
-
-		cp1.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.3));
-		cp2.setPosition(Geometry.lerp(parent.getFirstCenter(), parent.getSecondCenter(), 0.6));
-
-		cp1.addObserver(this);
-		cp2.addObserver(this);
-
 		this.connectionInfo = parent;
 		this.parent = parent;
 	}
 
+	public void setDefaultControlPoints() {
+		initControlPoints (new BezierControlPoint(), new BezierControlPoint());
+
+		cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
+		cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
+
+		finaliseControlPoints();
+	}
+
+	public void initControlPoints(BezierControlPoint cp1, BezierControlPoint cp2) {
+		this.cp1 = cp1;
+		this.cp2 = cp2;
+	}
+
+	public void finaliseControlPoints() {
+		cp1.setParent(this);
+		cp2.setParent(this);
+
+		cp1.addObserver(this);
+		cp2.addObserver(this);
+	}
+
+	public BezierControlPoint[] getControlPoints() {
+		return new BezierControlPoint[] { cp1, cp2 };
+	}
+
 	public void draw(Graphics2D g) {
+		if (!valid)
+			update();
+
 		g.setColor(connectionInfo.getDrawColor());
 		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 
 		g.draw(visibleCurve);
 
-		DrawHelper
-				.drawArrowHead(g, connectionInfo.getDrawColor(),
+		if(connectionInfo.hasArrow())
+			DrawHelper
+			.drawArrowHead(g, connectionInfo.getDrawColor(),
 						curveInfo.arrowHeadPosition,
 						curveInfo.arrowOrientation, connectionInfo
 								.getArrowLength(), connectionInfo
@@ -82,32 +101,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	public Rectangle2D getBoundingBox() {
 		return boundingBox;
-	}
-
-	public void readFromXML(Element element) {
-		Element anchors;
-		anchors = XmlUtil.getChildElement("anchorPoints", element);
-		if (anchors==null) return;
-		List<Element> xap = XmlUtil.getChildElements(ControlPoint.class.getSimpleName(), anchors);
-		if (xap==null) return;
-
-		Element eap = xap.get(0);
-		cp1.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
-		cp1.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-
-		eap=xap.get(1);
-		cp2.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
-		cp2.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-	}
-
-	public void writeToXML(Element element) {
-		Element anchors = XmlUtil.createChildElement("anchorPoints", element);
-		Element xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
-		XmlUtil.writeDoubleAttr(xap, "X", cp1.getX());
-		XmlUtil.writeDoubleAttr(xap, "Y", cp1.getY());
-		xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
-		XmlUtil.writeDoubleAttr(xap, "X", cp2.getX());
-		XmlUtil.writeDoubleAttr(xap, "Y", cp2.getY());
 	}
 
 	private CubicCurve2D getPartialCurve(double tStart, double tEnd)
@@ -155,7 +148,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
 		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
 
-
 		Point2D origin1 = new Point2D.Double();
 		origin1.setLocation(connectionInfo.getFirstCenter());
 		cp1.getParentToLocalTransform().transform(origin1, origin1);
@@ -170,6 +162,8 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
 
 		updateVisibleRange();
+
+		valid  = true;
 	}
 
 	@Override
@@ -203,7 +197,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	@Override
 	public void notify(StateEvent e) {
-		update();
+		valid = false;
 	}
 
 	@Override
@@ -220,7 +214,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	@Override
 	public void invalidate() {
-		throw new RuntimeException ("Not implemented");
+		valid = false;
 	}
-
 }

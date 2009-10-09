@@ -48,6 +48,7 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.ObservableHierarchyImpl;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualConnection extends VisualNode implements
 		Node, Drawable, Connection,
@@ -133,10 +134,12 @@ public class VisualConnection extends VisualNode implements
 		initialise();
 	}
 
+	@NoAutoSerialisation
 	public ConnectionType getConnectionType() {
 		return connectionType;
 	}
 
+	@NoAutoSerialisation
 	public void setConnectionType(ConnectionType t) {
 		if (connectionType!=t) {
 			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, graphic));
@@ -147,7 +150,9 @@ public class VisualConnection extends VisualNode implements
 				graphic = new Polyline(this);
 			}
 			if (t==ConnectionType.BEZIER) {
-				graphic = new Bezier(this);
+				Bezier b = new Bezier(this);
+				b.setDefaultControlPoints();
+				graphic = b;
 			}
 
 			children.add(graphic);
