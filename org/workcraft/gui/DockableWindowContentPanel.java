@@ -57,7 +57,7 @@ public class DockableWindowContentPanel extends JPanel {
 		public String getScript() {
 			switch (actionType) {
 			case CLOSE_ACTION:
-				return MainWindow.Actions.tryOperation("mainWindow.closeDockableWindow("+windowID+");");
+				return tryOperation("mainWindow.closeDockableWindow("+windowID+");");
 			case MINIMIZE_ACTION:
 				return "mainWindow.minimizeDockableWindow("+windowID+");";
 			case MAXIMIZE_ACTION:

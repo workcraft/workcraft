@@ -69,7 +69,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 		public static final ScriptedAction SAVE_WORKSPACE_ACTION = new ScriptedAction() {
 			public String getScript() {
-				return MainWindow.Actions.tryOperation("mainWindow.getWorkspaceView().saveWorkspace()");
+				return tryOperation("mainWindow.getWorkspaceView().saveWorkspace()");
 			}
 			public String getText() {
 				return "Save workspace";
@@ -77,7 +77,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		};
 		public static final ScriptedAction SAVE_WORKSPACE_AS_ACTION = new ScriptedAction() {
 			public String getScript() {
-				return MainWindow.Actions.tryOperation("mainWindow.getWorkspaceView().saveWorkspaceAs()");
+				return tryOperation("mainWindow.getWorkspaceView().saveWorkspaceAs()");
 			}
 			public String getText() {
 				return "Save workspace as...";
@@ -85,7 +85,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		};
 		public static final ScriptedAction NEW_WORKSPACE_AS_ACTION = new ScriptedAction() {
 			public String getScript() {
-				return MainWindow.Actions.tryOperation("mainWindow.getWorkspaceView().newWorkspace()");
+				return tryOperation("mainWindow.getWorkspaceView().newWorkspace()");
 			}
 			public String getText() {
 				return "New workspace";

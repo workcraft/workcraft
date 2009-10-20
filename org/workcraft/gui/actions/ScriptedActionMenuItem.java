@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 
 @SuppressWarnings("serial")
 public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
+
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			ScriptedActionMenuItem.this.fireActionPerformed();

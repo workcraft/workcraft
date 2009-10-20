@@ -178,19 +178,6 @@ public class MainWindow extends JFrame {
 				return "Settings...";
 			}
 		};
-
-		public static final String tryOperation (String operation) {
-			return "try\n" +
-			"{\n" +
-			operation + "\n" +
-			"}\n" +
-			"catch (err)\n" +
-			"{\n" +
-			"  if (!(err.javaException instanceof Packages.org.workcraft.framework.exceptions.OperationCancelledException)) {\n" +
-			"    printlnerr (err);\n" +
-			"  }\n" +
-			"}";
-		}
 	}
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {

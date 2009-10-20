@@ -89,7 +89,7 @@ public class MainMenu extends JMenuBar {
 		}
 
 		public String getScript() {
-			return "mainWindow.exportTo(\""+exporterClassName+"\");";
+			return tryOperation("mainWindow.exportTo(\""+exporterClassName+"\");");
 		}
 
 		public String getText() {
