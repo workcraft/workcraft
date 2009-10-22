@@ -38,6 +38,49 @@ public class Geometry {
 		return new Point2D.Double(p1.getX()*(1-t)+p2.getX()*t, p1.getY()*(1-t)+p2.getY()*t);
 	}
 
+	public static Point2D add (Point2D p1, Point2D p2) {
+		Point2D result = (Point2D)p1.clone();
+		result.setLocation(result.getX() + p2.getX(), result.getY() + p2.getY());
+		return result;
+	}
+
+	public static Point2D subtract (Point2D p1, Point2D p2) {
+		Point2D result = (Point2D)p1.clone();
+		result.setLocation(result.getX() - p2.getX(), result.getY() - p2.getY());
+		return result;
+	}
+
+	public static Point2D rotate90CCW (Point2D p) {
+		Point2D result = (Point2D)p.clone();
+		result.setLocation(-p.getY(), p.getX());
+		return result;
+	}
+
+	public static Point2D normalize (Point2D p) {
+		Point2D result = (Point2D)p.clone();
+		double length = p.distance(0, 0);
+		if (length < 0.0000001)
+			result.setLocation(0, 0);
+		else
+			result.setLocation(p.getX() / length, p.getY() / length);
+		return result;
+	}
+
+	public static Point2D reduce (Point2D p) {
+		Point2D result = multiply (normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
+		return result;
+	}
+
+	public static double dotProduct (Point2D v1, Point2D v2) {
+		return v1.getX() * v2.getX() + v1.getY() * v2.getY();
+	}
+
+	public static Point2D multiply (Point2D p, double a) {
+		Point2D result = (Point2D)p.clone();
+		result.setLocation(p.getX() * a, p.getY() * a);
+		return result;
+	}
+
 	public static class CurveSplitResult
 	{
 		public final CubicCurve2D curve1;
@@ -139,5 +182,22 @@ public class Geometry {
 		info.arrowOrientation = Math.atan2(info.arrowHeadPosition.getY() - pt.getY() , info.arrowHeadPosition.getX() - pt.getX());
 
 		return info;
+	}
+
+	public static Point2D changeBasis (Point2D p, Point2D vx, Point2D vy) {
+		Point2D result = (Point2D)p.clone();
+
+		if (dotProduct(vx,vy) > 0.0000001)
+			throw new RuntimeException ("Vectors vx and vy must be orthogonal");
+
+		double vysq = vy.distanceSq(0,0);
+		double vxsq = vx.distanceSq(0,0);
+
+		if (vysq < 0.0000001 || vxsq < 0.0000001)
+			throw new RuntimeException ("Vectors vx and vy must not have zero length");
+
+		result.setLocation(dotProduct(p, vx) / vxsq, dotProduct(p, vy) / vysq);
+
+		return result;
 	}
 }
