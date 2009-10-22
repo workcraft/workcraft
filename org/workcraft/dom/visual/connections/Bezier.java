@@ -46,6 +46,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	private Node parent;
 	private BezierControlPoint cp1, cp2;
+	private ControlPointScaler scaler = null;
 
 	private Rectangle2D boundingBox = null;
 	private boolean valid = false;
@@ -210,6 +211,25 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 			}
 			cp1.setHidden(!controlsVisible);
 			cp2.setHidden(!controlsVisible);
+	}
+
+	@Override
+	public void componentsTransformChanged() {
+		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
+				.getSecondCenter(), Arrays
+				.asList(new ControlPoint[] { cp1, cp2 }),
+				connectionInfo.getScaleMode());
+		invalidate();
+	}
+
+	@Override
+	public void componentsTransformChanging() {
+		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
+	}
+
+	@Override
+	public void controlPointsChanged() {
+		invalidate();
 	}
 
 	@Override

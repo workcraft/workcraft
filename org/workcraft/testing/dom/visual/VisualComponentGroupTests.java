@@ -40,7 +40,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
-import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class VisualComponentGroupTests {
@@ -65,7 +65,7 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public void notify(TransformChangedEvent e) {
+		public void notify(TransformEvent e) {
 			notified = true;
 		}
 

@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 
 public interface VisualConnectionProperties {
 	public Color getDrawColor();
@@ -38,4 +39,5 @@ public interface VisualConnectionProperties {
 
 	public Point2D getSecondCenter();
 	public Touchable getSecondShape();
+	public ScaleMode getScaleMode();
 }

@@ -29,5 +29,10 @@ import org.workcraft.dom.visual.Touchable;
 
 public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
 	public void draw (Graphics2D g);
+
+	public void componentsTransformChanging ();
+	public void componentsTransformChanged ();
+
+	public void controlPointsChanged();
 	public void invalidate();
 }

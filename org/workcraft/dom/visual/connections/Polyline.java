@@ -42,6 +42,7 @@ import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 
 public class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
 StateObserver, HierarchyObserver, SelectionObserver {
@@ -50,7 +51,9 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	private PartialCurveInfo curveInfo;
 
 	private Rectangle2D boundingBox = null;
+
 	private boolean valid = false;
+	private ControlPointScaler scaler = null;
 
 	public Polyline(VisualConnection parent) {
 		groupImpl = new ArbitraryInsertionGroupImpl(this);
@@ -219,7 +222,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 		groupImpl.add(segment, ap);
 
-		update();
+		controlPointsChanged();
 	}
 
 	@Override
@@ -303,7 +306,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void notify(StateEvent e) {
-		invalidate();
+		controlPointsChanged();
 	}
 
 	@Override
@@ -321,7 +324,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 					cp.addObserver(this);
 				}
 
-		invalidate();
+		controlPointsChanged();
 	}
 
 	@Override
@@ -343,11 +346,30 @@ StateObserver, HierarchyObserver, SelectionObserver {
 			((ControlPoint)n).setHidden(!controlsVisible);
 	}
 
-	public boolean isValid() {
-		return valid;
+	@Override
+	public void componentsTransformChanged() {
+		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
+				.getSecondCenter(), Hierarchy.filterNodesByType(getChildren(),
+				ControlPoint.class), connectionInfo.getScaleMode());
+		scaler = null;
+
+		invalidate();
 	}
 
-	public void invalidate() {
-		this.valid = false;
+	@Override
+	public void componentsTransformChanging() {
+		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
 	}
+
+	@Override
+	public void controlPointsChanged() {
+		invalidate();
+	}
+
+	@Override
+	public void invalidate() {
+		valid = false;
+	}
+
+
 }

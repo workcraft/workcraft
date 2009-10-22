@@ -60,6 +60,14 @@ public class VisualConnection extends VisualNode implements
 		BEZIER
 	};
 
+	public enum ScaleMode
+	{
+		NONE,
+		SCALE,
+		STRETCH,
+		ADAPTIVE
+	}
+
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private MathConnection refConnection;
@@ -67,6 +75,8 @@ public class VisualConnection extends VisualNode implements
 	private VisualComponent second;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
+	private ScaleMode scaleMode = ScaleMode.ADAPTIVE;
+
 	private ConnectionGraphic graphic = null;
 
 	private static double defaultLineWidth = 0.02;
@@ -100,6 +110,15 @@ public class VisualConnection extends VisualNode implements
 		hm.put("Bezier", ConnectionType.BEZIER);
 
 		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
+
+		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
+
+		hm2.put("Lock anchors", ScaleMode.NONE);
+		hm2.put("Proportional", ScaleMode.SCALE);
+		hm2.put("Stretch", ScaleMode.STRETCH);
+		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
+
+		addPropertyDeclaration(new PropertyDeclaration("Scale mode", "getScaleMode", "setScaleMode", ScaleMode.class, hm2));
 
 		componentsTransformObserver = new ComponentsTransformObserver(this);
 
@@ -323,5 +342,13 @@ public class VisualConnection extends VisualNode implements
 	@Override
 	public Touchable getSecondShape() {
 		return componentsTransformObserver.getSecondShape();
+	}
+
+	public ScaleMode getScaleMode() {
+		return scaleMode;
+	}
+
+	public void setScaleMode(ScaleMode scaleMode) {
+		this.scaleMode = scaleMode;
 	}
 }
