@@ -31,6 +31,8 @@ import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class ComponentsTransformObserver implements TransformObserver, Node {
@@ -52,14 +54,14 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 		if (!valid)
 			update();
 
-		return firstCenter;
+		return (Point2D)firstCenter.clone();
 	}
 
 	public Point2D getSecondCenter() {
 		if (!valid)
 			update();
 
-		return secondCenter;
+		return (Point2D)secondCenter.clone();
 	}
 
 	public Touchable getFirstShape() {
@@ -77,9 +79,14 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 	}
 
 	@Override
-	public void notify(TransformChangedEvent e) {
-		valid = false;
-		connection.getGraphic().invalidate();
+	public void notify(TransformEvent e) {
+		if (e instanceof TransformChangingEvent) {
+			connection.getGraphic().componentsTransformChanging();
+		}
+		else if (e instanceof TransformChangedEvent) {
+			valid = false;
+			connection.getGraphic().componentsTransformChanged();
+		}
 	}
 
 	private void update() {
@@ -91,6 +98,8 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 
 		firstCenter.setLocation(firstBB.getCenterX(), firstBB.getCenterY());
 		secondCenter.setLocation(secondBB.getCenterX(), secondBB.getCenterY());
+
+		valid = true;
 	}
 
 	@Override

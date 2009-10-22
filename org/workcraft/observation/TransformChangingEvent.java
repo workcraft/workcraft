@@ -21,12 +21,10 @@
 
 package org.workcraft.observation;
 
-
 import org.workcraft.dom.visual.Movable;
 
-
-public class TransformChangedEvent extends TransformEvent implements StateEvent {
-	public TransformChangedEvent(Movable sender) {
+public class TransformChangingEvent extends TransformEvent implements StateEvent {
+	public TransformChangingEvent(Movable sender) {
 		super(sender);
 	}
 }
