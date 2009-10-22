@@ -21,7 +21,7 @@
 
 package org.workcraft.gui.propertyeditor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PropertyDeclaration implements PropertyDescriptor {
@@ -50,14 +50,14 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		choice = false;
 	}
 
-	public PropertyDeclaration (String name, String getter, String setter, Class<?> cls, Map<String, Object> predefinedValues) {
+	public PropertyDeclaration (String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
 		this.cls = cls;
 		this.predefinedValues = predefinedValues;
 
-		valueNames = new HashMap<Object, String>();
+		valueNames = new LinkedHashMap<Object, String>();
 
 		for (String k : predefinedValues.keySet()) {
 			valueNames.put(predefinedValues.get(k), k);
