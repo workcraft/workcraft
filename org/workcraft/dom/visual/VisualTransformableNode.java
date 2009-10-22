@@ -28,6 +28,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 
@@ -67,18 +68,21 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	@NoAutoSerialisation
 	public void setX(double x) {
+		transformChanging();
 		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
 		transformChanged();
 	}
 
 	@NoAutoSerialisation
 	public void setY(double y) {
+		transformChanging();
 		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
 
 	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
+		transformChanging();
 		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
@@ -92,7 +96,10 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
 
 		sendNotification(new TransformChangedEvent(this));
+	}
 
+	protected void transformChanging() {
+		sendNotification(new TransformChangingEvent(this));
 	}
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
@@ -132,6 +139,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	public void applyTransform(AffineTransform transform)
 	{
+		transformChanging();
 		localToParentTransform.preConcatenate(transform);
 		transformChanged();
 	}
@@ -171,6 +179,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	public void setTransform(AffineTransform transform) {
+		transformChanging();
 		localToParentTransform.setTransform(transform);
 		transformChanged();
 	}
