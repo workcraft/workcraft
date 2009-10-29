@@ -204,6 +204,7 @@ public class PluginManager implements PluginProvider {
 			if(Plugin.class.isAssignableFrom(cls)) {
 				PluginInfo info = new PluginInfo(cls);
 				plugins.add(info);
+				nameToInfoMap.put(className, info);
 				System.out.println("plugin " + cls.getName());
 			} else
 				System.out.println("not a plugin class, ignored");
