@@ -30,10 +30,13 @@ import javax.swing.JTabbedPane;
 import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.AbstractDockable;
 import org.flexdock.docking.event.DockingEvent;
+import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.tabs.DockableTab;
 
 public class DockableWindow extends AbstractDockable {
 	private DockableWindowContentPanel panel;
 	private LinkedList<Component> dragSources = new LinkedList<Component>();
+	private MainWindow mainWindow;
 	private boolean closed = false;
 
 	public boolean isMaximized() {
@@ -42,6 +45,7 @@ public class DockableWindow extends AbstractDockable {
 
 	public void setMaximized(boolean maximized) {
 		panel.setMaximized(maximized);
+		updateHeaders(this.getDockingPort(), mainWindow.getDefaultActionListener());
 	}
 
 	public boolean isClosed() {
@@ -52,9 +56,10 @@ public class DockableWindow extends AbstractDockable {
 		this.closed = closed;
 	}
 
-	public DockableWindow(DockableWindowContentPanel panel, String persistentID) {
+	public DockableWindow(MainWindow mainWindow, DockableWindowContentPanel panel, String persistentID) {
 		super(persistentID);
 		this.panel = panel;
+		this.mainWindow = mainWindow;
 		setTabText(panel.getTitle());
 		dragSources.add(panel);
 	}
@@ -67,14 +72,22 @@ public class DockableWindow extends AbstractDockable {
 		return panel;
 	}
 
-	public static void updateHeaders(DockingPort port) {
+	public static void updateHeaders(DockingPort port, ScriptedActionListener actionListener) {
 		for (Object d : port.getDockables()) {
 			DockableWindow dockable = (DockableWindow)d;
 
 			boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
 
-			if (inTab)
+			if (inTab && !dockable.isMaximized()) {
 				dockable.getContentPanel().setHeaderVisible(false);
+				JTabbedPane tabbedPane = (JTabbedPane)dockable.getComponent().getParent();
+
+				for (int i=0; i<tabbedPane.getComponentCount(); i++)
+					if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
+						tabbedPane.setTabComponentAt(i, new DockableTab(dockable, actionListener));
+						break;
+					}
+			}
 			else
 				dockable.getContentPanel().setHeaderVisible(true);
 		}
@@ -91,7 +104,7 @@ public class DockableWindow extends AbstractDockable {
 	@Override
 	public void dockingComplete(DockingEvent evt) {
 //		System.out.println ("docked " + getTitle());
-		updateHeaders(evt.getNewDockingPort());
+		updateHeaders(evt.getNewDockingPort(), mainWindow.getDefaultActionListener());
 		super.dockingComplete(evt);
 
 	}
@@ -99,7 +112,7 @@ public class DockableWindow extends AbstractDockable {
 	@Override
 	public void undockingComplete(DockingEvent evt) {
 //		System.out.println ("undocked " + getTitle());
-		updateHeaders(evt.getOldDockingPort());
+		updateHeaders(evt.getOldDockingPort(), mainWindow.getDefaultActionListener());
 		super.undockingComplete(evt);
 	}
 
@@ -107,6 +120,10 @@ public class DockableWindow extends AbstractDockable {
 	@Override
 	public List getDragSources() {
 		return dragSources;
+	}
+
+	public int getOptions() {
+		return panel.getOptions();
 	}
 
 }

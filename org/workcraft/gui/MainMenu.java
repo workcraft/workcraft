@@ -192,6 +192,12 @@ public class MainMenu extends JMenuBar {
 		ScriptedActionMenuItem miImport = new ScriptedActionMenuItem(MainWindow.Actions.IMPORT_ACTION);
 		miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ScriptedActionMenuItem miCloseAll = new ScriptedActionMenuItem(MainWindow.Actions.CLOSE_ALL_EDITORS_ACTION);
+		miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ScriptedActionMenuItem miCloseActive = new ScriptedActionMenuItem(MainWindow.Actions.CLOSE_ACTIVE_EDITOR_ACTION);
+		miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		mnExport = new JMenu("Export");
 		mnExport.setEnabled(false);
 
@@ -199,9 +205,12 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miOpenModel);
 		mnFile.add(miSaveWork);
 		mnFile.add(miSaveWorkAs);
+		mnFile.add(miCloseActive);
+		mnFile.add(miCloseAll);
 		mnFile.addSeparator();
 		mnFile.add(miImport);
 		mnFile.add(mnExport);
+
 
 		mnFile.addSeparator();
 		mnFile.add(miNewWorkspace);
