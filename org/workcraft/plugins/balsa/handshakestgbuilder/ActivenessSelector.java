@@ -35,6 +35,17 @@ import org.workcraft.plugins.balsa.stgbuilder.InputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 
 public class ActivenessSelector {
+
+	public static TwoSideStg direct(TwoWayStg original, boolean activeInside)
+	{
+		StgInterface active = active(original);
+		StgInterface passive = passive(original);
+		if(activeInside)
+			return new TwoSideStg(active, passive);
+		else
+			return new TwoSideStg(passive, active);
+	}
+
 	private static final class ActiveSyncImpl implements ActiveSync {
 		private final SyncStg sync;
 

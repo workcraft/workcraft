@@ -37,6 +37,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
+import org.workcraft.plugins.balsa.handshakebuilder.FullDataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
@@ -127,39 +128,42 @@ public final class BalsaCircuit extends AbstractMathModel {
 
 		boolean isData1 = h1 instanceof DataHandshake;
 		boolean isData2 = h2 instanceof DataHandshake;
-		if(isData1 != isData2)
+		boolean isFull1 = h1 instanceof FullDataHandshake;
+		boolean isFull2 = h2 instanceof FullDataHandshake;
+
+		if((isData1 || isFull1) != (isData2 || isFull2))
 			throw new InvalidConnectionException("Cannot connect data handshake with an activation handshake");
 
 		if(isData1)
 		{
-			boolean isFull1 = h1 instanceof FullDataPull || h1 instanceof FullDataPush;
-			boolean isFull2 = h2 instanceof FullDataPull || h2 instanceof FullDataPush;
 			if(isFull1 != isFull2)
 				throw new InvalidConnectionException("Cannot connect control-side data handshake with datapath-side data handshake");
 
-			DataHandshake dh1 = (DataHandshake)h1;
-			DataHandshake dh2 = (DataHandshake)h2;
-
-			boolean push1 = isPush(dh1);
-			boolean push2 = isPush(dh2);
+			boolean push1 = isPush(h1);
+			boolean push2 = isPush(h2);
 
 			if(push1 != push2)
 				throw new InvalidConnectionException("Cannot connect push handshake with pull handshake");
 
-			if(dh1.getWidth() != dh2.getWidth())
-				throw new InvalidConnectionException("Cannot connect data handshakes with different bit widths");
+			if(isData1)
+				if(((DataHandshake)h1).getWidth() != ((DataHandshake)h2).getWidth())
+					throw new InvalidConnectionException("Cannot connect data handshakes with different bit widths");
+
+			if(isFull1)
+				if(((FullDataHandshake)h1).getValuesCount() != ((FullDataHandshake)h2).getValuesCount())
+					throw new InvalidConnectionException("Cannot connect data handshakes with different value counts");
 		}
 	}
 
-	private boolean isPush(DataHandshake handshake)
+	private boolean isPush(Handshake h2)
 	{
-		if (handshake instanceof PushHandshake)
+		if (h2 instanceof PushHandshake)
 			return true;
-		if (handshake instanceof PullHandshake)
+		if (h2 instanceof PullHandshake)
 			return false;
-		if (handshake instanceof FullDataPush)
+		if (h2 instanceof FullDataPush)
 			return true;
-		if (handshake instanceof FullDataPull)
+		if (h2 instanceof FullDataPull)
 			return false;
 		throw new RuntimeException("Unknown data handshake type"); // return !true && !false; %)
 	}

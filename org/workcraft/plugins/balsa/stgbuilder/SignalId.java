@@ -21,17 +21,19 @@
 
 package org.workcraft.plugins.balsa.stgbuilder;
 
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+
 public class SignalId {
-	private final Object owner;
+	private final Handshake owner;
 	private final String name;
-	public SignalId(Object owner, String name)
+	public SignalId(Handshake owner, String name)
 	{
 		if(owner == null || name == null)
 			throw new NullPointerException("Argument is null");
 		this.owner = owner;
 		this.name = name;
 	}
-	public Object getOwner()
+	public Handshake getOwner()
 	{
 		return owner;
 	}

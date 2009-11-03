@@ -18,8 +18,9 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.plugins.balsa.protocols;
 
-public interface PassiveSignalTransition extends PassiveEvent {
+package org.workcraft.plugins.balsa.handshakebuilder;
 
+public interface FullDataHandshake extends Handshake {
+	public int getValuesCount();
 }

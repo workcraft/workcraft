@@ -43,6 +43,7 @@ import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
+import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
@@ -83,7 +84,9 @@ public class WhileTests {
 			}
 		});
 		FourPhaseProtocol_NoDataPath handshakeBuilder = new FourPhaseProtocol_NoDataPath();
-		MainStgBuilder.buildStg(wh, handshakes, stgBuilder, handshakeBuilder);
+
+		Map<String, TwoSideStg> hsStgs = MainStgBuilder.buildHandshakes(handshakes, handshakeBuilder, stgBuilder);
+		MainStgBuilder.buildStg(wh, hsStgs, stgBuilder);
 
 		new DeadlockChecker().run(stg);
 

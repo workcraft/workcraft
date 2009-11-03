@@ -21,9 +21,7 @@
 
 package org.workcraft.plugins.balsa.handshakeevents;
 
-import org.workcraft.plugins.balsa.stgbuilder.Event;
 
 public interface DataHandshakeStg extends SyncStg
 {
-	public Event dataRelease();
 }

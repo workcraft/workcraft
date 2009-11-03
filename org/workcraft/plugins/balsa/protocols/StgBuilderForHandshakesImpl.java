@@ -84,10 +84,10 @@ public class StgBuilderForHandshakesImpl implements StgBuilderForHandshakes {
 		};
 	}
 
-	private static class ActiveSignalTransitionImpl implements ActiveSignalTransition
+	private static class ActiveEventImpl implements ActiveEvent
 	{
 		public final InputOutputEvent underlying;
-		public ActiveSignalTransitionImpl(InputOutputEvent event)
+		public ActiveEventImpl(InputOutputEvent event)
 		{
 			underlying = event;
 		}
@@ -99,10 +99,10 @@ public class StgBuilderForHandshakesImpl implements StgBuilderForHandshakes {
 		}
 	}
 
-	private static class PassiveSignalTransitionImpl implements PassiveSignalTransition
+	private static class PassiveEventImpl implements PassiveEvent
 	{
 		public final InputOutputEvent underlying;
-		public PassiveSignalTransitionImpl(InputOutputEvent event)
+		public PassiveEventImpl(InputOutputEvent event)
 		{
 			underlying = event;
 		}
@@ -131,11 +131,11 @@ public class StgBuilderForHandshakesImpl implements StgBuilderForHandshakes {
 		final StgSignal signal = builder.buildSignal(signalId, activeAsOutputs);
 		return new ActiveSignal()
 		{
-			@Override public ActiveSignalTransition getMinus() {
-				return new ActiveSignalTransitionImpl(signal.getMinus());
+			@Override public ActiveEvent getMinus() {
+				return new ActiveEventImpl(signal.getMinus());
 			}
-			@Override public ActiveSignalTransition getPlus() {
-				return new ActiveSignalTransitionImpl(signal.getPlus());
+			@Override public ActiveEvent getPlus() {
+				return new ActiveEventImpl(signal.getPlus());
 			}
 		};
 	}
@@ -152,11 +152,11 @@ public class StgBuilderForHandshakesImpl implements StgBuilderForHandshakes {
 		final StgSignal signal = builder.buildSignal(signalId, !activeAsOutputs);
 		return new PassiveSignal()
 		{
-			@Override public PassiveSignalTransition getMinus() {
-				return new PassiveSignalTransitionImpl(signal.getMinus());
+			@Override public PassiveEvent getMinus() {
+				return new PassiveEventImpl(signal.getMinus());
 			}
-			@Override public PassiveSignalTransition getPlus() {
-				return new PassiveSignalTransitionImpl(signal.getPlus());
+			@Override public PassiveEvent getPlus() {
+				return new PassiveEventImpl(signal.getPlus());
 			}
 		};
 	}

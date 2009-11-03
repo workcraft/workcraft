@@ -21,29 +21,34 @@
 
 package org.workcraft.plugins.balsa.stg;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.plugins.balsa.components.Component;
+import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakes.BinaryFuncHandshakes;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
-public abstract class DataPathComponentStgBuilder <T> extends ComponentStgBuilder<T> {
-	public final void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+public class BinaryFuncStgBuilder extends
+		DataPathComponentStgBuilder<BinaryFunc> {
+
+	BinaryFuncStgBuilder_Arithmetic arithmetic = new BinaryFuncStgBuilder_Arithmetic();
+	BinaryFuncStgBuilder_Comparison comparison = new BinaryFuncStgBuilder_Comparison();
+
+	DataPathComponentStgBuilder<BinaryFunc> get(BinaryFunc component)
 	{
-		Map<String, StgInterface> newMap = new HashMap<String, StgInterface>(handshakes);
-		StgInterface dp = newMap.get("dp");
-		newMap.remove("dp");
-		buildStg(component, newMap, dp, builder);
+		if(BinaryFuncHandshakes.isComparison(component))
+			return comparison;
+		else
+			return arithmetic;
 	}
 
-	public abstract void buildStg(T component, Map<String, StgInterface> handshakes, StgInterface dpHandshake, StrictPetriBuilder builder);
-
-	@SuppressWarnings("unchecked")
-	public final Handshake getDataPathHandshake(Component component)
-	{
-		return getDataPathHandshake((T)component);
+	public void buildStg(BinaryFunc component, Map<String, StgInterface> handshakes, StgInterface dataPath, StrictPetriBuilder builder) {
+		get(component).buildStg(component, handshakes, dataPath, builder);
 	}
-	public abstract Handshake getDataPathHandshake(T component);
+
+	@Override
+	public Handshake getDataPathHandshake(BinaryFunc component) {
+		return get(component).getDataPathHandshake(component);
+	}
 }

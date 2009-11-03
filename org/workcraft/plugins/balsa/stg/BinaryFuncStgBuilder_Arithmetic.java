@@ -32,14 +32,15 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
-public class BinaryFuncStgBuilder_NoDataPath extends
+public class BinaryFuncStgBuilder_Arithmetic extends
 		DataPathComponentStgBuilder<BinaryFunc> {
 
-	public BinaryFuncStgBuilder_NoDataPath()
+	public BinaryFuncStgBuilder_Arithmetic()
 	{
 	}
 
 	public void buildStg(BinaryFunc component, Map<String, StgInterface> handshakes, StgInterface dataPath, StrictPetriBuilder builder) {
+
 		ActivePullStg inpA = (ActivePullStg)handshakes.get("inpA");
 		ActivePullStg inpB = (ActivePullStg)handshakes.get("inpB");
 		PassivePullStg out = (PassivePullStg)handshakes.get("out");

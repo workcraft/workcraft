@@ -26,54 +26,44 @@ import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivenessSelector;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.protocols.StgBuilderForHandshakesImpl;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class MainStgBuilder {
 
-	public static void buildStg(Component component, Map<String, Handshake> handshakes, StgBuilder builder, HandshakeProtocol protocol)
-	{
-		Map<String, Handshake> handshakesCopy = new HashMap<String, Handshake>(handshakes);
-
-		HandshakeStgBuilder activeHandshakeBuilder = protocol.get(new StgBuilderForHandshakesImpl(builder, true));
-		HandshakeStgBuilder passiveHandshakeBuilder = protocol.get(new StgBuilderForHandshakesImpl(builder, false));
-
+	public static void addDataPathHandshakes(Map<String, Handshake> fullHandshakes, Component component) {
 		ComponentStgBuilder<?> componentBuilder = getComponentStgBuilder(component);
+
 		if(componentBuilder instanceof DataPathComponentStgBuilder<?>)
 		{
 			DataPathComponentStgBuilder<?> dpComponentBuilder = (DataPathComponentStgBuilder<?>)componentBuilder;
 			Handshake hs = dpComponentBuilder.getDataPathHandshake(component);
-			handshakesCopy.put("dp", hs);
+			fullHandshakes.put("dp", hs);
 		}
+	}
 
-		Map<String, TwoWayStg> handshakeStg = buildHandshakes(handshakesCopy, activeHandshakeBuilder, passiveHandshakeBuilder);
-
-
+	public static void buildStg(Component component, Map<String, TwoSideStg> handshakeStg, StgBuilder builder)
+	{
 		Map<String, StgInterface> hsFromInside = new HashMap<String, StgInterface>();
 		Map<String, StgInterface> hsFromOutside = new HashMap<String, StgInterface>();
 
 		for(String key : handshakeStg.keySet())
 		{
-			boolean isActive = handshakesCopy.get(key).isActive();
-			TwoWayStg twoWayHs = handshakeStg.get(key);
-			StgInterface active = ActivenessSelector.active(twoWayHs);
-			StgInterface passive = ActivenessSelector.passive(twoWayHs);
-			StgInterface inside, outside;
-			inside = isActive ? active : passive;
-			outside = isActive ? passive : active;
-			hsFromInside.put(key, inside);
-			hsFromOutside.put(key, outside);
+			TwoSideStg twoWayHs = handshakeStg.get(key);
+			hsFromInside.put(key, twoWayHs.internal);
+			hsFromOutside.put(key, twoWayHs.external);
 		}
 
 		StrictPetriBuilder insideBuilder = new StrictPetriBuilderImpl(builder);
 		StrictPetriBuilder envBuilder = insideBuilder;
 
+		ComponentStgBuilder<?> componentBuilder = getComponentStgBuilder(component);
 		componentBuilder.buildComponentStg(component, hsFromInside, insideBuilder);
 		componentBuilder.buildEnvironmentConstraint(component, hsFromOutside, envBuilder);
 	}
@@ -100,7 +90,7 @@ public class MainStgBuilder {
 		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.SequenceOptimised.class, new SequenceOptimisedStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder_NoDataPath());
-		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder_NoDataPath());
+		result.put(org.workcraft.plugins.balsa.components.BinaryFunc.class, new BinaryFuncStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.CallMux.class, new CallMux_NoDataPath());
 		result.put(org.workcraft.plugins.balsa.components.Case.class, new CaseStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.Variable.class, new Variable_NoDataPath());
@@ -109,12 +99,16 @@ public class MainStgBuilder {
 		return result;
 	}
 
-	private static Map<String, TwoWayStg> buildHandshakes(Map<String, Handshake> handshakes, HandshakeStgBuilder activeBuilder, HandshakeStgBuilder passiveBuilder) {
-		HashMap<String, TwoWayStg> result = new HashMap<String, TwoWayStg>();
+	public static Map<String, TwoSideStg> buildHandshakes(Map<String, Handshake> handshakes, HandshakeProtocol protocol, StgBuilder builder) {
+		HandshakeStgBuilder activeBuilder = protocol.get(new StgBuilderForHandshakesImpl(builder, true));
+		HandshakeStgBuilder passiveBuilder = protocol.get(new StgBuilderForHandshakesImpl(builder, false));
+
+		HashMap<String, TwoSideStg> result = new HashMap<String, TwoSideStg>();
 		for(String key : handshakes.keySet())
 		{
 			Handshake hs = handshakes.get(key);
-			TwoWayStg res = hs.buildStg(hs.isActive() ? activeBuilder : passiveBuilder);
+			boolean isActive = hs.isActive();
+			TwoSideStg res = ActivenessSelector.direct(hs.buildStg(isActive ? activeBuilder : passiveBuilder), isActive);
 			result.put(key, res);
 		}
 		return result;
