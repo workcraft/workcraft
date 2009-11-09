@@ -35,7 +35,7 @@ import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnectionInfo;
+import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.plugins.petri.Place;
@@ -155,7 +155,7 @@ public class VisualSTG extends VisualPetriNet {
 		return super.connect(first, second);
 	}
 
-	private VisualConnectionInfo maybeMakeImplicit (VisualPlace place) {
+	private VisualConnectionProperties maybeMakeImplicit (VisualPlace place) {
 		if (getPreset(place).size() != 1 || getPostset(place).size() != 1)
 			return null; // not an implicit place
 

@@ -24,6 +24,19 @@ package org.workcraft.gui.actions;
 import java.util.LinkedList;
 
 public abstract class ScriptedAction {
+	public static final String tryOperation (String operation) {
+		return "try\n" +
+		"{\n" +
+		operation + "\n" +
+		"}\n" +
+		"catch (err)\n" +
+		"{\n" +
+		"  if (!(err.javaException instanceof Packages.org.workcraft.exceptions.OperationCancelledException)) {\n" +
+		"    throw err.javaException;\n" +
+		"  }\n" +
+		"}";
+	}
+
 	private LinkedList<ScriptedActor> actors = new LinkedList<ScriptedActor>();
 	private boolean enabled = true;
 

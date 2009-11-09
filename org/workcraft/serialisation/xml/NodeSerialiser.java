@@ -23,10 +23,7 @@ package org.workcraft.serialisation.xml;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.serialisation.ReferenceProducer;
 
 public interface NodeSerialiser {
-	public void serialise(Element parentElement, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException;
+	public void serialise(Element parentElement, Object object) throws SerialisationException;
 }

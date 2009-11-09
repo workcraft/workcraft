@@ -32,7 +32,7 @@ import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
@@ -125,7 +125,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 			nodeAdded(n);
 	}
 
-	private void propagate(Node node, TransformChangedEvent e) {
+	private void propagate(Node node, TransformEvent e) {
 		LinkedList<TransformObserver> list = nodeToObservers.get(node);
 		if (list != null)
 			for (TransformObserver to : list)
@@ -137,8 +137,8 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 
 	@Override
 	public void notify(StateEvent e) {
-		if (e instanceof TransformChangedEvent)
-			propagate(((TransformChangedEvent)e).getSender(), ((TransformChangedEvent)e));
+		if (e instanceof TransformEvent)
+			propagate(((TransformEvent)e).getSender(), ((TransformEvent)e));
 	}
 
 	@Override

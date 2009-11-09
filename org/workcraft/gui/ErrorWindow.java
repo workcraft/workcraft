@@ -1,28 +1,29 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ComponentEvent;
@@ -66,17 +67,19 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 					Container parent = 	getParent().getParent().getParent();
 					if (parent instanceof JTabbedPane) {
 						JTabbedPane tab = (JTabbedPane) parent;
-						for (int i=0; i<tab.getComponentCount(); i++)
-							if (tab.getComponentAt(i) == getParent().getParent())
-								if (tab.getForegroundAt(i) != Color.RED) {
-									colorBack = tab.getForegroundAt(i);
-									tab.setForegroundAt(i, Color.RED);
+						for (int i=0; i<tab.getTabCount(); i++) {
+							if (tab.getComponentAt(i) == getParent().getParent()) {
+								Component tabComponent = tab.getTabComponentAt(i);
+								if (!tabComponent.getForeground().equals(Color.RED)) {
+									colorBack = tabComponent.getForeground();
+									tabComponent.setForeground(Color.RED);
 									tab.removeChangeListener(ErrorStreamView.this);
 									tab.addChangeListener(ErrorStreamView.this);
 								}
+							}
+						}
 					}
-				}
-
+		}
 			});
 
 			target.append(s);
@@ -105,12 +108,12 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 			Container parent = 	getParent().getParent().getParent();
 			if (parent instanceof JTabbedPane) {
 				JTabbedPane tab = (JTabbedPane) parent;
-				for (int i=0; i<tab.getComponentCount(); i++)
-					if (tab.getComponentAt(i) == getParent().getParent())
-						if (tab.getSelectedComponent() == tab.getComponentAt(i)) {
-							tab.setForegroundAt(i, colorBack);
-							colorBack = null;
-						}
+
+				if (tab.getSelectedComponent() == getParent().getParent()) {
+						tab.getTabComponentAt(tab.getSelectedIndex()).setForeground(colorBack);
+						colorBack = null;
+						tab.removeChangeListener(ErrorStreamView.this);
+				}
 			}
 		}
 	}

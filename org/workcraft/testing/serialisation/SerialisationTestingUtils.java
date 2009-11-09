@@ -33,6 +33,8 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -143,6 +145,22 @@ public class SerialisationTestingUtils {
 		compareConnections (vc1.getRefCon2(), vc2.getRefCon2());
 	}
 
+	public static void comparePolylines(Polyline p1, Polyline p2) {
+		assertEquals(p1.getChildren().size(), p2.getChildren().size());
+
+		Iterator<Node> i1 = p1.getChildren().iterator();
+		Iterator<Node> i2 = p2.getChildren().iterator();
+
+		for (int i=0; i<p1.getChildren().size(); i++)
+		{
+			ControlPoint cp1 = (ControlPoint)i1.next();
+			ControlPoint cp2 = (ControlPoint)i2.next();
+
+			assertEquals (cp1.getX(), cp2.getX(), 0.0001);
+			assertEquals (cp1.getY(), cp2.getY(), 0.0001);
+		}
+	}
+
 	public static void compareNodes (Node node1, Node node2) {
 		assertEquals(node1.getClass(), node2.getClass());
 
@@ -165,10 +183,12 @@ public class SerialisationTestingUtils {
 			compareImplicitPlaceArcs ( (ImplicitPlaceArc)node1, (ImplicitPlaceArc)node2 );
 		else if (node1 instanceof VisualConnection)
 			compareVisualConnections ( (VisualConnection)node1, (VisualConnection)node2 );
+		else if (node1 instanceof Polyline)
+			comparePolylines((Polyline)node1, (Polyline)node2);
 		else if (node1 instanceof MathGroup);
 		else if (node1 instanceof VisualGroup);
 		else
-			fail("Unexpected class" + node1.getClass().getName());
+			fail("Unexpected class " + node1.getClass().getName());
 
 		Collection<Node> ch1 = node1.getChildren();
 		Collection<Node> ch2 = node2.getChildren();

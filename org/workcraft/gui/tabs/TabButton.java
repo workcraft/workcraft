@@ -25,32 +25,42 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
 
-public class TabCloseButton extends JLabel implements MouseListener {
+import org.workcraft.gui.actions.ScriptedAction;
+import org.workcraft.gui.actions.ScriptedActionListener;
+
+public class TabButton extends JLabel implements MouseListener {
 	private static final long serialVersionUID = 1L;
+	private ScriptedActionListener actionListener;
+	private ScriptedAction action;
 
 	Border mouseOutBorder, mouseOverBorder;
 
-	public TabCloseButton() {
-		super("X");
+	public TabButton(String label, String toolTipText, ScriptedAction action, ScriptedActionListener actionListener) {
+		super(label);
 		setVerticalAlignment(JLabel.CENTER);
-		setFont(getFont().deriveFont(Font.BOLD));
+		setFont(getFont().deriveFont(Font.BOLD).deriveFont(AffineTransform.getScaleInstance(0.8, 0.8)));
 		setOpaque(false);
 		setForeground(Color.GRAY);
 		addMouseListener(this);
-		setToolTipText("Close window");
+		setToolTipText(toolTipText);
 
 		mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
 		mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
+
+		this.action = action;
+		this.actionListener = actionListener;
 
 		//this.setBorder(mouseOutBorder);
 	}
 
 	public void mouseClicked(MouseEvent e) {
+		actionListener.actionPerformed(action);
 	}
 
 	public void mouseEntered(MouseEvent e) {

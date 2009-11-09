@@ -34,10 +34,9 @@ import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
 	private HashMap<String, Class<? extends XMLSerialiser>> serialisers = new HashMap<String, Class<? extends XMLSerialiser>>();
-
 	private HashMap<Class<?>, XMLSerialiser> serialiserCache = new HashMap<Class<?>, XMLSerialiser>();
-
-	private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this);
+	private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this,this);
+	private XMLSerialiserState state = null;
 
 	private void registerSerialiser (Class<? extends XMLSerialiser> cls) {
 		XMLSerialiser inst;
@@ -60,15 +59,19 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 			{
 				serialiser = serialiserClass.newInstance();
 
-				if (serialiser instanceof ChainXMLSerialiser) {
-					((ChainXMLSerialiser)serialiser).setNodeSerialiser(this);
-				}
-
 				serialiserCache.put(cls, serialiser);
 			}
 		}
 
 		return serialiser;
+	}
+
+	public void begin(ReferenceProducer internalReferenceResolver, ReferenceProducer externalReferenceResolver) {
+		state = new XMLSerialiserState(internalReferenceResolver, externalReferenceResolver);
+	}
+
+	public void end() {
+		state = null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,18 +87,16 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 		}
 	}
 
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException
+	public void serialise(Element element, Object object) throws SerialisationException
 	{
 		element.setAttribute("class", object.getClass().getName());
 
-		nodeSerialiser.serialise(element, object, internalReferences, externalReferences);
+		nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
 		if (object instanceof Container)
 			for (Node child : ((Container)object).getChildren()) {
 				Element childElement = XmlUtil.createChildElement("node", element);
-				serialise(childElement, child, internalReferences, externalReferences);
+				serialise(childElement, child);
 			}
 	}
 }

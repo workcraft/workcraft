@@ -21,18 +21,23 @@
 
 package org.workcraft.dom.visual.connections;
 
-import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.geom.Point2D;
 
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 
-public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
-	public void draw (Graphics2D g);
+public interface VisualConnectionProperties {
+	public Color getDrawColor();
+	public double getLineWidth();
+	public double getArrowWidth();
+	public double getArrowLength();
+	public boolean hasArrow();
 
-	public void componentsTransformChanging ();
-	public void componentsTransformChanged ();
+	public Point2D getFirstCenter();
+	public Touchable getFirstShape();
 
-	public void controlPointsChanged();
-	public void invalidate();
+	public Point2D getSecondCenter();
+	public Touchable getSecondShape();
+	public ScaleMode getScaleMode();
 }

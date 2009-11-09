@@ -183,6 +183,8 @@ public class XMLSerialisationTestingUtils {
 			visualSTG.connect(vt3, vt4);
 			visualSTG.connect(vt4, vt1);
 
+
+
 			return visualSTG;
 		}
 		catch (InvalidConnectionException e) {

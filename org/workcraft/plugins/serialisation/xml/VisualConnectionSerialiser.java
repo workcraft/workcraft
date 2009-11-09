@@ -25,17 +25,15 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.ChainXMLSerialiser;
+import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
-import org.workcraft.serialisation.xml.ReferencingXMLSerialiser;
 import org.workcraft.util.XmlUtil;
 
-public class VisualConnectionSerialiser implements ReferencingXMLSerialiser, ChainXMLSerialiser {
-	NodeSerialiser serialiser;
-
+public class VisualConnectionSerialiser implements CustomXMLSerialiser {
 	public void serialise(Element element, Object object,
 			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException {
+			ReferenceProducer externalReferences,
+			NodeSerialiser nodeSerialiser) throws SerialisationException {
 
 		VisualConnection vcon = (VisualConnection) object;
 
@@ -45,15 +43,10 @@ public class VisualConnectionSerialiser implements ReferencingXMLSerialiser, Cha
 
 		Element graphicElement = XmlUtil.createChildElement("graphic", element);
 
-		serialiser.serialise(graphicElement, vcon.getGraphic(), internalReferences, externalReferences);
+		nodeSerialiser.serialise(graphicElement, vcon.getGraphic());
 	}
 
 	public String getClassName() {
 		return VisualConnection.class.getName();
-	}
-
-	@Override
-	public void setNodeSerialiser(NodeSerialiser serialiser) {
-		this.serialiser = serialiser;
 	}
 }

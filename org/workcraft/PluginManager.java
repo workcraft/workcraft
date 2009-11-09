@@ -180,7 +180,6 @@ public class PluginManager implements PluginProvider {
 		if (!path.endsWith(".class"))
 			return;
 
-
 		String className;
 
 		if (path.startsWith(File.separator))
@@ -188,7 +187,7 @@ public class PluginManager implements PluginProvider {
 		else
 			className = path;
 
-		className = className.replace(File.separator, ".");
+		className = className.replace(File.separatorChar, '.').replace('/', '.');
 
 		if (!className.startsWith("org.workcraft.plugins"))
 			return;
@@ -205,6 +204,7 @@ public class PluginManager implements PluginProvider {
 			if(Plugin.class.isAssignableFrom(cls)) {
 				PluginInfo info = new PluginInfo(cls);
 				plugins.add(info);
+				nameToInfoMap.put(className, info);
 				System.out.println("plugin " + cls.getName());
 			} else
 				System.out.println("not a plugin class, ignored");

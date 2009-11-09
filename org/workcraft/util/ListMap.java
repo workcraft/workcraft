@@ -19,32 +19,40 @@
 *
 */
 
-package org.workcraft.dom;
+package org.workcraft.util;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.workcraft.observation.ObservableHierarchy;
+public class ListMap <K,V> {
+	private HashMap<K,LinkedList<V>> map =  new HashMap<K, LinkedList<V>>();
 
-public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
-	Collection<Node> children = new LinkedHashSet<Node> ();
-
-	public DefaultGroupImpl (Container groupRef) {
-		super(groupRef);
+	public void put (K key, V value) {
+		LinkedList<V> list = map.get(key);
+		if (list == null) {
+			list = new LinkedList<V>();
+			map.put(key, list);
+		}
+		list.add(value);
 	}
 
-	public Collection<Node> getChildren() {
-		return Collections.unmodifiableCollection(children);
+	public void remove(K key, V value) {
+		LinkedList<V> list = map.get(key);
+		if (list != null)
+		{
+			list.remove(value);
+			if (list.isEmpty())
+				map.remove(list);
+		}
 	}
 
-	@Override
-	protected void addInternal(Node node) {
-		children.add(node);
-	}
-
-	@Override
-	protected void removeInternal(Node node) {
-		children.remove(node);
+	public List<V> get(K key) {
+		LinkedList<V> list = map.get(key);
+		if (list != null)
+			return list;
+		else
+			return Collections.emptyList();
 	}
 }

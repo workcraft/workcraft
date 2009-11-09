@@ -41,7 +41,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableWindowContentPanel extends JPanel {
-	class ViewAction extends ScriptedAction {
+	static public class ViewAction extends ScriptedAction {
 		public static final int CLOSE_ACTION = 1;
 		public static final int MINIMIZE_ACTION = 2;
 		public static final int MAXIMIZE_ACTION = 3;
@@ -57,11 +57,11 @@ public class DockableWindowContentPanel extends JPanel {
 		public String getScript() {
 			switch (actionType) {
 			case CLOSE_ACTION:
-				return MainWindow.Actions.tryOperation("mainWindow.closeDockableWindow("+windowID+");");
+				return tryOperation("mainWindow.closeDockableWindow("+windowID+");");
 			case MINIMIZE_ACTION:
 				return "mainWindow.minimizeDockableWindow("+windowID+");";
 			case MAXIMIZE_ACTION:
-				return "mainWindow.maximizeDockableWindow("+windowID+");";
+				return "mainWindow.toggleDockableWindowMaximized("+windowID+");";
 			}
 			return null;
 		}
@@ -103,26 +103,28 @@ public class DockableWindowContentPanel extends JPanel {
 			setBackground(c);
 
 			if  (options != 0) {
-
 				buttonPanel = new JPanel();
 				buttonPanel.setBackground(c);
 				buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 4,2));
-				buttonPanel.setPreferredSize(new Dimension(100,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
 				buttonPanel.setFocusable(false);
 				add(buttonPanel, BorderLayout.EAST);
 			}
+
+			int icons = 0;
 
 			if ( (options & MINIMIZE_BUTTON) != 0) {
 				btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
 						new ViewAction(ID, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				btnMin.setToolTipText("Toggle minimized");
 				buttonPanel.add(btnMin);
+				icons ++;
 			}
 
 			if ( (options & MAXIMIZE_BUTTON) != 0) {
 				btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
 						new ViewAction(ID, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				buttonPanel.add(btnMax);
+				icons ++;
 			}
 
 			if ( (options & CLOSE_BUTTON) != 0) {
@@ -131,6 +133,12 @@ public class DockableWindowContentPanel extends JPanel {
 						new ViewAction(ID, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
 				btnClose.setToolTipText("Close window");
 				buttonPanel.add(btnClose);
+				icons ++;
+			}
+
+			if (icons != 0) {
+				buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
+
 			}
 
 
@@ -173,6 +181,7 @@ public class DockableWindowContentPanel extends JPanel {
 	private DockableViewHeader header;
 	private MainWindow mainWindow;
 	private int ID;
+	private int options;
 	private Dockable dockable = null;
 
 	public boolean isMaximized() {
@@ -185,7 +194,6 @@ public class DockableWindowContentPanel extends JPanel {
 	public void setMaximized(boolean maximized) {
 		if (header != null)
 			header.setMaximized(maximized);
-
 	}
 
 	public Dockable getDockable() {
@@ -204,6 +212,7 @@ public class DockableWindowContentPanel extends JPanel {
 		this.mainWindow = mainWindow;
 		this.ID = ID;
 		this.content = content;
+		this.options = options;
 
 		header = new DockableViewHeader(title, options);
 
@@ -241,4 +250,7 @@ public class DockableWindowContentPanel extends JPanel {
 		return content;
 	}
 
+	public int getOptions() {
+		return options;
+	}
 }

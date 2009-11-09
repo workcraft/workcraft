@@ -1,23 +1,23 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft.dom.visual.connections;
 
@@ -28,42 +28,44 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.w3c.dom.Element;
+import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.Hierarchy;
 
-class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
+public class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
 StateObserver, HierarchyObserver, SelectionObserver {
-	LinkedList<ControlPoint> controlPoints = new LinkedList<ControlPoint>();
-
-	private DefaultGroupImpl groupImpl;
-	private VisualConnectionInfo connectionInfo;
+	private ArbitraryInsertionGroupImpl groupImpl;
+	private VisualConnectionProperties connectionInfo;
 	private PartialCurveInfo curveInfo;
 
 	private Rectangle2D boundingBox = null;
 
+	private boolean valid = false;
+	private ControlPointScaler scaler = null;
+
 	public Polyline(VisualConnection parent) {
-		groupImpl = new DefaultGroupImpl(this);
+		groupImpl = new ArbitraryInsertionGroupImpl(this);
 		groupImpl.setParent(parent);
 		groupImpl.addObserver((HierarchyObserver)this);
 		connectionInfo = parent;
 	}
 
 	public void draw(Graphics2D g) {
+		if (!valid)
+			update();
+
 		Path2D connectionPath = new Path2D.Double();
 
 		int start = getSegmentIndex(curveInfo.tStart);
@@ -85,7 +87,8 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.draw(connectionPath);
 
-		DrawHelper.drawArrowHead(g, connectionInfo.getDrawColor(), curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
+		if (connectionInfo.hasArrow())
+			DrawHelper.drawArrowHead(g, connectionInfo.getDrawColor(), curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
 				connectionInfo.getArrowLength(), connectionInfo.getArrowWidth());
 	}
 
@@ -106,6 +109,8 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		}
 
 		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
+
+		valid = true;
 	}
 
 	private int getSegmentIndex(double t) {
@@ -123,7 +128,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 
-	private int getNearestSegment (Point2D pt, Point2D pointOnSegment) {
+	private int getNearestSegment (Point2D pt, Point2D out_pointOnSegment) {
 		double min = Double.MAX_VALUE;
 		int nearest = -1;
 
@@ -134,23 +139,30 @@ StateObserver, HierarchyObserver, SelectionObserver {
 			Point2D b = new Point2D.Double ( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
 
 			double magB = b.distance(0, 0);
-			b.setLocation(b.getX() / magB, b.getY() / magB);
 
-			double magAonB = a.getX() * b.getX() + a.getY() * b.getY();
+			double dist;
 
-			if (magAonB < 0)
-				magAonB = 0;
-			if (magAonB > magB)
-				magAonB = magB;
+			if (magB < 0.0000001) {
+				dist = pt.distance(segment.getP1());
+			} else {
+				b.setLocation(b.getX() / magB, b.getY() / magB);
 
-			a.setLocation(segment.getX1() + b.getX() * magAonB, segment.getY1() + b.getY() * magAonB);
+				double magAonB = a.getX() * b.getX() + a.getY() * b.getY();
 
-			double dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0,0);
+				if (magAonB < 0)
+					magAonB = 0;
+				if (magAonB > magB)
+					magAonB = magB;
+
+				a.setLocation(segment.getX1() + b.getX() * magAonB, segment.getY1() + b.getY() * magAonB);
+
+				dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0,0);
+			}
 
 			if (dist < min) {
 				min = dist;
-				if (pointOnSegment != null)
-					pointOnSegment.setLocation(a);
+				if (out_pointOnSegment != null)
+					out_pointOnSegment.setLocation(a);
 				nearest = i;
 			}
 		}
@@ -159,15 +171,15 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	private int getSegmentCount() {
-		return controlPoints.size() + 1;
+		return groupImpl.getChildren().size() + 1;
 	}
 
 	private Point2D getAnchorPointLocation(int index) {
 		if (index == 0)
 			return connectionInfo.getFirstCenter();
-		if (index > controlPoints.size())
+		if (index > groupImpl.getChildren().size())
 			return connectionInfo.getSecondCenter();
-		return controlPoints.get(index-1).getPosition();
+		return ((ControlPoint) groupImpl.getChildren().get(index-1)).getPosition();
 	}
 
 	private Line2D getSegment(int index) {
@@ -201,52 +213,16 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return bb;
 	}
 
-	public ControlPoint addAnchorPoint(Point2D userLocation) {
+	public void createControlPoint(Point2D userLocation) {
 		Point2D pointOnConnection = new Point2D.Double();
-		int nearestSegment = getNearestSegment(userLocation, pointOnConnection);
-
-		//System.out.println ("nearestSegment = " + nearestSegment);
+		int segment = getNearestSegment(userLocation, pointOnConnection);
 
 		ControlPoint ap = new ControlPoint();
 		ap.setPosition(pointOnConnection);
 
-		controlPoints.add(nearestSegment, ap);
-		add(ap);
-		ap.addObserver(this);
+		groupImpl.add(segment, ap);
 
-		update();
-
-		return ap;
-	}
-
-	public void readFromXML(Element element) {
-		Element anchors;
-		anchors = XmlUtil.getChildElement("anchorPoints", element);
-		if (anchors==null) return;
-		List<Element> xap = XmlUtil.getChildElements(ControlPoint.class.getSimpleName(), anchors);
-		if (xap==null) return;
-
-		ControlPoint pap;
-		controlPoints.clear();
-		for (Element eap: xap) {
-			pap = new ControlPoint();
-			pap.setX(XmlUtil.readDoubleAttr(eap, "X", 0));
-			pap.setY(XmlUtil.readDoubleAttr(eap, "Y", 0));
-
-			controlPoints.add(pap);
-		}
-	}
-
-	public void writeToXML(Element element) {
-		if (controlPoints.size()>0) {
-			Element anchors = XmlUtil.createChildElement("anchorPoints", element);
-			Element xap;
-			for (ControlPoint ap: controlPoints) {
-				xap = XmlUtil.createChildElement(ControlPoint.class.getSimpleName(), anchors);
-				XmlUtil.writeDoubleAttr(xap, "X", ap.getX());
-				XmlUtil.writeDoubleAttr(xap, "Y", ap.getY());
-			}
-		}
+		controlPointsChanged();
 	}
 
 	@Override
@@ -278,10 +254,6 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		groupImpl.addObserver(obs);
 	}
 
-	public void addObserver(StateObserver obs) {
-		groupImpl.addObserver(obs);
-	}
-
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
@@ -291,10 +263,6 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	public void removeObserver(HierarchyObserver obs) {
-		groupImpl.removeObserver(obs);
-	}
-
-	public void removeObserver(StateObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
 
@@ -338,7 +306,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void notify(StateEvent e) {
-		update();
+		controlPointsChanged();
 	}
 
 	@Override
@@ -348,9 +316,15 @@ StateObserver, HierarchyObserver, SelectionObserver {
 				if (n instanceof ControlPoint) {
 					ControlPoint cp = (ControlPoint)n;
 					cp.removeObserver(this);
-					controlPoints.remove(cp);
+			}
+		if (e instanceof NodesAddedEvent)
+			for (Node n : e.getAffectedNodes())
+				if (n instanceof ControlPoint) {
+					ControlPoint cp = (ControlPoint)n;
+					cp.addObserver(this);
 				}
-		update();
+
+		controlPointsChanged();
 	}
 
 	@Override
@@ -358,7 +332,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		//System.out.println ("Selection changed");
 		boolean controlsVisible = false;
 		for (Node n : event.getSelection())
-			if (n == getParent() || controlPoints.contains(n)) {
+			if (n == getParent() || groupImpl.getChildren().contains(n)) {
 				controlsVisible = true;
 				break;
 			}
@@ -368,7 +342,34 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		else
 			System.out.println ("Hiding controls");*/
 
-		for (ControlPoint cp : controlPoints)
-			cp.setHidden(!controlsVisible);
+		for (Node n : groupImpl.getChildren())
+			((ControlPoint)n).setHidden(!controlsVisible);
 	}
+
+	@Override
+	public void componentsTransformChanged() {
+		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
+				.getSecondCenter(), Hierarchy.filterNodesByType(getChildren(),
+				ControlPoint.class), connectionInfo.getScaleMode());
+		scaler = null;
+
+		invalidate();
+	}
+
+	@Override
+	public void componentsTransformChanging() {
+		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
+	}
+
+	@Override
+	public void controlPointsChanged() {
+		invalidate();
+	}
+
+	@Override
+	public void invalidate() {
+		valid = false;
+	}
+
+
 }

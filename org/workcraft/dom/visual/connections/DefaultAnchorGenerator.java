@@ -34,7 +34,7 @@ public class DefaultAnchorGenerator implements GraphEditorMouseListener {
 			if (n instanceof VisualConnection) {
 				VisualConnection con = (VisualConnection)n;
 				if (con.getGraphic() instanceof Polyline)
-					((Polyline)con.getGraphic()).addAnchorPoint(e.getPosition());
+					((Polyline)con.getGraphic()).createControlPoint(e.getPosition());
 			}
 		}
 	}

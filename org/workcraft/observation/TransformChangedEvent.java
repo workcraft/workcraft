@@ -21,17 +21,12 @@
 
 package org.workcraft.observation;
 
-import org.workcraft.dom.visual.VisualNode;
+
+import org.workcraft.dom.visual.Movable;
 
 
-public class TransformChangedEvent implements StateEvent {
-	private VisualNode sender;
-
-	public TransformChangedEvent(VisualNode sender) {
-		this.sender = sender;
-	}
-
-	public VisualNode getSender() {
-		return sender;
+public class TransformChangedEvent extends TransformEvent implements StateEvent {
+	public TransformChangedEvent(Movable sender) {
+		super(sender);
 	}
 }

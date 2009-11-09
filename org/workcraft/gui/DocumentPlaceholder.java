@@ -24,8 +24,8 @@ package org.workcraft.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -37,21 +37,20 @@ public class DocumentPlaceholder extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		BufferedImage logo = getImage();
-
-		if (logo != null) {
-			int w = logo.getWidth();
-			int h = logo.getHeight();
+		if (logoImage != null) {
+			int w = logoImage.getWidth();
+			int h = logoImage.getHeight();
 
 			int x = (getWidth() - w)/2;
 			int y = (getHeight() - h)/2;
 
-			g.drawImage(logo, x, y, null);
+			g.drawImage(logoImage, x, y, null);
 		}
 	}
 
 	public DocumentPlaceholder() {
 		super();
+		logoImage = getImage();
 		setBackground(new Color(255,255,255));
 		setLayout(null);
 
@@ -61,8 +60,15 @@ public class DocumentPlaceholder extends JPanel {
 		if (logoImage == null)
 		{
 			try {
-				logoImage = ImageIO.read(new File("./images/logo.png"));
+				URL resource = ClassLoader.getSystemResource("images/logo.png");
+				if (resource != null)
+					logoImage = ImageIO.read(resource);
+				else {
+					System.err.println ("Cannot read logo!");
+					logoImage = null;
+				}
 			} catch (IOException e) {
+				e.printStackTrace();
 				logoImage = null;
 			}
 		}

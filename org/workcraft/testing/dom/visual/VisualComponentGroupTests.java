@@ -39,8 +39,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnectionInfo;
-import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.dom.visual.connections.VisualConnectionProperties;
+import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class VisualComponentGroupTests {
@@ -65,7 +65,7 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public void notify(TransformChangedEvent e) {
+		public void notify(TransformEvent e) {
 			notified = true;
 		}
 
@@ -104,7 +104,7 @@ public class VisualComponentGroupTests {
 		SquareNode sqr2 = new SquareNode(root, new Rectangle2D.Double(3, 3, 1, 1));
 		root.add(sqr1);
 		root.add(sqr2);
-		VisualConnectionInfo connectionR = Tools.createConnection(sqr1, sqr2, root);
+		VisualConnectionProperties connectionR = Tools.createConnection(sqr1, sqr2, root);
 
 		SquareNode sqg1 = new SquareNode(group, new Rectangle2D.Double(1, 1, 1, 1));
 		SquareNode sqg2 = new SquareNode(group, new Rectangle2D.Double(3, 3, 1, 1));
@@ -264,9 +264,8 @@ public class VisualComponentGroupTests {
 		};
 
 		public boolean uptodate = false;
-		@Override
+
 		public void update() {
-			super.update();
 			uptodate = true;
 		}
 	}
