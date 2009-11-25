@@ -19,43 +19,28 @@
 *
 */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.testing.plugins.interop;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import org.workcraft.dom.Model;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.interop.Importer;
+import org.junit.Test;
 import org.workcraft.parsers.lisp.LispNode;
 import org.workcraft.parsers.lisp.LispParser;
 import org.workcraft.parsers.lisp.ParseException;
 
-public class BreezeImporter implements Importer {
+public class BreezeImporterTests {
+	class BreezeComponentDeclarationParser
+	{
 
-	@Override
-	public boolean accept(File file) {
-		return file.isDirectory() || file.getName().endsWith(".breeze");
 	}
 
-	@Override
-	public String getDescription() {
-		return "Breeze handshake circuit (.breeze)";
-	}
-
-
-	@Override
-	public Model importFrom(InputStream in) throws DeserialisationException,
-			IOException {
-
-		try {
-			LispNode list = LispParser.parse(in);
-			System.out.println(list.getSubNodes());
-		} catch (ParseException e) {
-			throw new DeserialisationException(e);
-		}
-
-		throw new DeserialisationException("Not implemented");
+	@Test
+	public void Test1() throws FileNotFoundException, ParseException
+	{
+		InputStream is = new FileInputStream("C:\\deleteMe\\Concur.abs");
+		LispNode node = LispParser.parse(is);
+		System.out.println(node.getSubNodes());
 	}
 }

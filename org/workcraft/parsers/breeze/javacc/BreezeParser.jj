@@ -1,0 +1,567 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  LOOKAHEAD = 3;
+  FORCE_LA_CHECK = true;
+  DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(BreezeParser)
+package org.workcraft.parsers.breeze.javacc;
+
+import org.workcraft.parsers.lisp.LispNode;
+import org.workcraft.parsers.breeze.*;
+
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+ 
+public class BreezeParser {
+	public static LispNode parse (InputStream is) throws ParseException {
+		BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
+		return parser.listElement();
+	}
+
+	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException	{
+	  BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
+	  return parser.primitivePart();
+	}
+	
+	public static void registerBreezeParts(InputStream is, BreezeLibrary lib) throws ParseException
+	{
+		BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
+		parser.registerBreezeFile(lib);
+	}
+}
+PARSER_END(BreezeParser)
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+|	"\n"
+|	<";" (~["\r","\n"])*>
+}
+
+TOKEN :
+{
+  	<PRIMITIVE_PART : "primitive-part" >
+    |<ZERO : "0">
+  	|<VARIABLE_ARRAY_TYPE : "variable-array-type">
+  	|<CARDINAL : <ZERO> | (["0"-"9"])+>
+  	|<ACTIVE : "active">
+  	|<PASSIVE : "passive">
+  	|<INPUT : "input">
+  	|<OUTPUT : "output">
+  	|<NAMED_TYPE : "named-type">
+  	|<NUMERIC_TYPE : "numeric-type">
+  	|<BOOL_FALSE :"#f">
+ 	|<PARAMETERS :  "parameters" >
+  	|<PARAM :  "param">
+ 	|<PORTS :  "ports" >
+ 	|<PORT :  "port" >
+ 	|<SYNC_PORT :  "sync-port" >
+ 	|<ARRAYED_PORT :  "arrayed-port" >
+ 	|<ARRAYED_SYNC_PORT :  "arrayed-sync-port" >
+ 	|<SYMBOL :  "symbol" >
+	|<IMPLEMENTATION :  "implementation" > 
+	|<TYPE_STRING : "string">	
+	|<TYPE_CARDINAL : "\"cardinal\"">
+	|<TYPE_BOOLEAN : "\"boolean\"">
+	
+	|<SYNC : "sync">
+	|<PUSH : "push">
+	|<PULL : "pull">
+	|<CHANNELS : "channels">
+	|<ATTRIBUTES : "attributes">
+	|<COMPONENTS : "components">
+	|<COMPONENT : "component">
+	|<BREEZE_PART : "breeze-part">
+	|<TYPE : "type">
+	|<IMPORT : "import">
+	
+	|<OBR : "(" >
+	|<CBR : ")" >
+	|<QUOTED_VALUE: "\"" (~["\""])* "\"" >
+    |<VALUE: ( ~[" ","\r","\t","\n","(",")"] )+ >
+}
+
+List<LispNode> listBody() : 
+{
+	ArrayList<LispNode> result = new ArrayList<LispNode>();
+	LispNode o;
+}
+{
+  ( o = listElement() {result.add(o);})*
+  {
+   return result;
+  }
+}
+
+LispNode list() : 
+{
+	List<LispNode> result;
+}
+{
+  <OBR> result = listBody() <CBR>
+  {
+   return new LispNode(result);
+  }
+}
+
+String value() : {Token t;}
+{
+	  t = <VALUE> { return t.image; }
+	| t = <QUOTED_VALUE> { return t.image.substring(1, t.image.length()-1); }
+	| t = keyword() { return t.image; }
+	| t = cardinalToken() { return t.image; } 
+}
+LispNode listElement() : { String t; LispNode l;}
+{
+	  t = value() { return new LispNode(t); }
+	| l = list() { return l; } 
+}
+
+Token keyword() : {Token t;}
+{
+  	(t = <PRIMITIVE_PART> 
+  	| t = <VARIABLE_ARRAY_TYPE>
+  	| t = <ACTIVE>
+  	| t = <PASSIVE >
+  	| t = <INPUT>
+  	| t = <OUTPUT>
+  	| t = <NAMED_TYPE>
+  	| t = <NUMERIC_TYPE>
+  	| t = <BOOL_FALSE>
+ 	| t = <PARAMETERS>
+  	| t = <PARAM>
+ 	| t = <PORTS>
+ 	| t = <PORT>
+ 	| t = <SYNC_PORT>
+ 	| t = <ARRAYED_PORT>
+ 	| t = <ARRAYED_SYNC_PORT>
+ 	| t = <SYMBOL>
+	| t = <IMPLEMENTATION> 
+	| t = <TYPE_STRING>	
+	| t = <TYPE_CARDINAL>
+	| t = <TYPE_BOOLEAN>
+	
+	| t = <SYNC>
+	| t = <PUSH>
+	| t = <PULL>
+	| t = <CHANNELS>
+	| t = <ATTRIBUTES>
+	| t = <COMPONENTS>
+	| t = <COMPONENT>
+	| t = <BREEZE_PART>
+	| t = <TYPE>
+	| t = <IMPORT>
+	)
+	
+	{ return t; } 	
+}
+
+ParameterType type() : { ParameterType result; String typeName; }
+{
+	(<OBR>
+	( 
+		<TYPE_STRING> { result = ParameterType.STRING; }
+		|
+		<NAMED_TYPE> 
+		(
+			<TYPE_CARDINAL> { result = ParameterType.CARDINAL; }
+			|
+			<TYPE_BOOLEAN> { result = ParameterType.BOOLEAN; }
+			|
+			typeName = value() {result = ParameterType.OTHER; }
+		)
+		
+	)
+	<CBR>
+	| numericType() { result = ParameterType.CARDINAL; })
+	{ return result; }
+}
+
+ParameterDeclaration parameter() :
+{
+  String name;
+  ParameterType type;}
+{
+	<OBR> name = value() type = type() listBody() <CBR>
+	{ return new ParameterDeclaration (name, type); }}
+
+List<ParameterDeclaration> parameters() :
+{
+   ArrayList<ParameterDeclaration> result = new ArrayList<ParameterDeclaration>();
+   ParameterDeclaration o;
+}
+{
+ <OBR> <PARAMETERS>
+( o = parameter() {result.add(o);})* 
+ <CBR>
+ { return result; }}
+
+boolean dataDirectionIsInput() : {}
+{
+	<INPUT> { return true; }
+	| <OUTPUT> { return false; }
+} 
+
+Token cardinalToken() :
+{ Token t; }
+{
+	(t = <CARDINAL> | t = <ZERO>) { return t; }
+}
+
+int cardinal() :
+{
+	Token t;
+}
+{
+	(t = <CARDINAL> | t = <ZERO>)
+	{
+		return Integer.parseInt(t.image);
+	}
+}
+
+Expression<Integer> constantCardinalExpression() :
+{
+}
+{
+	{ return new Constant<Integer>(cardinal()); }
+}
+
+Expression<String> constantStringExpression() :
+{
+}
+{
+ { return new Constant<String>(value()); }
+}
+
+Expression<?> parameterizedExpression() :
+{
+	String paramName;
+}
+{
+	<OBR> <PARAM>
+		paramName = value()
+	<CBR>
+	{ return new ParameterReference<Object>(paramName); }
+}
+
+Expression<Integer> cardinalExpression() :
+{
+	Expression<?> result;
+}
+{
+	(
+		result = parameterizedExpression() |
+		result = constantCardinalExpression()
+	)
+	{return (Expression<Integer>)result;}
+}
+
+Expression<String> stringExpression() :
+{
+	Expression<?> result;
+}
+{
+	(
+		result = parameterizedExpression() |
+		result = constantStringExpression()
+	)
+
+	{return (Expression<String>) result;}
+}
+
+Expression<Integer> numericType() :
+{
+	Expression<Integer> result; 
+}
+{
+	<OBR> <NUMERIC_TYPE> <BOOL_FALSE>
+		result = cardinalExpression()
+	<CBR>
+	{
+		return result;		
+	}
+}
+
+VariableArrayType variable_array_type() :
+{
+	Expression<Integer> defaultWidth;
+	Expression<Integer> portCount;
+	Expression<String> specification;
+}
+{
+	<OBR> <VARIABLE_ARRAY_TYPE>
+	defaultWidth = numericType()
+	<ZERO>
+	portCount = cardinalExpression()
+	specification = stringExpression()
+	<CBR>
+	{ return new VariableArrayType(defaultWidth, portCount, specification); }
+}
+
+boolean isActive() : {}
+{
+	<ACTIVE> { return true; }
+	| <PASSIVE> { return false; }
+}
+
+Expression<Integer> arrayCount() : {}
+{
+	<ZERO>
+	{ return cardinalExpression(); }
+}
+
+PortDeclaration port() : 
+{
+	boolean isArrayed = false;
+	Expression<Integer> count = new Constant<Integer>(1);
+	PortType type = PortType.SYNC;
+	String name = null;
+	boolean isActive = false;
+	boolean isInput = false;
+	Expression<Integer> simpleWidth = null;
+	Expression<Integer[]> width = null;
+}
+{
+	<OBR>
+
+	(
+		(
+			<PORT> { type = PortType.DATA; }
+			name = value()
+			isActive = isActive()
+			isInput = dataDirectionIsInput()
+			simpleWidth = numericType()
+		|
+			<SYNC_PORT> { type = PortType.SYNC; }
+			name = value()
+			isActive = isActive()
+		)
+		{ isArrayed = false; }
+	
+	| 
+	
+	 	(
+	 		<ARRAYED_PORT> { type = PortType.DATA; }
+			name = value()
+			isActive = isActive()
+			isInput = dataDirectionIsInput()
+			(width = variable_array_type() | simpleWidth = numericType())
+		|
+			<ARRAYED_SYNC_PORT> { type = PortType.SYNC; }
+			name = value()
+			isActive = isActive()
+		)
+		count = arrayCount()
+		{ isArrayed = true; }
+	)
+	
+	listBody()
+	<CBR>
+	{
+		if(!isArrayed || width == null)
+			width = new ConstantArrayType(simpleWidth, count);
+		return new PortDeclaration(type, name, isActive, isInput, isArrayed, count, width); 
+	}
+}
+
+List<PortDeclaration> ports() :
+{
+	ArrayList<PortDeclaration> result = new ArrayList<PortDeclaration>();
+	PortDeclaration o;
+}
+{
+ <OBR> <PORTS>
+	( o = port() {result.add(o);})* 
+ <CBR>
+ 	{return result;}
+}
+
+PrimitivePart primitivePart() :{
+	String name;
+	List<ParameterDeclaration> parameters;
+	String symbol = "^_^v";
+	List<PortDeclaration> ports;
+}{
+  <OBR> <PRIMITIVE_PART>
+  	name = value()
+  	parameters = parameters()
+  	ports = ports()
+  	listBody()
+  <CBR>
+  { return new PrimitivePart(name, parameters, ports, symbol); }
+}
+
+void attributes() : {}
+{
+	list()
+}
+
+ChannelDeclaration channel() :
+{
+	ChannelType type;
+	int bits = 0;
+}
+{
+	<OBR>
+	(
+		<SYNC> { type = ChannelType.SYNC; }
+		| 
+		(<PULL> { type = ChannelType.PULL; }
+		 | <PUSH> { type = ChannelType.PUSH; })
+		bits = cardinal()
+	)
+	listBody()
+	<CBR>
+	{ return new ChannelDeclaration(type, bits); }
+}
+
+
+List<ChannelDeclaration> channels() : 
+{
+	List<ChannelDeclaration> list = new ArrayList<ChannelDeclaration>();
+	ChannelDeclaration channel;
+}
+{
+	<OBR><CHANNELS>
+	(channel = channel() { list.add(channel); } )*
+	<CBR>
+	{ return list; }
+}
+
+List<String> paramValues() :
+{
+	List<String> values = new ArrayList<String>();
+	String value;
+}
+{
+	<OBR>
+	(value = value() {values.add(value);})*
+	<CBR>
+	{return values;}
+}
+
+List<List<Integer>> connections() : 
+{
+	List<List<Integer>> result = new ArrayList<List<Integer>>();
+	List<Integer> subList;
+}
+{
+	<OBR>
+	(subList = intList() {result.add(subList);})*
+	<CBR>
+	{return result;}
+}
+
+List<Integer> intList() :
+{
+	List<Integer> result;
+	int val;
+}
+{
+	(
+		result = plainIntList()
+		|
+		val = cardinal() { result = new LinkedList<Integer>(); result.add(val); }  
+	)
+	{ return result; }
+} 
+
+List<Integer> plainIntList() : 
+{
+	List<Integer> result = new ArrayList<Integer>();
+	Integer value;
+}
+{
+	<OBR>
+	(value = cardinal() {result.add(value);})*
+	<CBR>
+	{return result;}
+}
+
+RawBreezePartReference component() :
+{
+	String name;
+	List<String> parameters;
+	List<List<Integer>> connections;
+}
+{
+	<OBR><COMPONENT>
+	name = value()
+	parameters = paramValues()
+	connections = connections()
+	<CBR>
+	{
+		return new RawBreezePartReference(name, parameters, connections);
+	}
+}
+
+List<RawBreezePartReference> components() :
+{
+	List<RawBreezePartReference> list = new ArrayList<RawBreezePartReference>();
+	RawBreezePartReference part;
+}
+{
+	<OBR><COMPONENTS>
+	(part = component() {list.add(part);})*
+	<CBR>
+	{return list;}
+}
+
+void registerBreezePart(BreezeLibrary library) :
+{
+	String name;
+	List<PortDeclaration> ports;
+	List<ChannelDeclaration> channels;
+	List<RawBreezePartReference> components;
+}
+{
+	<OBR><BREEZE_PART>
+	name = value()
+	ports = ports()
+	attributes()
+	channels = channels()
+	components = components()
+	listBody()
+	<CBR>
+	{BreezePart.register(library, name, ports, channels, components);}
+}
+
+void typeDefinition() : {}
+{
+	<OBR><TYPE>
+		listBody()
+	<CBR>
+}
+
+void registerBreezeDef(BreezeLibrary lib) : {}
+{
+	typeDefinition()
+	|
+	registerBreezePart(lib)
+}
+
+void importDef() : {}
+{
+	<OBR><IMPORT>
+	listBody()
+	<CBR>
+}
+
+void registerBreezeFile(BreezeLibrary lib) : {}
+{
+	(importDef())*
+	(registerBreezeDef(lib))*
+}

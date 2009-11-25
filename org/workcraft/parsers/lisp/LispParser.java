@@ -8,14 +8,14 @@ import java.io.InputStreamReader;
 
 @SuppressWarnings("all")
 public class LispParser implements LispParserConstants {
-        public static List<Object> parse (InputStream is) throws ParseException {
+        public static LispNode parse (InputStream is) throws ParseException {
                 LispParser parser = new LispParser(new BufferedReader(new InputStreamReader(is)));
-                return parser.everything();
+                return parser.listElement();
         }
 
-  final public List<Object> everything() throws ParseException {
-        LinkedList<Object> result = new LinkedList<Object>();
-        Object o;
+  final public List<LispNode> everything() throws ParseException {
+        LinkedList<LispNode> result = new LinkedList<LispNode>();
+        LispNode o;
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -34,25 +34,25 @@ public class LispParser implements LispParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List<Object> list() throws ParseException {
-        List<Object> result;
+  final public LispNode list() throws ParseException {
+        List<LispNode> result;
     jj_consume_token(OBR);
     result = everything();
     jj_consume_token(CBR);
-   {if (true) return result;}
+   {if (true) return new LispNode(result);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Object listElement() throws ParseException {
-                         Token t; List<Object> l;
+  final public LispNode listElement() throws ParseException {
+                           Token t; LispNode l;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VALUE:
       t = jj_consume_token(VALUE);
-                      {if (true) return t.image;}
+                      {if (true) return new LispNode(t.image);}
       break;
     case OBR:
       l = list();
-                                                       {if (true) return l;}
+                                                                     {if (true) return l;}
       break;
     default:
       jj_la1[1] = jj_gen;
