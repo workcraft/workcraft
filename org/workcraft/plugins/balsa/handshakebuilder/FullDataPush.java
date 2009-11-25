@@ -21,6 +21,6 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-public interface FullDataPush extends DataHandshake {
+public interface FullDataPush extends FullDataHandshake {
 
 }

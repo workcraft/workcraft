@@ -18,8 +18,16 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.plugins.balsa.protocols;
 
-public interface ActiveSignalTransition extends ActiveEvent {
+package org.workcraft.plugins.balsa.handshakestgbuilder;
 
+public class TwoSideStg
+{
+	public TwoSideStg(StgInterface internal, StgInterface external)
+	{
+		this.internal = internal;
+		this.external = external;
+	}
+	public final StgInterface internal;
+	public final StgInterface external;
 }

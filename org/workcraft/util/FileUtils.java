@@ -31,7 +31,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
 public class FileUtils{
-	   public static void copyFile(File in, File out)
+	public static void copyFile(File in, File out)
    	throws IOException
 	{
 		   FileOutputStream outStream = new FileOutputStream(out);
@@ -62,5 +62,27 @@ public class FileUtils{
 	        if (inChannel != null) inChannel.close();
 	        if (outChannel != null) outChannel.close();
 	    }
+	}
+
+	public static File createTempDirectory(String prefix) {
+		File tempDir;
+		try {
+			tempDir = File.createTempFile(prefix, "");
+		} catch (IOException e) {
+			throw new RuntimeException("can't create a temp file");
+		}
+		tempDir.delete();
+		if(!tempDir.mkdir())
+			throw new RuntimeException("can't create a temp directory");
+		return tempDir;
+	}
+
+	public static void deleteDirectoryTree(File dir) {
+		File [] files = dir.listFiles();
+		if(files != null)
+			for(File file : files)
+				deleteDirectoryTree(file);
+
+		dir.delete();
 	}
 }

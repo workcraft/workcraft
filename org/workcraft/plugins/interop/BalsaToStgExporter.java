@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Connection;
@@ -37,8 +38,13 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActivenessSelector;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
+import org.workcraft.plugins.balsa.handshakestgbuilder.InternalHandshakeStgBuilder;
+import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
@@ -61,57 +67,139 @@ public abstract class BalsaToStgExporter {
 
 		BalsaCircuit balsa = (BalsaCircuit)model;
 
-		ArrayList<File> tempFiles = new ArrayList<File>();
+		boolean useSimpleInternalHandshakes = false;
 
-		for(BreezeComponent component : getComponentsToSave(balsa))
+		if(useSimpleInternalHandshakes)
 		{
-			STG stg = buildStg(balsa, component);
+			STG stgf = buildStgFull(balsa);
+			new DotGExporter().export(stgf, out);
+		}
+		else
+		{
+			ArrayList<File> tempFiles = new ArrayList<File>();
+			for(BreezeComponent component : getComponentsToSave(balsa))
+			{
+				STG stg = buildStg(balsa, component);
 
-			File tempFile = File.createTempFile("brz_", ".g");
-			tempFiles.add(tempFile);
+				File tempFile = File.createTempFile("brz_", ".g");
+				tempFiles.add(tempFile);
 
-			DotGExporter exporter = new DotGExporter();
+				DotGExporter exporter = new DotGExporter();
 
-			Export.exportToFile(exporter, stg, tempFile);
+				Export.exportToFile(exporter, stg, tempFile);
+			}
+
+			String [] args = new String [tempFiles.size() + 3];
+			args[0] = PetriNetToolsSettings.getPcompCommand();
+			args[1] = "-d";
+			args[2] = "-r";
+			for(int i=0;i<tempFiles.size();i++)
+				args[i+3] = tempFiles.get(i).getPath();
+
+			SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
+
+			pcomp.start(10000);
+
+			byte [] outputData = pcomp.getOutputData();
+			System.out.println("----- Pcomp errors: -----");
+			System.out.print(new String(pcomp.getErrorData()));
+			System.out.println("----- End of errors -----");
+
+			if(pcomp.getReturnCode() != 0)
+			{
+				System.out.println("");
+				System.out.println("----- Pcomp output: -----");
+				System.out.print(new String(outputData));
+				System.out.println("----- End of output -----");
+
+				throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
+			}
+
+			saveData(outputData, out);
+
+			for(File f : tempFiles)
+				f.delete();
+		}
+	}
+
+	private STG buildStgFull(BalsaCircuit balsa) {
+		STG stg = new STG();
+
+		Iterable<BreezeComponent> components = getComponentsToSave(balsa);
+
+		Map<Connection, TwoWayStg> internalHandshakes = new HashMap<Connection, TwoWayStg>();
+
+		for(BreezeComponent component : components)
+		{
+			Map<String, Handshake> fullHandshakes = new HashMap<String, Handshake>(component.getHandshakes());
+
+			MainStgBuilder.addDataPathHandshakes(fullHandshakes, component.getUnderlyingComponent());
+
+			HandshakeNameProvider nameProvider = getNamesProvider(balsa, component, fullHandshakes);
+
+			StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, nameProvider);
+
+			Map<String, Handshake> external = new HashMap<String, Handshake>();
+			Map<String, TwoWayStg> internal = new HashMap<String, TwoWayStg>();
+
+			for(String name : fullHandshakes.keySet())
+			{
+				Connection connection = getInternalConnection(balsa, components, component, fullHandshakes.get(name));
+				if(connection == null)
+					external.put(name, fullHandshakes.get(name));
+				else
+				{
+					if(!internalHandshakes.containsKey(connection))
+					{
+						TwoWayStg internalStg = buildInternalStg(fullHandshakes.get(name), stgBuilder);
+						internalHandshakes.put(connection, internalStg);
+					}
+
+					internal.put(name, internalHandshakes.get(connection));
+				}
+			}
+
+			Map<String, TwoSideStg> handshakeStgs = MainStgBuilder.buildHandshakes(external, protocol, stgBuilder);
+
+			for(String name : internal.keySet())
+				handshakeStgs.put(name, ActivenessSelector.direct(internal.get(name), fullHandshakes.get(name).isActive()));
+
+			MainStgBuilder.buildStg(component.getUnderlyingComponent(), handshakeStgs, stgBuilder);
 		}
 
-		String [] args = new String [tempFiles.size() + 3];
-		args[0] = PetriNetToolsSettings.getPcompCommand();
-		args[1] = "-d";
-		args[2] = "-r";
-		for(int i=0;i<tempFiles.size();i++)
-			args[i+3] = tempFiles.get(i).getPath();
+		return stg;
+	}
 
-		SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
+	private Connection getInternalConnection(BalsaCircuit balsa, Iterable<BreezeComponent> components, BreezeComponent component, Handshake handshake) {
+		HandshakeComponent hs = component.getHandshakeComponents().get(handshake);
+		if(hs==null)
+			return null;
+		Connection connection = balsa.getConnection(hs);
+		if(connection == null)
+			return null;
 
-		pcomp.start(10000);
+		if(!contains(components, balsa.getConnectedHandshake(hs).getOwner()))
+			return null;
+		return connection;
+	}
 
-		byte [] outputData = pcomp.getOutputData();
-		System.out.println("----- Pcomp errors: -----");
-		System.out.print(new String(pcomp.getErrorData()));
-		System.out.println("----- End of errors -----");
+	private TwoWayStg buildInternalStg(Handshake handshake, StgBuilder stg) {
+		return handshake.buildStg(new InternalHandshakeStgBuilder(stg));
+	}
 
-		if(pcomp.getReturnCode() != 0)
-		{
-			System.out.println("");
-			System.out.println("----- Pcomp output: -----");
-			System.out.print(new String(outputData));
-			System.out.println("----- End of output -----");
-
-			throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
-		}
-
-		saveData(outputData, out);
-
-		for(File f : tempFiles)
-			f.delete();
+	private boolean contains(Iterable<BreezeComponent> components, BreezeComponent component)
+	{
+		for(BreezeComponent c : components)
+			if(component == c)
+				return true;
+		return false;
 	}
 
 	protected Iterable<BreezeComponent> getComponentsToSave(BalsaCircuit balsa) {
 		return Hierarchy.getDescendantsOfType(balsa.getRoot(), BreezeComponent.class);
 	}
 
-	public static void saveData(byte [] outputData, OutputStream out) throws IOException
+	private static void saveData(byte [] outputData, OutputStream out) throws IOException
 	{
 		out.write(outputData);
 	}
@@ -120,35 +208,43 @@ public abstract class BalsaToStgExporter {
 	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent) {
 		STG stg = new STG();
 
-		HandshakeNameProvider nameProvider = getNamesProvider(circuit, breezeComponent);
+		Map<String, Handshake> fullHandshakes = new HashMap<String, Handshake>(breezeComponent.getHandshakes());
+
+		MainStgBuilder.addDataPathHandshakes(fullHandshakes, breezeComponent.getUnderlyingComponent());
+
+		HandshakeNameProvider nameProvider = getNamesProvider(circuit, breezeComponent, fullHandshakes);
 
 		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, nameProvider);
 
-		MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), breezeComponent.getHandshakes(), stgBuilder, protocol);
+		Map<String, TwoSideStg> handshakeStgs = MainStgBuilder.buildHandshakes(fullHandshakes, protocol, stgBuilder);
+
+		MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), handshakeStgs, stgBuilder);
 		return stg;
 	}
 
-	private HandshakeNameProvider getNamesProvider(final BalsaCircuit circuit,
-			final BreezeComponent breezeComponent) {
+	private HandshakeNameProvider getNamesProvider(final BalsaCircuit circuit, final BreezeComponent breezeComponent, final Map<String, Handshake> handshakes) {
 		final HashMap<Object, String> names;
 
-			names = new HashMap<Object, String>();
-			for(Entry<String, Handshake> entry : breezeComponent.getHandshakes().entrySet())
-			{
-				names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
-			}
-			for(Entry<Handshake, HandshakeComponent> entry : breezeComponent.getHandshakeComponents().entrySet())
-			{
-				Connection connection = circuit.getConnection(entry.getValue());
-				if(connection != null)
-					names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
-			}
-			names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
+		names = new HashMap<Object, String>();
+
+		for(Entry<String, Handshake> entry : handshakes.entrySet())
+			names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
+
+		for(Entry<Handshake, HandshakeComponent> entry : breezeComponent.getHandshakeComponents().entrySet())
+		{
+			Connection connection = circuit.getConnection(entry.getValue());
+			if(connection != null)
+				names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
+		}
+		names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
 
 		HandshakeNameProvider nameProvider = new HandshakeNameProvider()
 		{
 			public String getName(Object handshake) {
-				return names.get(handshake);
+				String result = names.get(handshake);
+				if(result == null)
+					throw new IndexOutOfBoundsException("No name found for the given handshake");
+				return result;
 			}
 		};
 		return nameProvider;

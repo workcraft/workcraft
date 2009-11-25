@@ -30,6 +30,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.OutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
@@ -45,48 +46,38 @@ public class CallMux_NoDataPath extends
 		ActivePushStg out = (ActivePushStg)handshakes.get("out");
 		ActiveFullDataPushStg sel = (ActiveFullDataPushStg)dpHandshake;
 
-
-		/* TODO: move commented code to FullDataPush implementation
-		  StgSignal selAc = builder.buildSignal(new SignalId(component, "selAq"), false);
-
-		OutputPlace selRequested = builder.buildPlace();
-		OutputPlace selRtz = builder.buildPlace();
-		OutputPlace selAcknowledged = builder.buildPlace();
-		OutputPlace selAckReset = builder.buildPlace(1);
-		builder.connect(selAc.getPlus(), selAcknowledged);
-		builder.connect(selAc.getMinus(), selAckReset);
-
-		builder.connect(selRequested, selAc.getPlus());
-		builder.connect(selRtz, selAc.getMinus()); */
-
+		StgPlace releaseInputData = builder.buildPlace(0);
 		StgPlace releaseInput = builder.buildPlace(0);
-		//OutputPlace releaseSel = builder.buildPlace();
+
+		StgPlace noReleaseToken = builder.buildPlace(1);
+		StgPlace noDataReleaseToken = builder.buildPlace(1);
+
 		for(int i=0;i<component.getInputCount();i++)
 		{
 			PassivePushStg in = (PassivePushStg)handshakes.get("inp"+i);
 
-			//StgSignal selRq = builder.buildSignal(new SignalId(component, "sel"+i+"Rq"), true);
-			//OutputPlace selReady = builder.buildPlace(1);
-			//OutputPlace selActive = builder.buildPlace();
-			//builder.connect(selReady, selRq.getPlus());
-			//builder.connect(selRq.getPlus(), selActive);
-			//builder.connect(selActive, selRq.getMinus());
-			//builder.connect(selRq.getMinus(), selReady);
-
-			//builder.connect(selRq.getPlus(), selRequested);
-			//builder.connect(selAcknowledged, selRq.getMinus());
-			//builder.connect(selRq.getMinus(), selRtz);
-			//builder.connect(selAckReset, selRq.getPlus());
+			InputOutputEvent releasing = builder.buildTransition();
+			InputOutputEvent releasingData = builder.buildTransition();
 
 			builder.connect(in.go(), sel.data().get(i));
-			//builder.connect(releaseSel, selRq.getMinus());
-			builder.connect(releaseInput, in.dataRelease());
+			builder.connect(releaseInputData, releasingData);
+			builder.connect(releaseInput, releasing);
+			builder.connect(releasingData, noReleaseToken);
+			builder.connect(releasing, noDataReleaseToken);
+			builder.connect(releasingData, in.dataRelease());
+			builder.connect(releasing, in.done());
+			builder.connect(in.go(), releasingData);
+			builder.connect(in.go(), releasing);
+			builder.connect(in.go(), in.dataRelease());
+			builder.connect(in.go(), in.done());
 		}
 
+		builder.connect(noReleaseToken, out.go());
+		builder.connect(noDataReleaseToken, out.go());
 		builder.connect(sel.done(), out.go());
 
 		builder.connect(out.done(), releaseInput);
-		//builder.connect(out.done(), releaseSel);
+		builder.connect(out.dataRelease(), releaseInputData);
 	}
 
 	@Override
@@ -105,6 +96,6 @@ public class CallMux_NoDataPath extends
 
 	@Override
 	public Handshake getDataPathHandshake(CallMux component) {
-		return SimpleHandshakeBuilder.getInstance().CreateActiveFullDataPush(component.getWidth()); // TODO: remove stupidity
+		return SimpleHandshakeBuilder.getInstance().CreateActiveFullDataPush(component.getInputCount()); // TODO: remove stupidity
 	}
 }

@@ -21,9 +21,9 @@
 
 package org.workcraft.plugins.balsa.stgbuilder;
 
-import org.workcraft.plugins.balsa.protocols.PassiveSignalTransition;
+import org.workcraft.plugins.balsa.protocols.PassiveEvent;
 
 public interface PassiveSignal {
-	public PassiveSignalTransition getPlus();
-	public PassiveSignalTransition getMinus();
+	public PassiveEvent getPlus();
+	public PassiveEvent getMinus();
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Case;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.handshakebuilder.SimpleHandshakeBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
@@ -40,33 +41,20 @@ public class CaseStgBuilder extends DataPathComponentStgBuilder<Case> {
 		PassivePushStg in = (PassivePushStg)handshakes.get("inp");
 		ActiveFullDataPullStg dp = (ActiveFullDataPullStg)dpHandshake;
 
-		//OutputPlace guardChangeAllowed = builder.buildPlace(1);
-
-		//TODO: possibly move commented code to the FullDataPull implementation
-	/*	StgSignal dataSignal = builder.buildSignal(new SignalId(component, "dp"), false);
-		final OutputPlace dataOne = builder.buildPlace();
-		final OutputPlace dataZero = builder.buildPlace(1);
-		builder.connect(dataOne, dataSignal.getMinus());
-		builder.connect(dataSignal.getMinus(), dataZero);
-		builder.connect(dataZero, dataSignal.getPlus());
-		builder.connect(dataSignal.getPlus(), dataOne);
-
-		builder.connect(in.dataRelease(), guardChangeAllowed);
-		//TODO: Externalise the enviromnent specification
-		builder.connect(guardChangeAllowed, (OutputEvent)in.go());
-		builder.addReadArc(guardChangeAllowed, dataSignal.getMinus());
-		builder.addReadArc(guardChangeAllowed, dataSignal.getPlus());*/
-
 		StgPlace done = builder.buildPlace(0);
 
 		builder.connect(in.go(), dp.go());
+
+		StgPlace readyToRelease = builder.buildPlace(0);
+
+		builder.connect(readyToRelease, in.dataRelease());
 
 		for(int i=0;i<component.getOutputCount();i++)
 		{
 			ActiveSync activateOut = (ActiveSync)handshakes.get("activateOut"+i);
 
 			builder.connect(dp.result().get(i), activateOut.go());
-			builder.connect(dp.result().get(i), in.dataRelease());
+			builder.connect(dp.result().get(i), readyToRelease);
 			builder.connect(activateOut.done(), done);
 		}
 
@@ -75,6 +63,6 @@ public class CaseStgBuilder extends DataPathComponentStgBuilder<Case> {
 
 	@Override
 	public Handshake getDataPathHandshake(Case component) {
-		throw new RuntimeException("Not implemented!");// TODO Implement
+		return new SimpleHandshakeBuilder().CreateActiveFullDataPull(1 << component.getInputWidth());// TODO Implement
 	}
 }
