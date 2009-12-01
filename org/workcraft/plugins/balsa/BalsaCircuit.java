@@ -22,6 +22,7 @@
 package org.workcraft.plugins.balsa;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -87,7 +88,7 @@ public final class BalsaCircuit extends AbstractMathModel {
 	}
 
 	private void createHandshakeComponents(BreezeComponent component) {
-		HashMap<Handshake, HandshakeComponent> handshakeComponents = new HashMap<Handshake, HandshakeComponent>();
+		HashMap<Handshake, HandshakeComponent> handshakeComponents = new LinkedHashMap<Handshake, HandshakeComponent>();
 		Map<String, Handshake> handshakes = MainHandshakeMaker.getHandshakes(component.getUnderlyingComponent());
 		for(String handshakeName : handshakes.keySet())
 		{
@@ -124,7 +125,7 @@ public final class BalsaCircuit extends AbstractMathModel {
 		Handshake h2 = second.getHandshake();
 
 		if(h1.isActive() == h2.isActive())
-			throw new InvalidConnectionException("Must connect passive and active handshakes");
+			throw new InvalidConnectionException("Must connect passive and active handshakes. " + getHandshakesDescription(first, second));
 
 		boolean isData1 = h1 instanceof DataHandshake;
 		boolean isData2 = h2 instanceof DataHandshake;
@@ -153,6 +154,12 @@ public final class BalsaCircuit extends AbstractMathModel {
 				if(((FullDataHandshake)h1).getValuesCount() != ((FullDataHandshake)h2).getValuesCount())
 					throw new InvalidConnectionException("Cannot connect data handshakes with different value counts");
 		}
+	}
+
+	private String getHandshakesDescription(HandshakeComponent first, HandshakeComponent second) {
+		return String.format("first: %s, %s; second: %s, %s",
+		first.getHandshakeName(), first.getOwner().getUnderlyingComponent().toString(),
+		second.getHandshakeName(), second.getOwner().getUnderlyingComponent().toString());
 	}
 
 	private boolean isPush(Handshake h2)

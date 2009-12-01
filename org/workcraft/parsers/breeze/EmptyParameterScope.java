@@ -21,20 +21,12 @@
 
 package org.workcraft.parsers.breeze;
 
-import java.util.List;
+public class EmptyParameterScope implements ParameterScope {
+	private static EmptyParameterScope instance = new EmptyParameterScope();
+	public static EmptyParameterScope instance(){ return instance; }
 
-interface BreezeInstance<Port>
-{
-	List<Port> ports();
-}
-
-interface BreezeDefinition
-{
-	<Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterValueList parameters);
-}
-
-interface BreezeFactory<Port>
-{
-	BreezeInstance<Port> create(PrimitivePart declaration, ParameterScope parameters);
-	void connect(Port port1, Port port2);
+	@Override
+	public Object get(String key) {
+		return null;
+	}
 }

@@ -19,22 +19,16 @@
 *
 */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.exceptions;
 
-import java.util.List;
+@Deprecated // To warn users that they should implement the feature
+public class NotImplementedException extends RuntimeException {
 
-interface BreezeInstance<Port>
-{
-	List<Port> ports();
-}
+	public NotImplementedException()
+	{
+		super("The feature is not implemented yet");
+	}
 
-interface BreezeDefinition
-{
-	<Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterValueList parameters);
-}
+	private static final long serialVersionUID = -6828334836877473788L;
 
-interface BreezeFactory<Port>
-{
-	BreezeInstance<Port> create(PrimitivePart declaration, ParameterScope parameters);
-	void connect(Port port1, Port port2);
 }

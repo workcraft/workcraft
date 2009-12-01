@@ -42,4 +42,9 @@ public class DynamicComponent extends Component {
 	public PrimitivePart declaration() {
 		return declaration;
 	}
+
+	@Override public String toString()
+	{
+		return declaration.toString();
+	}
 }

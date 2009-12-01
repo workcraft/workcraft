@@ -60,6 +60,7 @@ TOKEN :
   	|<ACTIVE : "active">
   	|<PASSIVE : "passive">
   	|<INPUT : "input">
+  	|<INP : "inp">
   	|<OUTPUT : "output">
   	|<NAMED_TYPE : "named-type">
   	|<NUMERIC_TYPE : "numeric-type">
@@ -91,7 +92,7 @@ TOKEN :
 	|<OBR : "(" >
 	|<CBR : ")" >
 	|<QUOTED_VALUE: "\"" (~["\""])* "\"" >
-    |<VALUE: ( ~[" ","\r","\t","\n","(",")"] )+ >
+    |<VALUE: ( ~[" ","\r","\t","\n","(",")","\""] )+ >
 }
 
 List<LispNode> listBody() : 
@@ -135,8 +136,9 @@ Token keyword() : {Token t;}
   	(t = <PRIMITIVE_PART> 
   	| t = <VARIABLE_ARRAY_TYPE>
   	| t = <ACTIVE>
-  	| t = <PASSIVE >
+  	| t = <PASSIVE>
   	| t = <INPUT>
+  	| t = <INP>
   	| t = <OUTPUT>
   	| t = <NAMED_TYPE>
   	| t = <NUMERIC_TYPE>
@@ -211,7 +213,7 @@ List<ParameterDeclaration> parameters() :
 
 boolean dataDirectionIsInput() : {}
 {
-	<INPUT> { return true; }
+	(<INPUT>|<INP>) { return true; }
 	| <OUTPUT> { return false; }
 } 
 

@@ -26,10 +26,17 @@ public class ParameterDeclaration {
 		this.name = name;
 		this.type = type;
 	}
-	public final String name;
-	public final ParameterType type;
+	private final String name;
+	private final ParameterType type;
 
 	public String toString() {
 		return "(" + name + " " + type + ")";
+	}
+
+	public String name() {
+		return name;
+	}
+	public ParameterType type() {
+		return type;
 	}
 }

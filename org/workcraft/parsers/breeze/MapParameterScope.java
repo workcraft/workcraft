@@ -21,20 +21,13 @@
 
 package org.workcraft.parsers.breeze;
 
-import java.util.List;
+import java.util.HashMap;
 
-interface BreezeInstance<Port>
-{
-	List<Port> ports();
-}
+public class MapParameterScope extends HashMap<String,Object> implements ParameterScope {
+	private static final long serialVersionUID = -270289013154673251L;
 
-interface BreezeDefinition
-{
-	<Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterValueList parameters);
-}
-
-interface BreezeFactory<Port>
-{
-	BreezeInstance<Port> create(PrimitivePart declaration, ParameterScope parameters);
-	void connect(Port port1, Port port2);
+	@Override
+	public Object get(String key) {
+		return super.get(key);
+	}
 }

@@ -23,6 +23,8 @@ package org.workcraft.parsers.breeze;
 
 import java.util.List;
 
+import org.workcraft.exceptions.NotSupportedException;
+
 public class PrimitivePart implements BreezeDefinition {
 	String name;
 	List<ParameterDeclaration> parameters;
@@ -47,7 +49,49 @@ public class PrimitivePart implements BreezeDefinition {
 		return ports;
 	}
 
-	@Override public <Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterScope parameters) {
-		return factory.create(this, parameters);
+	@Override public <Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterValueList parameters) {
+		return factory.create(this, parseParameters(parameters));
+	}
+
+	private ParameterScope parseParameters(ParameterValueList parameterValues) {
+
+		MapParameterScope result = new MapParameterScope();
+
+		if(parameters.size() != parameterValues.size())
+			throw new RuntimeException("Incorrect number of parameter values for component " + name + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
+
+		for(int i=0;i<parameters.size();i++)
+		{
+			ParameterDeclaration parameter = parameters.get(i);
+			Object value = parse(parameter, parameterValues.get(i));
+			result.put(parameter.name(), value);
+		}
+
+		return result;
+	}
+
+	private static Object parse(ParameterDeclaration parameter, String string) {
+		ParameterType type = parameter.type();
+		if(type == ParameterType.BOOLEAN)
+			return parseBoolean(string);
+		if(type == ParameterType.CARDINAL)
+			return parseCardinal(string);
+		if(type == ParameterType.STRING)
+			return string;
+		if(type == ParameterType.OTHER)
+			return string;
+		throw new NotSupportedException();
+	}
+
+	private static Object parseCardinal(String string) {
+		return Integer.parseInt(string);
+	}
+
+	private static Object parseBoolean(String string) {
+		if(string.toLowerCase().equals("true"))
+			return true;
+		if(string.toLowerCase().equals("false"))
+			return false;
+		throw new NotSupportedException();
 	}
 }

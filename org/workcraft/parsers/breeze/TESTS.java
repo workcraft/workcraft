@@ -34,13 +34,6 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 
 
 public class TESTS {
-	private static final class EmptyParameterScope implements ParameterScope {
-		@Override
-		public Object get(String key) {
-			throw new RuntimeException ("Not implemented");
-		}
-	}
-
 	@Test
 	public void parseAbs() throws FileNotFoundException, ParseException, org.workcraft.parsers.breeze.javacc.ParseException
 	{
@@ -65,7 +58,7 @@ public class TESTS {
 
 		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-		lib.get("BMU").instantiate(factory, new EmptyParameterScope());
+		lib.get("BMU").instantiate(factory, EmptyValueList.instance());
 	}
 
 	private void registerParts(File file, BreezeLibrary lib) throws Exception {

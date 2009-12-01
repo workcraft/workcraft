@@ -19,22 +19,20 @@
 *
 */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.exceptions;
 
-import java.util.List;
+public class NotSupportedException extends RuntimeException {
 
-interface BreezeInstance<Port>
-{
-	List<Port> ports();
-}
+	public NotSupportedException(String message)
+	{
+		super(message);
+	}
 
-interface BreezeDefinition
-{
-	<Port> BreezeInstance<Port> instantiate(BreezeFactory<Port> factory, ParameterValueList parameters);
-}
+	public NotSupportedException()
+	{
+		super("The feature is not supported");
+	}
 
-interface BreezeFactory<Port>
-{
-	BreezeInstance<Port> create(PrimitivePart declaration, ParameterScope parameters);
-	void connect(Port port1, Port port2);
+	private static final long serialVersionUID = -6828334836877473788L;
+
 }

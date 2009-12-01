@@ -24,6 +24,8 @@ package org.workcraft.parsers.breeze;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.workcraft.exceptions.NotSupportedException;
+
 public class BreezePart implements BreezeDefinition
 {
 	private final List<PortDeclaration> ports;
@@ -55,7 +57,9 @@ public class BreezePart implements BreezeDefinition
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Port> BreezeInstance instantiate(BreezeFactory<Port> factory, ParameterScope parameters) {
+	public <Port> BreezeInstance instantiate(BreezeFactory<Port> factory, ParameterValueList parameters)
+	{
+		ensureEmpty(parameters);
 
 		List<Port> [] connections = new List[channels.size()];
 		for(int i=0;i<channels.size();i++)
@@ -69,13 +73,13 @@ public class BreezePart implements BreezeDefinition
 			for(List<Integer> indices : part.connections())
 			{
 				for(Integer index : indices)
-					connections[index].add(instance.ports().get(referencedIndex++));
+					connections[index-1].add(instance.ports().get(referencedIndex++));
 			}
 			contained.add(instance);
 		}
 
 		final List<Port> externalChannels = new ArrayList<Port>();
-		int portChannels = getPortCount(parameters);
+		int portChannels = getPortCount();
 		for(int i=0;i<portChannels;i++)
 		{
 			if(connections[i].size()!=1)
@@ -98,11 +102,16 @@ public class BreezePart implements BreezeDefinition
 		};
 	}
 
-	private int getPortCount(ParameterScope parameters) {
+	private void ensureEmpty(ParameterValueList parameters) {
+		if(parameters.size() != 0)
+			throw new NotSupportedException("Breeze Parts with parameters are not supported");
+	}
+
+	private int getPortCount() {
 		int count = 0;
 		for(PortDeclaration portDeclaration : ports)
 		{
-			count += portDeclaration.count.evaluate(parameters);
+			count += portDeclaration.count.evaluate(EmptyParameterScope.instance());
 		}
 		return count;
 	}

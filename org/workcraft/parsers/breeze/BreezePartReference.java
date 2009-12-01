@@ -39,12 +39,18 @@ public class BreezePartReference {
 		return def;
 	}
 
-	public ParameterScope parameters() {
-		return parseParameters(definition(),ref.parameters());
-	}
+	public ParameterValueList parameters() {
+		final List<String> parameters = ref.parameters();
+		return new ParameterValueList()
+		{
+			@Override public String get(int index) {
+				return parameters.get(index);
+			}
 
-	private ParameterScope parseParameters(BreezeDefinition breezePart, List<String> parameters) {
-		throw new RuntimeException ("Not implemented");
+			@Override public int size() {
+				return parameters.size();
+			}
+		};
 	}
 
 	public List<List<Integer>> connections() {
