@@ -26,65 +26,67 @@ public interface BreezeParserConstants {
   /** RegularExpression Id. */
   int INPUT = 12;
   /** RegularExpression Id. */
-  int OUTPUT = 13;
+  int INP = 13;
   /** RegularExpression Id. */
-  int NAMED_TYPE = 14;
+  int OUTPUT = 14;
   /** RegularExpression Id. */
-  int NUMERIC_TYPE = 15;
+  int NAMED_TYPE = 15;
   /** RegularExpression Id. */
-  int BOOL_FALSE = 16;
+  int NUMERIC_TYPE = 16;
   /** RegularExpression Id. */
-  int PARAMETERS = 17;
+  int BOOL_FALSE = 17;
   /** RegularExpression Id. */
-  int PARAM = 18;
+  int PARAMETERS = 18;
   /** RegularExpression Id. */
-  int PORTS = 19;
+  int PARAM = 19;
   /** RegularExpression Id. */
-  int PORT = 20;
+  int PORTS = 20;
   /** RegularExpression Id. */
-  int SYNC_PORT = 21;
+  int PORT = 21;
   /** RegularExpression Id. */
-  int ARRAYED_PORT = 22;
+  int SYNC_PORT = 22;
   /** RegularExpression Id. */
-  int ARRAYED_SYNC_PORT = 23;
+  int ARRAYED_PORT = 23;
   /** RegularExpression Id. */
-  int SYMBOL = 24;
+  int ARRAYED_SYNC_PORT = 24;
   /** RegularExpression Id. */
-  int IMPLEMENTATION = 25;
+  int SYMBOL = 25;
   /** RegularExpression Id. */
-  int TYPE_STRING = 26;
+  int IMPLEMENTATION = 26;
   /** RegularExpression Id. */
-  int TYPE_CARDINAL = 27;
+  int TYPE_STRING = 27;
   /** RegularExpression Id. */
-  int TYPE_BOOLEAN = 28;
+  int TYPE_CARDINAL = 28;
   /** RegularExpression Id. */
-  int SYNC = 29;
+  int TYPE_BOOLEAN = 29;
   /** RegularExpression Id. */
-  int PUSH = 30;
+  int SYNC = 30;
   /** RegularExpression Id. */
-  int PULL = 31;
+  int PUSH = 31;
   /** RegularExpression Id. */
-  int CHANNELS = 32;
+  int PULL = 32;
   /** RegularExpression Id. */
-  int ATTRIBUTES = 33;
+  int CHANNELS = 33;
   /** RegularExpression Id. */
-  int COMPONENTS = 34;
+  int ATTRIBUTES = 34;
   /** RegularExpression Id. */
-  int COMPONENT = 35;
+  int COMPONENTS = 35;
   /** RegularExpression Id. */
-  int BREEZE_PART = 36;
+  int COMPONENT = 36;
   /** RegularExpression Id. */
-  int TYPE = 37;
+  int BREEZE_PART = 37;
   /** RegularExpression Id. */
-  int IMPORT = 38;
+  int TYPE = 38;
   /** RegularExpression Id. */
-  int OBR = 39;
+  int IMPORT = 39;
   /** RegularExpression Id. */
-  int CBR = 40;
+  int OBR = 40;
   /** RegularExpression Id. */
-  int QUOTED_VALUE = 41;
+  int CBR = 41;
   /** RegularExpression Id. */
-  int VALUE = 42;
+  int QUOTED_VALUE = 42;
+  /** RegularExpression Id. */
+  int VALUE = 43;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -104,6 +106,7 @@ public interface BreezeParserConstants {
     "\"active\"",
     "\"passive\"",
     "\"input\"",
+    "\"inp\"",
     "\"output\"",
     "\"named-type\"",
     "\"numeric-type\"",
