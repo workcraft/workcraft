@@ -87,10 +87,11 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 					}
 				}
 			);
+
+		//this.applyTransform(AffineTransform.getQuadrantRotateInstance(1));
 	}
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
-		System.out.println("Creating VisualBreezeComponent...");
 		this.refComponent = refComponent;
 		init();
 	}
@@ -149,10 +150,10 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 
 			Direction dir = ray.direction;
 			int quadrants =
-				dir == Direction.Right ? 0 :
-					dir == Direction.Down ? 1:
-						dir == Direction.Left ? 2:
-							3;
+				dir == Direction.Right ? 1 :
+					dir == Direction.Down ? 2:
+						dir == Direction.Left ? 3:
+							0;
 
 			visual.applyTransform(AffineTransform.getQuadrantRotateInstance(quadrants));
 			visual.applyTransform(AffineTransform.getScaleInstance(handshakeRadius*2, handshakeRadius*2));
@@ -212,11 +213,16 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 
 		drawCircle(g, 0, 0, componentRadius);
 
+
+		/*AffineTransform t = g.getTransform();
+		t.concatenate(AffineTransform.getQuadrantRotateInstance(-1));
+		g.setTransform(t);*/
+
 		Font font = g.getFont();
 		font = font.deriveFont(0.2f);
 		String symbol = balsaComponent.getClass().getSimpleName();
 		if (balsaComponent instanceof DynamicComponent)
-			symbol = ((DynamicComponent)balsaComponent).declaration().getSymbol();
+			symbol = ((DynamicComponent)balsaComponent).getSymbol();
 		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), symbol);
 		Rectangle2D bounds = vec.getVisualBounds();
 		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());

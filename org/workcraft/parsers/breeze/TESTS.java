@@ -21,23 +21,12 @@
 
 package org.workcraft.parsers.breeze;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-
-import org.junit.Test;
-import org.workcraft.parsers.breeze.javacc.BreezeParser;
-import org.workcraft.parsers.lisp.ParseException;
-import org.workcraft.plugins.balsa.BalsaCircuit;
-
-
+/*
 public class TESTS {
 	@Test
 	public void parseAbs() throws FileNotFoundException, ParseException, org.workcraft.parsers.breeze.javacc.ParseException
 	{
-		InputStream is = new FileInputStream("C:\\deleteMe\\Variable.abs");
+		InputStream is = new FileInputStream("C:\\deleteMe\\BinaryFuncConstR.abs");
 		PrimitivePart part = BreezeParser.parsePrimitivePart(is);
 
 		System.out.println(part);
@@ -73,3 +62,4 @@ public class TESTS {
 		}
 	}
 }
+*/

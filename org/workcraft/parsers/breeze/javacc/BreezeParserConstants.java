@@ -52,41 +52,51 @@ public interface BreezeParserConstants {
   /** RegularExpression Id. */
   int SYMBOL = 25;
   /** RegularExpression Id. */
-  int IMPLEMENTATION = 26;
+  int CENTER_STRING = 26;
   /** RegularExpression Id. */
-  int TYPE_STRING = 27;
+  int IMPLEMENTATION = 27;
   /** RegularExpression Id. */
-  int TYPE_CARDINAL = 28;
+  int TYPE_STRING = 28;
   /** RegularExpression Id. */
-  int TYPE_BOOLEAN = 29;
+  int TYPE_CARDINAL = 29;
   /** RegularExpression Id. */
-  int SYNC = 30;
+  int TYPE_BOOLEAN = 30;
   /** RegularExpression Id. */
-  int PUSH = 31;
+  int CASE = 31;
   /** RegularExpression Id. */
-  int PULL = 32;
+  int ELSE = 32;
   /** RegularExpression Id. */
-  int CHANNELS = 33;
+  int STRING_APPEND = 33;
   /** RegularExpression Id. */
-  int ATTRIBUTES = 34;
+  int NUMBER_TO_STRING = 34;
   /** RegularExpression Id. */
-  int COMPONENTS = 35;
+  int SYNC = 35;
   /** RegularExpression Id. */
-  int COMPONENT = 36;
+  int PUSH = 36;
   /** RegularExpression Id. */
-  int BREEZE_PART = 37;
+  int PULL = 37;
   /** RegularExpression Id. */
-  int TYPE = 38;
+  int CHANNELS = 38;
   /** RegularExpression Id. */
-  int IMPORT = 39;
+  int ATTRIBUTES = 39;
   /** RegularExpression Id. */
-  int OBR = 40;
+  int COMPONENTS = 40;
   /** RegularExpression Id. */
-  int CBR = 41;
+  int COMPONENT = 41;
   /** RegularExpression Id. */
-  int QUOTED_VALUE = 42;
+  int BREEZE_PART = 42;
   /** RegularExpression Id. */
-  int VALUE = 43;
+  int TYPE = 43;
+  /** RegularExpression Id. */
+  int IMPORT = 44;
+  /** RegularExpression Id. */
+  int OBR = 45;
+  /** RegularExpression Id. */
+  int CBR = 46;
+  /** RegularExpression Id. */
+  int QUOTED_VALUE = 47;
+  /** RegularExpression Id. */
+  int VALUE = 48;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -119,10 +129,15 @@ public interface BreezeParserConstants {
     "\"arrayed-port\"",
     "\"arrayed-sync-port\"",
     "\"symbol\"",
+    "\"centre-string\"",
     "\"implementation\"",
     "\"string\"",
     "\"\\\"cardinal\\\"\"",
     "\"\\\"boolean\\\"\"",
+    "\"case\"",
+    "\"else\"",
+    "\"string-append\"",
+    "\"number->string\"",
     "\"sync\"",
     "\"push\"",
     "\"pull\"",

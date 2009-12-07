@@ -23,10 +23,7 @@ package org.workcraft.plugins.balsa;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
@@ -34,9 +31,7 @@ import java.util.Set;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 
 public class VisualHandshake extends VisualComponent {
 
@@ -74,7 +69,7 @@ public class VisualHandshake extends VisualComponent {
 			g.draw(new Line2D.Double(0.5, 0, 4, 0));*/
 	}
 
-	private void drawDataConnector(Graphics2D g, DataHandshake dataHandshake) {
+	/*private void drawDataConnector(Graphics2D g, DataHandshake dataHandshake) {
 		Stroke stroke = g.getStroke();
 
 		g.setStroke(new BasicStroke(0.05f));
@@ -112,7 +107,7 @@ public class VisualHandshake extends VisualComponent {
 		g.setStroke(stroke);
 
 		g.draw(new Line2D.Double(lineStartX, 0, lineEndX, 0));
-	}
+	}*/
 
 	public Handshake getHandshake() {
 		return handshake;
