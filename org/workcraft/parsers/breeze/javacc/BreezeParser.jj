@@ -72,10 +72,15 @@ TOKEN :
  	|<ARRAYED_PORT :  "arrayed-port" >
  	|<ARRAYED_SYNC_PORT :  "arrayed-sync-port" >
  	|<SYMBOL :  "symbol" >
+ 	|<CENTER_STRING :  "centre-string" >
 	|<IMPLEMENTATION :  "implementation" > 
 	|<TYPE_STRING : "string">	
 	|<TYPE_CARDINAL : "\"cardinal\"">
 	|<TYPE_BOOLEAN : "\"boolean\"">
+	|<CASE : "case">
+	|<ELSE : "else">
+	|<STRING_APPEND : "string-append">
+	|<NUMBER_TO_STRING : "number->string">
 	
 	|<SYNC : "sync">
 	|<PUSH : "push">
@@ -150,10 +155,15 @@ Token keyword() : {Token t;}
  	| t = <ARRAYED_PORT>
  	| t = <ARRAYED_SYNC_PORT>
  	| t = <SYMBOL>
+ 	| t = <CENTER_STRING>
 	| t = <IMPLEMENTATION> 
 	| t = <TYPE_STRING>	
 	| t = <TYPE_CARDINAL>
 	| t = <TYPE_BOOLEAN>
+	| t = <CASE>
+	| t = <ELSE>
+	| t = <STRING_APPEND>
+	| t = <NUMBER_TO_STRING>
 	
 	| t = <SYNC>
 	| t = <PUSH>
@@ -235,16 +245,20 @@ int cardinal() :
 
 Expression<Integer> constantCardinalExpression() :
 {
+	int result;
 }
 {
-	{ return new Constant<Integer>(cardinal()); }
+	result = cardinal()
+	{ return new Constant<Integer>(result); }
 }
 
 Expression<String> constantStringExpression() :
 {
+	String s;
 }
 {
- { return new Constant<String>(value()); }
+	s = value()
+ { return new Constant<String>(s); }
 }
 
 Expression<?> parameterizedExpression() :
@@ -256,6 +270,62 @@ Expression<?> parameterizedExpression() :
 		paramName = value()
 	<CBR>
 	{ return new ParameterReference<Object>(paramName); }
+}
+
+Expression<String> numberToStringExpression() :
+{ Expression<Integer> intExpression; }
+{
+	<OBR>
+		<NUMBER_TO_STRING>
+		intExpression = cardinalExpression()
+	<CBR>
+	{ return new ToStringExpression<Integer>(intExpression); }
+}
+
+Expression<String> stringAppendExpression() :
+{
+	Expression<String> str1;
+	Expression<String> str2;
+}
+{
+	<OBR>
+		<STRING_APPEND>
+		str1 = stringExpression()
+		str2 = stringExpression()
+	<CBR>
+	{ return new StringAppendExpression(str1, str2); }
+}
+
+Expression<String> stringCaseExpression() :
+{
+	Expression<String> condition;
+	Expression<String> value;
+	
+	Expression<String> toCheck;
+	List<Expression<String>> conditions = new ArrayList<Expression<String>>();
+	List<Expression<String>> values = new ArrayList<Expression<String>>();
+	Expression<String> elseValue;
+}
+{
+	<OBR>
+		<CASE>
+		toCheck = stringExpression()
+		
+		(
+			<OBR>
+				<OBR>
+					condition = stringExpression()
+				<CBR>
+				value = stringExpression()
+			<CBR>
+			{ conditions.add(condition); values.add(value); }
+		)*
+		<OBR>
+			<ELSE>
+			elseValue = stringExpression()
+		<CBR>
+	<CBR>
+	{ return new CaseExpression<String, String>(toCheck, conditions, values, elseValue); }
 }
 
 Expression<Integer> cardinalExpression() :
@@ -277,7 +347,10 @@ Expression<String> stringExpression() :
 {
 	(
 		result = parameterizedExpression() |
-		result = constantStringExpression()
+		result = constantStringExpression() |
+		result = stringCaseExpression() |
+		result = stringAppendExpression() |
+		result = numberToStringExpression()
 	)
 
 	{return (Expression<String>) result;}
@@ -390,16 +463,34 @@ List<PortDeclaration> ports() :
  	{return result;}
 }
 
+Expression<String> symbol() : { Expression<String> str1; Expression<String> str2 = null; }
+{
+	<OBR>
+		<SYMBOL>
+		<OBR>
+			<CENTER_STRING>
+			str1 = stringExpression()
+			(str2 = stringExpression())?
+		<CBR>
+	<CBR>
+	{
+		if(str2 == null)
+			return str1;
+		return new StringAppendExpression(str1, str2);
+	}
+}
+
 PrimitivePart primitivePart() :{
 	String name;
 	List<ParameterDeclaration> parameters;
-	String symbol = "^_^v";
+	Expression<String> symbol;
 	List<PortDeclaration> ports;
 }{
   <OBR> <PRIMITIVE_PART>
   	name = value()
   	parameters = parameters()
   	ports = ports()
+  	symbol = symbol()
   	listBody()
   <CBR>
   { return new PrimitivePart(name, parameters, ports, symbol); }
@@ -549,7 +640,6 @@ void typeDefinition() : {}
 
 void breezeDef(List<BreezePart> defs) : {BreezePart def;}
 {
-	
 	typeDefinition()
 	|
 	def = breezePart()

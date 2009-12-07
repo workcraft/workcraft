@@ -18,37 +18,28 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.parsers.breeze.javacc;
 
-package org.workcraft.plugins.balsa.components;
-
+import org.workcraft.parsers.breeze.Expression;
 import org.workcraft.parsers.breeze.ParameterScope;
-import org.workcraft.parsers.breeze.PrimitivePart;
 
-public class DynamicComponent extends Component {
-	private final PrimitivePart declaration;
-	private final ParameterScope parameters;
+public class StringAppendExpression implements Expression<String> {
 
-	public DynamicComponent(PrimitivePart declaration,
-			ParameterScope parameters) {
-				this.declaration = declaration;
-				this.parameters = parameters;
+	private final Expression<String> str1;
+	private final Expression<String> str2;
+
+	public StringAppendExpression(Expression<String> str1,
+			Expression<String> str2) {
+				this.str1 = str1;
+				this.str2 = str2;
 	}
 
-	public ParameterScope parameters()
-	{
-		return parameters;
+	@Override
+	public String evaluate(ParameterScope parameters) {
+		return str1.evaluate(parameters) + str2.evaluate(parameters);
 	}
 
-	public PrimitivePart declaration() {
-		return declaration;
-	}
-
-	@Override public String toString()
-	{
-		return declaration.toString();
-	}
-
-	public String getSymbol() {
-		return declaration.getSymbol().evaluate(parameters);
+	@Override public String toString() {
+		return str1.toString() + " + " + str2.toString();
 	}
 }

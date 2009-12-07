@@ -28,12 +28,12 @@ import org.workcraft.exceptions.NotSupportedException;
 public class PrimitivePart implements BreezeDefinition {
 	String name;
 	List<ParameterDeclaration> parameters;
-	String symbol;
+	Expression<String> symbol;
 	List<PortDeclaration> ports;
 
 
 	public PrimitivePart(String name, List<ParameterDeclaration> parameters,
-			List<PortDeclaration> ports, String symbol) {
+			List<PortDeclaration> ports, Expression<String> symbol) {
 		super();
 		this.name = name;
 		this.parameters = parameters;
@@ -95,7 +95,7 @@ public class PrimitivePart implements BreezeDefinition {
 		throw new NotSupportedException();
 	}
 
-	public String getSymbol() {
+	public Expression<String> getSymbol() {
 		return symbol;
 	}
 }
