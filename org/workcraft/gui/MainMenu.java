@@ -394,7 +394,7 @@ public class MainMenu extends JMenuBar {
 			for (PluginInfo info : exportPluginInfo) {
 				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
 
-				if (exporter.isApplicableTo(model)) {
+				if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
 					if (!haveVisual)
 						addExportSeparator("Visual");
 					addExporter(exporter);
@@ -413,7 +413,7 @@ public class MainMenu extends JMenuBar {
 			for (PluginInfo info : exportPluginInfo) {
 				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
 
-				if (exporter.isApplicableTo(model.getMathModel())) {
+				if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
 					if (!haveNonVisual)
 						addExportSeparator("Non-visual");
 					addExporter(exporter);

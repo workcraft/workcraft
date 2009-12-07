@@ -33,6 +33,7 @@ import org.workcraft.plugins.balsa.handshakebuilder.Sync;
 import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
 import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.FullDataPullStg;
+import org.workcraft.plugins.balsa.handshakeevents.FullDataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
@@ -151,20 +152,18 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 
 		@Override
 		public FullDataPullStg create(FullDataPull handshake) {
-			//The encoding must be always one-hot (we are trying to preserve a DI protocol)
+			//The encoding is one-hot (we are trying to preserve a DI protocol)
 
 			final ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
 
-			int wireCount = 1 << handshake.getWidth();
+			int wireCount = handshake.getValuesCount();
 			List<PassiveSignal> dataWires = new ArrayList<PassiveSignal>();
 			final List<PassiveEvent> result = new ArrayList<PassiveEvent>();
-
 
 			for(int i=0;i<wireCount;i++)
 			{
 				PassiveSignal signal = builder.buildPassiveSignal(new SignalId(handshake, "data"+i));
 				dataWires.add(signal);
-				result.add(signal.getPlus());
 			}
 
 			ActiveState ready = builder.buildActivePlace(1);
@@ -187,17 +186,20 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 			{
 				PassiveDummy produceResult = builder.buildPassiveTransition();
 				builder.connect(resultChoice, produceResult);
-				builder.connect(produceResult, result.get(i));
-				builder.connect(result.get(i), resultSent);
+				PassiveEvent setTransition = dataWires.get(i).getPlus();
+				builder.connect(produceResult, setTransition);
+				builder.connect(setTransition, resultSent);
 
 				PassiveState resultHigh = builder.buildPassivePlace(0);
 				builder.connect(produceResult, resultHigh);
 
-				PassiveSignalTransition resetTransition = dataWires.get(i).getMinus();
+				PassiveEvent resetTransition = dataWires.get(i).getMinus();
 				builder.connect(releaseSent, resetTransition);
 				builder.connect(resultHigh, resetTransition);
 
 				builder.connect(resetTransition, ready);
+
+				result.add(builder.get(produceResult, setTransition));
 			}
 
 			return new FullDataPullStg()
@@ -212,8 +214,65 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 		}
 
 		@Override
-		public FullDataPullStg create(FullDataPush handshake) {
-			throw new RuntimeException("Not supported");
+		public FullDataPushStg create(FullDataPush handshake) {
+			//The encoding is one-hot (we are trying to preserve a DI protocol)
+
+			final PassiveSignal ac = builder.buildPassiveSignal(new SignalId(handshake, "ac"));
+
+			int wireCount = handshake.getValuesCount();
+			List<ActiveSignal> dataWires = new ArrayList<ActiveSignal>();
+			final List<ActiveEvent> result = new ArrayList<ActiveEvent>();
+
+			for(int i=0;i<wireCount;i++)
+			{
+				ActiveSignal signal = builder.buildActiveSignal(new SignalId(handshake, "data"+i));
+				dataWires.add(signal);
+			}
+
+			PassiveState ready = builder.buildPassivePlace(0);
+			PassiveState resultSent = builder.buildPassivePlace(0);
+			ActiveState releaseSent = builder.buildActivePlace(0);
+
+			final PassiveEvent go = ac.getMinus();
+
+			final PassiveEvent release = ac.getPlus();
+
+			ActiveState resultChoice = builder.buildActivePlace(1);
+
+			builder.connect(ready, go);
+			builder.connect(go, resultChoice);
+			builder.connect(resultSent, release);
+			builder.connect(release, releaseSent);
+
+			for(int i=0;i<wireCount;i++)
+			{
+				ActiveDummy produceResult = builder.buildActiveTransition();
+				builder.connect(resultChoice, produceResult);
+				ActiveEvent setTransition = dataWires.get(i).getPlus();
+				builder.connect(produceResult, setTransition);
+				builder.connect(setTransition, resultSent);
+
+				ActiveState resultHigh = builder.buildActivePlace(0);
+				builder.connect(produceResult, resultHigh);
+
+				ActiveEvent resetTransition = dataWires.get(i).getMinus();
+				builder.connect(releaseSent, resetTransition);
+				builder.connect(resultHigh, resetTransition);
+
+				builder.connect(resetTransition, ready);
+
+				result.add(builder.get(produceResult, setTransition));
+			}
+
+			return new FullDataPushStg()
+			{
+				@Override public List<ActiveEvent> data() {
+					return result;
+				}
+				@Override public PassiveEvent done() {
+					return builder.get(release, go);
+				}
+			};
 		}
 	}
 

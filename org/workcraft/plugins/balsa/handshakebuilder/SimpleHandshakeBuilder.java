@@ -89,10 +89,10 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 		};
 	}
 
-	@Override public FullDataPush CreateActiveFullDataPush(int width) { return createFullDataPush(width, true); }
-	@Override public FullDataPush CreatePassiveFullDataPush(int width) { return createFullDataPush(width, false); }
+	@Override public FullDataPush CreateActiveFullDataPush(int valuesCount) { return createFullDataPush(valuesCount, true); }
+	@Override public FullDataPush CreatePassiveFullDataPush(int valuesCount) { return createFullDataPush(valuesCount, false); }
 
-	private FullDataPush createFullDataPush(final int width, final boolean active) {
+	private FullDataPush createFullDataPush(final int valuesCount, final boolean active) {
 		return new FullDataPush()
 		{
 			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
@@ -103,16 +103,16 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 				return active;
 			}
 
-			@Override public int getWidth() {
-				return width;
+			@Override public int getValuesCount() {
+				return valuesCount;
 			}
 		};
 	}
 
-	@Override public FullDataPull CreateActiveFullDataPull(int width) { return createFullDataPull(width, true); }
-	@Override public FullDataPull CreatePassiveFullDataPull(int width) { return createFullDataPull(width, false); }
+	@Override public FullDataPull CreateActiveFullDataPull(int valuesCount) { return createFullDataPull(valuesCount, true); }
+	@Override public FullDataPull CreatePassiveFullDataPull(int valuesCount) { return createFullDataPull(valuesCount, false); }
 
-	private FullDataPull createFullDataPull(final int width, final boolean active) {
+	private FullDataPull createFullDataPull(final int valuesCount, final boolean active) {
 		return new FullDataPull()
 		{
 			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
@@ -123,8 +123,8 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 				return active;
 			}
 
-			@Override public int getWidth() {
-				return width;
+			@Override public int getValuesCount() {
+				return valuesCount;
 			}
 		};
 	}

@@ -21,7 +21,11 @@
 
 package org.workcraft;
 
+import org.workcraft.exceptions.PluginInstantiationException;
+
 
 public interface PluginProvider {
 	public PluginInfo[] getPluginsImplementing(String interfaceName);
+	public Object getInstance (PluginInfo plugin) throws PluginInstantiationException;
+	public Object getSingleton (PluginInfo plugin) throws PluginInstantiationException;
 }

@@ -35,26 +35,30 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.balsa.components.Component;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.layouts.MainLayouter;
 import org.workcraft.util.Hierarchy;
 
-public class VisualBreezeComponent extends VisualTransformableNode implements Drawable
+public class VisualBreezeComponent extends VisualComponent implements Drawable
 {
 	HandshakeComponentLayout layout;
 	Map<String, VisualHandshake> visualHandshakes;
@@ -86,6 +90,7 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	}
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
+		System.out.println("Creating VisualBreezeComponent...");
 		this.refComponent = refComponent;
 		init();
 	}
@@ -108,6 +113,10 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 	@Override
 	public Collection<Node> getChildren() {
 		return Collections.<Node>unmodifiableCollection(visualHandshakes.values());
+	}
+
+	public Collection<VisualHandshake> getHandshakes() {
+		return Collections.<VisualHandshake>unmodifiableCollection(visualHandshakes.values());
 	}
 
 	public VisualHandshake getHandshake(String name) {
@@ -204,8 +213,11 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 		drawCircle(g, 0, 0, componentRadius);
 
 		Font font = g.getFont();
-		font = font.deriveFont(0.1f);
-		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), balsaComponent.getClass().getSimpleName());
+		font = font.deriveFont(0.2f);
+		String symbol = balsaComponent.getClass().getSimpleName();
+		if (balsaComponent instanceof DynamicComponent)
+			symbol = ((DynamicComponent)balsaComponent).declaration().getSymbol();
+		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), symbol);
 		Rectangle2D bounds = vec.getVisualBounds();
 		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
 	}
@@ -324,5 +336,12 @@ public class VisualBreezeComponent extends VisualTransformableNode implements Dr
 
 	public BreezeComponent getRefComponent() {
 		return refComponent;
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		List<MathNode> result = new ArrayList<MathNode>();
+		result.add(getReferencedComponent());
+		return result;
 	}
 }

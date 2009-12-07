@@ -131,6 +131,15 @@ public class VisualConnection extends VisualNode implements
 	}
 
 	public void setVisualConnectionDependencies(VisualComponent first, VisualComponent second, ConnectionGraphic graphic, MathConnection refConnection) {
+		if(first == null)
+			throw new NullPointerException("first");
+		if(second == null)
+			throw new NullPointerException("second");
+		if(graphic == null)
+			throw new NullPointerException("graphic");
+		if(refConnection == null)
+			throw new NullPointerException("refConnection");
+
 		this.first = first;
 		this.second = second;
 		this.refConnection = refConnection;

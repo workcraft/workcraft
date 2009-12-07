@@ -22,6 +22,7 @@
 package org.workcraft.plugins.balsa.handshakes;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.components.Component;
@@ -35,7 +36,7 @@ public abstract class HandshakeMaker<T> {
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Handshake> getComponentHandshakes(Component component) {
-		HashMap<String, Handshake> map = new HashMap<String, Handshake>();
+		HashMap<String, Handshake> map = new LinkedHashMap<String, Handshake>();
 		fillHandshakes((T)component, map);
 		return map;
 	}

@@ -19,13 +19,14 @@
 *
 */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.plugins.balsa.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
@@ -34,13 +35,17 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.DummyContractionMode;
+import org.workcraft.plugins.interop.CSCResolver;
+import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 public class BalsaToGatesExporter implements Exporter {
-	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
 
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
@@ -54,7 +59,7 @@ public class BalsaToGatesExporter implements Exporter {
 
 			File synthesised = File.createTempFile("result", ".eqn");
 
-			synthesiseStg(original, synthesised, false);
+			synthesiseStg(original, synthesised, BalsaExportConfig.DEFAULT);
 
 			FileUtils.copyFileToStream(synthesised, out);
 		}
@@ -65,21 +70,45 @@ public class BalsaToGatesExporter implements Exporter {
 		File eqn = File.createTempFile("result", ".eqn");
 		Export.exportToFile(new DotGExporter(), model, dotG);
 
-		synthesiseStg(dotG, eqn, true);
+		synthesiseStg(dotG, eqn, BalsaExportConfig.DEFAULT);
 
 		FileUtils.copyFileToStream(eqn, out);
 	}
 
-	public static void synthesiseStg(File original, File synthesised, boolean withMpsat)
+	public static void synthesiseStg(File original, File synthesised, BalsaExportConfig config)
 			throws IOException {
-		File tempDir = createTempDirectory();
 
-		//File renamed = new File(tempDir, "renamed.g");
-		File renamed2 = new File(tempDir, "renamed2.g");
+		File implicitRemoved = File.createTempFile("remImplicit", ".g");
 
+		removeImplicitPlaces(original, implicitRemoved);
 
-		//DummyRenamer.rename(original, renamed);
+		FileUtils.copyFile(implicitRemoved, new File(original.getAbsolutePath()+".explicit.g"));//DEBUG
 
+		File afterContraction;
+		File contracted = null;
+
+		if(config.dummyContractionMode() == DummyContractionMode.NONE)
+			afterContraction = implicitRemoved;
+		else
+		{
+			afterContraction = contracted = File.createTempFile("contracted", ".g");
+			switch(config.dummyContractionMode())
+			{
+			case PETRIFY:
+				contractDummies(implicitRemoved, contracted);
+			case DESIJ:
+				contractDummiesDesiJ(implicitRemoved, contracted);
+			default:
+				throw new RuntimeException("Unsupported contraction");
+
+			}
+		}
+
+		synthesise(afterContraction, synthesised, config);
+	}
+
+	private static void removeImplicitPlaces(File original, File renamed2)
+			throws IOException {
 		try {
 			Model stg = Import.importFromFile(new DotGImporter(), original);
 			Export.exportToFile(new DotGExporter(), stg, renamed2);
@@ -90,29 +119,30 @@ public class BalsaToGatesExporter implements Exporter {
 		} catch (DeserialisationException e) {
 			throw new RuntimeException(e);
 		}
+	}
 
-		//FileUtils.copyFile(renamed, new File(original.getAbsolutePath()+".ren"));
-		FileUtils.copyFile(renamed2, new File(original.getAbsolutePath()+".ren2"));
-
-		if(withMpsat)
+	private static void synthesise(File original, File synthesised, BalsaExportConfig config) throws IOException {
+		switch(config.synthesisTool())
 		{
-			File contracted = new File(tempDir, "contracted.g");
-
-			contractDummies(renamed2, contracted);
+		case MPSAT:
+		{
+			File tempDir = FileUtils.createTempDirectory("stgSynthesis");
 
 			File unfolding = new File(tempDir, "composition.mci");
 
-			makeUnfolding(contracted, unfolding);
+			makeUnfolding(original, unfolding);
 
 			File csc_resolved_mci = new File(tempDir, "resolved.mci");
 
-			resolveConflicts(unfolding, csc_resolved_mci);
+			CSCResolver.resolveConflicts(unfolding, csc_resolved_mci, null);
 
 			mpsatMakeEqn(csc_resolved_mci, synthesised);
+			break;
 		}
-		else
-		{
-			petrifyMakeEqn(renamed2, synthesised);
+		case PETRIFY:
+			petrifyMakeEqn(original, synthesised);
+			break;
+			default:
 		}
 	}
 
@@ -137,8 +167,14 @@ public class BalsaToGatesExporter implements Exporter {
 		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
 	}
 
-	private static void contractDummies(File original, File contracted) throws IOException {
 
+	private static void contractDummiesDesiJ(File original, File contracted) throws IOException
+	{
+		throw new RuntimeException("Not implemented");
+	}
+
+	private static void contractDummies(File original, File contracted) throws IOException
+	{
 		SynchronousExternalProcess process = new SynchronousExternalProcess(
 				new String[]{
 						PetriNetToolsSettings.getPetrifyCommand(),
@@ -155,6 +191,8 @@ public class BalsaToGatesExporter implements Exporter {
 
 		System.out.println("Petrify Dummy contraction errors: ");
 		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
+		if(process.getReturnCode() != 0)
+			throw new RuntimeException("Dummy contraction failed! " + process.getErrorData().toString());
 	}
 
 	private static void mpsatMakeEqn(File cscResolvedMci, File synthesised) throws IOException
@@ -174,44 +212,11 @@ public class BalsaToGatesExporter implements Exporter {
 
 		System.out.println("MPSAT complex gate synthesis errors: ");
 		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
-	}
-
-	private static void resolveConflicts(File unfolding, File cscResolvedMci) throws IOException {
-		File resolutionDir = createTempDirectory();
-
-		String[] split = mpsatArgsFormat.split(" ");
-		String[] args = new String[split.length + 2];
-		args[0] = PetriNetToolsSettings.getMpsatCommand();
-		for(int i=0;i<split.length;i++)
-			args[i+1] = split[i];
-		args[split.length+1] = unfolding.getAbsolutePath();
-
-		SynchronousExternalProcess process = new SynchronousExternalProcess(args, resolutionDir.getAbsolutePath());
-
-		process.start(300000);
-		System.out.println("MPSAT CSC resolution output: ");
-		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
-		System.out.println("MPSAT CSC resolution errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
-
 		if(process.getReturnCode() != 0)
-			throw new RuntimeException("MPSAT SCS resolution failed: " + new String(process.getErrorData()));
-
-		FileUtils.copyFile(new File(resolutionDir, "mpsat.mci"), cscResolvedMci);
-
-		deleteDirectory(resolutionDir);
+			throw new RuntimeException("MPSAT complex gate synthesis failed! " + process.getErrorData().toString());
 	}
 
-	private static void deleteDirectory(File dir) {
-		File [] files = dir.listFiles();
-		if(files != null)
-			for(File file : files)
-				deleteDirectory(file);
-
-		dir.delete();
-	}
-
-	private static void makeUnfolding(File original, File unfolding) throws IOException {
+	public static void makeUnfolding(File original, File unfolding) throws IOException {
 
 		SynchronousExternalProcess process =
 			new SynchronousExternalProcess(
@@ -243,19 +248,6 @@ public class BalsaToGatesExporter implements Exporter {
 		}
 	}
 
-	private static File createTempDirectory() {
-		File tempDir;
-		try {
-			tempDir = File.createTempFile("balsaExport", "");
-		} catch (IOException e) {
-			throw new RuntimeException("can't create a temp file");
-		}
-		tempDir.delete();
-		if(!tempDir.mkdir())
-			throw new RuntimeException("can't create a temp directory");
-		return tempDir;
-	}
-
 	public String getDescription() {
 		return "To Gates";
 	}
@@ -264,8 +256,15 @@ public class BalsaToGatesExporter implements Exporter {
 		return ".eqn";
 	}
 
-	public boolean isApplicableTo(Model model) {
-		return model instanceof BalsaCircuit || model instanceof STG;
+	public int getCompatibility(Model model) {
+		if (model instanceof BalsaCircuit || model instanceof STG)
+			return Exporter.BEST_COMPATIBILITY;
+		else
+			return Exporter.NOT_COMPATIBLE;
 	}
 
+	@Override
+	public UUID getTargetFormat() {
+		return Format.EQN;
+	}
 }

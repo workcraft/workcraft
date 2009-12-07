@@ -29,6 +29,7 @@ import org.workcraft.plugins.balsa.handshakebuilder.Sync;
 import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
 import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.FullDataPullStg;
+import org.workcraft.plugins.balsa.handshakeevents.FullDataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
@@ -173,7 +174,7 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 		}
 
 		@Override
-		public FullDataPullStg create(FullDataPush handshake) {
+		public FullDataPushStg create(FullDataPush handshake) {
 			throw new RuntimeException("Not implemented!");// TODO Implement
 		}
 	}

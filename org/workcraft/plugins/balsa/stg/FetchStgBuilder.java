@@ -49,7 +49,7 @@ public class FetchStgBuilder extends
 		//After it does, activate output
 		builder.connect(in.done(), out.go());
 		//After out acknowledges, RTZ input and acknowledge back
-		builder.connect(out.done(), in.dataRelease());
+		builder.connect(out.dataRelease(), in.dataRelease());
 		builder.connect(out.done(), activate.done());
 	}
 }

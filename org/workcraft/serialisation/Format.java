@@ -28,4 +28,6 @@ public class Format {
 	public static final UUID SVG = UUID.fromString("99439c3c-753b-46e3-a5d5-6a0993305a2c");
 	public static final UUID workcraftXML = UUID.fromString("6ea20f69-c9c4-4888-9124-252fe4345309");
 	public static final UUID defaultVisualXML = UUID.fromString("2fa9669c-a1bf-4be4-8622-007635d672e5");
+	public static final UUID DOT = UUID.fromString("f1596b60-e294-11de-8a39-0800200c9a66");
+	public static final UUID EQN = UUID.fromString("58b3c8d0-e297-11de-8a39-0800200c9a66");
 }

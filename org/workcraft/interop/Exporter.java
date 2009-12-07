@@ -22,6 +22,7 @@
 package org.workcraft.interop;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
@@ -29,8 +30,13 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 
 public interface Exporter extends Plugin {
+	public static final int NOT_COMPATIBLE = 0;
+	public static final int GENERAL_COMPATIBILITY = 1;
+	public static final int BEST_COMPATIBILITY = 10;
+
 	public String getDescription();
 	public String getExtenstion();
-	public boolean isApplicableTo (Model model);
+	public UUID getTargetFormat();
+	public int getCompatibility(Model model);
 	public void export (Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
 }

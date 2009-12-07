@@ -29,8 +29,8 @@ public interface HandshakeBuilder
 	public PullHandshake CreateActivePull(int width);
 	public PushHandshake CreatePassivePush(int width);
 	public PushHandshake CreateActivePush(int width);
-	public FullDataPull CreateActiveFullDataPull(int width);
-	public FullDataPull CreatePassiveFullDataPull(int width);
-	public FullDataPush CreateActiveFullDataPush(int width);
-	public FullDataPush CreatePassiveFullDataPush(int width);
+	public FullDataPull CreateActiveFullDataPull(int valuesCount);
+	public FullDataPull CreatePassiveFullDataPull(int valuesCount);
+	public FullDataPush CreateActiveFullDataPush(int valuesCount);
+	public FullDataPush CreatePassiveFullDataPush(int valuesCount);
 }

@@ -19,21 +19,15 @@
 *
 */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.parsers.breeze;
 
-import java.util.UUID;
+import java.util.HashMap;
 
-import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.balsa.protocols.TwoPhaseProtocol;
-import org.workcraft.serialisation.Format;
+public class MapParameterScope extends HashMap<String,Object> implements ParameterScope {
+	private static final long serialVersionUID = -270289013154673251L;
 
-public class BalsaToStgExporter_TwoPhase extends BalsaToStgExporter implements Exporter {
-	public BalsaToStgExporter_TwoPhase()
-	{
-		super(new TwoPhaseProtocol(), "two-phase");
-	}
-
-	public UUID getFormatUUID() {
-		return Format.STG;
+	@Override
+	public Object get(String key) {
+		return super.get(key);
 	}
 }

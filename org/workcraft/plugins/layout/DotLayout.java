@@ -21,64 +21,45 @@
 
 package org.workcraft.plugins.layout;
 
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.workcraft.PluginConsumer;
+import org.workcraft.PluginProvider;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.LayoutFailedException;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.layout.Layout;
+import org.workcraft.serialisation.Format;
+import org.workcraft.util.Export;
 
 @DisplayName ("Dot")
-public class DotLayout implements Layout {
+public class DotLayout implements Layout, PluginConsumer {
+	PluginProvider pluginProvider;
+	File tmp1 = null, tmp2 = null;
 
-	private void saveGraph(VisualModel model) throws IOException {
-		PrintStream out = new PrintStream(new File(DotLayoutSettings.tmpGraphFilePath));
-		out.println("digraph work {");
-		out.println("graph [nodesep=\"2.0\"];");
-		out.println("node [shape=box];");
-
-
-		for (Node n : model.getRoot().getChildren()) {
-			if (n instanceof VisualComponent) {
-				VisualComponent comp = (VisualComponent) n;
-				Integer id = model.getNodeID(comp);
-				if(id!=null) {
-					Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
-					if(bb!=null) {
-						double width = bb.getWidth();
-						double height = bb.getHeight();
-						out.println("\""+id+"\" [width=\""+width+"\", height=\""+height+"\"];");
-					}
-
-					Set<Node> postset = model.getPostset(comp);
-
-					for(Node target : postset) {
-						Integer targetId = model.getNodeID(target);
-						if(targetId!=null) {
-							out.println("\""+id+"\" -> \""+targetId+"\";");
-						}
-					}
-				}
-			}
-		}
-		out.println("}");
+	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
+		Exporter exporter = Export.chooseBestExporter(pluginProvider, model, Format.DOT);
+		if (exporter == null)
+			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
+		FileOutputStream out = new FileOutputStream(file);
+		exporter.export(model, out);
 		out.close();
 	}
 
-	private static String fileToString(String path) throws IOException {
-		FileInputStream f = new FileInputStream(path);
+	private static String fileToString(File file) throws IOException {
+		FileInputStream f = new FileInputStream(file);
 		byte[] buf = new byte[f.available()];
 		f.read(buf);
 		return new String(buf);
@@ -104,32 +85,49 @@ public class DotLayout implements Layout {
 	}
 
 	private void cleanUp() {
-		(new File(DotLayoutSettings.tmpGraphFilePath)).delete();
+		if (tmp1 != null) {
+			tmp1.delete();
+			tmp1 = null;
+		}
+		if (tmp2 != null) {
+			tmp2.delete();
+			tmp2 = null;
+		}
 	}
 
 	public void doLayout(VisualModel model) throws LayoutFailedException {
 		try {
-			saveGraph(model);
+			tmp1 = File.createTempFile("work", ".dot");
+			tmp2 = File.createTempFile("worklayout", ".dot");
+
+			saveGraph(model, tmp1);
 			SynchronousExternalProcess p = new SynchronousExternalProcess(
-					new String[] {DotLayoutSettings.dotCommand, "-Tdot", "-O", DotLayoutSettings.tmpGraphFilePath}, ".");
+					new String[] {DotLayoutSettings.dotCommand, "-Tdot", "-o", tmp2.getAbsolutePath(), tmp1.getAbsolutePath()}, ".");
 			p.start(10000);
 			if(p.getReturnCode()==0) {
-				String in = fileToString(DotLayoutSettings.tmpGraphFilePath+".dot");
+				String in = fileToString(tmp2);
 				applyLayout(in, model);
-				cleanUp();
 			}
-			else {
-				cleanUp();
+			else
 				throw new LayoutFailedException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
-			}
 		} catch(IOException e) {
-			cleanUp();
 			throw new LayoutFailedException(e);
+		} catch (ModelValidationException e) {
+			throw new LayoutFailedException(e);
+		} catch (SerialisationException e) {
+			throw new LayoutFailedException(e);
+		} finally {
+			cleanUp();
 		}
 	}
 
 	public boolean isApplicableTo(VisualModel model) {
 		return true;
+	}
+
+	@Override
+	public void processPlugins(PluginProvider pluginManager) {
+		this.pluginProvider = pluginManager;
 	}
 
 

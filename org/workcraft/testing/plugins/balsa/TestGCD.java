@@ -66,8 +66,9 @@ import org.workcraft.plugins.balsa.components.Fetch;
 import org.workcraft.plugins.balsa.components.SequenceOptimised;
 import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
-import org.workcraft.plugins.interop.BalsaToGatesExporter;
-import org.workcraft.plugins.interop.BalsaToStgExporter_FourPhase;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
+import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
@@ -297,24 +298,32 @@ public class TestGCD {
 	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
 	{
 		init();
-		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, whilE})));
+
+		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchBmA, casE})));
+
+		//synthesize(new Chunk(getAllComponents()));
+
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{bfNotEquals})));
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{bfNotEquals, whilE})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{bfNotEquals, whilE})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
-		System.out.println("----- seq:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq})));
-		System.out.println("----- concur:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{concur})));
-		System.out.println("----- fetchA:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA})));
-		System.out.println("----- fetchB:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchB})));
-		System.out.println("----- whilE:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
-		System.out.println("----- seq+whilE:  ");
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, whilE})));
-		//System.out.println("----- concur+fetches:  ");
+//		System.out.println("----- seq:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq})));
+//		System.out.println("----- concur:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{concur})));
+//		System.out.println("----- fetchA:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA})));
+//		System.out.println("----- fetchB:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchB})));
+//		System.out.println("----- whilE:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{whilE})));
+//		System.out.println("----- seq+whilE:  ");
+//		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, whilE})));
+//		//System.out.println("----- concur+fetches:  ");
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{concur, fetchA, fetchB})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, concur, fetchA, fetchB, whilE})));
 	}
@@ -338,8 +347,6 @@ public class TestGCD {
 			System.out.println(getChunkName(ch) + "\t"+costs.get(ch));
 
 		System.out.println("");
-
-
 	}
 
 	BreezeComponent seq;
@@ -382,7 +389,7 @@ public class TestGCD {
 		bfNotEquals = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.NOT_EQUALS); } });
 		bfAmB = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
 		bfBmA = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
-		bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.GREATER_THAN); } });
+		bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.SUBTRACT); } }); // Should be GREATER_THAN. Used SUBTRACT to make it transfer data on the data-path.
 		whilE = addComponent(new While());
 		casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
 
@@ -425,6 +432,7 @@ public class TestGCD {
 		connect(whilE, "guard", bfNotEquals, "out");
 		connect(whilE, "activateOut", fetchGT, "activate");
 
+		connect(bfGreater, "out", fetchGT, "inp");
 		connect(fetchGT, "out", casE, "inp");
 		connect(casE, "activateOut0", fetchBmA, "activate");
 		connect(casE, "activateOut1", fetchAmB, "activate");
@@ -645,22 +653,22 @@ public class TestGCD {
 		}
 	}
 
-	private void exportPartial(final BreezeComponent[] components, File stgFile, File eqnFile){
-
+	private void exportPartial(final BreezeComponent[] components, File stgFile, File eqnFile)
+	{
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
+			{
+				@Override protected Iterable<BreezeComponent> getComponentsToSave(BalsaCircuit balsa) {
+					return Arrays.asList(components);
+				}
+			};
+
+		try
 		{
-		@Override
-			protected Iterable<BreezeComponent> getComponentsToSave(
-					BalsaCircuit balsa) {
-				return Arrays.asList(components);
-			}
-		};
-		try {
 			Export.exportToFile(exporter, circuit, stgFile);
 
 			try
 			{
-				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, true);
+				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, BalsaExportConfig.DEFAULT);
 			}
 			catch(RuntimeException e)
 			{

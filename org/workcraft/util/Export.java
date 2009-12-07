@@ -24,13 +24,44 @@ package org.workcraft.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
+
+import org.workcraft.PluginInfo;
+import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 
 public class Export {
+	static public Exporter chooseBestExporter (PluginProvider provider, Model model, UUID targetFormat) {
+		PluginInfo[] plugins = provider.getPluginsImplementing(Exporter.class.getName());
+
+		Exporter best = null;
+		int bestCompatibility = Exporter.NOT_COMPATIBLE;
+
+		for (PluginInfo info : plugins) {
+			Exporter exporter;
+			try {
+				exporter = (Exporter)provider.getSingleton(info);
+			} catch (PluginInstantiationException e) {
+				throw new RuntimeException (e);
+			}
+
+			if (exporter.getTargetFormat().equals(targetFormat)) {
+				int compatibility = exporter.getCompatibility(model);
+				if (compatibility > bestCompatibility) {
+					bestCompatibility = compatibility;
+					best = exporter;
+				}
+			}
+		}
+
+		return best;
+	}
+
 	static public void exportToFile (Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
@@ -40,9 +71,9 @@ public class Export {
 		try
 		{
 			if (model instanceof VisualModel)
-				if (!exporter.isApplicableTo(model))
-					if (!exporter.isApplicableTo(((VisualModel)model).getMathModel()))
-							throw new RuntimeException ("Exporter is not applicable to model.");
+				if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
+					if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
+							throw new RuntimeException ("Exporter is not applicable to the model.");
 					else
 						model = ((VisualModel)model).getMathModel();
 			exporter.export(model, fos);

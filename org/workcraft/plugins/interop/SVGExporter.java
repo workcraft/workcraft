@@ -80,15 +80,15 @@ public class SVGExporter implements Exporter {
 		return ".svg";
 	}
 
-	public boolean isApplicableTo(Model model) {
+	public int getCompatibility(Model model) {
 		if (model instanceof VisualModel)
-			return true;
+			return Exporter.GENERAL_COMPATIBILITY;
 		else
-			return false;
+			return Exporter.NOT_COMPATIBLE;
 	}
 
-
-	public UUID getFormatUUID() {
-		return Format.STG;
+	@Override
+	public UUID getTargetFormat() {
+		return Format.SVG;
 	}
 }

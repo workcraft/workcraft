@@ -29,13 +29,13 @@ import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public abstract class ComponentStgBuilder <T> {
 	@SuppressWarnings("unchecked")
-	public void buildComponentStg(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	public final void buildComponentStg(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
 	{
 		buildStg((T)component, handshakes, builder);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void buildEnvironmentConstraint(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	public final void buildEnvironmentConstraint(Component component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
 	{
 		buildEnvironment((T)component, handshakes, builder);
 	}

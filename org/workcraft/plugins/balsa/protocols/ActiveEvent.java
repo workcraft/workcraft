@@ -20,7 +20,6 @@
 */
 package org.workcraft.plugins.balsa.protocols;
 
-import org.workcraft.plugins.balsa.stgbuilder.Event;
 
-public interface ActiveEvent extends Event, ActiveOut, PassiveIn {
+public interface ActiveEvent extends ActiveOut, PassiveIn {
 }

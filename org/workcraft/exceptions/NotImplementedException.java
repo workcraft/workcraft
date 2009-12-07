@@ -18,8 +18,17 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.plugins.balsa.protocols;
 
-public interface ActiveSignalTransition extends ActiveEvent {
+package org.workcraft.exceptions;
+
+@Deprecated // To warn users that they should implement the feature
+public class NotImplementedException extends RuntimeException {
+
+	public NotImplementedException()
+	{
+		super("The feature is not implemented yet");
+	}
+
+	private static final long serialVersionUID = -6828334836877473788L;
 
 }

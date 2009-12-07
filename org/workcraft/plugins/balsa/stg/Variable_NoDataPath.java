@@ -27,8 +27,10 @@ import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakebuilder.SimpleHandshakeBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class Variable_NoDataPath extends
@@ -39,7 +41,15 @@ public class Variable_NoDataPath extends
 	}
 
 	public void buildStg(Variable component, Map<String, StgInterface> handshakes, StgInterface dpHandshake, StrictPetriBuilder builder) {
-		// No action for reading needed, so we do nothing for read handshakes
+		// No action for reading needed, so we just acknowledge back
+		for(int i=0;i<component.getReadPortCount();i++)
+		{
+			PassivePullStg read = (PassivePullStg) handshakes.get("read"+i);
+			builder.connect(read.go(), read.done());
+			StgPlace dataReleased = builder.buildPlace(1);
+			builder.connect(read.dataRelease(), dataReleased);
+			builder.connect(dataReleased, read.done());
+		}
 
 		PassivePushStg write = (PassivePushStg)handshakes.get("write");
 		ActiveSync latch = (ActiveSync)dpHandshake;

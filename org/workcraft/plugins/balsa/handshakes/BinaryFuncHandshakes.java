@@ -37,12 +37,16 @@ public class BinaryFuncHandshakes extends HandshakeMaker<BinaryFunc> {
 		handshakes.put("inpA", builder.CreateActivePull(component.getInputAWidth()));
 		handshakes.put("inpB", builder.CreateActivePull(component.getInputAWidth()));
 		if(comparison)
-			handshakes.put("out", builder.CreatePassiveFullDataPull(component.getOutputWidth()));
+			handshakes.put("out", builder.CreatePassiveFullDataPull(2));
 		else
 			handshakes.put("out", builder.CreatePassivePull(component.getOutputWidth()));
 	}
 
-	private static boolean isComparison(BinaryOperator op) {
+	public static boolean isComparison(BinaryFunc component) {
+		return isComparison(component.getOp());
+	}
+
+	public static boolean isComparison(BinaryOperator op) {
 		return
 		op == BinaryOperator.EQUALS ||
 		op == BinaryOperator.NOT_EQUALS ||

@@ -30,7 +30,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public abstract class DataPathComponentStgBuilder <T> extends ComponentStgBuilder<T> {
-	public void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	public final void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
 	{
 		Map<String, StgInterface> newMap = new HashMap<String, StgInterface>(handshakes);
 		StgInterface dp = newMap.get("dp");
@@ -41,7 +41,7 @@ public abstract class DataPathComponentStgBuilder <T> extends ComponentStgBuilde
 	public abstract void buildStg(T component, Map<String, StgInterface> handshakes, StgInterface dpHandshake, StrictPetriBuilder builder);
 
 	@SuppressWarnings("unchecked")
-	public Handshake getDataPathHandshake(Component component)
+	public final Handshake getDataPathHandshake(Component component)
 	{
 		return getDataPathHandshake((T)component);
 	}

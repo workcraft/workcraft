@@ -21,9 +21,9 @@
 
 package org.workcraft.plugins.balsa.stgbuilder;
 
-import org.workcraft.plugins.balsa.protocols.ActiveSignalTransition;
+import org.workcraft.plugins.balsa.protocols.ActiveEvent;
 
 public interface ActiveSignal {
-	public ActiveSignalTransition getPlus();
-	public ActiveSignalTransition getMinus();
+	public ActiveEvent getPlus();
+	public ActiveEvent getMinus();
 }

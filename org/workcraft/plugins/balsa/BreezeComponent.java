@@ -23,10 +23,12 @@ package org.workcraft.plugins.balsa;
 
 import java.util.Map;
 
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
+@VisualClass("org.workcraft.plugins.balsa.VisualBreezeComponent")
 @VisualComponentGeneratorAttribute(generator="org.workcraft.plugins.balsa.BreezeVisualComponentGenerator")
 public class BreezeComponent extends MathNode {
 

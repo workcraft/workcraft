@@ -68,10 +68,10 @@ public class VisualHandshake extends VisualComponent {
 			g.fill(circle);
 
 
-		if(handshake instanceof DataHandshake)
+		/*if(handshake instanceof DataHandshake)
 			drawDataConnector(g, (DataHandshake) handshake);
 		else
-			g.draw(new Line2D.Double(0.5, 0, 4, 0));
+			g.draw(new Line2D.Double(0.5, 0, 4, 0));*/
 	}
 
 	private void drawDataConnector(Graphics2D g, DataHandshake dataHandshake) {

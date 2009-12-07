@@ -97,6 +97,18 @@ public class XMLSerialisationTestingUtils {
 			} else
 				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceName);
 		}
+
+		@Override
+		public Object getInstance(PluginInfo plugin) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object getSingleton(PluginInfo plugin) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	public static PluginProvider createMockPluginManager() {

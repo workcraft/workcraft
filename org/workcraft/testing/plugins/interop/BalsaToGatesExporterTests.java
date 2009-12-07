@@ -29,7 +29,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.components.While;
-import org.workcraft.plugins.interop.BalsaToGatesExporter;
+import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.util.Export;
 
 public class BalsaToGatesExporterTests {

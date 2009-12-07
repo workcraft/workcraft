@@ -51,6 +51,7 @@ public class MainHandshakeMaker {
 	private static Map<Class<? extends Component>, HandshakeMaker<?>> getMap() {
 		HashMap<Class<? extends Component>, HandshakeMaker<?>> map = new HashMap<Class<? extends Component>, HandshakeMaker<?>>();
 
+		map.put(org.workcraft.plugins.balsa.components.DynamicComponent.class, new DynamicHandshakes());
 		map.put(org.workcraft.plugins.balsa.components.ActiveEagerFalseVariable.class, new ActiveEagerFalseVariableHandshakes());
 		map.put(org.workcraft.plugins.balsa.components.Adapt.class, new AdaptHandshakes());
 		map.put(org.workcraft.plugins.balsa.components.Arbiter.class, new ArbiterHandshakes());

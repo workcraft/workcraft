@@ -15,9 +15,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
  
 public class LispParser {
-	public static List<Object> parse (InputStream is) throws ParseException {
+	public static LispNode parse (InputStream is) throws ParseException {
 		LispParser parser = new LispParser(new BufferedReader(new InputStreamReader(is)));
-		return parser.everything();
+		return parser.listElement();
 	}
 }
 PARSER_END(LispParser)
@@ -38,10 +38,10 @@ TOKEN :
     |< VALUE: ( ~[" ","\r","\t","\n","(",")"] )+ >
 }
 
-List<Object> everything() : 
+List<LispNode> everything() : 
 {
-	LinkedList<Object> result = new LinkedList<Object>();
-	Object o;
+	LinkedList<LispNode> result = new LinkedList<LispNode>();
+	LispNode o;
 }
 {
   ( o = listElement() {result.add(o);})*
@@ -50,18 +50,18 @@ List<Object> everything() :
   }
 }
 
-List<Object> list() : 
+LispNode list() : 
 {
-	List<Object> result;
+	List<LispNode> result;
 }
 {
   <OBR> result = everything() <CBR>
   {
-   return result;
+   return new LispNode(result);
   }
 }
 
-Object listElement() : { Token t; List<Object> l;}
+LispNode listElement() : { Token t; LispNode l;}
 {
-	t = <VALUE> { return t.image; } | l = list() { return l; } 
+	t = <VALUE> { return new LispNode(t.image); } | l = list() { return l; } 
 }

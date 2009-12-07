@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.plugins.balsa.io;
 
 import java.util.UUID;
 
@@ -33,7 +33,7 @@ public class BalsaToStgExporter_FourPhase extends BalsaToStgExporter implements 
 		super(new FourPhaseProtocol_NoDataPath(), "four-phase (no data path)");
 	}
 
-	public UUID getFormatUUID() {
+	public UUID getTargetFormat() {
 		return Format.STG;
 	}
 }

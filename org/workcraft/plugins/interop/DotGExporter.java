@@ -23,6 +23,7 @@ package org.workcraft.plugins.interop;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
@@ -30,6 +31,7 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.serialisation.dotg.DotGSerialiser;
+import org.workcraft.serialisation.Format;
 
 public class DotGExporter implements Exporter, Plugin {
 	DotGSerialiser serialiser = new DotGSerialiser();
@@ -47,7 +49,15 @@ public class DotGExporter implements Exporter, Plugin {
 		return serialiser.getExtension();
 	}
 
-	public boolean isApplicableTo(Model model) {
-		return serialiser.isApplicableTo(model);
+	public int getCompatibility(Model model) {
+		if (serialiser.isApplicableTo(model))
+			return Exporter.GENERAL_COMPATIBILITY;
+		else
+			return Exporter.NOT_COMPATIBLE;
+	}
+
+	@Override
+	public UUID getTargetFormat() {
+		return Format.STG;
 	}
 }
