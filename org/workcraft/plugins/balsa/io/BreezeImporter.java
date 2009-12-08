@@ -31,10 +31,6 @@ import org.workcraft.interop.Importer;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
-import org.workcraft.parsers.breeze.javacc.BreezeParser;
-import org.workcraft.parsers.lisp.LispNode;
-import org.workcraft.parsers.lisp.LispParser;
-import org.workcraft.parsers.lisp.ParseException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 
 public class BreezeImporter implements Importer {

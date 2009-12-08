@@ -21,18 +21,22 @@
 
 package org.workcraft.parsers.breeze;
 
-/*
+import java.io.File;
+import java.io.IOException;
+
+import org.junit.Test;
+import org.workcraft.parsers.lisp.ParseException;
+
+
 public class TESTS {
 	@Test
-	public void parseAbs() throws FileNotFoundException, ParseException, org.workcraft.parsers.breeze.javacc.ParseException
+	public void parseAbs() throws ParseException, org.workcraft.parsers.breeze.javacc.ParseException, IOException
 	{
-		InputStream is = new FileInputStream("C:\\deleteMe\\BinaryFuncConstR.abs");
-		PrimitivePart part = BreezeParser.parsePrimitivePart(is);
-
-		System.out.println(part);
+		BreezeLibrary lib = new BreezeLibrary();
+		lib.registerPrimitives(new File("C:\\deleteMe\\"));
 	}
 
-	@Test
+	/*@Test
 	public void viterbiToGates() throws Exception
 	{
 		File bzrFileName = new File("C:\\deleteMe\\viterbi\\BMU.breeze");
@@ -60,6 +64,5 @@ public class TESTS {
 		{
 			is.close();
 		}
-	}
+	}*/
 }
-*/
