@@ -27,7 +27,8 @@ public class BreezeParser {
 		return parser.listElement();
 	}
 
-	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException	{
+	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException
+	{
 	  BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
 	  return parser.primitivePart();
 	}
@@ -129,6 +130,7 @@ String value() : {Token t;}
 	| t = keyword() { return t.image; }
 	| t = integerToken() { return t.image; } 
 }
+
 LispNode listElement() : { String t; LispNode l;}
 {
 	  t = value() { return new LispNode(t); }
@@ -205,10 +207,12 @@ ParameterType type() : { ParameterType result; String typeName; }
 ParameterDeclaration parameter() :
 {
   String name;
-  ParameterType type;}
+  ParameterType type;
+}
 {
 	<OBR> name = value() type = type() listBody() <CBR>
-	{ return new ParameterDeclaration (name, type); }}
+	{ return new ParameterDeclaration (name, type); }
+}
 
 List<ParameterDeclaration> parameters() :
 {
@@ -219,7 +223,8 @@ List<ParameterDeclaration> parameters() :
  <OBR> <PARAMETERS>
 ( o = parameter() {result.add(o);})* 
  <CBR>
- { return result; }}
+ { return result; }
+}
 
 boolean dataDirectionIsInput() : {}
 {
@@ -512,12 +517,14 @@ Expression<String> symbol() : { Expression<String> str; }
 	{ return str; }
 }
 
-PrimitivePart primitivePart() :{
+PrimitivePart primitivePart() :
+{
 	String name;
 	List<ParameterDeclaration> parameters;
 	Expression<String> symbol;
 	List<PortDeclaration> ports;
-}{
+}
+{
   <OBR> <PRIMITIVE_PART>
   	name = value()
   	parameters = parameters()
@@ -689,4 +696,5 @@ List<BreezePart> breezeFile() : { List<BreezePart > defs = new LinkedList<Breeze
 {
 	(importDef())*
 	(breezeDef(defs))*
-	{return defs;}}
+	{return defs;}
+}

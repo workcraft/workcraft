@@ -88,7 +88,7 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 				}
 			);
 
-		this.applyTransform(AffineTransform.getQuadrantRotateInstance(1));
+		//this.applyTransform(AffineTransform.getQuadrantRotateInstance(1));
 	}
 
 	public VisualBreezeComponent(BreezeComponent refComponent) {
@@ -214,9 +214,9 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 		drawCircle(g, 0, 0, componentRadius);
 
 
-		AffineTransform t = g.getTransform();
+		/*AffineTransform t = g.getTransform();
 		t.concatenate(AffineTransform.getQuadrantRotateInstance(-1));
-		g.setTransform(t);
+		g.setTransform(t);*/
 
 		Font font = g.getFont();
 		font = font.deriveFont(0.2f);

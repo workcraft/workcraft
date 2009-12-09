@@ -18,12 +18,10 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.parsers.breeze.javacc;
+package org.workcraft.parsers.breeze;
 
 import java.util.List;
 
-import org.workcraft.parsers.breeze.Expression;
-import org.workcraft.parsers.breeze.ParameterScope;
 
 public class AddExpression implements Expression<Integer> {
 
