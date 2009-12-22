@@ -19,35 +19,40 @@
 *
 */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
 
-public class VariableArrayType implements Expression<Integer[]> {
+import java.util.Arrays;
+
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
+
+public class ConstantArrayType implements Expression<Integer[]> {
 	private final Expression<Integer> width;
-	private final Expression<Integer> readPortCount;
-	private final Expression<String> specification;
+	private Expression<Integer> count;
 
-	public VariableArrayType(Expression<Integer> width, Expression<Integer> readPortCount,
-			Expression<String> specification)
-	{
+	public ConstantArrayType(Expression<Integer> width, Expression<Integer> count) {
 		this.width = width;
-		this.readPortCount = readPortCount;
-		this.specification = specification;
+		this.count = count;
 	}
 
-	public Integer[] evaluate(ParameterScope parameters)
-	{
-		Integer[] result = new Integer[readPortCount.evaluate(parameters)];
+	public void setCount (Expression<Integer> count) {
+		this.count = count;
+	}
 
-		if (specification.evaluate(parameters).length() != 0 )
-			throw new RuntimeException ("Not implemented");
-
-		for (int i=0; i < result.length; i++)
-			result[i] = width.evaluate(parameters);
-
+	@Override
+	public Integer[] evaluate(ParameterScope parameters) {
+		Integer[] result = new Integer[count.evaluate(parameters)];
+		Arrays.fill(result, width.evaluate(parameters));
 		return result;
 	}
 
 	public String toString() {
-		return String.format("(width %s readPortCount %s specification %s)", width, readPortCount, specification);
+		return "(constant-array-type width " + width + " count " + count +")";
+	}
+
+
+	@Override
+	public <R> R accept(Visitor<R> visitor) {
+		return visitor.visit(this);
 	}
 }

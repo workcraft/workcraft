@@ -21,11 +21,18 @@
 
 package org.workcraft.parsers.breeze;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.Test;
+import org.workcraft.parsers.breeze.javacc.BreezeParser;
 import org.workcraft.parsers.lisp.ParseException;
+import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
+import org.workcraft.util.Export;
 
 
 public class TESTS {
@@ -36,14 +43,14 @@ public class TESTS {
 		lib.registerPrimitives(new File("C:\\deleteMe\\"));
 	}
 
-	/*@Test
+	@Test
 	public void viterbiToGates() throws Exception
 	{
 		File bzrFileName = new File("C:\\deleteMe\\viterbi\\BMU.breeze");
 		File definitionsFolder = new File("C:\\deleteMe");
 
 		BreezeLibrary lib = new BreezeLibrary();
-	//	registerPrimitives(definitionsFolder, lib);
+		lib.registerPrimitives(definitionsFolder);
 
 		registerParts(bzrFileName, lib);
 
@@ -51,18 +58,22 @@ public class TESTS {
 
 		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-		//lib.get("BMU").instantiate(factory, EmptyValueList.instance());
+		lib.get("BMU").instantiate(lib, factory, EmptyValueList.instance());
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+		new BalsaToGatesExporter().export(circuit, stream);
 	}
 
 	private void registerParts(File file, BreezeLibrary lib) throws Exception {
 		InputStream is = new FileInputStream(file);
 		try
 		{
-		//	BreezeParser.registerBreezeParts(is, lib);
+			lib.registerParts(is);
 		}
 		finally
 		{
 			is.close();
 		}
-	}*/
+	}
 }

@@ -21,6 +21,10 @@
 
 package org.workcraft.parsers.breeze;
 
+import org.workcraft.parsers.breeze.expressions.Expression;
+
+import japa.parser.ast.body.VariableDeclarator;
+
 public class PortDeclaration {
 
 	public PortDeclaration(PortType type, String name, boolean isActive,
@@ -48,5 +52,9 @@ public class PortDeclaration {
 
 	public String toString() {
 		return String.format("(%s %s %s %s %s %s)", isArrayed?"ARRAYED-"+type:type, name, isActive?"active":"passive", isInput?"input":"output", count, width);
+	}
+
+	public String getName() {
+		return name;
 	}
 }

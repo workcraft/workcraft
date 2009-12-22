@@ -24,9 +24,10 @@ package org.workcraft.parsers.breeze;
 import java.util.List;
 
 import org.workcraft.exceptions.NotSupportedException;
+import org.workcraft.parsers.breeze.expressions.Expression;
 
 public class PrimitivePart implements BreezeDefinition {
-	String name;
+	private final String name;
 	List<ParameterDeclaration> parameters;
 	Expression<String> symbol;
 	List<PortDeclaration> ports;
@@ -42,10 +43,10 @@ public class PrimitivePart implements BreezeDefinition {
 	}
 
 	public String toString() {
-		return "("+name+" " + parameters + " " + symbol + " " + ports + ")";
+		return "("+getName()+" " + parameters + " " + symbol + " " + ports + ")";
 	}
 
-	public List<PortDeclaration> ports() {
+	public List<PortDeclaration> getPorts() {
 		return ports;
 	}
 
@@ -58,7 +59,7 @@ public class PrimitivePart implements BreezeDefinition {
 		MapParameterScope result = new MapParameterScope();
 
 		if(parameters.size() != parameterValues.size())
-			throw new RuntimeException("Incorrect number of parameter values for component " + name + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
+			throw new RuntimeException("Incorrect number of parameter values for component " + getName() + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
 
 		for(int i=0;i<parameters.size();i++)
 		{
@@ -97,5 +98,13 @@ public class PrimitivePart implements BreezeDefinition {
 
 	public Expression<String> getSymbol() {
 		return symbol;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public List<ParameterDeclaration> getParameters() {
+		return parameters;
 	}
 }

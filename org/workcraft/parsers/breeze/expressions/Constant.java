@@ -19,7 +19,10 @@
 *
 */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
+
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class Constant<T> implements Expression<T> {
 	private final T value;
@@ -36,4 +39,10 @@ public class Constant<T> implements Expression<T> {
 	public String toString() {
 		return value.toString();
 	}
+
+	@Override
+	public <R> R accept(Visitor<R> visitor) {
+		return visitor.visit(this);
+	}
+
 }

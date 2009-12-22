@@ -19,8 +19,14 @@
  *
  */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
+
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public interface Expression<T> {
-	public abstract T evaluate(ParameterScope parameters);
+
+	public T evaluate(ParameterScope parameters);
+
+	public abstract <R> R accept(Visitor<R> visitor);
 }

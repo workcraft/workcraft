@@ -18,35 +18,37 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
 
 import java.util.List;
 
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
-public class StringConcatenateExpression implements Expression<String> {
 
-	private final List<Expression<String>> strs;
+public class AddExpression implements Expression<Integer> {
 
-	public StringConcatenateExpression(List<Expression<String>> strs) {
-				this.strs = strs;
+	private final List<Expression<Integer>> args;
+
+	public AddExpression(List<Expression<Integer>> args) {
+		this.args = args;
 	}
 
 	@Override
-	public String evaluate(ParameterScope parameters) {
-		StringBuilder sb = new StringBuilder();
-		for(Expression<String> str : strs)
-			sb.append(str.evaluate(parameters));
-		return sb.toString();
+	public Integer evaluate(ParameterScope parameters) {
+		int result = 0;
+		for(Expression<Integer> expr : getArgs())
+			result += expr.evaluate(parameters);
+		return result;
 	}
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for(Expression<String> str : strs)
-		{
-			if(sb.length() == 0)
-				sb.append(" + ");
-			sb.append(str.toString());
-		}
-		return sb.toString();
+	public List<Expression<Integer>> getArgs() {
+		return args;
 	}
+
+	@Override
+	public <R> R accept(Visitor<R> visitor) {
+		return visitor.visit(this);
+	}
+
 }

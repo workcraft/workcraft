@@ -18,9 +18,12 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
 
 import java.util.List;
+
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 
 public class CaseExpression<T1, T2> implements Expression<T2> {
@@ -58,6 +61,11 @@ public class CaseExpression<T1, T2> implements Expression<T2> {
 			if(conditions.get(i).evaluate(parameters).equals(checkValue))
 				return values.get(i).evaluate(parameters);
 		return elseValue.evaluate(parameters);
+	}
+
+	@Override
+	public <R> R accept(Visitor<R> visitor) {
+		return visitor.visit(this);
 	}
 
 }

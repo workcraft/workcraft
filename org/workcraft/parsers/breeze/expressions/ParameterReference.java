@@ -19,7 +19,10 @@
  *
  */
 
-package org.workcraft.parsers.breeze;
+package org.workcraft.parsers.breeze.expressions;
+
+import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class ParameterReference<T> implements Expression<T> {
 	String parameterName = null;
@@ -39,5 +42,10 @@ public class ParameterReference<T> implements Expression<T> {
 
 	public String toString() {
 		return "<" + parameterName +">";
+	}
+
+	@Override
+	public <R> R accept(Visitor<R> visitor) {
+		return visitor.visit(this);
 	}
 }

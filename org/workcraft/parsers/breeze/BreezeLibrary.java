@@ -46,7 +46,7 @@ public class BreezeLibrary extends HashMap<String, BreezeDefinition> {
 				try
 				{
 					PrimitivePart primitivePart = BreezeParser.parsePrimitivePart(is);
-					put("$Brz"+primitivePart.name, primitivePart);
+					put("$Brz"+primitivePart.getName(), primitivePart);
 				} catch (ParseException e) {
 					System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
 				}

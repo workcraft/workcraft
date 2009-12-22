@@ -5,6 +5,7 @@
 options {
   JDK_VERSION = "1.5";
   LOOKAHEAD = 3;
+  STATIC = false;
 }
 
 PARSER_BEGIN(BreezeParser)
