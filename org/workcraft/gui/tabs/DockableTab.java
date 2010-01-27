@@ -66,13 +66,13 @@ public class DockableTab extends JPanel {
 		TabButton close = null;
 
 		if ((dockableWindow.getOptions() & DockableWindowContentPanel.MAXIMIZE_BUTTON) != 0) {
-			TabButton max = new TabButton("⇱", "Maximize window", new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION), actionListener);
+			TabButton max = new TabButton("\u2191", "Maximize window", new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION), actionListener);
 			buttonsPanel.add(max);
 			buttonsPanel.add(Box.createRigidArea(new Dimension(2,0)));
 		}
 
 		if ((dockableWindow.getOptions() & DockableWindowContentPanel.CLOSE_BUTTON) != 0) {
-			close = new TabButton("×", "Close window", new ViewAction(dockableWindow.getID(), ViewAction.CLOSE_ACTION), actionListener);
+			close = new TabButton("\u00d7", "Close window", new ViewAction(dockableWindow.getID(), ViewAction.CLOSE_ACTION), actionListener);
 			buttonsPanel.add(close);
 		}
 
