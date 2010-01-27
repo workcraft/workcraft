@@ -5,7 +5,6 @@
 options {
   JDK_VERSION = "1.5";
   LOOKAHEAD = 3;
-  FORCE_LA_CHECK = true;
 }
 
 PARSER_BEGIN(BreezeParser)
@@ -28,7 +27,8 @@ public class BreezeParser {
 		return parser.listElement();
 	}
 
-	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException	{
+	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException
+	{
 	  BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
 	  return parser.primitivePart();
 	}
@@ -55,7 +55,7 @@ TOKEN :
   	<PRIMITIVE_PART : "primitive-part" >
     |<ZERO : "0">
   	|<VARIABLE_ARRAY_TYPE : "variable-array-type">
-  	|<CARDINAL : <ZERO> | (["0"-"9"])+>
+  	|<INTEGER : ("-")?(["0"-"9"])+>
   	|<ACTIVE : "active">
   	|<PASSIVE : "passive">
   	|<INPUT : "input">
@@ -81,6 +81,7 @@ TOKEN :
 	|<ELSE : "else">
 	|<STRING_APPEND : "string-append">
 	|<NUMBER_TO_STRING : "number->string">
+	|<PLUS : "+">
 	
 	|<SYNC : "sync">
 	|<PUSH : "push">
@@ -127,8 +128,9 @@ String value() : {Token t;}
 	  t = <VALUE> { return t.image; }
 	| t = <QUOTED_VALUE> { return t.image.substring(1, t.image.length()-1); }
 	| t = keyword() { return t.image; }
-	| t = cardinalToken() { return t.image; } 
+	| t = integerToken() { return t.image; } 
 }
+
 LispNode listElement() : { String t; LispNode l;}
 {
 	  t = value() { return new LispNode(t); }
@@ -164,6 +166,7 @@ Token keyword() : {Token t;}
 	| t = <ELSE>
 	| t = <STRING_APPEND>
 	| t = <NUMBER_TO_STRING>
+	| t = <PLUS>
 	
 	| t = <SYNC>
 	| t = <PUSH>
@@ -204,10 +207,12 @@ ParameterType type() : { ParameterType result; String typeName; }
 ParameterDeclaration parameter() :
 {
   String name;
-  ParameterType type;}
+  ParameterType type;
+}
 {
 	<OBR> name = value() type = type() listBody() <CBR>
-	{ return new ParameterDeclaration (name, type); }}
+	{ return new ParameterDeclaration (name, type); }
+}
 
 List<ParameterDeclaration> parameters() :
 {
@@ -218,7 +223,8 @@ List<ParameterDeclaration> parameters() :
  <OBR> <PARAMETERS>
 ( o = parameter() {result.add(o);})* 
  <CBR>
- { return result; }}
+ { return result; }
+}
 
 boolean dataDirectionIsInput() : {}
 {
@@ -226,29 +232,29 @@ boolean dataDirectionIsInput() : {}
 	| <OUTPUT> { return false; }
 } 
 
-Token cardinalToken() :
+Token integerToken() :
 { Token t; }
 {
-	(t = <CARDINAL> | t = <ZERO>) { return t; }
+	(t = <INTEGER> | t = <ZERO>) { return t; }
 }
 
-int cardinal() :
+int integer() :
 {
 	Token t;
 }
 {
-	(t = <CARDINAL> | t = <ZERO>)
+	(t = integerToken())
 	{
 		return Integer.parseInt(t.image);
 	}
 }
 
-Expression<Integer> constantCardinalExpression() :
+Expression<Integer> constantIntegerExpression() :
 {
 	int result;
 }
 {
-	result = cardinal()
+	result = integer()
 	{ return new Constant<Integer>(result); }
 }
 
@@ -277,23 +283,33 @@ Expression<String> numberToStringExpression() :
 {
 	<OBR>
 		<NUMBER_TO_STRING>
-		intExpression = cardinalExpression()
+		intExpression = integerExpression()
 	<CBR>
 	{ return new ToStringExpression<Integer>(intExpression); }
 }
 
 Expression<String> stringAppendExpression() :
 {
-	Expression<String> str1;
+	Expression<String> result;
 	Expression<String> str2;
 }
 {
 	<OBR>
 		<STRING_APPEND>
-		str1 = stringExpression()
-		str2 = stringExpression()
+		stringAppendBody()
+		result = stringAppendBody()
 	<CBR>
-	{ return new StringAppendExpression(str1, str2); }
+	{ return result; }
+}
+
+Expression<String> stringAppendBody() :
+{
+	Expression<String> str;
+	List<Expression<String>> strs = new ArrayList<Expression<String>>();
+}
+{
+	(str = stringExpression() { strs.add(str); })*
+	{ return new StringConcatenateExpression(strs); }
 }
 
 Expression<String> stringCaseExpression() :
@@ -328,17 +344,42 @@ Expression<String> stringCaseExpression() :
 	{ return new CaseExpression<String, String>(toCheck, conditions, values, elseValue); }
 }
 
-Expression<Integer> cardinalExpression() :
+Expression<Integer> addExpression() : 
+{
+	List<Expression<Integer>> args = new ArrayList<Expression<Integer>>();
+}
+{
+	<OBR>
+		<PLUS>
+		(integerExpression())*
+	<CBR>
+	{
+		return new AddExpression(args);
+	}
+}
+
+
+Expression<Integer> integerExpression() :
 {
 	Expression<?> result;
 }
 {
 	(
 		result = parameterizedExpression() |
-		result = constantCardinalExpression()
+		result = constantIntegerExpression() |
+		result = addExpression()
 	)
 	{return (Expression<Integer>)result;}
 }
+
+Expression<String> implicitNumberToString() :
+{
+	Expression<Integer> res;
+}
+{
+	res = integerExpression()
+	{return new ToStringExpression(res);}
+} 
 
 Expression<String> stringExpression() :
 {
@@ -350,7 +391,8 @@ Expression<String> stringExpression() :
 		result = constantStringExpression() |
 		result = stringCaseExpression() |
 		result = stringAppendExpression() |
-		result = numberToStringExpression()
+		result = numberToStringExpression() |
+		result = implicitNumberToString()
 	)
 
 	{return (Expression<String>) result;}
@@ -362,7 +404,7 @@ Expression<Integer> numericType() :
 }
 {
 	<OBR> <NUMERIC_TYPE> <BOOL_FALSE>
-		result = cardinalExpression()
+		result = integerExpression()
 	<CBR>
 	{
 		return result;		
@@ -379,7 +421,7 @@ VariableArrayType variable_array_type() :
 	<OBR> <VARIABLE_ARRAY_TYPE>
 	defaultWidth = numericType()
 	<ZERO>
-	portCount = cardinalExpression()
+	portCount = integerExpression()
 	specification = stringExpression()
 	<CBR>
 	{ return new VariableArrayType(defaultWidth, portCount, specification); }
@@ -394,7 +436,7 @@ boolean isActive() : {}
 Expression<Integer> arrayCount() : {}
 {
 	<ZERO>
-	{ return cardinalExpression(); }
+	{ return integerExpression(); }
 }
 
 PortDeclaration port() : 
@@ -463,29 +505,26 @@ List<PortDeclaration> ports() :
  	{return result;}
 }
 
-Expression<String> symbol() : { Expression<String> str1; Expression<String> str2 = null; }
+Expression<String> symbol() : { Expression<String> str; }
 {
 	<OBR>
 		<SYMBOL>
 		<OBR>
 			<CENTER_STRING>
-			str1 = stringExpression()
-			(str2 = stringExpression())?
+			str = stringAppendBody()
 		<CBR>
 	<CBR>
-	{
-		if(str2 == null)
-			return str1;
-		return new StringAppendExpression(str1, str2);
-	}
+	{ return str; }
 }
 
-PrimitivePart primitivePart() :{
+PrimitivePart primitivePart() :
+{
 	String name;
 	List<ParameterDeclaration> parameters;
 	Expression<String> symbol;
 	List<PortDeclaration> ports;
-}{
+}
+{
   <OBR> <PRIMITIVE_PART>
   	name = value()
   	parameters = parameters()
@@ -513,7 +552,7 @@ ChannelDeclaration channel() :
 		| 
 		(<PULL> { type = ChannelType.PULL; }
 		 | <PUSH> { type = ChannelType.PUSH; })
-		bits = cardinal()
+		bits = integer()
 	)
 	listBody()
 	<CBR>
@@ -566,7 +605,7 @@ List<Integer> intList() :
 	(
 		result = plainIntList()
 		|
-		val = cardinal() { result = new LinkedList<Integer>(); result.add(val); }  
+		val = integer() { result = new LinkedList<Integer>(); result.add(val); }  
 	)
 	{ return result; }
 } 
@@ -578,7 +617,7 @@ List<Integer> plainIntList() :
 }
 {
 	<OBR>
-	(value = cardinal() {result.add(value);})*
+	(value = integer() {result.add(value);})*
 	<CBR>
 	{return result;}
 }
@@ -657,4 +696,5 @@ List<BreezePart> breezeFile() : { List<BreezePart > defs = new LinkedList<Breeze
 {
 	(importDef())*
 	(breezeDef(defs))*
-	{return defs;}}
+	{return defs;}
+}

@@ -137,8 +137,6 @@ public class VisualConnection extends VisualNode implements
 			throw new NullPointerException("second");
 		if(graphic == null)
 			throw new NullPointerException("graphic");
-		if(refConnection == null)
-			throw new NullPointerException("refConnection");
 
 		this.first = first;
 		this.second = second;

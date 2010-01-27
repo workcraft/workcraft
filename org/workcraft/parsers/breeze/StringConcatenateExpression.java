@@ -18,22 +18,35 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.parsers.breeze.javacc;
+package org.workcraft.parsers.breeze;
 
-import org.workcraft.parsers.breeze.Expression;
-import org.workcraft.parsers.breeze.ParameterScope;
+import java.util.List;
 
-public class ToStringExpression<T> implements Expression<String> {
 
-	private final Expression<T> expression;
+public class StringConcatenateExpression implements Expression<String> {
 
-	public ToStringExpression(Expression<T> intExpression) {
-		this.expression = intExpression;
+	private final List<Expression<String>> strs;
+
+	public StringConcatenateExpression(List<Expression<String>> strs) {
+				this.strs = strs;
 	}
 
 	@Override
 	public String evaluate(ParameterScope parameters) {
-		return expression.evaluate(parameters).toString();
+		StringBuilder sb = new StringBuilder();
+		for(Expression<String> str : strs)
+			sb.append(str.evaluate(parameters));
+		return sb.toString();
 	}
 
+	@Override public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(Expression<String> str : strs)
+		{
+			if(sb.length() == 0)
+				sb.append(" + ");
+			sb.append(str.toString());
+		}
+		return sb.toString();
+	}
 }
