@@ -76,6 +76,7 @@ import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
+import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
@@ -446,6 +447,9 @@ public class MainWindow extends JFrame {
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
+
+		DockableWindow tasks = createDockableWindow (new TaskManagerWindow(framework), "Tasks", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
+
 		workspaceWindow.startup();
 
 		setVisible(true);
@@ -453,12 +457,14 @@ public class MainWindow extends JFrame {
 		loadDockingLayout();
 		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
+
 		registerUtilityWindow (outputDockable);
 		registerUtilityWindow (problems);
 		registerUtilityWindow (javaScript);
 		registerUtilityWindow (wsvd);
 		registerUtilityWindow (propertyEditor);
 		registerUtilityWindow (toolbox);
+		registerUtilityWindow (tasks);
 		utilityWindows.add(documentPlaceholder);
 
 		disableWorkActions();

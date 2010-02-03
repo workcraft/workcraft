@@ -63,6 +63,8 @@ import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.tasks.DefaultTaskManager;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Workspace;
@@ -153,6 +155,7 @@ public class Framework {
 
 	private PluginManager pluginManager;
 	private ModelManager modelManager;
+	private TaskManager taskManager;
 	private Config config ;
 	private Workspace workspace;
 
@@ -173,6 +176,7 @@ public class Framework {
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
+		taskManager = new DefaultTaskManager(this);
 		modelManager = new ModelManager();
 		config = new Config();
 		workspace = new Workspace(this);
@@ -454,6 +458,10 @@ public class Framework {
 
 	public PluginManager getPluginManager() {
 		return pluginManager;
+	}
+
+	public TaskManager getTaskManager() {
+		return taskManager;
 	}
 
 	public Workspace getWorkspace() {
