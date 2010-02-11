@@ -45,6 +45,12 @@ public class FileUtils{
 		   }
 	}
 
+	public static void dumpString (File out, String string) throws IOException {
+		FileOutputStream fos = new FileOutputStream(out);
+		fos.write(string.getBytes());
+		fos.close();
+	}
+
 	public static void copyFileToStream(File in, OutputStream out)
    		throws IOException
 	{
