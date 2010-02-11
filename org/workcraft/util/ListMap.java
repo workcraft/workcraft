@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class ListMap <K,V> {
 	private HashMap<K,LinkedList<V>> map =  new HashMap<K, LinkedList<V>>();
@@ -48,11 +49,16 @@ public class ListMap <K,V> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<V> get(K key) {
 		LinkedList<V> list = map.get(key);
 		if (list != null)
-			return list;
+			return (List<V>)list.clone();
 		else
 			return Collections.emptyList();
+	}
+
+	public Set<K> keySet() {
+		return map.keySet();
 	}
 }
