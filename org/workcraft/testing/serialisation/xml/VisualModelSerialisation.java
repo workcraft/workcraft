@@ -52,7 +52,7 @@ public class VisualModelSerialisation {
 		VisualSTG visualstg = new VisualSTG(stg);
 
 		RandomLayout layout = new RandomLayout();
-		layout.doLayout(visualstg);
+		layout.run(visualstg, null);
 
 		// serialise
 		PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
