@@ -15,7 +15,6 @@ public class MpsatVerificationTask implements Task {
 	private Model model;
 	private Exporter exporter;
 	private String[] mpsatArgs;
-	private ProgressMonitor monitor;
 	private Framework framework;
 
 
@@ -28,7 +27,6 @@ public class MpsatVerificationTask implements Task {
 
 	@Override
 	public Result run(ProgressMonitor monitor) {
-		this.monitor = monitor;
 		try {
 			File netFile = File.createTempFile("net", exporter.getExtenstion());
 			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
