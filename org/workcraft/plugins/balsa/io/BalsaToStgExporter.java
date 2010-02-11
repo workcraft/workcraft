@@ -49,8 +49,8 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
-import org.workcraft.plugins.layout.PetriNetToolsSettings;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.verification.PetriNetToolsSettings;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
 
