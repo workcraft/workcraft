@@ -25,6 +25,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
+import org.workcraft.Framework;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.workspace.FileHandler;
 
@@ -40,7 +41,7 @@ public class SystemOpen implements FileHandler {
 	}
 
 
-	public void execute(File f) {
+	public void execute(File f, Framework framework) {
 		try {
 			if (System.getProperty ("os.name").contains("Windows"))
 				Runtime.getRuntime().exec (new String[] {"cmd", "/c", f.getAbsolutePath() });
