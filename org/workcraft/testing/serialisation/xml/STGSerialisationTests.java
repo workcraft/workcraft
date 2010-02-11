@@ -50,7 +50,7 @@ public class STGSerialisationTests {
 			VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 
 			RandomLayout layout = new RandomLayout();
-			layout.doLayout(stg);
+			layout.run(stg, null);
 
 			// serialise
 			PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
