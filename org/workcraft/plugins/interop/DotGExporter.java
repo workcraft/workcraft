@@ -51,7 +51,7 @@ public class DotGExporter implements Exporter, Plugin {
 
 	public int getCompatibility(Model model) {
 		if (serialiser.isApplicableTo(model))
-			return Exporter.GENERAL_COMPATIBILITY;
+			return Exporter.BEST_COMPATIBILITY;
 		else
 			return Exporter.NOT_COMPATIBLE;
 	}
