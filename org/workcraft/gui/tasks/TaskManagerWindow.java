@@ -41,15 +41,15 @@ import javax.swing.border.Border;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.SmartFlowLayout;
+import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.ProgressObserver;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.TaskObserver;
+import org.workcraft.tasks.TaskMonitor;
 
 @SuppressWarnings("serial")
-public class TaskManagerWindow extends JPanel implements TaskObserver {
-	class TaskControlMonitor implements ProgressObserver {
+public class TaskManagerWindow extends JPanel implements TaskMonitor {
+	class TaskControlMonitor implements ProgressMonitor {
 		TaskManagerWindow window;
 		TaskControl taskControl;
 
@@ -64,7 +64,7 @@ public class TaskManagerWindow extends JPanel implements TaskObserver {
 		}
 
 		@Override
-		public void finished(Result result) {
+		public void finished(Result result, String description) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -76,6 +76,11 @@ public class TaskManagerWindow extends JPanel implements TaskObserver {
 		@Override
 		public void logMessage(String message) {
 			System.out.println(message);
+		}
+
+		@Override
+		public void logErrorMessage(String message) {
+			System.err.println (message);
 		}
 
 		@Override
@@ -188,33 +193,20 @@ public class TaskManagerWindow extends JPanel implements TaskObserver {
 							monitor.progressUpdate(i/99.0);
 						}
 						return Result.OK;
-					} }, "Test task #" + counter++, new ProgressObserver(){
+					} }, "Test task #" + counter++, new DummyProgressMonitor(){
 
 						@Override
-						public void finished(Result result) {
+						public void finished(Result result, final String description) {
 							if (result.getExitStatus() == Result.ExitStatus.OK )
 							{
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										JOptionPane.showMessageDialog(null, "Task finished!");
+										JOptionPane.showMessageDialog(null, "Task " + description + " finished!");
 									}
 
 								});
 							}
-						}
-
-						@Override
-						public boolean isCancelRequested() {
-							return false;
-						}
-
-						@Override
-						public void logMessage(String message) {
-						}
-
-						@Override
-						public void progressUpdate(double completion) {
 						}
 					});
 			}
@@ -229,7 +221,7 @@ public class TaskManagerWindow extends JPanel implements TaskObserver {
 	}
 
 	@Override
-	public ProgressObserver taskStarting(final String description) {
+	public ProgressMonitor taskStarting(final String description) {
 		TaskControlGenerator tcg = new TaskControlGenerator(framework, content, description);
 		try {
 			SwingUtilities.invokeAndWait(tcg);
