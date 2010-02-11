@@ -34,8 +34,70 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.tasks.ExceptionResult;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Task;
 
 public class Export {
+	public static class ExportTask implements Task {
+		Exporter exporter;
+		Model model;
+		File file;
+
+		public ExportTask(Exporter exporter, Model model, String path) {
+			this.exporter = exporter;
+			this.model = model;
+			this.file = new File(path);
+		}
+
+		@Override
+		public Result run(ProgressMonitor monitor) {
+			FileOutputStream fos;
+
+			try {
+				file.createNewFile();
+				fos = new FileOutputStream(file);
+			} catch (IOException e) {
+				return new ExceptionResult(e);
+			}
+
+			boolean ok = false;
+
+			try
+			{
+				if (model instanceof VisualModel)
+					if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
+						if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
+								return new ExceptionResult(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
+						else
+							model = ((VisualModel)model).getMathModel();
+				exporter.export(model, fos);
+				ok = true;
+			} catch (IOException e) {
+				return new ExceptionResult(e);
+			} catch (ModelValidationException e) {
+				return new ExceptionResult(e);
+			} catch (SerialisationException e) {
+				return new ExceptionResult(e);
+			} catch (RuntimeException e) {
+				return new ExceptionResult(e);
+			}
+			finally
+			{
+				try {
+					fos.close();
+				} catch (IOException e) {
+					return new ExceptionResult(e);
+				}
+				if(!ok)
+					file.delete();
+			}
+
+			return Result.OK;
+		}
+	}
+
 	static public Exporter chooseBestExporter (PluginProvider provider, Model model, UUID targetFormat) {
 		PluginInfo[] plugins = provider.getPluginsImplementing(Exporter.class.getName());
 
