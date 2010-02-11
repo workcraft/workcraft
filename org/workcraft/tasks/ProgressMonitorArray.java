@@ -2,14 +2,14 @@ package org.workcraft.tasks;
 
 import java.util.ArrayList;
 
-public class ProgressObserverList extends ArrayList<ProgressObserver> implements ProgressObserver
+public class ProgressMonitorArray extends ArrayList<ProgressMonitor> implements ProgressMonitor
 {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void finished(Result result) {
-		for(ProgressObserver o : this)
-			o.finished(result);
+	public void finished(Result result, String description) {
+		for(ProgressMonitor o : this)
+			o.finished(result, description);
 	}
 
 	@Override
@@ -32,4 +32,9 @@ public class ProgressObserverList extends ArrayList<ProgressObserver> implements
 			o.progressUpdate(completion);
 	}
 
+	@Override
+	public void logErrorMessage(String message) {
+		for(ProgressMonitor o : this)
+			o.logErrorMessage(message);
+	}
 }

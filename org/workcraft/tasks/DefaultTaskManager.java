@@ -14,14 +14,14 @@ public class DefaultTaskManager implements TaskManager {
 
 	TaskObserverList taskObserverList = new TaskObserverList();
 
-	static class TaskObserverList extends ArrayList<TaskObserver> implements TaskObserver
+	static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor
 	{
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public ProgressObserverList taskStarting(String description) {
-			ProgressObserverList l = new ProgressObserverList();
-			for(TaskObserver obs : this)
+		public ProgressMonitorArray taskStarting(String description) {
+			ProgressMonitorArray l = new ProgressMonitorArray();
+			for(TaskMonitor obs : this)
 				l.add(obs.taskStarting(description));
 			return l;
 		}
@@ -29,15 +29,15 @@ public class DefaultTaskManager implements TaskManager {
 	}
 
 	@Override
-	public void addObserver(TaskObserver obs) {
+	public void addObserver(TaskMonitor obs) {
 		taskObserverList.add(obs);
 	}
 
 	@Override
 	public Result execute(Task task, String description) {
-		ProgressObserver progressMon = taskObserverList.taskStarting(description);
+		ProgressMonitor progressMon = taskObserverList.taskStarting(description);
 		Result result = task.run(progressMon);
-		progressMon.finished(result);
+		progressMon.finished(result, description);
 		return result;
 	}
 
@@ -54,22 +54,22 @@ public class DefaultTaskManager implements TaskManager {
 	}
 
 	@Override
-	public void queue(final Task task, final String description, final ProgressObserver observer) {
+	public void queue(final Task task, final String description, final ProgressMonitor observer) {
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run() {
-				ProgressObserverList progressMon = taskObserverList.taskStarting(description);
+				ProgressMonitorArray progressMon = taskObserverList.taskStarting(description);
 				progressMon.add(observer);
 				Result result = task.run(progressMon);
-				progressMon.finished(result);
+				progressMon.finished(result, description);
 			}
 		}
 		).start();
 	}
 
 	@Override
-	public void removeObserver(TaskObserver obs) {
+	public void removeObserver(TaskMonitor obs) {
 		taskObserverList.remove(obs);
 	}
 
