@@ -46,6 +46,7 @@ import javax.swing.ListSelectionModel;
 import org.workcraft.Framework;
 import org.workcraft.PluginInfo;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.util.GUI;
 
 public class CreateWorkDialog extends JDialog {
 
@@ -78,12 +79,7 @@ public class CreateWorkDialog extends JDialog {
 		setModal(true);
 		setTitle("New work");
 
-		Dimension parentSize = owner.getSize();
-		this.setSize(parentSize.width / 2, parentSize.height / 2);
-		Dimension mySize = getSize();
-		owner.getLocationOnScreen();
-
-		this.setLocation (((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+		GUI.centerFrameToParent(this, owner);
 
 		initComponents();
 	}
