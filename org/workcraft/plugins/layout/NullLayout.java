@@ -21,24 +21,39 @@
 
 package org.workcraft.plugins.layout;
 
+import org.workcraft.Framework;
+import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.layout.Layout;
 
-@DisplayName ("Zero")
-public class NullLayout implements Layout {
+@DisplayName ("Reset layout")
+public class NullLayout implements Tool {
 	public void doLayout(VisualModel model) {
+	}
+
+
+	@Override
+	public String getSection() {
+		return "Layout";
+	}
+
+	@Override
+	public boolean isApplicableTo(Model model) {
+		if (model instanceof VisualModel)
+			return true;
+		return false;
+	}
+
+	@Override
+	public void run(Model model, Framework framework) {
 		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualTransformableNode) {
 				((VisualTransformableNode)n).setX(0);
 				((VisualTransformableNode)n).setY(0);
 			}
 		}
-	}
-
-	public boolean isApplicableTo(VisualModel model) {
-			return true;
 	}
 }

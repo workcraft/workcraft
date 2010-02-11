@@ -62,12 +62,11 @@ import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
 import org.workcraft.ModelFactory;
 import org.workcraft.PluginInfo;
+import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.LayoutFailedException;
 import org.workcraft.exceptions.ModelCheckingFailedException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -76,12 +75,13 @@ import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
+import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-import org.workcraft.layout.Layout;
 import org.workcraft.plugins.modelchecking.ModelChecker;
+import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -716,6 +716,9 @@ public class MainWindow extends JFrame {
 		toolboxWindow.setToolsForModel(editorInFocus.getModel());
 		mainMenu.setMenuForModel(editorInFocus.getModel());
 
+		mainMenu.revalidate();
+		mainMenu.repaint();
+
 		framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("visualModel", sender.getModel(), framework.getJavaScriptGlobalScope(), true);
 
@@ -918,17 +921,12 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-
-	public void doLayout (String layoutClassName) {
+	public void runTool (String className) {
 		try {
-			Layout layout = (Layout)framework.getPluginManager().getSingletonByName(layoutClassName);
-			layout.doLayout(editorInFocus.getModel());
-		} catch (LayoutFailedException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Layout failed", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
+			Tool tool = (Tool)framework.getPluginManager().getSingletonByName(className);
+			tool.run(editorInFocus.getModel(), framework);
 		} catch (PluginInstantiationException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Layout failed", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
+			throw new RuntimeException (e);
 		}
 	}
 
@@ -949,6 +947,8 @@ public class MainWindow extends JFrame {
 		fc.setAcceptAllFileFilterUsed(false);
 
 		String title = editorInFocus.getModel().getTitle();
+		if (title.isEmpty())
+			title = "Untitled";
 		title = removeSpecialFileNameCharacters(title);
 
 		fc.setSelectedFile(new File(title));
@@ -977,15 +977,11 @@ public class MainWindow extends JFrame {
 				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
-		try {
-			Export.exportToFile(exporter, editorInFocus.getModel(), path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ModelValidationException e) {
-			e.printStackTrace();
-		} catch (SerialisationException e) {
-			e.printStackTrace();
-		}
+
+		Task exportTask = new Export.ExportTask (exporter, editorInFocus.getModel(), path);
+		framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
+
+		//Export.exportToFile(exporter, editorInFocus.getModel(), path);
 
 		lastSavePath = fc.getCurrentDirectory().getPath();
 	}
@@ -1015,12 +1011,12 @@ public class MainWindow extends JFrame {
 
 	public void closeActiveEditor() throws OperationCancelledException {
 		for (DockableWindow w : editorWindows) {
-				Component component = w.getContentPanel().getContent();
-				if (component == editorInFocus) {
-					closeDockableWindow(w.getID());
-					break;
-				}
+			Component component = w.getContentPanel().getContent();
+			if (component == editorInFocus) {
+				closeDockableWindow(w.getID());
+				break;
 			}
+		}
 	}
 
 	public void closeEditorWindows() throws OperationCancelledException {

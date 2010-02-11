@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -34,6 +36,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginInfo;
+import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -42,26 +45,28 @@ import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
-import org.workcraft.layout.Layout;
 import org.workcraft.plugins.modelchecking.ModelChecker;
+import org.workcraft.util.ListMap;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Tools;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
-	class LayoutAction extends ScriptedAction {
-		String layoutClassName;
-		String layoutText;
+	class ToolAction extends ScriptedAction {
+		String className;
+		String text;
 
-		public LayoutAction(PluginInfo layoutPlugin) {
-			layoutClassName = layoutPlugin.getClassName();
-			layoutText = layoutPlugin.getDisplayName();
+		public ToolAction(Pair<String, Tool> tool) {
+			this.className = tool.getSecond().getClass().getCanonicalName();
+			this.text = tool.getFirst();
 		}
 
 		public String getScript() {
-			return "mainWindow.doLayout(\""+layoutClassName+"\")";
-
+			return "mainWindow.runTool(\""+className+"\")";
 		}
+
 		public String getText() {
-			return layoutText;
+			return text;
 		}
 	}
 	class ToggleWindowAction extends ScriptedAction {
@@ -116,12 +121,13 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnTools = null, mnModelChecking = null, mnSettings, mnHelp, mnWindows;
+	private JMenu mnFile, mnEdit, mnView, mnSettings, mnHelp, mnWindows;
 	private JMenu mnExport;
-	private JMenu mnLayout = null;
 
 	private MainWindow mainWindow;
 	private HashMap <Integer, ScriptedActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ScriptedActionCheckBoxMenuItem>();
+
+	private LinkedList<JMenu> toolMenus = new LinkedList<JMenu>();
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -291,24 +297,6 @@ public class MainMenu extends JMenuBar {
 		add(mnHelp);
 	}
 
-	private void addLayout (PluginInfo layoutPlugin) {
-		if (mnLayout == null)
-			mnLayout = new JMenu("Layout");
-
-		ScriptedActionMenuItem miLayoutMenuItem = new ScriptedActionMenuItem(new LayoutAction(layoutPlugin));
-		miLayoutMenuItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnLayout.add(miLayoutMenuItem);
-	}
-
-	private void addModelChecker (ModelChecker checker) {
-		if (mnModelChecking == null)
-			mnModelChecking = new JMenu("Model checking");
-
-		ScriptedActionMenuItem miModelCheckMenuItem = new ScriptedActionMenuItem(new ModelCheckAction(checker));
-		miModelCheckMenuItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnModelChecking.add(miModelCheckMenuItem);
-	}
-
 	private void addExporter (Exporter exporter) {
 		addExporter (exporter, null);
 	}
@@ -333,55 +321,27 @@ public class MainMenu extends JMenuBar {
 	}
 
 	final public void setMenuForModel(VisualModel model) {
-		if (mnTools != null)
-			remove(mnTools);
+		for (JMenu toolMenu : toolMenus)
+			remove(toolMenu);
 
-		mnTools = null;
-		mnLayout = null;
-
-		mnTools = new JMenu();
-		mnTools.setText("Tools");
+		toolMenus.clear();
 
 		Framework framework = mainWindow.getFramework();
 
-		PluginInfo[] layoutPluginInfo = framework.getPluginManager().getPluginsImplementing(Layout.class.getName());
+		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(model, framework);
+		List<String> sections = Tools.getSections(tools);
 
-		try {
-			for (PluginInfo info : layoutPluginInfo) {
-				Layout layout = (Layout)framework.getPluginManager().getSingleton(info);
+		for (String section : sections) {
+			JMenu sectionMenu = new JMenu (section);
+			toolMenus.add(sectionMenu);
+			add(sectionMenu);
 
-				if (layout.isApplicableTo(model))
-					addLayout(info);
+			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
+				ScriptedActionMenuItem miTool = new ScriptedActionMenuItem(new ToolAction(tool));
+				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+				sectionMenu.add(miTool);
 			}
-		} catch (PluginInstantiationException e) {
-			System.err.println ("Could not instantiate layout plugin class: " + e.getMessage() + " (skipped)");
 		}
-
-		if (mnLayout != null)
-			mnTools.add(mnLayout);
-
-
-		PluginInfo[] modelCheckerPluginInfo = framework.getPluginManager().getPluginsImplementing(ModelChecker.class.getName());
-
-		try {
-			for (PluginInfo info : modelCheckerPluginInfo) {
-				ModelChecker modelChecker = (ModelChecker)framework.getPluginManager().getSingleton(info);
-
-				if (modelChecker.isApplicableTo(model))
-					addModelChecker(modelChecker);
-			}
-		} catch (PluginInstantiationException e) {
-			System.err.println ("Could not instantiate layout plugin class: " + e.getMessage() + " (skipped)");
-		}
-
-		if (mnModelChecking != null)
-			mnTools.add(mnModelChecking);
-
-
-		if (mnTools.getMenuComponentCount() > 0)
-			add(mnTools, getComponentIndex(mnSettings));
-		else
-			mnTools = null;
 
 		mnExport.removeAll();
 		mnExport.setEnabled(false);
@@ -423,8 +383,6 @@ public class MainMenu extends JMenuBar {
 		}  catch (PluginInstantiationException e) {
 			System.err.println ("Could not instantiate export plugin class: " + e.getMessage() + " (skipped)");
 		}
-
-		doLayout();
 	}
 
 	final public void registerUtilityWindow(DockableWindow window) {

@@ -69,7 +69,7 @@ public class FileFilters {
 		return path.endsWith(ext)?path:path+ext;
 	}
 
-	public class GenericFileFilter extends FileFilter {
+	public static class GenericFileFilter extends FileFilter {
 		private String extension;
 		private String description;
 
