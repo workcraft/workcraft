@@ -28,24 +28,25 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.workcraft.Framework;
 import org.workcraft.PluginConsumer;
 import org.workcraft.PluginProvider;
+import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.LayoutFailedException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
-import org.workcraft.layout.Layout;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
 
-@DisplayName ("Dot")
-public class DotLayout implements Layout, PluginConsumer {
+@DisplayName ("Layout using dot")
+public class DotLayout implements Tool, PluginConsumer {
 	PluginProvider pluginProvider;
 	File tmp1 = null, tmp2 = null;
 
@@ -95,34 +96,36 @@ public class DotLayout implements Layout, PluginConsumer {
 		}
 	}
 
-	public void doLayout(VisualModel model) throws LayoutFailedException {
+	public void run (Model model, Framework framework) {
 		try {
 			tmp1 = File.createTempFile("work", ".dot");
 			tmp2 = File.createTempFile("worklayout", ".dot");
 
-			saveGraph(model, tmp1);
+			saveGraph((VisualModel)model, tmp1);
 			SynchronousExternalProcess p = new SynchronousExternalProcess(
 					new String[] {DotLayoutSettings.dotCommand, "-Tdot", "-o", tmp2.getAbsolutePath(), tmp1.getAbsolutePath()}, ".");
 			p.start(10000);
 			if(p.getReturnCode()==0) {
 				String in = fileToString(tmp2);
-				applyLayout(in, model);
+				applyLayout(in, (VisualModel)model);
 			}
 			else
-				throw new LayoutFailedException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
+				throw new RuntimeException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
 		} catch(IOException e) {
-			throw new LayoutFailedException(e);
+			throw new RuntimeException(e);
 		} catch (ModelValidationException e) {
-			throw new LayoutFailedException(e);
+			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
-			throw new LayoutFailedException(e);
+			throw new RuntimeException(e);
 		} finally {
 			cleanUp();
 		}
 	}
 
-	public boolean isApplicableTo(VisualModel model) {
-		return true;
+	public boolean isApplicableTo(Model model) {
+		if (model instanceof VisualModel)
+			return true;
+		return false;
 	}
 
 	@Override
@@ -130,5 +133,8 @@ public class DotLayout implements Layout, PluginConsumer {
 		this.pluginProvider = pluginManager;
 	}
 
-
+	@Override
+	public String getSection() {
+		return "Layout";
+	}
 }
