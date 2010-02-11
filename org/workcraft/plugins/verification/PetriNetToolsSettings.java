@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.layout;
+package org.workcraft.plugins.verification;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 
 	public void storePersistentProperties(Config config) {
 		config.set("PetriTools.pcompCommand", pcompCommand);
-		config.set("PetriTools.punfCommand", punfCommand);
+
 		config.set("PetriTools.mpsatCommand", mpsatCommand);
 		config.set("PetriTools.petrifyCommand", petrifyCommand);
 	}
