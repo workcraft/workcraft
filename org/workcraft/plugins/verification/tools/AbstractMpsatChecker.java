@@ -6,8 +6,10 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.verification.MpsatPreset;
 import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.tasks.MpsatVerificationTask;
+import org.workcraft.plugins.verification.tasks.MpsatChainResult;
+import org.workcraft.plugins.verification.tasks.MpsatChainTask;
 import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.util.Export;
 
 public abstract class AbstractMpsatChecker {
@@ -17,6 +19,7 @@ public abstract class AbstractMpsatChecker {
 	}
 
 	protected abstract String getPresetName();
+	protected abstract ProgressMonitor<MpsatChainResult> getProgressMonitor();
 
 	public boolean isApplicableTo(Model model) {
 		if (model instanceof STG || model instanceof VisualSTG)
@@ -41,7 +44,10 @@ public abstract class AbstractMpsatChecker {
 
 		String[] args = pmgr.getMpsatArguments(preset);
 
-		framework.getTaskManager().queue(new MpsatVerificationTask(model, args, Export.chooseBestExporter(framework.getPluginManager(), stg, Format.STG), framework), "Verification");
+		framework.getTaskManager().queue(
+				new MpsatChainTask(model, args, Export.chooseBestExporter(
+						framework.getPluginManager(), stg, Format.STG),
+						framework), "Verification", getProgressMonitor());
 	}
 
 }
