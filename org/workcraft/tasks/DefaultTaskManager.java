@@ -19,8 +19,8 @@ public class DefaultTaskManager implements TaskManager {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public ProgressMonitorArray taskStarting(String description) {
-			ProgressMonitorArray l = new ProgressMonitorArray();
+		public <T> ProgressMonitorArray<T> taskStarting(String description) {
+			ProgressMonitorArray<T> l = new ProgressMonitorArray<T>();
 			for(TaskMonitor obs : this)
 				l.add(obs.taskStarting(description));
 			return l;
@@ -33,16 +33,24 @@ public class DefaultTaskManager implements TaskManager {
 		taskObserverList.add(obs);
 	}
 
+
 	@Override
-	public Result execute(Task task, String description) {
-		ProgressMonitor progressMon = taskObserverList.taskStarting(description);
-		Result result = task.run(progressMon);
+	public <T> Result<T> execute(Task<T> task, String description) {
+		return execute (task, description, null);
+	}
+
+	@Override
+	public <T> Result<T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+		ProgressMonitorArray<T> progressMon = taskObserverList.taskStarting(description);
+		if (observer != null)
+			progressMon.add(observer);
+		Result<T> result = task.run(progressMon);
 		progressMon.finished(result, description);
 		return result;
 	}
 
 	@Override
-	public void queue(final Task task, final String description) {
+	public <T> void queue(final Task<T> task, final String description) {
 		new Thread(new Runnable()
 		{
 			@Override
@@ -54,15 +62,12 @@ public class DefaultTaskManager implements TaskManager {
 	}
 
 	@Override
-	public void queue(final Task task, final String description, final ProgressMonitor observer) {
+	public <T> void queue(final Task<T> task, final String description, final ProgressMonitor<? super T> observer) {
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run() {
-				ProgressMonitorArray progressMon = taskObserverList.taskStarting(description);
-				progressMon.add(observer);
-				Result result = task.run(progressMon);
-				progressMon.finished(result, description);
+				execute(task, description, observer);
 			}
 		}
 		).start();

@@ -1,8 +1,8 @@
 package org.workcraft.tasks;
 
-public class DummyProgressMonitor implements ProgressMonitor {
+public class DummyProgressMonitor<T> implements ProgressMonitor<T> {
 	@Override
-	public void finished(Result result, String description) {
+	public void finished(Result<? extends T> result, String description) {
 	}
 
 	@Override
@@ -11,7 +11,7 @@ public class DummyProgressMonitor implements ProgressMonitor {
 	}
 
 	@Override
-	public void logMessage(String message) {
+	public void stdout(byte[] data) {
 	}
 
 	@Override
@@ -19,6 +19,6 @@ public class DummyProgressMonitor implements ProgressMonitor {
 	}
 
 	@Override
-	public void logErrorMessage(String message) {
+	public void stderr(byte[] data) {
 	}
 }
