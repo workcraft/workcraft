@@ -11,6 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.plugins.verification.MpsatPreset.SolutionMode;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
@@ -19,9 +20,9 @@ public class MpsatPresetManager {
 	private ArrayList<MpsatPreset> presets = new ArrayList<MpsatPreset>();
 
 	private void addBuiltInPresets() {
-		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, false, "", "Deadlock", true));
-		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, true, "", "Deadlock (shortest trace)", true));
-		presets.add(new MpsatPreset(MpsatMode.CSC_CONFLICT_DETECTION, 0, 0, false, "", "CSC conflict detection", true));
+		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.FIRST, 0, "", "Deadlock", true));
+		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.MINIMUM_COST, 0, "", "Deadlock (shortest trace)", true));
+		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.ALL, 0, "", "Deadlock (all traces)", true));
 	}
 
 	private void savePresets() {
@@ -100,8 +101,22 @@ public class MpsatPresetManager {
 		args.add(preset.getMode().getArgument());
 		args.add(String.format("-v%d", preset.getVerbosity()));
 		args.add(String.format("-$%d", preset.getSatSolver()));
-		if (preset.isMinimiseCost())
+
+
+		switch (preset.getSolutionMode()) {
+		case FIRST:
+			break;
+		case MINIMUM_COST:
 			args.add("-f");
+			break;
+		case ALL:
+			int solutionNumberLimit = preset.getSolutionNumberLimit();
+			if (solutionNumberLimit>0)
+				args.add("-a" + Integer.toString(solutionNumberLimit));
+			else
+				args.add("-a");
+		}
+
 
 		if (preset.getMode().isReach())
 			try {
@@ -113,6 +128,6 @@ public class MpsatPresetManager {
 				throw new RuntimeException(e);
 			}
 
-		return args.toArray(new String[args.size()]);
+			return args.toArray(new String[args.size()]);
 	}
 }

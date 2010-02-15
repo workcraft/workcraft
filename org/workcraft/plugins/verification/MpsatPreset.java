@@ -10,21 +10,29 @@ public class MpsatPreset {
 	public static final int SOLVER_ZCHAFF = 0;
 	public static final int SOLVER_MINISAT = 1;
 
+	public enum SolutionMode {
+		FIRST,
+		ALL,
+		MINIMUM_COST
+	}
+
 	private MpsatMode mode;
 	private int verbosity;
 	private int satSolver;
-	private boolean minimiseCost;
+	private SolutionMode solutionMode;
+	private int solutionNumberLimit;
 	private String reach;
 	private String description;
 	private boolean builtIn;
 
 	public MpsatPreset(MpsatMode mode, int verbosity, int satSolver,
-			boolean minimiseCost, String reach, String description, boolean builtIn) {
+			SolutionMode solutionMode, int solutionNumberLimit, String reach, String description, boolean builtIn) {
 		super();
 		this.mode = mode;
 		this.verbosity = verbosity;
 		this.satSolver = satSolver;
-		this.minimiseCost = minimiseCost;
+		this.solutionMode = solutionMode;
+		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
 		this.description = description;
 		this.builtIn = builtIn;
@@ -34,8 +42,9 @@ public class MpsatPreset {
 		description = element.getAttribute("description");
 		mode = MpsatMode.getMode(element.getAttribute("mode"));
 		verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
+		solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
 		satSolver = XmlUtil.readIntAttr(element, "satSolver", 0);
-		minimiseCost = XmlUtil.readBoolAttr(element, "minimiseCost");
+		solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));
 
 		Element re = XmlUtil.getChildElement("reach", element);
 		reach = re.getTextContent();
@@ -47,7 +56,8 @@ public class MpsatPreset {
 		e.setAttribute("mode", mode.getArgument());
 		e.setAttribute("verbosity", Integer.toString(verbosity));
 		e.setAttribute("satSolver", Integer.toString(satSolver));
-		e.setAttribute("minimiseCost", Boolean.toString(minimiseCost));
+		e.setAttribute("solutionMode", solutionMode.name());
+		e.setAttribute("solutionNumberLimit", Integer.toString(solutionNumberLimit));
 
 		Element re = parent.getOwnerDocument().createElement("reach");
 		re.setTextContent(reach);
@@ -72,10 +82,6 @@ public class MpsatPreset {
 		return satSolver;
 	}
 
-	public boolean isMinimiseCost() {
-		return minimiseCost;
-	}
-
 	public String getReach() {
 		return reach;
 	}
@@ -86,5 +92,13 @@ public class MpsatPreset {
 
 	public boolean isBuiltIn() {
 		return builtIn;
+	}
+
+	public SolutionMode getSolutionMode() {
+		return solutionMode;
+	}
+
+	public int getSolutionNumberLimit() {
+		return solutionNumberLimit;
 	}
 }

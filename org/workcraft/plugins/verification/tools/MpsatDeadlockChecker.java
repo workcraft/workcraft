@@ -4,7 +4,9 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Tool;
+import org.workcraft.Trace;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.plugins.verification.MpsatDeadlockParser;
 import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
 import org.workcraft.plugins.verification.tasks.MpsatChainResult;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -27,8 +29,23 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						if (mpsatChainResult.getOutcome() == Outcome.FINISHED)
-							JOptionPane.showMessageDialog(null, new String(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue().getOutput()));
+						if (mpsatChainResult.getOutcome() == Outcome.FINISHED) {
+							MpsatDeadlockParser mdp = new MpsatDeadlockParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
+
+							if (mdp.hasDeadlock()) {
+								String message = "The system has a deadlock.";
+
+								int i = 1;
+								for (Trace t : mdp.getSolutions()) {
+									message += "\nSolution " + Integer.toString(i) + ":\n";
+									message += t;
+									message += "\n";
+								}
+
+								JOptionPane.showMessageDialog(null, message);
+							} else
+								JOptionPane.showMessageDialog(null, "The system is deadlock-free.");
+						}
 						else if (mpsatChainResult.getOutcome() != Outcome.CANCELLED) {
 
 							Result<Object> exportResult = mpsatChainResult.getReturnValue().getExportResult();
