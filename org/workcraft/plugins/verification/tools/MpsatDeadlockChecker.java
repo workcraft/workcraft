@@ -33,12 +33,13 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 							MpsatDeadlockParser mdp = new MpsatDeadlockParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
 
 							if (mdp.hasDeadlock()) {
-								String message = "The system has a deadlock.";
+								String message = "The system has a deadlock.\n";
 
 								int i = 1;
 								for (Trace t : mdp.getSolutions()) {
-									message += "\nSolution " + Integer.toString(i) + ":\n";
-									message += t;
+									if (mdp.getSolutions().size() > 1)
+										message += "Trace " + Integer.toString(i) + ": ";
+									message += t.size()>0 ? t: "Initial marking is a deadlock state.";
 									message += "\n";
 								}
 
@@ -63,7 +64,7 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 
 							if (punfResult.getOutcome() == Outcome.FAILED) {
 								String errorMessage = "Punf could not build the unfolding prefix.";
-								Throwable cause = exportResult.getCause();
+								Throwable cause = punfResult.getCause();
 								if (cause != null)
 									errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
 								else
