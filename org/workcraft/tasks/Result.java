@@ -1,16 +1,50 @@
 package org.workcraft.tasks;
 
-public interface Result {
+public class Result<T> {
 
-	public enum ExitStatus {
-		OK,
+	public enum Outcome {
+		FINISHED,
 		CANCELLED,
 		FAILED
 	}
 
-	public static final Result OK = new DefaultResult(ExitStatus.OK);
-	public static final Result CANCELLED = new DefaultResult(ExitStatus.CANCELLED);
-	public static final Result FAILED = new DefaultResult(ExitStatus.FAILED);
+	private Outcome outcome;
+	private Throwable cause;
+	private T result;
 
-	public ExitStatus getExitStatus();
+	public Result(Outcome outcome) {
+		this.outcome = outcome;
+		this.cause = null;
+		this.result = null;
+	}
+
+	public Result (Outcome outcome, T result) {
+		this.outcome = outcome;
+		this.cause = null;
+		this.result = result;
+	}
+
+	public Result(Throwable exception) {
+		this.outcome = Outcome.FAILED;
+		this.cause = exception;
+		this.result = null;
+	}
+
+	public Result(T result) {
+		this.outcome = Outcome.FINISHED;
+		this.cause = null;
+		this.result = result;
+	}
+
+	public Outcome getOutcome() {
+		return outcome;
+	}
+
+	public Throwable getCause() {
+		return cause;
+	}
+
+	public T getReturnValue() {
+		return result;
+	}
 }

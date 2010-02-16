@@ -34,13 +34,13 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.tasks.ExceptionResult;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 
 public class Export {
-	public static class ExportTask implements Task {
+	public static class ExportTask implements Task<Object> {
 		Exporter exporter;
 		Model model;
 		File file;
@@ -52,14 +52,14 @@ public class Export {
 		}
 
 		@Override
-		public Result run(ProgressMonitor monitor) {
+		public Result<Object> run(ProgressMonitor<Object> monitor) {
 			FileOutputStream fos;
 
 			try {
 				file.createNewFile();
 				fos = new FileOutputStream(file);
 			} catch (IOException e) {
-				return new ExceptionResult(e);
+				return new Result<Object>(e);
 			}
 
 			boolean ok = false;
@@ -69,32 +69,26 @@ public class Export {
 				if (model instanceof VisualModel)
 					if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
 						if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
-								return new ExceptionResult(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
+								return new Result<Object>(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
 						else
 							model = ((VisualModel)model).getMathModel();
 				exporter.export(model, fos);
 				ok = true;
-			} catch (IOException e) {
-				return new ExceptionResult(e);
-			} catch (ModelValidationException e) {
-				return new ExceptionResult(e);
-			} catch (SerialisationException e) {
-				return new ExceptionResult(e);
-			} catch (RuntimeException e) {
-				return new ExceptionResult(e);
+			} catch (Throwable e) {
+				return new Result<Object>(e);
 			}
 			finally
 			{
 				try {
 					fos.close();
 				} catch (IOException e) {
-					return new ExceptionResult(e);
+					return new Result<Object>(e);
 				}
 				if(!ok)
 					file.delete();
 			}
 
-			return Result.OK;
+			return new Result<Object>(Outcome.FINISHED);
 		}
 	}
 

@@ -46,10 +46,11 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
+import org.workcraft.tasks.Result.Outcome;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
-	class TaskControlMonitor implements ProgressMonitor {
+	class TaskControlMonitor implements ProgressMonitor<Object> {
 		TaskManagerWindow window;
 		TaskControl taskControl;
 
@@ -64,7 +65,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 		}
 
 		@Override
-		public void finished(Result result, String description) {
+		public void finished(Result<? extends Object> result, String description) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -74,13 +75,11 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 		}
 
 		@Override
-		public void logMessage(String message) {
-			System.out.println(message);
+		public void stdout(byte[] data) {
 		}
 
 		@Override
-		public void logErrorMessage(String message) {
-			System.err.println (message);
+		public void stderr(byte[] data) {
 		}
 
 		@Override
@@ -178,26 +177,26 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 		comp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				framework.getTaskManager().queue(new Task(){
+				framework.getTaskManager().queue(new Task<Object>(){
 					@Override
-					public Result run(ProgressMonitor monitor) {
+					public Result<Object> run(ProgressMonitor<Object> monitor) {
 						for (int i=0; i < 100; i++) {
 							try {
 								if (monitor.isCancelRequested()) {
-									return Result.CANCELLED;
+									return new Result<Object>(Outcome.CANCELLED);
 								}
 								Thread.sleep((int)(Math.random()*100+20));
 							} catch (InterruptedException e) {
-								return Result.FAILED;
+								return new Result<Object>(Outcome.FAILED);
 							}
 							monitor.progressUpdate(i/99.0);
 						}
-						return Result.OK;
-					} }, "Test task #" + counter++, new DummyProgressMonitor(){
+						return new Result<Object>(Outcome.FINISHED);
+					} }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
 
 						@Override
-						public void finished(Result result, final String description) {
-							if (result.getExitStatus() == Result.ExitStatus.OK )
+						public void finished(Result<? extends Object> result, final String description) {
+							if (result.getOutcome() == Outcome.FINISHED )
 							{
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
@@ -221,7 +220,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 	}
 
 	@Override
-	public ProgressMonitor taskStarting(final String description) {
+	public ProgressMonitor<Object> taskStarting(final String description) {
 		TaskControlGenerator tcg = new TaskControlGenerator(framework, content, description);
 		try {
 			SwingUtilities.invokeAndWait(tcg);

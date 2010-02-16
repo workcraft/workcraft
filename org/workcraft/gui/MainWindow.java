@@ -978,7 +978,7 @@ public class MainWindow extends JFrame {
 		}
 
 
-		Task exportTask = new Export.ExportTask (exporter, editorInFocus.getModel(), path);
+		Task<Object> exportTask = new Export.ExportTask (exporter, editorInFocus.getModel(), path);
 		framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
 
 		//Export.exportToFile(exporter, editorInFocus.getModel(), path);

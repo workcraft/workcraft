@@ -30,7 +30,6 @@ public class GenericMpsatChecker implements Tool {
 	public void run(Model model, Framework framework) {
 		MpsatPresetManager pmgr = new MpsatPresetManager();
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
-		dialog.setSize(500, 500);
 		GUI.centerFrameToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
 	}

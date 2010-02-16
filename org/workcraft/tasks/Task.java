@@ -1,5 +1,5 @@
 package org.workcraft.tasks;
 
-public interface Task {
-	public Result run (ProgressMonitor monitor);
+public interface Task <T> {
+	public Result<T> run (ProgressMonitor<T> monitor);
 }
