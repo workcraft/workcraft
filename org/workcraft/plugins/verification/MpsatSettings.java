@@ -1,94 +1,104 @@
-/*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
-
+/**
+ *
+ */
 package org.workcraft.plugins.verification;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.workcraft.Config;
-import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.w3c.dom.Element;
+import org.workcraft.util.XmlUtil;
 
-@DisplayName("MPSat")
-public class MpsatSettings implements PersistentPropertyEditable, Plugin {
-	private static LinkedList<PropertyDescriptor> properties;
+public class MpsatSettings {
+	public static final int SOLVER_ZCHAFF = 0;
+	public static final int SOLVER_MINISAT = 1;
 
-	private static String mpsatCommand = "mpsat";
-	private static String mpsatArgs = "";
-
-	private static final String mpsatCommandKey = "Verification.mpsat.command";
-	private static final String mpsatArgsKey = "Verification.mpsat.args";
-
-	public MpsatSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
-		properties.add(new PropertyDeclaration("MPSat additional arguments", "getMpsatArgs", "setMpsatArgs", String.class));
+	public enum SolutionMode {
+		FIRST,
+		ALL,
+		MINIMUM_COST
 	}
 
-	public List<PropertyDescriptor> getPropertyDeclarations() {
-		return properties;
+	private MpsatMode mode;
+	private int verbosity;
+	private int satSolver;
+	private SolutionMode solutionMode;
+	private int solutionNumberLimit;
+	private String reach;
+	private String description;
+	private boolean builtIn;
+
+	public MpsatSettings(MpsatMode mode, int verbosity, int satSolver,
+			SolutionMode solutionMode, int solutionNumberLimit, String reach, String description, boolean builtIn) {
+		super();
+		this.mode = mode;
+		this.verbosity = verbosity;
+		this.satSolver = satSolver;
+		this.solutionMode = solutionMode;
+		this.solutionNumberLimit = solutionNumberLimit;
+		this.reach = reach;
+		this.description = description;
+		this.builtIn = builtIn;
 	}
 
-	public void loadPersistentProperties(Config config) {
-		mpsatCommand = config.getString(mpsatCommandKey, "mpsat");
-		mpsatArgs = config.getString(mpsatArgsKey, "");
+	public MpsatSettings(Element element) {
+		description = element.getAttribute("description");
+		mode = MpsatMode.getMode(element.getAttribute("mode"));
+		verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
+		solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
+		satSolver = XmlUtil.readIntAttr(element, "satSolver", 0);
+		solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));
+
+		Element re = XmlUtil.getChildElement("reach", element);
+		reach = re.getTextContent();
 	}
 
-	public void storePersistentProperties(Config config) {
-		config.set(mpsatCommandKey, mpsatCommand);
-		config.set(mpsatArgsKey, mpsatArgs);
+	public void toXML(Element parent) {
+		Element e = parent.getOwnerDocument().createElement("preset");
+		e.setAttribute("description", description);
+		e.setAttribute("mode", mode.getArgument());
+		e.setAttribute("verbosity", Integer.toString(verbosity));
+		e.setAttribute("satSolver", Integer.toString(satSolver));
+		e.setAttribute("solutionMode", solutionMode.name());
+		e.setAttribute("solutionNumberLimit", Integer.toString(solutionNumberLimit));
+
+		Element re = parent.getOwnerDocument().createElement("reach");
+		re.setTextContent(reach);
+
+		e.appendChild(re);
+		parent.appendChild(e);
 	}
 
-	public String getSection() {
-		return "Verification";
+	public String toString() {
+		return builtIn?description + " [built-in]":description;
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	public MpsatMode getMode() {
+		return mode;
 	}
 
-	public void firePropertyChanged(String propertyName) {
+	public int getVerbosity() {
+		return verbosity;
 	}
 
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
+	public int getSatSolver() {
+		return satSolver;
 	}
 
-	public static String getMpsatCommand() {
-		return mpsatCommand;
+	public String getReach() {
+		return reach;
 	}
 
-	public static void setMpsatCommand(String mpsatCommand) {
-		MpsatSettings.mpsatCommand = mpsatCommand;
+	public String getDescription() {
+		return description;
 	}
 
-	public static String getMpsatArgs() {
-		return mpsatArgs;
+	public boolean isBuiltIn() {
+		return builtIn;
 	}
 
-	public static void setMpsatArgs(String mpsatArgs) {
-		MpsatSettings.mpsatArgs = mpsatArgs;
+	public SolutionMode getSolutionMode() {
+		return solutionMode;
 	}
 
+	public int getSolutionNumberLimit() {
+		return solutionNumberLimit;
+	}
 }

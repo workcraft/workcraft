@@ -25,24 +25,26 @@ import javax.swing.JTextField;
 
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.verification.MpsatMode;
-import org.workcraft.plugins.verification.MpsatPreset;
 import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.MpsatPreset.SolutionMode;
+import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
 
 	private JPanel content, presetPanel, reachPanel, buttonsPanel;
+	private JLabel numberOfSolutionsLabel;
 	private JScrollPane optionsPanel;
 	private JComboBox presetCombo, modeCombo, satCombo, verbosityCombo;
 	private JButton manageButton, saveButton, runButton, updateButton, cancelButton;
-	private JTextField solutionLimit;
+	private JTextField solutionLimitText;
 	private JTextArea reachText;
 	private JRadioButton allSolutionsButton, firstSolutionButton, cheapestSolutionButton;
 	private MpsatPresetManager presetManager;
 
 	private TableLayout layout;
+	private int modalResult = 0;
 
 	class IntMode {
 		public int value;
@@ -59,16 +61,16 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createPresetPanel() {
-		presetPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 3));
+		presetPanel = new JPanel(new SimpleFlowLayout(15, 3));
 
 		presetCombo = new JComboBox();
-		for (MpsatPreset p : presetManager.getPresets())
+		for (MpsatSettings p : presetManager.getPresets())
 			presetCombo.addItem(p);
 
 		presetCombo.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				applySelectedPreset();
+				applySettingsToControls();
 			}
 		});
 
@@ -85,6 +87,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		});
 
 		presetPanel.add(GUI.createLabeledComponent(presetCombo, "Preset:"));
+		presetPanel.add(new SimpleFlowLayout.LineBreak(3));
 		presetPanel.add(updateButton);
 		presetPanel.add(saveButton);
 		presetPanel.add(manageButton);
@@ -106,7 +109,6 @@ public class MpsatConfigurationDialog extends JDialog {
 			modeCombo.addItem(mode);
 
 		modeCombo.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MpsatMode selectedMode = (MpsatMode)modeCombo.getSelectedItem();
@@ -130,12 +132,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		optionsPanelContent.add(new JLabel("Solution mode:"));
 		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(-2));
 
-		firstSolutionButton = new JRadioButton ("Find any solution (default)");
-		allSolutionsButton = new JRadioButton("Find all solutions");
-		cheapestSolutionButton = new JRadioButton("Minimise cost function");
-
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(firstSolutionButton); bg.add(allSolutionsButton); bg.add(cheapestSolutionButton);
+		createSolutionModeButtons();
 
 		optionsPanelContent.add(firstSolutionButton);
 		optionsPanelContent.add(cheapestSolutionButton);
@@ -143,14 +140,20 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		optionsPanelContent.add(new SimpleFlowLayout.LineBreak());
 
-		solutionLimit = new JTextField();
-		solutionLimit.setText("WWWW");
-		Dimension preferredSize = solutionLimit.getPreferredSize();
-		solutionLimit.setText("");
-		solutionLimit.setPreferredSize(preferredSize);
+		solutionLimitText = new JTextField();
+		solutionLimitText.setText("WWWW");
+		Dimension preferredSize = solutionLimitText.getPreferredSize();
+		solutionLimitText.setText("");
+		solutionLimitText.setPreferredSize(preferredSize);
 
+		JPanel numberOfSolutionsPanel = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
+		numberOfSolutionsLabel = new JLabel("Maximum number of solutions (leave blank for no limit):");
+		numberOfSolutionsPanel.add(numberOfSolutionsLabel);
+		numberOfSolutionsPanel.add(solutionLimitText);
 
-		optionsPanelContent.add(GUI.createLabeledComponent(solutionLimit, "Maximum number of solutions (leave blank for no limit):"));
+		disableNumberOfSolutionControls();
+
+		optionsPanelContent.add(numberOfSolutionsPanel);
 		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(8));
 
 		satCombo = new JComboBox();
@@ -166,6 +169,46 @@ public class MpsatConfigurationDialog extends JDialog {
 		optionsPanelContent.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity level:"));
 	}
 
+	private void createSolutionModeButtons() {
+		firstSolutionButton = new JRadioButton ("Find any solution (default)");
+		firstSolutionButton.setSelected(true);
+		firstSolutionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				disableNumberOfSolutionControls();
+			}
+		});
+		allSolutionsButton = new JRadioButton("Find all solutions");
+		allSolutionsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				enableNumberOfSolutionControls();
+			}
+		});
+
+		cheapestSolutionButton = new JRadioButton("Minimise cost function");
+		cheapestSolutionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				disableNumberOfSolutionControls();
+			}
+		});
+
+
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(firstSolutionButton); bg.add(allSolutionsButton); bg.add(cheapestSolutionButton);
+	}
+
+	private void disableNumberOfSolutionControls() {
+		numberOfSolutionsLabel.setEnabled(false);
+		solutionLimitText.setEnabled(false);
+	}
+
+	private void enableNumberOfSolutionControls() {
+		numberOfSolutionsLabel.setEnabled(true);
+		solutionLimitText.setEnabled(true);
+	}
+
 	private void createReachPanel() {
 		reachPanel = new JPanel  (new BorderLayout());
 		reachPanel.setBorder(BorderFactory.createTitledBorder("Property specification (Reach)"));
@@ -176,17 +219,35 @@ public class MpsatConfigurationDialog extends JDialog {
 		reachPanel.add(reachText);
 	}
 
-	private void applySelectedPreset() {
-		MpsatPreset p = (MpsatPreset)presetCombo.getSelectedItem();
+	private void applySettingsToControls() {
+		MpsatSettings p = (MpsatSettings)presetCombo.getSelectedItem();
 
 		modeCombo.setSelectedItem(p.getMode());
 		satCombo.setSelectedIndex(p.getSatSolver());
 		verbosityCombo.setSelectedIndex(p.getVerbosity());
-		//minimiseCostCheck.setSelected(p.isMinimiseCost());
+		switch (p.getSolutionMode()) {
+		case ALL:
+			allSolutionsButton.setSelected(true);
+			enableNumberOfSolutionControls();
+			break;
+		case MINIMUM_COST:
+			cheapestSolutionButton.setSelected(true);
+			disableNumberOfSolutionControls();
+			break;
+		case FIRST:
+			firstSolutionButton.setSelected(true);
+			disableNumberOfSolutionControls();
+			break;
+		}
+		int n = p.getSolutionNumberLimit();
+
+		if (n>0)
+			solutionLimitText.setText(Integer.toString(n));
+		else
+			solutionLimitText.setText("");
+
 		reachText.setText(p.getReach());
 	}
-
-
 
 	public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
 		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
@@ -199,7 +260,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
-				{presetPanel.getPreferredSize().height, TableLayout.FILL, TableLayout.FILL, buttonsPanel.getPreferredSize().height}
+				{TableLayout.PREFERRED, TableLayout.FILL, TableLayout.FILL, buttonsPanel.getPreferredSize().height}
 		};
 
 		layout = new TableLayout(size);
@@ -219,11 +280,29 @@ public class MpsatConfigurationDialog extends JDialog {
 		presetCombo.setSelectedIndex(0);
 	}
 
+	public MpsatSettings getSettings() {
+		return getSettingsFromControls("Custom settings");
+	}
+
 	private void createButtonsPanel() {
 		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
 		runButton = new JButton ("Run");
+		runButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				modalResult = 1;
+				setVisible(false);
+			}
+		});
 		cancelButton = new JButton ("Cancel");
+		runButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				modalResult = 0;
+				setVisible(false);
+			}
+		});
 
 		buttonsPanel.add(cancelButton);
 		buttonsPanel.add(runButton);
@@ -233,11 +312,36 @@ public class MpsatConfigurationDialog extends JDialog {
 		String desc = JOptionPane.showInputDialog(this, "Please enter the description of the new preset:");
 
 		if (! (desc == null || desc.isEmpty())) {
-			MpsatPreset preset = new MpsatPreset((MpsatMode)modeCombo.getSelectedItem(),
-					verbosityCombo.getSelectedIndex(), satCombo.getSelectedIndex(), SolutionMode.ALL,
-					0, reachText.getText(), desc, false );
+			MpsatSettings preset = getSettingsFromControls(desc);
 			presetManager.createPreset(preset);
 			presetCombo.addItem(preset);
 		}
+	}
+
+	private MpsatSettings getSettingsFromControls(String desc) {
+		SolutionMode m;
+
+		if (firstSolutionButton.isSelected())
+			m = SolutionMode.FIRST;
+		else if (cheapestSolutionButton.isSelected())
+			m = SolutionMode.MINIMUM_COST;
+		else
+			m = SolutionMode.ALL;
+
+		int n;
+
+		try {
+			n = Integer.parseInt(solutionLimitText.getText());
+		} catch (NumberFormatException e) {
+			n = 0;
+		}
+
+		if (n<0)
+			n=0;
+
+		MpsatSettings preset = new MpsatSettings((MpsatMode) modeCombo
+				.getSelectedItem(), verbosityCombo.getSelectedIndex(), satCombo
+				.getSelectedIndex(), m, n, reachText.getText(), desc, false);
+		return preset;
 	}
 }

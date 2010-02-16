@@ -11,18 +11,18 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.plugins.verification.MpsatPreset.SolutionMode;
+import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class MpsatPresetManager {
-	private ArrayList<MpsatPreset> presets = new ArrayList<MpsatPreset>();
+	private ArrayList<MpsatSettings> presets = new ArrayList<MpsatSettings>();
 
 	private void addBuiltInPresets() {
-		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.FIRST, 0, "", "Deadlock", true));
-		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.MINIMUM_COST, 0, "", "Deadlock (shortest trace)", true));
-		presets.add(new MpsatPreset(MpsatMode.DEADLOCK, 0, 0, SolutionMode.ALL, 0, "", "Deadlock (all traces)", true));
+		presets.add(new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.FIRST, 0, "", "Deadlock", true));
+		presets.add(new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.MINIMUM_COST, 0, "", "Deadlock (shortest trace)", true));
+		presets.add(new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.ALL, 0, "", "Deadlock (all traces)", true));
 	}
 
 	private void savePresets() {
@@ -32,7 +32,7 @@ public class MpsatPresetManager {
 			Element root = doc.createElement("mpsat-presets");
 			doc.appendChild(root);
 
-			for (MpsatPreset p : presets)
+			for (MpsatSettings p : presets)
 				if (!p.isBuiltIn())
 					p.toXML(root);
 
@@ -53,14 +53,14 @@ public class MpsatPresetManager {
 				Document doc = XmlUtil.loadDocument("config/mpsat_presets.xml");
 
 				for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement())) {
-					MpsatPreset e = new MpsatPreset(p);
+					MpsatSettings e = new MpsatSettings(p);
 					presets.add(e);
 				}
 			}
 
-			Collections.sort(presets, new Comparator<MpsatPreset>() {
+			Collections.sort(presets, new Comparator<MpsatSettings>() {
 				@Override
-				public int compare(MpsatPreset o1, MpsatPreset o2) {
+				public int compare(MpsatSettings o1, MpsatSettings o2) {
 					return o1.getDescription().compareTo(o2.getDescription());
 				}
 			});
@@ -73,30 +73,30 @@ public class MpsatPresetManager {
 		}
 	}
 
-	public void createPreset (MpsatPreset settings) {
+	public void createPreset (MpsatSettings settings) {
 		presets.add(settings);
 		savePresets();
 	}
 
-	public void updatePreset (int preset, MpsatPreset settings) {
+	public void updatePreset (int preset, MpsatSettings settings) {
 		if (!presets.get(preset).isBuiltIn()) {
 			presets.set(preset, settings);
 			savePresets();
 		}
 	}
 
-	public MpsatPreset findPreset(String description) {
-		for (MpsatPreset preset : presets)
+	public MpsatSettings findPreset(String description) {
+		for (MpsatSettings preset : presets)
 			if (preset.getDescription().equals(description))
 				return preset;
 		return null;
 	}
 
-	public List<MpsatPreset> getPresets() {
+	public List<MpsatSettings> getPresets() {
 		return Collections.unmodifiableList(presets);
 	}
 
-	public String[] getMpsatArguments(MpsatPreset preset) {
+	public String[] getMpsatArguments(MpsatSettings preset) {
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(preset.getMode().getArgument());
 		args.add(String.format("-v%d", preset.getVerbosity()));

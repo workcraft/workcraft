@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.verification.PunfSettings;
+import org.workcraft.plugins.verification.PunfUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -32,9 +32,9 @@ public class PunfTask implements Task<ExternalProcessResult>, ExternalProcessLis
 			this.monitor = monitor;
 
 			ArrayList<String> command = new ArrayList<String>();
-			command.add(PunfSettings.getPunfCommand());
+			command.add(PunfUtilitySettings.getPunfCommand());
 
-			for (String arg : PunfSettings.getPunfArgs().split(" "))
+			for (String arg : PunfUtilitySettings.getPunfArgs().split(" "))
 				if (!arg.isEmpty())
 					command.add(arg);
 

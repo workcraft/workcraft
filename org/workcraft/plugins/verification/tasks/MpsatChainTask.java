@@ -5,6 +5,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.verification.MpsatMode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
@@ -17,12 +18,14 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	private Exporter exporter;
 	private String[] mpsatArgs;
 	private Framework framework;
+	private MpsatMode mpsatMode;
 
-	public MpsatChainTask(Model model, String[] mpsatArgs, Exporter exporter, Framework framework) {
+	public MpsatChainTask(Model model, String[] mpsatArgs, MpsatMode mpsatMode, Exporter exporter, Framework framework) {
 		this.model = model;
 		this.mpsatArgs = mpsatArgs;
 		this.exporter = exporter;
 		this.framework = framework;
+		this.mpsatMode = mpsatMode;
 	}
 
 	@Override
@@ -39,7 +42,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, mpsatMode));
 			}
 
 			monitor.progressUpdate(0.33);
@@ -54,7 +57,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				mciFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, mpsatMode));
 			}
 
 			monitor.progressUpdate(0.66);
@@ -66,12 +69,12 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, mpsatMode ));
 			}
 
 			monitor.progressUpdate(1.0);
 
-			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult));
+			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, mpsatMode));
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		}

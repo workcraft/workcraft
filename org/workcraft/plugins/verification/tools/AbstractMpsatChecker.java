@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.plugins.verification.MpsatPreset;
+import org.workcraft.plugins.verification.MpsatSettings;
 import org.workcraft.plugins.verification.MpsatPresetManager;
 import org.workcraft.plugins.verification.tasks.MpsatChainResult;
 import org.workcraft.plugins.verification.tasks.MpsatChainTask;
@@ -37,7 +37,7 @@ public abstract class AbstractMpsatChecker {
 
 		MpsatPresetManager pmgr = new MpsatPresetManager();
 		String presetName = getPresetName();
-		MpsatPreset preset = pmgr.findPreset(presetName);
+		MpsatSettings preset = pmgr.findPreset(presetName);
 
 		if (preset == null)
 			throw new RuntimeException ("Built-in MPSat configuration \"" + presetName + "\" was not found.");
@@ -45,7 +45,7 @@ public abstract class AbstractMpsatChecker {
 		String[] args = pmgr.getMpsatArguments(preset);
 
 		framework.getTaskManager().queue(
-				new MpsatChainTask(model, args, Export.chooseBestExporter(
+				new MpsatChainTask(model, args, preset.getMode(), Export.chooseBestExporter(
 						framework.getPluginManager(), stg, Format.STG),
 						framework), "Verification", getProgressMonitor());
 	}
