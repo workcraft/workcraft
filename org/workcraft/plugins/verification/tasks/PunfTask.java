@@ -48,7 +48,7 @@ public class PunfTask implements Task<ExternalProcessResult>, ExternalProcessLis
 			try {
 				punfProcess.start();
 			} catch (IOException e) {
-				return new Result<ExternalProcessResult>(Outcome.FAILED);
+				return new Result<ExternalProcessResult>(e);
 			}
 
 			while (true) {
