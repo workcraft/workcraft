@@ -170,7 +170,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 								mi.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent e) {
-										tools.get(e.getSource()).run(we.getModel(), framework);
+										Tools.run(we.getModel(), tools.get(e.getSource()), framework);
 									}
 								});
 

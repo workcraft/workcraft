@@ -31,20 +31,20 @@ import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
-@DisplayName("punf")
-public class PunfSettings implements PersistentPropertyEditable, Plugin {
+@DisplayName("MPSat")
+public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String punfCommand = "punf";
-	private static String punfArgs = "";
+	private static String mpsatCommand = "mpsat";
+	private static String mpsatArgs = "";
 
-	private static final String punfCommandKey = "Verification.punf.command";
-	private static final String punfArgsKey = "Verification.punf.args";
+	private static final String mpsatCommandKey = "Verification.mpsat.command";
+	private static final String mpsatArgsKey = "Verification.mpsat.args";
 
-	public PunfSettings() {
+	public MpsatUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("Punf command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration("Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
+		properties.add(new PropertyDeclaration("MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
+		properties.add(new PropertyDeclaration("MPSat additional arguments", "getMpsatArgs", "setMpsatArgs", String.class));
 	}
 
 	public List<PropertyDescriptor> getPropertyDeclarations() {
@@ -52,13 +52,13 @@ public class PunfSettings implements PersistentPropertyEditable, Plugin {
 	}
 
 	public void loadPersistentProperties(Config config) {
-		punfCommand = config.getString(punfCommandKey, "punf");
-		punfArgs = config.getString(punfArgsKey, "");
+		mpsatCommand = config.getString(mpsatCommandKey, "mpsat");
+		mpsatArgs = config.getString(mpsatArgsKey, "");
 	}
 
 	public void storePersistentProperties(Config config) {
-		config.set(punfCommandKey, punfCommand);
-		config.set(punfArgsKey, punfArgs);
+		config.set(mpsatCommandKey, mpsatCommand);
+		config.set(mpsatArgsKey, mpsatArgs);
 	}
 
 	public String getSection() {
@@ -68,7 +68,6 @@ public class PunfSettings implements PersistentPropertyEditable, Plugin {
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 	}
 
-
 	public void firePropertyChanged(String propertyName) {
 	}
 
@@ -76,19 +75,20 @@ public class PunfSettings implements PersistentPropertyEditable, Plugin {
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
-	public static String getPunfCommand() {
-		return punfCommand;
+	public static String getMpsatCommand() {
+		return mpsatCommand;
 	}
 
-	public static void setPunfCommand(String punfCommand) {
-		PunfSettings.punfCommand = punfCommand;
+	public static void setMpsatCommand(String mpsatCommand) {
+		MpsatUtilitySettings.mpsatCommand = mpsatCommand;
 	}
 
-	public static String getPunfArgs() {
-		return punfArgs;
+	public static String getMpsatArgs() {
+		return mpsatArgs;
 	}
 
-	public static void setPunfArgs(String punfArgs) {
-		PunfSettings.punfArgs = punfArgs;
+	public static void setMpsatArgs(String mpsatArgs) {
+		MpsatUtilitySettings.mpsatArgs = mpsatArgs;
 	}
+
 }

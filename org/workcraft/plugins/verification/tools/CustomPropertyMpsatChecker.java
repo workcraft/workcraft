@@ -6,12 +6,14 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.verification.MpsatChainResultHandler;
 import org.workcraft.plugins.verification.MpsatPresetManager;
 import org.workcraft.plugins.verification.gui.MpsatConfigurationDialog;
+import org.workcraft.plugins.verification.tasks.MpsatChainTask;
 import org.workcraft.util.GUI;
 
 @DisplayName("Check custom property (punf, MPSat)")
-public class GenericMpsatChecker implements Tool {
+public class CustomPropertyMpsatChecker implements Tool {
 
 	@Override
 	public String getSection() {
@@ -20,7 +22,7 @@ public class GenericMpsatChecker implements Tool {
 
 	@Override
 	public boolean isApplicableTo(Model model) {
-		if (model instanceof STG || model instanceof VisualSTG)
+		if (model instanceof STG)
 			return true;
 		else
 			return false;
@@ -32,6 +34,10 @@ public class GenericMpsatChecker implements Tool {
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerFrameToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
+		if (dialog.getModalResult() == 1)
+		{
+			framework.getTaskManager().queue(new MpsatChainTask(model, dialog.getSettings(), framework), "MPSat tool chain",
+					new MpsatChainResultHandler());
+		}
 	}
-
 }

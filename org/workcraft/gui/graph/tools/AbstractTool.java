@@ -23,6 +23,9 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.Graphics2D;
 
+import javax.swing.Icon;
+import javax.swing.JPanel;
+
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
@@ -68,5 +71,13 @@ public abstract class AbstractTool implements GraphEditorTool {
 
 	public int getHotKeyCode() {
 		return -1; // undefined hotkey
+	}
+
+	public Icon getIcon() {
+		return null;
+	}
+
+	public JPanel getInterfacePanel() {
+		return null;
 	}
 }
