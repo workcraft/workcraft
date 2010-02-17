@@ -66,7 +66,6 @@ import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.ModelCheckingFailedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -80,10 +79,10 @@ import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.modelchecking.ModelChecker;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Import;
+import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -229,6 +228,7 @@ public class MainWindow extends JFrame {
 	private JavaScriptWindow jsWindow;
 	private PropertyEditorWindow propertyEditorWindow;
 	private ToolboxWindow toolboxWindow;
+	private ToolInterfaceWindow toolInterfaceWindow;
 
 	private JPanel content;
 
@@ -260,6 +260,8 @@ public class MainWindow extends JFrame {
 		jsWindow = new JavaScriptWindow(framework);
 
 		toolboxWindow = new ToolboxWindow(framework);
+
+		toolInterfaceWindow = new ToolInterfaceWindow();
 
 		outputDockable = null;
 		editorInFocus = null;
@@ -440,6 +442,7 @@ public class MainWindow extends JFrame {
 
 		DockableWindow wsvd = createDockableWindow (workspaceWindow, "Workspace", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION, 0.8f);
 		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow tiw = createDockableWindow(toolInterfaceWindow, "Tool controls", propertyEditor, DockableWindowContentPanel.CLOSE_BUTTON);
 		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 
 		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), "", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f, "DocumentPlaceholder");
@@ -465,6 +468,7 @@ public class MainWindow extends JFrame {
 		registerUtilityWindow (propertyEditor);
 		registerUtilityWindow (toolbox);
 		registerUtilityWindow (tasks);
+		registerUtilityWindow (tiw);
 		utilityWindows.add(documentPlaceholder);
 
 		disableWorkActions();
@@ -908,23 +912,13 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void runModelChecker(String modelCheckerClassName) {
-		try {
-			ModelChecker checker = (ModelChecker)framework.getPluginManager().getSingletonByName(modelCheckerClassName);
-			checker.run(editorInFocus.getModel());
-		} catch (ModelCheckingFailedException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Model checking failed", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		} catch (PluginInstantiationException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Model checking failed", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		}
-	}
-
 	public void runTool (String className) {
 		try {
 			Tool tool = (Tool)framework.getPluginManager().getSingletonByName(className);
-			tool.run(editorInFocus.getModel(), framework);
+
+			VisualModel model = editorInFocus.getModel();
+
+			Tools.run(model, tool, framework);
 		} catch (PluginInstantiationException e) {
 			throw new RuntimeException (e);
 		}
@@ -1036,6 +1030,10 @@ public class MainWindow extends JFrame {
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
+	}
+
+	public ToolInterfaceWindow getToolInterfaceWindow() {
+		return toolInterfaceWindow;
 	}
 }
 

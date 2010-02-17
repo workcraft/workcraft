@@ -4,50 +4,30 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.plugins.verification.MpsatPreset;
-import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.tasks.MpsatChainResult;
+import org.workcraft.plugins.verification.MpsatChainResultHandler;
+import org.workcraft.plugins.verification.MpsatSettings;
 import org.workcraft.plugins.verification.tasks.MpsatChainTask;
-import org.workcraft.serialisation.Format;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.util.Export;
 
 public abstract class AbstractMpsatChecker {
-
-	public String getSection() {
+	public final String getSection() {
 		return "Verification";
 	}
 
-	protected abstract String getPresetName();
-	protected abstract ProgressMonitor<MpsatChainResult> getProgressMonitor();
+	protected abstract MpsatSettings getSettings();
 
-	public boolean isApplicableTo(Model model) {
-		if (model instanceof STG || model instanceof VisualSTG)
+	public final boolean isApplicableTo(Model model) {
+		if (model instanceof STG)
 			return true;
 		else
 			return false;
 	}
 
-	public void run(Model model, Framework framework) {
-		STG stg;
-		if (model instanceof VisualSTG)
-			stg = (STG)((VisualSTG)model).getMathModel();
-		else
-			stg = (STG)model;
+	public final void run(Model model, Framework framework) {
+		String title = model.getTitle();
+		String description = "MPSat tool chain";
+		if (!title.isEmpty())
+			description += "(" + title +")";
 
-		MpsatPresetManager pmgr = new MpsatPresetManager();
-		String presetName = getPresetName();
-		MpsatPreset preset = pmgr.findPreset(presetName);
-
-		if (preset == null)
-			throw new RuntimeException ("Built-in MPSat configuration \"" + presetName + "\" was not found.");
-
-		String[] args = pmgr.getMpsatArguments(preset);
-
-		framework.getTaskManager().queue(
-				new MpsatChainTask(model, args, Export.chooseBestExporter(
-						framework.getPluginManager(), stg, Format.STG),
-						framework), "Verification", getProgressMonitor());
+		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler());
 	}
-
 }

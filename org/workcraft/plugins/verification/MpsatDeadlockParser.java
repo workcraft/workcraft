@@ -29,13 +29,16 @@ public class MpsatDeadlockParser extends MpsatResultParser {
 		while (m.find()) {
 			Trace trace = new Trace();
 
-			String[] ss = m.group(1).split(",");
+			String mpsatTrace = m.group(1);
+			if (!mpsatTrace.isEmpty()) {
+				String[] ss = mpsatTrace.split(",");
 
-			for (String k: ss) {
-				if (k.charAt(1) == '.')
-					trace.add(k.substring(2).trim());
-				else
-					trace.add(k.trim());
+				for (String k: ss) {
+					if (k.charAt(1) == '.')
+						trace.add(k.substring(2).trim());
+					else
+						trace.add(k.trim());
+				}
 			}
 
 			solutions.add(trace);

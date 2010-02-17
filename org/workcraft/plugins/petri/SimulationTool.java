@@ -28,24 +28,47 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.util.GUI;
 
-public class SimulationTool extends AbstractTool {
 
+public class SimulationTool extends AbstractTool {
 	private VisualModel visualNet;
 	private PetriNet net;
+	private JPanel interfacePanel;
+
+	private JButton autoPlayButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
 
 	HashMap<Place, Integer> tokens = new HashMap<Place, Integer>();
 
+	public SimulationTool() {
+		super();
+		createInterface();
+	}
+
 	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
+
+	private void createInterface() {
+		interfacePanel = new JPanel(new SimpleFlowLayout(5,5));
+
+		autoPlayButton = new JButton("Play");
+		stepButton = new JButton ("Step");
+		loadTraceButton = new JButton ("Load trace");
+		saveMarkingButton = new JButton ("Save marking");
+		loadMarkingButton = new JButton ("Load marking");
+
+		interfacePanel.add(autoPlayButton);
+	}
 
 	private void highlightEnabledTransitions(Container root) {
 		for (Node n : root.getChildren())
@@ -103,10 +126,6 @@ public class SimulationTool extends AbstractTool {
 		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation O_O;;");
 	}
 
-	public String getIconPath() {
-		return null;
-	}
-
 	public String getLabel() {
 		return "Simulation";
 	}
@@ -122,5 +141,10 @@ public class SimulationTool extends AbstractTool {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public JPanel getInterfacePanel() {
+		return interfacePanel;
 	}
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.verification.MpsatUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -34,9 +34,9 @@ public class MpsatTask implements Task<ExternalProcessResult>, ExternalProcessLi
 			this.monitor = monitor;
 
 			ArrayList<String> command = new ArrayList<String>();
-			command.add(MpsatSettings.getMpsatCommand());
+			command.add(MpsatUtilitySettings.getMpsatCommand());
 
-			for (String arg : MpsatSettings.getMpsatArgs().split(" "))
+			for (String arg : MpsatUtilitySettings.getMpsatArgs().split(" "))
 				if (!arg.isEmpty())
 					command.add(arg);
 

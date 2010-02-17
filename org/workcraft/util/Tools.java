@@ -9,6 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.PluginInstantiationException;
 
 public class Tools {
@@ -20,7 +21,7 @@ public class Tools {
 			try {
 				Tool tool = (Tool) framework.getPluginManager().getSingleton(info);
 
-				if (!tool.isApplicableTo(model))
+				if (!isApplicable(model, tool))
 					continue;
 
 				toolSections.put(tool.getSection(), new Pair <String,Tool> (info.getDisplayName(), tool));
@@ -31,6 +32,32 @@ public class Tools {
 		}
 
 		return toolSections;
+	}
+
+	private static boolean isApplicable(Model model, Tool tool) {
+		if (tool.isApplicableTo(model))
+			return true;
+		if (model instanceof VisualModel) {
+				if (tool.isApplicableTo(((VisualModel)model).getMathModel()))
+					return true;
+		}
+		return false;
+	}
+
+	public static void run(Model model, Tool tool, Framework framework) {
+		if (tool.isApplicableTo(model))
+			tool.run(model, framework);
+		else if (model instanceof VisualModel)
+			if (tool.isApplicableTo(((VisualModel)model).getMathModel()))
+				tool.run(((VisualModel)model).getMathModel(), framework);
+		else {
+			String errorMessage = "Attempt to apply incompatible tool " +
+				tool.getClass().getName() + " to a model of class " + model.getClass().getName();
+			if (model instanceof VisualModel)
+				errorMessage += " (math model class " + ((VisualModel)model).getMathModel().getClass() + ")";
+
+			throw new RuntimeException (errorMessage);
+		}
 	}
 
 	public static List<String> getSections (ListMap<String, Pair<String, Tool>> tools) {
