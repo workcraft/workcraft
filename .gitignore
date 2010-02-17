@@ -1,4 +1,6 @@
 bin
+jar
+distr
 build
 config
 *.log

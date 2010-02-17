@@ -22,10 +22,9 @@
 package org.workcraft.plugins.petri;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.Icon;
@@ -40,6 +39,8 @@ import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.util.GUI;
+
 
 public class SimulationTool extends AbstractTool {
 	private VisualModel visualNet;
@@ -122,10 +123,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-		Rectangle2D r = g.getFont().getStringBounds("Simulation O_O;;", g.getFontRenderContext());
-		g.setColor(Color.BLUE);
-		g.drawString ("Simulation O_O;;", editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation O_O;;");
 	}
 
 	public String getLabel() {
@@ -138,8 +136,11 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return GUI.loadIconFromResource("images/play.png");
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	@Override

@@ -23,13 +23,16 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
@@ -50,6 +53,8 @@ import org.workcraft.gui.graph.tools.ToolProvider;
 
 @SuppressWarnings("serial")
 public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKeyListener {
+
+	public static final int TOOL_ICON_CROP_SIZE = 16;
 
 	class ToolTracker {
 		LinkedList<GraphEditorTool> tools = new LinkedList<GraphEditorTool>();
@@ -103,19 +108,30 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		button.setFocusable(false);
 		button.setHorizontalAlignment(SwingConstants.LEFT);
 		button.setSelected(selected);
-		button.setFont(button.getFont().deriveFont(9.0f));
-		button.setToolTipText(tool.getLabel());
+//		button.setFont(button.getFont().deriveFont(9.0f));
+
+		Insets insets = button.getInsets();
+		int minSize = TOOL_ICON_CROP_SIZE+Math.max(insets.left+insets.right, insets.top+insets.bottom);
+
+		Icon icon = tool.getIcon();
+		if(icon==null) {
+			button.setText(tool.getLabel());
+			button.setPreferredSize(new Dimension(120,minSize));
+		}
+		else {
+			BufferedImage crop = new BufferedImage(TOOL_ICON_CROP_SIZE, TOOL_ICON_CROP_SIZE,
+					BufferedImage.TYPE_INT_ARGB);
+			icon.paintIcon(button, crop.getGraphics(), 8-icon.getIconWidth()/2, 8-icon.getIconHeight()/2);
+			button.setIcon(new ImageIcon(crop));
+			button.setPreferredSize(new Dimension(minSize,minSize));
+		}
 
 
 		int hotKeyCode = tool.getHotKeyCode();
 		if ( hotKeyCode != -1)
-			button.setText("["+Character.toString((char)hotKeyCode)+"] " + tool.getLabel());
+			button.setToolTipText("["+Character.toString((char)hotKeyCode)+"] " + tool.getLabel());
 		else
-			button.setText(tool.getLabel());
-
-		button.setPreferredSize(new Dimension(120,20));
-		button.setMinimumSize(new Dimension(0,0));
-		button.setMaximumSize(new Dimension(120,20));
+			button.setToolTipText(tool.getLabel());
 
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -188,7 +204,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		removeAll();
 		selectedTool = null;
 
-		setLayout(new FlowLayout (FlowLayout.LEFT, 5, 5));
+		setLayout(new SimpleFlowLayout (5, 5));
 
 		addCommonTools();
 
