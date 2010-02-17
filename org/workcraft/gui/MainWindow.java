@@ -823,6 +823,7 @@ public class MainWindow extends JFrame {
 		if (lastSavePath != null)
 			fc.setCurrentDirectory(new File(lastSavePath));
 
+
 		String path;
 
 		while (true) {
