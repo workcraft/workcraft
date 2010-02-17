@@ -23,7 +23,6 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -32,6 +31,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 import javax.swing.Icon;
 
@@ -41,6 +41,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.util.GUI;
 
 public class ConnectionTool extends AbstractTool {
 	private VisualNode mouseOverObject = null;
@@ -168,7 +169,6 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		g.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
 		String message;
 
 		if (warningMessage != null)
@@ -179,12 +179,7 @@ public class ConnectionTool extends AbstractTool {
 			else
 				message = "Click on the second component (control+click to connect continuously)";
 
-		Rectangle2D r = g.getFont().getStringBounds(message, g.getFontRenderContext());
-		if (warningMessage!=null)
-			g.setColor(Color.RED);
-		else
-			g.setColor(Color.BLUE);
-		g.drawString (message, editor.getWidth()/2 - (int)r.getWidth()/2, editor.getHeight() - 20);
+		GUI.drawEditorMessage(editor, g, warningMessage!=null ? Color.RED : Color.BLACK, message);
 	}
 
 	@Override
@@ -194,7 +189,11 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		return null;
+		try {
+			return GUI.loadIconFromResource("images/connect.png");
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	@Override

@@ -25,10 +25,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class DocumentPlaceholder extends JPanel {
@@ -60,15 +60,8 @@ public class DocumentPlaceholder extends JPanel {
 		if (logoImage == null)
 		{
 			try {
-				URL resource = ClassLoader.getSystemResource("images/logo.png");
-				if (resource != null)
-					logoImage = ImageIO.read(resource);
-				else {
-					System.err.println ("Cannot read logo!");
-					logoImage = null;
-				}
+				logoImage = GUI.loadImageFromResource("images/logo.png");
 			} catch (IOException e) {
-				e.printStackTrace();
 				logoImage = null;
 			}
 		}

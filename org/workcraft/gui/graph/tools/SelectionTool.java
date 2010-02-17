@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -45,6 +46,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
 public class SelectionTool extends AbstractTool {
@@ -473,6 +475,10 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		return null;
+		try {
+			return GUI.loadIconFromResource("images/select.png");
+		} catch (IOException e) {
+			return null;
+		}
 	}
 }
