@@ -39,6 +39,12 @@ public class WorkspaceEntry {
 		this.workspace = workspace;
 	}
 
+	public WorkspaceEntry(Workspace workspace, File f) {
+		this(workspace);
+
+		file = f;
+	}
+
 	public File getFile() {
 		return file;
 	}

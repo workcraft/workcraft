@@ -83,6 +83,22 @@ public class FileUtils{
 		return tempDir;
 	}
 
+	public static void copyAll(File source, File targetDir) throws IOException {
+		if (!targetDir.isDirectory())
+			throw new RuntimeException ("Cannot copy files to a file that is not a directory.");
+
+		File target = new File(targetDir, source.getName());
+
+		if (source.isDirectory()) {
+			if (!target.mkdir())
+				throw new RuntimeException ("Cannot create directory " + target.getAbsolutePath());
+			for (File f : source.listFiles())
+				copyAll (f, target);
+		} else {
+			copyFile(source, target);
+		}
+	}
+
 	public static void deleteDirectoryTree(File dir) {
 		File [] files = dir.listFiles();
 		if(files != null)

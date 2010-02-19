@@ -290,7 +290,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 	public void saveWorkspace() throws OperationCancelledException {
 		if (framework.getWorkspace().getFilePath() != null)
-			framework.getWorkspace().save(framework.getWorkspace().getFilePath());
+			framework.getWorkspace().writeWorkspaceFile(framework.getWorkspace().getFilePath());
 		else
 			saveWorkspaceAs();
 	}
@@ -326,7 +326,7 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
-		framework.getWorkspace().save(path);
+		framework.getWorkspace().writeWorkspaceFile(path);
 		lastSavePath = fc.getCurrentDirectory().getPath();
 	}
 

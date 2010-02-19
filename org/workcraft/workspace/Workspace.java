@@ -36,6 +36,7 @@ import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -45,7 +46,8 @@ public class Workspace {
 
 	Framework framework;
 
-	private boolean temporary = true;
+	private File baseDir;
+	private boolean temporary;
 
 	private boolean changed = false;
 	private String filePath = null;
@@ -53,6 +55,31 @@ public class Workspace {
 
 	public Workspace(Framework framework) {
 		this.framework = framework;
+		this.temporary = true;
+
+		try {
+			baseDir = File.createTempFile("workspace", "");
+			baseDir.delete();
+			if (!baseDir.mkdir())
+				throw new RuntimeException ("Could not create a temporary workspace directory.");
+			baseDir.deleteOnExit();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Workspace(Framework framework, File f) throws DeserialisationException {
+		baseDir = f.getParentFile();
+		load(f.getAbsolutePath());
+	}
+
+	public WorkspaceEntry createFile(String relativePath, boolean temporary) {
+		String fullPath = baseDir.getAbsolutePath() + File.separator + relativePath;
+		File f = new File(fullPath);
+		f.getParentFile().mkdirs();
+		WorkspaceEntry we = new WorkspaceEntry(this, f);
+		we.setTemporary(temporary);
+		return we;
 	}
 
 	public WorkspaceEntry add(String path, boolean temporary) throws DeserialisationException {
@@ -147,7 +174,28 @@ public class Workspace {
 		}
 	}
 
-	public void save(String path) {
+	public void saveAs(String path) {
+		File newBaseDir = new File(path);
+		if (!newBaseDir.exists())
+			if (!newBaseDir.mkdirs())
+				throw new RuntimeException("Cannot create directory " + newBaseDir.getAbsolutePath());
+
+		if (!newBaseDir.isDirectory())
+			throw new RuntimeException("Workspace must be saved to a directory, not a file.");
+
+		try {
+			FileUtils.copyAll(baseDir, newBaseDir);
+		} catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		baseDir = newBaseDir;
+
+		writeWorkspaceFile(baseDir.getAbsolutePath() + File.separator + "workcraft.workspace");
+	}
+
+	public void writeWorkspaceFile(String path) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
