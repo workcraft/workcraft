@@ -23,6 +23,7 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -204,7 +205,8 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		removeAll();
 		selectedTool = null;
 
-		setLayout(new SimpleFlowLayout (5, 5));
+		setLayout(new FlowLayout(FlowLayout.LEFT));
+//		setLayout(new SimpleFlowLayout (5, 5));
 
 		addCommonTools();
 

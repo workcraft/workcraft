@@ -35,6 +35,7 @@ import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.ToolIcon;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
@@ -44,6 +45,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
+@ToolIcon("images/place.png")
 public class VisualPlace extends VisualComponent {
 	/*static public class AddTokenAction extends ScriptedAction {
 		private int placeID;

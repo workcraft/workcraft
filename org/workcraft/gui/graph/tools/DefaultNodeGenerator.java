@@ -21,10 +21,15 @@
 
 package org.workcraft.gui.graph.tools;
 
+import java.io.IOException;
+
+import javax.swing.Icon;
+
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.util.GUI;
 
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
@@ -32,12 +37,27 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
 	private Class<?> vcls;
 	private String displayName;
 	private int hk;
+	private Icon icon = null;
 
 	public DefaultNodeGenerator (Class<?> cls) {
 		this.cls = cls;
 		this.vcls = Annotations.getVisualClass(cls);
 		this.displayName = Annotations.getDisplayName(vcls);
 		this.hk = Annotations.getHotKeyCode(vcls);
+
+		String iconPath = Annotations.getToolIcon(vcls);
+		if(iconPath!=null) {
+			try {
+				this.icon = GUI.loadIconFromResource(iconPath);
+			}
+			catch (IOException e) {
+			}
+		}
+	}
+
+	@Override
+	public Icon getIcon() {
+		return icon;
 	}
 
 	@Override
