@@ -193,8 +193,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return view;
 	}
 
-	public void snap(Point2D point) {
-		point.setLocation(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
+	public Point2D snap(Point2D point) {
+		return new Point2D.Double(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {

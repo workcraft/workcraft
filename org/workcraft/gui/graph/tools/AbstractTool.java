@@ -69,6 +69,16 @@ public abstract class AbstractTool implements GraphEditorTool {
 	public void mouseReleased(GraphEditorMouseEvent e) {
 	}
 
+	public void startDrag(GraphEditorMouseEvent e) {
+	}
+
+	public void finishDrag(GraphEditorMouseEvent e) {
+	}
+
+	public boolean isDragging() {
+		return false;
+	}
+
 	public int getHotKeyCode() {
 		return -1; // undefined hotkey
 	}

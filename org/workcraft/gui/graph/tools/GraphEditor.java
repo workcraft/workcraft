@@ -33,7 +33,7 @@ public interface GraphEditor {
 	public VisualModel getModel();
 	public int getWidth();
 	public int getHeight();
-	public void snap(Point2D pos);
+	public Point2D snap(Point2D pos);
 	public void repaint();
 	public boolean hasFocus();
 }
