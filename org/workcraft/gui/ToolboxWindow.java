@@ -108,7 +108,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		button.setFocusable(false);
 		button.setHorizontalAlignment(SwingConstants.LEFT);
 		button.setSelected(selected);
-//		button.setFont(button.getFont().deriveFont(9.0f));
+		button.setMargin(new Insets(2,2,2,2));
 
 		Insets insets = button.getInsets();
 		int minSize = TOOL_ICON_CROP_SIZE+Math.max(insets.left+insets.right, insets.top+insets.bottom);

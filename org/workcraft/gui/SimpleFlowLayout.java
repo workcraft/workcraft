@@ -68,7 +68,7 @@ public class SimpleFlowLayout implements LayoutManager {
 	}
 
 	public Dimension minimumLayoutSize(Container target) {
-		return preferredLayoutSize(target);
+		return new Dimension(0,0);
 	}
 
 	public void layoutContainer(Container target) {
