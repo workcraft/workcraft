@@ -48,7 +48,7 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	public void mousePressed(GraphEditorMouseEvent e) {
 		try {
-			generator.generate(e.getModel(), e.getPosition());
+			generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
 		} catch (NodeCreationException e1) {
 			throw new RuntimeException (e1);
 		}

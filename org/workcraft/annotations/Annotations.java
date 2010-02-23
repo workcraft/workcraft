@@ -40,6 +40,13 @@ public class Annotations {
 		return dna.value();
 	}
 
+	public static String getToolIcon(Class<?> cls) {
+		ToolIcon icon =  cls.getAnnotation(ToolIcon.class);
+		if (icon == null)
+			return null;
+		return icon.value();
+	}
+
 	public static Class<?>[] getDefaultCreateButtons(Class<? extends VisualModel> cls) {
 		DefaultCreateButtons dcba = cls.getAnnotation(DefaultCreateButtons.class);
 		if (dcba == null)

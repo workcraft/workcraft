@@ -48,4 +48,15 @@ public class DummyMouseListener implements GraphEditorMouseListener {
 
 	public void mouseReleased(GraphEditorMouseEvent e) {
 	}
+
+	public void startDrag(GraphEditorMouseEvent e) {
+	}
+
+	public void finishDrag(GraphEditorMouseEvent e) {
+	}
+
+	public boolean isDragging() {
+		return false;
+	}
+
 }

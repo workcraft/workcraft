@@ -30,10 +30,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Colorisable;
@@ -43,20 +44,22 @@ import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
-public class SelectionTool extends AbstractTool {
+public class SelectionTool extends AbstractTool implements StateObserver {
 	private static final int DRAG_NONE = 0;
 	private static final int DRAG_MOVE = 1;
 	private static final int DRAG_SELECT = 2;
 
-	private static final int SELECTION_ADD = 0;
-	private static final int SELECTION_REMOVE = 1;
-	private static final int SELECTION_REPLACE = 2;
+	private static final int SELECTION_NONE = 0;
+	private static final int SELECTION_ADD = 1;
+	private static final int SELECTION_REMOVE = 2;
+	private static final int SELECTION_REPLACE = 3;
 
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
@@ -65,23 +68,23 @@ public class SelectionTool extends AbstractTool {
 	protected Color grayOutColor = Color.LIGHT_GRAY;
 
 	private int drag = DRAG_NONE;
-	private Point2D prevPosition;
-	private Point2D startPosition;
+	private boolean notClick = false;
+
 	private Point2D snapOffset;
+
 	private LinkedList<Node> selected = new LinkedList<Node>();
 	private int selectionMode;
 
-	private static ListenerResolver listenerResolver = new ListenerResolver();
-	private static Collection<GraphEditorMouseListener> listeners = Collections.emptyList();
+	private Rectangle2D selectionBox = null;
 
 	@Override
 	public void activated(GraphEditor editor) {
-		listeners = listenerResolver.getMouseListenersFor(editor.getModel().getClass());
+		editor.getModel().addObserver(this);
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
-		listeners = Collections.emptyList();
+		editor.getModel().removeObserver(this);
 	}
 
 	private void selectNone(VisualModel model) {
@@ -144,42 +147,45 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	@Override
+	public boolean isDragging() {
+		return drag!=DRAG_NONE;
+	}
+
+	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
-		//System.out.println ("mouseClicking <_<");
 
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			if(drag!=DRAG_NONE)
-				stopDrag(e);
-
 			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
-
 			if (node != null)
 			{
-				if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
-					// do nothing, mousePressed will handle the selection without modifiers
-				} else
-					if ( (e.getModifiers()&MouseEvent.SHIFT_DOWN_MASK) != 0)
+				switch(e.getKeyModifiers()) {
+					case 0:
+						select(e.getModel(), node);
+						break;
+					case MouseEvent.SHIFT_DOWN_MASK:
 						addToSelection(e.getModel(), node);
-					else if ( (e.getModifiers()&MouseEvent.CTRL_DOWN_MASK) != 0)
+						break;
+					case MouseEvent.CTRL_DOWN_MASK:
 						removeFromSelection(e.getModel(), node);
+						break;
+				}
 			} else {
-				if ((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0)
-					selectNone (e.getModel());
+				if (e.getKeyModifiers()==0)
+					selectNone(e.getModel());
 			}
 		}
-		else if(e.getButton()==MouseEvent.BUTTON3) {
-
+		else if(e.getButton()==MouseEvent.BUTTON3 && !notClick) {
 
 			/* POPUP MENU */
+			// FIXME implement real popup menu
+			JPopupMenu popup = new JPopupMenu();
+			popup.add(new JMenuItem("Test popup menu"));
+			popup.show(e.getSystemEvent().getComponent(), e.getSystemEvent().getX(), e.getSystemEvent().getY());
 
 		}
 
-		for (GraphEditorMouseListener listener : listeners)
-			listener.mouseClicked(e);
-
-		//System.out.println ("mouseClicked >_>");
 	}
 
 	@Override
@@ -187,126 +193,148 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = e.getEditor().getModel();
 
 		if(drag==DRAG_MOVE) {
-			Point2D pos = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
-			e.getEditor().snap(pos);
-
-			offsetSelection(e, pos.getX()-prevPosition.getX(), pos.getY()-prevPosition.getY());
-
-			prevPosition = pos;
+			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
+			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
+			offsetSelection(e, p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		}
 		else if(drag==DRAG_SELECT) {
-			Collection<Node> hit = model.boxHitTest(startPosition, e.getPosition());
-
 			uncolorise(selected);
-
 			selected.clear();
-			selected.addAll(hit);
+			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 
 			colorise(e.getModel().getSelection());
-
 			if (selectionMode == SELECTION_ADD || selectionMode == SELECTION_REPLACE) {
 				colorise(selected);
 			} else {
 				uncolorise(selected);
 			}
 
-			prevPosition = e.getPosition();
+			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
+
 			e.getEditor().repaint();
 		}
-		else
-			prevPosition = e.getPosition();
 	}
 
-
 	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		// System.out.println ("mousePressing ^_^");
-
-		// FIXME: drag should start only if mouse is indeed moved, otherwise it interferes
-		// with correct onclick behaviour
-
+	public void startDrag(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
 
-		if(e.getButton()==MouseEvent.BUTTON1) {
-			startPosition = e.getPosition();
-			prevPosition = e.getPosition();
-
-			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+		if(e.getButtonModifiers()==MouseEvent.BUTTON1_DOWN_MASK) {
+			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getStartPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
-				// selection will not actually be changed until drag completes
-				drag = DRAG_SELECT;
-				selected.clear();
 
-				// System.out.println ("Drag-select");
-
-				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
-					// no modifiers, start new selection
-					selectNone(model);
-					selectionMode = SELECTION_REPLACE;
-				} else {
-					// remember what was selected when drag started to modify the selection accordingly
-					selected.addAll(model.getSelection());
-
-					if((e.getModifiers()&MouseEvent.CTRL_DOWN_MASK)!=0)
-						// alt held
+				switch(e.getKeyModifiers()) {
+					case 0:
+						selectionMode = SELECTION_REPLACE;
+						break;
+					case MouseEvent.CTRL_DOWN_MASK:
 						selectionMode = SELECTION_REMOVE;
-					else
-						// shift held
+						break;
+					case MouseEvent.SHIFT_DOWN_MASK:
 						selectionMode = SELECTION_ADD;
+						break;
+					default:
+						selectionMode = SELECTION_NONE;
 				}
+
+				if(selectionMode!=SELECTION_NONE) {
+					// selection will not actually be changed until drag completes
+					drag = DRAG_SELECT;
+					selected.clear();
+
+					if(selectionMode==SELECTION_REPLACE)
+						selectNone(model);
+					else
+						selected.addAll(model.getSelection());
+				}
+
 			} else {
 				// hit something
 
-				if((e.getModifiers()&(MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK))==0) {
+				if(e.getKeyModifiers()==0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
-
-					if(!model.getSelection().contains(hitNode))
-						select(e.getModel(), hitNode);
-					//System.out.println (e.getModel().getSelection().size() + " trying");
-					//System.out.println (e.getModel().getSelection().iterator().next());
-
 					drag = DRAG_MOVE;
 
-					if(hitNode instanceof VisualTransformableNode) {
-						VisualTransformableNode node = (VisualTransformableNode) hitNode;
-						snapOffset = new Point2D.Double(node.getX()-e.getX(), node.getY()-e.getY());
-						prevPosition = new Point2D.Double(node.getX(), node.getY());
-					}
+					Movable node = (Movable) hitNode;
+					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
+					Point2D pSnap = e.getEditor().snap(pos);
+					offsetSelection(e, pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
+					snapOffset = new Point2D.Double(pSnap.getX()-e.getStartPosition().getX(), pSnap.getY()-e.getStartPosition().getY());
 
-					else
-						snapOffset = new Point2D.Double(0, 0);
 				}
 				// do nothing if pressed on a node with modifiers
+
 			}
 		}
-		else if(e.getButton()==MouseEvent.BUTTON3)
-			if(drag!=DRAG_NONE)
-				stopDrag(e);
+	}
 
-		//		System.out.println ("mousePressed d^_^b");
+	@Override
+	public void mousePressed(GraphEditorMouseEvent e) {
+		VisualModel model = e.getEditor().getModel();
+
+		if(e.getButton()==MouseEvent.BUTTON1) {
+
+			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			if(hitNode!=null && !model.getSelection().contains(hitNode))
+				select(e.getModel(), hitNode);
+
+		}
+		else if(e.getButton()==MouseEvent.BUTTON3) {
+
+			if(isDragging()) {
+				cancelDrag(e);
+				e.getEditor().repaint();
+				notClick = true; // FIXME left click still generated but it should not
+			}
+			else {
+				notClick = false;
+			}
+		}
+	}
+
+	@Override
+	public void finishDrag(GraphEditorMouseEvent e) {
+		if (drag == DRAG_SELECT)
+		{
+			if (selectionMode == SELECTION_REPLACE)
+				select(e.getModel(), selected);
+			else if (selectionMode == SELECTION_ADD)
+				addToSelection(e.getModel(), selected);
+			else if (selectionMode == SELECTION_REMOVE)
+				removeFromSelection(e.getModel(), selected);
+			selectionBox = null;
+		}
+		drag = DRAG_NONE;
+
+		e.getEditor().repaint();
+	}
+
+
+	private void cancelDrag(GraphEditorMouseEvent e) {
+		VisualModel model = e.getEditor().getModel();
+
+		if(drag==DRAG_MOVE) {
+			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getStartPosition().getX()+snapOffset.getX(), e.getStartPosition().getY()+snapOffset.getY()));
+			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
+			offsetSelection(e, p1.getX()-p2.getX(), p1.getY()-p2.getY());
+//			offsetSelection(e, e.getStartPosition().getX()-e.getX(), e.getStartPosition().getY()-e.getY());
+		}
+		else if(drag == DRAG_SELECT) {
+			uncolorise(selected);
+			colorise(model.getSelection());
+			selected.clear();
+			selectionBox = null;
+		}
+		drag = DRAG_NONE;
+
+		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
-		//System.out.println ("mouseReleasing T_T");
-
-		if(e.getButton()==MouseEvent.BUTTON1) {
-			if (drag == DRAG_SELECT)
-			{
-				if (selectionMode == SELECTION_REPLACE)
-					select(e.getModel(), selected);
-				else if (selectionMode == SELECTION_ADD)
-					addToSelection(e.getModel(), selected);
-				else if (selectionMode == SELECTION_REMOVE)
-					removeFromSelection(e.getModel(), selected);
-			}
-			drag = DRAG_NONE;
-
-			e.getEditor().repaint();
-		}
-		//System.out.println ("mouseReleased X_X");
+		// do nothing
 	}
 
 	private void grayOutNotActive(VisualModel model)
@@ -427,24 +455,7 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	private void stopDrag(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
-
-		if(drag==DRAG_MOVE) {
-			offsetSelection(e, startPosition.getX()-e.getX(), startPosition.getY()-e.getY());
-		}
-		else if(drag == DRAG_SELECT) {
-			selectNone(model);
-			for (Node so: selected)
-				addToSelection(model, so);
-			selected.clear();
-			// model.fireSelectionChanged();
-		}
-		drag = DRAG_NONE;
-
-	}
-
-	private Rectangle2D selectionRect(Point2D currentPosition) {
+	private Rectangle2D selectionRect(Point2D startPosition, Point2D currentPosition) {
 		return new Rectangle2D.Double(
 				Math.min(startPosition.getX(), currentPosition.getX()),
 				Math.min(startPosition.getY(), currentPosition.getY()),
@@ -454,14 +465,13 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		if(drag==DRAG_SELECT) {
+		if(drag==DRAG_SELECT && selectionBox!=null) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
-			Rectangle2D bb = selectionRect(prevPosition);
 			g.setColor(selectionFillColor);
-			g.fill(bb);
+			g.fill(selectionBox);
 			g.setColor(selectionBorderColor);
-			g.draw(bb);
+			g.draw(selectionBox);
 		}
 	}
 
@@ -480,5 +490,11 @@ public class SelectionTool extends AbstractTool {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public void notify(StateEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }
