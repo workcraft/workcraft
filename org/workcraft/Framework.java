@@ -43,6 +43,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -342,16 +344,57 @@ public class Framework {
 		return execJavaScript (script, globalScope);
 	}
 
+	static class JavascriptPassThroughException extends RuntimeException
+	{
+		private static final long serialVersionUID = 8906492547355596206L;
+		private final String scriptTrace;
+
+		public JavascriptPassThroughException(Throwable wrapped, String scriptTrace)
+		{
+			super(wrapped);
+			this.scriptTrace = scriptTrace;
+		}
+
+		@Override
+		public String getMessage() {
+			return String.format("Java %s was unhandled in javascript. \nJavascript stack trace: %s", getCause().getClass().getSimpleName(), getScriptTrace());
+		}
+
+		public String getScriptTrace() {
+			return scriptTrace;
+		}
+	}
+
 	public Object execJavaScript(Script script, Scriptable scope) {
 		javaScriptExecution.setScript(script);
 		javaScriptExecution.setScope(scope);
-		return Context.call(javaScriptExecution);
+		return exec();
 	}
 
 	public Object execJavaScript(String script, Scriptable scope) {
 		javaScriptExecution.setScript(script);
 		javaScriptExecution.setScope(scope);
-		return Context.call(javaScriptExecution);
+		return exec();
+	}
+
+
+	private Object exec() {
+		try
+		{
+			return Context.call(javaScriptExecution);
+		}
+		catch(JavaScriptException ex)
+		{
+			System.out.println("Script stack trace: " + ex.getScriptStackTrace());
+			Object value = ex.getValue();
+			if(value instanceof NativeJavaObject)
+			{
+				 Object wrapped = ((NativeJavaObject)value).unwrap();
+				 if(wrapped instanceof Throwable)
+					 throw new JavascriptPassThroughException((Throwable)wrapped, ex.getScriptStackTrace());
+			}
+			throw ex;
+		}
 	}
 
 	public Object execJavaScript (String script) {
