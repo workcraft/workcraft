@@ -201,18 +201,29 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return selection;
 	}
 
-	private void notifySelectionChanged() {
-		sendNotification(new SelectionChangedEvent(this));
+	private Collection<Node> saveSelection() {
+		Set<Node> prevSelection = new HashSet<Node>();
+		prevSelection.addAll(selection);
+		return prevSelection;
+	}
+
+	private void notifySelectionChanged(Collection<Node> prevSelection) {
+		sendNotification(new SelectionChangedEvent(this, prevSelection));
 	}
 
 	/**
 	 * Select all components, connections and groups from the <code>root</code> group.
 	 */
 	public void selectAll() {
+		if(selection.size()==getRoot().getChildren().size())
+			return;
+
+		Collection<Node> s = saveSelection();
+
 		selection.clear();
 		selection.addAll(getRoot().getChildren());
 
-		notifySelectionChanged();
+		notifySelectionChanged(s);
 	}
 
 	/**
@@ -220,9 +231,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 */
 	public void selectNone() {
 		if (!selection.isEmpty()) {
+			Collection<Node> s = saveSelection();
+
 			selection.clear();
 
-			notifySelectionChanged();
+			notifySelectionChanged(s);
 		}
 	}
 
@@ -246,61 +259,67 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			return;
 		}
 
+		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
 
 		selection.clear();
 		selection.addAll(nodes);
 
-		notifySelectionChanged();
+		notifySelectionChanged(s);
 	}
 
 	public void select(Node node) {
-		if (selection.contains(node) && selection.size() == 1)
+		if (selection.size() == 1 && selection.contains(node))
 			return;
 
+		Collection<Node> s = saveSelection();
 		validateSelection(node);
 
 		selection.clear();
 		selection.add(node);
 
-		notifySelectionChanged();
+		notifySelectionChanged(s);
 	}
 
 	public void addToSelection(Node node) {
 		if (selection.contains(node))
 			return;
 
+		Collection<Node> s = saveSelection();
 		validateSelection(node);
+
 		selection.add(node);
 
-		notifySelectionChanged();
+		notifySelectionChanged(s);
 	}
 
 	public void addToSelection(Collection<Node> nodes) {
+		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
-
-		int sizeBefore = selection.size();
 
 		selection.addAll(nodes);
 
-		if (sizeBefore != selection.size())
-			notifySelectionChanged();
+		if (s.size() != selection.size())
+			notifySelectionChanged(s);
 	}
 
 	public void removeFromSelection(Node node) {
-		if (selection.contains(node))
+		if (selection.contains(node)) {
+			Collection<Node> s = saveSelection();
+
 			selection.remove(node);
 
-		notifySelectionChanged();
+			notifySelectionChanged(s);
+		}
 	}
 
 	public void removeFromSelection(Collection<Node> nodes) {
-		int sizeBefore = selection.size();
+		Collection<Node> s = saveSelection();
 
 		selection.removeAll(nodes);
 
-		if (sizeBefore != selection.size())
-			notifySelectionChanged();
+		if (s.size() != selection.size())
+			notifySelectionChanged(s);
 	}
 
 	public Model getMathModel() {
