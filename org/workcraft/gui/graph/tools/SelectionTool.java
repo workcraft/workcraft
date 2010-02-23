@@ -46,12 +46,11 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
+import org.workcraft.gui.graph.SelectionColoriser;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
-public class SelectionTool extends AbstractTool implements StateObserver {
+public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
 	private static final int DRAG_MOVE = 1;
 	private static final int DRAG_SELECT = 2;
@@ -64,8 +63,9 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 
 	protected Color selectionBorderColor = new Color(200, 200, 200);
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
-	protected Color selectionColor = new Color(99, 130, 191).brighter();;
 	protected Color grayOutColor = Color.LIGHT_GRAY;
+
+	private SelectionColoriser coloriser;
 
 	private int drag = DRAG_NONE;
 	private boolean notClick = false;
@@ -79,71 +79,13 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 
 	@Override
 	public void activated(GraphEditor editor) {
-		editor.getModel().addObserver(this);
+		coloriser = new SelectionColoriser(editor.getModel());
+		coloriser.activate();
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
-		editor.getModel().removeObserver(this);
-	}
-
-	private void selectNone(VisualModel model) {
-		uncolorise (model.getSelection());
-		model.selectNone();
-	}
-
-	private void colorise(Collection<Node> nodes) {
-		for (Node n : nodes)
-			if (n instanceof Colorisable)
-				((Colorisable)n).setColorisation(selectionColor);
-	}
-
-	private void colorise(Node node) {
-		if (node instanceof Colorisable)
-			((Colorisable)node).setColorisation(selectionColor);
-	}
-
-	private void uncolorise(Collection<Node> nodes) {
-		for (Node n : nodes)
-			if (n instanceof Colorisable)
-				((Colorisable)n).clearColorisation();
-	}
-
-	private void uncolorise(Node node) {
-		if (node instanceof Colorisable)
-			((Colorisable)node).clearColorisation();
-	}
-
-	private void select (VisualModel model, VisualNode node) {
-		uncolorise(model.getSelection());
-		colorise(node);
-		model.select(node);
-	}
-
-	private void select (VisualModel model, Collection<Node> nodes) {
-		uncolorise(model.getSelection());
-		colorise (nodes);
-		model.select(nodes);
-	}
-
-	protected void addToSelection(VisualModel model, Node so) {
-		colorise(so);
-		model.addToSelection(so);
-	}
-
-	protected void addToSelection(VisualModel model, Collection<Node> s) {
-		colorise(s);
-		model.addToSelection(s);
-	}
-
-	protected void removeFromSelection(VisualModel model, VisualNode so) {
-		uncolorise(so);
-		model.removeFromSelection(so);
-	}
-
-	protected void removeFromSelection(VisualModel model, Collection<Node> so) {
-		uncolorise(so);
-		model.removeFromSelection(so);
+		coloriser.deactivate();
 	}
 
 	@Override
@@ -162,18 +104,18 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 			{
 				switch(e.getKeyModifiers()) {
 					case 0:
-						select(e.getModel(), node);
+						e.getModel().select(node);
 						break;
 					case MouseEvent.SHIFT_DOWN_MASK:
-						addToSelection(e.getModel(), node);
+						e.getModel().addToSelection(node);
 						break;
 					case MouseEvent.CTRL_DOWN_MASK:
-						removeFromSelection(e.getModel(), node);
+						e.getModel().removeFromSelection(node);
 						break;
 				}
 			} else {
 				if (e.getKeyModifiers()==0)
-					selectNone(e.getModel());
+					e.getModel().selectNone();
 			}
 		}
 		else if(e.getButton()==MouseEvent.BUTTON3 && !notClick) {
@@ -198,15 +140,15 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 			offsetSelection(e, p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		}
 		else if(drag==DRAG_SELECT) {
-			uncolorise(selected);
+			SelectionColoriser.uncolorise(selected);
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 
-			colorise(e.getModel().getSelection());
+			SelectionColoriser.colorise(e.getModel().getSelection());
 			if (selectionMode == SELECTION_ADD || selectionMode == SELECTION_REPLACE) {
-				colorise(selected);
+				SelectionColoriser.colorise(selected);
 			} else {
-				uncolorise(selected);
+				SelectionColoriser.uncolorise(selected);
 			}
 
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
@@ -245,7 +187,7 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 					selected.clear();
 
 					if(selectionMode==SELECTION_REPLACE)
-						selectNone(model);
+						model.selectNone();
 					else
 						selected.addAll(model.getSelection());
 				}
@@ -258,7 +200,7 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 					drag = DRAG_MOVE;
 
 					if(hitNode!=null && !model.getSelection().contains(hitNode))
-						select(e.getModel(), hitNode);
+						e.getModel().select(hitNode);
 
 					Movable node = (Movable) hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
@@ -293,11 +235,11 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 		if (drag == DRAG_SELECT)
 		{
 			if (selectionMode == SELECTION_REPLACE)
-				select(e.getModel(), selected);
+				e.getModel().select(selected);
 			else if (selectionMode == SELECTION_ADD)
-				addToSelection(e.getModel(), selected);
+				e.getModel().addToSelection(selected);
 			else if (selectionMode == SELECTION_REMOVE)
-				removeFromSelection(e.getModel(), selected);
+				e.getModel().removeFromSelection(selected);
 			selectionBox = null;
 		}
 		drag = DRAG_NONE;
@@ -313,11 +255,10 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getStartPosition().getX()+snapOffset.getX(), e.getStartPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
 			offsetSelection(e, p1.getX()-p2.getX(), p1.getY()-p2.getY());
-//			offsetSelection(e, e.getStartPosition().getX()-e.getX(), e.getStartPosition().getY()-e.getY());
 		}
 		else if(drag == DRAG_SELECT) {
-			uncolorise(selected);
-			colorise(model.getSelection());
+			SelectionColoriser.uncolorise(selected);
+			SelectionColoriser.colorise(model.getSelection());
 			selected.clear();
 			selectionBox = null;
 		}
@@ -337,10 +278,7 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 		if (root instanceof Colorisable)
 			((Colorisable)root).setColorisation(grayOutColor);
 
-		model.getCurrentLevel().clearColorisation();
-		for(Node node : model.getSelection())
-			if(node instanceof Colorisable)
-				((Colorisable)node).setColorisation(selectionColor);
+		coloriser.update();
 	}
 
 	@Override
@@ -407,7 +345,7 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 			case KeyEvent.VK_X:
 				break;
 			case KeyEvent.VK_V:
-				selectNone(e.getModel());
+				e.getModel().selectNone();
 				//addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
 				//e.getModel().fireSelectionChanged();
 				e.getEditor().repaint();
@@ -486,9 +424,4 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 		}
 	}
 
-	@Override
-	public void notify(StateEvent e) {
-		// TODO Auto-generated method stub
-
-	}
 }
