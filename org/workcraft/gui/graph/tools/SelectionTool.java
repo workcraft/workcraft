@@ -257,6 +257,9 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
 
+					if(hitNode!=null && !model.getSelection().contains(hitNode))
+						select(e.getModel(), hitNode);
+
 					Movable node = (Movable) hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
 					Point2D pSnap = e.getEditor().snap(pos);
@@ -272,21 +275,12 @@ public class SelectionTool extends AbstractTool implements StateObserver {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
-
-		if(e.getButton()==MouseEvent.BUTTON1) {
-
-			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
-			if(hitNode!=null && !model.getSelection().contains(hitNode))
-				select(e.getModel(), hitNode);
-
-		}
-		else if(e.getButton()==MouseEvent.BUTTON3) {
+		if(e.getButton()==MouseEvent.BUTTON3) {
 
 			if(isDragging()) {
 				cancelDrag(e);
 				e.getEditor().repaint();
-				notClick = true; // FIXME left click still generated but it should not
+				notClick = true; // TODO left click still generated but it should not
 			}
 			else {
 				notClick = false;
