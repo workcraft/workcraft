@@ -71,7 +71,12 @@ public class WorkspaceEntry {
 	}
 
 	public boolean isWork() {
-		return (file.getName().endsWith(".work"));
+		if (object != null)
+			return (object instanceof Model);
+		else if (file != null)
+			return (file.getName().endsWith(".work"));
+		else
+			throw new RuntimeException ("WorkspaceEntry has null in both object and file fields, this should not happen.");
 	}
 
 	public String getTitle() {
