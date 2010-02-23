@@ -28,9 +28,11 @@ import org.workcraft.dom.visual.VisualModel;
 
 public class SelectionChangedEvent implements StateEvent {
 	private VisualModel sender;
+	private Collection<Node> prevSelection;
 
-	public SelectionChangedEvent(VisualModel sender) {
+	public SelectionChangedEvent(VisualModel sender, Collection<Node> prevSelection) {
 		this.sender = sender;
+		this.prevSelection = prevSelection;
 	}
 
 	public VisualModel getSender() {
@@ -39,6 +41,10 @@ public class SelectionChangedEvent implements StateEvent {
 
 	public Collection<Node> getSelection() {
 		return sender.getSelection();
+	}
+
+	public Collection<Node> getPrevSelection() {
+		return prevSelection;
 	}
 
 }
