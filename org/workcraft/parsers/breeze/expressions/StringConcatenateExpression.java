@@ -28,23 +28,23 @@ import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class StringConcatenateExpression implements Expression<String> {
 
-	private final List<Expression<String>> strs;
+	private final List<Expression<String>> args;
 
 	public StringConcatenateExpression(List<Expression<String>> strs) {
-				this.strs = strs;
+				this.args = strs;
 	}
 
 	@Override
 	public String evaluate(ParameterScope parameters) {
 		StringBuilder sb = new StringBuilder();
-		for(Expression<String> str : strs)
+		for(Expression<String> str : getArgs())
 			sb.append(str.evaluate(parameters));
 		return sb.toString();
 	}
 
 	@Override public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for(Expression<String> str : strs)
+		for(Expression<String> str : getArgs())
 		{
 			if(sb.length() == 0)
 				sb.append(" + ");
@@ -56,5 +56,9 @@ public class StringConcatenateExpression implements Expression<String> {
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public List<Expression<String>> getArgs() {
+		return args;
 	}
 }

@@ -45,17 +45,29 @@ public class VariableArrayType implements Expression<Integer[]> {
 			throw new RuntimeException ("Not implemented");
 
 		for (int i=0; i < result.length; i++)
-			result[i] = width.evaluate(parameters);
+			result[i] = getWidth().evaluate(parameters);
 
 		return result;
 	}
 
 	public String toString() {
-		return String.format("(width %s readPortCount %s specification %s)", width, readPortCount, specification);
+		return String.format("(width %s readPortCount %s specification %s)", getWidth(), readPortCount, specification);
 	}
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public Expression<Integer> getWidth() {
+		return width;
+	}
+
+	public Expression<Integer> getReadPortCount() {
+		return readPortCount;
+	}
+
+	public Expression<String> getSpecification() {
+		return specification;
 	}
 }

@@ -33,16 +33,20 @@ public class Constant<T> implements Expression<T> {
 
 	@Override
 	public T evaluate(ParameterScope parameters) {
-		return value;
+		return getValue();
 	}
 
 	public String toString() {
-		return value.toString();
+		return getValue().toString();
 	}
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public T getValue() {
+		return value;
 	}
 
 }

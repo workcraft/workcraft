@@ -23,6 +23,8 @@ package org.workcraft.parsers.breeze;
 
 import java.util.List;
 
+import org.workcraft.parsers.breeze.dom.RawBreezePartReference;
+
 public class BreezePartReference {
 	private final BreezeLibrary library;
 	private final RawBreezePartReference ref;

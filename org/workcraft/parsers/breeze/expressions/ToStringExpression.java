@@ -26,20 +26,24 @@ import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class ToStringExpression<T> implements Expression<String> {
 
-	private final Expression<T> expression;
+	private final Expression<T> arg;
 
 	public ToStringExpression(Expression<T> intExpression) {
-		this.expression = intExpression;
+		this.arg = intExpression;
 	}
 
 	@Override
 	public String evaluate(ParameterScope parameters) {
-		return expression.evaluate(parameters).toString();
+		return arg.evaluate(parameters).toString();
 	}
 
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public Expression<T> getArg() {
+		return arg;
 	}
 }

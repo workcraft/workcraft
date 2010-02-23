@@ -18,34 +18,28 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-
 package org.workcraft.plugins.balsa;
 
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.parsers.breeze.Connection;
 
-public class BreezeConnection extends MathConnection {
+public class BreezeConnection implements Connection<HandshakeComponent> {
 
-	private String handshake1;
-	private String handshake2;
+	private final MathConnection connection;
 
-	public BreezeConnection(BreezeComponent first, BreezeComponent second) {
-		super(first, second);
+	public BreezeConnection(MathConnection connection)
+	{
+		this.connection = connection;
 	}
 
-	public void setHandshake1(String handshake1) {
-		this.handshake1 = handshake1;
+	@Override
+	public HandshakeComponent getFirst() {
+		return (HandshakeComponent) connection.getFirst();
 	}
 
-	public String getHandshake1() {
-		return handshake1;
-	}
-
-	public void setHandshake2(String handshake2) {
-		this.handshake2 = handshake2;
-	}
-
-	public String getHandshake2() {
-		return handshake2;
+	@Override
+	public HandshakeComponent getSecond() {
+		return (HandshakeComponent) connection.getSecond();
 	}
 
 }

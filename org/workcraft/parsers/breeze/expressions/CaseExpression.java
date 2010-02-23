@@ -56,16 +56,32 @@ public class CaseExpression<T1, T2> implements Expression<T2> {
 
 	@Override
 	public T2 evaluate(ParameterScope parameters) {
-		T1 checkValue = toCheck.evaluate(parameters);
-		for(int i=0;i<conditions.size();i++)
-			if(conditions.get(i).evaluate(parameters).equals(checkValue))
-				return values.get(i).evaluate(parameters);
-		return elseValue.evaluate(parameters);
+		T1 checkValue = getToCheck().evaluate(parameters);
+		for(int i=0;i<getConditions().size();i++)
+			if(getConditions().get(i).evaluate(parameters).equals(checkValue))
+				return getValues().get(i).evaluate(parameters);
+		return getElseValue().evaluate(parameters);
 	}
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public Expression<T1> getToCheck() {
+		return toCheck;
+	}
+
+	public List<Expression<T1>> getConditions() {
+		return conditions;
+	}
+
+	public List<Expression<T2>> getValues() {
+		return values;
+	}
+
+	public Expression<T2> getElseValue() {
+		return elseValue;
 	}
 
 }

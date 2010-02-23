@@ -71,7 +71,7 @@ public class InternalHandshakeStgBuilder implements HandshakeStgBuilder {
 	}
 
 	@Override
-	public DataPullStg create(PullHandshake handshake) {
+	public DataPullStg visit(PullHandshake handshake) {
 		final ActiveEvent go = active();
 		final PassiveEvent done = passive();
 		final ActiveEvent release = active();
@@ -88,7 +88,7 @@ public class InternalHandshakeStgBuilder implements HandshakeStgBuilder {
 	}
 
 	@Override
-	public DataPushStg create(PushHandshake handshake) {
+	public DataPushStg visit(PushHandshake handshake) {
 		final ActiveEvent go = active();
 		final PassiveEvent done = passive();
 		final PassiveEvent release = passive();
@@ -105,7 +105,7 @@ public class InternalHandshakeStgBuilder implements HandshakeStgBuilder {
 	}
 
 	@Override
-	public SyncStg create(Sync handshake) {
+	public SyncStg visit(Sync handshake) {
 		final ActiveEvent go = active();
 		final PassiveEvent done = passive();
 		StgPlace ready = buildPlace(1);
@@ -119,7 +119,7 @@ public class InternalHandshakeStgBuilder implements HandshakeStgBuilder {
 	}
 
 	@Override
-	public FullDataPullStg create(FullDataPull handshake) {
+	public FullDataPullStg visit(FullDataPull handshake) {
 		final ActiveEvent go = active();
 		StgPlace ready = buildPlace(1);
 		connect(ready, go.in());
@@ -141,7 +141,7 @@ public class InternalHandshakeStgBuilder implements HandshakeStgBuilder {
 	}
 
 	@Override
-	public FullDataPushStg create(FullDataPush handshake) {
+	public FullDataPushStg visit(FullDataPush handshake) {
 		final PassiveEvent done = passive();
 
 		StgPlace ready = buildPlace(1);

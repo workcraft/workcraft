@@ -23,6 +23,7 @@ package org.workcraft.plugins.balsa.handshakestgbuilder;
 
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
+import org.workcraft.plugins.balsa.handshakebuilder.HandshakeVisitor;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
@@ -31,12 +32,13 @@ import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.FullDataPullStg;
 import org.workcraft.plugins.balsa.handshakeevents.FullDataPushStg;
 import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
+import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 
-public interface HandshakeStgBuilder
+public interface HandshakeStgBuilder extends HandshakeVisitor<TwoWayStg>
 {
-	public abstract DataPullStg create(PullHandshake handshake);
-	public abstract DataPushStg create(PushHandshake handshake);
-	public abstract SyncStg create(Sync handshake);
-	public abstract FullDataPullStg create(FullDataPull handshake);
-	public abstract FullDataPushStg create(FullDataPush handshake);
+	public abstract DataPullStg visit(PullHandshake handshake);
+	public abstract DataPushStg visit(PushHandshake handshake);
+	public abstract SyncStg visit(Sync handshake);
+	public abstract FullDataPullStg visit(FullDataPull handshake);
+	public abstract FullDataPushStg visit(FullDataPush handshake);
 }

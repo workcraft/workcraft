@@ -28,31 +28,35 @@ import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class ConstantArrayType implements Expression<Integer[]> {
 	private final Expression<Integer> width;
-	private Expression<Integer> count;
+	private final Expression<Integer> count;
 
 	public ConstantArrayType(Expression<Integer> width, Expression<Integer> count) {
 		this.width = width;
 		this.count = count;
 	}
 
-	public void setCount (Expression<Integer> count) {
-		this.count = count;
-	}
-
 	@Override
 	public Integer[] evaluate(ParameterScope parameters) {
-		Integer[] result = new Integer[count.evaluate(parameters)];
-		Arrays.fill(result, width.evaluate(parameters));
+		Integer[] result = new Integer[getCount().evaluate(parameters)];
+		Arrays.fill(result, getWidth().evaluate(parameters));
 		return result;
 	}
 
 	public String toString() {
-		return "(constant-array-type width " + width + " count " + count +")";
+		return "(constant-array-type width " + getWidth() + " count " + getCount() +")";
 	}
 
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public Expression<Integer> getWidth() {
+		return width;
+	}
+
+	public Expression<Integer> getCount() {
+		return count;
 	}
 }

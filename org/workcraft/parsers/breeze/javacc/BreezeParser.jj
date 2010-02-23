@@ -13,7 +13,8 @@ package org.workcraft.parsers.breeze.javacc;
 
 import org.workcraft.parsers.lisp.LispNode;
 import org.workcraft.parsers.breeze.*;
-
+import org.workcraft.parsers.breeze.dom.*;
+import org.workcraft.parsers.breeze.expressions.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
- 
+
 public class BreezeParser {
 	public static LispNode parse (InputStream is) throws ParseException {
 		BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
@@ -78,6 +79,8 @@ TOKEN :
 	|<TYPE_STRING : "string">	
 	|<TYPE_CARDINAL : "\"cardinal\"">
 	|<TYPE_BOOLEAN : "\"boolean\"">
+	|<TYPE_BINARYOPERATOR : "\"BinaryOperator\"">
+	|<TYPE_UNARYOPERATOR : "\"UnaryOperator\"">
 	|<CASE : "case">
 	|<ELSE : "else">
 	|<STRING_APPEND : "string-append">
@@ -163,6 +166,8 @@ Token keyword() : {Token t;}
 	| t = <TYPE_STRING>	
 	| t = <TYPE_CARDINAL>
 	| t = <TYPE_BOOLEAN>
+	| t = <TYPE_BINARYOPERATOR>
+	| t = <TYPE_UNARYOPERATOR>
 	| t = <CASE>
 	| t = <ELSE>
 	| t = <STRING_APPEND>
@@ -196,7 +201,11 @@ ParameterType type() : { ParameterType result; String typeName; }
 			|
 			<TYPE_BOOLEAN> { result = ParameterType.BOOLEAN; }
 			|
-			typeName = value() {result = ParameterType.OTHER; }
+			<TYPE_BINARYOPERATOR> { result = ParameterType.BINARY_OPERATOR; }
+			|
+			<TYPE_UNARYOPERATOR> { result = ParameterType.UNARY_OPERATOR; }
+			|
+			typeName = value() { result = ParameterType.OTHER; }
 		)
 		
 	)
@@ -297,7 +306,6 @@ Expression<String> stringAppendExpression() :
 {
 	<OBR>
 		<STRING_APPEND>
-		stringAppendBody()
 		result = stringAppendBody()
 	<CBR>
 	{ return result; }
@@ -396,7 +404,7 @@ Expression<String> stringExpression() :
 		result = implicitNumberToString()
 	)
 
-	{return (Expression<String>) result;}
+	{return new ToStringExpression((Expression<Object>) result);}
 }
 
 Expression<Integer> numericType() :
@@ -418,7 +426,7 @@ VariableArrayType variable_array_type() :
 	Expression<Integer> portCount;
 	Expression<String> specification;
 }
-{
+{	
 	<OBR> <VARIABLE_ARRAY_TYPE>
 	defaultWidth = numericType()
 	<ZERO>
@@ -440,57 +448,77 @@ Expression<Integer> arrayCount() : {}
 	{ return integerExpression(); }
 }
 
-PortDeclaration port() : 
+PortDeclaration arrayedSyncPort(String name, boolean isActive) :
 {
-	boolean isArrayed = false;
-	Expression<Integer> count = new Constant<Integer>(1);
-	PortType type = PortType.SYNC;
-	String name = null;
-	boolean isActive = false;
-	boolean isInput = false;
-	Expression<Integer> simpleWidth = null;
-	Expression<Integer[]> width = null;
+	Expression<Integer> count;
 }
+{
+	count = arrayCount()
+	{ return PortDeclaration.createArrayedSync(name, isActive, count); }
+}
+
+PortDeclaration arrayedDataPort(String name, boolean isActive) :
+{
+	Expression<Integer> count;
+	Expression<Integer[]> width;
+	Expression<Integer> simpleWidth;
+	boolean isInput;
+}
+{
+	count = arrayCount()
+	isInput = dataDirectionIsInput()
+	(width = variable_array_type() | simpleWidth = numericType() {width = new ConstantArrayType(simpleWidth, count);})
+	{ return PortDeclaration.createArrayedData(name, isActive, count, isInput, width); }
+}
+
+PortDeclaration simpleSyncPort(String name, boolean isActive) :
+{}
+{
+	{ return PortDeclaration.createSync(name, isActive); }
+}
+
+PortDeclaration simpleDataPort(String name, boolean isActive) :
+{
+	Expression<Integer> width;
+	boolean isInput;
+}
+{
+	isInput = dataDirectionIsInput()
+	width = numericType()
+	{ return PortDeclaration.createData(name, isActive, isInput, width); }
+}
+
+PortDeclaration port() :
+{ PortDeclaration result; String name; boolean isActive; }
 {
 	<OBR>
 
 	(
-		(
-			<PORT> { type = PortType.DATA; }
-			name = value()
-			isActive = isActive()
-			isInput = dataDirectionIsInput()
-			simpleWidth = numericType()
-		|
-			<SYNC_PORT> { type = PortType.SYNC; }
-			name = value()
-			isActive = isActive()
-		)
-		{ isArrayed = false; }
-	
+		<PORT>
+		name = value()
+		isActive = isActive()
+		result = simpleDataPort(name, isActive)
+	|
+		<SYNC_PORT>
+		name = value()
+		isActive = isActive()
+		result = simpleSyncPort(name, isActive)
 	| 
-	
-	 	(
-	 		<ARRAYED_PORT> { type = PortType.DATA; }
-			name = value()
-			isActive = isActive()
-			isInput = dataDirectionIsInput()
-			(width = variable_array_type() | simpleWidth = numericType())
-		|
-			<ARRAYED_SYNC_PORT> { type = PortType.SYNC; }
-			name = value()
-			isActive = isActive()
-		)
-		count = arrayCount()
-		{ isArrayed = true; }
+ 		<ARRAYED_PORT>
+		name = value()
+		isActive = isActive()
+		result = arrayedDataPort(name, isActive)
+	|
+		<ARRAYED_SYNC_PORT>
+		name = value()
+		isActive = isActive()
+		result = arrayedSyncPort(name, isActive)
 	)
 	
 	listBody()
 	<CBR>
 	{
-		if(!isArrayed || width == null)
-			width = new ConstantArrayType(simpleWidth, count);
-		return new PortDeclaration(type, name, isActive, isInput, isArrayed, count, width); 
+		return result; 
 	}
 }
 

@@ -24,6 +24,7 @@ package org.workcraft.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
@@ -31,8 +32,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
 public class FileUtils{
-	public static void copyFile(File in, File out)
-   	throws IOException
+	public static void copyFile(File in, File out)  throws IOException
 	{
 		   FileOutputStream outStream = new FileOutputStream(out);
 		   try
@@ -45,8 +45,7 @@ public class FileUtils{
 		   }
 	}
 
-	public static void copyFileToStream(File in, OutputStream out)
-   		throws IOException
+	public static void copyFileToStream(File in, OutputStream out)  throws IOException
 	{
 	    FileChannel inChannel = new
 	        FileInputStream(in).getChannel();
@@ -64,7 +63,8 @@ public class FileUtils{
 	    }
 	}
 
-	public static File createTempDirectory(String prefix) {
+	public static File createTempDirectory(String prefix)
+	{
 		File tempDir;
 		try {
 			tempDir = File.createTempFile(prefix, "");
@@ -77,12 +77,20 @@ public class FileUtils{
 		return tempDir;
 	}
 
-	public static void deleteDirectoryTree(File dir) {
+	public static void deleteDirectoryTree(File dir)
+	{
 		File [] files = dir.listFiles();
 		if(files != null)
 			for(File file : files)
 				deleteDirectoryTree(file);
 
 		dir.delete();
+	}
+
+	public static void writeAllText(File file, String source) throws IOException
+	{
+		FileWriter writer = new FileWriter(file);
+		writer.write(source);
+		writer.close();
 	}
 }

@@ -31,15 +31,16 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
+import static org.workcraft.plugins.balsa.stg.ProcessOperations.*;
+
 public class SequenceOptimisedStgBuilder extends
 		ComponentStgBuilder<SequenceOptimised> {
 	ProcessOperations o;
 	@Override
 	public void buildStg(SequenceOptimised component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
-		o = new ProcessOperations(builder);
 		PassiveSync activate = (PassiveSync)handshakes.get("activate");
 		Collection<ActiveSync> arr = getHandshakeArray(handshakes, "activateOut", component.getOutputCount(), ActiveSync.class);
-		o.enclosure(activate, o.sequence(arr));
+		enclosure(builder, activate, sequence(builder, arr));
 	}
 	private static <T extends StgInterface> Collection<T> getHandshakeArray(Map<String, StgInterface> handshakes,
 			String arrayName, int arraySize, Class<T> handshakeType) {

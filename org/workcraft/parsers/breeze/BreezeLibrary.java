@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.javacc.BreezeParser;
 import org.workcraft.parsers.breeze.javacc.ParseException;
 

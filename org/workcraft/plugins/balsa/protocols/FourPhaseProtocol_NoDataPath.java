@@ -97,7 +97,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 			};
 		}
 
-		public DataPullStg create(PullHandshake handshake) {
+		public DataPullStg visit(PullHandshake handshake) {
 			final HandshakeSignals signals = createSignals(handshake);
 
 			return new DataPullStg()
@@ -117,7 +117,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 		}
 
 
-		public DataPushStg create(PushHandshake handshake) {
+		public DataPushStg visit(PushHandshake handshake) {
 			final HandshakeSignals signals = createSignals(handshake);
 
 			return new DataPushStg()
@@ -136,7 +136,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 			};
 		}
 
-		public SyncStg create(Sync handshake) {
+		public SyncStg visit(Sync handshake) {
 			final HandshakeSignals signals = createSignals(handshake);
 
 			return new SyncStg(){
@@ -151,7 +151,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 		}
 
 		@Override
-		public FullDataPullStg create(FullDataPull handshake) {
+		public FullDataPullStg visit(FullDataPull handshake) {
 			//The encoding is one-hot (we are trying to preserve a DI protocol)
 
 			final ActiveSignal rq = builder.buildActiveSignal(new SignalId(handshake, "rq"));
@@ -214,7 +214,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 		}
 
 		@Override
-		public FullDataPushStg create(FullDataPush handshake) {
+		public FullDataPushStg visit(FullDataPush handshake) {
 			//The encoding is one-hot (we are trying to preserve a DI protocol)
 
 			final PassiveSignal ac = builder.buildPassiveSignal(new SignalId(handshake, "ac"));
@@ -277,8 +277,7 @@ public class FourPhaseProtocol_NoDataPath implements HandshakeProtocol
 	}
 
 	@Override
-	public HandshakeStgBuilder get(
-			StgBuilderForHandshakes stgBuilder) {
+	public HandshakeStgBuilder get(StgBuilderForHandshakes stgBuilder) {
 		return new StgBuilder(stgBuilder);
 	}
 

@@ -29,14 +29,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.SynchronousExternalProcess;
-import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BreezeComponent;
+import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
@@ -52,7 +52,6 @@ import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.layout.PetriNetToolsSettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Export;
-import org.workcraft.util.Hierarchy;
 
 public abstract class BalsaToStgExporter {
 
@@ -65,9 +64,22 @@ public abstract class BalsaToStgExporter {
 		this.protocolName = protocolName;
 	}
 
-	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
+	private static class BalsaCircuit extends CachedCircuit<HandshakeComponent, BreezeComponent, BreezeConnection>
+	{
 
-		BalsaCircuit balsa = (BalsaCircuit)model;
+		public BalsaCircuit(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> c) {
+			super(c);
+		}
+	}
+
+	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asCircuit(), out);
+	}
+
+	public void export(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		BalsaCircuit balsa = new BalsaCircuit(circuit);
 
 		boolean useSimpleInternalHandshakes = false;
 
@@ -129,7 +141,7 @@ public abstract class BalsaToStgExporter {
 
 		Iterable<BreezeComponent> components = getComponentsToSave(balsa);
 
-		Map<Connection, TwoWayStg> internalHandshakes = new HashMap<Connection, TwoWayStg>();
+		Map<BreezeConnection, TwoWayStg> internalHandshakes = new HashMap<BreezeConnection, TwoWayStg>();
 
 		for(BreezeComponent component : components)
 		{
@@ -146,7 +158,7 @@ public abstract class BalsaToStgExporter {
 
 			for(String name : fullHandshakes.keySet())
 			{
-				Connection connection = getInternalConnection(balsa, components, component, fullHandshakes.get(name));
+				BreezeConnection connection = getInternalConnection(balsa, components, component, fullHandshakes.get(name));
 				if(connection == null)
 					external.put(name, fullHandshakes.get(name));
 				else
@@ -172,11 +184,11 @@ public abstract class BalsaToStgExporter {
 		return stg;
 	}
 
-	private Connection getInternalConnection(BalsaCircuit balsa, Iterable<BreezeComponent> components, BreezeComponent component, Handshake handshake) {
+	private BreezeConnection getInternalConnection(BalsaCircuit balsa, Iterable<BreezeComponent> components, BreezeComponent component, Handshake handshake) {
 		HandshakeComponent hs = component.getHandshakeComponents().get(handshake);
 		if(hs==null)
 			return null;
-		Connection connection = balsa.getConnection(hs);
+		BreezeConnection connection = balsa.getConnection(hs);
 		if(connection == null)
 			return null;
 
@@ -186,7 +198,7 @@ public abstract class BalsaToStgExporter {
 	}
 
 	private TwoWayStg buildInternalStg(Handshake handshake, StgBuilder stg) {
-		return handshake.buildStg(new InternalHandshakeStgBuilder(stg));
+		return handshake.accept(new InternalHandshakeStgBuilder(stg));
 	}
 
 	private boolean contains(Iterable<BreezeComponent> components, BreezeComponent component)
@@ -197,8 +209,8 @@ public abstract class BalsaToStgExporter {
 		return false;
 	}
 
-	protected Iterable<BreezeComponent> getComponentsToSave(BalsaCircuit balsa) {
-		return Hierarchy.getDescendantsOfType(balsa.getRoot(), BreezeComponent.class);
+	protected Iterable<BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
+		return balsa.getBlocks();
 	}
 
 	private static void saveData(byte [] outputData, OutputStream out) throws IOException
@@ -224,21 +236,45 @@ public abstract class BalsaToStgExporter {
 		return stg;
 	}
 
+	class CountingNameProvider implements HandshakeNameProvider
+	{
+		Map<Object, String> names = new HashMap<Object, String>();
+		int nextId = 1;
+		private final String prefix;
+
+		public CountingNameProvider(String prefix) {
+			this.prefix = prefix;
+		}
+
+		@Override
+		public String getName(Object key) {
+			String name = names.get(key);
+			if(name == null)
+			{
+				name = "" + nextId++;
+				names.put(key, name);
+			}
+			return prefix + name;
+		}
+	}
+
 	private HandshakeNameProvider getNamesProvider(final BalsaCircuit circuit, final BreezeComponent breezeComponent, final Map<String, Handshake> handshakes) {
 		final HashMap<Object, String> names;
 
 		names = new HashMap<Object, String>();
+		final CountingNameProvider cnp1 = new CountingNameProvider("c");
+		final CountingNameProvider cnp2 = new CountingNameProvider("w");
 
 		for(Entry<String, Handshake> entry : handshakes.entrySet())
-			names.put(entry.getValue(), "c" + circuit.getNodeID(breezeComponent) + "_" + entry.getKey());
+			names.put(entry.getValue(), cnp1.getName(breezeComponent) + "_" + entry.getKey());
 
 		for(Entry<Handshake, HandshakeComponent> entry : breezeComponent.getHandshakeComponents().entrySet())
 		{
-			Connection connection = circuit.getConnection(entry.getValue());
+			BreezeConnection connection = circuit.getConnection(entry.getValue());
 			if(connection != null)
-				names.put(entry.getKey(), "cn_" + circuit.getNodeID(connection));
+				names.put(entry.getKey(), cnp2.getName(connection));
 		}
-		names.put(breezeComponent.getUnderlyingComponent(), "c" + circuit.getNodeID(breezeComponent));
+		names.put(breezeComponent.getUnderlyingComponent(), cnp1.getName(breezeComponent));
 
 		HandshakeNameProvider nameProvider = new HandshakeNameProvider()
 		{

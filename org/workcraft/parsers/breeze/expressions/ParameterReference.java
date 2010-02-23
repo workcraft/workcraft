@@ -25,7 +25,7 @@ import org.workcraft.parsers.breeze.ParameterScope;
 import org.workcraft.parsers.breeze.expressions.visitors.Visitor;
 
 public class ParameterReference<T> implements Expression<T> {
-	String parameterName = null;
+	private final String parameterName;
 
 	public ParameterReference(String parameterName)
 	{
@@ -37,15 +37,19 @@ public class ParameterReference<T> implements Expression<T> {
 	@SuppressWarnings("unchecked")
 	public T evaluate(ParameterScope parameters)
 	{
-		return (T)parameters.get(parameterName);
+		return (T)parameters.get(getParameterName());
 	}
 
 	public String toString() {
-		return "<" + parameterName +">";
+		return "<" + getParameterName() +">";
 	}
 
 	@Override
 	public <R> R accept(Visitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	public String getParameterName() {
+		return parameterName;
 	}
 }
