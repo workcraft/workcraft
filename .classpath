@@ -12,6 +12,7 @@
 	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/substance.jar"/>
+	<classpathentry kind="lib" path="lib/javaparser-1.0.7.jar" sourcepath="c:/Work/libs/javaparser"/>
 	<classpathentry kind="lib" path="lib/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

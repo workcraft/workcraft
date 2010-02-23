@@ -21,17 +21,50 @@
 
 package org.workcraft.plugins.balsa.components;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum BinaryOperator
 {
-	ADD,
-	SUBTRACT,
-	REVERSE_SUBTRACT,
-	EQUALS,
-	NOT_EQUALS,
-	LESS_THAN,
-	GREATER_THAN,
-	LESS_OR_EQUALS,
-	GREATER_OR_EQUALS,
-	AND,
-	OR
+	ADD ("Add"),
+	SUBTRACT ("Subtract"),
+	REVERSE_SUBTRACT ("ReverseSubtract"),
+	EQUALS ("Equals"),
+	NOT_EQUALS ("NotEquals"),
+	LESS_THAN ("LessThan"),
+	GREATER_THAN ("GreaterThan"),
+	LESS_OR_EQUALS ("LessOrEquals"),
+	GREATER_OR_EQUALS ("GreaterOrEquals"),
+	AND ("And"),
+	OR ("Or");
+
+	private static Map<String, BinaryOperator> textToValue = fillMap();
+	private static Map<String, BinaryOperator> fillMap() {
+		Map<String, BinaryOperator> result = new HashMap<String, BinaryOperator>();
+
+		for(BinaryOperator op : BinaryOperator.values())
+		{
+			result.put(op.text, op);
+		}
+
+		return result;
+	}
+
+	private final String text;
+	private BinaryOperator(String text) {
+		this.text = text;
+	}
+
+	@Override
+	public String toString() {
+		return text;
+	}
+
+	public static BinaryOperator parse(String text)
+	{
+		BinaryOperator result = textToValue.get(text);
+		if(result == null)
+			throw new IndexOutOfBoundsException("Unknown binary operator: " + text);
+		return result;
+	}
 };

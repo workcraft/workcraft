@@ -21,11 +21,6 @@
 
 package org.workcraft.plugins.balsa.handshakebuilder;
 
-import org.workcraft.plugins.balsa.handshakeevents.DataPullStg;
-import org.workcraft.plugins.balsa.handshakeevents.DataPushStg;
-import org.workcraft.plugins.balsa.handshakeevents.SyncStg;
-import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
 
 public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
@@ -39,8 +34,8 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 
 	public PullHandshake createPull(final int width, final boolean isActive) {
 		return new PullHandshake(){
-			@Override public DataPullStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
+			@Override public <T> T accept(HandshakeVisitor<T> v) {
+				return v.visit(this);
 			}
 
 			@Override public int getWidth() {
@@ -59,8 +54,8 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 	public PushHandshake createPush(final int width, final boolean isActive) {
 		return new PushHandshake()
 		{
-			@Override public DataPushStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
+			@Override public <T> T accept(HandshakeVisitor<T> v) {
+				return v.visit(this);
 			}
 
 			@Override public int getWidth() {
@@ -77,9 +72,10 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 	@Override public Sync CreatePassiveSync() { return createSync(false); }
 
 	private Sync createSync(final boolean isActive) {
-		return new Sync(){
-			public SyncStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
+		return new Sync()
+		{
+			public <T> T accept(HandshakeVisitor<T> v) {
+				return v.visit(this);
 			}
 
 			@Override
@@ -95,8 +91,8 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 	private FullDataPush createFullDataPush(final int valuesCount, final boolean active) {
 		return new FullDataPush()
 		{
-			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
+			@Override public <T> T accept(HandshakeVisitor<T> v) {
+				return v.visit(this);
 			}
 
 			@Override public boolean isActive() {
@@ -115,8 +111,8 @@ public class SimpleHandshakeBuilder implements HandshakeBuilder {
 	private FullDataPull createFullDataPull(final int valuesCount, final boolean active) {
 		return new FullDataPull()
 		{
-			@Override public TwoWayStg buildStg(HandshakeStgBuilder builder) {
-				return builder.create(this);
+			@Override public <T> T accept(HandshakeVisitor<T> v) {
+				return v.visit(this);
 			}
 
 			@Override public boolean isActive() {

@@ -53,8 +53,10 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
+import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.HandshakeComponent;
 import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.components.BinaryOperator;
@@ -657,7 +659,7 @@ public class TestGCD {
 	{
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
 			{
-				@Override protected Iterable<BreezeComponent> getComponentsToSave(BalsaCircuit balsa) {
+				@Override protected Iterable<BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
 					return Arrays.asList(components);
 				}
 			};

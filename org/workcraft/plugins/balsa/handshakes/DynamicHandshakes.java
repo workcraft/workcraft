@@ -24,8 +24,12 @@ package org.workcraft.plugins.balsa.handshakes;
 import java.util.Map;
 
 import org.workcraft.parsers.breeze.ParameterScope;
-import org.workcraft.parsers.breeze.PortDeclaration;
-import org.workcraft.parsers.breeze.PortType;
+import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
+import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
+import org.workcraft.parsers.breeze.dom.DataPortDeclaration;
+import org.workcraft.parsers.breeze.dom.PortDeclaration;
+import org.workcraft.parsers.breeze.dom.PortVisitor;
+import org.workcraft.parsers.breeze.dom.SyncPortDeclaration;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
@@ -34,48 +38,60 @@ public class DynamicHandshakes extends HandshakeMaker<DynamicComponent> {
 	@Override
 	protected void fillHandshakes(DynamicComponent component,
 			Map<String, Handshake> handshakes) {
-		for(PortDeclaration port : component.declaration().ports())
+		for(PortDeclaration port : component.declaration().getPorts())
 		{
 			addPort(port, component.parameters(), handshakes);
 		}
 	}
 
-	private void addPort(PortDeclaration port, ParameterScope parameters, Map<String, Handshake> handshakes) {
-		if(port.isArrayed)
+	private void addPort(PortDeclaration port, final ParameterScope parameters, final Map<String, Handshake> handshakes)
+	{
+		port.accept(new PortVisitor<Object>()
 		{
-			for(int i=0;i<port.count.evaluate(parameters);i++)
-				addChannel(port.name+i, i, port, parameters, handshakes);
-		}
-		else
-			addChannel(port.name, 0, port, parameters, handshakes);
-	}
-
-	private void addChannel(String name, int i, PortDeclaration port,
-			ParameterScope parameters, Map<String, Handshake> handshakes) {
-		Handshake hs;
-
-		if(port.type == PortType.SYNC)
-		{
-			if(port.isActive)
-				hs = builder.CreateActiveSync();
-			else
-				hs = builder.CreatePassiveSync();
-		}
-		else
-		{
-			int width = port.width.evaluate(parameters)[i];
-			if(port.isActive)
-				if(port.isInput)
-					hs = builder.CreateActiveFullDataPull(width);
+			private Handshake newData(boolean isActive, boolean isInput, int width) {
+				if(isActive)
+					if(isInput)
+						return builder.CreateActivePull(width);
+					else
+						return builder.CreateActivePush(width);
 				else
-					hs = builder.CreateActiveFullDataPush(width);
-			else
-				if(port.isInput)
-					hs = builder.CreatePassiveFullDataPush(width);
-				else
-					hs = builder.CreatePassiveFullDataPull(width);
-		}
+					if(isInput)
+						return builder.CreatePassivePush(width);
+					else
+						return builder.CreatePassivePull(width);
+			}
 
-		handshakes.put(name, hs);
+			private Handshake newSync(PortDeclaration port) {
+				Handshake hs;
+				if(port.isActive())
+					hs = builder.CreateActiveSync();
+				else
+					hs = builder.CreatePassiveSync();
+				return hs;
+			}
+
+			@Override public Object visit(SyncPortDeclaration port) {
+				handshakes.put(port.getName(), newSync(port));
+				return null;
+			}
+
+			@Override public Object visit(DataPortDeclaration port) {
+				handshakes.put(port.getName(), newData(port.isActive(), port.isInput(), port.getWidth().evaluate(parameters)));
+				return null;
+			}
+
+			@Override public Object visit(ArrayedDataPortDeclaration port) {
+				for(int i=0;i<port.getCount().evaluate(parameters);i++)
+					handshakes.put(port.getName() + i, newData(port.isActive(), port.isInput(), port.getWidth().evaluate(parameters)[i]));
+				return null;
+			}
+
+			@Override public Object visit(ArrayedSyncPortDeclaration port) {
+				for(int i=0;i<port.getCount().evaluate(parameters);i++)
+					handshakes.put(port.getName() + i, newSync(port));
+				return null;
+			}
+		}
+		);
 	}
 }

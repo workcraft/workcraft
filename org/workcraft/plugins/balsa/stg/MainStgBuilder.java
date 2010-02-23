@@ -87,6 +87,7 @@ public class MainStgBuilder {
 	private static Map<Class<? extends Component>, ComponentStgBuilder<?>> fillMap() {
 		Map<Class<? extends Component>, ComponentStgBuilder<?>> result = new HashMap<Class<? extends Component>, ComponentStgBuilder<?>>();
 
+		result.put(org.workcraft.plugins.balsa.components.DynamicComponent.class, new DynamicComponentStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.Concur.class, new ConcurStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.SequenceOptimised.class, new SequenceOptimisedStgBuilder());
 		result.put(org.workcraft.plugins.balsa.components.While.class, new WhileStgBuilder_NoDataPath());
@@ -108,7 +109,7 @@ public class MainStgBuilder {
 		{
 			Handshake hs = handshakes.get(key);
 			boolean isActive = hs.isActive();
-			TwoSideStg res = ActivenessSelector.direct(hs.buildStg(isActive ? activeBuilder : passiveBuilder), isActive);
+			TwoSideStg res = ActivenessSelector.direct(hs.accept(isActive ? activeBuilder : passiveBuilder), isActive);
 			result.put(key, res);
 		}
 		return result;

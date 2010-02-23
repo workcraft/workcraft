@@ -21,9 +21,11 @@
 
 package org.workcraft.plugins.balsa;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +41,8 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.parsers.breeze.Netlist;
+import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
@@ -52,8 +56,8 @@ import org.workcraft.util.Hierarchy;
 @VisualClass ("org.workcraft.plugins.balsa.VisualBalsaCircuit")
 @DisplayName ("Balsa circuit")
 
-public final class BalsaCircuit extends AbstractMathModel {
-
+public final class BalsaCircuit extends AbstractMathModel
+{
 	public BalsaCircuit() {
 		super(null);
 
@@ -206,5 +210,39 @@ public final class BalsaCircuit extends AbstractMathModel {
 	public final Collection<MathConnection> getConnections()
 	{
 		return Hierarchy.getChildrenOfType(this.getRoot(), MathConnection.class);
+	}
+
+	public BreezeComponent addNew(Component component)
+	{
+		BreezeComponent node = new BreezeComponent();
+		node.setUnderlyingComponent(component);
+		add(node);
+		return node;
+	}
+
+	public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> asCircuit()
+	{
+		return new Netlist<HandshakeComponent, BreezeComponent, BreezeConnection>()
+		{
+
+			@Override public List<BreezeComponent> getBlocks()
+			{
+				return new ArrayList<BreezeComponent>(getComponents());
+			}
+
+			@Override public List<BreezeConnection> getConnections()
+			{
+				List<BreezeConnection> result = new ArrayList<BreezeConnection>();
+				Collection<MathConnection> conns = BalsaCircuit.this.getConnections();
+				for(MathConnection conn : conns)
+					result.add(new BreezeConnection(conn));
+				return result;
+			}
+
+			@Override public List<HandshakeComponent> getPorts()
+			{
+				throw new org.workcraft.exceptions.NotImplementedException();
+			}
+		};
 	}
 }

@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.javacc.BreezeParser;
 import org.workcraft.parsers.breeze.javacc.ParseException;
 
@@ -46,7 +47,7 @@ public class BreezeLibrary extends HashMap<String, BreezeDefinition> {
 				try
 				{
 					PrimitivePart primitivePart = BreezeParser.parsePrimitivePart(is);
-					put("$Brz"+primitivePart.name, primitivePart);
+					put("$Brz"+primitivePart.getName(), primitivePart);
 				} catch (ParseException e) {
 					System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
 				}

@@ -25,5 +25,7 @@ public enum ParameterType {
 	STRING,
 	CARDINAL,
 	BOOLEAN,
+	BINARY_OPERATOR,
+	UNARY_OPERATOR,
 	OTHER
 }
