@@ -36,6 +36,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
@@ -180,8 +181,8 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 			}
 
 			String folder = null;
-			if (we.getModel() != null)
-				folder = we.getModel().getDisplayName();
+			if (we.getObject() instanceof Model)
+				folder = ((Model)we.getObject()).getDisplayName();
 
 			if (folder != null) {
 				DefaultMutableTreeNode modelTypeNode = modelTypeNodes.get(folder);

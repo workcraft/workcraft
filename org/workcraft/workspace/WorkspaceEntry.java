@@ -28,7 +28,7 @@ import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceEntry {
 	private File file = null;
-	private Model model = null;
+	private Object object = null;
 	private boolean unsaved = false;
 	private boolean temporary = true;
 	private int entryID;
@@ -49,21 +49,16 @@ public class WorkspaceEntry {
 		return file;
 	}
 
-	public Model getModel() {
-		return model;
+	public Object getObject() {
+		return object;
 	}
 
 	public void setFile(File file) {
 		this.file = file;
 	}
 
-	public void setModel(Model model) {
-		this.model = model;
-	}
-
-	public void renameModel(String title) {
-		model.setTitle(title);
-		workspace.fireEntryChanged(this);
+	public void setObject(Object object) {
+		this.object = object;
 	}
 
 	public void setUnsaved(boolean unsaved) {
@@ -76,14 +71,12 @@ public class WorkspaceEntry {
 	}
 
 	public boolean isWork() {
-		return (model != null || file.getName().endsWith(".work"));
+		return (file.getName().endsWith(".work"));
 	}
 
 	public String getTitle() {
 		String res;
 		if (isWork()) {
-			res = model.getTitle();
-			if (res.isEmpty())
 				if (file != null) {
 					String fileName = file.getName();
 					int dot = fileName.lastIndexOf('.');
@@ -104,8 +97,8 @@ public class WorkspaceEntry {
 	public String toString() {
 		String res = getTitle();
 
-		if (model != null)
-			if (model instanceof VisualModel)
+		if (object != null)
+			if (object instanceof VisualModel)
 				res = res + " [V]";
 
 		if (unsaved)

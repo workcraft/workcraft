@@ -115,7 +115,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
-		visualModel = (VisualModel) workspaceEntry.getModel();
+		visualModel = (VisualModel) workspaceEntry.getObject();
 		toolboxWindow = mainWindow.getToolboxWindow();
 
 		new Repainter().attach(visualModel.getRoot());

@@ -97,7 +97,7 @@ public class Workspace {
 			we.setFile(f);
 			if (f.getName().endsWith(".work")) {
 				Model model = framework.load(f.getPath());
-				we.setModel(model);
+				we.setObject(model);
 			}
 			workspace.add(we);
 			fireEntryAdded(we);
@@ -109,7 +109,7 @@ public class Workspace {
 	public WorkspaceEntry add(Model model, boolean temporary) {
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setTemporary(temporary);
-		we.setModel(model);
+		we.setObject(model);
 		workspace.add(we);
 		fireEntryAdded(we);
 		return we;

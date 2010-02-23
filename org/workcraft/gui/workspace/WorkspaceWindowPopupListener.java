@@ -40,6 +40,7 @@ import javax.swing.tree.TreePath;
 import org.workcraft.Framework;
 import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
+import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.util.ListMap;
@@ -119,8 +120,9 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 							}
 					}
 
-					if (we.getModel()!=null) {
-						JLabel label = new JLabel (we.getModel().getDisplayName()+ (we.getModel().getTitle().isEmpty()?"" : ("\"" + we.getModel().getTitle() + "\"" )));
+					if (we.getObject() instanceof Model) {
+						Model model = (Model)we.getObject();
+						JLabel label = new JLabel (model.getDisplayName()+ (model.getTitle().isEmpty()?"" : ("\"" + model.getTitle() + "\"" )));
 						popup.add(label);
 						popup.addSeparator();
 
@@ -155,7 +157,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 						popup.add(miSaveAs);
 						popup.add(miOpenView);
 
-						ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(we.getModel(), framework);
+						ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(model, framework);
 						List<String> sections = Tools.getSections(applicableTools);
 
 						if (!sections.isEmpty())
@@ -170,7 +172,7 @@ class WorkspaceWindowPopupListener extends MouseAdapter {
 
 								mi.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent e) {
-										Tools.run(we.getModel(), tools.get(e.getSource()), framework);
+										Tools.run((Model)we.getObject(), tools.get(e.getSource()), framework);
 									}
 								});
 

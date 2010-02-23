@@ -64,6 +64,7 @@ import org.workcraft.ModelFactory;
 import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -338,17 +339,17 @@ public class MainWindow extends JFrame {
 	}
 
 	public void createEditorWindow(WorkspaceEntry we) {
-		if (we.getModel() == null) {
-			JOptionPane.showMessageDialog(this, "The selected entry is not a Workcraft model, and cannot be edited.", "Cannot open editor", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+		Object object = we.getObject();
 
-		VisualModel visualModel = (we.getModel() instanceof VisualModel) ? (VisualModel) we.getModel() : null;
+		if (!(object instanceof Model))
+			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
+
+		VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
 
 		if (visualModel == null)
 			try {
-				visualModel = ModelFactory.createVisualModel(we.getModel());
-				we.setModel(visualModel);
+				visualModel = ModelFactory.createVisualModel((MathModel)object);
+				we.setObject(visualModel);
 			} catch (VisualModelInstantiationException e) {
 				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
@@ -514,7 +515,7 @@ public class MainWindow extends JFrame {
 				WorkspaceEntry we = editor.getWorkspaceEntry();
 
 				if (editor.getWorkspaceEntry().isUnsaved()) {
-					int result = JOptionPane.showConfirmDialog(this, "Model \""+we.getTitle() + "\" ("+we.getModel().getDisplayName()+") has unsaved changes.\nSave before closing?",
+					int result = JOptionPane.showConfirmDialog(this, "Document \""+we.getTitle() + "\" has unsaved changes.\nSave before closing?",
 							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 					if (result == JOptionPane.YES_OPTION) {
@@ -756,7 +757,7 @@ public class MainWindow extends JFrame {
 			for (File f : fc.getSelectedFiles()) {
 				try {
 					WorkspaceEntry we = framework.getWorkspace().add(f.getPath(), true);
-					if (we.getModel() instanceof VisualModel)
+					if (we.getObject() instanceof VisualModel)
 						createEditorWindow(we);
 				} catch (DeserialisationException e) {
 					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
@@ -789,7 +790,10 @@ public class MainWindow extends JFrame {
 			saveAs(we);
 		}
 		try {
-			framework.save(we.getModel(), we.getFile().getPath());
+			if (we.getObject() instanceof Model)
+				framework.save((Model)we.getObject(), we.getFile().getPath());
+			else
+				throw new RuntimeException ("Workcraft does not know how to save " + we.getObject().getClass());
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
@@ -814,7 +818,7 @@ public class MainWindow extends JFrame {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 
-		String title = we.getModel().getTitle();
+		String title = we.getTitle();
 		title = removeSpecialFileNameCharacters(title);
 
 		fc.setSelectedFile(new File(title));
@@ -846,7 +850,10 @@ public class MainWindow extends JFrame {
 		}
 
 		try {
-			framework.save(we.getModel(), path);
+			if (we.getObject() instanceof Model)
+				framework.save((Model)we.getObject(), we.getFile().getPath());
+			else
+				throw new RuntimeException ("Workcraft does not know how to save " + we.getObject().getClass());
 			we.setFile(new File(path));
 			we.setUnsaved(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
@@ -896,7 +903,7 @@ public class MainWindow extends JFrame {
 						try {
 							model = Import.importFromFile(importer, f);
 							WorkspaceEntry we = framework.getWorkspace().add(model, false);
-							if (we.getModel() instanceof VisualModel)
+							if (we.getObject() instanceof VisualModel)
 								createEditorWindow(we);
 							break;
 						} catch (IOException e) {
