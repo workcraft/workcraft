@@ -31,7 +31,9 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.Transition;
@@ -39,6 +41,8 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
+@DisplayName("Signal Transition")
+@SVGIcon("images/icons/svg/signal-transition.svg")
 public class VisualSignalTransition extends VisualTransition {
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;

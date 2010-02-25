@@ -50,11 +50,11 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @SuppressWarnings("serial")
 public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKeyListener {
 
-	public static final int TOOL_ICON_CROP_SIZE = 16;
 
 	class ToolTracker {
 		LinkedList<GraphEditorTool> tools = new LinkedList<GraphEditorTool>();
@@ -108,10 +108,11 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		button.setFocusable(false);
 		button.setHorizontalAlignment(SwingConstants.LEFT);
 		button.setSelected(selected);
-		button.setMargin(new Insets(2,2,2,2));
+		button.setMargin(new Insets(0,0,0,0));
 
 		Insets insets = button.getInsets();
-		int minSize = TOOL_ICON_CROP_SIZE+Math.max(insets.left+insets.right, insets.top+insets.bottom);
+		int iconSize = CommonVisualSettings.getIconSize();
+		int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
 
 		Icon icon = tool.getIcon();
 		if(icon==null) {
@@ -119,9 +120,9 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			button.setPreferredSize(new Dimension(120,minSize));
 		}
 		else {
-			BufferedImage crop = new BufferedImage(TOOL_ICON_CROP_SIZE, TOOL_ICON_CROP_SIZE,
+			BufferedImage crop = new BufferedImage(iconSize, iconSize,
 					BufferedImage.TYPE_INT_ARGB);
-			icon.paintIcon(button, crop.getGraphics(), 8-icon.getIconWidth()/2, 8-icon.getIconHeight()/2);
+			icon.paintIcon(button, crop.getGraphics(), (iconSize-icon.getIconWidth())/2, (iconSize-icon.getIconHeight())/2);
 			button.setIcon(new ImageIcon(crop));
 			button.setPreferredSize(new Dimension(minSize,minSize));
 		}

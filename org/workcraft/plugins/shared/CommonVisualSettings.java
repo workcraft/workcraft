@@ -38,13 +38,15 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 
 	protected static double size = 1.0;
 	protected static double strokeWidth = 0.1;
-
+	protected static int iconSize = 16;
 	protected static Color backgroundColor = Color.WHITE;
 	protected static Color foregroundColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
+		properties.add(new PropertyDeclaration("Base icon width (pixels, 8-256)", "getIconSize", "setIconSize", int.class));
+
 		properties.add(new PropertyDeclaration("Base component size (cm)", "getSize", "setSize", double.class));
 		properties.add(new PropertyDeclaration("Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
 
@@ -59,6 +61,7 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 
 	public void loadPersistentProperties(Config config) {
 		size = config.getDouble("CommonVisualSettings.size", 1.0);
+		iconSize = config.getInt("CommonVisualSettings.iconSize", 16);
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
 		backgroundColor = config.getColor("CommonVisualSettings.backgroundColor", Color.WHITE);
 		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
@@ -66,6 +69,7 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 	}
 
 	public void storePersistentProperties(Config config) {
+		config.setInt("CommonVisualSettings.iconSize", iconSize);
 		config.setDouble("CommonVisualSettings.size", size);
 		config.setDouble("CommonVisualSettings.strokeWidth", strokeWidth);
 		config.setColor("CommonVisualSettings.backgroundColor", backgroundColor);
@@ -131,4 +135,15 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
+	public static int getIconSize() {
+		return iconSize;
+	}
+
+	public static void setIconSize(int iconSize) {
+		if (iconSize<8)
+			iconSize = 8;
+		if (iconSize>256)
+			iconSize = 256;
+		CommonVisualSettings.iconSize = iconSize;
+	}
 }

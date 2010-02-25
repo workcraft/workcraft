@@ -444,7 +444,7 @@ public class MainWindow extends JFrame {
 		DockableWindow wsvd = createDockableWindow (workspaceWindow, "Workspace", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION, 0.8f);
 		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
 		DockableWindow tiw = createDockableWindow(toolInterfaceWindow, "Tool controls", propertyEditor, DockableWindowContentPanel.CLOSE_BUTTON);
-		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, 0, DockingManager.NORTH_REGION, 0.5f);
 
 		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), "", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f, "DocumentPlaceholder");
 

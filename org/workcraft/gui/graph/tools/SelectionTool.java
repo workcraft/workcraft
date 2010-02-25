@@ -417,11 +417,7 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		try {
-			return GUI.loadIconFromResource("images/select.png");
-		} catch (IOException e) {
-			return null;
-		}
+		return GUI.createIconFromSVG("images/icons/svg/select.svg");
 	}
 
 }

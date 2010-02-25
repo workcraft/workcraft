@@ -174,6 +174,7 @@ public class DockableWindowContentPanel extends JPanel {
 	public static final int CLOSE_BUTTON = 1;
 	public static final int MINIMIZE_BUTTON = 2;
 	public static final int MAXIMIZE_BUTTON = 4;
+	public static final int HEADER = 8;
 
 	private String title;
 	private JComponent content;
@@ -212,7 +213,11 @@ public class DockableWindowContentPanel extends JPanel {
 		this.mainWindow = mainWindow;
 		this.ID = ID;
 		this.content = content;
-		this.options = options;
+
+		if ( (options & ~HEADER) > 0)
+			this.options = options | HEADER;
+		else
+			this.options = options;
 
 		header = new DockableViewHeader(title, options);
 
@@ -220,15 +225,18 @@ public class DockableWindowContentPanel extends JPanel {
 		contentPane.setLayout(new BorderLayout(0,0));
 		contentPane.add(content,BorderLayout.CENTER);
 		contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), 2));
-		contentPane.add(header, BorderLayout.NORTH);
+
+		if ((options & HEADER) > 0)
+			contentPane.add(header, BorderLayout.NORTH);
 
 		add(contentPane, BorderLayout.CENTER);
+
 		setFocusable(false);
 
 	}
 
 	public void setHeaderVisible(boolean headerVisible) {
-		if (headerVisible) {
+		if (headerVisible && ((options & HEADER) > 0)) {
 			if (header.getParent() != contentPane)
 				contentPane.add(header, BorderLayout.NORTH);
 		}

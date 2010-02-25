@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -18,7 +20,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.w3c.dom.Document;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class GUI {
 
@@ -33,9 +43,9 @@ public class GUI {
 		Dimension parentSize = parent.getSize();
 		frame.setSize(parentSize.width / 2, parentSize.height / 2);
 		Dimension mySize = frame.getSize();
-		parent.getLocationOnScreen();
+		Point q = parent.getLocationOnScreen();
 
-		frame.setLocation (((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+		frame.setLocation (((parentSize.width - mySize.width)/2) + q.x, ((parentSize.height - mySize.height)/2) + q.y);
 	}
 
 	public static BufferedImage loadImageFromResource(String path) throws IOException {
@@ -46,10 +56,11 @@ public class GUI {
 		return ImageIO.read(res);
 	}
 
-	public static ImageIcon loadIconFromResource(String path) throws IOException {
+	public static ImageIcon createIconFromImage(String path) {
 		URL res = ClassLoader.getSystemResource(path);
 		if(res==null) {
-			throw new IOException("Resource not found: "+path);
+			System.err.println ("Missing icon: " + path);
+			return null;
 		}
 		return new ImageIcon(res);
 	}
@@ -66,5 +77,43 @@ public class GUI {
 		g.setColor(color);
 		LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
 		g.drawString (message, r.x, r.y+r.height-(int)(lm.getDescent()));
+	}
+
+	public static ImageIcon createIconFromSVG(String path) {
+
+		try {
+
+			System.setProperty("org.apache.batik.warn_destination", "false");
+			Document document;
+
+			String parser = XMLResourceDescriptor.getXMLParserClassName();
+			SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+
+			document = f.createDocument(ClassLoader.getSystemResource(path).toString());
+
+			UserAgentAdapter userAgentAdapter = new UserAgentAdapter();
+			BridgeContext bridgeContext = new BridgeContext(userAgentAdapter);
+			GVTBuilder builder = new GVTBuilder();
+
+			GraphicsNode graphicsNode =	builder.build(bridgeContext, document);
+
+			double size = Math.max(bridgeContext.getDocumentSize().getHeight(), bridgeContext.getDocumentSize().getWidth());
+			int iconSize = CommonVisualSettings.getIconSize();
+
+			BufferedImage bufferedImage = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.scale(iconSize/size, iconSize/size);
+
+			graphicsNode.paint(g2d);
+			g2d.dispose();
+			return new ImageIcon(bufferedImage);
+		}
+		catch (Throwable e) {
+			System.err.println ("Failed to load SVG file " + path);
+			System.err.println(e);
+			return null;
+		}
 	}
 }

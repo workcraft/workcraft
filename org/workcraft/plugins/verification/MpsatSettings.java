@@ -27,11 +27,9 @@ public class MpsatSettings {
 	private SolutionMode solutionMode;
 	private int solutionNumberLimit;
 	private String reach;
-	private String description;
-	private boolean builtIn;
 
 	public MpsatSettings(MpsatMode mode, int verbosity, int satSolver,
-			SolutionMode solutionMode, int solutionNumberLimit, String reach, String description, boolean builtIn) {
+			SolutionMode solutionMode, int solutionNumberLimit, String reach) {
 		super();
 		this.mode = mode;
 		this.verbosity = verbosity;
@@ -39,12 +37,9 @@ public class MpsatSettings {
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
-		this.description = description;
-		this.builtIn = builtIn;
 	}
 
 	public MpsatSettings(Element element) {
-		description = element.getAttribute("description");
 		mode = MpsatMode.getMode(element.getAttribute("mode"));
 		verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
 		solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
@@ -56,8 +51,7 @@ public class MpsatSettings {
 	}
 
 	public void toXML(Element parent) {
-		Element e = parent.getOwnerDocument().createElement("preset");
-		e.setAttribute("description", description);
+		Element e = parent.getOwnerDocument().createElement("settings");
 		e.setAttribute("mode", mode.getArgument());
 		e.setAttribute("verbosity", Integer.toString(verbosity));
 		e.setAttribute("satSolver", Integer.toString(satSolver));
@@ -69,10 +63,6 @@ public class MpsatSettings {
 
 		e.appendChild(re);
 		parent.appendChild(e);
-	}
-
-	public String toString() {
-		return builtIn?description + " [built-in]":description;
 	}
 
 	public MpsatMode getMode() {
@@ -89,14 +79,6 @@ public class MpsatSettings {
 
 	public String getReach() {
 		return reach;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public boolean isBuiltIn() {
-		return builtIn;
 	}
 
 	public SolutionMode getSolutionMode() {

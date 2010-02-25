@@ -70,6 +70,25 @@ public class Config {
 			return s;
 	}
 
+	public int getInt (String key, int defaultValue) {
+		String s = get (key);
+
+		if (s == null)
+			return defaultValue;
+
+		try {
+			return Integer.parseInt(s);
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+			return defaultValue;
+		}
+	}
+
+	public void setInt (String key, int value) {
+		set (key, Integer.toString(value));
+	}
+
 	public double getDouble (String key, double defaultValue) {
 		String s = get (key);
 

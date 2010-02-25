@@ -45,14 +45,15 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
 		this.displayName = Annotations.getDisplayName(vcls);
 		this.hk = Annotations.getHotKeyCode(vcls);
 
-		String iconPath = Annotations.getToolIcon(vcls);
-		if(iconPath!=null) {
-			try {
-				this.icon = GUI.loadIconFromResource(iconPath);
-			}
-			catch (IOException e) {
-			}
+		String iconPath = Annotations.getSVGIconPath(vcls);
+		if(iconPath != null) {
+			icon = GUI.createIconFromSVG(iconPath);
+			return;
 		}
+
+		iconPath = Annotations.getIconPath(vcls);
+		if (iconPath != null)
+			icon = GUI.createIconFromImage(iconPath);
 	}
 
 	@Override

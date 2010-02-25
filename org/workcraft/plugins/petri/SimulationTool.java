@@ -136,11 +136,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		try {
-			return GUI.loadIconFromResource("images/play.png");
-		} catch (IOException e) {
-			return null;
-		}
+		return GUI.createIconFromSVG("images/icons/svg/start-green.svg");
 	}
 
 	@Override

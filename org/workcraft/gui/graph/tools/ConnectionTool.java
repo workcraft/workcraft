@@ -31,7 +31,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 
 import javax.swing.Icon;
 
@@ -189,11 +188,7 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public Icon getIcon() {
-		try {
-			return GUI.loadIconFromResource("images/connect.png");
-		} catch (IOException e) {
-			return null;
-		}
+		return GUI.createIconFromSVG("images/icons/svg/connect.svg");
 	}
 
 	@Override

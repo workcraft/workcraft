@@ -40,8 +40,15 @@ public class Annotations {
 		return dna.value();
 	}
 
-	public static String getToolIcon(Class<?> cls) {
-		ToolIcon icon =  cls.getAnnotation(ToolIcon.class);
+	public static String getSVGIconPath(Class<?> cls) {
+		SVGIcon icon =  cls.getAnnotation(SVGIcon.class);
+		if (icon == null)
+			return null;
+		return icon.value();
+	}
+
+	public static String getIconPath(Class<?> cls) {
+		Icon icon =  cls.getAnnotation(Icon.class);
 		if (icon == null)
 			return null;
 		return icon.value();

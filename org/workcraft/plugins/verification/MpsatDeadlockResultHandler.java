@@ -3,6 +3,8 @@
  */
 package org.workcraft.plugins.verification;
 
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import org.workcraft.Trace;
@@ -19,9 +21,11 @@ final class MpsatDeadlockResultHandler implements Runnable {
 
 	@Override
 	public void run() {
-		MpsatDeadlockParser mdp = new MpsatDeadlockParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
+		MpsatResultParser mdp = new MpsatResultParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
 
-		if (mdp.hasDeadlock()) {
+		List<Trace> solutions = mdp.getSolutions();
+
+		if (!solutions.isEmpty()) {
 			String message = "The system has a deadlock.\n";
 
 			int i = 1;
