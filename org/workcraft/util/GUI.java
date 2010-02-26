@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -14,7 +15,9 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -115,5 +118,16 @@ public class GUI {
 			System.err.println(e);
 			return null;
 		}
+	}
+
+	public static JButton createIconButton(Icon icon, String toolTip) {
+		JButton result = new JButton(icon);
+		result.setToolTipText(toolTip);
+		result.setMargin(new Insets(0,0,0,0));
+		int iconSize = CommonVisualSettings.getIconSize();
+		Insets insets = result.getInsets();
+		int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
+		result.setPreferredSize(new Dimension(minSize, minSize));
+		return result;
 	}
 }

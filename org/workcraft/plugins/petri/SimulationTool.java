@@ -61,7 +61,7 @@ public class SimulationTool extends AbstractTool {
 	private void createInterface() {
 		interfacePanel = new JPanel(new SimpleFlowLayout(5,5));
 
-		autoPlayButton = new JButton("Play");
+		autoPlayButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/start.svg"), "Automatic simulation");
 		stepButton = new JButton ("Step");
 		loadTraceButton = new JButton ("Load trace");
 		saveMarkingButton = new JButton ("Save marking");
