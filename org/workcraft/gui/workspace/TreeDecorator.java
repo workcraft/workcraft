@@ -18,10 +18,13 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.gui.workspace;
 
-package org.workcraft.gui.actions;
+import javax.swing.Icon;
+import javax.swing.JPopupMenu;
 
-
-public interface ScriptedActionListener {
-	public void actionPerformed(Action action);
+public interface TreeDecorator<Node> {
+	public String getName(Node node);
+	public Icon getIcon(Node node);
+	public JPopupMenu getPopupMenu(Node node);
 }

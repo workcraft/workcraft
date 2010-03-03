@@ -719,7 +719,7 @@ public class Framework {
 	}
 
 	public void loadWorkspace(File file) throws DeserialisationException {
-		workspace.load(file.getPath());
+		workspace.load(file);
 	}
 
 	public Config getConfig() {

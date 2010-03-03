@@ -21,6 +21,33 @@
 
 package org.workcraft.gui.actions;
 
-public interface ScriptedActor {
-	public void actionEnableStateChanged(boolean actionEnabled);
+import java.util.LinkedList;
+
+import org.workcraft.Framework;
+
+public abstract class Action {
+	private LinkedList<Actor> actors = new LinkedList<Actor>();
+	private boolean enabled = true;
+
+	public abstract String getText();
+	public abstract void run(Framework framework);
+
+	void addActor(Actor actor) {
+		actors.add(actor);
+	}
+
+	void removeActor(Actor actor) {
+		actors.remove(actor);
+	}
+
+	public void setEnabled(boolean enabled) {
+		if (this.enabled != enabled) {
+			this.enabled = enabled;
+			for (Actor actor : actors)
+				actor.actionEnableStateChanged(enabled);
+		}
+	}
+	public boolean isEnabled() {
+		return enabled;
+	}
 }

@@ -12,7 +12,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 

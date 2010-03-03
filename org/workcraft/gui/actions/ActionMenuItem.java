@@ -27,18 +27,18 @@ import java.util.LinkedList;
 import javax.swing.JMenuItem;
 
 @SuppressWarnings("serial")
-public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
+public class ActionMenuItem extends JMenuItem implements Actor {
 
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			ScriptedActionMenuItem.this.fireActionPerformed();
+			ActionMenuItem.this.fireActionPerformed();
 		}
 	}
 
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
-	private ScriptedAction scriptedAction = null;
+	private Action scriptedAction = null;
 
-	public ScriptedActionMenuItem(ScriptedAction action, String text) {
+	public ActionMenuItem(Action action, String text) {
 		super(text);
 		scriptedAction = action;
 		scriptedAction.addActor(this);
@@ -47,7 +47,7 @@ public class ScriptedActionMenuItem extends JMenuItem implements ScriptedActor {
 		addActionListener(new ActionForwarder());
 	}
 
-	public ScriptedActionMenuItem(ScriptedAction action) {
+	public ActionMenuItem(Action action) {
 		this(action, action.getText());
 
 	}

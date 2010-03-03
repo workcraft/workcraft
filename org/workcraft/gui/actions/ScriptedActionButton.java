@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import javax.swing.JButton;
 
 @SuppressWarnings("serial")
-public class ScriptedActionButton extends JButton implements ScriptedActor {
+public class ScriptedActionButton extends JButton implements Actor {
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			ScriptedActionButton.this.fireActionPerformed();
@@ -36,9 +36,9 @@ public class ScriptedActionButton extends JButton implements ScriptedActor {
 	}
 
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
-	private ScriptedAction scriptedAction = null;
+	private Action scriptedAction = null;
 
-	public ScriptedActionButton(ScriptedAction action, String text) {
+	public ScriptedActionButton(Action action, String text) {
 		super(text);
 		scriptedAction = action;
 		scriptedAction.addActor(this);

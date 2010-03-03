@@ -18,10 +18,11 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.gui.workspace;
 
-package org.workcraft.gui.actions;
-
-
-public interface ScriptedActionListener {
-	public void actionPerformed(Action action);
+public interface TreeListener<Node> {
+	public void added(Path<Node> path);
+	public void removed(Path<Node> path);
+	public void changed(Path<Node> path);
+	public void restructured(Path<Node> path);
 }

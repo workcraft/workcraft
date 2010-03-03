@@ -18,10 +18,16 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.workspace;
 
-package org.workcraft.gui.actions;
 
-
-public interface ScriptedActionListener {
-	public void actionPerformed(Action action);
+public class WorkspaceNode {
+	public WorkspaceNode(MountTree mounts)
+	{
+		this.mounts = mounts;
+	}
+	public MountTree getMounts() {
+		return mounts;
+	}
+	private final MountTree mounts;
 }

@@ -115,4 +115,9 @@ public class FileUtils{
 		writer.write(source);
 		writer.close();
 	}
+
+	public static void moveFile(File from, File to) throws IOException {
+		copyFile(from, to);
+		from.delete();
+	}
 }

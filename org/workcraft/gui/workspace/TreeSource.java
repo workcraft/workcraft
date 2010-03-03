@@ -18,10 +18,15 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.gui.workspace;
 
-package org.workcraft.gui.actions;
+import java.util.List;
 
-
-public interface ScriptedActionListener {
-	public void actionPerformed(Action action);
+public interface TreeSource<Node>
+{
+	public void addListener(TreeListener<Node> listener);
+	public void removeListener(TreeListener<Node> listener);
+	public Node getRoot();
+	public boolean isLeaf(Node node);
+	public List<Node> getChildren(Node node);
 }
