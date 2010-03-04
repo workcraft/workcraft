@@ -147,22 +147,7 @@ public class Workspace {
 			}
 		}
 		if(bestMount == null)
-		{
-			String name = "-- external --/"+file.getName();
-			String nameTrial = name;
-			int i=0;
-			while(mounts.containsKey(Path.fromString(nameTrial)))
-			{
-				int index = name.indexOf('.');
-				if(index == -1)
-					index = name.length();
-				nameTrial = name.substring(0, index) + i + name.substring(index);
-			}
-
-			final Path<String> path = Path.fromString(nameTrial);
-			addMount(path, file, true);
-			return path;
-		}
+			return null;
 		return Path.combine(bestMount.getKey(), bestRel);
 	}
 
@@ -405,22 +390,46 @@ public class Workspace {
 
 
 	public void move(File from, File to) throws IOException {
-		move(getWorkspacePath(from), getWorkspacePath(to));
+		final Path<String> wsFrom = getWorkspacePath(from);
+		Path<String> wsTo = getWorkspacePath(to);
+		if(wsTo != null)
+			move(wsFrom, wsTo);
+		else
+		{
+			wsTo = tempMountExternalFile(to);
+			moved(wsFrom, wsTo);
+		}
+	}
+
+	private Path<String> tempMountExternalFile(File file)
+	{
+		String name = "-- external --/"+file.getName();
+		String nameTrial = name;
+		int i=0;
+		while(mounts.containsKey(Path.fromString(nameTrial)))
+		{
+			int index = name.indexOf('.');
+			if(index == -1)
+				index = name.length();
+			nameTrial = name.substring(0, index) + i + name.substring(index);
+		}
+
+		final Path<String> path = Path.fromString(nameTrial);
+		addMount(path, file, true);
+		return path;
 	}
 
 	private void move(Path<String> from, Path<String> to) throws IOException {
 		File fileFrom = getFile(from);
 		File fileTo = getFile(to);
-		File mountFrom = mounts.get(from);
-		File mountTo = mounts.get(to);
-		final WorkspaceEntry openFileFrom = openFiles.getValue(from);
-		final WorkspaceEntry openFileTo = openFiles.getValue(to);
-		if(openFileTo != null || mountTo != null)
-			throw new RuntimeException("Cannot move " + from + " to " + to + ": destination exists");
 		if(fileFrom.exists())
 			FileUtils.moveFile(fileFrom, fileTo);
-		openFiles.removeKey(from);
-		openFiles.put(to, openFileFrom);
+
+		moved(from, to);
+
+		File mountFrom = mounts.get(from);
+		File mountTo = mounts.get(to);
+
 		if(mountFrom != null)
 		{
 			mounts.remove(from);
@@ -434,6 +443,17 @@ public class Workspace {
 		}
 	}
 
+
+	private void moved(Path<String> from, Path<String> to) {
+		final WorkspaceEntry openFileFrom = openFiles.getValue(from);
+		final WorkspaceEntry openFileTo = openFiles.getValue(to);
+		if(openFileTo != null)
+		{
+			throw new RuntimeException("Cannot move " + from + " to " + to + ": destination exists");
+		}
+		openFiles.removeKey(from);
+		openFiles.put(to, openFileFrom);
+	}
 
 	public MountTree getMountTree(Path<String> path) {
 		MountTree result = getRoot();
