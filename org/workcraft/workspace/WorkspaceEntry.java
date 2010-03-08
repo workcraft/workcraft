@@ -25,75 +25,54 @@ import java.io.File;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.workspace.Path;
 
-public class WorkspaceEntry {
-	private File file = null;
+public class WorkspaceEntry
+{
 	private Object object = null;
-	private boolean unsaved = false;
+	private boolean changed = true;
 	private boolean temporary = true;
-	private int entryID;
 	private Workspace workspace;
 
 	public WorkspaceEntry(Workspace workspace) {
-		entryID = workspace.getNextEntryID();
 		this.workspace = workspace;
-	}
-
-	public WorkspaceEntry(Workspace workspace, File f) {
-		this(workspace);
-
-		file = f;
-	}
-
-	public File getFile() {
-		return file;
 	}
 
 	public Object getObject() {
 		return object;
 	}
 
-	public void setFile(File file) {
-		this.file = file;
-	}
-
 	public void setObject(Object object) {
 		this.object = object;
 	}
 
-	public void setUnsaved(boolean unsaved) {
-		this.unsaved = unsaved;
+	public void setChanged(boolean changed) {
+		this.changed = changed;
 		workspace.fireEntryChanged(this);
 	}
 
-	public boolean isUnsaved() {
-		return unsaved;
+	public boolean isChanged() {
+		return changed;
 	}
 
 	public boolean isWork() {
 		if (object != null)
 			return (object instanceof Model);
-		else if (file != null)
-			return (file.getName().endsWith(".work"));
 		else
-			throw new RuntimeException ("WorkspaceEntry has null in both object and file fields, this should not happen.");
+			return (getWorkspacePath().getNode().endsWith(".work"));
 	}
 
 	public String getTitle() {
 		String res;
+		String name = getWorkspacePath().getNode();
 		if (isWork()) {
-				if (file != null) {
-					String fileName = file.getName();
-					int dot = fileName.lastIndexOf('.');
-					if (dot == -1)
-						res = fileName;
-					else
-						res = fileName.substring(0,dot);
-				}
-				else
-					res = "Untitled";
+			int dot = name.lastIndexOf('.');
+			if (dot == -1)
+				res = name;
+			else
+				res = name.substring(0,dot);
 		} else
-			res = file.getName();
+			res = name;
 
 		return res;
 	}
@@ -106,7 +85,7 @@ public class WorkspaceEntry {
 			if (object instanceof VisualModel)
 				res = res + " [V]";
 
-		if (unsaved)
+		if (changed)
 			res = "* " + res;
 
 		if (temporary)
@@ -115,15 +94,19 @@ public class WorkspaceEntry {
 		return res;
 	}
 
-	public int getEntryID() {
-		return entryID;
-	}
-
 	public boolean isTemporary() {
 		return temporary;
 	}
 
 	public void setTemporary(boolean temporary) {
 		this.temporary = temporary;
+	}
+
+	public Path<String> getWorkspacePath() {
+		return workspace.getPath(this);
+	}
+
+	public File getFile() {
+		return workspace.getFile(this);
 	}
 }

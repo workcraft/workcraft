@@ -21,16 +21,19 @@
 
 package org.workcraft.plugins.balsa;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.parsers.breeze.Block;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
 @VisualClass("org.workcraft.plugins.balsa.VisualBreezeComponent")
 @VisualComponentGeneratorAttribute(generator="org.workcraft.plugins.balsa.BreezeVisualComponentGenerator")
-public class BreezeComponent extends MathNode {
+public class BreezeComponent extends MathNode implements Block<HandshakeComponent> {
 
 	private org.workcraft.plugins.balsa.components.Component underlyingComponent;
 	public BreezeComponent() {
@@ -69,4 +72,9 @@ public class BreezeComponent extends MathNode {
 
 	private Map<Handshake, HandshakeComponent> handshakeComponents;
 	private Map<String, Handshake> handshakes;
+
+	@Override
+	public List<HandshakeComponent> getPorts() {
+		return Arrays.asList(handshakeComponents.values().toArray(new HandshakeComponent[0]));
+	}
 }

@@ -33,10 +33,10 @@ public class ParameterDeclaration {
 		return "(" + name + " " + type + ")";
 	}
 
-	public String name() {
+	public String getName() {
 		return name;
 	}
-	public ParameterType type() {
+	public ParameterType getType() {
 		return type;
 	}
 }

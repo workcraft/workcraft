@@ -24,9 +24,13 @@ package org.workcraft.parsers.breeze;
 import java.util.List;
 
 import org.workcraft.exceptions.NotSupportedException;
+import org.workcraft.parsers.breeze.dom.PortDeclaration;
+import org.workcraft.parsers.breeze.expressions.Expression;
+import org.workcraft.plugins.balsa.components.BinaryOperator;
+import org.workcraft.plugins.balsa.components.UnaryOperator;
 
 public class PrimitivePart implements BreezeDefinition {
-	String name;
+	private final String name;
 	List<ParameterDeclaration> parameters;
 	Expression<String> symbol;
 	List<PortDeclaration> ports;
@@ -42,10 +46,10 @@ public class PrimitivePart implements BreezeDefinition {
 	}
 
 	public String toString() {
-		return "("+name+" " + parameters + " " + symbol + " " + ports + ")";
+		return "("+getName()+" " + parameters + " " + symbol + " " + ports + ")";
 	}
 
-	public List<PortDeclaration> ports() {
+	public List<PortDeclaration> getPorts() {
 		return ports;
 	}
 
@@ -53,38 +57,37 @@ public class PrimitivePart implements BreezeDefinition {
 		return factory.create(this, parseParameters(parameters));
 	}
 
-	private ParameterScope parseParameters(ParameterValueList parameterValues) {
-
+	private ParameterScope parseParameters(ParameterValueList parameterValues)
+	{
 		MapParameterScope result = new MapParameterScope();
 
 		if(parameters.size() != parameterValues.size())
-			throw new RuntimeException("Incorrect number of parameter values for component " + name + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
+			throw new RuntimeException("Incorrect number of parameter values for component " + getName() + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
 
 		for(int i=0;i<parameters.size();i++)
 		{
 			ParameterDeclaration parameter = parameters.get(i);
 			Object value = parse(parameter, parameterValues.get(i));
-			result.put(parameter.name(), value);
+			result.put(parameter.getName(), value);
 		}
 
 		return result;
 	}
 
 	private static Object parse(ParameterDeclaration parameter, String string) {
-		ParameterType type = parameter.type();
+		ParameterType type = parameter.getType();
 		if(type == ParameterType.BOOLEAN)
 			return parseBoolean(string);
-		if(type == ParameterType.CARDINAL)
-			return parseCardinal(string);
-		if(type == ParameterType.STRING)
+		else if(type == ParameterType.CARDINAL)
+			return Integer.parseInt(string);
+		else if(type == ParameterType.STRING)
 			return string;
-		if(type == ParameterType.OTHER)
-			return string;
-		throw new NotSupportedException();
-	}
-
-	private static Object parseCardinal(String string) {
-		return Integer.parseInt(string);
+		else if(type == ParameterType.BINARY_OPERATOR)
+			return BinaryOperator.parse(string);
+		else if(type == ParameterType.UNARY_OPERATOR)
+			return UnaryOperator.valueOf(string);
+		else
+			throw new NotSupportedException();
 	}
 
 	private static Object parseBoolean(String string) {
@@ -97,5 +100,13 @@ public class PrimitivePart implements BreezeDefinition {
 
 	public Expression<String> getSymbol() {
 		return symbol;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public List<ParameterDeclaration> getParameters() {
+		return parameters;
 	}
 }

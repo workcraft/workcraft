@@ -3,7 +3,6 @@ package org.workcraft.plugins.verification.tools;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.verification.MpsatChainResultHandler;
 import org.workcraft.plugins.verification.MpsatSettings;
 import org.workcraft.plugins.verification.tasks.MpsatChainTask;

@@ -1,5 +1,6 @@
 package org.workcraft.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -67,7 +68,7 @@ public class Tools {
 	}
 
 	public static List<Pair<String,Tool>> getSectionTools (String section, ListMap<String, Pair<String, Tool>> tools) {
-		List<Pair<String,Tool>> sectionTools = tools.get(section);
+		List<Pair<String,Tool>> sectionTools = new ArrayList<Pair<String, Tool>>(tools.get(section));
 
 		Collections.sort(sectionTools, new Comparator<Pair<String,Tool>>() {
 			@Override

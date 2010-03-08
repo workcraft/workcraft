@@ -21,11 +21,15 @@
 
 package org.workcraft.util;
 
+import java.util.AbstractSequentialList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.workcraft.gui.DockableWindow;
 
 public class ListMap <K,V> {
 	private HashMap<K,LinkedList<V>> map =  new HashMap<K, LinkedList<V>>();
@@ -45,20 +49,27 @@ public class ListMap <K,V> {
 		{
 			list.remove(value);
 			if (list.isEmpty())
-				map.remove(list);
+				map.remove(key);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<V> get(K key) {
 		LinkedList<V> list = map.get(key);
 		if (list != null)
-			return (List<V>)list.clone();
+			return Collections.unmodifiableList(list);
 		else
 			return Collections.emptyList();
 	}
 
 	public Set<K> keySet() {
 		return map.keySet();
+	}
+
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
+
+	public Collection<LinkedList<V>> values() {
+		return map.values();
 	}
 }

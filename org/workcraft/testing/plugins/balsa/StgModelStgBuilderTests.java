@@ -24,8 +24,7 @@ package org.workcraft.testing.plugins.balsa;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
-import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
-import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeStgBuilder;
+import org.workcraft.plugins.balsa.handshakebuilder.HandshakeVisitor;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
@@ -46,13 +45,11 @@ public class StgModelStgBuilderTests {
 		{
 			@Override public String toString(){ return "hs1"; }
 
-			@Override
-			public TwoWayStg buildStg(HandshakeStgBuilder builder) {
+			@Override public <T> T accept(HandshakeVisitor<T> v) {
 				throw new RuntimeException ("Not implemented");
 			}
 
-			@Override
-			public boolean isActive() {
+			@Override public boolean isActive() {
 				throw new RuntimeException ("Not implemented");
 			}
 		};

@@ -23,70 +23,67 @@ package org.workcraft.gui.workspace;
 
 import java.awt.BorderLayout;
 import java.io.File;
-import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.actions.ScriptedAction;
-import org.workcraft.gui.actions.ScriptedActionMenuItem;
+import org.workcraft.gui.WorkspaceTreeDecorator;
+import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceListener;
 
 
 @SuppressWarnings("serial")
-public class WorkspaceWindow extends JPanel implements WorkspaceListener {
+public class WorkspaceWindow extends JPanel {
 	public static class Actions {
-		public static final ScriptedAction ADD_FILES_TO_WORKSPACE_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.getWorkspaceView().addToWorkspace()";
+		public static final Action ADD_FILES_TO_WORKSPACE_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				f.getMainWindow().getWorkspaceView().addToWorkspace(Path.root(""));
 			}
 			public String getText() {
-				return "Add files to workspace...";
+				return "Link files to the root of workspace...";
 			};
 		};
 
-		public static final ScriptedAction OPEN_WORKSPACE_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.getWorkspaceView().openWorkspace()";
+		public static final Action OPEN_WORKSPACE_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				f.getMainWindow().getWorkspaceView().openWorkspace();
 			}
 			public String getText() {
 				return "Open workspace...";
 			};
 		};
 
-		public static final ScriptedAction SAVE_WORKSPACE_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.getWorkspaceView().saveWorkspace()");
+		public static final Action SAVE_WORKSPACE_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().getWorkspaceView().saveWorkspace(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Save workspace";
 			};
 		};
-		public static final ScriptedAction SAVE_WORKSPACE_AS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.getWorkspaceView().saveWorkspaceAs()");
+		public static final Action SAVE_WORKSPACE_AS_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().getWorkspaceView().saveWorkspaceAs(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Save workspace as...";
 			};
 		};
-		public static final ScriptedAction NEW_WORKSPACE_AS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.getWorkspaceView().newWorkspace()");
+		public static final Action NEW_WORKSPACE_AS_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				f.getMainWindow().getWorkspaceView().newWorkspace();
 			}
 			public String getText() {
 				return "New workspace";
@@ -95,36 +92,29 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 	}
 
 	private JScrollPane scrollPane = null;
-	private JTree workspaceTree = null;
+	private TreeWindow<Path<String>>  workspaceTree = null;
 
-	private MainWindow mainWindow;
-	private Framework framework;
+	private final MainWindow mainWindow;
+	private final Framework framework;
 	private String lastSavePath = null;
 	private String lastOpenPath = null;
 
-	private DefaultMutableTreeNode workspaceRoot;
-	private HashMap<String, DefaultMutableTreeNode> folderNodes = new HashMap<String, DefaultMutableTreeNode>();
-	private HashMap<String, DefaultMutableTreeNode> modelTypeNodes = new HashMap<String, DefaultMutableTreeNode>();
-	private HashMap<WorkspaceEntry, DefaultMutableTreeNode> entryNodes = new HashMap<WorkspaceEntry, DefaultMutableTreeNode>();
-
-	public WorkspaceWindow(MainWindow mainWindow) {
+	public WorkspaceWindow(Framework framework) {
 		super();
-		this.mainWindow = mainWindow;
-		this.framework = mainWindow.getFramework();
+		this.framework = framework;
+		this.mainWindow = framework.getMainWindow();
+		startup();
 	}
 
 	public void startup() {
+		final Workspace workspace = framework.getWorkspace();
+		workspaceTree  = TreeWindow.create(workspace.getTree(), new WorkspaceTreeDecorator(this));
 		scrollPane = new JScrollPane();
-
-		workspaceRoot = new DefaultMutableTreeNode("(default workspace)");
-
-		workspaceTree = new JTree();
-		workspaceTree.setModel(new DefaultTreeModel(workspaceRoot));
-		workspaceTree.addMouseListener(new WorkspaceWindowPopupListener(framework, this));
+		scrollPane.getVerticalScrollBar().setUnitIncrement(8);
 
 		scrollPane.setViewportView(workspaceTree);
 
-		setLayout( new BorderLayout(0,0));
+		setLayout(new BorderLayout(0,0));
 		this.add(scrollPane, BorderLayout.CENTER);
 
 		lastSavePath = framework.getConfigVar("gui.workspace.lastSavePath");
@@ -144,15 +134,14 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 		int i;
 
-		for (i=0; i<node.getChildCount(); i++)
+		for (i=0;i<node.getChildCount(); i++)
 			if (node.getChildAt(i).toString().compareToIgnoreCase(caption) > 0)
 				return i;
 
 		return i;
-
 	}
 
-	public void entryAdded(WorkspaceEntry we) {
+	/*public void entryAdded(WorkspaceEntry we) {
 		DefaultMutableTreeNode node;
 
 		if(!entryNodes.containsKey(we)) {
@@ -225,36 +214,36 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 			entryNodes.remove(we);
 		}
-	}
+	}*/
 
 
 	public void workspaceSaved() {
-		String title = framework.getWorkspace().getFilePath();
+		String title = framework.getWorkspace().getWorkspaceFile().getAbsolutePath();
 		if (title.isEmpty())
 			title = "new workspace";
 		title = "(" + title + ")";
 		if (framework.getWorkspace().isChanged())
 			title = "*" + title;
 
-		workspaceRoot.setUserObject(title);
 		repaint();
 	}
 
 	public JMenu createMenu() {
 		JMenu menu = new JMenu("Workspace");
 
+		final ScriptedActionListener listener = framework.getMainWindow().getDefaultActionListener();
 
-		ScriptedActionMenuItem miNewModel = new ScriptedActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
-		miNewModel.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
+		ActionMenuItem miNewModel = new ActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
+		miNewModel.addScriptedActionListener(listener);
 
-		ScriptedActionMenuItem miAdd = new ScriptedActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
-		miAdd.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
+		ActionMenuItem miAdd = new ActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
+		miAdd.addScriptedActionListener(listener);
 
-		ScriptedActionMenuItem miSave = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
-		miSave.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
+		ActionMenuItem miSave = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
+		miSave.addScriptedActionListener(listener);
 
-		ScriptedActionMenuItem miSaveAs = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
-		miSaveAs.addScriptedActionListener(framework.getMainWindow().getDefaultActionListener());
+		ActionMenuItem miSaveAs = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
+		miSaveAs.addScriptedActionListener(listener);
 
 		menu.add(miNewModel);
 		menu.addSeparator();
@@ -265,33 +254,30 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		return menu;
 	}
 
-	public void addToWorkspace() {
+	public void addToWorkspace(Path<String> path) {
 		JFileChooser fc;
 		if (lastOpenPath != null)
 			fc = new JFileChooser(lastOpenPath);
 		else
 			fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		fc.setDialogTitle("Add files to workspace");
+		fc.setDialogTitle("Link to workspace");
 		fc.setMultiSelectionEnabled(true);
 		fc.addChoosableFileFilter(FileFilters.DOCUMENT_FILES);
 		fc.setFileFilter(fc.getAcceptAllFileFilter());
 		if(fc.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
 			for(File file : fc.getSelectedFiles())
-				try {
-					framework.getWorkspace().add(file.getPath(), false);
-				} catch (DeserialisationException e) {
-					JOptionPane.showMessageDialog(null, "The file \"" + file.getName() + "\" could not be loaded. Please refer to the Problems window for details.", "Load error", JOptionPane.ERROR_MESSAGE);
-					e.printStackTrace();
-				}
+				framework.getWorkspace().addMount(Path.append(path, file.getName()), file, false);
 
-				lastOpenPath = fc.getCurrentDirectory().getPath();
+			lastOpenPath = fc.getCurrentDirectory().getPath();
 		}
 	}
 
+
 	public void saveWorkspace() throws OperationCancelledException {
-		if (framework.getWorkspace().getFilePath() != null)
-			framework.getWorkspace().writeWorkspaceFile(framework.getWorkspace().getFilePath());
+		if (!framework.getWorkspace().isTemporary())
+			framework.getWorkspace().save();
 		else
 			saveWorkspaceAs();
 	}
@@ -299,8 +285,8 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 	public void saveWorkspaceAs() throws OperationCancelledException {
 		JFileChooser fc;
 
-		if (framework.getWorkspace().getFilePath() != null)
-			fc = new JFileChooser(framework.getWorkspace().getFilePath());
+		if (!framework.getWorkspace().isTemporary())
+			fc = new JFileChooser(framework.getWorkspace().getWorkspaceFile());
 		else if (lastSavePath != null)
 			fc = new JFileChooser(lastSavePath);
 		else
@@ -309,25 +295,25 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 		fc.setDialogTitle("Save workspace as...");
 		fc.setFileFilter(FileFilters.WORKSPACE_FILES);
 
-		String path;
+		File file;
 
 		while (true) {
 			if(fc.showSaveDialog(mainWindow)==JFileChooser.APPROVE_OPTION) {
-				path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
+				String path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
 
-				File f = new File(path);
+				file = new File(path);
 
-				if (!f.exists())
+				if (!file.exists())
 					break;
 				else
-					if (JOptionPane.showConfirmDialog(mainWindow, "The file \"" + f.getName()+"\" already exists. Do you want to overwrite it?", "Confirm",
+					if (JOptionPane.showConfirmDialog(mainWindow, "The file \"" + file.getName()+"\" already exists. Do you want to overwrite it?", "Confirm",
 							JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 						break;
 			} else
 				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
-		framework.getWorkspace().writeWorkspaceFile(path);
+		framework.getWorkspace().saveAs(file);
 		lastSavePath = fc.getCurrentDirectory().getPath();
 	}
 
@@ -392,5 +378,9 @@ public class WorkspaceWindow extends JPanel implements WorkspaceListener {
 
 	public void entryChanged(WorkspaceEntry we) {
 		repaint();
+	}
+
+	public Workspace getWorkspace() {
+		return framework.getWorkspace();
 	}
 }

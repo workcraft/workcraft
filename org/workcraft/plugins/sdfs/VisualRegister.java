@@ -39,7 +39,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
-import org.workcraft.gui.actions.ScriptedActionMenuItem;
+import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -124,10 +124,10 @@ public class VisualRegister extends VisualComponent {
 		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,
 					ScriptedActionListener actionListener) {
-				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new ToggleMarkedAction(getReferencedRegister()));
+				ActionMenuItem addToken = new ActionMenuItem(new ToggleMarkedAction(getReferencedRegister()));
 				addToken.addScriptedActionListener(actionListener);
 
-				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new ToggleEnabledAction(getReferencedRegister()));
+				ActionMenuItem removeToken = new ActionMenuItem(new ToggleEnabledAction(getReferencedRegister()));
 				removeToken.addScriptedActionListener(actionListener);
 
 				menu.add(new JLabel ("Register"));

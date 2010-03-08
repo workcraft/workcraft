@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import javax.swing.JCheckBoxMenuItem;
 
 @SuppressWarnings("serial")
-public class ScriptedActionCheckBoxMenuItem extends JCheckBoxMenuItem implements ScriptedActor {
+public class ScriptedActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			ScriptedActionCheckBoxMenuItem.this.fireActionPerformed();

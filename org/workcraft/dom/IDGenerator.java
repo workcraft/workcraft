@@ -21,11 +21,25 @@
 
 package org.workcraft.dom;
 
+import java.util.TreeSet;
+
 public class IDGenerator {
-	private int IDCounter = 0;
+	private TreeSet<Integer> released;
+	private int nextID = 0;
 
 	public int getNextID() {
-		return IDCounter++;
+		Integer id = released.pollFirst();
+		if (id == null)
+			return nextID++;
+		else
+			return id;
 	}
 
+	public void reserveID(int id) {
+		nextID = Math.max(nextID, id+1);
+	}
+
+	public void releaseID(int id) {
+		released.add(id);
+	}
 }

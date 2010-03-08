@@ -40,9 +40,9 @@ import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
-import org.workcraft.gui.actions.ScriptedActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.modelchecking.ModelChecker;
@@ -154,54 +154,54 @@ public class MainMenu extends JMenuBar {
 		mnFile = new JMenu();
 		mnFile.setText("File");
 
-		ScriptedActionMenuItem miNewModel = new ScriptedActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
+		ActionMenuItem miNewModel = new ActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
 		miNewModel.setMnemonic(KeyEvent.VK_N);
 		miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		miNewModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miExit = new ScriptedActionMenuItem(MainWindow.Actions.EXIT_ACTION);
+		ActionMenuItem miExit = new ActionMenuItem(MainWindow.Actions.EXIT_ACTION);
 		miExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miShutdownGUI = new ScriptedActionMenuItem(MainWindow.Actions.SHUTDOWN_GUI_ACTION);
+		ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindow.Actions.SHUTDOWN_GUI_ACTION);
 		miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miOpenModel = new ScriptedActionMenuItem(MainWindow.Actions.OPEN_WORK_ACTION);
+		ActionMenuItem miOpenModel = new ActionMenuItem(MainWindow.Actions.OPEN_WORK_ACTION);
 		miOpenModel.setMnemonic(KeyEvent.VK_O);
 		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miSaveWork = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_WORK_ACTION);
+		ActionMenuItem miSaveWork = new ActionMenuItem(MainWindow.Actions.SAVE_WORK_ACTION);
 		miSaveWork.setMnemonic(KeyEvent.VK_S);
 		miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		miSaveWork.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miSaveWorkAs = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_WORK_AS_ACTION);
+		ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindow.Actions.SAVE_WORK_AS_ACTION);
 		miSaveWorkAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miNewWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.NEW_WORKSPACE_AS_ACTION);
+		ActionMenuItem miNewWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.NEW_WORKSPACE_AS_ACTION);
 		miNewWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miOpenWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.OPEN_WORKSPACE_ACTION);
+		ActionMenuItem miOpenWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.OPEN_WORKSPACE_ACTION);
 		miOpenWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miAddFiles = new ScriptedActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
+		ActionMenuItem miAddFiles = new ActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
 		miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 
-		ScriptedActionMenuItem miSaveWorkspace = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
+		ActionMenuItem miSaveWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
 		miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miSaveWorkspaceAs = new ScriptedActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
+		ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
 		miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miImport = new ScriptedActionMenuItem(MainWindow.Actions.IMPORT_ACTION);
+		ActionMenuItem miImport = new ActionMenuItem(MainWindow.Actions.IMPORT_ACTION);
 		miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miCloseAll = new ScriptedActionMenuItem(MainWindow.Actions.CLOSE_ALL_EDITORS_ACTION);
+		ActionMenuItem miCloseAll = new ActionMenuItem(MainWindow.Actions.CLOSE_ALL_EDITORS_ACTION);
 		miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miCloseActive = new ScriptedActionMenuItem(MainWindow.Actions.CLOSE_ACTIVE_EDITOR_ACTION);
+		ActionMenuItem miCloseActive = new ActionMenuItem(MainWindow.Actions.CLOSE_ACTIVE_EDITOR_ACTION);
 		miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		mnExport = new JMenu("Export");
@@ -273,13 +273,13 @@ public class MainMenu extends JMenuBar {
 		mnSettings = new JMenu();
 		mnSettings.setText("Utility");
 
-		ScriptedActionMenuItem miCustomButtons = new ScriptedActionMenuItem(MainWindow.Actions.EDIT_CUSTOM_BUTTONS_ACTION);
+		ActionMenuItem miCustomButtons = new ActionMenuItem(MainWindow.Actions.EDIT_CUSTOM_BUTTONS_ACTION);
 		miCustomButtons.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miReconfigure = new ScriptedActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
+		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ScriptedActionMenuItem miProperties = new ScriptedActionMenuItem(MainWindow.Actions.EDIT_SETTINGS_ACTION);
+		ActionMenuItem miProperties = new ActionMenuItem(MainWindow.Actions.EDIT_SETTINGS_ACTION);
 		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		mnSettings.add(miProperties);
@@ -307,9 +307,7 @@ public class MainMenu extends JMenuBar {
 	}
 
 	private void addExporter (Exporter exporter, String additionalDescription) {
-		//if (exporter.getExtenstion().equals(".work"))
-		//	return;
-		ScriptedActionMenuItem miExport = new ScriptedActionMenuItem(new ExportAction(exporter),
+		ActionMenuItem miExport = new ActionMenuItem(new ExportAction(exporter),
 				additionalDescription == null?
 					exporter.getDescription()
 					:
@@ -337,7 +335,7 @@ public class MainMenu extends JMenuBar {
 			add(sectionMenu);
 
 			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
-				ScriptedActionMenuItem miTool = new ScriptedActionMenuItem(new ToolAction(tool));
+				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
 				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
 				sectionMenu.add(miTool);
 			}
@@ -366,8 +364,6 @@ public class MainMenu extends JMenuBar {
 		}
 
 		boolean haveNonVisual = false;
-
-
 
 		try {
 			for (PluginInfo info : exportPluginInfo) {

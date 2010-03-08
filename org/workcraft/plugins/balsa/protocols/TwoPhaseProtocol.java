@@ -110,7 +110,7 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 			return builder.get(toggle, detector);
 		}
 
-		@Override public SyncStg create(Sync handshake)
+		@Override public SyncStg visit(Sync handshake)
 		{
 			final ActiveEvent rqToggle = buildSignalToggle(builder.buildActiveSignal(new SignalId(handshake, "rq")));
 			final PassiveEvent acToggle = buildSignalToggle(builder.buildPassiveSignal(new SignalId(handshake, "ac")));
@@ -134,8 +134,8 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 			};
 		}
 
-		@Override public DataPullStg create(PullHandshake handshake) {
-			final SyncStg sync = create((Sync)handshake);
+		@Override public DataPullStg visit(PullHandshake handshake) {
+			final SyncStg sync = visit((Sync)handshake);
 
 			return new DataPullStg()
 			{
@@ -151,8 +151,8 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 			};
 		}
 
-		public DataPushStg create(PushHandshake handshake) {
-			final SyncStg sync = create((Sync)handshake);
+		public DataPushStg visit(PushHandshake handshake) {
+			final SyncStg sync = visit((Sync)handshake);
 
 			return new DataPushStg()
 			{
@@ -169,12 +169,12 @@ public class TwoPhaseProtocol implements HandshakeProtocol {
 		}
 
 		@Override
-		public FullDataPullStg create(FullDataPull handshake) {
+		public FullDataPullStg visit(FullDataPull handshake) {
 			throw new RuntimeException("Not implemented!");// TODO Implement
 		}
 
 		@Override
-		public FullDataPushStg create(FullDataPush handshake) {
+		public FullDataPushStg visit(FullDataPush handshake) {
 			throw new RuntimeException("Not implemented!");// TODO Implement
 		}
 	}

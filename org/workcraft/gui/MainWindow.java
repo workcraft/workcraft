@@ -23,7 +23,6 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -31,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -71,84 +71,87 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Import;
+import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 	public static class Actions {
-		public static final ScriptedAction CREATE_WORK_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.createWork();");
+		public static final Action CREATE_WORK_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().createWork(); } catch (OperationCancelledException e) { }
 			}
-			public String getText() {
+			@Override public String getText() {
 				return "Create work...";
 			};
 		};
-		public static final ScriptedAction OPEN_WORK_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.openWork();");
+		public static final Action OPEN_WORK_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().openWork(); } catch (OperationCancelledException e) { }
 			}
-			public String getText() {
+			@Override public String getText() {
 				return "Open work...";
 			};
 		};
-		public static final ScriptedAction SAVE_WORK_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.saveWork();");
+		public static final Action SAVE_WORK_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().saveWork(); } catch (OperationCancelledException e) { }
 			}
-			public String getText() {
+			@Override public String getText() {
 				return "Save work";
 			};
 		};
-		public static final ScriptedAction SAVE_WORK_AS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.saveWorkAs();");
+		public static final Action SAVE_WORK_AS_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().saveWorkAs(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Save work as...";
 			};
 		};
-		public static final ScriptedAction CLOSE_ACTIVE_EDITOR_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.closeActiveEditor();");
+		public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().closeActiveEditor(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Close active work";
 			};
 		};
 
-		public static final ScriptedAction CLOSE_ALL_EDITORS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("mainWindow.closeEditorWindows();");
+		public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.getMainWindow().closeEditorWindows(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Close all works";
 			};
 		};
-		public static final ScriptedAction EXIT_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("framework.shutdown();");
+		public static final Action EXIT_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				f.shutdown();
 			}
 			public String getText() {
 				return "Exit";
 			};
 		};
-		public static final ScriptedAction SHUTDOWN_GUI_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation("framework.shutdownGUI();");
+		public static final Action SHUTDOWN_GUI_ACTION = new Action() {
+			@Override public void run(Framework f) {
+				try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
 			}
 			public String getText() {
 				return "Switch to console mode";
@@ -200,7 +203,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
-		public void actionPerformed(ScriptedAction e) {
+		public void actionPerformed(Action e) {
 			/*if (e.getScript() == null)
 				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
 			else
@@ -216,8 +219,7 @@ public class MainWindow extends JFrame {
 					System.out.println ("Redo script:\n"+e.getRedoScript());
 			}*/
 
-			if (e.getScript() != null)
-				framework.execJavaScript(e.getScript());
+			e.run(framework);
 		}
 	};
 
@@ -237,7 +239,7 @@ public class MainWindow extends JFrame {
 	private DockableWindow outputDockable;
 	private DockableWindow documentPlaceholder;
 
-	private LinkedHashSet<DockableWindow> editorWindows = new LinkedHashSet<DockableWindow>();
+	private ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<WorkspaceEntry, DockableWindow>();
 	private LinkedList<DockableWindow> utilityWindows = new LinkedList<DockableWindow>();
 
 	private GraphEditorPanel editorInFocus;
@@ -251,8 +253,7 @@ public class MainWindow extends JFrame {
 	private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
 	protected void createWindows() {
-		workspaceWindow  = new WorkspaceWindow(this);
-		framework.getWorkspace().addListener(workspaceWindow);
+		workspaceWindow  = new WorkspaceWindow(framework);
 		workspaceWindow.setVisible(true);
 		propertyEditorWindow = new PropertyEditorWindow(framework);
 
@@ -292,10 +293,6 @@ public class MainWindow extends JFrame {
 
 		framework.setConfigVar("gui.lookandfeel", laf);
 		framework.restartGUI();
-	}
-
-	public WorkspaceWindow getWorkspaceView() {
-		return workspaceWindow;
 	}
 
 	private int getNextDockableID() {
@@ -363,19 +360,19 @@ public class MainWindow extends JFrame {
 
 			if (editorWindows.isEmpty()) {
 				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
+						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 
 				DockingManager.close(documentPlaceholder);
 				DockingManager.unregisterDockable(documentPlaceholder);
 				utilityWindows.remove(documentPlaceholder);
 			}
 			else {
-				DockableWindow firstEditorWindow = editorWindows.iterator().next();
+				DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
 				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getEntryID());
+						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 			}
 
-			editorWindows.add(editorWindow);
+			editorWindows.put(we, editorWindow);
 			requestFocus(editor);
 
 			enableWorkActions();
@@ -454,7 +451,7 @@ public class MainWindow extends JFrame {
 
 		DockableWindow tasks = createDockableWindow (new TaskManagerWindow(framework), "Tasks", outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
 
-		workspaceWindow.startup();
+		//workspaceWindow.startup();
 
 		setVisible(true);
 
@@ -505,7 +502,11 @@ public class MainWindow extends JFrame {
 	}
 
 	public void closeDockableWindow(int ID) throws OperationCancelledException {
-		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+		closeDockableWindow(IDToDockableWindowMap.get(ID));
+	}
+
+	public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
+		int ID = dockableWindow.getID();
 
 		if (dockableWindow != null) {
 			if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
@@ -514,7 +515,7 @@ public class MainWindow extends JFrame {
 
 				WorkspaceEntry we = editor.getWorkspaceEntry();
 
-				if (editor.getWorkspaceEntry().isUnsaved()) {
+				if (we.isChanged()) {
 					int result = JOptionPane.showConfirmDialog(this, "Document \""+we.getTitle() + "\" has unsaved changes.\nSave before closing?",
 							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -525,14 +526,16 @@ public class MainWindow extends JFrame {
 						throw new OperationCancelledException("Operation cancelled by user.");
 				}
 
-				if (we.isTemporary())
-					framework.getWorkspace().remove(we);
+
 
 				if (DockingManager.isMaximized(dockableWindow)) {
 					toggleDockableWindowMaximized(dockableWindow.getID());
 				}
 
-				editorWindows.remove(dockableWindow);
+				editorWindows.remove(we, dockableWindow);
+
+				if (editorWindows.get(we).isEmpty())
+					framework.getWorkspace().close(we);
 
 				if (editorWindows.isEmpty()) {
 					DockingManager.registerDockable(documentPlaceholder);
@@ -645,7 +648,7 @@ public class MainWindow extends JFrame {
 			int result = JOptionPane.showConfirmDialog(this, "Current workspace has unsaved changes.\nSave before closing?",
 					"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {
-				workspaceWindow.saveWorkspace();
+				//workspaceWindow.saveWorkspace();
 			}
 			else if (result == JOptionPane.CANCEL_OPTION)
 				throw new OperationCancelledException("Operation cancelled by user.");
@@ -667,7 +670,7 @@ public class MainWindow extends JFrame {
 		outputWindow.releaseStream();
 		errorWindow.releaseStream();
 
-		workspaceWindow.shutdown();
+		//workspaceWindow.shutdown();
 
 		setVisible(false);
 	}
@@ -680,7 +683,12 @@ public class MainWindow extends JFrame {
 		utilityWindows.clear();
 	}*/
 
+
 	public void createWork() throws OperationCancelledException {
+		createWork(Path.<String>empty());
+	}
+
+	public void createWork(Path<String> path) throws OperationCancelledException {
 		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
@@ -688,18 +696,20 @@ public class MainWindow extends JFrame {
 			try {
 				Model mathModel = (Model)framework.getPluginManager().getInstance(info);
 
+				String name = dialog.getModelTitle();
+
 				if (!dialog.getModelTitle().isEmpty())
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
 					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
-					WorkspaceEntry we = framework.getWorkspace().add(visualModel, false);
+					WorkspaceEntry we = framework.getWorkspace().add(path, name, visualModel, false);
 					if (dialog.openInEditorSelected())
 						createEditorWindow (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
-					framework.getWorkspace().add(mathModel, false);
+					framework.getWorkspace().add(path, name, mathModel, false);
 			} catch (PluginInstantiationException e) {
 				e.printStackTrace();
 				//throw new RuntimeException(e);
@@ -754,21 +764,23 @@ public class MainWindow extends JFrame {
 		fc.setDialogTitle("Open work file(s)");
 
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
-			for (File f : fc.getSelectedFiles()) {
-				try {
-					WorkspaceEntry we = framework.getWorkspace().add(f.getPath(), true);
-					if (we.getObject() instanceof VisualModel)
-						createEditorWindow(we);
-				} catch (DeserialisationException e) {
-					JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
-							+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
-					printCause(e);
-
-				}
-			}
+			for (File f : fc.getSelectedFiles())
+				openWork(f);
 			lastOpenPath = fc.getCurrentDirectory().getPath();
 		} else
 			throw new OperationCancelledException("Open operation cancelled by user.");
+	}
+
+	public void openWork(File f) {
+		try {
+			WorkspaceEntry we = framework.getWorkspace().open(f, true);
+			if (we.getObject() instanceof VisualModel)
+				createEditorWindow(we);
+		} catch (DeserialisationException e) {
+			JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
+					+"\".\nPlease see Problems window for details.", "Load failed", JOptionPane.ERROR_MESSAGE);
+			printCause(e);
+		}
 	}
 
 	public void saveWork() throws OperationCancelledException {
@@ -786,7 +798,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void save(WorkspaceEntry we) throws OperationCancelledException {
-		if (we.getFile() == null) {
+		if (!we.getFile().exists()) {
 			saveAs(we);
 		}
 		try {
@@ -798,7 +810,7 @@ public class MainWindow extends JFrame {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 		}
-		we.setUnsaved(false);
+		we.setChanged(false);
 		lastSavePath = we.getFile().getParent();
 	}
 
@@ -824,9 +836,7 @@ public class MainWindow extends JFrame {
 		fc.setSelectedFile(new File(title));
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 
-		if (lastSavePath != null)
-			fc.setCurrentDirectory(new File(lastSavePath));
-
+		fc.setCurrentDirectory(we.getFile().getParentFile());
 
 		String path;
 
@@ -850,16 +860,18 @@ public class MainWindow extends JFrame {
 		}
 
 		try {
+			framework.getWorkspace().move(we.getFile(), new File(path));
 			if (we.getObject() instanceof Model)
 				framework.save((Model)we.getObject(), we.getFile().getPath());
 			else
 				throw new RuntimeException ("Workcraft does not know how to save " + we.getObject().getClass());
-			we.setFile(new File(path));
-			we.setUnsaved(false);
+			we.setChanged(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -902,7 +914,7 @@ public class MainWindow extends JFrame {
 						Model model;
 						try {
 							model = Import.importFromFile(importer, f);
-							WorkspaceEntry we = framework.getWorkspace().add(model, false);
+							WorkspaceEntry we = framework.getWorkspace().add(Path.<String>empty(), f.getName(), model, false);
 							if (we.getObject() instanceof VisualModel)
 								createEditorWindow(we);
 							break;
@@ -1012,17 +1024,20 @@ public class MainWindow extends JFrame {
 	}
 
 	public void closeActiveEditor() throws OperationCancelledException {
-		for (DockableWindow w : editorWindows) {
-			Component component = w.getContentPanel().getContent();
-			if (component == editorInFocus) {
-				closeDockableWindow(w.getID());
-				break;
-			}
-		}
+		for (WorkspaceEntry k : editorWindows.keySet())
+			for (DockableWindow w : editorWindows.get(k))
+				if (w.getContentPanel().getContent() == editorInFocus) {
+					closeDockableWindow(w);
+					return;
+				}
 	}
 
 	public void closeEditorWindows() throws OperationCancelledException {
-		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>(editorWindows);
+		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>();
+
+		for (WorkspaceEntry k : editorWindows.keySet())
+			for (DockableWindow w : editorWindows.get(k))
+				windowsToClose.add(w);
 
 		for (DockableWindow w : windowsToClose) {
 			if (DockingManager.isMaximized(w))
@@ -1031,6 +1046,12 @@ public class MainWindow extends JFrame {
 
 		for (DockableWindow w : windowsToClose)
 			closeDockableWindow(w.getID());
+	}
+
+	public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException
+	{
+		for (DockableWindow w : new ArrayList<DockableWindow>(editorWindows.get(openFile)))
+			closeDockableWindow(w);
 	}
 
 	public void editSettings() {
@@ -1042,6 +1063,10 @@ public class MainWindow extends JFrame {
 
 	public ToolInterfaceWindow getToolInterfaceWindow() {
 		return toolInterfaceWindow;
+	}
+
+	public WorkspaceWindow getWorkspaceView() {
+		return workspaceWindow;
 	}
 }
 

@@ -211,7 +211,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public void notify(HierarchyEvent e) {
 		repaint();
-		workspaceEntry.setUnsaved(true);
+		workspaceEntry.setChanged(true);
 	}
 
 	public void notify(StateEvent e) {
@@ -223,6 +223,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		}
 
 		repaint();
-		workspaceEntry.setUnsaved(true);
+		workspaceEntry.setChanged(true);
 	}
 }
