@@ -22,6 +22,7 @@ package org.workcraft.gui.workspace;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -95,7 +96,19 @@ public class TreeWindow<Node> extends JPanel
 					Object value, boolean sel, boolean expanded, boolean leaf,
 					int row, boolean hasFocus) {
 				Node node = (Node)value;
-				Component res = super.getTreeCellRendererComponent(tree, decorator.getName(node), sel, expanded, leaf, row, hasFocus);
+
+
+				String name = decorator.getName(node);
+				boolean tricky = name.startsWith("!");
+				if (tricky)
+					name = name.substring(1);
+				Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
+
+				if (tricky)
+					res.setFont(res.getFont().deriveFont(Font.ITALIC));
+				else
+					res.setFont(res.getFont().deriveFont(Font.PLAIN));
+
 				final Icon icon = decorator.getIcon(node);
 				//if(icon!=null)
 					setIcon(icon);

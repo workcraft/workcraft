@@ -42,12 +42,12 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class Workspace {
-	private TwoWayMap<Path<String>, WorkspaceEntry> openFiles = new TwoWayMap<Path<String>, WorkspaceEntry>();
+	private LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<Path<String>, WorkspaceEntry>();
 	private List<WorkspaceListener> workspaceListeners = new ArrayList<WorkspaceListener>();
 
 	private boolean temporary;
@@ -93,6 +93,10 @@ public class Workspace {
 	{
 		if (file.exists()) {
 			Path<String> workspacePath = getWorkspacePath(file);
+
+			if (workspacePath == null)
+				workspacePath = tempMountExternalFile(file);
+
 			for(WorkspaceEntry we : openFiles.values())
 				if(we.getWorkspacePath().equals(workspacePath))
 					return we;
@@ -424,7 +428,7 @@ public class Workspace {
 
 	private Path<String> tempMountExternalFile(File file)
 	{
-		final Path<String> path = newName(Path.root("-- external --"), file.getName());
+		final Path<String> path = newName(Path.root("!External"), file.getName());
 		addMount(path, file, true);
 		return path;
 	}
