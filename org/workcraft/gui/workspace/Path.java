@@ -199,6 +199,6 @@ public abstract class Path<Node>
 		final Node node = getNode();
 		if(parent.isEmpty())
 			return node.toString();
-		return parent.toString() + "\\" + node.toString();
+		return parent.toString() + "/" + node.toString();
 	}
 }
