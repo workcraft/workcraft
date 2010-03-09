@@ -28,6 +28,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
@@ -39,9 +40,14 @@ public class STG extends PetriNet {
 	}
 
 	public STG(Container root) {
-		super(root);
+		this (root, null);
+	}
+
+	public STG(Container root, References refs) {
+		super(root, refs);
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
+
 
 	public Collection<SignalTransition> getSignalTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);

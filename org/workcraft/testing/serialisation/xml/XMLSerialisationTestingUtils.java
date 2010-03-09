@@ -50,7 +50,6 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.serialisation.ImplicitArcSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
-import org.workcraft.plugins.stg.serialisation.VisualSTGDeserialiser;
 import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionDeserialiser;
 import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionSerialiser;
 
@@ -85,14 +84,10 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (IntDeserialiser.class),
 						new PluginInfo (EnumDeserialiser.class),
 						new PluginInfo (AffineTransformDeserialiser.class),
-						new PluginInfo (VisualSTGDeserialiser.class),
 						new PluginInfo (VisualPlaceDeserialiser.class),
 						new PluginInfo (VisualSignalTransitionDeserialiser.class),
 						new PluginInfo (VisualConnectionDeserialiser.class),
 						new PluginInfo (ImplicitPlaceArcDeserialiser.class),
-						new PluginInfo (VisualSTGDeserialiser.class)
-
-
 				};
 			} else
 				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceName);

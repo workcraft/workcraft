@@ -116,11 +116,11 @@ public abstract class AbstractModel implements Plugin, Model, NodeContext {
 		return nodeContextTracker.getPreset(component);
 	}
 
-	public Node getNodeByID(int ID) {
+	public Node getNodeByID(String ID) {
 		return nodeIDManager.getNodeByID(ID);
 	}
 
-	public int getNodeID(Node node) {
+	public String getNodeID(Node node) {
 		return nodeIDManager.getNodeID(node);
 	}
 }

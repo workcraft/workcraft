@@ -31,19 +31,40 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
 @DisplayName("Petri Net")
 public class PetriNet extends AbstractMathModel {
+	private ReferenceManager<Node> referenceManager = new ReferenceManager<Node>(new Func<Node, String>() {
+		@Override
+		public String eval(Node arg) {
+			if (arg instanceof Place) {
+				final String label = ((Place)arg).getLabel();
+				return "p:" + label;
+			} else if (arg instanceof Transition) {
+				final String label = ((Transition)arg).getLabel();
+				return "t:" + label;
+			}
+			return "";
+		}
+	});
 
 	public PetriNet() {
 		this(null);
 	}
 
 	public PetriNet(Container root) {
+		this(root, null);
+
+	}
+
+	public PetriNet(Container root, References refs) {
 		super(root);
 		new DefaultHangingConnectionRemover(this, "PN").attach(getRoot());
+		ReferenceManager.attach(referenceManager, root, refs);
 	}
 
 	public void validate() throws ModelValidationException {
@@ -93,5 +114,15 @@ public class PetriNet extends AbstractMathModel {
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		if (first instanceof Transition && second instanceof Transition)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
+	}
+
+	@Override
+	public Node getNodeByID(String ID) {
+		return referenceManager.getObject(ID);
+	}
+
+	@Override
+	public String getNodeID(Node node) {
+		return referenceManager.getReference(node);
 	}
 }

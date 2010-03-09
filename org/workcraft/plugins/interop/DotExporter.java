@@ -31,7 +31,7 @@ public class DotExporter implements Exporter {
 		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualComponent) {
 				VisualComponent comp = (VisualComponent) n;
-				Integer id = model.getNodeID(comp);
+				String id = model.getNodeID(comp);
 				if(id!=null) {
 					Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
 					if(bb!=null) {
@@ -43,7 +43,7 @@ public class DotExporter implements Exporter {
 					Set<Node> postset = model.getPostset(comp);
 
 					for(Node target : postset) {
-						Integer targetId = model.getNodeID(target);
+						String targetId = model.getNodeID(target);
 						if(targetId!=null) {
 							out.println("\""+id+"\" -> \""+targetId+"\";");
 						}

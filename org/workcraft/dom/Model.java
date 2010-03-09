@@ -62,9 +62,9 @@ public interface Model {
 	public Connection connect(Node first, Node second)
 			throws InvalidConnectionException;
 
-	public Node getNodeByID(int ID);
+	public Node getNodeByID(String ID);
 
-	public int getNodeID(Node node);
+	public String getNodeID(Node node);
 
 	/**
 	 * This method may be called to test that

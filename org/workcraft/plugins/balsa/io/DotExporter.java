@@ -32,7 +32,7 @@ public class DotExporter implements Exporter {
 		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualBreezeComponent) {
 				VisualBreezeComponent comp = (VisualBreezeComponent) n;
-				Integer id = model.getNodeID(comp);
+				String id = model.getNodeID(comp);
 				if(id!=null) {
 					Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
 					if(bb!=null) {
@@ -47,7 +47,7 @@ public class DotExporter implements Exporter {
 						for(Node target : postset) {
 							if (target instanceof VisualHandshake) {
 								VisualBreezeComponent targetComp = (VisualBreezeComponent)((VisualHandshake)target).getParent();
-								Integer targetId = model.getNodeID(targetComp);
+								String targetId = model.getNodeID(targetComp);
 								if(targetId!=null) {
 									out.println("\""+id+"\" -> \""+targetId+"\";");
 								}

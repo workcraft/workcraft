@@ -31,19 +31,15 @@ import org.workcraft.observation.NodesDeletedEvent;
 public class NodeIDManager extends HierarchySupervisor {
 	private IDGenerator idGenerator = new IDGenerator();
 
-	private HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
-	private HashMap<Node, Integer> nodeIdentifiers = new HashMap<Node, Integer>();
+	private HashMap<String, Node> nodes = new HashMap<String, Node>();
+	private HashMap<Node, String> nodeIdentifiers = new HashMap<Node, String>();
 
-	public Node getNodeByID(int ID) {
+	public Node getNodeByID(String ID) {
 		return nodes.get(ID);
 	}
 
-	public int getNodeID(Node node) {
-		Integer ID = nodeIdentifiers.get(node);
-		if (ID == null)
-			return -1;
-		else
-			return ID;
+	public String getNodeID(Node node) {
+		return nodeIdentifiers.get(node);
 	}
 
 	@Override
@@ -69,7 +65,7 @@ public class NodeIDManager extends HierarchySupervisor {
 	}
 
 	private void nodeAdded(Node n) {
-		int id = idGenerator.getNextID();
+		String id = Integer.toString(idGenerator.getNextID());
 		nodes.put(id, n);
 		nodeIdentifiers.put(n, id);
 

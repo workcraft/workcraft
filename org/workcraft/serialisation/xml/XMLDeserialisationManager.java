@@ -33,6 +33,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
@@ -95,7 +96,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 
 	public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException
 	{
-		Object instance = nodeDeserialiser.initInstance(element, state.externalReferences, constructorParameters);
+		Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
 		state.setInstanceElement(instance, element);
 		state.setObject(element.getAttribute("ref"), instance);
@@ -125,15 +126,39 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 			org.workcraft.serialisation.xml.XMLDeserialiser deserialiser  = getDeserialiserFor(className);
 			cls = Class.forName(className);
 
+			Object underlyingModel;
+			if (state.getExternalReferences() != null)
+				underlyingModel = state.getExternalReferences().getObject("$model");
+			else
+				underlyingModel = null;
+
 			if (deserialiser instanceof ModelXMLDeserialiser) {
-				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, root, state.internalReferences, state.externalReferences);
+				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, (Model)underlyingModel, root, state.getInternalReferences(), state.getExternalReferences());
 			} else if (deserialiser != null) {
 				throw new DeserialisationException ("Deserialiser for model class must implement ModelXMLDesiraliser interface");
 			} else {
-				Constructor<?> ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
-				result = (Model) ctor.newInstance(root);
-			}
 
+				Constructor<?> ctor;
+				if (underlyingModel == null) {
+					try {
+						ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
+						result = (Model) ctor.newInstance(root, state.getInternalReferences());
+					} catch (NoSuchMethodException e) {
+						ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
+						result = (Model) ctor.newInstance(root);
+					}
+
+				}
+				else {
+					try {
+						ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
+						result = (Model) ctor.newInstance(underlyingModel, root, state.getInternalReferences());
+					} catch (NoSuchMethodException e) {
+						ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
+						result = (Model) ctor.newInstance(underlyingModel, root);
+					}
+				}
+			}
 		} catch (InstantiationException e) {
 			throw new DeserialisationException(e);
 		} catch (IllegalAccessException e) {
@@ -141,15 +166,15 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 		} catch (ClassNotFoundException e) {
 			throw new DeserialisationException(e);
 		} catch (NoSuchMethodException e) {
-			throw new DeserialisationException("In order to be deserialised automatically, the model must declare a constructor with parameter " + root.getClass(), e);
+			throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
 		} catch (IllegalArgumentException e) {
 			throw new DeserialisationException(e);
 		} catch (InvocationTargetException e) {
 			throw new DeserialisationException(e);
 		}
 
-		nodeDeserialiser.doInitialisation(element, result, cls, state.externalReferences);
-		nodeDeserialiser.doFinalisation(element, result, state.internalReferences, state.externalReferences, cls.getSuperclass());
+		nodeDeserialiser.doInitialisation(element, result, cls, state.getExternalReferences());
+		nodeDeserialiser.doFinalisation(element, result, state.getInternalReferences(), state.getExternalReferences(), cls.getSuperclass());
 
 		state.setObject("$model", result);
 
@@ -171,6 +196,6 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 	}
 
 	public void finaliseInstance(Object instance) throws DeserialisationException {
-		nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.internalReferences, state.externalReferences);
+		nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.getInternalReferences(), state.getExternalReferences());
 	}
 }
