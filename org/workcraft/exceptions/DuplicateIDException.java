@@ -21,10 +21,16 @@
 
 package org.workcraft.exceptions;
 
-public class DuplicateIDException extends Exception {
+public class DuplicateIDException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
+	private final int id;
 
 	public DuplicateIDException (int ID) {
 		super (Integer.toString(ID));
+		id = ID;
+
+	}
+	public int getId() {
+		return id;
 	}
 }
