@@ -20,9 +20,9 @@
 */
 package org.workcraft.parsers.breeze;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface Block<Port>
 {
-	Collection<Port> getPorts();
+	List<? extends Port> getPorts();
 }
