@@ -50,17 +50,17 @@ public class CachedCircuit<Port, Comp extends Block<Port>, Conn extends Connecti
 	}
 
 	@Override
-	public List<Comp> getBlocks() {
+	public Collection<? extends Comp> getBlocks() {
 		return c.getBlocks();
 	}
 
 	@Override
-	public List<Conn> getConnections() {
+	public Collection<? extends Conn> getConnections() {
 		return c.getConnections();
 	}
 
 	@Override
-	public Collection<Port> getPorts() {
+	public List<? extends Port> getPorts() {
 		return c.getPorts();
 	}
 
