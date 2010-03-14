@@ -128,16 +128,13 @@ public class SaveLoadTests {
 	}
 
 	private void assertPetriEquals(PetriNet expected, PetriNet actual) {
-		Finder<MathNode> componentFinder = new Finder<MathNode>(getComponents(actual), new ComponentLabelExtractor());
-
 		Assert.assertEquals(getComponents(expected).size(), getComponents(actual).size());
 		for(MathNode component : getComponents(expected))
-			assertComponentEquals(component, componentFinder.getMatching(component));
+			assertComponentEquals(component,(MathNode) actual.getNodeByReference(expected.getNodeReference(component)));
 
-		Finder<MathConnection> connectionFinder = new Finder<MathConnection>(getConnections(actual), new ConnectionByComponentsIdentifier(new ComponentLabelExtractor()));
 		Assert.assertEquals(getConnections(expected).size(), getConnections(actual).size());
 		for(MathConnection connection : getConnections(expected))
-			assertConnectionEquals(connection, connectionFinder.getMatching(connection));
+			assertConnectionEquals(connection, (MathConnection) actual.getNodeByReference(expected.getNodeReference(connection)));
 	}
 
 	private void assertConnectionEquals(MathConnection expected, MathConnection actual) {
@@ -218,8 +215,6 @@ public class SaveLoadTests {
 		Class<? extends Node> type = node.getClass();
 		Assert.assertEquals(type, node2.getClass());
 
-		Assert.assertEquals(node.getLabel(), node2.getLabel());
-
 		if(type == Transition.class)
 			assertTransitionEquals((Transition)node, (Transition)node2);
 		if(type == Place.class)
@@ -248,16 +243,16 @@ public class SaveLoadTests {
 		Place place3 = new Place();
 		place3.setTokens(2);
 		petri.add(place1);
-		place1.setLabel("place1");
+		petri.setName(place1, "place1");
 		petri.add(place2);
-		place2.setLabel("place2");
+		petri.setName(place2, "place2");
 		petri.add(place3);
-		place3.setLabel("place3");
+		petri.setName(place3, "place3");
 
 		Transition trans1 = new Transition();
-		trans1.setLabel("trans1");
+		petri.setName(trans1, "trans1");
 		Transition trans2 = new Transition();
-		trans2.setLabel("trans2");
+		petri.setName(trans2, "trans2");
 
 		petri.add(trans1);
 		petri.add(trans2);

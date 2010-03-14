@@ -31,13 +31,6 @@ interface KeyProvider<T>
 	public Object getKey(T item);
 }
 
-class ComponentLabelExtractor implements KeyProvider<MathNode>
-{
-	public Object getKey(MathNode node) {
-		return node.getLabel();
-	}
-}
-
 class Finder<T>
 {
 	private final HashMap<Object, T> map;

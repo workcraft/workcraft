@@ -44,8 +44,8 @@ public class DOMTests {
 		Connection con1 = pn.connect(p1, t1);
 		Connection con2 = pn.connect(t1, p2);
 
-		assertSame (p1, pn.getNodeByID(pn.getNodeID(p1)));
-		assertSame (p2, pn.getNodeByID(pn.getNodeID(p2)));
+		assertSame (p1, pn.getNodeByReference(pn.getNodeReference(p1)));
+		assertSame (p2, pn.getNodeByReference(pn.getNodeReference(p2)));
 
 		assertTrue (pn.getPreset(p2).contains(t1));
 		assertTrue (pn.getPostset(p1).contains(t1));
@@ -57,7 +57,7 @@ public class DOMTests {
 		assertTrue (pn.getConnections(t1).contains(con2));
 		assertFalse (pn.getConnections(t1).contains(con1));
 
-		assertEquals(pn.getNodeID(p1), -1);
+		assertEquals(pn.getNodeReference(p1), -1);
 	}
 
 }

@@ -24,13 +24,26 @@ package org.workcraft.dom.math;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
-	public AbstractMathModel(Container root) {
-		super( (root == null) ? new MathGroup() : root);
+
+	public AbstractMathModel() {
+		this (null, null);
+	}
+
+	public AbstractMathModel (Container root) {
+		this (root, null);
+	}
+
+	public AbstractMathModel(Container root, ReferenceManager referenceManager) {
+		super((root == null) ? new MathGroup() : root, referenceManager);
+
+		new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
 	}
 
 	public Connection connect(Node first, Node second)

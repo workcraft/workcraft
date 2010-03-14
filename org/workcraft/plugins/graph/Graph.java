@@ -44,9 +44,9 @@ public class Graph extends AbstractMathModel {
 	public void validateConnection(Connection connection)	throws InvalidConnectionException {
 	}
 
-	public Vertex createVertex(String label) {
+	public Vertex createVertex() {
 		Vertex v = new Vertex();
-		v.setLabel(label);
+
 		try {
 			add(v);
 		} catch (InvalidComponentException e) {
@@ -57,5 +57,15 @@ public class Graph extends AbstractMathModel {
 
 	public void validateConnection(Node first, Node second)
 			throws InvalidConnectionException {
+	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }

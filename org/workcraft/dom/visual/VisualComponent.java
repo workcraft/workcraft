@@ -27,6 +27,8 @@ import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
@@ -44,6 +46,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private GlyphVector labelGlyphs = null;
 	private String glyphsForLabel = null;
 
+	private String label = "";
+
 	private Point2D labelPosition = null;
 
 	private Color labelColor = CommonVisualSettings.getForegroundColor();
@@ -51,10 +55,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration("Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration("Label color", "getLabelColor", "setLabelColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration("Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration("Fill color", "getFillColor", "setFillColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label color", "getLabelColor", "setLabelColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
 	public VisualComponent(MathNode refNode) {
@@ -80,11 +84,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	public String getLabel() {
-		return getReferencedComponent().getLabel();
+		return label;
 	}
 
 	public void setLabel(String label) {
-		getReferencedComponent().setLabel(label);
+		this.label = label;
 		labelGlyphs = null;
 		glyphsForLabel = null;
 	}
@@ -109,7 +113,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		if (labelGlyphs == null || !getLabel().equals(glyphsForLabel)) {
 			final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
 			glyphsForLabel = getLabel();
-			Rectangle2D textBB = labelGlyphs.getVisualBounds();
+			Rectangle2D textBB = glyphs.getVisualBounds();
 			Rectangle2D bb = getBoundingBoxInLocalSpace();
 			labelPosition = new Point2D.Double( bb.getMinX() + ( bb.getWidth() - textBB.getWidth() ) *0.5, bb.getMaxY() + textBB.getHeight() + 0.1);
 			labelGlyphs = glyphs;
@@ -145,5 +149,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public MathNode getReferencedComponent() {
 		return refNode;
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		ArrayList<MathNode> result = new ArrayList<MathNode>();
+		result.add(getReferencedComponent());
+		return result;
 	}
 }

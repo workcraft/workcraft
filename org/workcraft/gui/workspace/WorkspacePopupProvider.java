@@ -22,7 +22,6 @@
 package org.workcraft.gui.workspace;
 
 import java.awt.Component;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -48,8 +47,6 @@ import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
-
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class WorkspacePopupProvider {
 	private Framework framework;

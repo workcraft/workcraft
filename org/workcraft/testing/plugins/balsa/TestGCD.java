@@ -243,7 +243,7 @@ public class TestGCD {
 	}
 
 	private String getId(BreezeComponent comp) {
-		return circuit.getNodeID(comp);
+		return circuit.getNodeReference(comp);
 	}
 
 	class BcComparator implements Comparator<BreezeComponent> {

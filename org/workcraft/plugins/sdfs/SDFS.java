@@ -24,7 +24,6 @@ package org.workcraft.plugins.sdfs;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -36,8 +35,6 @@ public class SDFS extends AbstractMathModel {
 
 	public SDFS() {
 		super(null);
-
-		new DefaultHangingConnectionRemover(this, "SDFS").attach(getRoot());
 	}
 
 	public void validate() throws ModelValidationException {
@@ -64,5 +61,15 @@ public class SDFS extends AbstractMathModel {
 			throws InvalidConnectionException {
 		if (first == second)
 			throw new InvalidConnectionException ("Self-loops are not allowed");
+	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }

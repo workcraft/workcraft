@@ -73,7 +73,7 @@ public class DotLayout implements Tool, PluginConsumer {
 		while(matcher.find()) {
 			String id = matcher.group(1);
 
-			Node comp = model.getNodeByID(id);
+			Node comp = model.getNodeByReference(id);
 
 			if(comp==null || !(comp instanceof Movable))
 				continue;

@@ -39,14 +39,14 @@ public class CircuitComponent extends MathNode {
 	public CircuitComponent() {
 	}
 
-	public Contact addInput(String label) {
-		Contact c = new Contact(label, IOType.input);
+	public Contact addInput() {
+		Contact c = new Contact( IOType.input);
 		inputs.add(c);
 		return c;
 	}
 
-	public Contact addOutput(String label) {
-		Contact c = new Contact(label, IOType.output);
+	public Contact addOutput() {
+		Contact c = new Contact(IOType.output);
 		outputs.add(c);
 		return c;
 	}

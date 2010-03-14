@@ -44,4 +44,14 @@ public class Circuit extends AbstractMathModel {
 	public void validateConnection(Node first, Node second)
 			throws InvalidConnectionException {
 	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
 }

@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.dom;
+package org.workcraft.dom.references;
 
 import java.util.Comparator;
 import java.util.TreeSet;

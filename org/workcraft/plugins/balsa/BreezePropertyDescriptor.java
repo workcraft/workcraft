@@ -28,9 +28,11 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 public class BreezePropertyDescriptor implements PropertyDescriptor {
 
 	private final java.beans.PropertyDescriptor propertyDescriptor;
+	private final VisualBreezeComponent me;
 
-	public BreezePropertyDescriptor(java.beans.PropertyDescriptor propertyDescriptor) {
+	public BreezePropertyDescriptor(java.beans.PropertyDescriptor propertyDescriptor, VisualBreezeComponent me) {
 		this.propertyDescriptor = propertyDescriptor;
+		this.me = me;
 	}
 
 	public Map<Object, String> getChoice() {
@@ -45,10 +47,9 @@ public class BreezePropertyDescriptor implements PropertyDescriptor {
 		return propertyDescriptor.getPropertyType();
 	}
 
-	public Object getValue(Object owner) {
+	public Object getValue() {
 		try {
-			VisualBreezeComponent component = (VisualBreezeComponent)owner;
-			return propertyDescriptor.getReadMethod().invoke(component.balsaComponent);
+			return propertyDescriptor.getReadMethod().invoke(me.balsaComponent);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -58,10 +59,9 @@ public class BreezePropertyDescriptor implements PropertyDescriptor {
 		return propertyDescriptor.getWriteMethod() != null;
 	}
 
-	public void setValue(Object owner, Object value) {
+	public void setValue(Object value) {
 		try {
-			VisualBreezeComponent component = (VisualBreezeComponent)owner;
-			propertyDescriptor.getWriteMethod().invoke(component.balsaComponent, value);
+			propertyDescriptor.getWriteMethod().invoke(me.balsaComponent, value);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

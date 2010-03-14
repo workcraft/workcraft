@@ -26,7 +26,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -43,11 +42,11 @@ public class PunfUtilitySettings implements PersistentPropertyEditable, Plugin {
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("Punf command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration("Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
+		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
 	}
 
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -63,17 +62,6 @@ public class PunfUtilitySettings implements PersistentPropertyEditable, Plugin {
 
 	public String getSection() {
 		return "Verification";
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public static String getPunfCommand() {

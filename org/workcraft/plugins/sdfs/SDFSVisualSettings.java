@@ -27,7 +27,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -52,20 +51,20 @@ public class SDFSVisualSettings implements PersistentPropertyEditable, Plugin {
 	public SDFSVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration("Enabled register color", "getEnabledRegisterColor", "setEnabledRegisterColor", Color.class));
-		properties.add(new PropertyDeclaration("Disabled register color", "getDisabledRegisterColor", "setDisabledRegisterColor", Color.class));
-		properties.add(new PropertyDeclaration("Token color", "getTokenColor", "setTokenColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Enabled register color", "getEnabledRegisterColor", "setEnabledRegisterColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Disabled register color", "getDisabledRegisterColor", "setDisabledRegisterColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Token color", "getTokenColor", "setTokenColor", Color.class));
 
-		properties.add(new PropertyDeclaration ("Use global settings", "getUseGlobal", "setUseGlobal", boolean.class));
-		properties.add(new PropertyDeclaration("Base component size (cm)", "getSize", "setSize", double.class));
-		properties.add(new PropertyDeclaration("Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
+		properties.add(new PropertyDeclaration(this, "Use global settings", "getUseGlobal", "setUseGlobal", boolean.class));
+		properties.add(new PropertyDeclaration(this, "Base component size (cm)", "getSize", "setSize", double.class));
+		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
 
-		properties.add(new PropertyDeclaration("Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
-		properties.add(new PropertyDeclaration("Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		properties.add(new PropertyDeclaration("Default fill color", "getFillColor", "setFillColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Default fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -168,20 +167,6 @@ public class SDFSVisualSettings implements PersistentPropertyEditable, Plugin {
 		else
 			SDFSVisualSettings.strokeWidth = strokeWidth;
 	}
-
-
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-	}
-
 
 	public static boolean getUseGlobal() {
 		return useGlobal;

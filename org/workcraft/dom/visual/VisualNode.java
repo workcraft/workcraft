@@ -35,7 +35,7 @@ import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertySupport;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
@@ -46,7 +46,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 
-public abstract class VisualNode implements PropertyEditable, Node, Touchable, Colorisable, ObservableState, Hidable {
+public abstract class VisualNode implements Properties, Node, Touchable, Colorisable, ObservableState, Hidable {
 	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
@@ -122,24 +122,12 @@ public abstract class VisualNode implements PropertyEditable, Node, Touchable, C
 		return popupMenuBuilder.build(actionListener);
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		propertySupport.addPropertyChangeListener(listener);
-	}
-
 	public void addPropertyDeclaration(PropertyDescriptor declaration) {
 		propertySupport.addPropertyDeclaration(declaration);
 	}
 
-	public void firePropertyChanged(String propertyName) {
-		propertySupport.firePropertyChanged(propertyName, this);
-	}
-
-	public Collection<PropertyDescriptor> getPropertyDeclarations() {
+	public Collection<PropertyDescriptor> getDescriptors() {
 		return propertySupport.getPropertyDeclarations();
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		propertySupport.removePropertyChangeListener(listener);
 	}
 
 	public boolean isHidden() {

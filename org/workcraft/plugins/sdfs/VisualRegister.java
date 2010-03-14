@@ -118,8 +118,8 @@ public class VisualRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration ("Enabled", "isEnabled", "setEnabled", boolean.class));
-		addPropertyDeclaration(new PropertyDeclaration ("Marked", "isMarked", "setMarked", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Enabled", "isEnabled", "setEnabled", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Marked", "isMarked", "setMarked", boolean.class));
 
 		addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,

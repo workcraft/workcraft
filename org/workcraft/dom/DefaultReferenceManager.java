@@ -21,26 +21,18 @@
 
 package org.workcraft.dom;
 
-import java.util.HashMap;
-
+import org.workcraft.dom.references.IDGenerator;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.util.TwoWayMap;
 
-public class NodeIDManager extends HierarchySupervisor {
+public class DefaultReferenceManager extends HierarchySupervisor implements ReferenceManager {
 	private IDGenerator idGenerator = new IDGenerator();
 
-	private HashMap<String, Node> nodes = new HashMap<String, Node>();
-	private HashMap<Node, String> nodeIdentifiers = new HashMap<Node, String>();
-
-	public Node getNodeByID(String ID) {
-		return nodes.get(ID);
-	}
-
-	public String getNodeID(Node node) {
-		return nodeIdentifiers.get(node);
-	}
+	private TwoWayMap<String, Node> nodes = new TwoWayMap<String, Node>();
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
@@ -57,8 +49,7 @@ public class NodeIDManager extends HierarchySupervisor {
 	}
 
 	private void nodeRemoved(Node n) {
-		nodes.remove(nodeIdentifiers.get(n));
-		nodeIdentifiers.remove(n);
+		nodes.removeValue(n);
 
 		for (Node nn: n.getChildren())
 			nodeRemoved(nn);
@@ -67,9 +58,18 @@ public class NodeIDManager extends HierarchySupervisor {
 	private void nodeAdded(Node n) {
 		String id = Integer.toString(idGenerator.getNextID());
 		nodes.put(id, n);
-		nodeIdentifiers.put(n, id);
 
 		for (Node nn : n.getChildren())
 			nodeAdded(nn);
+	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		return nodes.getValue(reference);
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		return nodes.getKey(node);
 	}
 }

@@ -26,8 +26,6 @@ import org.workcraft.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.VisualPlaceDeserialiser;
-import org.workcraft.plugins.petri.VisualPlaceSerialiser;
 import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
 import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
 import org.workcraft.plugins.serialisation.xml.BooleanDeserialiser;
@@ -50,8 +48,6 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.serialisation.ImplicitArcSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
-import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionDeserialiser;
-import org.workcraft.plugins.stg.serialisation.VisualSignalTransitionSerialiser;
 
 public class XMLSerialisationTestingUtils {
 	static class MockPluginManager implements PluginProvider {
@@ -68,8 +64,6 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (IntSerialiser.class),
 						new PluginInfo (EnumSerialiser.class),
 						new PluginInfo (AffineTransformSerialiser.class),
-						new PluginInfo (VisualPlaceSerialiser.class),
-						new PluginInfo (VisualSignalTransitionSerialiser.class),
 						new PluginInfo (VisualConnectionSerialiser.class),
 						new PluginInfo (ImplicitArcSerialiser.class)
 				};
@@ -84,8 +78,6 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (IntDeserialiser.class),
 						new PluginInfo (EnumDeserialiser.class),
 						new PluginInfo (AffineTransformDeserialiser.class),
-						new PluginInfo (VisualPlaceDeserialiser.class),
-						new PluginInfo (VisualSignalTransitionDeserialiser.class),
 						new PluginInfo (VisualConnectionDeserialiser.class),
 						new PluginInfo (ImplicitPlaceArcDeserialiser.class),
 				};

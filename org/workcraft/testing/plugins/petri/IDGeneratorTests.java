@@ -3,7 +3,7 @@ package org.workcraft.testing.plugins.petri;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.workcraft.dom.IDGenerator;
+import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.exceptions.DuplicateIDException;
 
 public class IDGeneratorTests {

@@ -22,7 +22,6 @@
 package org.workcraft.gui.propertyeditor;
 
 import java.awt.Component;
-import java.awt.event.ItemEvent;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
@@ -49,10 +48,6 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 			int column) {
 		textField.setText(value.toString());
 		return textField;
-	}
-
-	public void itemStateChanged(ItemEvent e) {
-		fireEditingStopped();
 	}
 }
 

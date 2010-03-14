@@ -1,23 +1,23 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft;
 import java.io.BufferedReader;
@@ -69,6 +69,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
@@ -77,66 +78,62 @@ public class Framework {
 	public static final String FRAMEWORK_VERSION_MAJOR = "2";
 	public static final String FRAMEWORK_VERSION_MINOR = "dev";
 
-	class JavaScriptExecution implements ContextAction {
-		Script script;
-		Scriptable scope;
-		String strScript;
+	class ExecuteScriptAction implements ContextAction {
+		private String script;
+		private Scriptable scope;
 
-		public void setScope (Scriptable scope) {
+		public ExecuteScriptAction(String script, Scriptable scope) {
+			this.script = script;
 			this.scope = scope;
 		}
 
-		public void setScript (Script script) {
-			this.script = script;
+		public Object run(Context cx) {
+			return cx.evaluateString(scope, script, "<string>", 1, null);
 		}
+	}
 
-		public void setScript (String strScript) {
-			this.strScript = strScript;
+	class ExecuteCompiledScriptAction implements ContextAction {
+		private Script script;
+		private Scriptable scope;
+
+		public ExecuteCompiledScriptAction(Script script, Scriptable scope) {
+			this.script = script;
+			this.scope = scope;
 		}
 
 		public Object run(Context cx) {
-			Object ret;
-			if (script != null)
-				ret = script.exec(cx, scope);
-			else
-				ret = cx.evaluateString(scope, strScript, "<string>", 1, null);
-			script = null;
-			scope = null;
-			strScript = null;
-			return ret;
+			return script.exec(cx, scope);
 		}
 	}
-	class JavaScriptCompilation implements ContextAction {
-		String source, sourceName;
-		BufferedReader reader;
 
-		public void setSource (String source) {
-			this.source = source;
-		}
+	class CompileScriptFromReaderAction implements ContextAction {
+		private String sourceName;
+		private BufferedReader reader;
 
-		public void setSource (BufferedReader reader) {
+		public CompileScriptFromReaderAction(BufferedReader reader, String sourceName) {
+			this.sourceName = sourceName;
 			this.reader = reader;
 		}
 
-		public void setSourceName (String sourceName) {
-			this.sourceName = sourceName;
+		public Object run(Context cx) {
+			try {
+				return cx.compileReader(reader, sourceName, 1, null);
+			} catch (IOException e) {
+				throw new RuntimeException (e);
+			}
+		}
+	}
 
+	class CompileScriptAction implements ContextAction {
+		private String source, sourceName;
+
+		public CompileScriptAction(String source, String sourceName) {
+			this.source = source;
+			this.sourceName = sourceName;
 		}
 
 		public Object run(Context cx) {
-			Object ret;
-			if (source!=null)
-				ret = cx.compileString(source, sourceName, 1, null);
-			else
-				try {
-					ret = cx.compileReader(reader, sourceName, 1, null);
-				} catch (IOException e) {
-					e.printStackTrace();
-					ret = null;
-				}
-				source = null;
-				sourceName = null;
-				return ret;
+			return cx.compileString(source, sourceName, 1, null);
 		}
 	}
 
@@ -165,12 +162,11 @@ public class Framework {
 	private ScriptableObject systemScope;
 	private ScriptableObject globalScope;
 
-	private JavaScriptExecution javaScriptExecution = new JavaScriptExecution();
-	private JavaScriptCompilation javaScriptCompilation = new JavaScriptCompilation();
-
 	private boolean inGUIMode = false;
 	private boolean shutdownRequested = false;
 	private boolean GUIRestartRequested = false;
+
+	private ContextFactory contextFactory = new ContextFactory();
 
 
 	private boolean silent = false;
@@ -183,8 +179,6 @@ public class Framework {
 		modelManager = new ModelManager();
 		config = new Config();
 		workspace = new Workspace(this);
-		javaScriptExecution = new JavaScriptExecution();
-		javaScriptCompilation = new JavaScriptCompilation();
 	}
 
 
@@ -294,26 +288,22 @@ public class Framework {
 	public void initJavaScript() {
 		if (!silent)
 			System.out.println ("Initialising javascript...");
-		Context.call(new ContextAction() {
+		contextFactory.call(new ContextAction() {
 			public Object run(Context cx) {
 				ImporterTopLevel importer = new ImporterTopLevel();
 				importer.initStandardObjects(cx, false);
 				systemScope = importer;
-
-				//systemScope.initStandardObjects();
-				//systemScope.setParentScope(
 
 				Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
 				ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
 				//ScriptableObject.putProperty(systemScope, "importer", );
 				systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
-				globalScope =(ScriptableObject) cx.newObject(systemScope);
+				globalScope = (ScriptableObject) cx.newObject(systemScope);
 				globalScope.setPrototype(systemScope);
 				globalScope.setParentScope(null);
 
 				return null;
-
 			}
 		});
 	}
@@ -323,7 +313,7 @@ public class Framework {
 	}
 
 	public void setJavaScriptProperty (final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
-		Context.call(new ContextAction(){
+		contextFactory.call(new ContextAction(){
 			public Object run(Context arg0) {
 				Object scriptable = Context.javaToJS(object, scope);
 				ScriptableObject.putProperty(scope, name, scriptable);
@@ -336,8 +326,13 @@ public class Framework {
 		});
 	}
 
-	public void deleteJavaScriptProperty (String name, ScriptableObject scope) {
-		ScriptableObject.deleteProperty(scope, name);
+	public void deleteJavaScriptProperty (final String name, final ScriptableObject scope) {
+		contextFactory.call(new ContextAction(){
+			public Object run(Context arg0) {
+				return ScriptableObject.deleteProperty(scope, name);
+			}
+		});
+
 	}
 
 	public Object execJavaScript(File file) throws FileNotFoundException {
@@ -370,53 +365,51 @@ public class Framework {
 		}
 	}
 
+	public Object execJavaScript (String script) {
+		return execJavaScript(script, globalScope);
+	}
+
 	public Object execJavaScript(Script script, Scriptable scope) {
-		javaScriptExecution.setScript(script);
-		javaScriptExecution.setScope(scope);
-		return exec();
+		return doContextAction(new ExecuteCompiledScriptAction(script, scope));
 	}
 
 	public Object execJavaScript(String script, Scriptable scope) {
-		javaScriptExecution.setScript(script);
-		javaScriptExecution.setScope(scope);
-		return exec();
+		return doContextAction(new ExecuteScriptAction(script, scope));
 	}
 
-
-	private Object exec() {
+	private Object doContextAction (ContextAction action) {
 		try
 		{
-			return ContextFactory.getGlobal().call(javaScriptExecution);
-		}
-		catch(JavaScriptException ex)
+			return contextFactory.call(action);
+		} catch(JavaScriptException ex)
 		{
 			System.out.println("Script stack trace: " + ex.getScriptStackTrace());
 			Object value = ex.getValue();
 			if(value instanceof NativeJavaObject)
 			{
-				 Object wrapped = ((NativeJavaObject)value).unwrap();
-				 if(wrapped instanceof Throwable)
-					 throw new JavascriptPassThroughException((Throwable)wrapped, ex.getScriptStackTrace());
+				Object wrapped = ((NativeJavaObject)value).unwrap();
+				if(wrapped instanceof Throwable)
+					throw new JavascriptPassThroughException((Throwable)wrapped, ex.getScriptStackTrace());
 			}
 			throw ex;
 		}
 	}
 
-	public Object execJavaScript (String script) {
-		return execJavaScript(script, globalScope);
+
+	public void execFile (String filePath) {
+		try {
+			execJavaScript (FileUtils.readAllText(new File(filePath)), globalScope);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Script compileJavaScript (String source, String sourceName) {
-		javaScriptCompilation.setSource(source);
-		javaScriptCompilation.setSourceName(sourceName);
-		return (Script) Context.call(javaScriptCompilation);
+		return (Script) doContextAction(new CompileScriptAction(source, sourceName));
 	}
 
 	public Script compileJavaScript (BufferedReader source, String sourceName) {
-		javaScriptCompilation.setSource(source);
-		javaScriptCompilation.setSourceName(sourceName);
-		return (Script) Context.call(javaScriptCompilation);
-	}
+		return (Script) doContextAction(new CompileScriptFromReaderAction(source, sourceName));	}
 
 	public void startGUI() {
 		if (inGUIMode) {
@@ -446,7 +439,7 @@ public class Framework {
 				e.printStackTrace();
 			}
 
-			Context.call(new ContextAction() {
+			contextFactory.call(new ContextAction() {
 				public Object run(Context cx) {
 					Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
 					ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
@@ -469,7 +462,7 @@ public class Framework {
 			mainWindow = null;
 			inGUIMode = false;
 
-			Context.call(new ContextAction() {
+			contextFactory.call(new ContextAction() {
 				public Object run(Context cx) {
 					ScriptableObject.deleteProperty(systemScope, "mainWindow");
 					return null;
@@ -527,7 +520,7 @@ public class Framework {
 	public void setArgs(List<String> args) {
 		SetArgs setargs = new SetArgs();
 		setargs.setArgs(args.toArray());
-		Context.call(setargs);
+		contextFactory.call(setargs);
 	}
 
 	public Model load(String path) throws DeserialisationException {
@@ -639,29 +632,29 @@ public class Framework {
 			mathSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
 
 
-		String mathEntryName = "model" + mathSerialiser.getExtension();
-		ZipEntry ze = new ZipEntry(mathEntryName);
-		zos.putNextEntry(ze);
-		ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
-		zos.closeEntry();
+			String mathEntryName = "model" + mathSerialiser.getExtension();
+			ZipEntry ze = new ZipEntry(mathEntryName);
+			zos.putNextEntry(ze);
+			ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
+			zos.closeEntry();
 
-		String visualEntryName = null;
-		ModelSerialiser visualSerialiser = null;
+			String visualEntryName = null;
+			ModelSerialiser visualSerialiser = null;
 
-		if (visualModel != null) {
-			// TODO: get appropiate serialiser from config
+			if (visualModel != null) {
+				// TODO: get appropiate serialiser from config
 
 				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
 
-			visualEntryName = "visualModel" + visualSerialiser.getExtension();
-			ze = new ZipEntry(visualEntryName);
-			zos.putNextEntry(ze);
-			visualSerialiser.serialise(visualModel, zos, refResolver);
-			zos.closeEntry();
-		}
+				visualEntryName = "visualModel" + visualSerialiser.getExtension();
+				ze = new ZipEntry(visualEntryName);
+				zos.putNextEntry(ze);
+				visualSerialiser.serialise(visualModel, zos, refResolver);
+				zos.closeEntry();
+			}
 
-		ze = new ZipEntry("meta");
-		zos.putNextEntry(ze);
+			ze = new ZipEntry("meta");
+			zos.putNextEntry(ze);
 
 			Document doc;
 			doc = XmlUtil.createDocument();

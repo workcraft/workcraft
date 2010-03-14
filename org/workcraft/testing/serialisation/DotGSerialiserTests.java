@@ -71,7 +71,7 @@ public class DotGSerialiserTests {
 	private ArrayList<String> getSortedIds(STG stg, Set<Place> goodTokenized) {
 		ArrayList<String> ids = new ArrayList<String>();
 		for(Place place : goodTokenized)
-			ids.add(stg.getNodeID(place));
+			ids.add(stg.getNodeReference(place));
 		Collections.sort(ids);
 		return ids;
 	}

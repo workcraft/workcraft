@@ -30,13 +30,10 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -125,9 +122,9 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration ("Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration ("Capacity", "getCapacity", "setCapacity", int.class));
-		addPropertyDeclaration(new PropertyDeclaration ("Token color", "getTokenColor", "setTokenColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
 
 	/*	addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
 			public void addItems(JPopupMenu menu,
@@ -271,12 +268,5 @@ public class VisualPlace extends VisualComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
-	}
-
-	@Override
-	public Collection<MathNode> getMathReferences() {
-		LinkedList<MathNode> result = new LinkedList<MathNode>();
-		result.add(getReferencedPlace());
-		return result;
 	}
 }

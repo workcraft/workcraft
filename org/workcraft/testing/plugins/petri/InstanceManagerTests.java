@@ -7,23 +7,23 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.plugins.petri.ReferenceManager;
+import org.workcraft.plugins.stg.InstanceManager;
 import org.workcraft.util.Func;
+import org.workcraft.util.Pair;
 
-public class LabelInstanceManagerTests
+public class InstanceManagerTests
 {
 	@Test(expected=NullPointerException.class)
 	public void testConstructorNull()
 	{
-		new ReferenceManager<Object>(null);
+		new InstanceManager<Object>(null);
 	}
 
 	@Test
 	public void testConstructor()
 	{
-		new ReferenceManager<Object>(new Func<Object, String>()
+		new InstanceManager<Object>(new Func<Object, String>()
 				{
 					@Override public String eval(Object arg) {
 						throw new RuntimeException("this method should not be called");
@@ -31,9 +31,9 @@ public class LabelInstanceManagerTests
 				});
 	}
 
-	ReferenceManager<Object> make(final Map<Object, String> expectedRequests)
+	InstanceManager<Object> make(final Map<Object, String> expectedRequests)
 	{
-		return new ReferenceManager<Object>(new Func<Object, String>()
+		return new InstanceManager<Object>(new Func<Object, String>()
 				{
 			@Override public String eval(Object arg) {
 				final String label = expectedRequests.get(arg);
@@ -48,8 +48,8 @@ public class LabelInstanceManagerTests
 	public void testGetReferenceUnknown()
 	{
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.getReference(new Object());
+		final InstanceManager<Object> mgr = make(expectedRequests);
+		mgr.getInstance(new Object());
 	}
 
 	@Test
@@ -62,13 +62,13 @@ public class LabelInstanceManagerTests
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
 		expectedRequests.put(o3, "qwe");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager<Object> mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o2);
 		mgr.assign(o3);
-		assertEquals("abc/1", mgr.getReference(o2));
-		assertEquals("qwe/0", mgr.getReference(o3));
-		assertEquals("abc/0", mgr.getReference(o1));
+		assertEquals(Pair.of("abc",1), mgr.getInstance(o2));
+		assertEquals(Pair.of("qwe",0), mgr.getInstance(o3));
+		assertEquals(Pair.of("abc",0), mgr.getInstance(o1));
 	}
 
 	@Test
@@ -83,20 +83,19 @@ public class LabelInstanceManagerTests
 		expectedRequests.put(o2, "abc");
 		expectedRequests.put(o3, "qwe");
 		expectedRequests.put(o4, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager<Object> mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o2);
 		mgr.assign(o3);
-		assertEquals("abc/1", mgr.getReference(o2));
-		assertEquals("qwe/0", mgr.getReference(o3));
-		assertEquals("abc/0", mgr.getReference(o1));
+		assertEquals(Pair.of("abc",1), mgr.getInstance(o2));
+		assertEquals(Pair.of("qwe",0), mgr.getInstance(o3));
+		assertEquals(Pair.of("abc",0), mgr.getInstance(o1));
 
-		mgr.assign(o2, "abc/1");
-		mgr.assign(o2, "abc/2");
+		mgr.assign(o2, 1);
+		mgr.assign(o2, 2);
 		mgr.assign(o4);
 
-		assertEquals ("abc/1", mgr.getReference(o4));
-
+		assertEquals(Pair.of("abc",1), mgr.getInstance(o4));
 	}
 
 	@Test(expected=NotFoundException.class)
@@ -107,12 +106,12 @@ public class LabelInstanceManagerTests
 		Object o2 = new Object();
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager<Object> mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.remove(o1);
 		mgr.assign(o2);
-		assertEquals("abc/0", mgr.getReference(o2));
-		mgr.getReference(o1);
+		assertEquals(Pair.of("abc",0), mgr.getInstance(o2));
+		mgr.getInstance(o1);
 	}
 
 
@@ -122,39 +121,9 @@ public class LabelInstanceManagerTests
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
 		Object o1 = new Object();
 		expectedRequests.put(o1, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager<Object> mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o1);
-	}
-
-	@Test(expected=NullPointerException.class)
-	public void testAssignForcedNull()
-	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		expectedRequests.put(o1, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.assign(o1, null);
-	}
-
-	@Test(expected=ArgumentException.class)
-	public void testAssignForcedWrongLabelFormat()
-	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		expectedRequests.put(o1, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.assign(o1, "kojozz");
-	}
-
-	@Test(expected=ArgumentException.class)
-	public void testAssignForcedWrongLabel()
-	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		expectedRequests.put(o1, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.assign(o1, "kojozz/8");
 	}
 
 	@Test
@@ -163,12 +132,12 @@ public class LabelInstanceManagerTests
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
 		Object o1 = new Object();
 		expectedRequests.put(o1, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.assign(o1, "abc/8");
-		assertEquals("abc/8", mgr.getReference(o1));
+		final InstanceManager<Object> mgr = make(expectedRequests);
+		mgr.assign(o1, 8);
+		assertEquals(Pair.of("abc",8), mgr.getInstance(o1));
 	}
 
-	@Test(expected=DuplicateIDException.class)
+	@Test(expected=ArgumentException.class)
 	public void testAssignForcedExistingId()
 	{
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
@@ -176,9 +145,21 @@ public class LabelInstanceManagerTests
 		Object o2 = new Object();
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
-		final ReferenceManager<Object> mgr = make(expectedRequests);
-		mgr.assign(o1, "abc/8");
-		mgr.assign(o2, "abc/8");
+		final InstanceManager<Object> mgr = make(expectedRequests);
+		mgr.assign(o1, 8);
+		mgr.assign(o2, 8);
+	}
+
+	@Test(expected=NotFoundException.class)
+	public void testNotFoundException()
+	{
+		InstanceManager<Object> mgr = new InstanceManager<Object>(new Func<Object, String>() {
+			@Override
+			public String eval(Object arg) {
+				return "O_O";
+			} });
+
+		mgr.getObject(Pair.of("o_O", 8));
 	}
 
 }

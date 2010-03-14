@@ -94,22 +94,22 @@ public class VisualConnection extends VisualNode implements
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
 	protected void initialise() {
-		addPropertyDeclaration(new PropertyDeclaration("Line width", "getLineWidth", "setLineWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration("Arrow width", "getArrowWidth", "setArrowWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Line width", "getLineWidth", "setLineWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width", "getArrowWidth", "setArrowWidth", double.class));
 
 		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
 		arrowLengths.put("short", 0.2);
 		arrowLengths.put("medium", 0.4);
 		arrowLengths.put("long", 0.8);
 
-		addPropertyDeclaration(new PropertyDeclaration("Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
 
 		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
 
 		hm.put("Polyline", ConnectionType.POLYLINE);
 		hm.put("Bezier", ConnectionType.BEZIER);
 
-		addPropertyDeclaration(new PropertyDeclaration("Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
 
 		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
 
@@ -118,7 +118,7 @@ public class VisualConnection extends VisualNode implements
 		hm2.put("Stretch", ScaleMode.STRETCH);
 		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
 
-		addPropertyDeclaration(new PropertyDeclaration("Scale mode", "getScaleMode", "setScaleMode", ScaleMode.class, hm2));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Scale mode", "getScaleMode", "setScaleMode", ScaleMode.class, hm2));
 
 		componentsTransformObserver = new ComponentsTransformObserver(this);
 

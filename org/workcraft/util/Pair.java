@@ -1,8 +1,8 @@
 package org.workcraft.util;
 
 public class Pair <T1, T2> {
-	private T1 first;
-	private T2 second;
+	final private T1 first;
+	final private T2 second;
 
 	public Pair (T1 first, T2 second) {
 		this.first = first;

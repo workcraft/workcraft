@@ -24,7 +24,9 @@ package org.workcraft.gui.propertyeditor;
 import java.awt.Color;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -75,7 +77,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		model.clearObject();
 	}
 
-	public void setObject(PropertyEditable o) {
+	public void setObject(Properties o) {
 		model.setObject(o);
 
 		cellRenderers = new TableCellRenderer[model.getRowCount()];
@@ -118,8 +120,24 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		}
 	}
 
-	public PropertyEditable getObject() {
+	public Properties getObject() {
 		return model.getObject();
 	}
 
+	@Override
+	public void editingStopped(ChangeEvent e) {
+        TableCellEditor editor = getCellEditor();
+        if (editor != null) {
+        	Object value = editor.getCellEditorValue();
+            try
+            {
+                setValueAt(value, editingRow, editingColumn);
+                removeEditor();
+            }
+            catch(Throwable t)
+            {
+            	JOptionPane.showMessageDialog(null, t.getMessage(), "Cannot change property", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
 }
