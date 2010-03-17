@@ -29,14 +29,15 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 
 import org.workcraft.annotations.Hotkey;
-import org.workcraft.dom.math.MathNode;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-@Hotkey(KeyEvent.VK_P)
+@Hotkey(KeyEvent.VK_V)
+@SVGIcon("images/icons/svg/vertex.svg")
+
 public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;

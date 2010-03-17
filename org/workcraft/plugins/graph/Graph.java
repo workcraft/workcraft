@@ -24,6 +24,7 @@ package org.workcraft.plugins.graph;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidComponentException;
@@ -37,6 +38,12 @@ public class Graph extends AbstractMathModel {
 	public Graph() {
 		super(null);
 	}
+
+
+	public Graph(Container root) {
+		super(root);
+	}
+
 
 	public void validate() throws ModelValidationException {
 	}
@@ -57,15 +64,5 @@ public class Graph extends AbstractMathModel {
 
 	public void validateConnection(Node first, Node second)
 			throws InvalidConnectionException {
-	}
-
-	@Override
-	public Node getNodeByReference(String reference) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	@Override
-	public String getNodeReference(Node node) {
-		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }
