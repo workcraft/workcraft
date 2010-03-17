@@ -34,6 +34,7 @@ import java.util.Collection;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_P)
 public class VisualVertex extends VisualComponent {
@@ -61,16 +62,14 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-	}
+		}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0,0) < size * size;
+		double size = CommonVisualSettings.getSize();
+
+		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
 	}
 
-	@Override
-	public Collection<MathNode> getMathReferences() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
