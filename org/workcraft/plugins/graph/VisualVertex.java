@@ -29,13 +29,15 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 
 import org.workcraft.annotations.Hotkey;
-import org.workcraft.dom.math.MathNode;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
-@Hotkey(KeyEvent.VK_P)
+@Hotkey(KeyEvent.VK_V)
+@SVGIcon("images/icons/svg/vertex.svg")
+
 public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
@@ -61,16 +63,14 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-	}
+		}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0,0) < size * size;
+		double size = CommonVisualSettings.getSize();
+
+		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
 	}
 
-	@Override
-	public Collection<MathNode> getMathReferences() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
