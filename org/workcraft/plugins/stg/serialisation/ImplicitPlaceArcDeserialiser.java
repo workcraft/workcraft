@@ -24,8 +24,8 @@ package org.workcraft.plugins.stg.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.stg.ImplicitPlaceArc;
+import org.workcraft.plugins.stg.STGPlace;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
@@ -34,7 +34,7 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 public class ImplicitPlaceArcDeserialiser implements CustomXMLDeserialiser {
 	@Override
 	public String getClassName() {
-		return ImplicitPlaceArc.class.getName();
+		return VisualImplicitPlaceArc.class.getName();
 	}
 
 	@Override
@@ -42,12 +42,12 @@ public class ImplicitPlaceArcDeserialiser implements CustomXMLDeserialiser {
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver,
 			NodeFinaliser nodeFinaliser) throws DeserialisationException {
-		ImplicitPlaceArc arc = (ImplicitPlaceArc) instance;
+		VisualImplicitPlaceArc arc = (VisualImplicitPlaceArc) instance;
 
 		arc.setImplicitPlaceArcDependencies(
 				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon1")),
 				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon2")),
-				(Place)externalReferenceResolver.getObject(element.getAttribute("refPlace"))
+				(STGPlace)externalReferenceResolver.getObject(element.getAttribute("refPlace"))
 		);
 	}
 
@@ -55,7 +55,7 @@ public class ImplicitPlaceArcDeserialiser implements CustomXMLDeserialiser {
 	public Object createInstance(Element element,
 			ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters) {
-		return new ImplicitPlaceArc();
+		return new VisualImplicitPlaceArc();
 	}
 
 	@Override

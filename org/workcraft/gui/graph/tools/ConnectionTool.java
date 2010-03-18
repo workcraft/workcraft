@@ -37,7 +37,6 @@ import javax.swing.Icon;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -139,11 +138,11 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else if (mouseOverObject != null) {
 				try {
-					VisualConnection vcon = (VisualConnection)e.getModel().connect(first, mouseOverObject);
+					e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
 						first.clearColorisation();
-						first = vcon.getSecond();
+						first = mouseOverObject;
 						first.setColorisation(highlightColor);
 						mouseOverObject = null;
 					} else {

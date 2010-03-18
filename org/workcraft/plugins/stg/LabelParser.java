@@ -15,6 +15,16 @@ public class LabelParser {
 	private static final Pattern signalTransitionPattern2 = Pattern
 		.compile("([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~])(\\/([0-9]+))?");
 
+
+	public static Pair<String, String> parseImplicitPlaceReference(String ref) {
+		String[] parts = ref.replaceAll(" ", "").split(",");
+
+		if (parts.length < 2 || !parts[0].startsWith("<") || !parts[0].endsWith(">"))
+			throw new ArgumentException ("Invalid implicit place reference: " + ref);
+
+		return Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length()-1));
+	}
+
 	public static Triple<String, SignalTransition.Direction, Integer> parseFull(String s) {
 		final Matcher matcher = signalTransitionPattern.matcher(s);
 

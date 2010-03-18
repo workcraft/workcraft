@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.NodeHelper;
 
@@ -85,16 +86,37 @@ public class Hierarchy {
 			return result;
 	}
 
-	public static Node getCommonParent(Node node1, Node node2) {
-		Node [] path1 = getPath(node1);
-		Node [] path2 = getPath(node2);
-		int size = Math.min(path1.length, path2.length);
+	public static Node getCommonParent(Node... nodes) {
+		ArrayList<Node[]> paths = new ArrayList<Node[]>(nodes.length);
+
+		int minPathLength = Integer.MAX_VALUE;
+
+		for (Node node : nodes) {
+			final Node[] path = getPath(node);
+			if (minPathLength > path.length)
+				minPathLength = path.length;
+			paths.add(path);
+		}
+
 		Node result = null;
-		for(int i=0;i<size;i++)
-			if(path1[i]==path2[i])
-				result = path1[i];
+
+		for(int i=0;i<minPathLength;i++) {
+			Node node = paths.get(0)[i];
+
+			boolean good = true;
+
+			for (Node[] path : paths)
+				if (path[i] != node) {
+					good = false;
+					break;
+				}
+
+			if (good)
+				result = node;
 			else
 				break;
+		}
+
 		return result;
 	}
 
@@ -107,6 +129,11 @@ public class Hierarchy {
 			node = node.getParent();
 		}
 		return true;
+	}
+
+	public static Container getNearestContainer (Node... node) {
+		Node parent = getCommonParent(node);
+		return getNearestAncestor (parent, Container.class);
 	}
 
 	@SuppressWarnings({ "unchecked", "serial" })

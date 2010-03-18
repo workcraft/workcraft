@@ -36,7 +36,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.LoadFromXMLException;
 import org.workcraft.exceptions.ModelSaveFailedException;
@@ -61,7 +61,7 @@ public class SaveLoadTests {
 		testMathModelLoadWhileWhile(new FileInputStream("./org/workcraft/testing/plugins/balsa/tests/LoopWhile.work"));
 	}
 
-	void testMathModelLoadWhileWhile(InputStream input) throws LoadFromXMLException, DeserialisationException, IOException, DocumentFormatException, PluginInstantiationException
+	void testMathModelLoadWhileWhile(InputStream input) throws LoadFromXMLException, DeserialisationException, IOException, FormatException, PluginInstantiationException
 	{
 		Framework framework = new Framework();
 		framework.getPluginManager().loadManifest();
@@ -240,7 +240,7 @@ public class SaveLoadTests {
 
 
 	@Test
-	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException, DocumentFormatException, DeserialisationException, PluginInstantiationException
+	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException, FormatException, DeserialisationException, PluginInstantiationException
 	{
 		Framework f = new Framework();
 		f.getPluginManager().loadManifest();

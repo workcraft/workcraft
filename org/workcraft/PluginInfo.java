@@ -27,7 +27,7 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.util.XmlUtil;
 
 
@@ -67,10 +67,10 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
 
 
-	public PluginInfo(Element element) throws DocumentFormatException {
+	public PluginInfo(Element element) throws FormatException {
 		className = XmlUtil.readStringAttr(element, "class");
 		if(className==null || className.isEmpty())
-			throw new DocumentFormatException();
+			throw new FormatException();
 
 		displayName = XmlUtil.readStringAttr(element, "displayName");
 		if (displayName.isEmpty())

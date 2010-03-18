@@ -34,10 +34,6 @@ public class VisualGraph extends AbstractVisualModel {
 	}
 
 	@Override
-	public void validate() throws ModelValidationException {
-	}
-
-	@Override
 	public void validateConnection(Node first, Node second)
 			throws InvalidConnectionException {
 	}
@@ -49,6 +45,12 @@ public class VisualGraph extends AbstractVisualModel {
 
 	@Override
 	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public void connect(Node first, Node second)
+			throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 

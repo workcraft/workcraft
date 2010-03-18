@@ -23,6 +23,7 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.Transition;
@@ -34,13 +35,26 @@ public class SignalTransition extends Transition {
 	public enum Type {
 		INPUT,
 		OUTPUT,
-		INTERNAL
+		INTERNAL,
+		DUMMY
 	}
 
 	public enum Direction {
 		PLUS,
 		MINUS,
 		TOGGLE;
+
+		public static Direction fromString(String s) {
+			if (s.equals("+"))
+				return PLUS;
+			else if (s.equals("-"))
+				return MINUS;
+			else if (s.equals("~"))
+				return TOGGLE;
+
+			throw new ArgumentException ("Unexpected string: " + s);
+		}
+
 
 		@Override public String toString() {
 			switch(this)

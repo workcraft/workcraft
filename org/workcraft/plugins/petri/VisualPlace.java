@@ -106,16 +106,6 @@ public class VisualPlace extends VisualComponent {
 		getPlace().setTokens(tokens);
 	}
 
-	@NoAutoSerialisation
-	public int getCapacity() {
-		return getPlace().getCapacity();
-	}
-
-	@NoAutoSerialisation
-	public void setCapacity(int c) {
-		getPlace().setCapacity(c);
-	}
-
 	public VisualPlace(Place place) {
 		super(place);
 		addPropertyDeclarations();
@@ -123,7 +113,6 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
 
 	/*	addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {

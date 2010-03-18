@@ -24,18 +24,23 @@ package org.workcraft.plugins.petri;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Petri Net")
 @DefaultCreateButtons ( { Place.class, Transition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
 public class VisualPetriNet extends AbstractVisualModel {
+	private PetriNet net;
+
 	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {
 		this (model, null);
 	}
@@ -49,17 +54,28 @@ public class VisualPetriNet extends AbstractVisualModel {
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
+
+		this.net = model;
 	}
 
-	public void validate() throws ModelValidationException {
-		getMathModel().validate();
-	}
-
-	public void validateConnection(Node first, Node second)
-	throws InvalidConnectionException {
+	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first instanceof VisualPlace && second instanceof VisualPlace)
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		if (first instanceof VisualTransition && second instanceof VisualTransition)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
+	}
+
+	@Override
+	public void connect(Node first, Node second) throws InvalidConnectionException {
+		validateConnection(first, second);
+
+		VisualComponent c1 = (VisualComponent) first;
+		VisualComponent c2 = (VisualComponent) second;
+
+		MathConnection con = (MathConnection) net.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+
+		VisualConnection ret = new VisualConnection(con, c1, c2);
+
+		Hierarchy.getNearestContainer(c1, c2).add(ret);
 	}
 }

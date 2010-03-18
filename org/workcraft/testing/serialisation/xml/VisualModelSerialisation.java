@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.workcraft.PluginProvider;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -46,7 +46,7 @@ public class VisualModelSerialisation {
 	@Test
 	public void SimpleSaveLoad() throws InvalidConnectionException,
 			SerialisationException, PluginInstantiationException, IOException,
-			DocumentFormatException, DeserialisationException, VisualModelInstantiationException {
+			FormatException, DeserialisationException, VisualModelInstantiationException {
 
 		STG stg = XMLSerialisationTestingUtils.createTestSTG1();
 		VisualSTG visualstg = new VisualSTG(stg);

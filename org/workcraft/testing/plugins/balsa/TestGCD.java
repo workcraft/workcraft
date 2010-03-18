@@ -48,7 +48,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -89,7 +89,7 @@ public class TestGCD {
 	Queue<Chunk> queue = new ArrayBlockingQueue<Chunk>(50000);
 
 	//@Test
-	public void SynthesizeAll() throws IOException, DocumentFormatException, PluginInstantiationException, InterruptedException
+	public void SynthesizeAll() throws IOException, FormatException, PluginInstantiationException, InterruptedException
 	{
 		init();
 		Collection<Chunk> allChunks = getAllChunks();
@@ -279,7 +279,7 @@ public class TestGCD {
 	}
 
 
-	public void printTable() throws NumberFormatException, IOException, DocumentFormatException, PluginInstantiationException
+	public void printTable() throws NumberFormatException, IOException, FormatException, PluginInstantiationException
 	{
 		System.out.println("");
 		System.out.println("Separate components: ");
@@ -297,7 +297,7 @@ public class TestGCD {
 	}
 
 	@Test
-	public void synthesiseSample() throws IOException, DocumentFormatException, PluginInstantiationException
+	public void synthesiseSample() throws IOException, FormatException, PluginInstantiationException
 	{
 		init();
 
@@ -331,7 +331,7 @@ public class TestGCD {
 	}
 
 	//@Test
-	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, DocumentFormatException, PluginInstantiationException
+	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, FormatException, PluginInstantiationException
 	{
 		init();
 
@@ -369,7 +369,7 @@ public class TestGCD {
 	BreezeComponent bfAmB;
 	BreezeComponent bfBmA;
 
-	private void init() throws IOException, DocumentFormatException,
+	private void init() throws IOException, FormatException,
 			PluginInstantiationException {
 		Framework f = new Framework();
 		f.getPluginManager().loadManifest();
@@ -695,7 +695,7 @@ public class TestGCD {
 		}
 	}
 
-	private Node getHc(BreezeComponent comp, String hc) {
+	private HandshakeComponent getHc(BreezeComponent comp, String hc) {
 		HandshakeComponent hcc = comp.getHandshakeComponentByName(hc);
 		assertTrue("Handshake "+ hc +" not found in component " + comp.getUnderlyingComponent().getClass().toString(), hcc != null);
 

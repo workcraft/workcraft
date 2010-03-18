@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.workcraft.PluginProvider;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -45,7 +45,7 @@ public class STGSerialisationTests {
 		@Test
 		public void SimpleVisualSaveLoadWithImplicitArcs() throws InvalidConnectionException,
 				SerialisationException, PluginInstantiationException, IOException,
-				DocumentFormatException, DeserialisationException, VisualModelInstantiationException {
+				FormatException, DeserialisationException, VisualModelInstantiationException {
 
 			VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 

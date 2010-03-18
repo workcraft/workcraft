@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -73,12 +73,12 @@ public class MathModelSerialisation {
 	}
 
 	@Test
-	public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, DocumentFormatException, DeserialisationException {
+	public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
 		runTest (XMLSerialisationTestingUtils.createTestSTG1());
 	}
 
 	@Test
-	public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, DocumentFormatException, DeserialisationException {
+	public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
 		runTest (XMLSerialisationTestingUtils.createTestSTG2());
 	}
 

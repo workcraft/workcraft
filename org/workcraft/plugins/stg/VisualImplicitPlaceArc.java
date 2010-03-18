@@ -39,8 +39,8 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class ImplicitPlaceArc extends VisualConnection {
-	private Place implicitPlace;
+public class VisualImplicitPlaceArc extends VisualConnection {
+	private STGPlace implicitPlace;
 	private MathConnection refCon1;
 	private MathConnection refCon2;
 
@@ -70,12 +70,12 @@ public class ImplicitPlaceArc extends VisualConnection {
 		});*/
 	}
 
-	public ImplicitPlaceArc () {
+	public VisualImplicitPlaceArc () {
 		super();
 		addPropertyDeclarations();
 	}
 
-	public void setImplicitPlaceArcDependencies (MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
+	public void setImplicitPlaceArcDependencies (MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;
@@ -91,7 +91,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 			});
 	}
 
-	public ImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, Place implicitPlace) {
+	public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
 		super(null, first, second);
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;
@@ -135,7 +135,7 @@ public class ImplicitPlaceArc extends VisualConnection {
 	}
 
 	@NoAutoSerialisation
-	public Place getImplicitPlace() {
+	public STGPlace getImplicitPlace() {
 		return implicitPlace;
 	}
 

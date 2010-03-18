@@ -57,13 +57,6 @@ public class SDFS extends AbstractMathModel {
 	}
 
 	@Override
-	public void validateConnection(Node first, Node second)
-			throws InvalidConnectionException {
-		if (first == second)
-			throw new InvalidConnectionException ("Self-loops are not allowed");
-	}
-
-	@Override
 	public Node getNodeByReference(String reference) {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}

@@ -40,10 +40,6 @@ public class Circuit extends AbstractMathModel {
 	public void validate() throws ModelValidationException {
 	}
 
-	@Override
-	public void validateConnection(Node first, Node second)
-			throws InvalidConnectionException {
-	}
 
 	@Override
 	public Node getNodeByReference(String reference) {

@@ -23,7 +23,7 @@ package org.workcraft.plugins.stg.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.stg.ImplicitPlaceArc;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
@@ -31,7 +31,7 @@ import org.workcraft.serialisation.xml.NodeSerialiser;
 public class ImplicitArcSerialiser implements CustomXMLSerialiser {
 	@Override
 	public String getClassName() {
-		return ImplicitPlaceArc.class.getName();
+		return VisualImplicitPlaceArc.class.getName();
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class ImplicitArcSerialiser implements CustomXMLSerialiser {
 			ReferenceProducer internalReferences,
 			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
 			throws SerialisationException {
-		ImplicitPlaceArc arc = (ImplicitPlaceArc) object;
+		VisualImplicitPlaceArc arc = (VisualImplicitPlaceArc) object;
 
 		element.setAttribute("first", internalReferences.getReference(arc.getFirst()));
 		element.setAttribute("second", internalReferences.getReference(arc.getSecond()));

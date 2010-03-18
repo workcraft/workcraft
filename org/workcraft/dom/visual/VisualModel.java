@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.observation.ObservableState;
 
 public interface VisualModel extends Model, ObservableState {
@@ -37,6 +38,9 @@ public interface VisualModel extends Model, ObservableState {
 	public Model getMathModel();
 
 	public Collection<Node> getSelection();
+
+	public void connect(Node first, Node second) throws InvalidConnectionException;
+	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
 
 	public void selectAll();
 	public void selectNone();

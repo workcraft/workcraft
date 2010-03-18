@@ -1,0 +1,269 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  LOOKAHEAD = 2;
+  STATIC = false;
+}
+
+PARSER_BEGIN(DotGParser)
+package org.workcraft.plugins.stg.javacc;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.*;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Triple;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.NotFoundException;
+
+public class DotGParser {
+	private Map<String, Type> signals;
+	private Map<Pair<Node, Node>, STGPlace> implicitPlaces;
+	private STG stg;
+
+	private void init() {
+		signals = new HashMap<String, Type>();
+		stg = new STG();
+		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
+	}
+	
+	private Node getOrCreate (String name) {
+		try {
+			return stg.getNodeByReference(name);
+		} catch (NotFoundException e) {
+			Type t = signals.get (name);
+			if (t==null)
+				return stg.createPlace(name);
+			else if (t.equals(Type.DUMMY))
+				return stg.createTransition(name);
+			else
+				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+		}
+	}
+	
+	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
+		String reference = stg.makeReference(ref);
+		String name = ref.getFirst(); 
+		try {
+			return stg.getNodeByReference (reference);
+		} catch (NotFoundException e) {
+		
+			SignalTransition st = stg.createSignalTransition();
+			stg.setName (st, reference);
+			Type t = signals.get(name);
+			if (t==null)
+				throw new FormatException ("Undeclared signal encountered: " + name + 
+				" ("+reference+"). Possibly malformed header.");
+			st.setSignalType(t);
+			return st;
+		
+		}
+	}
+	
+	private void createArc (Node first, Node second) {
+		try {
+			ConnectionResult result = stg.connect(first, second);
+			STGPlace implicitPlace = result.getImplicitPlace();
+			
+			if (implicitPlace != null)
+				implicitPlaces.put (Pair.of (first, second), implicitPlace);
+			 
+		} catch (InvalidConnectionException e)
+		{
+			throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
+			 " to " + stg.getNodeReference(second) + ".", e);
+		}
+	}
+	
+	private void setSignalsType (List<String> list, Type type) {
+		for (String signal : list) {
+			if (signals.containsKey(signal))
+			{
+				Type prevType = signals.get(signal);
+				if (prevType != null && prevType.equals(type))
+					throw new FormatException (type + " signal \"" + signal + "\" was already listed as " + prevType);
+			}
+			else
+				signals.put(signal, type);
+		}
+	}
+}
+PARSER_END(DotGParser)
+
+SKIP :
+{
+ 	" "
+|	"\t"
+|	<"#" (~["\r","\n"])* (["\r", "\n"])*>
+}
+
+TOKEN :
+{
+	<LINEBREAK: (["\r", "\n"])+>
+  	| <INPUT_HEADER: ".inputs">
+  	| <OUTPUT_HEADER: ".outputs">
+  	| <INTERNAL_HEADER: ".internal">
+  	| <DUMMY_HEADER: ".dummy">
+  	| <GRAPH: ".graph">
+  	| <MARKING: ".marking">
+  	| <CAPACITY: ".capacity">
+	| <UNSUPPORTED_HEADER: "." <NAME>>  	
+  	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
+  	| <DIRECTION: ["+","-","~"]>
+  	| <INTEGER: (["0"-"9"])+>
+  	| "{" | "}" | "<" | ">" | "," | "/" | "="
+	| <ANY : ~[]>
+}
+
+STG parse() : { }
+{
+	{ init(); }
+	 ( header() <LINEBREAK> )*
+	 graph()
+	 ( footer() <LINEBREAK> )*
+	 <EOF>
+	 {return stg;}
+}
+
+void header() : { List<String> list; }
+{
+	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
+	|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
+	|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
+	|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
+	|<UNSUPPORTED_HEADER> (<ANY>)*
+}
+
+List<String> signalList() : { Token t; List<String> list = new LinkedList<String>(); }
+{
+	( t = <NAME> { list.add (t.image); } ) * 
+	{return list;}
+}
+
+void footer() : { }
+{
+	<MARKING> marking()
+	|<CAPACITY> capacity()
+	|<UNSUPPORTED_HEADER> (<ANY>)*
+}
+
+void capacity() : { }
+{
+	(capacityEntry()) *
+}
+
+void capacityEntry() : { STGPlace p; int value; }
+{
+	 ( 
+	 	(p = implicitPlaceReference() | p =  explicitPlaceReference())
+	        value = assignment()
+	 )
+	 {
+	 	p.setCapacity(value);
+	 }
+}
+
+void marking() : { }
+{
+	"{" (markingEntry()) * "}"
+}
+
+int assignment() : { Token t; }
+{
+	"=" t = <INTEGER> { return Integer.parseInt(t.image); }
+}
+
+void markingEntry() : { STGPlace p; int value = 1; }
+{
+	 ( 
+	 	(p = implicitPlaceReference() | p =  explicitPlaceReference())
+	        ( value = assignment() ) ?
+	 )
+	 {
+	 	p.setTokens(value);
+	 }
+}
+
+STGPlace implicitPlaceReference() : 
+{ 
+	Triple<String, Direction, Integer> r1, r2;
+	Token t;
+	Integer tokens = null;
+}
+{
+	("<" r1 = signalTransition() "," r2 = signalTransition() ">")
+	{
+		Node st1 = stg.getNodeByReference(stg.makeReference(r1));
+		Node st2 = stg.getNodeByReference(stg.makeReference(r2));
+		
+		return implicitPlaces.get(Pair.of(st1,st2));
+	}
+}
+
+STGPlace explicitPlaceReference() : 
+{
+	Token t;
+	String name;
+	Integer tokens = null;
+}
+{
+	( t = <NAME> { name = t.image; } )
+	{
+		return (STGPlace) stg.getNodeByReference (name);
+	}
+}
+
+void graph() : { }
+{
+	<GRAPH> <LINEBREAK>
+	( graphLine() <LINEBREAK> )+
+}
+
+Triple<String, Direction, Integer> signalTransition() : 
+{
+	Token t;
+	String name;
+	Direction direction;
+	Integer instance = null;
+}
+{
+	t = <NAME> { name = t.image; }
+	t = <DIRECTION> { direction = Direction.fromString(t.image);}
+	(
+		( "/" t = <INTEGER> ) { instance = Integer.parseInt(t.image); } 
+	)? 
+	
+	{ return Triple.of (name, direction, instance); }	
+	
+}
+
+void graphLine() : 
+{
+	Token t;
+	Triple<String, Direction, Integer> r;
+	Node from, to;
+}
+{
+	( 
+		r = signalTransition() { from = getOrCreate(r); }
+		| t = <NAME> { from = getOrCreate(t.image); }
+	)
+
+	(
+		(
+		r = signalTransition() { to = getOrCreate(r); }
+		| t = <NAME> { to = getOrCreate(t.image); }
+		
+		) { createArc(from, to); } 
+	)* 	
+}

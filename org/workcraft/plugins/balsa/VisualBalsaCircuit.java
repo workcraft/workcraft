@@ -32,8 +32,8 @@ import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.util.Hierarchy;
 
 @CustomTools(VisualBalsaTools.class)
 public final class VisualBalsaCircuit extends AbstractVisualModel {
@@ -66,12 +66,16 @@ public final class VisualBalsaCircuit extends AbstractVisualModel {
 	}
 
 	@Override
-	public void validate() throws ModelValidationException {
-	}
-
-	@Override
 	public void validateConnection(Node first, Node second)
 			throws InvalidConnectionException {
+
+		if ( ! (first instanceof VisualHandshake && second instanceof VisualHandshake) )
+			throw new InvalidConnectionException("Only handshakes can be connected");
+
+		((BalsaCircuit)getMathModel()).validateConnection( ((VisualHandshake)first).getHandshakeComponent(),
+					((VisualHandshake)second).getHandshakeComponent() );
+
+
 	}
 
 	@Override
@@ -82,5 +86,16 @@ public final class VisualBalsaCircuit extends AbstractVisualModel {
 	@Override
 	public String getNodeReference(Node node) {
 		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public void connect(Node first, Node second)
+			throws InvalidConnectionException {
+		final VisualHandshake firstHandshake = (VisualHandshake)first;
+		final VisualHandshake secondHandshake = (VisualHandshake)second;
+		final MathConnection connect = ((BalsaCircuit)getMathModel()).connect( firstHandshake.getHandshakeComponent(),
+				secondHandshake.getHandshakeComponent() );
+
+		Hierarchy.getNearestContainer(first, second).add(new VisualConnection(connect, firstHandshake, secondHandshake));
 	}
 }

@@ -40,7 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.dom.Model;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
@@ -107,11 +107,11 @@ public class PluginManager implements PluginProvider {
 		System.out.println(""+plugins.size()+" plugin(s) total");
 	}
 
-	public void loadManifest() throws IOException, DocumentFormatException, PluginInstantiationException {
+	public void loadManifest() throws IOException, FormatException, PluginInstantiationException {
 		loadManifest(DEFAULT_MANIFEST);
 	}
 
-	public void loadManifest(String path) throws IOException, DocumentFormatException, PluginInstantiationException {
+	public void loadManifest(String path) throws IOException, FormatException, PluginInstantiationException {
 		File f = new File(path);
 		if(!f.exists()) {
 			System.out.println("Plugin manifest \"" + f.getPath() + "\" does not exist.");
@@ -127,7 +127,7 @@ public class PluginManager implements PluginProvider {
 			db = dbf.newDocumentBuilder();
 			doc = db.parse(f);
 		} catch(ParserConfigurationException e) {
-			throw new DocumentFormatException();
+			throw new FormatException();
 		} catch(IOException e) {
 			throw new IOException(e.getMessage());
 		} catch(SAXException e) {
@@ -136,7 +136,7 @@ public class PluginManager implements PluginProvider {
 
 		Element xmlroot = doc.getDocumentElement();
 		if (!xmlroot.getNodeName().equals("workcraft-plugins"))
-			throw(new DocumentFormatException());
+			throw(new FormatException());
 
 		NodeList nl = xmlroot.getElementsByTagName("plugin");
 		plugins.clear();

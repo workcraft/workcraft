@@ -37,7 +37,6 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -108,19 +107,6 @@ public final class BalsaCircuit extends AbstractMathModel
 		component.setHandshakes(handshakes);
 	}
 
-	@Override
-	public void validate() throws ModelValidationException {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void validateConnection(Node first, Node second)
-		throws InvalidConnectionException {
-		if(!(first instanceof HandshakeComponent && second instanceof HandshakeComponent))
-			throw new InvalidConnectionException("Only handshakes can be connected");
-		validateConnection((HandshakeComponent)first, (HandshakeComponent)second);
-	}
-
 	public void validateConnection(HandshakeComponent first, HandshakeComponent second)
 			throws InvalidConnectionException {
 
@@ -161,6 +147,16 @@ public final class BalsaCircuit extends AbstractMathModel
 				if(((FullDataHandshake)h1).getValuesCount() != ((FullDataHandshake)h2).getValuesCount())
 					throw new InvalidConnectionException("Cannot connect data handshakes with different value counts");
 		}
+	}
+
+	public MathConnection connect (HandshakeComponent first, HandshakeComponent second) throws InvalidConnectionException {
+		validateConnection(first, second);
+
+		MathConnection con = new MathConnection(first, second);
+
+		Hierarchy.getNearestContainer(first, second).add(con);
+
+		return con;
 	}
 
 	private String getHandshakesDescription(HandshakeComponent first, HandshakeComponent second) {

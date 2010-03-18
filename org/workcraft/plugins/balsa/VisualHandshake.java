@@ -43,6 +43,10 @@ public class VisualHandshake extends VisualComponent {
 		this.handshake = handshake.getHandshake();
 	}
 
+	public HandshakeComponent getHandshakeComponent() {
+		return (HandshakeComponent)getReferencedComponent();
+	}
+
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return new Rectangle2D.Double(-0.5, -0.5, 1, 1);
 	}

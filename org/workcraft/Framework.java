@@ -54,7 +54,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.DocumentFormatException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -695,7 +695,7 @@ public class Framework {
 			pluginManager.loadManifest();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (DocumentFormatException e) {
+		} catch (FormatException e) {
 			e.printStackTrace();
 		} catch (PluginInstantiationException e) {
 			e.printStackTrace();

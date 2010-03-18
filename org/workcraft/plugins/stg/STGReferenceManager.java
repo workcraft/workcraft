@@ -13,7 +13,6 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
@@ -39,7 +38,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		this.uniqueNameManager = new UniqueNameManager<Node>(new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
-				if (arg instanceof Place)
+				if (arg instanceof STGPlace)
 					return "p";
 				if (arg instanceof Transition)
 					return "dummy";
@@ -76,8 +75,12 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 	private void setExistingReference(Node n) {
 		final String reference = existingReferences.getReference(n);
-		if (reference != null)
-			setName (n, reference);
+		if (reference != null) {
+			if (n instanceof STGPlace) {
+				if (! ((STGPlace) n).isImplicit())
+					setName (n, reference);
+			}
+		}
 	}
 
 	@Override
@@ -93,7 +96,11 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	public String getNodeReference(Node node) {
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
-			return st.getSignalName() + st.getDirection() + "/" + instanceManager.getInstance(st).getSecond();
+			final Integer instance = instanceManager.getInstance(st).getSecond();
+			if (instance == 0)
+				return st.getSignalName() + st.getDirection();
+			else
+				return st.getSignalName() + st.getDirection() + "/" + instance;
 		} else
 			return uniqueNameManager.getName(node);
 	}

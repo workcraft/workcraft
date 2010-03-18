@@ -55,25 +55,6 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public void validate() throws ModelValidationException {
-			return;
-		}
-
-		@Override
-		public Connection connect(Node first, Node second)
-				throws InvalidConnectionException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void validateConnection(Node first, Node second)
-				throws InvalidConnectionException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public Node getNodeByReference(String reference) {
 			return names.getNodeByReference(reference);
 		}
@@ -93,12 +74,6 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public void validate() throws ModelValidationException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public void validateConnection(Node first, Node second)
 				throws InvalidConnectionException {
 			// TODO Auto-generated method stub
@@ -112,6 +87,12 @@ public class VisualModelTests {
 
 		@Override
 		public String getNodeReference(Node node) {
+			throw new org.workcraft.exceptions.NotImplementedException();
+		}
+
+		@Override
+		public void connect(Node first, Node second)
+				throws InvalidConnectionException {
 			throw new org.workcraft.exceptions.NotImplementedException();
 		}
 

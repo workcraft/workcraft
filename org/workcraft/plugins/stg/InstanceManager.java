@@ -81,11 +81,12 @@ public class InstanceManager<T>
 		final Pair<String, Integer> assigned = instances.getValue(t);
 
 		if (reference.getSecond() == null) {
-			if (assigned.getFirst().equals(reference.getFirst())) // already registered with same name
-				return;
-
-			// release old instance
-			remove (t);
+			if (assigned != null) {
+				if (assigned.getFirst().equals(reference.getFirst())) // already registered with same name
+					return;
+				// release old instance
+				remove (t);
+			}
 
 			instances.put(t, Pair.of(reference.getFirst(), getGenerator(reference.getFirst()).getNextID()));
 		}

@@ -43,7 +43,6 @@ import org.w3c.dom.Element;
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.MouseListeners;
 import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
@@ -54,7 +53,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.exceptions.PasteException;
@@ -350,27 +348,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				result.add((VisualNode)node);
 		}
 		return result;
-	}
-
-	@Override
-	public Connection connect(Node first, Node second) throws InvalidConnectionException {
-		validateConnection(first, second);
-
-		VisualComponent c1 = (VisualComponent) first;
-		VisualComponent c2 = (VisualComponent) second;
-
-		MathConnection con = (MathConnection) mathModel.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-
-		VisualConnection ret = new VisualConnection(con, c1, c2);
-
-		Container group =
-			Hierarchy.getNearestAncestor(
-					Hierarchy.getCommonParent(first, second),
-					Container.class);
-
-		group.add(ret );
-
-		return ret;
 	}
 
 	public VisualGroup getCurrentLevel() {

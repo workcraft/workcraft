@@ -29,8 +29,6 @@ import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
 
 /**
@@ -38,7 +36,7 @@ import org.workcraft.gui.propertyeditor.Properties;
  * @author Ivan Poliakov
  *
  */
-public abstract class AbstractModel implements Plugin, Model, NodeContext {
+public abstract class AbstractModel implements Plugin, Model {
 	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private ReferenceManager referenceManager = new DefaultReferenceManager();
 
@@ -86,8 +84,6 @@ public abstract class AbstractModel implements Plugin, Model, NodeContext {
 		}
 	}
 
-	public abstract Connection connect(Node first, Node second) throws InvalidConnectionException;
-
 	public String getDisplayName() {
 		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
 		if (name == null)
@@ -103,8 +99,6 @@ public abstract class AbstractModel implements Plugin, Model, NodeContext {
 	final public void setTitle(String title) {
 		this.title = title;
 	}
-
-	abstract public void validate() throws ModelValidationException;
 
 	public final Container getRoot() {
 		return root;

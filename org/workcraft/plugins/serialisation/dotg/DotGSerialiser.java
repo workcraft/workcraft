@@ -23,8 +23,10 @@ package org.workcraft.plugins.serialisation.dotg;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -33,11 +35,12 @@ import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.STGModel;
-import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.STGPlace;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -69,12 +72,37 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		out.print("\n");
 	}
 
+	private Iterable<Node> sortNodes (Collection<? extends Node> nodes, final Model model) {
+		ArrayList<Node> list = new ArrayList<Node>(nodes);
+
+		Collections.sort(list, new Comparator<Node>() {
+			public int compare(Node o1, Node o2) {
+				return model.getNodeReference(o1).compareTo(model.getNodeReference(o2));
+			}
+		});
+
+		return list;
+	}
+
 	private void writeGraphEntry(PrintWriter out, Model model, Node node) {
+		if (node instanceof STGPlace)
+			if (((STGPlace)node).isImplicit())
+				return;
+
 		out.write(model.getNodeReference(node));
 
-		for (Node n : model.getPostset(node)) {
-			out.write(" ");
-			out.write(model.getNodeReference(n));
+		for (Node n : sortNodes (model.getPostset(node), model)  ) {
+			if (n instanceof STGPlace) {
+				if (((STGPlace)n).isImplicit()) {
+					Collection<Node> postset = model.getPostset(n);
+					if (postset.size() > 1)
+						throw new FormatException("Implicit place cannot have more than one node in postset");
+					out.write(" " + model.getNodeReference(postset.iterator().next()));
+				} else
+					out.write(" " + model.getNodeReference(n));
+			} else {
+				out.write(" " + model.getNodeReference(n));
+			}
 		}
 
 		out.write("\n");
@@ -108,36 +136,70 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 
 		out.print(".graph\n");
 
-		for (SignalTransition t : stg.getSignalTransitions())
-			writeGraphEntry (out, stg, t);
+		//out.println("# Signal transitions");
+		for (Node n : sortNodes (stg.getSignalTransitions(), stg))
+			writeGraphEntry (out, stg, n);
+		//out.println();
 
-		for (Transition t : stg.getDummies())
-			writeGraphEntry (out, stg, t);
+		//out.print("# Dummy transitions");
+		for (Node n : sortNodes (stg.getDummies(), stg))
+			writeGraphEntry (out, stg, n);
+		//out.println();
 
-		for (Place p : stg.getPlaces())
-			writeGraphEntry (out, stg, p);
+		//out.print("# Places")
+		for (Node n : sortNodes (stg.getPlaces(), stg))
+			writeGraphEntry (out, stg, n);
+		//out.println();
 
 		writeMarking(stg, stg.getPlaces(), out);
 	}
 
 	private void writeMarking(Model model, Collection<Place> places, PrintWriter out) {
-		out.print(".marking {");
+		ArrayList<String> markingEntries = new ArrayList<String>();
 
 		for (Place p: places) {
 			final int tokens = p.getTokens();
+			final String reference;
+
+			if (p instanceof STGPlace) {
+				if ( ((STGPlace)p).isImplicit() ) {
+					reference = "<" + model.getNodeReference(model.getPreset(p).iterator().next()) + "," +
+										model.getNodeReference(model.getPostset(p).iterator().next()) + ">";
+				} else
+					reference = model.getNodeReference(p);
+			} else {
+				reference = model.getNodeReference(p);
+			}
+
 			if (tokens == 1)
-				out.print(" " + model.getNodeReference(p));
+				markingEntries.add(reference);
 			else if (tokens > 1)
-				out.print(" " + model.getNodeReference(p) + "=" + tokens);
+				markingEntries.add(reference + "=" + tokens);
 		}
 
-		out.print (" }\n");
+		Collections.sort(markingEntries);
+
+		out.print(".marking {");
+
+		boolean first = true;
+
+		for (String m : markingEntries) {
+			if (!first) {
+				out.print (" ");
+			} else
+				first = false;
+
+			out.print (m);
+		}
+
+		out.print ("}\n");
 
 		StringBuilder capacity = new StringBuilder();
 
 		for (Place p : places) {
-			if (p.getCapacity() != 1)
-				capacity.append(" " + model.getNodeReference(p) + "=" + p.getCapacity());
+			if (p instanceof STGPlace)
+				if (((STGPlace)p).getCapacity() != 1)
+				capacity.append(" " + model.getNodeReference(p) + "=" + ((STGPlace)p).getCapacity());
 		}
 
 		if (capacity.length() > 0)

@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.stg;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,16 +31,23 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
+import org.workcraft.util.SetUtils;
+import org.workcraft.util.Triple;
 
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
 @DisplayName("Signal Transition Graph")
@@ -73,13 +81,23 @@ public class STG extends AbstractMathModel implements STGModel {
 		return createSignalTransition(null);
 	}
 
-	final public Place createPlace(String name) {
-		Place newPlace = new Place();
+	final public STGPlace createPlace(String name) {
+		return createPlace (name, false);
+	}
+
+	final public STGPlace createPlace(String name, boolean markAsImplicit) {
+		STGPlace newPlace = new STGPlace();
+
+		newPlace.setImplicit(markAsImplicit);
+
 		if (name!=null)
 			setName(newPlace, name);
+
 		getRoot().add(newPlace);
+
 		return newPlace;
 	}
+
 
 	final public Transition createTransition(String name) {
 		Transition newTransition = new Transition();
@@ -161,6 +179,12 @@ public class STG extends AbstractMathModel implements STGModel {
 		return referenceManager.getInstanceNumber(st);
 	}
 
+	public String makeReference (Triple<String, Direction, Integer> label) {
+		String name = label.getFirst();
+		Integer instance = label.getThird();
+		return name+label.getSecond()+"/"+((instance==null)?0:instance);
+	}
+
 	public String getName(Node node) {
 		return referenceManager.getName(node);
 	}
@@ -171,7 +195,11 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		Properties.Mix result = new Properties.Mix(new NamePropertyDescriptor(this, node));
+		Properties.Mix result = new Properties.Mix();
+		if (node instanceof STGPlace) {
+			if (!((STGPlace) node).isImplicit())
+				result.add (new NamePropertyDescriptor(this, node));
+		}
 		if (node instanceof SignalTransition)
 			result.add(new InstancePropertyDescriptor(this, (SignalTransition)node));
 		return result;
@@ -181,17 +209,66 @@ public class STG extends AbstractMathModel implements STGModel {
 		return referenceManager.getSignalTransitions(signalName);
 	}
 
-	@Override
-	public void validateConnection(Node first, Node second)
-			throws InvalidConnectionException {
-		if (first instanceof Place && second instanceof Place)
+	public ConnectionResult connect(Node first, Node second) throws InvalidConnectionException {
+		if (first instanceof Transition && second instanceof Transition) {
+			STGPlace p = new STGPlace();
+			p.setImplicit(true);
+
+			MathConnection con1 = new MathConnection ( (Transition) first, p);
+			MathConnection con2 = new MathConnection ( p, (Transition) second);
+
+			Hierarchy.getNearestContainer(first, second).add( Arrays.asList(new Node[] { p, con1, con2}) );
+
+			return new ComplexResult(p, con1, con2);
+		} else if (first instanceof Place && second instanceof Place)
 			throw new InvalidConnectionException ("Connections between places are not valid");
-		if (first instanceof Transition && second instanceof Transition)
-			throw new InvalidConnectionException ("Connections between transitions are not valid");
+		else {
+			MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
+			Hierarchy.getNearestContainer(first, second).add(con);
+			return new SimpleResult(con);
+		}
 	}
 
 	@Override
-	public void validate() throws ModelValidationException {
+	public String getNodeReference(Node node) {
+		if(node instanceof STGPlace)
+		{
+			if(((STGPlace) node).isImplicit()) {
+				Set<Node> preset = getPreset(node);
+				Set<Node> postset = getPostset(node);
 
+				if (!(preset.size()==1 && postset.size()==1))
+					throw new RuntimeException ("An implicit place cannot have more that one transition in its preset or postset.");
+
+				return "<"+referenceManager.getNodeReference(preset.iterator().next())
+							+ "," + referenceManager.getNodeReference(postset.iterator().next()) + ">";
+			} else
+				return referenceManager.getNodeReference(node);
+		} else
+			return referenceManager.getNodeReference(node);
+	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		try {
+			Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+
+			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
+			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
+
+			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
+
+			for (Node node : implicitPlaceCandidates) {
+				if (node instanceof STGPlace) {
+					if (((STGPlace) node).isImplicit())
+						return node;
+				}
+			}
+
+			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
+					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
+		} catch (ArgumentException e) {
+			return referenceManager.getNodeByReference(reference);
+		}
 	}
 }

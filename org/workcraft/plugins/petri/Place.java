@@ -28,17 +28,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass("org.workcraft.plugins.petri.VisualPlace")
 public class Place extends MathNode {
 	protected int tokens = 0;
-	protected int capacity = 1;
-
-	public int getCapacity() {
-		return capacity;
-	}
-
-	public void setCapacity(int c) {
-		this.capacity = c;
-
-		sendNotification ( new PropertyChangedEvent (this, "capacity"));
-	}
 
 	public int getTokens() {
 		return tokens;
