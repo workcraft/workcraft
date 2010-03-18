@@ -20,10 +20,10 @@
 */
 package org.workcraft.parsers.breeze;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface Netlist<Port, Comp extends Block<Port>, Conn extends Connection<Port>> extends Block<Port>
 {
-	public List<Comp> getBlocks();
-	public List<Conn> getConnections();
+	public Collection<? extends Comp> getBlocks();
+	public Collection<? extends Conn> getConnections();
 }

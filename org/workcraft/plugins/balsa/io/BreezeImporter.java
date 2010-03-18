@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
 import org.workcraft.parsers.breeze.BreezeLibrary;
@@ -33,8 +32,21 @@ import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 
-public class BreezeImporter implements Importer {
+public class BreezeImporter implements Importer
+{
+	public BreezeImporter()
+	{
+		balsaHome = balsaHomeStatic;
+	}
+
+	public BreezeImporter(String balsaHome) {
+		this.balsaHome = balsaHome;
+	}
+
 	private static final String ABSPATH = "/share/tech/common/components";
+	private String balsaHome;
+
+	private static final String balsaHomeStatic = System.getenv("BALSA_HOME");
 
 	@Override
 	public boolean accept(File file) {
@@ -46,15 +58,18 @@ public class BreezeImporter implements Importer {
 		return "Breeze handshake circuit (.breeze)";
 	}
 
+	public void setBalsaHome(String path)
+	{
+		balsaHome = path;
+	}
 
 	@Override
-	public Model importFrom(InputStream in) throws DeserialisationException,
+	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException,
 			IOException {
 		BreezeLibrary lib = new BreezeLibrary();
-		String balsaHome = System.getenv("BALSA_HOME");
 		if (balsaHome == null || balsaHome.isEmpty())
 			throw new DeserialisationException("BALSA_HOME environment variable not set -- cannot load primitive parts definitions.");
-		lib.registerPrimitives(new File(balsaHome + ABSPATH));
+		lib.registerPrimitives(new File(new File(balsaHome), ABSPATH));
 
 		try {
 			lib.registerParts(in);

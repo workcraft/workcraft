@@ -296,7 +296,6 @@ public class TestGCD {
 		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
-	@Test
 	public void synthesiseSample() throws IOException, FormatException, PluginInstantiationException
 	{
 		init();

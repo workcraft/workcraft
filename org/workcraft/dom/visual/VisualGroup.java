@@ -81,16 +81,6 @@ ObservableHierarchy, Colorisable {
 		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
 	}
 
-	public Collection<Node> hitObjects(Point2D p1 , Point2D p2) {
-		return HitMan.boxHitTest(this, p1, p2);
-	}
-
-	public Collection<Node> hitObjects(Rectangle2D rectInLocalSpace) {
-		return hitObjects(
-				new Point2D.Double(rectInLocalSpace.getMinX(), rectInLocalSpace.getMinY()),
-				new Point2D.Double(rectInLocalSpace.getMaxX(), rectInLocalSpace.getMaxY()));
-	}
-
 	public void setColorisation(Color color) {
 		super.setColorisation(color);
 		for (Colorisable node : Hierarchy.getChildrenOfType(this, Colorisable.class))

@@ -35,6 +35,7 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.Icon;
 
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -89,7 +90,8 @@ public class ConnectionTool extends AbstractTool {
 	private void drawConnectingLine(Graphics2D g, VisualGroup root, Color color) {
 		g.setColor(color);
 
-		Rectangle2D bb = first.getBoundingBoxInAncestorSpace(root);
+
+		Rectangle2D bb = TransformHelper.transform(first, TransformHelper.getTransformToAncestor(first, root)).getBoundingBox();
 		Point2D center = new Point2D.Double(bb.getCenterX(), bb.getCenterY());
 
 		Line2D line = new Line2D.Double(center.getX(), center.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());

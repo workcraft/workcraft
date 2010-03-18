@@ -38,7 +38,6 @@ import org.workcraft.dom.visual.TransformEventPropagator;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
@@ -251,25 +250,6 @@ public class VisualComponentGroupTests {
 		Assert.assertTrue("not hit", node1.notified);
 	}
 
-	class MyConnection extends VisualConnection
-	{
-		public MyConnection(VisualComponent first, VisualComponent second, VisualGroup parent) {
-			super(null, first, second);
-			parent.add(this);
-		}
-		@Override
-		public void setParent(Node parent) {
-			super.setParent(parent);
-			uptodate = false;
-		};
-
-		public boolean uptodate = false;
-
-		public void update() {
-			uptodate = true;
-		}
-	}
-
 	class DummyNode extends VisualComponent
 	{
 		public DummyNode(VisualGroup parent) {
@@ -292,22 +272,5 @@ public class VisualComponentGroupTests {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	}
-
-	@Test
-	public void TestConnectionUpdate()
-	{
-		TransformEventPropagator p = new TransformEventPropagator();
-		VisualGroup root = createGroup(null);
-		p.attach(root);
-
-		VisualGroup group1 = createGroup(root);
-		DummyNode node1 = new DummyNode(group1);
-		DummyNode node2 = new DummyNode(group1);
-		MyConnection connection = new MyConnection(node1, node2, group1);
-
-		group1.unGroup();
-
-		Assert.assertTrue("Connection must be updated", connection.uptodate);
 	}
 }

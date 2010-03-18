@@ -24,35 +24,30 @@ package org.workcraft.parsers.breeze;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sound.sampled.Port;
-
 import org.junit.Test;
-import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.parsers.breeze.dom.BreezeDocument;
 import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.dom.ChannelDeclaration;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
-import org.workcraft.parsers.breeze.dom.PortVisitor;
 import org.workcraft.parsers.breeze.dom.RawBreezePartReference;
 import org.workcraft.parsers.breeze.expressions.Constant;
-import org.workcraft.parsers.breeze.javacc.BreezeParser;
+import org.workcraft.parsers.breeze.splitting.SplitResult;
+import org.workcraft.parsers.breeze.splitting.Splitter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.HandshakeComponent;
-import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
@@ -63,12 +58,11 @@ import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
-import org.workcraft.plugins.balsa.stg.implementations.StgBuilderSelector;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.balsa.io.BreezeImporter;
 import org.workcraft.util.Export;
 
 //TODO!
-@SuppressWarnings({"deprecation", "unused"})
+//@SuppressWarnings({"deprecation", "unused"})
 public class TESTS {
 	@Test
 	public void parseAbs() throws org.workcraft.parsers.breeze.javacc.ParseException, IOException
@@ -161,13 +155,15 @@ public class TESTS {
 	}
 
 	@Test
-	public void toVerilog()
+	public void toVerilog() throws Exception
 	{
 		BreezeLibrary lib;
 
-		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit = null;//input
+		File inFile = new File("C:\\balsa_Testing\\viterbi\\test.breeze");
+		final BalsaCircuit balsa = new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile));
+		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit = balsa.asNetlist();
 
-		SplitResult split = splitControlAndData(circuit);
+		SplitResult split = Splitter.splitControlAndData(circuit);
 
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control = split.getControl();
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data = split.getData();
@@ -219,7 +215,13 @@ public class TESTS {
 
 	private VerilogComponent directMap(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data)
 	{
-		ByteArrayOutputStream breezeFile = new ByteArrayOutputStream();
+		OutputStream breezeFile;
+		try {
+			breezeFile = new FileOutputStream("c:\\data.breeze");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}// new ByteArrayOutputStream();
 		new Writer(new PrintStream(breezeFile)).print(toBreeze(data));
 		//TODO
 		return null;
@@ -235,257 +237,6 @@ public class TESTS {
 		}
 		System.out.println(out.toString());
 		return null;
-	}
-
-	public class PartSplitResult
-	{
-
-		public PartSplitResult(
-				BreezeComponent data,
-				BreezeComponent control,
-				List<BreezeConnection> connections) {
-			super();
-			this.data = data;
-			this.control = control;
-			this.connections = connections;
-		}
-		private final BreezeComponent data;
-		private final BreezeComponent control;
-		private final List<BreezeConnection> connections;
-		public BreezeComponent getControl() {
-			return control;
-		}
-		public BreezeComponent getData() {
-			return data;
-		}
-		public Collection<? extends BreezeConnection> getConnections() {
-			return connections;
-		}
-	}
-
-
-	public class SplitResult implements Netlist<HandshakeComponent, Block<HandshakeComponent>, BreezeConnection>
-	{
-		private final Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data;
-		private final Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control;
-		private final List<BreezeConnection> connections;
-
-		public SplitResult(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data, Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control, List<BreezeConnection> connections)
-		{
-			this.data = data;
-			this.control = control;
-			this.connections = connections;
-		}
-
-		public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> getData()
-		{
-			return data;
-		}
-
-		public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> getControl()
-		{
-			return control;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public List<Block<HandshakeComponent>> getBlocks() {
-			return Arrays.asList((Block<HandshakeComponent>[])new Block[]{data, control});
-		}
-
-		@Override
-		public List<BreezeConnection> getConnections() {
-			return connections;
-		}
-
-		@Override
-		public List<HandshakeComponent> getPorts() {
-			ArrayList<HandshakeComponent> result = new ArrayList<HandshakeComponent>();
-			result.addAll(data.getPorts());
-			result.addAll(control.getPorts());
-			for(BreezeConnection c : connections)
-			{
-				result.remove(c.getFirst());
-				result.remove(c.getSecond());
-			}
-			return result;
-		}
-	}
-
-	class SplitPort
-	{
-		public SplitPort(HandshakeComponent controlPort, HandshakeComponent dataPort)
-		{
-			this.controlPort = controlPort;
-			this.dataPort = dataPort;
-		}
-		public final HandshakeComponent controlPort;
-		public final HandshakeComponent dataPort;
-	}
-
-	private SplitResult splitControlAndData(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit)
-	{
-		Map<HandshakeComponent, SplitPort> splitPorts = splitPorts(circuit.getPorts());
-
-		ArrayList<HandshakeComponent> controlPorts = new ArrayList<HandshakeComponent>();
-		ArrayList<HandshakeComponent> dataPorts = new ArrayList<HandshakeComponent>();
-
-		for(HandshakeComponent p : splitPorts.keySet())
-		{
-			SplitPort split = splitPorts.get(p);
-			controlPorts.add(split.controlPort);
-			dataPorts.add(split.dataPort);
-		}
-
-		List<BreezeComponent> controlParts = new ArrayList<BreezeComponent>();
-		List<BreezeComponent> dataParts = new ArrayList<BreezeComponent>();
-
-		List<BreezeConnection> controlConns = new ArrayList<BreezeConnection>();
-		List<BreezeConnection> dataConns = new ArrayList<BreezeConnection>();
-
-		for(BreezeConnection c : circuit.getConnections())
-		{
-			SplitPort p1 = splitPorts.get(c.getFirst());
-			SplitPort p2 = splitPorts.get(c.getSecond());
-
-			BreezeConnection cc = tryConn(p1.controlPort, p2.controlPort);
-			BreezeConnection cd = tryConn(p1.dataPort, p2.dataPort);
-
-			if(cc != null)
-				controlConns.add(cc);
-			if(cd != null)
-				controlConns.add(cd);
-		}
-
-		List<BreezeConnection> interconnects = new ArrayList<BreezeConnection>();
-
-		for(BreezeComponent p : circuit.getBlocks())
-		{
-			PartSplitResult split = splitPart(p, splitPorts);
-			controlParts.add(split.getControl());
-			controlParts.add(split.getData());
-			interconnects.addAll(split.getConnections());
-		}
-
-		return new SplitResult(getCircuit(controlPorts, controlParts, controlConns), getCircuit(dataPorts, dataParts, dataConns), interconnects);
-	}
-
-	private Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> getCircuit(
-			ArrayList<HandshakeComponent> dataPorts,
-			List<BreezeComponent> dataParts, List<BreezeConnection> dataConns) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private Map<HandshakeComponent, SplitPort> splitPorts(
-			Collection<HandshakeComponent> ports) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private PartSplitResult splitPart(BreezeComponent part, Map<HandshakeComponent, SplitPort> splitPorts) {
-		List<HandshakeComponent> controlPorts = new ArrayList<HandshakeComponent>();
-		List<HandshakeComponent> dataPorts = new ArrayList<HandshakeComponent>();
-
-		boolean changed = false;
-		for(HandshakeComponent p : part.getPorts())
-		{
-			SplitPort sp = splitPorts.get(p);
-
-			if(sp.controlPort != p)
-				changed = true;
-
-			if(sp.controlPort != null)
-				controlPorts.add(sp.controlPort);
-			if(sp.dataPort != null)
-				dataPorts.add(sp.controlPort);
-		}
-
-		BreezeComponent dataPart, controlPart;
-
-		List<BreezeConnection> conns = new ArrayList<BreezeConnection>();
-
-		if(!changed)
-		{
-			dataPart = null;
-			controlPart = part;
-		}
-		else
-		{
-			HandshakeComponent active = createActiveSync();
-			HandshakeComponent passive = createPassiveSync();
-			dataPorts.add(passive);
-			controlPorts.add(active);
-			dataPart = createDataPart(part, dataPorts);
-			controlPart = createControlPart(part, controlPorts);
-		}
-
-		return new PartSplitResult(dataPart, controlPart, conns);
-	}
-
-	private HandshakeComponent createPassiveSync() {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private HandshakeComponent createActiveSync() {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private BreezeComponent createControlPart(BreezeComponent part,
-			List<HandshakeComponent> controlPorts) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private BreezeComponent createDataPart(BreezeComponent part,
-			List<HandshakeComponent> dataPorts) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private HandshakeComponent getDataPortDataPart(
-			HandshakeComponent p) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private HandshakeComponent getDataPortControlPart(
-			HandshakeComponent p) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private boolean isPureControlPort(HandshakeComponent p) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private BreezeConnection connect(HandshakeComponent p1, HandshakeComponent p2) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	private BreezeConnection tryConn(HandshakeComponent p1, HandshakeComponent p2) {
-		if(p1 == null || p2 == null)
-			return null;
-		return connect(p1, p2);
-	}
-
-	private Map<HandshakeComponent, SplitPort> splitPorts(List<HandshakeComponent> ports)
-	{
-		Map<HandshakeComponent, SplitPort> result = new HashMap<HandshakeComponent, SplitPort>();
-
-		for(HandshakeComponent p : ports)
-		{
-			HandshakeComponent control;
-			HandshakeComponent data;
-			if (isPureControlPort(p))
-			{
-				control = p;
-				data = null;
-			}
-			else
-			{
-				control = getDataPortControlPart(p);
-				data = getDataPortDataPart(p);
-			}
-
-			result.put(p, new SplitPort(control, data));
-		}
-
-		return result;
 	}
 
 	private void mapSimple(BreezeComponent component, BalsaCircuit preSplit, Map<HandshakeComponent, HandshakeComponent> portMapping) {

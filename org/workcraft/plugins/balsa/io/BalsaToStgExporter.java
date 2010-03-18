@@ -74,7 +74,7 @@ public abstract class BalsaToStgExporter {
 
 	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
-		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asCircuit(), out);
+		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
 	}
 
 	public void export(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
@@ -139,7 +139,7 @@ public abstract class BalsaToStgExporter {
 	private STG buildStgFull(BalsaCircuit balsa) {
 		STG stg = new STG();
 
-		Iterable<BreezeComponent> components = getComponentsToSave(balsa);
+		Iterable<? extends BreezeComponent> components = getComponentsToSave(balsa);
 
 		Map<BreezeConnection, TwoWayStg> internalHandshakes = new HashMap<BreezeConnection, TwoWayStg>();
 
@@ -184,7 +184,7 @@ public abstract class BalsaToStgExporter {
 		return stg;
 	}
 
-	private BreezeConnection getInternalConnection(BalsaCircuit balsa, Iterable<BreezeComponent> components, BreezeComponent component, Handshake handshake) {
+	private BreezeConnection getInternalConnection(BalsaCircuit balsa, Iterable<? extends BreezeComponent> components, BreezeComponent component, Handshake handshake) {
 		HandshakeComponent hs = component.getHandshakeComponents().get(handshake);
 		if(hs==null)
 			return null;
@@ -201,7 +201,7 @@ public abstract class BalsaToStgExporter {
 		return handshake.accept(new InternalHandshakeStgBuilder(stg));
 	}
 
-	private boolean contains(Iterable<BreezeComponent> components, BreezeComponent component)
+	private boolean contains(Iterable<? extends BreezeComponent> components, BreezeComponent component)
 	{
 		for(BreezeComponent c : components)
 			if(component == c)
@@ -209,7 +209,7 @@ public abstract class BalsaToStgExporter {
 		return false;
 	}
 
-	protected Iterable<BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
+	protected Iterable<? extends BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
 		return balsa.getBlocks();
 	}
 

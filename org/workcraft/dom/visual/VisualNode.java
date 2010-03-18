@@ -22,8 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +30,6 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
-import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -42,8 +39,6 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
 
 
 public abstract class VisualNode implements Properties, Node, Touchable, Colorisable, ObservableState, Hidable {
@@ -72,33 +67,6 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 		this.parent = parent;
 	}
 
-
-	public final AffineTransform getAncestorToParentTransform(VisualGroup ancestor) throws NotAnAncestorException {
-		return Geometry.optimisticInverse(getParentToAncestorTransform(ancestor));
-	}
-
-	public final AffineTransform getParentToAncestorTransform(VisualGroup ancestor) throws NotAnAncestorException{
-		AffineTransform transform = TransformHelper.getTransformToAncestor(this, ancestor);
-		transform.preConcatenate(ancestor.parentToLocalTransform);
-		return transform;
-	}
-
-	public final Rectangle2D getBoundingBoxInAncestorSpace(VisualGroup ancestor) throws NotAnAncestorException {
-		Rectangle2D parentBB = getBoundingBox();
-
-		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
-		Point2D p1 = new Point2D.Double(parentBB.getMaxX(), parentBB.getMaxY());
-
-		AffineTransform t = getParentToAncestorTransform(ancestor);
-		t.transform(p0, p0);
-		t.transform(p1, p1);
-
-		return new Rectangle2D.Double (
-				p0.getX(), p0.getY(),
-				p1.getX()-p0.getX(),p1.getY() - p0.getY()
-		);
-	}
-
 	public void setColorisation (Color color) {
 		colorisation = color;
 	}
@@ -111,9 +79,6 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 		setColorisation(null);
 	}
 
-	public final boolean isDescendantOf(VisualGroup group) {
-		return Hierarchy.isDescendant(this, group);
-	}
 	protected final void addPopupMenuSegment (PopupMenuSegment segment) {
 		popupMenuBuilder.addSegment(segment);
 	}

@@ -21,17 +21,34 @@
 
 package org.workcraft.plugins.graph;
 
+import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.plugins.petri.PetriNet;
 
+@DefaultCreateButtons ( { Vertex.class } )
 public class VisualGraph extends AbstractVisualModel {
 
 	public VisualGraph(Graph model) throws VisualModelInstantiationException {
 		super(model);
 	}
+
+	public VisualGraph(Graph model, VisualGroup root) {
+		super(model, root);
+
+		if (root == null)
+			try {
+				createDefaultFlatStructure();
+			} catch (NodeCreationException e) {
+				throw new RuntimeException(e);
+			}
+	}
+
 
 	@Override
 	public void validateConnection(Node first, Node second)
@@ -39,19 +56,8 @@ public class VisualGraph extends AbstractVisualModel {
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	@Override
-	public String getNodeReference(Node node) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	@Override
 	public void connect(Node first, Node second)
 			throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
-
 }

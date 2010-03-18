@@ -18,7 +18,7 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.plugins.balsa.stg;
+package org.workcraft.plugins.balsa.stg.codegenerator;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.CompilationUnit;
@@ -60,7 +60,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.parsers.breeze.BreezeDefinition;
 import org.workcraft.parsers.breeze.BreezeLibrary;
@@ -85,15 +84,20 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
+import org.workcraft.plugins.balsa.stg.ComponentStgBuilder;
+import org.workcraft.plugins.balsa.stg.GeneratedComponentStgBuilder;
+import org.workcraft.plugins.balsa.stg.MyAstHelper;
+import org.workcraft.plugins.balsa.stg.MyDumpVisitor;
+import org.workcraft.plugins.balsa.stg.StgHandshakeInterpreter;
 import org.workcraft.util.FileUtils;
 
 public class CodeGenerator {
-	@Test
-	public void generateBaseClasses() throws IOException
+	public void generateBaseClasses(File projectPath, BalsaSystem balsa) throws IOException
 	{
 		BreezeLibrary lib = new BreezeLibrary();
-		lib.registerPrimitives(new File("c:\\deleteMe\\"));
-		File destinationFolder = new File("C:\\Work\\Workcraft\\org\\workcraft\\plugins\\balsa\\stg\\generated\\");
+		lib.registerPrimitives(balsa.getDefinitionsDir());
+		File destinationFolder = appendPath(projectPath, BASE_CLASSES_PATH);
 		String pckg = "org.workcraft.plugins.balsa.stg.generated";
 
 		for(BreezeDefinition def : lib.values())
@@ -109,12 +113,14 @@ public class CodeGenerator {
 		}
 	}
 
-	@Test
-	public void generateStubs() throws IOException
+	String[] BASE_CLASSES_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "generated"};
+	String[] STUBS_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "implementations_stubs"};
+
+	public void generateStubs(File path, BalsaSystem balsa) throws IOException
 	{
 		BreezeLibrary lib = new BreezeLibrary();
-		lib.registerPrimitives(new File("c:\\deleteMe\\"));
-		File destinationFolder = new File("C:\\Work\\Workcraft\\org\\workcraft\\plugins\\balsa\\stg\\implementations_stubs\\");
+		lib.registerPrimitives(balsa.getDefinitionsDir());
+		File destinationFolder = appendPath(path, STUBS_PATH);
 		String pckg = "org.workcraft.plugins.balsa.stg.implementations";
 		String generatedPckg = "org.workcraft.plugins.balsa.stg.generated";
 
@@ -147,6 +153,13 @@ public class CodeGenerator {
 			String source = cu.toString();
 			FileUtils.writeAllText(new File(destinationFolder, stub.getName()+".java"), source);
 		}
+	}
+
+	private File appendPath(File path, String[] toAppend) {
+		File result = path;
+		for(String s : toAppend)
+			result = new File(result, s);
+		return result;
 	}
 
 	private TypeDeclaration generateSelector(Collection<BreezeDefinition> breezeDefs) {

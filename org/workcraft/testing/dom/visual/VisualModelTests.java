@@ -21,7 +21,9 @@
 
 package org.workcraft.testing.dom.visual;
 
-import static org.workcraft.testing.dom.visual.Tools.*;
+import static org.workcraft.testing.dom.visual.Tools.createComponent;
+import static org.workcraft.testing.dom.visual.Tools.createConnection;
+import static org.workcraft.testing.dom.visual.Tools.createGroup;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -29,10 +31,10 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.dom.AbstractModel;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultReferenceManager;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.HitMan;
@@ -42,7 +44,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
@@ -53,21 +54,9 @@ public class VisualModelTests {
 		public MockMathModel() {
 			super(new MathGroup());
 		}
-
-		@Override
-		public Node getNodeByReference(String reference) {
-			return names.getNodeByReference(reference);
-		}
-
-		@Override
-		public String getNodeReference(Node node) {
-			return names.getNodeReference(node);
-		}
 	}
 
 	private class MockConcreteVisualModel extends AbstractVisualModel {
-		DefaultReferenceManager names = new DefaultReferenceManager();
-
 
 		public MockConcreteVisualModel() {
 			super(new MockMathModel());
@@ -81,21 +70,9 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public Node getNodeByReference(String reference) {
-			throw new org.workcraft.exceptions.NotImplementedException();
-		}
-
-		@Override
-		public String getNodeReference(Node node) {
-			throw new org.workcraft.exceptions.NotImplementedException();
-		}
-
-		@Override
 		public void connect(Node first, Node second)
 				throws InvalidConnectionException {
-			throw new org.workcraft.exceptions.NotImplementedException();
 		}
-
 	}
 
 	@Test
@@ -174,7 +151,7 @@ public class VisualModelTests {
 	public void TestGroup2Items() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = createGroup(root);
 		VisualGroup node2 = createGroup(root);
 
@@ -185,7 +162,7 @@ public class VisualModelTests {
 	public void TestGroup1Item() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = createGroup(root);
 
 		model.addToSelection(node1);
@@ -199,7 +176,7 @@ public class VisualModelTests {
 	public void TestGroup5Items() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
 		VisualGroup node3 = new VisualGroup();
@@ -232,7 +209,7 @@ public class VisualModelTests {
 	public void TestUngroupRoot() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -265,7 +242,7 @@ public class VisualModelTests {
 	public void TestUngroupNonRoot() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -300,7 +277,7 @@ public class VisualModelTests {
 	public void TestUngroupEmpty() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -323,7 +300,7 @@ public class VisualModelTests {
 	public void TestUngroupTwoGroups() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();

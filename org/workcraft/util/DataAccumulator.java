@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class DataAccumulator extends OutputStream {
@@ -33,10 +34,18 @@ public class DataAccumulator extends OutputStream {
 	public static byte[] loadStream (InputStream is) throws IOException {
 		DataAccumulator accum = new DataAccumulator();
 
-		int available;
-		while ( (available=is.available()) > 0) {
+		while (true) {
+			int available = is.available();
+			if(available == 0)
+				available = 1024;
 			byte[] chunk = new byte[available];
-			is.read(chunk, 0, available);
+			int read = is.read(chunk, 0, available);
+			if(read == -1)
+				break;
+			if(read == 0)
+				continue;
+			if(read != available)
+				chunk = Arrays.copyOfRange(chunk, 0, read);
 			accum.write(chunk);
 		}
 

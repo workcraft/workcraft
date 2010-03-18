@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Colorisable;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -37,13 +36,13 @@ public class SelectionColoriser implements StateObserver {
 	protected void clear() {
 		if(model==null)
 			return;
-		((VisualGroup) model.getRoot()).clearColorisation();
+		((Colorisable) model.getRoot()).clearColorisation();
 	}
 
 	public void update() {
 		if(model==null)
 			return;
-		((VisualGroup) model.getRoot()).clearColorisation();
+		((Colorisable) model.getRoot()).clearColorisation();
 		colorise(model.getSelection());
 	}
 
@@ -58,19 +57,17 @@ public class SelectionColoriser implements StateObserver {
 
 	public static void colorise(Collection<Node> nodes) {
 		for (Node n : nodes)
-			if (n instanceof Colorisable)
-				((Colorisable)n).setColorisation(selectionColor);
+			colorise(n);
 	}
 
-	public static void colorise(Node node) {
+	private static void colorise(Node node) {
 		if (node instanceof Colorisable)
 			((Colorisable)node).setColorisation(selectionColor);
 	}
 
 	public static void uncolorise(Collection<Node> nodes) {
 		for (Node n : nodes)
-			if (n instanceof Colorisable)
-				((Colorisable)n).clearColorisation();
+			uncolorise(n);
 	}
 
 	public static void uncolorise(Node node) {

@@ -264,25 +264,36 @@ public class HitMan
 		return hitTestForSelection(pt, model.getCurrentLevel());
 	}
 
-	public static Collection<Node> boxHitTest (VisualGroup group, Point2D p1, Point2D p2) {
-		Point2D p1local = new Point2D.Double();
-		Point2D p2local = new Point2D.Double();
-		group.getParentToLocalTransform().transform(p1, p1local);
-		group.getParentToLocalTransform().transform(p2, p2local);
+
+	/**
+	 * The method finds all direct children of the given container, which completely fit inside the given rectangle.
+	 * @param container The container whose children will be examined
+	 * @param p1 		The top-left corner of the rectangle, in the parent coordinates for the container
+	 * @param p2 		The bottom-right corner of the rectangle
+	 * @return 			The collection of nodes fitting completely inside the rectangle
+	 */
+	public static Collection<Node> boxHitTest (Container container, Point2D p1, Point2D p2) {
+
+		if(container instanceof Movable)
+		{
+			AffineTransform toLocal = Geometry.optimisticInverse(((Movable) container).getTransform());
+			toLocal.transform(p1, p1);
+			toLocal.transform(p2, p2);
+		}
 
 		LinkedList<Node> hit = new LinkedList<Node>();
 
 		Rectangle2D rect = new Rectangle2D.Double(
-				Math.min(p1local.getX(), p2local.getX()),
-				Math.min(p1local.getY(), p2local.getY()),
-				Math.abs(p1local.getX()-p2local.getX()),
-				Math.abs(p1local.getY()-p2local.getY()));
+				Math.min(p1.getX(), p2.getX()),
+				Math.min(p1.getY(), p2.getY()),
+				Math.abs(p1.getX()-p2.getX()),
+				Math.abs(p1.getY()-p2.getY()));
 
-		for (Touchable n : Hierarchy.getChildrenOfType(group, Touchable.class)) {
+		for (Touchable n : Hierarchy.getChildrenOfType(container, Touchable.class)) {
 			if (n instanceof Hidable && ((Hidable)n).isHidden() )
 				continue;
 
-			if (p1local.getX()<=p2local.getX()) {
+			if (p1.getX()<=p2.getX()) {
 				if (TouchableHelper.insideRectangle(n, rect))
 					hit.add((VisualNode)n);
 			} else {

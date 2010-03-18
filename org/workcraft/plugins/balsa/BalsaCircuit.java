@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -216,7 +217,7 @@ public final class BalsaCircuit extends AbstractMathModel
 		return node;
 	}
 
-	public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> asCircuit()
+	public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> asNetlist()
 	{
 		return new Netlist<HandshakeComponent, BreezeComponent, BreezeConnection>()
 		{
@@ -237,7 +238,18 @@ public final class BalsaCircuit extends AbstractMathModel
 
 			@Override public List<HandshakeComponent> getPorts()
 			{
-				throw new org.workcraft.exceptions.NotImplementedException();
+				LinkedHashSet<HandshakeComponent> handshakes = new LinkedHashSet<HandshakeComponent>();
+				for(BreezeComponent component : getComponents())
+				{
+					for(HandshakeComponent hs : component.getHandshakeComponents().values())
+						handshakes.add(hs);
+				}
+				for(BreezeConnection conn : getConnections())
+				{
+					handshakes.remove(conn.getFirst());
+					handshakes.remove(conn.getSecond());
+				}
+				return new ArrayList<HandshakeComponent>(handshakes);
 			}
 		};
 	}
