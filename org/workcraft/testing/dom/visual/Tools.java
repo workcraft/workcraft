@@ -23,12 +23,13 @@ package org.workcraft.testing.dom.visual;
 
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 class Tools {
-	static VisualGroup createGroup(VisualGroup parent)
+	static VisualGroup createGroup(Container parent)
 	{
 		VisualGroup node = new VisualGroup();
 		if(parent!=null)

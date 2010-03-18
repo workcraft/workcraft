@@ -54,7 +54,6 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.exceptions.PasteException;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
@@ -66,7 +65,7 @@ import org.workcraft.util.XmlUtil;
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
 	private Model mathModel;
-	private VisualGroup currentLevel;
+	private Container currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
 	private ObservableStateImpl observableState = new ObservableStateImpl();
 
@@ -368,11 +367,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return ret;
 	}
 
-	public VisualGroup getCurrentLevel() {
+	public Container getCurrentLevel() {
 		return currentLevel;
 	}
 
-	public void setCurrentLevel(VisualGroup newCurrentLevel) {
+	public void setCurrentLevel(Container newCurrentLevel) {
 		selection.clear();
 		currentLevel = newCurrentLevel;
 	}
@@ -405,8 +404,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class))
 		{
-			if(connection.getFirst().isDescendantOf(group) &&
-					connection.getSecond().isDescendantOf(group)) {
+			if(Hierarchy.isDescendant(connection.getFirst(), group) &&
+					Hierarchy.isDescendant(connection.getSecond(), group)) {
 				connectionsToGroup.add(connection);
 			}
 		}
@@ -525,22 +524,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		deleteSelection();
 	}
 
-	//	public VisualComponent getComponentByRefID(Integer id) {
-	//		return refIDToVisualComponentMap.get(id);
-	//	}
-
-
 	private Point2D transformToCurrentSpace(Point2D pointInRootSpace)
 	{
-		if(currentLevel == getRoot())
-			return pointInRootSpace;
 		Point2D newPoint = new Point2D.Double();
-		try {
-			currentLevel.getAncestorToParentTransform((VisualGroup)getRoot()).transform(pointInRootSpace, newPoint);
-		} catch (NotAnAncestorException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Root is not an ancestor of the current node o_O");
-		}
+		TransformHelper.getTransform(getRoot(), currentLevel).transform(pointInRootSpace, newPoint);
 		return newPoint;
 	}
 
@@ -552,17 +539,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2) {
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);
-		return currentLevel.hitObjects(p1, p2);
+		return HitMan.boxHitTest(currentLevel, p1, p2);
 	}
 
 	public Collection<Node> boxHitTest(Rectangle2D selectionRect) {
-		Point2D min = new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY());
-		Point2D max = new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY());
-		min = transformToCurrentSpace(min);
-		max = transformToCurrentSpace(max);
-		selectionRect.setRect(min.getX(), min.getY(), max.getX()-min.getX(), max.getY()-min.getY());
-
-		return currentLevel.hitObjects(selectionRect);
+		return boxHitTest(
+				new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY()),
+				new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY()));
 	}
 
 	public void addObserver(StateObserver obs) {
@@ -576,5 +559,4 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void sendNotification(StateEvent e) {
 		observableState.sendNotification(e);
 	}
-
 }

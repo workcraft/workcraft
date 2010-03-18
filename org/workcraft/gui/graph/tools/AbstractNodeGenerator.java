@@ -21,6 +21,7 @@
 
 package org.workcraft.gui.graph.tools;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
@@ -29,6 +30,7 @@ import org.workcraft.NodeFactory;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
@@ -51,7 +53,12 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 		model.getCurrentLevel().add(vc);
 
 		if (vc instanceof Movable)
-			MovableHelper.translate((Movable)vc, where.getX(), where.getY());
+		{
+			AffineTransform transform = TransformHelper.getTransform(model.getRoot(), vc);
+			Point2D transformed = new Point2D.Double();
+			transform.transform(where, transformed);
+			MovableHelper.translate((Movable)vc, transformed.getX(), transformed.getY());
+		}
 	}
 
 	@Override

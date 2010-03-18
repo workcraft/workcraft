@@ -55,7 +55,7 @@ import org.workcraft.plugins.balsa.components.While;
 
 public class SaveLoadTests {
 
-	@Test
+	//@Test
 	public void TestMathModelLoad() throws Exception
 	{
 		testMathModelLoadWhileWhile(new FileInputStream("./org/workcraft/testing/plugins/balsa/tests/LoopWhile.work"));
@@ -108,7 +108,7 @@ public class SaveLoadTests {
 		);
 	}
 
-	@Test
+	//@Test
 	public void TestVisualModelLoad() throws Exception
 	{
 		//Model model = Framework.load("./org/workcraft/testing/plugins/balsa/tests/LoopWhile_Visual.work");
@@ -169,7 +169,7 @@ public class SaveLoadTests {
 		return null;
 	}
 
-	@Test
+	//@Test
 	public void TestMathModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit circuit = createWhileWhileMathCircuit();
@@ -181,7 +181,7 @@ public class SaveLoadTests {
 		//testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}
 
-	@Test
+	//@Test
 	public void TestVisualModelSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, VisualModelInstantiationException, IOException, ModelValidationException, SerialisationException
 	{
 		VisualBalsaCircuit circuit = createLoopWhileVisualCircuit();
@@ -239,7 +239,7 @@ public class SaveLoadTests {
 	}
 
 
-	@Test
+//	@Test
 	public void TestMathModelSaveLoadSaveLoad() throws InvalidConnectionException, ModelSaveFailedException, LoadFromXMLException, IOException, ModelValidationException, SerialisationException, DocumentFormatException, DeserialisationException, PluginInstantiationException
 	{
 		Framework f = new Framework();
@@ -259,6 +259,4 @@ public class SaveLoadTests {
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}
-
-
 }

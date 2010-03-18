@@ -36,6 +36,7 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HitMan;
@@ -365,8 +366,8 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	private void currentLevelUp(GraphEditorKeyEvent e) {
-		VisualGroup level = e.getModel().getCurrentLevel();
-		VisualGroup parent = Hierarchy.getNearestAncestor(level.getParent(), VisualGroup.class);
+		Container level = e.getModel().getCurrentLevel();
+		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
 		if(parent!=null)
 		{
 			e.getModel().setCurrentLevel(parent);

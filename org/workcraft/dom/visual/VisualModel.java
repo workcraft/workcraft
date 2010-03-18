@@ -26,6 +26,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.observation.ObservableState;
@@ -33,7 +34,7 @@ import org.workcraft.observation.ObservableState;
 public interface VisualModel extends Model, ObservableState {
 	public void draw (Graphics2D g);
 
-	public VisualGroup getCurrentLevel();
+	public Container getCurrentLevel();
 	public Model getMathModel();
 
 	public Collection<Node> getSelection();
@@ -50,7 +51,7 @@ public interface VisualModel extends Model, ObservableState {
 	public void groupSelection();
 	public void ungroupSelection();
 
-	public void setCurrentLevel (VisualGroup group);
+	public void setCurrentLevel (Container group);
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 	public Collection<Node> boxHitTest(Rectangle2D rect);

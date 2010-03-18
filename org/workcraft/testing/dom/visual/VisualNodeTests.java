@@ -26,6 +26,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.observation.StateEvent;
@@ -81,32 +82,32 @@ public class VisualNodeTests {
 		ensureShiftX(node11, root, 1);
 		ensureShiftX(node1, root, 0);
 
-		ensureShiftX(node1111, node1, 110);
-		ensureShiftX(node111, node1, 10);
-		ensureShiftX(node11, node1, 0);
+		ensureShiftX(node1111, node1, 111);
+		ensureShiftX(node111, node1, 11);
+		ensureShiftX(node11, node1, 1);
 
-		ensureShiftX(node1111, node11, 100);
-		ensureShiftX(node111, node11, 00);
-		ensureFall(node1, node11);
+		ensureShiftX(node1111, node11, 110);
+		ensureShiftX(node111, node11, 10);
+		ensureShiftX(node1, node11, -1);
 
-		ensureShiftX(node1111, node111, 000);
-		ensureFall(node11, node111);
-		ensureFall(node1, node111);
+		ensureShiftX(node1111, node111, 100);
+		ensureShiftX(node11, node111, -10);
+		ensureShiftX(node1, node111, -11);
 
-		ensureFall(node111, node1111);
-		ensureFall(node11, node1111);
-		ensureFall(node1, node1111);
+		ensureShiftX(node111, node1111, -100);
+		ensureShiftX(node11, node1111, -110);
+		ensureShiftX(node1, node1111, -111);
 
 		ensureShiftX(node2, root, 0);
-		ensureFall(node2, node1);
-		ensureFall(node2, node11);
-		ensureFall(node2, node111);
-		ensureFall(node2, node1111);
+		ensureShiftX(node2, node1, 0);
+		ensureShiftX(node2, node11, -1);
+		ensureShiftX(node2, node111, -11);
+		ensureShiftX(node2, node1111, -111);
 
-		ensureFall(node1, node2);
-		ensureFall(node11, node2);
-		ensureFall(node111, node2);
-		ensureFall(node1111, node2);
+		ensureShiftX(node1, node2, 0);
+		ensureShiftX(node11, node2, 1);
+		ensureShiftX(node111, node2, 11);
+		ensureShiftX(node1111, node2, 111);
 	}
 
 	@Test
@@ -152,10 +153,9 @@ public class VisualNodeTests {
 		Assert.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
 	}
 
-	private void ensureShiftX(VisualGroup node,
-			VisualGroup ancestor, double i) throws NotAnAncestorException {
-		ensureShiftX(node.getParentToAncestorTransform(ancestor), i);
-		ensureShiftX(node.getAncestorToParentTransform(ancestor), -i);
+	private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) throws NotAnAncestorException {
+		ensureShiftX(TransformHelper.getTransform(node, ancestor), i);
+		ensureShiftX(TransformHelper.getTransform(ancestor, node), -i);
 
 	}
 
@@ -176,28 +176,5 @@ public class VisualNodeTests {
 	{
 		double eps = 1e-6;
 		Assert.assertTrue("Expected: "+expected+", actual: "+actual, expected-eps<=actual && expected+eps>=actual);
-	}
-
-	private void ensureFall(VisualGroup node, VisualGroup ancestor) {
-		boolean ok1 = false;
-		boolean ok2 = false;
-		try
-		{
-			node.getAncestorToParentTransform(ancestor);
-			ok1 = true;
-		}
-		catch(NotAnAncestorException ex)
-		{
-		}
-		try
-		{
-			node.getParentToAncestorTransform(ancestor);
-			ok2 = true;
-		}
-		catch(NotAnAncestorException ex)
-		{
-		}
-		Assert.assertFalse(ok1);
-		Assert.assertFalse(ok2);
 	}
 }

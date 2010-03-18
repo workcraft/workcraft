@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
@@ -169,7 +170,7 @@ public class VisualModelTests {
 	public void TestGroup2Items() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = createGroup(root);
 		VisualGroup node2 = createGroup(root);
 
@@ -180,7 +181,7 @@ public class VisualModelTests {
 	public void TestGroup1Item() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = createGroup(root);
 
 		model.addToSelection(node1);
@@ -194,7 +195,7 @@ public class VisualModelTests {
 	public void TestGroup5Items() throws VisualModelInstantiationException {
 		VisualModel model = createModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
 		VisualGroup node3 = new VisualGroup();
@@ -227,7 +228,7 @@ public class VisualModelTests {
 	public void TestUngroupRoot() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -260,7 +261,7 @@ public class VisualModelTests {
 	public void TestUngroupNonRoot() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -295,7 +296,7 @@ public class VisualModelTests {
 	public void TestUngroupEmpty() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
@@ -318,7 +319,7 @@ public class VisualModelTests {
 	public void TestUngroupTwoGroups() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
-		VisualGroup root = model.getCurrentLevel();
+		Container root = model.getCurrentLevel();
 
 		VisualGroup node1 = new VisualGroup();
 		VisualGroup node2 = new VisualGroup();
