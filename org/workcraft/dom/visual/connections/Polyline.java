@@ -348,16 +348,26 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void componentsTransformChanged() {
-		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
+		if(scaler == null)
+			System.err.print("error @ Polyline.componentsTransformChanged(): scaler == null");
+		else
+		{
+			scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
 				.getSecondCenter(), Hierarchy.filterNodesByType(getChildren(),
 				ControlPoint.class), connectionInfo.getScaleMode());
-		scaler = null;
+			rememberScale();
+		}
 
 		invalidate();
 	}
 
 	@Override
 	public void componentsTransformChanging() {
+		if(scaler == null)
+			rememberScale();
+	}
+
+	private void rememberScale() {
 		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
 	}
 
