@@ -160,7 +160,7 @@ public class TESTS {
 		BreezeLibrary lib;
 
 		File inFile = new File("C:\\balsa_Testing\\viterbi\\test.breeze");
-		final BalsaCircuit balsa = new BreezeImporter("C:\\balsa_Testing\\balsa").importFrom(new FileInputStream(inFile));
+		final BalsaCircuit balsa = new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile));
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit = balsa.asNetlist();
 
 		SplitResult split = Splitter.splitControlAndData(circuit);
