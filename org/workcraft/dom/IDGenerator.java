@@ -24,7 +24,7 @@ package org.workcraft.dom;
 import java.util.TreeSet;
 
 public class IDGenerator {
-	private TreeSet<Integer> released;
+	private TreeSet<Integer> released = new TreeSet<Integer>();
 	private int nextID = 0;
 
 	public int getNextID() {
