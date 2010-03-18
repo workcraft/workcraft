@@ -36,6 +36,8 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -43,12 +45,11 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Signal Transition")
 @SVGIcon("images/icons/svg/signal-transition.svg")
-public class VisualSignalTransition extends VisualTransition {
+public class VisualSignalTransition extends VisualTransition implements StateObserver {
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;
 
 	private static Color inputsColor = Color.RED.darker();
-	private static Color dummiesColor = Color.BLACK;
 	private static Color outputsColor = Color.BLUE.darker();
 	private static Color internalsColor = Color.GREEN.darker();
 	private static Color defaultFillColor = Color.WHITE;
@@ -65,6 +66,9 @@ public class VisualSignalTransition extends VisualTransition {
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
 		addPropertyDeclarations();
+
+		transition.addObserver(this);
+
 		updateText();
 	}
 
@@ -73,16 +77,15 @@ public class VisualSignalTransition extends VisualTransition {
 		types.put("Input", SignalTransition.Type.INPUT);
 		types.put("Output", SignalTransition.Type.OUTPUT);
 		types.put("Internal", SignalTransition.Type.INTERNAL);
-		types.put("Dummy", SignalTransition.Type.DUMMY);
 
 		LinkedHashMap<String, Object> directions = new LinkedHashMap<String, Object>();
 		directions.put("+", SignalTransition.Direction.PLUS);
 		directions.put("-", SignalTransition.Direction.MINUS);
 		directions.put("", SignalTransition.Direction.TOGGLE);
 
-		addPropertyDeclaration(new PropertyDeclaration("Signal name", "getSignalName", "setSignalName", String.class));
-		addPropertyDeclaration(new PropertyDeclaration("Transition", "getDirection", "setDirection", SignalTransition.Direction.class, directions));
-		addPropertyDeclaration(new PropertyDeclaration("Signal type", "getType", "setType", SignalTransition.Type.class, types));
+		//addPropertyDeclaration(new PropertyDeclaration(this, "Signal name", "getSignalName", "setSignalName", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Transition", "getDirection", "setDirection", SignalTransition.Direction.class, directions));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Signal type", "getType", "setType", SignalTransition.Type.class, types));
 	}
 
 	@Override
@@ -139,7 +142,6 @@ public class VisualSignalTransition extends VisualTransition {
 				textY = (float)-textBB.getCenterY();
 
 				textBB.setRect(textBB.getX() - textBB.getCenterX(), textBB.getY() - textBB.getCenterY(), textBB.getWidth(), textBB.getHeight());
-				firePropertyChanged("shape");
 			}
 
 			//g.setColor(Coloriser.colorise(userFillColor, getColorisation()));
@@ -159,23 +161,19 @@ public class VisualSignalTransition extends VisualTransition {
 	}
 
 	private String getText() {
-		String text = getSignalName();
-		if (text.isEmpty())
-			return text;
-
-		switch (getDirection()) {
+		final StringBuffer result = new StringBuffer(getReferencedTransition().getSignalName());
+		switch (getReferencedTransition().getDirection()) {
 		case PLUS:
-			return text+"+";
+			result.append("+"); break;
 		case MINUS:
-			return text+"-";
+			result.append("-"); break;
+		case TOGGLE:
+			result.append("~"); break;
 		}
-
-		return text;
+		return result.toString();
 	}
 
 	private Color getColor() {
-		if (getType() == SignalTransition.Type.DUMMY)
-			return dummiesColor;
 		if (getType() == SignalTransition.Type.INTERNAL)
 			return internalsColor;
 		if (getType() == SignalTransition.Type.INPUT)
@@ -204,11 +202,6 @@ public class VisualSignalTransition extends VisualTransition {
 	}
 
 	@NoAutoSerialisation
-	public void setReferencedTransition(SignalTransition t) {
-
-	}
-
-	@NoAutoSerialisation
 	public SignalTransition.Type getType() {
 		return getReferencedTransition().getSignalType();
 	}
@@ -216,6 +209,7 @@ public class VisualSignalTransition extends VisualTransition {
 	@NoAutoSerialisation
 	public void setType(SignalTransition.Type type) {
 		getReferencedTransition().setSignalType(type);
+		updateText();
 	}
 
 	@NoAutoSerialisation
@@ -237,6 +231,11 @@ public class VisualSignalTransition extends VisualTransition {
 	@NoAutoSerialisation
 	public void setSignalName(String name) {
 		getReferencedTransition().setSignalName(name);
+		updateText();
+	}
+
+	@Override
+	public void notify(StateEvent e) {
 		updateText();
 	}
 }

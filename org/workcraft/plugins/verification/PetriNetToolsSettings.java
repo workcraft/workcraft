@@ -27,7 +27,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -43,13 +42,13 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 
 	public PetriNetToolsSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("PComp command", "getPcompCommand", "setPcompCommand", String.class));
-		properties.add(new PropertyDeclaration("PUNF command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration("MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
-		properties.add(new PropertyDeclaration("Petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "PComp command", "getPcompCommand", "setPcompCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "PUNF command", "getPunfCommand", "setPunfCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
 
 	}
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -65,15 +64,6 @@ public class PetriNetToolsSettings implements PersistentPropertyEditable, Plugin
 
 		config.set("PetriTools.mpsatCommand", mpsatCommand);
 		config.set("PetriTools.petrifyCommand", petrifyCommand);
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public String getSection() {

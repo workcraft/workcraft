@@ -21,6 +21,7 @@
 
 package org.workcraft.gui.propertyeditor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,12 +35,14 @@ public class PropertyDeclaration implements PropertyDescriptor {
 	public Map<Object, String> valueNames;
 
 	private boolean choice;
+	private final Object owner;
 
 	public boolean isChoice() {
 		return choice;
 	}
 
-	public PropertyDeclaration (String name, String getter, String setter, Class<?> cls ) {
+	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls) {
+		this.owner = object;
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
@@ -50,7 +53,8 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		choice = false;
 	}
 
-	public PropertyDeclaration (String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
+	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
+		this.owner = object;
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
@@ -70,18 +74,30 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		return valueNames;
 	}
 
-	public Object getValue(Object owner) {
-		try {
-			return owner.getClass().getMethod(getter).invoke(owner);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public Object getValue() throws InvocationTargetException {
+			try {
+				return owner.getClass().getMethod(getter).invoke(owner);
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (SecurityException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
 	}
 
-	public void setValue(Object owner, Object value) {
+	public void setValue(Object value) throws InvocationTargetException {
 		try {
 			owner.getClass().getMethod(setter, cls).invoke(owner, value);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
 	}

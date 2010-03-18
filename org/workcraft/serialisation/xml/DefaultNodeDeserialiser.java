@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.util.ConstructorParametersMatcher;
@@ -124,13 +125,15 @@ class DefaultNodeDeserialiser {
 		//System.out.println ("Initialising " + className);
 
 		try {
-			XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
-
-			String shortClassName = Class.forName(className).getSimpleName();
+			Class<?> cls = Class.forName(className);
+			String shortClassName = cls.getSimpleName();
 
 			Element currentLevelElement = XmlUtil.getChildElement(shortClassName, element);
 
 			Object instance;
+
+			// Check for a custom deserialiser first
+			XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
 
 			if (deserialiser instanceof CustomXMLDeserialiser) {
 				//System.out.println ("Using custom deserialiser " + deserialiser);
@@ -140,6 +143,11 @@ class DefaultNodeDeserialiser {
 				instance = ((BasicXMLDeserialiser)deserialiser).deserialise(currentLevelElement);
 			} else {
 				//System.out.println ("Using default deserialiser " + deserialiser);
+
+				// Check for incoming parameters - these may be supplied when a custom deserialiser requests
+				// a sub-node to be deserialised which should know how to construct this class and pass
+				// the proper constructor arguments
+
 				if (constructorParameters.length != 0) {
 					Class<?>[] parameterTypes = new Class<?>[constructorParameters.length];
 					for (int i=0; i<constructorParameters.length; i++)
@@ -147,8 +155,28 @@ class DefaultNodeDeserialiser {
 					Constructor<?> ctor = new ConstructorParametersMatcher().match(Class.forName(className), parameterTypes);
 					instance = ctor.newInstance(constructorParameters);
 				}
-				else
-					instance = Class.forName(className).newInstance();
+				else {
+					// Still don't know how to deserialise the class.
+					// Let's see if it is a dependent node.
+
+					if (DependentNode.class.isAssignableFrom(cls)) {
+						// Check for the simple case when there is only one reference to the underlying model.
+						String ref = currentLevelElement.getAttribute("ref");
+						if (ref.isEmpty())
+							// Bad luck, we probably can't do anything.
+							// But let's try a default constructor just in case.
+							instance = cls.newInstance();
+						else {
+							// Hooray, we've got a reference, so there is likely an appropriate constructor.
+							Object refObject = externalReferenceResolver.getObject(ref);
+							Constructor<?> ctor = new ConstructorParametersMatcher().match(cls, refObject.getClass());
+							instance = ctor.newInstance(refObject);
+						}
+					} else {
+						// It is not a dependent node, so there should be a default constructor.
+						instance = cls.newInstance();
+					}
+				}
 			}
 
 			//System.out.println ("Result = " + instance);
@@ -156,7 +184,6 @@ class DefaultNodeDeserialiser {
 			doInitialisation(element, instance, instance.getClass(), externalReferenceResolver);
 
 			return instance;
-
 		} catch (InstantiationException e) {
 			throw new DeserialisationException(e);
 		} catch (IllegalAccessException e) {

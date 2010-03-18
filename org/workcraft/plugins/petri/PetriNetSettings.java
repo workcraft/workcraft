@@ -27,7 +27,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
@@ -40,7 +39,7 @@ public class PetriNetSettings implements PersistentPropertyEditable, Plugin {
 		properties = new LinkedList<PropertyDescriptor>();
 	}
 
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -53,16 +52,4 @@ public class PetriNetSettings implements PersistentPropertyEditable, Plugin {
 	public String getSection() {
 		return "Visual";
 	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-	}
-
 }

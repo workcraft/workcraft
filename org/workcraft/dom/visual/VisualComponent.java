@@ -27,6 +27,8 @@ import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
@@ -39,10 +41,13 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	private MathNode refNode = null;
 
+	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+
+	private GlyphVector labelGlyphs = null;
+	private String glyphsForLabel = null;
+
 	private String label = "";
 
-	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	private GlyphVector labelGlyphs = null;
 	private Point2D labelPosition = null;
 
 	private Color labelColor = CommonVisualSettings.getForegroundColor();
@@ -50,10 +55,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration("Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration("Label color", "getLabelColor", "setLabelColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration("Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration("Fill color", "getFillColor", "setFillColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label color", "getLabelColor", "setLabelColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
 	public VisualComponent(MathNode refNode) {
@@ -85,34 +90,34 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public void setLabel(String label) {
 		this.label = label;
 		labelGlyphs = null;
+		glyphsForLabel = null;
 	}
 
 	public GlyphVector getLabelGlyphs(Graphics2D g) {
-		if (labelGlyphs == null) {
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
-		}
-
+		updateGlyph(g);
 		return labelGlyphs;
 	}
 
 	public Rectangle2D getLabelBB(Graphics2D g) {
-		if (labelGlyphs == null) {
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
-		}
-
-		return labelGlyphs.getVisualBounds();
+		return getLabelGlyphs(g).getVisualBounds();
 	}
 
 	protected void drawLabelInLocalSpace(Graphics2D g) {
-		if (labelGlyphs == null) {
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
-			Rectangle2D textBB = labelGlyphs.getVisualBounds();
-			Rectangle2D bb = getBoundingBoxInLocalSpace();
-			labelPosition = new Point2D.Double( bb.getMinX() + ( bb.getWidth() - textBB.getWidth() ) *0.5, bb.getMaxY() + textBB.getHeight() + 0.1);
-		}
+		updateGlyph(g);
 
 		g.setColor(Coloriser.colorise(labelColor, getColorisation()));
 		g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
+	}
+
+	private void updateGlyph(Graphics2D g) {
+		if (labelGlyphs == null || !getLabel().equals(glyphsForLabel)) {
+			final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
+			glyphsForLabel = getLabel();
+			Rectangle2D textBB = glyphs.getVisualBounds();
+			Rectangle2D bb = getBoundingBoxInLocalSpace();
+			labelPosition = new Point2D.Double( bb.getMinX() + ( bb.getWidth() - textBB.getWidth() ) *0.5, bb.getMaxY() + textBB.getHeight() + 0.1);
+			labelGlyphs = glyphs;
+		}
 	}
 
 	public Color getLabelColor() {
@@ -144,5 +149,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public MathNode getReferencedComponent() {
 		return refNode;
+	}
+
+	@Override
+	public Collection<MathNode> getMathReferences() {
+		ArrayList<MathNode> result = new ArrayList<MathNode>();
+		result.add(getReferencedComponent());
+		return result;
 	}
 }

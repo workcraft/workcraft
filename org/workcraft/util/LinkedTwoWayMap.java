@@ -18,28 +18,14 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.util;
 
-package org.workcraft.dom;
+import java.util.LinkedHashMap;
 
-import java.util.TreeSet;
-
-public class IDGenerator {
-	private TreeSet<Integer> released = new TreeSet<Integer>();
-	private int nextID = 0;
-
-	public int getNextID() {
-		Integer id = released.pollFirst();
-		if (id == null)
-			return nextID++;
-		else
-			return id;
-	}
-
-	public void reserveID(int id) {
-		nextID = Math.max(nextID, id+1);
-	}
-
-	public void releaseID(int id) {
-		released.add(id);
+public class LinkedTwoWayMap<T1, T2> extends GeneralTwoWayMap<T1, T2>
+{
+	public LinkedTwoWayMap()
+	{
+		super(new LinkedHashMap<T1, T2>(), new LinkedHashMap<T2, T1>());
 	}
 }

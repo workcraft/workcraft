@@ -20,6 +20,10 @@ function load(x) {
 	return framework.load(x);
 }
 
+function exec(x) {
+	framework.execFile(x);
+}
+
 function save(x) {
 	framework.save(x);
 

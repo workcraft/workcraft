@@ -40,8 +40,8 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration("X", "getX", "setX", double.class));
-		addPropertyDeclaration(new PropertyDeclaration("Y", "getY", "setY", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "X", "getX", "setX", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Y", "getY", "setY", double.class));
 	}
 
 	public VisualTransformableNode() {

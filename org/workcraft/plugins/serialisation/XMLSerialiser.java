@@ -71,7 +71,7 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 			ReferenceProducer internalReferences = new ReferenceProducer() {
 				public String getReference(Object obj) {
 					if (obj instanceof Node)
-						return Integer.toString(model.getNodeID((Node)obj));
+						return model.getNodeReference((Node)obj);
 					else
 						return null;
 				}

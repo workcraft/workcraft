@@ -47,7 +47,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
@@ -79,14 +78,16 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 		layout = MainLayouter.getLayout(balsaComponent, handshakes);
 		buildVisualHandshakes();
 		makeProperties();
-		addPropertyChangeListener(
+
+		//TODO : replace PropertyChangeListener with StateObserver
+		/*addPropertyChangeListener(
 				new PropertyChangeListener()
 				{
 					public void onPropertyChanged(String propertyName, Object sender) {
 						buildVisualHandshakes();
 					}
 				}
-			);
+			);*/
 
 		//this.applyTransform(AffineTransform.getQuadrantRotateInstance(1));
 	}
@@ -102,7 +103,7 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 			PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
 			for(int i=0;i<descriptors.length;i++)
 				if(!descriptors[i].getName().equals("class"))
-					addPropertyDeclaration(new BreezePropertyDescriptor(descriptors[i]));
+					addPropertyDeclaration(new BreezePropertyDescriptor(descriptors[i], this));
 		} catch (IntrospectionException e) {
 			throw new RuntimeException(e);
 		}

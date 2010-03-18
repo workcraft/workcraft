@@ -34,12 +34,17 @@ public abstract class HierarchySupervisor implements HierarchyObserver {
 			attachInternal (node);
 	}
 
-	public void attach (Node root) {
+	public void attach (Node root, boolean sendRootAddedEvent) {
 		this.root = root;
 
-		handleEvent (new NodesAddedEvent(root.getParent(), root));
+		if (sendRootAddedEvent)
+			handleEvent (new NodesAddedEvent(root.getParent(), root));
 
 		attachInternal (root);
+	}
+
+	public void attach (Node root) {
+		attach(root, true);
 	}
 
 	private void detachInternal (Node root) {

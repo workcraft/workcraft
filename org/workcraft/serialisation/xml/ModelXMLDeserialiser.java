@@ -26,8 +26,15 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.References;
 
 public interface ModelXMLDeserialiser extends XMLDeserialiser {
-	public Model deserialise (Element modelElement, Node hierarchyRoot, ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver) throws DeserialisationException;
+	public Model deserialise(
+			Element modelElement,
+			Model underlyingModel,
+			Node hierarchyRoot,
+			References internalReferences,
+			ReferenceResolver externalReferenceResolver
+			)
+			throws DeserialisationException;
 }

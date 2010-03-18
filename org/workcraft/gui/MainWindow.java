@@ -506,6 +506,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
+		if (dockableWindow == null)
+			throw new NullPointerException();
+
 		int ID = dockableWindow.getID();
 
 		if (dockableWindow != null) {
@@ -554,8 +557,6 @@ public class MainWindow extends JFrame {
 				DockingManager.close(dockableWindow);
 				dockableWindow.setClosed(true);
 			}
-		} else {
-			System.err.println ("closeDockableWindow: window with ID="+ID+" was not found.");
 		}
 	}
 

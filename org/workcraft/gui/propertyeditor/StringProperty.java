@@ -41,6 +41,6 @@ public class StringProperty implements PropertyClass {
 	}
 
 	public Object toCellRendererValue(Object value) {
-		return value.toString();
+		return ""+value;
 	}
 }

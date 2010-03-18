@@ -27,7 +27,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -45,17 +44,17 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("Base icon width (pixels, 8-256)", "getIconSize", "setIconSize", int.class));
+		properties.add(new PropertyDeclaration(this, "Base icon width (pixels, 8-256)", "getIconSize", "setIconSize", int.class));
 
-		properties.add(new PropertyDeclaration("Base component size (cm)", "getSize", "setSize", double.class));
-		properties.add(new PropertyDeclaration("Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
+		properties.add(new PropertyDeclaration(this, "Base component size (cm)", "getSize", "setSize", double.class));
+		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
 
-		properties.add(new PropertyDeclaration("Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
-		properties.add(new PropertyDeclaration("Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		properties.add(new PropertyDeclaration("Default fill color", "getFillColor", "setFillColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Default fill color", "getFillColor", "setFillColor", Color.class));
 	}
 
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -120,19 +119,6 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 
 	public static void setStrokeWidth(double strokeWidth) {
 		CommonVisualSettings.strokeWidth = strokeWidth;
-	}
-
-
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public static int getIconSize() {

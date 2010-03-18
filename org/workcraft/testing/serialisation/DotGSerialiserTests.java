@@ -44,7 +44,7 @@ public class DotGSerialiserTests {
 		STG good = getModel(true);
 
 		Set<Place> goodTokenized = getTokenizedPlaces(good);
-		ArrayList<Integer> goodIds = getSortedIds(good, goodTokenized);
+		ArrayList<String> goodIds = getSortedIds(good, goodTokenized);
 		print(goodIds);
 
 		for(int i=0;i<50;i++)
@@ -53,25 +53,25 @@ public class DotGSerialiserTests {
 
 			Set<Place> badTokenized = getTokenizedPlaces(bad);
 
-			ArrayList<Integer> badIds = getSortedIds(bad, badTokenized);
+			ArrayList<String> badIds = getSortedIds(bad, badTokenized);
 
-			HashSet<Integer> missing = new HashSet<Integer>(goodIds);
+			HashSet<String> missing = new HashSet<String>(goodIds);
 			missing.removeAll(badIds);
 
 			print(missing);
 		}
 	}
 
-	private void print(Collection<Integer> badIds) {
-		for(Integer i : badIds)
+	private void print(Collection<String> badIds) {
+		for(String i : badIds)
 			System.out.print(i+" ");
 		System.out.println();
 	}
 
-	private ArrayList<Integer> getSortedIds(STG stg, Set<Place> goodTokenized) {
-		ArrayList<Integer> ids = new ArrayList<Integer>();
+	private ArrayList<String> getSortedIds(STG stg, Set<Place> goodTokenized) {
+		ArrayList<String> ids = new ArrayList<String>();
 		for(Place place : goodTokenized)
-			ids.add(stg.getNodeID(place));
+			ids.add(stg.getNodeReference(place));
 		Collections.sort(ids);
 		return ids;
 	}

@@ -23,21 +23,22 @@ package org.workcraft.plugins.serialisation.dotg;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.UUID;
 
 import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -51,220 +52,119 @@ public class DotGSerialiser implements ModelSerialiser, Plugin {
 		}
 	}
 
-	private String getTypeLetter(SignalTransition st) {
-		switch (st.getSignalType()) {
-		case INTERNAL:
-			return "i";
-		case INPUT:
-			return "I";
-		case OUTPUT:
-			return "O";
-		case DUMMY:
-			return "d"; // except dummy, those are not normal cases
+	private void writeSignalsHeader (PrintWriter out, Collection<String> signalNames, String header) {
+		if (signalNames.isEmpty())
+			return;
+
+		LinkedList<String> sortedNames = new LinkedList<String>(signalNames);
+		Collections.sort(sortedNames);
+
+		out.print(header);
+
+		for (String s : sortedNames) {
+			out.print(" ");
+			out.print(s);
 		}
-		return "";
+
+		out.print("\n");
 	}
 
-	// returns non-empty name for a transition
-	private String getName(STG stg, HashSet<String> names, MathNode st) {
+	private void writeGraphEntry(PrintWriter out, Model model, Node node) {
+		out.write(model.getNodeReference(node));
 
-		String sname = "_";
-
-		if (st instanceof Place) {
-			sname = "p" + stg.getNodeID(st);
-		} else if (st instanceof SignalTransition) {
-
-			sname = ((SignalTransition)st).getSignalName();
-
-			if (sname.equals("")) {
-				sname=getTypeLetter((SignalTransition)st)+stg.getNodeID(st);
-			} else return sname;
+		for (Node n : model.getPostset(node)) {
+			out.write(" ");
+			out.write(model.getNodeReference(n));
 		}
 
-		// is sname busy?
-		while (names.contains(sname)) {
-			sname = "_"+sname;
-		}
-
-		return sname;
+		out.write("\n");
 	}
-
-	private String getTransitionName(STG stg, HashSet<String> names, SignalTransition st) {
-
-		String sname = getName(stg, names, st);
-		if (st.getSignalType()!= SignalTransition.Type.DUMMY) {
-			switch (st.getDirection()) {
-			case PLUS:
-				sname+="+";
-				break;
-			case MINUS:
-				sname+="-";
-				break;
-			}
-			if (st.getInstance()>1) sname+="/"+st.getInstance();
-		}
-
-		return sname;
-	}
-
-
 
 	public ReferenceProducer serialise(Model model, OutputStream outStream, ReferenceProducer inRef) {
-		STG stg = (STG)model;
-
-		stg.assignInstances();
-
-		ReferenceResolver resolver = new ReferenceResolver();
-
-		//////////////////////////////////////////////////
-		// create the lists of all of the transition types
-		ArrayList<String> internal	= new ArrayList<String>();
-		ArrayList<String> inputs	= new ArrayList<String>();
-		ArrayList<String> outputs	= new ArrayList<String>();
-		ArrayList<String> dummy		= new ArrayList<String>();
-		HashSet<String> allnames = new HashSet<String>();
-
-		Collection<SignalTransition> transitions = stg.getSignalTransitions();
-		Collection<Place> places = stg.getPlaces();
-
-		//Pattern p = Pattern.compile(STG.signalPattern);
-
-		// add all names to the exception list
-		allnames.add("");
-		for (SignalTransition st: transitions) {
-			allnames.add(st.getSignalName());
-		}
-
-		String sname;
-		// sort out all the transitions
-		for (SignalTransition st: transitions) {
-			sname = getName(stg, allnames, st);
-
-			switch (st.getSignalType()) {
-			case INTERNAL:
-				if (!internal.contains(sname)) internal.add(sname);
-				break;
-			case INPUT:
-				if (!inputs.contains(sname)) inputs.add(sname);
-				break;
-			case OUTPUT:
-				if (!outputs.contains(sname)) outputs.add(sname);
-				break;
-			case DUMMY:
-				if (!dummy.contains(sname)) dummy.add(sname);
-				break;
-			}
-		}
-
-		Collections.sort(inputs);
-		Collections.sort(outputs);
-		Collections.sort(internal);
-		Collections.sort(dummy);
-
-		////////////////////////////////////////////////////
-		// prepare connection lists
-
-		List<String> connections1 = new ArrayList<String>(); // connections from transitions
-		List<String> connections2 = new ArrayList<String>(); // connections from places
-		String tokens = ""; // all the token markings, separated with space
-		String capacity = ""; // each token capacity
-
-		for (SignalTransition st : transitions) {
-			List<String> ts = new ArrayList<String>();
-			for (Node c : stg.getPostset(st)) {
-				if (c instanceof Place) {
-					ts.add(getName(stg, allnames, (Place)c));
-				}
-			}
-			Collections.sort(ts);
-
-			String ts2 = "";
-			for (String s: ts) ts2+=" "+s;
-			connections1.add(getTransitionName(stg, allnames, st)+ts2);
-		}
-
-
-
-		for (Place p :  places) {
-			List<String> ts = new ArrayList<String>();
-
-			for (Node c : stg.getPostset(p)) {
-				if (c instanceof SignalTransition) {
-					ts.add(getTransitionName(stg, allnames, (SignalTransition)c));
-				}
-			}
-			Collections.sort(ts);
-
-			String ts2 = "";
-			for (String s: ts) ts2+=" "+s;
-			connections2.add(getName(stg, allnames, p)+ts2);
-
-			if (p.getTokens()>0) {
-				tokens+=" "+getName(stg, allnames, p);
-				if (p.getTokens()>1)
-					tokens+="="+p.getTokens();
-			}
-
-			if (p.getCapacity()!=1) {
-				capacity+=" "+getName(stg, allnames, p)+"="+p.getCapacity();
-			}
-
-		}
-
-		////////////////////////////////////////////////////
-		// save everything now
-
 		PrintWriter out = new PrintWriter(outStream);
 		out.print("# STG file generated by Workcraft.\n");
 
+		ReferenceResolver resolver = new ReferenceResolver();
 
-		if (internal.size()>0) {
-			out.print(".internal ");
-			for (String s : internal) out.print(" "+s);
-			out.print("\n");
-		}
-
-		if (inputs.size()>0) {
-			Collections.sort(inputs);
-			out.print(".inputs ");
-			for (String s : inputs) out.print(" "+s);
-			out.print("\n");
-		}
-
-		if (outputs.size()>0) {
-			Collections.sort(outputs);
-			out.print(".outputs ");
-			for (String s : outputs) out.print(" "+s);
-			out.print("\n");
-		}
-
-		if (dummy.size()>0) {
-			Collections.sort(dummy);
-			out.print(".dummy ");
-			for (String s : dummy) out.print(" "+s);
-			out.print("\n");
-		}
-
-		out.print(".graph\n");
-
-		Collections.sort(connections1);
-		for (String s : connections1) out.print(s+"\n");
-
-		Collections.sort(connections2);
-		for (String s : connections2) out.print(s+"\n");
-
-		out.print(".marking { "+tokens+" }\n");
-		if (!capacity.equals(""))
-			out.print(".capacity "+capacity+"\n");
+		if (model instanceof STGModel)
+			writeSTG((STGModel)model, out);
+		else if (model instanceof PetriNetModel)
+			writePN((PetriNetModel)model, out);
+		else
+			throw new ArgumentException ("Model class not supported: " + model.getClass().getName());
 
 		out.print(".end\n");
+
 		out.close();
 
 		return resolver;
 	}
 
+	private void writeSTG(STGModel stg, PrintWriter out) {
+		writeSignalsHeader(out, stg.getSignalNames(Type.INTERNAL), ".internal");
+		writeSignalsHeader(out, stg.getSignalNames(Type.INPUT), ".inputs");
+		writeSignalsHeader(out, stg.getSignalNames(Type.OUTPUT), ".outputs");
+		writeSignalsHeader(out, stg.getDummyNames(), ".dummy");
+
+		out.print(".graph\n");
+
+		for (SignalTransition t : stg.getSignalTransitions())
+			writeGraphEntry (out, stg, t);
+
+		for (Transition t : stg.getDummies())
+			writeGraphEntry (out, stg, t);
+
+		for (Place p : stg.getPlaces())
+			writeGraphEntry (out, stg, p);
+
+		writeMarking(stg, stg.getPlaces(), out);
+	}
+
+	private void writeMarking(Model model, Collection<Place> places, PrintWriter out) {
+		out.print(".marking {");
+
+		for (Place p: places) {
+			final int tokens = p.getTokens();
+			if (tokens == 1)
+				out.print(" " + model.getNodeReference(p));
+			else if (tokens > 1)
+				out.print(" " + model.getNodeReference(p) + "=" + tokens);
+		}
+
+		out.print (" }\n");
+
+		StringBuilder capacity = new StringBuilder();
+
+		for (Place p : places) {
+			if (p.getCapacity() != 1)
+				capacity.append(" " + model.getNodeReference(p) + "=" + p.getCapacity());
+		}
+
+		if (capacity.length() > 0)
+			out.print(".capacity" + capacity + "\n");
+	}
+
+	private void writePN(PetriNetModel net, PrintWriter out) {
+		LinkedList<String> transitions = new LinkedList<String>();
+
+		for (Transition t : net.getTransitions())
+			transitions.add(net.getNodeReference(t));
+
+		writeSignalsHeader(out, transitions, ".dummy");
+
+		out.print(".graph\n");
+
+		for (Transition t : net.getTransitions())
+			writeGraphEntry (out, net, t);
+
+		for (Place p : net.getPlaces())
+			writeGraphEntry (out,net, p);
+
+		writeMarking(net, net.getPlaces(), out);
+	}
+
 	public boolean isApplicableTo(Model model) {
-		if (model instanceof STG)
+		if (model instanceof STGModel || model instanceof PetriNetModel)
 			return true;
 		return false;
 	}

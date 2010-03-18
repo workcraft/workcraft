@@ -42,12 +42,12 @@ public class VisualCircuitComponent extends VisualComponent {
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component);
 		// testing...
-		inputs.add(new VisualContact(component.addInput("A")));
-		inputs.add(new VisualContact(component.addInput("B")));
-		inputs.add(new VisualContact(component.addInput("C")));
-		outputs.add(new VisualContact(component.addOutput("X")));
-		outputs.add(new VisualContact(component.addOutput("Y")));
-		outputs.add(new VisualContact(component.addOutput("Z")));
+		inputs.add(new VisualContact(component.addInput()));
+		inputs.add(new VisualContact(component.addInput()));
+		inputs.add(new VisualContact(component.addInput()));
+		outputs.add(new VisualContact(component.addOutput()));
+		outputs.add(new VisualContact(component.addOutput()));
+		outputs.add(new VisualContact(component.addOutput()));
 
 	}
 

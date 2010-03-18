@@ -27,12 +27,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.PropertyChangeListener;
-import org.workcraft.gui.propertyeditor.PropertyEditable;
+import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 
 @SuppressWarnings("serial")
-public class PropertyEditorWindow extends JPanel implements PropertyChangeListener {
+public class PropertyEditorWindow extends JPanel {
 	private PropertyEditorTable propertyTable;
 	private JScrollPane scrollProperties;
 
@@ -48,14 +47,13 @@ public class PropertyEditorWindow extends JPanel implements PropertyChangeListen
 
 	}
 
-	public PropertyEditable getObject () {
+	public Properties getObject () {
 		return propertyTable.getObject();
 	}
 
-	public void setObject (PropertyEditable o) {
+	public void setObject (Properties o) {
 		removeAll();
 		propertyTable.setObject(o);
-		o.addPropertyChangeListener(this);
 		add(scrollProperties, BorderLayout.CENTER);
 		validate();
 		repaint();
@@ -64,16 +62,11 @@ public class PropertyEditorWindow extends JPanel implements PropertyChangeListen
 	public void clearObject () {
 		if (propertyTable.getObject() != null) {
 			removeAll();
-			propertyTable.getObject().removePropertyChangeListener(this);
 			propertyTable.clearObject();
 			add(new DisabledPanel(), BorderLayout.CENTER);
 			validate();
 			repaint();
 		}
 
-	}
-
-	public void onPropertyChanged(String propertyName, Object sender) {
-		repaint();
 	}
 }

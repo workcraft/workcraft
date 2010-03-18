@@ -21,9 +21,11 @@
 
 package org.workcraft.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -114,6 +116,22 @@ public class FileUtils{
 		FileWriter writer = new FileWriter(file);
 		writer.write(source);
 		writer.close();
+	}
+
+	public static String readAllText (File file) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+
+		StringBuffer result = new StringBuffer();
+
+		while (true) {
+		 String s = reader.readLine();
+		 if (s==null)
+			 return result.toString();
+
+		 result.append(s);
+		 result.append('\n');
+		}
 	}
 
 	public static void moveFile(File from, File to) throws IOException {

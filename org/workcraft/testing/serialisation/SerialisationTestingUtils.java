@@ -45,23 +45,15 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 public class SerialisationTestingUtils {
 	public static void comparePlaces (Place p1, Place p2) {
 		assertEquals(p1.getTokens(), p2.getTokens());
-		assertEquals(p1.getLabel(), p2.getLabel());
 		assertEquals(p1.getCapacity(), p2.getCapacity());
-		//assertEquals(p1.getID(), p2.getID());
 	}
 
 	public static void compareTransitions (SignalTransition t1, SignalTransition t2) {
-		assertEquals(t1.getLabel(), t2.getLabel());
 		assertEquals(t1.getSignalName(), t2.getSignalName());
 		assertEquals(t1.getDirection(), t2.getDirection());
-		assertEquals(t1.getInstance(), t2.getInstance());
-		//assertEquals(t1.getID(), t2.getID());
 	}
 
 	public static void compareConnections (MathConnection con1, MathConnection con2) {
-		//assertEquals(con1.getID(), con2.getID());
-		assertEquals(con1.getLabel(), con2.getLabel());
-
 		compareNodes (con1.getFirst(), con2.getFirst());
 		compareNodes (con1.getSecond(), con2.getSecond());
 	}

@@ -42,4 +42,14 @@ public class VisualGraph extends AbstractVisualModel {
 			throws InvalidConnectionException {
 	}
 
+	@Override
+	public Node getNodeByReference(String reference) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
 }

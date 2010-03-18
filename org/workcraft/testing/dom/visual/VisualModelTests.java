@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultReferenceManager;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
@@ -48,6 +49,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 public class VisualModelTests {
 
 	private class MockMathModel extends AbstractModel {
+		DefaultReferenceManager names = new DefaultReferenceManager();
 
 		public MockMathModel() {
 			super(new MathGroup());

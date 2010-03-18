@@ -89,8 +89,8 @@ public class StgModelStgBuilder implements StgBuilder {
 	}
 
 	public StgModelStgTransition buildTransition() {
-		SignalTransition transition = new SignalTransition();
-		transition.setSignalType(Type.DUMMY);
+		SignalTransition transition = null;//new SignalTransition();
+		//transition.setSignalType(Type.DUMMY); // TODO!!!
 		model.add(transition);
 		return new StgModelStgTransition(transition);
 	}

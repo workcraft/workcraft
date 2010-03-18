@@ -21,8 +21,6 @@
 
 package org.workcraft.gui.graph.tools;
 
-import java.io.IOException;
-
 import javax.swing.Icon;
 
 import org.workcraft.NodeFactory;

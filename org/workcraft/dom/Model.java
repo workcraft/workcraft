@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.gui.propertyeditor.Properties;
 
 
 public interface Model {
@@ -62,9 +63,9 @@ public interface Model {
 	public Connection connect(Node first, Node second)
 			throws InvalidConnectionException;
 
-	public Node getNodeByID(int ID);
+	public Node getNodeByReference(String reference);
 
-	public int getNodeID(Node node);
+	public String getNodeReference(Node node);
 
 	/**
 	 * This method may be called to test that
@@ -103,4 +104,6 @@ public interface Model {
 	public Set<Node> getPreset(Node node);
 
 	public Set<Connection> getConnections(Node node);
+
+	public Properties getProperties(Node node);
 }

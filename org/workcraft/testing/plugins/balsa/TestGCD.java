@@ -242,14 +242,14 @@ public class TestGCD {
 		return result;
 	}
 
-	private int getId(BreezeComponent comp) {
-		return circuit.getNodeID(comp);
+	private String getId(BreezeComponent comp) {
+		return circuit.getNodeReference(comp);
 	}
 
 	class BcComparator implements Comparator<BreezeComponent> {
 		@Override
 		public int compare(BreezeComponent comp1, BreezeComponent comp2) {
-			return getId(comp1) - getId(comp2);
+			return getId(comp1).compareTo(getId(comp2));
 		}
 
 	}

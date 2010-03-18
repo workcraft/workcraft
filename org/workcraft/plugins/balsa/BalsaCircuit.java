@@ -257,4 +257,14 @@ public final class BalsaCircuit extends AbstractMathModel
 			}
 		};
 	}
+
+	@Override
+	public Node getNodeByReference(String reference) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public String getNodeReference(Node node) {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
 }

@@ -37,10 +37,9 @@ public class Contact extends MathNode {
 	public Contact() {
 	}
 
-	public Contact(String label, IOType iot) {
+	public Contact(IOType iot) {
 		super();
 
-		setLabel(label);
 		setIOType(iot);
 	}
 

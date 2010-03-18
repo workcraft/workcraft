@@ -23,8 +23,6 @@ package org.workcraft.plugins.petri;
 
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.DefaultMathNodeRemover;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.CustomToolButtons;
@@ -51,9 +49,6 @@ public class VisualPetriNet extends AbstractVisualModel {
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
-
-		new DefaultHangingConnectionRemover(this, "VPN").attach(getRoot());
-		new DefaultMathNodeRemover().attach(getRoot());
 	}
 
 	public void validate() throws ModelValidationException {

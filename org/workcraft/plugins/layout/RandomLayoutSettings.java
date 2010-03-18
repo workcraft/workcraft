@@ -27,7 +27,6 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.visual.PropertyChangeListener;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -44,13 +43,13 @@ public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin 
 
 	public RandomLayoutSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration("Start X", "getStartX", "setStartX", double.class));
-		properties.add(new PropertyDeclaration("Start Y", "getStartY", "setStartY", double.class));
-		properties.add(new PropertyDeclaration("Range X", "getRangeX", "setRangeX", double.class));
-		properties.add(new PropertyDeclaration("Range Y", "getRangeY", "setRangeY", double.class));
+		properties.add(new PropertyDeclaration(this, "Start X", "getStartX", "setStartX", double.class));
+		properties.add(new PropertyDeclaration(this, "Start Y", "getStartY", "setStartY", double.class));
+		properties.add(new PropertyDeclaration(this, "Range X", "getRangeX", "setRangeX", double.class));
+		properties.add(new PropertyDeclaration(this, "Range Y", "getRangeY", "setRangeY", double.class));
 
 	}
-	public List<PropertyDescriptor> getPropertyDeclarations() {
+	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
@@ -66,15 +65,6 @@ public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin 
 		config.setDouble("RandomLayout.startY", startY);
 		config.setDouble("RandomLayout.rangeX", rangeX);
 		config.setDouble("RandomLayout.rangeY", rangeY);
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	}
-
-	public void firePropertyChanged(String propertyName) {
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
 	}
 
 	public String getSection() {

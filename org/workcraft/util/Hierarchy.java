@@ -144,4 +144,38 @@ public class Hierarchy {
 			result.addAll(getDescendantsOfType(n, type));
 		return result;
 	}
+
+	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter)
+	{
+		ArrayList<T> result = new ArrayList<T>();
+
+		for (T t : getChildrenOfType(node, type))
+			if (filter.eval(t))
+				result.add(t);
+
+		for(Node n : node.getChildren())
+			result.addAll(getDescendantsOfType(n, type, filter));
+
+		return result;
+	}
+
+	public static Collection<Node> getDescendants (Node node)
+	{
+		ArrayList<Node> result = new ArrayList<Node>();
+		result.addAll(node.getChildren());
+		for(Node n : node.getChildren())
+			result.addAll(getDescendants(n));
+		return result;
+	}
+
+	public static Collection<Node> getDescendants (Node node, Func<Node, Boolean> filter)
+	{
+		ArrayList<Node> result = new ArrayList<Node>();
+		for(Node n : node.getChildren()) {
+			if (filter.eval(n))
+				result.add(n);
+			result.addAll(getDescendants(n));
+		}
+		return result;
+	}
 }

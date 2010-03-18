@@ -25,6 +25,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 
 /**
  * Base type for mathematical objects -- components (graph nodes)
@@ -32,18 +36,10 @@ import org.workcraft.dom.Node;
  * @author Ivan Poliakov
  *
  */
-public abstract class MathNode implements Node {
-	private String label = "";
+public abstract class MathNode implements Node, ObservableState {
+	private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	private Node parent = null;
-
-	final public String getLabel() {
-		return label;
-	}
-
-	final public void setLabel(String label) {
-		this.label = label;
-	}
 
 	public Collection<Node> getChildren() {
 		return new HashSet<Node>();
@@ -55,5 +51,19 @@ public abstract class MathNode implements Node {
 
 	public void setParent(Node parent) {
 		this.parent = parent;
+	}
+
+	final protected void sendNotification(StateEvent e) {
+		observableStateImpl.sendNotification(e);
+	}
+
+	@Override
+	public void addObserver(StateObserver obs) {
+		observableStateImpl.addObserver(obs);
+	}
+
+	@Override
+	public void removeObserver(StateObserver obs) {
+		observableStateImpl.removeObserver(obs);
 	}
 }

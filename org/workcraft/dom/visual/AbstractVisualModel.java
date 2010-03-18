@@ -45,6 +45,8 @@ import org.workcraft.annotations.MouseListeners;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
+import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -55,6 +57,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.PasteException;
+import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -89,6 +92,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
+		new DefaultHangingConnectionRemover(this, "Visual").attach(getRoot());
+		new DefaultMathNodeRemover().attach(getRoot());
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {
@@ -558,5 +563,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	public void sendNotification(StateEvent e) {
 		observableState.sendNotification(e);
+	}
+
+	@Override public Properties getProperties(Node node) {
+		return null;
 	}
 }

@@ -24,7 +24,6 @@ package org.workcraft.plugins.petri;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.Icon;
@@ -76,7 +75,7 @@ public class SimulationTool extends AbstractTool {
 			if (n instanceof VisualTransition)
 			{
 				VisualTransition vt = (VisualTransition)n;
-				if (net.isEnabled(vt.getTransition()))
+				if (net.isEnabled(vt.getReferencedTransition()))
 						vt.setColorisation(enabledColor);
 				else
 					vt.clearColorisation();
@@ -114,7 +113,7 @@ public class SimulationTool extends AbstractTool {
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;
-			net.fire(vt.getTransition());
+			net.fire(vt.getReferencedTransition());
 			highlightEnabledTransitions(visualNet.getRoot());
 		}
 

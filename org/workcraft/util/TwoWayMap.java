@@ -18,54 +18,15 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 package org.workcraft.util;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.HashMap;
 
-public class TwoWayMap<T1,T2> {
-	LinkedHashMap<T1, T2> from1to2 = new LinkedHashMap<T1,T2>();
-	LinkedHashMap<T2, T1> from2to1 = new LinkedHashMap<T2,T1>();
-	public void put(T1 first, T2 second)
+public class TwoWayMap<T1, T2> extends GeneralTwoWayMap<T1, T2>
+{
+	public TwoWayMap()
 	{
-		from1to2.put(first, second);
-		from2to1.put(second, first);
-	}
-	public Set<T1> keys()
-	{
-		return from1to2.keySet();
-	}
-	public Set<T2> values()
-	{
-		return from2to1.keySet();
-	}
-	public T2 getValue(T1 first) {
-		return from1to2.get(first);
-	}
-	public T1 getKey(T2 second) {
-		return from2to1.get(second);
-	}
-	public void removeKey(T1 first)
-	{
-		T2 second = getValue(first);
-		remove(first,second);
-	}
-	public void removeValue(T2 second)
-	{
-		T1 first = getKey(second);
-		remove(first,second);
-	}
-	private void remove(T1 first, T2 second) {
-		from1to2.remove(first);
-		from2to1.remove(second);
-	}
-	public boolean isEmpty() {
-		return from1to2.isEmpty();
-	}
-	public boolean containsKey(T1 key) {
-		return from1to2.containsKey(key);
-	}
-	public boolean containsValue(T2 value) {
-		return from2to1.containsKey(value);
+		super(new HashMap<T1, T2>(), new HashMap<T2, T1>());
 	}
 }

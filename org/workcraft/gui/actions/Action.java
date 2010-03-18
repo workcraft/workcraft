@@ -23,8 +23,6 @@ package org.workcraft.gui.actions;
 
 import java.util.LinkedList;
 
-import javax.swing.AbstractAction;
-
 import org.workcraft.Framework;
 
 public abstract class Action/* extends AbstractAction */{

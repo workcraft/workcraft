@@ -21,12 +21,13 @@
 
 package org.workcraft.gui.propertyeditor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public interface PropertyDescriptor {
 	public boolean isWritable();
-	public Object getValue(Object owner);
-	public void setValue(Object owner, Object value);
+	public Object getValue() throws InvocationTargetException;
+	public void setValue(Object value) throws InvocationTargetException;
 	public Map<Object, String> getChoice();
 	public String getName();
 	public Class<?> getType();
