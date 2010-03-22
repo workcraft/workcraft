@@ -113,7 +113,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		if (labelGlyphs == null || !getLabel().equals(glyphsForLabel)) {
 			final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
 			glyphsForLabel = getLabel();
-			Rectangle2D textBB = glyphs.getVisualBounds();
+			Rectangle2D textBB = glyphs.getLogicalBounds();
 			Rectangle2D bb = getBoundingBoxInLocalSpace();
 			labelPosition = new Point2D.Double( bb.getMinX() + ( bb.getWidth() - textBB.getWidth() ) *0.5, bb.getMaxY() + textBB.getHeight() + 0.1);
 			labelGlyphs = glyphs;
