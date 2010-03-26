@@ -4,8 +4,8 @@
  
 options {
   JDK_VERSION = "1.5";
-  LOOKAHEAD = 3;
   STATIC = false;
+  DEBUG_LOOKAHEAD = true;
 }
 
 PARSER_BEGIN(BreezeParser)
@@ -190,26 +190,32 @@ Token keyword() : {Token t;}
 
 ParameterType type() : { ParameterType result; String typeName; }
 {
-	(<OBR>
-	( 
-		<TYPE_STRING> { result = ParameterType.STRING; }
-		|
-		<NAMED_TYPE> 
+	(
+		LOOKAHEAD(<OBR>(<TYPE_STRING>|<NAMED_TYPE> ))
+		<OBR>
 		(
-			<TYPE_CARDINAL> { result = ParameterType.CARDINAL; }
+			<TYPE_STRING> { result = ParameterType.STRING; }
 			|
-			<TYPE_BOOLEAN> { result = ParameterType.BOOLEAN; }
-			|
-			<TYPE_BINARYOPERATOR> { result = ParameterType.BINARY_OPERATOR; }
-			|
-			<TYPE_UNARYOPERATOR> { result = ParameterType.UNARY_OPERATOR; }
-			|
-			typeName = value() { result = ParameterType.OTHER; }
+			<NAMED_TYPE> 
+			(
+				LOOKAHEAD(1)
+				<TYPE_CARDINAL> { result = ParameterType.CARDINAL; }
+				|
+				LOOKAHEAD(1)
+				<TYPE_BOOLEAN> { result = ParameterType.BOOLEAN; }
+				|
+				LOOKAHEAD(1)
+				<TYPE_BINARYOPERATOR> { result = ParameterType.BINARY_OPERATOR; }
+				|
+				LOOKAHEAD(1)
+				<TYPE_UNARYOPERATOR> { result = ParameterType.UNARY_OPERATOR; }
+				|
+				typeName = value() { result = ParameterType.OTHER; }
+			)
 		)
-		
+		<CBR>
+		| numericType() { result = ParameterType.CARDINAL; }
 	)
-	<CBR>
-	| numericType() { result = ParameterType.CARDINAL; })
 	{ return result; }
 }
 
@@ -336,6 +342,7 @@ Expression<String> stringCaseExpression() :
 		toCheck = stringExpression()
 		
 		(
+			LOOKAHEAD(<OBR><OBR>)
 			<OBR>
 				<OBR>
 					condition = stringExpression()
@@ -373,6 +380,7 @@ Expression<Integer> integerExpression() :
 }
 {
 	(
+		LOOKAHEAD(<OBR><PARAM>)
 		result = parameterizedExpression() |
 		result = constantIntegerExpression() |
 		result = addExpression()
@@ -395,12 +403,12 @@ Expression<String> stringExpression() :
 }
 {
 	(
-		result = parameterizedExpression() |
-		result = constantStringExpression() |
-		result = stringCaseExpression() |
-		result = stringAppendExpression() |
-		result = numberToStringExpression() |
-		result = implicitNumberToString()
+		LOOKAHEAD(<OBR><PARAM>) 			result = parameterizedExpression() |
+		LOOKAHEAD(<OBR><CASE>)				result = stringCaseExpression() |
+		LOOKAHEAD(<OBR> <STRING_APPEND>) 	result = stringAppendExpression() |
+		LOOKAHEAD(<OBR> <NUMBER_TO_STRING>)	result = numberToStringExpression() |
+		LOOKAHEAD(implicitNumberToString()) result = implicitNumberToString() |
+											result = constantStringExpression()
 	)
 
 	{return new ToStringExpression((Expression<Object>) result);}
@@ -441,10 +449,11 @@ boolean isActive() : {}
 	| <PASSIVE> { return false; }
 }
 
-Expression<Integer> arrayCount() : {}
+Expression<Integer> arrayCount() : { Expression<Integer> result; }
 {
 	<ZERO>
-	{ return integerExpression(); }
+	result = integerExpression()
+	{ return result; }
 }
 
 PortDeclaration arrayedSyncPort(String name, boolean isActive) :
@@ -459,14 +468,18 @@ PortDeclaration arrayedSyncPort(String name, boolean isActive) :
 PortDeclaration arrayedDataPort(String name, boolean isActive) :
 {
 	Expression<Integer> count;
-	Expression<Integer[]> width;
-	Expression<Integer> simpleWidth;
+	Expression<Integer[]> width = null;
+	Expression<Integer> simpleWidth = null;
 	boolean isInput;
 }
 {
-	count = arrayCount()
 	isInput = dataDirectionIsInput()
-	(width = variable_array_type() | simpleWidth = numericType() {width = new ConstantArrayType(simpleWidth, count);})
+	(
+		LOOKAHEAD(<OBR><VARIABLE_ARRAY_TYPE>) width = variable_array_type() | 
+			simpleWidth = numericType()
+	)
+	count = arrayCount()
+	{ if(width == null) width = new ConstantArrayType(simpleWidth, count); }
 	{ return PortDeclaration.createArrayedData(name, isActive, count, isInput, width); }
 }
 
@@ -707,10 +720,8 @@ void typeDefinition() : {}
 
 void breezeDef(List<BreezePart> defs) : {BreezePart def;}
 {
-	typeDefinition()
-	|
-	def = breezePart()
-	{ defs.add(def); }
+	LOOKAHEAD(<OBR><TYPE>) typeDefinition()
+	| def = breezePart() { defs.add(def); }
 }
 
 void importDef() : {}
@@ -722,7 +733,7 @@ void importDef() : {}
 
 List<BreezePart> breezeFile() : { List<BreezePart > defs = new LinkedList<BreezePart >();}
 {
-	(importDef())*
+	(LOOKAHEAD(<OBR><IMPORT>) importDef())*
 	(breezeDef(defs))*
 	{return defs;}
 }
