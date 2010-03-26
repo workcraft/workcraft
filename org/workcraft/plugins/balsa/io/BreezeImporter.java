@@ -34,19 +34,17 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 
 public class BreezeImporter implements Importer
 {
+	private final BalsaSystem balsa;
+
+
 	public BreezeImporter()
 	{
-		balsaHome = balsaHomeStatic;
+		balsa = BalsaSystem.DEFAULT();
 	}
 
-	public BreezeImporter(String balsaHome) {
-		this.balsaHome = balsaHome;
+	public BreezeImporter(BalsaSystem balsa) {
+		this.balsa = balsa;
 	}
-
-	private static final String ABSPATH = "/share/tech/common/components";
-	private String balsaHome;
-
-	private static final String balsaHomeStatic = System.getenv("BALSA_HOME");
 
 	@Override
 	public boolean accept(File file) {
@@ -58,18 +56,12 @@ public class BreezeImporter implements Importer
 		return "Breeze handshake circuit (.breeze)";
 	}
 
-	public void setBalsaHome(String path)
-	{
-		balsaHome = path;
-	}
-
 	@Override
 	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException,
 			IOException {
 		BreezeLibrary lib = new BreezeLibrary();
-		if (balsaHome == null || balsaHome.isEmpty())
-			throw new DeserialisationException("BALSA_HOME environment variable not set -- cannot load primitive parts definitions.");
-		lib.registerPrimitives(new File(new File(balsaHome), ABSPATH));
+
+		lib.registerPrimitives(balsa.getDefinitionsDir());
 
 		try {
 			lib.registerParts(in);

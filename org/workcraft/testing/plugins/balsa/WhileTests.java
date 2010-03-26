@@ -47,7 +47,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
-import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
+import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
@@ -67,19 +67,19 @@ public class WhileTests {
 
 		final Map<String, Handshake> handshakes = MainHandshakeMaker.getHandshakes(wh);
 
-		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
+		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new NameProvider<Handshake>()
 		{
-			HashMap<Object, String> names;
+			HashMap<Handshake, String> names;
 
 			{
-				names = new HashMap<Object, String>();
+				names = new HashMap<Handshake, String>();
 				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
 					names.put(entry.getValue(), entry.getKey());
 				}
 			}
 
-			public String getName(Object handshake) {
+			public String getName(Handshake handshake) {
 				return names.get(handshake);
 			}
 		});

@@ -26,7 +26,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Model;
@@ -46,7 +50,7 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.InternalHandshakeStgBuild
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
+import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.stg.STG;
@@ -66,7 +70,6 @@ public abstract class BalsaToStgExporter {
 
 	private static class BalsaCircuit extends CachedCircuit<HandshakeComponent, BreezeComponent, BreezeConnection>
 	{
-
 		public BalsaCircuit(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> c) {
 			super(c);
 		}
@@ -83,9 +86,11 @@ public abstract class BalsaToStgExporter {
 
 		boolean useSimpleInternalHandshakes = false;
 
+		NameProvider<Handshake> names = getNamesProvider(balsa);
+
 		if(useSimpleInternalHandshakes)
 		{
-			STG stgf = buildStgFull(balsa);
+			STG stgf = buildStgFull(balsa, names);
 			new DotGExporter().export(stgf, out);
 		}
 		else
@@ -93,50 +98,55 @@ public abstract class BalsaToStgExporter {
 			ArrayList<File> tempFiles = new ArrayList<File>();
 			for(BreezeComponent component : getComponentsToSave(balsa))
 			{
-				STG stg = buildStg(balsa, component);
+				STG stg = buildStg(balsa, component, names);
 
 				File tempFile = File.createTempFile("brz_", ".g");
 				tempFiles.add(tempFile);
 
-				DotGExporter exporter = new DotGExporter();
-
-				Export.exportToFile(exporter, stg, tempFile);
+				Export.exportToFile(new DotGExporter(), stg, tempFile);
 			}
 
-			String [] args = new String [tempFiles.size() + 3];
-			args[0] = PetriNetToolsSettings.getPcompCommand();
-			args[1] = "-d";
-			args[2] = "-r";
-			for(int i=0;i<tempFiles.size();i++)
-				args[i+3] = tempFiles.get(i).getPath();
-
-			SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
-
-			pcomp.start(10000);
-
-			byte [] outputData = pcomp.getOutputData();
-			System.out.println("----- Pcomp errors: -----");
-			System.out.print(new String(pcomp.getErrorData()));
-			System.out.println("----- End of errors -----");
-
-			if(pcomp.getReturnCode() != 0)
+			if(tempFiles.size() > 0)
 			{
-				System.out.println("");
-				System.out.println("----- Pcomp output: -----");
-				System.out.print(new String(outputData));
-				System.out.println("----- End of output -----");
+				String [] args = new String [tempFiles.size() + 3];
+				args[0] = PetriNetToolsSettings.getPcompCommand();
+				args[1] = "-d";
+				args[2] = "-r";
+				for(int i=0;i<tempFiles.size();i++)
+					args[i+3] = tempFiles.get(i).getPath();
 
-				throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
+				SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
+
+				pcomp.start(10000);
+
+				byte [] outputData = pcomp.getOutputData();
+				System.out.println("----- Pcomp errors: -----");
+				System.out.print(new String(pcomp.getErrorData()));
+				System.out.println("----- End of errors -----");
+
+				if(pcomp.getReturnCode() != 0)
+				{
+					System.out.println("");
+					System.out.println("----- Pcomp output: -----");
+					System.out.print(new String(outputData));
+					System.out.println("----- End of output -----");
+
+					throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
+				}
+
+				saveData(outputData, out);
+
+				for(File f : tempFiles)
+					f.delete();
 			}
-
-			saveData(outputData, out);
-
-			for(File f : tempFiles)
-				f.delete();
+			else
+			{
+				new DotGExporter().export(new STG(), out);
+			}
 		}
 	}
 
-	private STG buildStgFull(BalsaCircuit balsa) {
+	private STG buildStgFull(BalsaCircuit balsa, NameProvider<Handshake> names) {
 		STG stg = new STG();
 
 		Iterable<? extends BreezeComponent> components = getComponentsToSave(balsa);
@@ -149,9 +159,7 @@ public abstract class BalsaToStgExporter {
 
 			MainStgBuilder.addDataPathHandshakes(fullHandshakes, component.getUnderlyingComponent());
 
-			HandshakeNameProvider nameProvider = getNamesProvider(balsa, component, fullHandshakes);
-
-			StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, nameProvider);
+			StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, names);
 
 			Map<String, Handshake> external = new HashMap<String, Handshake>();
 			Map<String, TwoWayStg> internal = new HashMap<String, TwoWayStg>();
@@ -219,16 +227,14 @@ public abstract class BalsaToStgExporter {
 	}
 
 
-	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent) {
+	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent, NameProvider<Handshake> names) {
 		STG stg = new STG();
 
 		Map<String, Handshake> fullHandshakes = new HashMap<String, Handshake>(breezeComponent.getHandshakes());
 
 		MainStgBuilder.addDataPathHandshakes(fullHandshakes, breezeComponent.getUnderlyingComponent());
 
-		HandshakeNameProvider nameProvider = getNamesProvider(circuit, breezeComponent, fullHandshakes);
-
-		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, nameProvider);
+		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, names);
 
 		Map<String, TwoSideStg> handshakeStgs = MainStgBuilder.buildHandshakes(fullHandshakes, protocol, stgBuilder);
 
@@ -236,9 +242,9 @@ public abstract class BalsaToStgExporter {
 		return stg;
 	}
 
-	class CountingNameProvider implements HandshakeNameProvider
+	class CountingNameProvider<T> implements NameProvider<T>
 	{
-		Map<Object, String> names = new HashMap<Object, String>();
+		Map<T, String> names = new HashMap<T, String>();
 		int nextId = 1;
 		private final String prefix;
 
@@ -247,7 +253,7 @@ public abstract class BalsaToStgExporter {
 		}
 
 		@Override
-		public String getName(Object key) {
+		public String getName(T key) {
 			String name = names.get(key);
 			if(name == null)
 			{
@@ -258,34 +264,30 @@ public abstract class BalsaToStgExporter {
 		}
 	}
 
-	private HandshakeNameProvider getNamesProvider(final BalsaCircuit circuit, final BreezeComponent breezeComponent, final Map<String, Handshake> handshakes) {
-		final HashMap<Object, String> names;
+	private NameProvider<Handshake> getNamesProvider(final BalsaCircuit circuit)
+	{
+		NameProvider<BreezeComponent> componentNames = new CountingNameProvider<BreezeComponent>("c");
 
-		names = new HashMap<Object, String>();
-		final CountingNameProvider cnp1 = new CountingNameProvider("c");
-		final CountingNameProvider cnp2 = new CountingNameProvider("w");
+		final HashMap<Handshake, String> names = new HashMap<Handshake, String>();
 
-		for(Entry<String, Handshake> entry : handshakes.entrySet())
-			names.put(entry.getValue(), cnp1.getName(breezeComponent) + "_" + entry.getKey());
+		List<? extends HandshakeComponent> externalPorts = circuit.getPorts();
 
-		for(Entry<Handshake, HandshakeComponent> entry : breezeComponent.getHandshakeComponents().entrySet())
+		for(HandshakeComponent hs : externalPorts)
+			names.put(hs.getHandshake(), "port_" + hs.getHandshakeName());
+		for(BreezeComponent comp : circuit.getBlocks())
+			for(HandshakeComponent hs : comp.getPorts())
+				names.put(hs.getHandshake(), componentNames.getName(comp) + "_" + hs.getHandshakeName());
+
+		return new NameProvider<Handshake>()
 		{
-			BreezeConnection connection = circuit.getConnection(entry.getValue());
-			if(connection != null)
-				names.put(entry.getKey(), cnp2.getName(connection));
-		}
-		names.put(breezeComponent.getUnderlyingComponent(), cnp1.getName(breezeComponent));
-
-		HandshakeNameProvider nameProvider = new HandshakeNameProvider()
-		{
-			public String getName(Object handshake) {
+			public String getName(Handshake handshake)
+			{
 				String result = names.get(handshake);
 				if(result == null)
-					throw new IndexOutOfBoundsException("No name found for the given handshake");
+					throw new NoSuchElementException("No name found for the given handshake");
 				return result;
 			}
 		};
-		return nameProvider;
 	}
 
 	public String getDescription() {

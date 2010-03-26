@@ -36,7 +36,7 @@ public class SplitResult implements Netlist<HandshakeComponent, Block<HandshakeC
 	private final Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control;
 	private final List<BreezeConnection> connections;
 
-	public SplitResult(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data, Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control, List<BreezeConnection> connections)
+	public SplitResult(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control, Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data, List<BreezeConnection> connections)
 	{
 		this.data = data;
 		this.control = control;

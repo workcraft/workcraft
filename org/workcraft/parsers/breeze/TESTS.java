@@ -159,14 +159,18 @@ public class TESTS {
 	{
 		BreezeLibrary lib;
 
-		File inFile = new File("C:\\balsa_Testing\\viterbi\\test.breeze");
+		File inFile = new File("/c/balsa_Testing/viterbi/test.breeze");
 		final BalsaCircuit balsa = new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile));
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit = balsa.asNetlist();
 
+		System.out.println("Original circuit components: " + circuit.getBlocks().size());
 		SplitResult split = Splitter.splitControlAndData(circuit);
 
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control = split.getControl();
 		Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data = split.getData();
+
+		System.out.println("Control circuit components: " + control.getBlocks().size());
+		System.out.println("Data circuit components: " + data.getBlocks().size());
 
 		VerilogComponent controller = synthesiseThroughStg(control);
 		VerilogComponent dataPath = directMap(data);
@@ -235,6 +239,7 @@ public class TESTS {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		System.out.println("Exported STG: ");
 		System.out.println(out.toString());
 		return null;
 	}

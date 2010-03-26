@@ -84,7 +84,7 @@ public class Splitter {
 		{
 			PartSplitResult split = splitPart(p, splitPorts);
 			controlParts.add(split.getControl());
-			controlParts.add(split.getData());
+			dataParts.add(split.getData());
 			interconnects.addAll(split.getConnections());
 		}
 
@@ -107,8 +107,7 @@ public class Splitter {
 		};
 	}
 
-	private Map<HandshakeComponent, SplitPort> splitPorts(
-			Netlist<HandshakeComponent,BreezeComponent,BreezeConnection> circuit) {
+	private Map<HandshakeComponent, SplitPort> splitPorts(Netlist<HandshakeComponent,BreezeComponent,BreezeConnection> circuit) {
 		Map<HandshakeComponent, SplitPort> result = new HashMap<HandshakeComponent, SplitPort>();
 		for(BreezeComponent comp : circuit.getBlocks())
 			for(HandshakeComponent port : comp.getHandshakeComponents().values())

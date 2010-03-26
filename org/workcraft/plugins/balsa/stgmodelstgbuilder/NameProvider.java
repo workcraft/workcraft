@@ -21,6 +21,6 @@
 
 package org.workcraft.plugins.balsa.stgmodelstgbuilder;
 
-public interface HandshakeNameProvider {
-	public String getName(Object handshake);
+public interface NameProvider<T> {
+	public String getName(T obj);
 }
