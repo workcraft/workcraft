@@ -39,6 +39,7 @@ import javax.swing.SwingConstants;
 
 import org.workcraft.Framework;
 import org.workcraft.annotations.Annotations;
+import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -176,7 +177,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			tracker = trackerMap.get(selectedTool);
 
 			selectedTool.deactivated(mainWindow.getCurrentEditor());
-			((VisualGroup)mainWindow.getCurrentEditor().getModel().getRoot()).clearColorisation();
+			((Colorisable)mainWindow.getCurrentEditor().getModel().getRoot()).clearColorisation();
 			reverseMap.get(selectedTool).setSelected(false);
 		}
 

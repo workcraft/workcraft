@@ -28,7 +28,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -44,7 +43,6 @@ import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.SelectionColoriser;
@@ -100,7 +98,7 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
 				switch(e.getKeyModifiers()) {
@@ -163,7 +161,7 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButtonModifiers()==MouseEvent.BUTTON1_DOWN_MASK) {
-			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getStartPosition(), model);
+			Node hitNode = HitMan.hitTestForSelection(e.getStartPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag

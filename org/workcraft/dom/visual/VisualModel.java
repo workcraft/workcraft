@@ -23,7 +23,6 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import org.workcraft.dom.Container;
@@ -54,5 +53,4 @@ public interface VisualModel extends Model, ObservableState {
 	public void setCurrentLevel (Container group);
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
-	public Collection<Node> boxHitTest(Rectangle2D rect);
 }
