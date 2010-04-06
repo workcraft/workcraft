@@ -103,24 +103,6 @@ public class MainMenu extends JMenuBar {
 
 	}
 
-	class ModelCheckAction extends ScriptedAction {
-		private String modelCheckerClassName;
-		private String displayName;
-
-		public ModelCheckAction(ModelChecker checker) {
-			modelCheckerClassName = checker.getClass().getName();
-			displayName = checker.getDisplayName();
-		}
-
-		public String getScript() {
-			return "mainWindow.runModelChecker(\""+modelCheckerClassName+"\");";
-		}
-
-		public String getText() {
-			return displayName;
-		}
-	}
-
 	private JMenu mnFile, mnEdit, mnView, mnSettings, mnHelp, mnWindows;
 	private JMenu mnExport;
 

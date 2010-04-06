@@ -19,32 +19,27 @@
 *
 */
 
-package org.workcraft.dom.visual;
+package org.workcraft.plugins.cpog;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
-public class BoundingBoxHelper {
+@DisplayName("Vertex")
+@VisualClass("org.workcraft.plugins.cpog.VisualVertex")
+public class Vertex extends MathNode
+{
+	private BooleanFunction condition = BooleanFunction.TRUE;
 
-	public static Rectangle2D union(Rectangle2D rect1, Rectangle2D rect2)
+	public void setCondition(BooleanFunction condition)
 	{
-		if (rect1 == null) return rect2;
-		if (rect2 == null) return rect1;
-
-		Rectangle2D result = new Rectangle2D.Double();
-
-		result.setRect(rect1);
-		result.add(rect2);
-
-		return result;
+		this.condition = condition;
+		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 
-	public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
-		Rectangle2D bb = null;
-		for(Touchable node : nodes)
-			bb = union(bb, node.getBoundingBox());
-		return bb;
+	public BooleanFunction getCondition()
+	{
+		return condition;
 	}
-
-
 }

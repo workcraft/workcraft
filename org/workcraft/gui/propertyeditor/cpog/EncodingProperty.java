@@ -19,32 +19,30 @@
 *
 */
 
-package org.workcraft.dom.visual;
+package org.workcraft.gui.propertyeditor.cpog;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
-public class BoundingBoxHelper {
+import org.workcraft.gui.propertyeditor.PropertyClass;
+import org.workcraft.plugins.cpog.Encoding;
 
-	public static Rectangle2D union(Rectangle2D rect1, Rectangle2D rect2)
-	{
-		if (rect1 == null) return rect2;
-		if (rect2 == null) return rect1;
+public class EncodingProperty implements PropertyClass {
 
-		Rectangle2D result = new Rectangle2D.Double();
-
-		result.setRect(rect1);
-		result.add(rect2);
-
-		return result;
+	public Object fromCellEditorValue(Object editorComponentValue) {
+		return editorComponentValue;
 	}
 
-	public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
-		Rectangle2D bb = null;
-		for(Touchable node : nodes)
-			bb = union(bb, node.getBoundingBox());
-		return bb;
+	public TableCellEditor getCellEditor() {
+		return new EncodingCellEditor();
 	}
 
+	public TableCellRenderer getCellRenderer() {
+		return new DefaultTableCellRenderer();
+	}
 
+	public Object toCellRendererValue(Object value) {
+		return value;
+	}
 }
