@@ -46,5 +46,19 @@ public class BoundingBoxHelper {
 		return bb;
 	}
 
+	public static Rectangle2D expand(Rectangle2D rect, double x, double y)
+	{
+		Rectangle2D res = new Rectangle2D.Double();
+		res.setRect(rect);
+
+		x /= 2.0f;
+		y /= 2.0f;
+
+		res.add(rect.getMinX() - x, rect.getMinY() - y);
+		res.add(rect.getMaxX() + x, rect.getMaxY() + y);
+
+		return res;
+	}
+
 
 }

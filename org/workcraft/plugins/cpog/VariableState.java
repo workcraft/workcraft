@@ -23,13 +23,13 @@ package org.workcraft.plugins.cpog;
 
 public enum VariableState
 {
-	TRUE("1"),
-	FALSE("0"),
-	UNDEFINED("?");
+	TRUE('1'),
+	FALSE('0'),
+	UNDEFINED('?');
 
-	public final String value;
+	public final char value;
 
-	private VariableState(String value)
+	private VariableState(char value)
 	{
 		this.value = value;
 	}
@@ -37,6 +37,14 @@ public enum VariableState
 	@Override
 	public String toString()
 	{
-		return value;
+		return Character.toString(value);
+	}
+
+	public static VariableState fromChar(char c)
+	{
+		if (c == TRUE.value) return TRUE;
+		if (c == FALSE.value) return FALSE;
+
+		return UNDEFINED;
 	}
 }

@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
@@ -63,6 +64,8 @@ public class VisualCPOG extends AbstractVisualModel
 				throw new RuntimeException(e);
 			}
 		}
+
+		new CPOGConsistencyEnforcer(this).attach(getRoot());
 	}
 
 	@Override
@@ -118,5 +121,15 @@ public class VisualCPOG extends AbstractVisualModel
 		currentLevel.reparent(connectionsToGroup, group);
 
 		select(group);
+	}
+
+	public Collection<VisualCPOGGroup> getGroups()
+	{
+		return Hierarchy.getChildrenOfType(getRoot(), VisualCPOGGroup.class);
+	}
+
+	public Collection<VisualVariable> getVariables()
+	{
+		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
 	}
 }

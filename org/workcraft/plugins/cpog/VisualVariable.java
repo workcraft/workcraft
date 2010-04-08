@@ -80,7 +80,7 @@ public class VisualVariable extends VisualComponent
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.setFont(font);
 
-		String text = getState().value;
+		String text = getState().toString();
 
 		GlyphVector glyphVector = font.createGlyphVector(g.getFontRenderContext(), text);
 		Rectangle2D textBB = glyphVector.getLogicalBounds();

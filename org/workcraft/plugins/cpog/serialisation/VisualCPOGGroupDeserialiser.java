@@ -64,7 +64,7 @@ public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters)
 	{
-		return new Encoding();
+		return new VisualCPOGGroup();
 	}
 
 	@Override
