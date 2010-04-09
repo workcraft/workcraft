@@ -1,0 +1,172 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;
+}
+PARSER_BEGIN(BooleanParser)
+package org.workcraft.plugins.cpog.optimisation.javacc;
+
+import java.io.StringReader;
+
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.*;
+import org.workcraft.plugins.cpog.optimisation.*;
+
+public class BooleanParser {
+	BooleanWorker worker = BooleanOperations.worker;
+
+  BooleanFormula var(String name)
+  {
+    return new FreeVariable(name);  }
+  BooleanFormula constant(String value)
+  {
+	return "0".equals(value) ? worker.zero() : worker.one(); 
+  }
+  BooleanFormula and(BooleanFormula a, BooleanFormula b)
+  {
+	return worker.and(a,b); 
+  }
+  BooleanFormula or(BooleanFormula a, BooleanFormula b)
+  {
+	return worker.or(a,b); 
+  }
+  BooleanFormula eq(BooleanFormula a, BooleanFormula b)
+  {
+	return worker.iff(a,b); 
+  }
+  BooleanFormula imply(BooleanFormula a, BooleanFormula b)
+  {
+	return worker.imply(a,b); 
+  }
+  BooleanFormula xor(BooleanFormula a, BooleanFormula b)
+  {
+	return worker.xor(a,b); 
+  }
+  BooleanFormula not(BooleanFormula a)
+  {
+	return worker.not(a); 
+  }
+
+  public static BooleanFormula parse(String text) throws ParseException
+  {	return new BooleanParser(new StringReader(text)).formula();
+  }
+
+  public static void main(String[] args)  throws Exception
+  {	System.out.println(FormulaToString.toString(new BooleanParser(System.in).formula()));
+  }
+}
+PARSER_END(BooleanParser)
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+|	"\n"
+}
+TOKEN : /* OPERATORS */
+{
+  	< EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
+|  	< NOTEQUALS: "neq" | "!=" >
+|  	< IMPLIES: "imp" | "=>" | "->" >
+|  	< OR: "or" | "|" | "+" | "\u2228" >
+|  	< XOR: "xor" | "^" >
+|	< AND: "and" | "&" | "*" | "\u2227" >
+|	< NOT: "not" | "!" | "¬" >
+|   < POSTNOT: "'" >
+}
+TOKEN :
+{
+    < CONSTANT: "0"|"1" >
+|   < VARIABLE: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9","[","]"])* >
+}
+BooleanFormula formula() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = eqOp() ( < EQUALS > op = eqOp()  { result = eq(result, op); } )*
+  { return result; }}
+
+BooleanFormula eqOp() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = neqOp() ( < NOTEQUALS > op = neqOp()
+  { result = xor(result, op); } ) *
+  { return result; }
+}
+
+BooleanFormula neqOp() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = implyOp() [ < IMPLIES > op = implyOp()
+  { result = imply(result, op); } ]
+  { return result; }
+}
+
+BooleanFormula implyOp() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = orOp() ( < OR > op = orOp()
+  { result = or(result, op); } ) *
+  { return result; }
+}
+
+BooleanFormula orOp() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = xorOp() ( < XOR > op = xorOp()
+  { result = xor(result, op); } ) *
+  { return result; }
+}
+
+BooleanFormula xorOp() :
+{
+  	BooleanFormula result;
+  	BooleanFormula op;
+}
+{
+  result = andOp() ( < AND > op = andOp()
+  { result = and(result, op); } ) *
+  { return result; }
+}
+
+BooleanFormula andOp() :
+{
+  boolean inverse = false;
+  BooleanFormula result;}
+{
+  	(< NOT > { inverse = !inverse; } )*
+  	result = literal()
+  	(< POSTNOT > { inverse = !inverse; } )*
+  	{ return inverse ? not(result) : result; }
+}
+
+BooleanFormula literal() :
+{
+  Token t;
+  BooleanFormula result;}
+{
+   (     t = < VARIABLE >
+	{ result = var(t.image); }
+    |
+    t = < CONSTANT >
+	{ result = constant(t.image); }    | "(" result = formula() ")"
+  )
+  { return result; }}
