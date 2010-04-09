@@ -21,31 +21,27 @@
 
 package org.workcraft.plugins.cpog;
 
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.dom.visual.connections.VisualConnection;
 
-public class CPOGConnection extends MathConnection
+public class VisualDynamicVariableConnection extends VisualConnection
 {
-	private BooleanFunction condition;
+	DynamicVariableConnection mathConnection;
 
-	public CPOGConnection()
+	public VisualDynamicVariableConnection(DynamicVariableConnection mathConnection)
 	{
+		super();
+		this.mathConnection = mathConnection;
 	}
 
-	public CPOGConnection(Vertex first, Vertex second)
+	public VisualDynamicVariableConnection(DynamicVariableConnection mathConnection, VisualVertex first, VisualVariable second)
 	{
-		super(first, second);
-		condition = BooleanFunction.TRUE;
+		super(mathConnection, first, second);
+		this.mathConnection = mathConnection;
 	}
 
-	public void setCondition(BooleanFunction condition)
+	@Override
+	public boolean hasArrow()
 	{
-		this.condition = condition;
-		sendNotification(new PropertyChangedEvent(this, "condition"));
-	}
-
-	public BooleanFunction getCondition()
-	{
-		return condition;
+		return false;
 	}
 }

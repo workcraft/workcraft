@@ -21,47 +21,16 @@
 
 package org.workcraft.plugins.cpog;
 
-public enum VariableState
+import org.workcraft.dom.math.MathConnection;
+
+public class DynamicVariableConnection extends MathConnection
 {
-	TRUE('1'),
-	FALSE('0'),
-	UNDEFINED('?');
-
-	public final char value;
-
-	private VariableState(char value)
+	public DynamicVariableConnection()
 	{
-		this.value = value;
 	}
 
-	@Override
-	public String toString()
+	public DynamicVariableConnection(Vertex first, Variable second)
 	{
-		return Character.toString(value);
-	}
-
-	public static VariableState fromChar(char c)
-	{
-		if (c == TRUE.value) return TRUE;
-		if (c == FALSE.value) return FALSE;
-
-		return UNDEFINED;
-	}
-
-	public boolean matches(VariableState state)
-	{
-		if (value == state.value) return true;
-		if (value == '?' || state.value == '?') return true;
-		return false;
-	}
-
-	public VariableState toggle()
-	{
-		switch(this)
-		{
-			case TRUE: return VariableState.FALSE;
-			case FALSE: return VariableState.UNDEFINED;
-			default: return VariableState.TRUE;
-		}
+		super(first, second);
 	}
 }

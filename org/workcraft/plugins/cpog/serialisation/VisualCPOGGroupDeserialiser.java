@@ -27,7 +27,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.cpog.Encoding;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VariableState;
-import org.workcraft.plugins.cpog.VisualCPOGGroup;
+import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
@@ -38,14 +38,14 @@ public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 	@Override
 	public String getClassName()
 	{
-		return VisualCPOGGroup.class.getName();
+		return VisualScenario.class.getName();
 	}
 
 	@Override
 	public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
 	{
-		Encoding encoding = ((VisualCPOGGroup) instance).getEncoding();
+		Encoding encoding = ((VisualScenario) instance).getEncoding();
 
 		NodeList subelements = element.getElementsByTagName("encoding");
 
@@ -53,8 +53,8 @@ public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 		{
 			Element subelement = (Element) subelements.item(i);
 
-			Variable var = (Variable) internalReferenceResolver.getObject(subelement.getAttribute("variable"));
-			VariableState state = Enum.valueOf(VariableState.class, subelement.getAttribute("variable"));
+			Variable var = (Variable) externalReferenceResolver.getObject(subelement.getAttribute("variable"));
+			VariableState state = Enum.valueOf(VariableState.class, subelement.getAttribute("state"));
 
 			encoding.setState(var, state);
 		}
@@ -64,7 +64,7 @@ public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters)
 	{
-		return new VisualCPOGGroup();
+		return new VisualScenario();
 	}
 
 	@Override

@@ -33,10 +33,12 @@ import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -50,6 +52,8 @@ public class VisualVariable extends VisualComponent
 	private static float strokeWidth = 0.1f;
 
 	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
+
+	private Rectangle2D labelBB = null;
 
 	public VisualVariable(Variable variable)
 	{
@@ -104,6 +108,7 @@ public class VisualVariable extends VisualComponent
 	public void setLabel(String label)
 	{
 		getMathVariable().setLabel(label);
+		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
 	protected void drawLabelInLocalSpace(Graphics2D g)
@@ -112,10 +117,14 @@ public class VisualVariable extends VisualComponent
 
 		final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
 
-		Rectangle2D textBB = glyphs.getLogicalBounds();
+		labelBB = glyphs.getLogicalBounds();
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		Point2D labelPosition = new Point2D.Double(bb.getMinX() + (bb.getWidth() - textBB.getWidth()) * 0.5,
+		Point2D labelPosition = new Point2D.Double(bb.getMinX() + (bb.getWidth() - labelBB.getWidth()) * 0.5,
 				bb.getMinY() - 0.2);
+
+		labelBB = glyphs.getVisualBounds();
+		labelBB.setRect(labelBB.getMinX() + labelPosition.getX(), labelBB.getMinY() + labelPosition.getY(),
+				labelBB.getWidth(), labelBB.getHeight());
 
 		g.setColor(Coloriser.colorise(getLabelColor(), getColorisation()));
 		g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
@@ -145,5 +154,15 @@ public class VisualVariable extends VisualComponent
 	public void setState(VariableState state)
 	{
 		getMathVariable().setState(state);
+	}
+
+	public Rectangle2D getBoundingBoxWithLabel()
+	{
+		return transformToParentSpace(BoundingBoxHelper.union(getBoundingBoxInLocalSpace(), labelBB));
+	}
+
+	public void toggle()
+	{
+		setState(getState().toggle());
 	}
 }

@@ -62,9 +62,16 @@ public class CPOG extends AbstractMathModel
 		referenceManager.setName(vertex, name);
 	}
 
-	public CPOGConnection connect(Vertex first, Vertex second) throws InvalidConnectionException
+	public Arc connect(Vertex first, Vertex second) throws InvalidConnectionException
 	{
-		CPOGConnection con = new CPOGConnection(first, second);
+		Arc con = new Arc(first, second);
+		getRoot().add(con);
+		return con;
+	}
+
+	public DynamicVariableConnection connect(Vertex first, Variable second) throws InvalidConnectionException
+	{
+		DynamicVariableConnection con = new DynamicVariableConnection(first, second);
 		getRoot().add(con);
 		return con;
 	}

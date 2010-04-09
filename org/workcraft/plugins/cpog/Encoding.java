@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class Encoding
@@ -41,5 +40,10 @@ public class Encoding
 		VariableState res = states.get(var);
 		if (res == null) res = VariableState.UNDEFINED;
 		return res;
+	}
+
+	public void toggleState(Variable var)
+	{
+		setState(var, getState(var).toggle());
 	}
 }

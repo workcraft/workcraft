@@ -24,11 +24,11 @@ package org.workcraft.plugins.cpog;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
-public class VisualCPOGConnection extends VisualConnection
+public class VisualArc extends VisualConnection
 {
-	CPOGConnection mathConnection;
+	Arc mathConnection;
 
-	public VisualCPOGConnection(CPOGConnection mathConnection)
+	public VisualArc(Arc mathConnection)
 	{
 		super();
 		this.mathConnection = mathConnection;
@@ -41,7 +41,7 @@ public class VisualCPOGConnection extends VisualConnection
 		addPropertyDeclaration(new PropertyDeclaration(this, "Condition", "getCondition", "setCondition", String.class));
 	}
 
-	public VisualCPOGConnection(CPOGConnection mathConnection, VisualVertex first, VisualVertex second)
+	public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second)
 	{
 		super(mathConnection, first, second);
 		this.mathConnection = mathConnection;

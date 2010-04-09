@@ -38,6 +38,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_V)
@@ -122,5 +123,6 @@ public class VisualVertex extends VisualComponent
 	public void setCondition(String condition)
 	{
 		getMathVertex().setCondition(new BooleanFunction(condition));
+		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 }

@@ -23,21 +23,24 @@ package org.workcraft.plugins.cpog;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
+import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
+@DisplayName("Conditional Partial Order Graph")
 @DefaultCreateButtons( { Vertex.class, Variable.class, RhoClause.class })
+@CustomTools ( CustomToolsProvider.class )
 public class VisualCPOG extends AbstractVisualModel
 {
 	private CPOG mathModel;
@@ -65,31 +68,66 @@ public class VisualCPOG extends AbstractVisualModel
 			}
 		}
 
-		new CPOGConsistencyEnforcer(this).attach(getRoot());
+		new ConsistencyEnforcer(this).attach(getRoot());
 	}
 
 	@Override
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException
 	{
 		if (first == second) throw new InvalidConnectionException("Self loops are not allowed");
+
+		if (first instanceof VisualVariable && !getPreset(first).isEmpty()) throw new InvalidConnectionException("Variables do not support multiple connections");
+		if (second instanceof VisualVariable && !getPreset(second).isEmpty()) throw new InvalidConnectionException("Variables do not support multiple connections");
+
+		if (first instanceof VisualVertex && second instanceof VisualVertex) return;
+		if (first instanceof VisualVertex && second instanceof VisualVariable) return;
+		if (first instanceof VisualVariable && second instanceof VisualVertex) return;
+
+		throw new InvalidConnectionException("Invalid connection");
 	}
 
 	@Override
 	public void connect(Node first, Node second) throws InvalidConnectionException
 	{
-		VisualVertex v = (VisualVertex) first;
-		VisualVertex u = (VisualVertex) second;
+		validateConnection(first, second);
 
-		CPOGConnection con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
-		add(new VisualCPOGConnection(con, v, u));
+		if (first instanceof VisualVertex && second instanceof VisualVertex)
+		{
+			VisualVertex v = (VisualVertex) first;
+			VisualVertex u = (VisualVertex) second;
+
+			Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
+			Hierarchy.getNearestContainer(v, u).add(new VisualArc(con, v, u));
+		}
+		else
+		{
+			VisualVertex v;
+			VisualVariable u;
+
+			if (first instanceof VisualVertex)
+			{
+				v = (VisualVertex) first;
+				u = (VisualVariable) second;
+			}
+			else
+			{
+				v = (VisualVertex) second;
+				u = (VisualVariable) first;
+			}
+
+			DynamicVariableConnection con = mathModel.connect(v.getMathVertex(), u.getMathVariable());
+			Hierarchy.getNearestContainer(v, u).add(new VisualDynamicVariableConnection(con, v, u));
+		}
 	}
 
 	private Collection<Node> getGroupableSelection()
 	{
-		ArrayList<Node> result = new ArrayList<Node>();
+		HashSet<Node> result = new HashSet<Node>();
+
 		for(Node node : getOrderedCurrentLevelSelection())
-			if(node instanceof VisualVertex)
+			if(node instanceof VisualVertex || node instanceof VisualVariable)
 				result.add(node);
+
 		return result;
 	}
 
@@ -99,7 +137,7 @@ public class VisualCPOG extends AbstractVisualModel
 		Collection<Node> selected = getGroupableSelection();
 		if (selected.size() <= 1) return;
 
-		VisualGroup group = new VisualCPOGGroup();
+		VisualGroup group = new VisualScenario();
 
 		Container currentLevel = getCurrentLevel();
 
@@ -123,9 +161,9 @@ public class VisualCPOG extends AbstractVisualModel
 		select(group);
 	}
 
-	public Collection<VisualCPOGGroup> getGroups()
+	public Collection<VisualScenario> getGroups()
 	{
-		return Hierarchy.getChildrenOfType(getRoot(), VisualCPOGGroup.class);
+		return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
 	}
 
 	public Collection<VisualVariable> getVariables()

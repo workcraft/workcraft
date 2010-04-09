@@ -4,15 +4,12 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
 
-public class CPOGConsistencyEnforcer extends HierarchySupervisor {
+public class ConsistencyEnforcer extends HierarchySupervisor {
 
 	private final VisualCPOG visualCPOG;
 
-	public CPOGConsistencyEnforcer(VisualCPOG visualCPOG)
+	public ConsistencyEnforcer(VisualCPOG visualCPOG)
 	{
 		this.visualCPOG  = visualCPOG;
 	}
@@ -33,7 +30,7 @@ public class CPOGConsistencyEnforcer extends HierarchySupervisor {
 
 	private void updateEncoding()
 	{
-		for(VisualCPOGGroup group : visualCPOG.getGroups())
+		for(VisualScenario group : visualCPOG.getGroups())
 		{
 			Encoding oldEncoding = group.getEncoding();
 			Encoding newEncoding = new Encoding();

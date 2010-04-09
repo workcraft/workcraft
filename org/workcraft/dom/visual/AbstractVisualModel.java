@@ -60,7 +60,6 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.cpog.VisualCPOGGroup;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 

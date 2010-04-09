@@ -24,11 +24,9 @@ package org.workcraft.plugins.cpog;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -38,7 +36,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_R)
 @SVGIcon("images/icons/svg/rho.svg")
