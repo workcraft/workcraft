@@ -25,34 +25,34 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class CnfLiteral implements BooleanFormula
 {
-	private FreeVariable variable;
+	private BooleanVariable variable;
 	private boolean negation;
 
 	public CnfLiteral()
 	{
 	}
 
-	public static CnfLiteral Zero = new CnfLiteral(new FreeVariable("0"));
-	public static CnfLiteral One = new CnfLiteral(new FreeVariable("1"));
+	public static CnfLiteral Zero = new CnfLiteral(new FV("0"));
+	public static CnfLiteral One = new CnfLiteral(new FV("1"));
 
-	public CnfLiteral(FreeVariable variable) {
+	public CnfLiteral(BooleanVariable variable) {
 		this.variable = variable;
 	}
 
-	public CnfLiteral(FreeVariable variable, boolean negation) {
+	public CnfLiteral(BooleanVariable variable, boolean negation) {
 		this.variable = variable;
 		this.negation = negation;
 	}
 
 	public CnfLiteral(String varName) {
-		this(new FreeVariable(varName));
+		this(new FV(varName));
 	}
 
-	public void setVariable(FreeVariable variable) {
+	public void setVariable(BooleanVariable variable) {
 		this.variable = variable;
 	}
 
-	public FreeVariable getVariable() {
+	public BooleanVariable getVariable() {
 		return variable;
 	}
 

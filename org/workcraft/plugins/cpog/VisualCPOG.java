@@ -21,9 +21,11 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
@@ -36,6 +38,11 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
+import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
@@ -169,5 +176,51 @@ public class VisualCPOG extends AbstractVisualModel
 	public Collection<VisualVariable> getVariables()
 	{
 		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
+	}
+
+	@Override
+	public Properties getProperties(Node node) {
+		Properties properties = super.getProperties(node);
+		if(node instanceof VisualRhoClause)
+		{
+			final VisualRhoClause rho = (VisualRhoClause)node;
+			properties = Properties.Merge.add(properties, new PropertyDescriptor(){
+
+				@Override
+				public Map<Object, String> getChoice() {
+					return null;
+				}
+
+				@Override
+				public String getName() {
+					return "Function";
+				}
+
+				@Override
+				public Class<?> getType() {
+					return String.class;
+				}
+
+				@Override
+				public Object getValue() throws InvocationTargetException {
+					return FormulaToString.toString(rho.getFormula());
+				}
+
+				@Override
+				public boolean isWritable() {
+					return true;
+				}
+
+				@Override
+				public void setValue(Object value) throws InvocationTargetException {
+					try {
+						rho.setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+					} catch (ParseException e) {
+						throw new InvocationTargetException(e);
+					}
+				}
+			});
+		}
+		return properties;
 	}
 }

@@ -22,7 +22,7 @@ package org.workcraft.plugins.cpog.optimisation.booleanvisitors;
 
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.And;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
@@ -30,6 +30,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Or;
+import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
@@ -80,12 +81,17 @@ public class RecursiveBooleanVisitor<T> implements BooleanVisitor<T>
 	}
 
 	@Override
-	public T visit(FreeVariable node) {
+	public T visit(BooleanVariable node) {
 		return visitDefault(node);
 	}
 
 	@Override
 	public T visit(Or node) {
+		return visitBinary(node);
+	}
+
+	@Override
+	public T visit(Xor node) {
 		return visitBinary(node);
 	}
 }

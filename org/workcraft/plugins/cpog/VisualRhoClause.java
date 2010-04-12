@@ -22,6 +22,7 @@
 package org.workcraft.plugins.cpog;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -29,13 +30,18 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 @Hotkey(KeyEvent.VK_R)
 @SVGIcon("images/icons/svg/rho.svg")
@@ -50,14 +56,12 @@ public class VisualRhoClause extends VisualComponent
 	public VisualRhoClause(RhoClause rhoClause)
 	{
 		super(rhoClause);
-		PropertyDescriptor declaration = new PropertyDeclaration(this, "Function", "getFunction", "setFunction", String.class);
-		addPropertyDeclaration(declaration);
 	}
 
 	public void draw(Graphics2D g)
 	{
 		FontRenderContext fontRenderContext = g.getFontRenderContext();
-		GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, getFunction());
+		GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, FormulaToString.toString(getFormula()));
 		Rectangle2D textBB = glyphVector.getLogicalBounds();
 
 		float textX = (float)-textBB.getCenterX();
@@ -75,7 +79,39 @@ public class VisualRhoClause extends VisualComponent
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.draw(boudingBox);
 
+		g.setColor(Coloriser.colorise(getColor(), getColorisation()));
 		g.drawGlyphVector(glyphVector, textX, textY);
+	}
+
+	private Color getColor() {
+		BooleanFormula value = evaluate();
+		if(value == One.instance())
+			return new Color(0x00cc00);
+		else
+			if(value == Zero.instance())
+				return Color.RED;
+			else
+				return getForegroundColor();
+	}
+
+	private BooleanFormula evaluate() {
+		return getMathRhoClause().getFormula().accept(
+			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
+			{
+				@Override
+				public BooleanFormula visit(BooleanVariable node) {
+					switch(((Variable)node).getState())
+					{
+					case TRUE:
+						return One.instance();
+					case FALSE:
+						return Zero.instance();
+					default:
+						return node;
+					}
+				}
+			}
+		);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()
@@ -93,13 +129,13 @@ public class VisualRhoClause extends VisualComponent
 		return (RhoClause)getReferencedComponent();
 	}
 
-	public String getFunction()
+	public BooleanFormula getFormula()
 	{
-		return getMathRhoClause().getFunction().value;
+		return getMathRhoClause().getFormula();
 	}
 
-	public void setFunction(String function)
+	public void setFormula(BooleanFormula formula)
 	{
-		getMathRhoClause().setFunction(new BooleanFunction(function));
+		getMathRhoClause().setFormula(formula);
 	}
 }

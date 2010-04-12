@@ -21,13 +21,18 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.stg.STGReferenceManager;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
 @VisualClass("org.workcraft.plugins.cpog.VisualCPOG")
@@ -74,5 +79,9 @@ public class CPOG extends AbstractMathModel
 		DynamicVariableConnection con = new DynamicVariableConnection(first, second);
 		getRoot().add(con);
 		return con;
+	}
+
+	public Collection<Variable> getVariables() {
+		return Hierarchy.getChildrenOfType(getRoot(), Variable.class);
 	}
 }

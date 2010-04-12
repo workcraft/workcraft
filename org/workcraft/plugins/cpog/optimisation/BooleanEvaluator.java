@@ -27,6 +27,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Or;
+import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class BooleanEvaluator implements BooleanVisitor<Boolean>
@@ -63,7 +64,7 @@ public class BooleanEvaluator implements BooleanVisitor<Boolean>
 	}
 
 	@Override
-	public Boolean visit(FreeVariable variable) {
+	public Boolean visit(BooleanVariable variable) {
 		if(variable.getLabel().equals("0"))
 			return false;
 		if(variable.getLabel().equals("1"))
@@ -76,4 +77,8 @@ public class BooleanEvaluator implements BooleanVisitor<Boolean>
 		return node.getX().accept(this) || node.getY().accept(this);
 	}
 
+	@Override
+	public Boolean visit(Xor node) {
+		return node.getX().accept(this) ^ node.getY().accept(this);
+	}
 }

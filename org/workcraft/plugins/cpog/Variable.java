@@ -25,10 +25,12 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @DisplayName("Variable")
 @VisualClass("org.workcraft.plugins.cpog.VisualVariable")
-public class Variable extends MathNode implements Comparable<Variable>
+public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable
 {
 	private VariableState state = VariableState.UNDEFINED;
 
@@ -59,5 +61,10 @@ public class Variable extends MathNode implements Comparable<Variable>
 	public String getLabel()
 	{
 		return label;
+	}
+
+	@Override
+	public <T> T accept(BooleanVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 }

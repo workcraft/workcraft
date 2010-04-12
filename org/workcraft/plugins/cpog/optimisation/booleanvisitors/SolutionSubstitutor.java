@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanSolution;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
@@ -36,9 +36,9 @@ public class SolutionSubstitutor extends BooleanReplacer {
 		super(buildMap(solution));
 	}
 
-	private static Map<FreeVariable, BooleanFormula> buildMap(BooleanSolution solution) {
-		Map<FreeVariable, BooleanFormula> result = new HashMap<FreeVariable, BooleanFormula>();
-		for(FreeVariable var : solution.getVariables())
+	private static Map<BooleanVariable, BooleanFormula> buildMap(BooleanSolution solution) {
+		Map<BooleanVariable, BooleanFormula> result = new HashMap<BooleanVariable, BooleanFormula>();
+		for(BooleanVariable var : solution.getVariables())
 			result.put(var, solution.getSolution(var)?One.instance():Zero.instance());
 		return result;
 	}

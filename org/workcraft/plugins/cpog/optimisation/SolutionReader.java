@@ -58,19 +58,19 @@ public class SolutionReader
 
 	private static final class BooleanSolutionImplementation implements BooleanSolution
 	{
-		private final Map<FreeVariable, Boolean> results;
+		private final Map<BooleanVariable, Boolean> results;
 
-		private BooleanSolutionImplementation(Map<FreeVariable, Boolean> results) {
+		private BooleanSolutionImplementation(Map<BooleanVariable, Boolean> results) {
 			this.results = results;
 		}
 
 		@Override
-		public Collection<FreeVariable> getVariables() {
+		public Collection<BooleanVariable> getVariables() {
 			return results.keySet();
 		}
 
 		@Override
-		public boolean getSolution(FreeVariable variable) {
+		public boolean getSolution(BooleanVariable variable) {
 			Boolean result = results.get(variable);
 			if(result == null)
 				throw new RuntimeException("No solution for variable: " + variable.getLabel());
@@ -79,7 +79,7 @@ public class SolutionReader
 	}
 
 	public static BooleanSolution readSolution(CnfTask task, String solution) {
-		Map<String, FreeVariable> vars = task.getVars();
+		Map<String, BooleanVariable> vars = task.getVars();
 
 		Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
 
@@ -88,7 +88,7 @@ public class SolutionReader
 		if(numbers==null)
 			return null;
 
-		final Map<FreeVariable, Boolean> results = new HashMap<FreeVariable, Boolean>();
+		final Map<BooleanVariable, Boolean> results = new HashMap<BooleanVariable, Boolean>();
 		for(int i = 0; i < numbers.size(); i++)
 		{
 			int cnfIndex = numbers.get(i);
@@ -110,7 +110,7 @@ public class SolutionReader
 				}
 				else
 				{
-					FreeVariable var = vars.get(varName);
+					BooleanVariable var = vars.get(varName);
 					if(var == null)
 						throw new RuntimeException("No variable for solution:" + varName);
 					results.put(var, value);

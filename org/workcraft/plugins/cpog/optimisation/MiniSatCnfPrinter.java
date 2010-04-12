@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 public class MiniSatCnfPrinter implements CnfPrinter
 {
-	Map<FreeVariable, Integer> numbers = new HashMap<FreeVariable, Integer>();
+	Map<BooleanVariable, Integer> numbers = new HashMap<BooleanVariable, Integer>();
 	int varCount = 0;
 	private Cnf cnf;
 
@@ -58,7 +58,7 @@ public class MiniSatCnfPrinter implements CnfPrinter
 	private String getHeadComments() {
 		StringBuilder result = new StringBuilder();
 
-		for(FreeVariable var : new TreeMap<FreeVariable, Integer>(numbers).keySet()) {
+		for(BooleanVariable var : new TreeMap<BooleanVariable, Integer>(numbers).keySet()) {
 			String label = var.getLabel();
 			if(!label.isEmpty())
 				result.append("c " + numbers.get(var) + " " + label+"\n");
@@ -71,7 +71,7 @@ public class MiniSatCnfPrinter implements CnfPrinter
 		return "p cnf " + varCount + " " + cnf.getClauses().size()+"\n";
 	}
 
-	private Integer getNumber(FreeVariable variable) {
+	private Integer getNumber(BooleanVariable variable) {
 		Integer res = numbers.get(variable);
 		if(res == null)
 		{

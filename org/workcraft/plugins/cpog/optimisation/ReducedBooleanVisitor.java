@@ -28,5 +28,5 @@ public interface ReducedBooleanVisitor {
 	void visit(And node);
 	void visit(Not node);
 	void visit(Iff node);
-	void visit(FreeVariable node);
+	void visit(BooleanVariable node);
 }

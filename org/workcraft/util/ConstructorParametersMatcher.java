@@ -56,7 +56,9 @@ public class ConstructorParametersMatcher
 			String s = "";
 			for(Class<?> parameter : parameters)
 			{
-				s += parameter.getCanonicalName() + ", ";
+				if(s.length()>0)
+					s+=", ";
+				s += parameter.getCanonicalName();
 			}
 			throw new NoSuchMethodException("Unable to find a constructor for class " + c.getCanonicalName() + " with parameters (" + s + ")");
 		}

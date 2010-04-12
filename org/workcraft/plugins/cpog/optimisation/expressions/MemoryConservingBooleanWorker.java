@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 
@@ -51,6 +51,11 @@ class Inverter implements BooleanVisitor<BooleanFormula> {
 	}
 
 	@Override
+	public BooleanFormula visit(Xor node) {
+		return visitDefault(node);
+	}
+
+	@Override
 	public BooleanFormula visit(Zero node) {
 		throw new RuntimeException("no constants expected here");
 	}
@@ -66,7 +71,7 @@ class Inverter implements BooleanVisitor<BooleanFormula> {
 	}
 
 	@Override
-	public BooleanFormula visit(FreeVariable node) {
+	public BooleanFormula visit(BooleanVariable node) {
 		return visitDefault(node);
 	}
 

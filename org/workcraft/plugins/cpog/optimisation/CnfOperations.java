@@ -29,15 +29,15 @@ public class CnfOperations {
 		return new CnfLiteral(x.getVariable(), !x.getNegation());
 	}
 
-	public static CnfLiteral not(FreeVariable x)
+	public static CnfLiteral not(BooleanVariable x)
 	{
 		return new CnfLiteral(x, true);
 	}
 
-	public static CnfClause or(List<FreeVariable> literals)
+	public static CnfClause or(List<BooleanVariable> literals)
 	{
 		CnfClause result = new CnfClause();
-		for(FreeVariable var : literals)
+		for(BooleanVariable var : literals)
 			result.getLiterals().add(literal(var));
 		return result;
 	}
@@ -47,7 +47,7 @@ public class CnfOperations {
 		return new CnfClause(Arrays.asList(literals));
 	}
 
-	public static CnfLiteral literal(FreeVariable var)
+	public static CnfLiteral literal(BooleanVariable var)
 	{
 		return new CnfLiteral(var);
 	}

@@ -30,11 +30,11 @@ public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf>
 {
 	@Override
 	public CnfTask getCnf(Cnf cnf) {
-		Map<String, FreeVariable> vars = new HashMap<String, FreeVariable>();
+		Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
 
 		for(CnfClause clause : cnf.getClauses())
 			for(CnfLiteral literal : clause.getLiterals()) {
-				FreeVariable variable = literal.getVariable();
+				BooleanVariable variable = literal.getVariable();
 				String label = variable.getLabel();
 				if(!label.isEmpty())
 					vars.put(label, variable);

@@ -124,7 +124,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
 
 		for(int i=0;i<vars.length;i++)
 		{
-			FreeVariable var = new FreeVariable("param"+i);
+			FreeVariable var = new FV("param"+i);
 			params.add(var);
 			literals[i] = new CnfLiteral(var);
 		}

@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.And;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
@@ -33,139 +33,249 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Or;
+import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+
+import com.sun.org.apache.bcel.internal.classfile.Node;
 
 
 public class FormulaToString implements BooleanVisitor<String>
 {
-	static class PrinterSuite
+	public class Void{ private Void(){} }
+	public static class PrinterSuite
 	{
 		public PrinterSuite()
 		{
+			iff = new IffPrinter();
+			imply = new ImplyPrinter();
+			or = new OrPrinter();
+			xor = new XorPrinter();
+			and = new AndPrinter();
+			not = new NotPrinter();
+			constants = new ConstantPrinter();
+			vars = new VariablePrinter();
+			paren = new ParenthesesPrinter();
+
 			builder = new StringBuilder();
-			Map<String, FreeVariable> varMap = new HashMap<String, FreeVariable>();
-			IffPrinter = new Printer(this, 0, builder, varMap);
-			ImplyPrinter = new Printer(this, 1, builder, varMap);
-			OrPrinter = new Printer(this, 2, builder, varMap);
-			AndPrinter = new Printer(this, 3, builder, varMap);
-			NotPrinter = new Printer(this, 4, builder, varMap);
 		}
-		public Printer IffPrinter;
-		public Printer ImplyPrinter;
-		public Printer OrPrinter;
-		public Printer AndPrinter;
-		public Printer NotPrinter;
-		private StringBuilder builder;
+
+		public void init()
+		{
+			init(iff, imply);
+			init(imply, or);
+			init(or, xor);
+			init(xor, and);
+			init(and, not);
+			init(not, vars);
+			init(vars, constants);
+			init(constants, paren);
+			init(paren, iff);
+		}
+
+		public void init(DelegatingPrinter printer, DelegatingPrinter next)
+		{
+			printer.setNext(next);
+			printer.setBuilder(builder);
+		}
+
+		public StringBuilder builder;
+		public IffPrinter iff;
+		public ImplyPrinter imply;
+		public OrPrinter or;
+		public XorPrinter xor;
+		public AndPrinter and;
+		public NotPrinter not;
+		public ConstantPrinter constants;
+		public VariablePrinter vars;
+		public ParenthesesPrinter paren;
 	}
 
-	//private static FormulaToString BasicPrinter = new FormulaToString(5);
-	private static class Printer implements BooleanVisitor<Object>
+	public static class DelegatingPrinter implements BooleanVisitor<Void>
 	{
-		private final int level;
-		private final PrinterSuite suite;
-		private final StringBuilder builder;
-		private final Map<String, FreeVariable> varMap;
+		public DelegatingPrinter next;
+		public StringBuilder builder;
 
-		public Printer(PrinterSuite suite, int level, StringBuilder builder, Map<String, FreeVariable> varMap)
+		public void setNext(DelegatingPrinter next)
 		{
-			this.suite = suite;
-			this.level = level;
+			this.next = next;
+		}
+
+		public void setBuilder(StringBuilder builder)
+		{
 			this.builder = builder;
-			this.varMap = varMap;
 		}
 
-		@Override
-		public Object visit(And node) {
-			visitBinary(suite.AndPrinter.level, suite.AndPrinter, "&", node);
+		public Void append(String text)
+		{
+			builder.append(text);
+			return null;
+		}
+
+		protected Void visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node) {
+			node.getX().accept(printer);
+			append(opSymbol);
+			node.getY().accept(printer);
 			return null;
 		}
 
 		@Override
-		public String visit(Iff node) {
-			visitBinary(suite.IffPrinter.level, suite.IffPrinter, "<->", node);
-			return null;
-		}
-
-		private void visitBinary(int opLevel, Printer opPrinter, String opSymbol, BinaryBooleanFormula node) {
-			boolean paren = level>opLevel;
-			if(paren)
-				builder.append("(");
-			node.getX().accept(opPrinter);
-			builder.append(opSymbol);
-			node.getY().accept(opPrinter);
-			if(paren)
-				builder.append(")");
+		public Void visit(And node) {
+			return next.visit(node);
 		}
 
 		@Override
-		public String visit(Zero node) {
-			return "0";
+		public Void visit(Iff node) {
+			return next.visit(node);
 		}
 
 		@Override
-		public String visit(One node) {
-			return "1";
+		public Void visit(Zero node) {
+			return next.visit(node);
 		}
 
 		@Override
-		public String visit(Not node) {
-			builder.append("!");
-			node.getX().accept(suite.NotPrinter);
-			if(level>suite.NotPrinter.level)
-				throw new RuntimeException("o_O");
-			return null;
+		public Void visit(One node) {
+			return next.visit(node);
 		}
 
 		@Override
-		public Object visit(Imply node) {
-			visitBinary(suite.ImplyPrinter.level, suite.OrPrinter, " ->", node);
-			return null;
+		public Void visit(Not node) {
+			return next.visit(node);
 		}
 
 		@Override
-		public String visit(FreeVariable variable) {
-			String label = variable.getLabel();
-			FreeVariable nameHolder = varMap.get(label);
+		public Void visit(Imply node) {
+			return next.visit(node);
+		}
+
+		@Override
+		public Void visit(BooleanVariable node) {
+			return next.visit(node);
+		}
+
+		@Override
+		public Void visit(Or node) {
+			return next.visit(node);
+		}
+
+		@Override
+		public Void visit(Xor node) {
+			return next.visit(node);
+		}
+	}
+
+	public static class IffPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(Iff node) {
+			return visitBinary(this, " = ", node);
+		}
+	}
+
+	public static class ImplyPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(Imply node) {
+			return visitBinary(next, " -> ", node);
+		}
+	}
+
+	public static class OrPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(Or node) {
+			return visitBinary(this, " + ", node);
+		}
+	}
+
+	public static class XorPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(Xor node) {
+			return visitBinary(this, " ^ ", node);//oplus: \u2295
+		}
+	}
+
+	public static class AndPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(And node) {
+			return visitBinary(this, " * ", node);
+		}
+	}
+
+	public static class NotPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(Not node) {
+			node.getX().accept(this);
+			return append("'");
+		}
+	}
+
+	public static class ConstantPrinter extends DelegatingPrinter
+	{
+		@Override
+		public Void visit(One one) {
+			return append("1");
+		}
+		@Override
+		public Void visit(Zero zero) {
+			return append("0");
+		}
+	}
+
+	public static class VariablePrinter extends DelegatingPrinter
+	{
+		Map<String, BooleanVariable> varMap = new HashMap<String, BooleanVariable>();
+		@Override
+		public Void visit(BooleanVariable var) {
+			String label = var.getLabel();
+			BooleanVariable nameHolder = varMap.get(label);
 			if(nameHolder == null)
-				varMap.put(label, variable);
+				varMap.put(label, var);
 			else
-				if(nameHolder != variable)
+				if(nameHolder != var)
 					throw new RuntimeException("name conflict! duplicate name " + label);
 
-			builder.append(label);
+			append(label);
 
 			return null;
 		}
+	}
 
-	/*	Map<FreeVariable, Integer> varIndices = new HashMap<FreeVariable, Integer>();
-		int varCounter = 0;
-		private int getVarIndex(FreeVariable variable) {
-			Integer stored = varIndices.get(variable);
-			if(stored != null)
-				return stored;
-			int next = varCounter++;
-			varIndices.put(variable, next);
-			return next;
-		}*/
-
-		@Override
-		public String visit(Or node) {
-			visitBinary(suite.OrPrinter.level, suite.OrPrinter, "|", node);
+	public static class ParenthesesPrinter extends DelegatingPrinter
+	{
+		@Override public Void visit(Zero node) { return enclose(node); }
+		@Override public Void visit(One node) { return enclose(node); }
+		@Override public Void visit(BooleanVariable node) { return enclose(node); }
+		@Override public Void visit(And node) { return enclose(node); }
+		@Override public Void visit(Or node) { return enclose(node); }
+		@Override public Void visit(Xor node) { return enclose(node); }
+		@Override public Void visit(Iff node) { return enclose(node); }
+		@Override public Void visit(Imply node) { return enclose(node); }
+		Void enclose(BooleanFormula node)
+		{
+			append("(");
+			node.accept(next);
+			append(")");
 			return null;
 		}
 	}
 
 	public static String toString(BooleanFormula f) {
-		Printer printer = getPrinter();
+		DelegatingPrinter printer = getPrinter();
 		f.accept(printer);
 		return printer.builder.toString();
 	}
 
-	private static Printer getPrinter() {
-		return new PrinterSuite().IffPrinter;
+	private static DelegatingPrinter getPrinter() {
+		PrinterSuite suite = new PrinterSuite();
+		suite.init();
+		return suite.iff;
 	}
 
-	Printer printer;
+	DelegatingPrinter printer;
 
 	@Override
 	public String visit(And node) {
@@ -198,12 +308,17 @@ public class FormulaToString implements BooleanVisitor<String>
 	}
 
 	@Override
-	public String visit(FreeVariable node) {
+	public String visit(BooleanVariable node) {
 		return toString(node);
 	}
 
 	@Override
 	public String visit(Or node) {
+		return toString(node);
+	}
+
+	@Override
+	public String visit(Xor node) {
 		return toString(node);
 	}
 }

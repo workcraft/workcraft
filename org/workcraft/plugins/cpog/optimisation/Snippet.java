@@ -44,7 +44,7 @@ public class Snippet {
 					encodings[i][j] = Zero.instance();
 			else
 				for(int j=0;j<freeVariables;j++)
-					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
+					encodings[i][j] = new FV("x"+j+"_s"+i);
 			for(int j=0;j<forcedVarCount;j++) {
 				encodings[i][freeVariables+j] = parseBoolean(forcedVars[i].charAt(j));
 			}

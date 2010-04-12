@@ -43,13 +43,13 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
 	BooleanFormula generateBinaryFunction(BooleanFormula[] arg1, BooleanFormula[] arg2, int funcId)
 	{
-		BooleanFormula isIff = ZERO;//*/new FreeVariable("f"+funcId + "_isIff");
+		BooleanFormula isIff = ZERO;//*/new FV("f"+funcId + "_isIff");
 		BooleanNumber var1Number = generateInt("f"+funcId + "_v1_", arg1.length);
 		BooleanNumber var2Number = generateInt("f"+funcId + "_v2_", arg2.length);
 		//BooleanFormula less = numberProvider.less(var1Number, var2Number);
 		//rho.add(less);
-		BooleanFormula noNegate1 = new FreeVariable("f"+funcId + "_v1_plain");
-		BooleanFormula noNegate2 = new FreeVariable("f"+funcId + "_v2_plain");
+		BooleanFormula noNegate1 = new FV("f"+funcId + "_v1_plain");
+		BooleanFormula noNegate2 = new FV("f"+funcId + "_v2_plain");
 		BooleanFormula var1 = numberProvider.select(arg1, var1Number);
 		BooleanFormula var2 = numberProvider.select(arg2, var2Number);
 
@@ -125,7 +125,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
 	public CpogOptimisationTask<BooleanFormula> getFormula(String [] scenarios, int freeVarsCount, int derivedVariables)
 	{
-		Map<Character, FreeVariable> forcedVariables = new HashMap<Character, FreeVariable>();
+		Map<Character, BooleanVariable> forcedVariables = new HashMap<Character, BooleanVariable>();
 
 		BooleanFormula[][] parsedMatrix = new BooleanFormula[scenarios.length][];
 
@@ -159,7 +159,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 								cell = forcedVariables.get(c);
 								if(cell == null)
 								{
-									FreeVariable var = new FreeVariable(c.toString());
+									BooleanVariable var = new FV(c.toString());
 									forcedVariables.put(c, var);
 									cell = var;
 								}
@@ -174,19 +174,19 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		}
 
 
-		CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<FreeVariable>(forcedVariables.values()), freeVarsCount, derivedVariables);
+		CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), freeVarsCount, derivedVariables);
 
 		BooleanFormula[][] vars = preResult.getEncodingVars();
 		BooleanFormula[] funcs = preResult.getFunctionVars();
 		BooleanFormula result = preResult.getTask();
 
-		for(FreeVariable v : forcedVariables.values())
+		for(BooleanVariable v : forcedVariables.values())
 			result = eliminateUnrestrictableVar(result, v);
 
 		return new CpogOptimisationTask<BooleanFormula>(funcs, vars, result);
 	}
 
-	private BooleanFormula eliminateUnrestrictableVar(BooleanFormula result, FreeVariable v) {
+	private BooleanFormula eliminateUnrestrictableVar(BooleanFormula result, BooleanVariable v) {
 		//System.out.println("original: " + FormulaToString.toString(result));
 
 		BooleanFormula one = replace(result, v, ONE);
@@ -196,19 +196,19 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		return and(one, zero);
 	}
 
-	private BooleanFormula replace(BooleanFormula where, FreeVariable what, BooleanFormula with)
+	private BooleanFormula replace(BooleanFormula where, BooleanVariable what, BooleanFormula with)
 	{
-		return BooleanReplacer.replace(where, Arrays.asList(new FreeVariable[]{what}), Arrays.asList(new BooleanFormula[]{with}));
+		return BooleanReplacer.replace(where, Arrays.asList(new BooleanVariable[]{what}), Arrays.asList(new BooleanFormula[]{with}));
 	}
 
 	public CpogOptimisationTask<BooleanFormula> getFormula(BooleanFormula [][] scenarios, List<? extends BooleanFormula> forcedParams, int freeVarsCount, int derivedVariables)
 	{
 		// Generate function parameters
-		List<FreeVariable> freeVariables = new ArrayList<FreeVariable>();
+		List<BooleanVariable> freeVariables = new ArrayList<BooleanVariable>();
 		char nextVar = 'x';
 		for(int i=0;i<freeVarsCount;i++)
 		{
-			freeVariables.add(new FreeVariable(""+(nextVar++)));
+			freeVariables.add(new FV(""+(nextVar++)));
 			if(nextVar>'z')
 				nextVar = 'p';
 			if(nextVar == 'x')
@@ -230,7 +230,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		for(int i=0;i<functionCount;i++)
 		{
 			BooleanNumber varId = generateInt("cpog_f"+i+"_",allVariables.size());
-			BooleanFormula plain = new FreeVariable("cpog_f"+i+"_plain");
+			BooleanFormula plain = new FV("cpog_f"+i+"_plain");
 
 			BooleanFormula value = iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
 
@@ -247,11 +247,11 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 				for(int j=0;j<freeVarsCount;j++)
 					encodings[i][j] = ZERO;
 				for(int j=0;j<0 && j<freeVarsCount;j++)
-					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
+					encodings[i][j] = new FV("x"+j+"_s"+i);
 			}
 			else
 				for(int j=0;j<freeVarsCount;j++)
-					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
+					encodings[i][j] = new FV("x"+j+"_s"+i);
 		}
 
 		//Verify results

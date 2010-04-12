@@ -20,15 +20,15 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.literal;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
-
-import javax.management.RuntimeErrorException;
 
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.RecursiveBooleanVisitor;
@@ -39,9 +39,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Or;
+import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
-
-import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, BooleanVisitor<CnfLiteral>
 {
@@ -141,7 +140,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(FreeVariable variable) {
+			public CnfLiteral[][] visit(BooleanVariable variable) {
 				CnfLiteral[][]result = new CnfLiteral[1][];
 				result[0] = new CnfLiteral[1];
 				result[0][0] = CnfOperations.literal(variable);
@@ -149,6 +148,10 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 			}
 			@Override
 			public CnfLiteral[][] visit(Or node) {
+				throw new RuntimeException();
+			}
+			@Override
+			public CnfLiteral[][] visit(Xor node) {
 				throw new RuntimeException();
 			}
 		}
@@ -187,7 +190,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		}
 
 		@Override
-		public Object visit(FreeVariable node) {
+		public Object visit(BooleanVariable node) {
 			if(currentResult)
 				result.add(or(literal(node)));
 			else
@@ -208,6 +211,11 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		}
 		@Override
 		public Object visit(Or node) {
+			throw new RuntimeException("not implemented");
+		}
+
+		@Override
+		public Object visit(Xor node) {
 			throw new RuntimeException("not implemented");
 		}
 	}
@@ -363,7 +371,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	}
 
 	@Override
-	public CnfLiteral visit(FreeVariable variable) {
+	public CnfLiteral visit(BooleanVariable variable) {
 		return literal(variable);
 	}
 
@@ -376,6 +384,21 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 						result.add(or(not(res), x, y));
 						result.add(or(res, not(y)));
 						result.add(or(res, not(x)));
+					}
+				}
+			);
+	}
+
+	@Override
+	public CnfLiteral visit(Xor node) {
+		return visit(node,
+				new BinaryGateImplementer()
+				{
+					@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+						result.add(or(res, not(x), y));
+						result.add(or(res, x, not(y)));
+						result.add(or(not(res), not(x), not(y)));
+						result.add(or(not(res), x, y));
 					}
 				}
 			);

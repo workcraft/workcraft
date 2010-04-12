@@ -34,13 +34,13 @@ public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
 
 	class VariableCollector extends RecursiveBooleanVisitor<Object>
 	{
-		private final Map<String, FreeVariable> vars = new HashMap<String, FreeVariable>();
+		private final Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
 		@Override
-		public Object visit(FreeVariable variable) {
+		public Object visit(BooleanVariable variable) {
 			vars.put(variable.getLabel(), variable);
 			return null;
 		}
-		public Map<String, FreeVariable> getVars() {
+		public Map<String, BooleanVariable> getVars() {
 			return vars;
 		}
 	}
@@ -50,7 +50,7 @@ public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
 	{
 		VariableCollector collector = new VariableCollector();
 		formula.accept(collector);
-		Map<String, FreeVariable> vars = collector.getVars();
+		Map<String, BooleanVariable> vars = collector.getVars();
 
 		return new CnfTask(ProcessIO.runViaStreams(FormulaToString.toString(BooleanOperations.not(formula))+"|0|!1", new String[]{limboolePath, "-d"}), vars);
 	}

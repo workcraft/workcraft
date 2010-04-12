@@ -19,9 +19,9 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 	}
 
 	public OneHotIntBooleanFormula generate(String varPrefix, int range) {
-		List<FreeVariable> vars = new ArrayList<FreeVariable>();
+		List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
 		for(int i=0;i<range;i++)
-			vars.add(new FreeVariable(varPrefix + "sel"+i));
+			vars.add(new FV(varPrefix + "sel"+i));
 
 		List<CnfLiteral> literals = new ArrayList<CnfLiteral>();
 		List<CnfLiteral> sorted = new ArrayList<CnfLiteral>();
@@ -91,12 +91,12 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 
 	@Override
 	public BooleanFormula select(BooleanFormula[] vars, OneHotIntBooleanFormula number) {
-		List<FreeVariable> params = new ArrayList<FreeVariable>();
+		List<BooleanVariable> params = new ArrayList<BooleanVariable>();
 		CnfLiteral []literals = new CnfLiteral[vars.length];
 
 		for(int i=0;i<vars.length;i++)
 		{
-			FreeVariable var = new FreeVariable("param"+i);
+			BooleanVariable var = new FV("param"+i);
 			params.add(var);
 			literals[i] = new CnfLiteral(var);
 		}

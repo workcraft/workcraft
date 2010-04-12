@@ -15,9 +15,9 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 
 	@Override
 	public ThermometerBooleanFormula generate(String varPrefix, int range) {
-		List<FreeVariable> vars = new ArrayList<FreeVariable>();
+		List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
 		for(int i=0;i<range-1;i++)
-			vars.add(new FreeVariable(varPrefix + "sel"+i));
+			vars.add(new FV(varPrefix + "sel"+i));
 
 		for(int i=0;i<range-2;i++)
 			rho.add(imply(vars.get(i+1), vars.get(i)));
@@ -30,7 +30,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 			ThermometerBooleanFormula number) {
 		List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
 
-		List<FreeVariable> digits = number.getVars();
+		List<BooleanVariable> digits = number.getVars();
 		int N = digits.size();
 		if(N+1 != vars.length)
 			throw new RuntimeException("Lengths do not match");
@@ -54,8 +54,8 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 
 	public BooleanFormula lessOrEquals(ThermometerBooleanFormula a, ThermometerBooleanFormula b) {
 		List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
-		List<FreeVariable> aVars = a.getVars();
-		List<FreeVariable> bVars = b.getVars();
+		List<BooleanVariable> aVars = a.getVars();
+		List<BooleanVariable> bVars = b.getVars();
 		for(int i=0;i<aVars.size();i++)
 			conditions.add(imply(aVars.get(i), bVars.get(i)));
 		return and(conditions);

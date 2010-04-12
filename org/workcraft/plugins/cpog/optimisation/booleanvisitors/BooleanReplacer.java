@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.And;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
@@ -34,6 +34,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Or;
+import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
@@ -42,7 +43,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 {
 	private final HashMap<BooleanFormula, BooleanFormula> map;
 
-	public BooleanReplacer(List<? extends FreeVariable> from, List<? extends BooleanFormula> to)
+	public BooleanReplacer(List<? extends BooleanVariable> from, List<? extends BooleanFormula> to)
 	{
 		HashMap<BooleanFormula, BooleanFormula> m = new HashMap<BooleanFormula, BooleanFormula>();
 		if(from.size() != to.size())
@@ -52,7 +53,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 		map = m;
 	}
 
-	public BooleanReplacer(Map<? extends FreeVariable, ? extends BooleanFormula> map)
+	public BooleanReplacer(Map<? extends BooleanVariable, ? extends BooleanFormula> map)
 	{
 		this.map = new HashMap<BooleanFormula, BooleanFormula> (map);
 	}
@@ -100,12 +101,12 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 	}
 
 	@Override
-	public BooleanFormula visit(FreeVariable node) {
+	public BooleanFormula visit(BooleanVariable node) {
 		BooleanFormula replacement = map.get(node);
 		return replacement!=null? replacement : node;
 	}
 
-	public static BooleanFormula replace(BooleanFormula formula, List<? extends FreeVariable> params, List<? extends BooleanFormula> values) {
+	public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> params, List<? extends BooleanFormula> values) {
 		return formula.accept(new BooleanReplacer(params, values));
 	}
 
@@ -116,6 +117,17 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 			@Override
 			public BooleanFormula apply(BooleanFormula x, BooleanFormula y) {
 				return iff(x,y);
+			}
+		});
+	}
+
+	@Override
+	public BooleanFormula visit(Xor node) {
+		return visitBinaryFunc(node, new BinaryOperation()
+		{
+			@Override
+			public BooleanFormula apply(BooleanFormula x, BooleanFormula y) {
+				return xor(x,y);
 			}
 		});
 	}

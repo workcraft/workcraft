@@ -17,9 +17,9 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
 
 	@Override
 	public OneHotIntBooleanFormula generate(String varPrefix, int range) {
-		List<FreeVariable> vars = new ArrayList<FreeVariable>();
+		List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
 		for(int i=0;i<range;i++)
-			vars.add(new FreeVariable(varPrefix + "sel"+i));
+			vars.add(new FV(varPrefix + "sel"+i));
 
 		for(int i=0;i<range;i++)
 			for(int j=i+1;j<range;j++)

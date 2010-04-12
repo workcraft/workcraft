@@ -18,30 +18,19 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.plugins.cpog.optimisation;
+package org.workcraft.plugins.cpog.optimisation.expressions;
 
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
+import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class FreeVariable implements BooleanFormula, Comparable<FreeVariable> {
-
-	private final String label;
-
-	public FreeVariable(String label) {
-		this.label = label;
+public class Xor extends BinaryBooleanFormula
+{
+	Xor(BooleanFormula x, BooleanFormula y) {
+		super(x,y);
 	}
 
 	@Override
 	public <T> T accept(BooleanVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	@Override
-	public int compareTo(FreeVariable var) {
-		return -var.getLabel().compareTo(getLabel());
-	}
-
 }

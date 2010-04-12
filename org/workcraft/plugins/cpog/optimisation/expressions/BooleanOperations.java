@@ -90,6 +90,10 @@ public class BooleanOperations
 		return worker.iff(x, y);
 	}
 
+	public static BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
+		return worker.xor(x, y);
+	}
+
 	public static BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
 		return worker.imply(x, y);
 	}

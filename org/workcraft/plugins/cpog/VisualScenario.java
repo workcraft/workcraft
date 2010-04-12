@@ -46,7 +46,6 @@ public class VisualScenario extends VisualGroup
 
 	public VisualScenario()
 	{
-		System.out.println("creating VisualCpogGroup");
 		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
 		addPropertyDeclaration(new PropertyDeclaration(this, "Encoding", "getEncoding", "setEncoding", Encoding.class));
 	}

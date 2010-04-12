@@ -115,7 +115,7 @@ public class Main {
 		),
 		ProcessIO.readFile(new File("C:\\Documents and Settings\\User\\My Documents\\weirdCpog\\stream3616042594776122168out")));
 
-		for(FreeVariable var : sol.getVariables())
+		for(BooleanVariable var : sol.getVariables())
 		{
 			System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
 		}

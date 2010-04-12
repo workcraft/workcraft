@@ -65,7 +65,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 					encodings[i][j] = CnfLiteral.Zero;
 			else
 				for(int j=0;j<freeVariables;j++)
-					encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
+					encodings[i][j] = literal(new FV("x"+j+"_s"+i));
 		}
 
 		//... and all possible functions.
@@ -137,11 +137,11 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		tableConditions.addAll(rho);
 
 		// Forming solution output here
-		FreeVariable [] parameters = new FreeVariable[freeVariables];
+		BooleanVariable [] parameters = new FV[freeVariables];
 		Character varName = 'a';
 		for(int i=0;i<nonDerivedVariables;i++)
 		{
-			parameters[i] = new FreeVariable(varName.toString());
+			parameters[i] = new FV(varName.toString());
 			varName++;
 		}
 

@@ -25,21 +25,23 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
 @DisplayName("RhoClause")
 @VisualClass("org.workcraft.plugins.cpog.VisualRhoClause")
 public class RhoClause extends MathNode
 {
-	private BooleanFunction function = BooleanFunction.TRUE;
+	private BooleanFormula formula = BooleanOperations.ONE;
 
-	public void setFunction(BooleanFunction function)
+	public void setFormula(BooleanFormula formula)
 	{
-		this.function = function;
-		sendNotification(new PropertyChangedEvent(this, "function"));
+		this.formula = formula;
+		sendNotification(new PropertyChangedEvent(this, "formula"));
 	}
 
-	public BooleanFunction getFunction()
+	public BooleanFormula getFormula()
 	{
-		return function;
+		return formula;
 	}
 }
