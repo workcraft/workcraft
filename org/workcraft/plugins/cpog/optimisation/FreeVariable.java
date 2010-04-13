@@ -2,11 +2,11 @@ package org.workcraft.plugins.cpog.optimisation;
 
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-public class FV implements BooleanVariable, Comparable<FV> {
+public class FreeVariable implements BooleanVariable, Comparable<FreeVariable> {
 
 	private final String label;
 
-	public FV(String label) {
+	public FreeVariable(String label) {
 		this.label = label;
 	}
 
@@ -20,7 +20,7 @@ public class FV implements BooleanVariable, Comparable<FV> {
 	}
 
 	@Override
-	public int compareTo(FV var) {
+	public int compareTo(FreeVariable var) {
 		return -var.getLabel().compareTo(getLabel());
 	}
 

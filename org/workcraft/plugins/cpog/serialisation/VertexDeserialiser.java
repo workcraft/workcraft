@@ -19,28 +19,34 @@
  *
  */
 
-package org.workcraft.plugins.cpog;
+package org.workcraft.plugins.cpog.serialisation;
 
-/**
- * A slightly meaningless class (yet).
- * @author chEEtah
- */
-public class BooleanFunction
+import org.w3c.dom.Element;
+import org.workcraft.plugins.cpog.Vertex;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.serialisation.ReferenceResolver;
+
+public class VertexDeserialiser extends BooleanFunctionDeserialiser
 {
-	public static BooleanFunction TRUE = new BooleanFunction("1");
-	public static BooleanFunction FALSE = new BooleanFunction("0");
-
-	public final String value;
-
-	public BooleanFunction(String value)
+	@Override
+	public String getClassName()
 	{
-		if (value == null) value = "1";
-		this.value = value;
+		return Vertex.class.getName();
 	}
 
 	@Override
-	public String toString()
+	protected void setFormula(Object deserialisee, BooleanFormula formula)
 	{
-		return value;
+		((Vertex)deserialisee).setCondition(formula);
 	}
+
+	@Override
+	public Object createInstance(Element element,
+			ReferenceResolver externalReferenceResolver,
+			Object... constructorParameters)
+	{
+		return new Vertex();
+	}
+
+
 }

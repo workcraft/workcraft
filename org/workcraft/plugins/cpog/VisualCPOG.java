@@ -50,6 +50,60 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( CustomToolsProvider.class )
 public class VisualCPOG extends AbstractVisualModel
 {
+	private final class BooleanFormulaPropertyDescriptor implements
+			PropertyDescriptor {
+		private final Node node;
+
+		private BooleanFormulaPropertyDescriptor(Node node)
+		{
+			this.node = node;
+		}
+
+		@Override
+		public Map<Object, String> getChoice() {
+			return null;
+		}
+
+		@Override
+		public String getName()
+		{
+			if (node instanceof VisualRhoClause) return "Function";
+			return "Condition";
+		}
+
+		@Override
+		public Class<?> getType() {
+			return String.class;
+		}
+
+		@Override
+		public Object getValue() throws InvocationTargetException
+		{
+			if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
+			if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
+			return FormulaToString.toString(((VisualArc)node).getCondition());
+		}
+
+		@Override
+		public boolean isWritable() {
+			return true;
+		}
+
+		@Override
+		public void setValue(Object value) throws InvocationTargetException {
+			try
+			{
+				if (node instanceof VisualRhoClause) ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+				else
+				if (node instanceof VisualArc) ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+				else
+				if (node instanceof VisualVertex) ((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+			} catch (ParseException e) {
+				throw new InvocationTargetException(e);
+			}
+		}
+	}
+
 	private CPOG mathModel;
 
 	public VisualCPOG(CPOG model) throws VisualModelInstantiationException
@@ -142,7 +196,7 @@ public class VisualCPOG extends AbstractVisualModel
 	public void groupSelection()
 	{
 		Collection<Node> selected = getGroupableSelection();
-		if (selected.size() <= 1) return;
+		if (selected.size() < 1) return;
 
 		VisualGroup group = new VisualScenario();
 
@@ -181,46 +235,10 @@ public class VisualCPOG extends AbstractVisualModel
 	@Override
 	public Properties getProperties(Node node) {
 		Properties properties = super.getProperties(node);
-		if(node instanceof VisualRhoClause)
-		{
-			final VisualRhoClause rho = (VisualRhoClause)node;
-			properties = Properties.Merge.add(properties, new PropertyDescriptor(){
 
-				@Override
-				public Map<Object, String> getChoice() {
-					return null;
-				}
+		if(node instanceof VisualRhoClause || node instanceof VisualVertex || node instanceof VisualArc)
+			properties = Properties.Merge.add(properties, new BooleanFormulaPropertyDescriptor(node));
 
-				@Override
-				public String getName() {
-					return "Function";
-				}
-
-				@Override
-				public Class<?> getType() {
-					return String.class;
-				}
-
-				@Override
-				public Object getValue() throws InvocationTargetException {
-					return FormulaToString.toString(rho.getFormula());
-				}
-
-				@Override
-				public boolean isWritable() {
-					return true;
-				}
-
-				@Override
-				public void setValue(Object value) throws InvocationTargetException {
-					try {
-						rho.setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
-					} catch (ParseException e) {
-						throw new InvocationTargetException(e);
-					}
-				}
-			});
-		}
 		return properties;
 	}
 }

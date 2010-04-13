@@ -61,21 +61,27 @@ public class FormulaToString implements BooleanVisitor<String>
 
 		public void init()
 		{
-			init(iff, imply);
-			init(imply, or);
-			init(or, xor);
-			init(xor, and);
-			init(and, not);
-			init(not, vars);
-			init(vars, constants);
-			init(constants, paren);
-			init(paren, iff);
+			init(false);
 		}
 
-		public void init(DelegatingPrinter printer, DelegatingPrinter next)
+		public void init(boolean unicodeAllowed)
+		{
+			init(iff, imply, unicodeAllowed);
+			init(imply, or, unicodeAllowed);
+			init(or, xor, unicodeAllowed);
+			init(xor, and, unicodeAllowed);
+			init(and, not, unicodeAllowed);
+			init(not, vars, unicodeAllowed);
+			init(vars, constants, unicodeAllowed);
+			init(constants, paren, unicodeAllowed);
+			init(paren, iff, unicodeAllowed);
+		}
+
+		public void init(DelegatingPrinter printer, DelegatingPrinter next, boolean unicodeAllowed)
 		{
 			printer.setNext(next);
 			printer.setBuilder(builder);
+			printer.unicodeAllowed = unicodeAllowed;
 		}
 
 		public StringBuilder builder;
@@ -94,6 +100,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	{
 		public DelegatingPrinter next;
 		public StringBuilder builder;
+		public boolean unicodeAllowed = false;
 
 		public void setNext(DelegatingPrinter next)
 		{
@@ -176,7 +183,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	{
 		@Override
 		public Void visit(Imply node) {
-			return visitBinary(next, " -> ", node);
+			return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
 		}
 	}
 
@@ -192,7 +199,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	{
 		@Override
 		public Void visit(Xor node) {
-			return visitBinary(this, " ^ ", node);//oplus: \u2295
+			return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
 		}
 	}
 
@@ -200,7 +207,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	{
 		@Override
 		public Void visit(And node) {
-			return visitBinary(this, " * ", node);
+			return visitBinary(this, unicodeAllowed ? " \u2022 " : " * ", node);
 		}
 	}
 
@@ -263,15 +270,20 @@ public class FormulaToString implements BooleanVisitor<String>
 		}
 	}
 
-	public static String toString(BooleanFormula f) {
-		DelegatingPrinter printer = getPrinter();
+	public static String toString(BooleanFormula f)
+	{
+		return toString(f, false);
+	}
+
+	public static String toString(BooleanFormula f, boolean unicodeAllowed) {
+		DelegatingPrinter printer = getPrinter(unicodeAllowed);
 		f.accept(printer);
 		return printer.builder.toString();
 	}
 
-	private static DelegatingPrinter getPrinter() {
+	private static DelegatingPrinter getPrinter(boolean unicodeAllowed) {
 		PrinterSuite suite = new PrinterSuite();
-		suite.init();
+		suite.init(unicodeAllowed);
 		return suite.iff;
 	}
 

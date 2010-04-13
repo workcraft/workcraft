@@ -96,10 +96,10 @@ TOKEN : /* OPERATORS */
 {
   	< EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
 |  	< NOTEQUALS: "neq" | "!=" >
-|  	< IMPLIES: "imp" | "=>" | "->" >
+|  	< IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
 |  	< OR: "or" | "|" | "+" | "\u2228" >
 |  	< XOR: "xor" | "^" | "\u2295" >
-|	< AND: "and" | "&" | "*" | "\u2227" >
+|	< AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
 |	< NOT: "not" | "!" | "¬" >
 |   < POSTNOT: "'" >
 }

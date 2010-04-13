@@ -21,20 +21,10 @@
 
 package org.workcraft.plugins.cpog.serialisation;
 
-import org.w3c.dom.Element;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.cpog.RhoClause;
-import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString.PrinterSuite;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString.Void;
-import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class RhoClauseSerialiser implements CustomXMLSerialiser
+public class RhoClauseSerialiser extends BooleanFormulaSerialiser
 {
 	@Override
 	public String getClassName()
@@ -43,25 +33,8 @@ public class RhoClauseSerialiser implements CustomXMLSerialiser
 	}
 
 	@Override
-	public void serialise(Element element, Object object, final ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException
+	protected BooleanFormula getFormula(Object serialisee)
 	{
-		BooleanFormula formula = ((RhoClause) object).getFormula();
-
-		PrinterSuite printers = new FormulaToString.PrinterSuite();
-		printers.vars = new FormulaToString.VariablePrinter(){
-			@Override
-			public Void visit(BooleanVariable node) {
-				append("var_"+internalReferences.getReference((Variable)node));
-				return null;
-			}
-		};
-
-		printers.init();
-
-		formula.accept(printers.iff);
-		String string = printers.builder.toString();
-
-		element.setAttribute("formula", string);
+		return ((RhoClause) serialisee).getFormula();
 	}
 }

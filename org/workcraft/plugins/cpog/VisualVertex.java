@@ -39,6 +39,9 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_V)
@@ -53,9 +56,6 @@ public class VisualVertex extends VisualComponent
 	public VisualVertex(Vertex vertex)
 	{
 		super(vertex);
-		PropertyDescriptor declaration = new PropertyDeclaration(this, "Condition", "getCondition", "setCondition",
-				String.class);
-		addPropertyDeclaration(declaration);
 	}
 
 	public void draw(Graphics2D g)
@@ -75,8 +75,8 @@ public class VisualVertex extends VisualComponent
 	protected void drawLabelInLocalSpace(Graphics2D g)
 	{
 		String text = getLabel();
-		String condition = getCondition();
-		if (!condition.equals("1")) text += ": " + condition;
+		String condition = FormulaToString.toString(getCondition(), true);
+		if (getCondition() != One.instance()) text += ": " + condition;
 
 		final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
 
@@ -115,14 +115,14 @@ public class VisualVertex extends VisualComponent
 		return (Vertex) getReferencedComponent();
 	}
 
-	public String getCondition()
+	public BooleanFormula getCondition()
 	{
-		return getMathVertex().getCondition().value;
+		return getMathVertex().getCondition();
 	}
 
-	public void setCondition(String condition)
+	public void setCondition(BooleanFormula condition)
 	{
-		getMathVertex().setCondition(new BooleanFunction(condition));
+		getMathVertex().setCondition(condition);
 		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 }

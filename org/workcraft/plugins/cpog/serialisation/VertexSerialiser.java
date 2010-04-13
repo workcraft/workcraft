@@ -21,23 +21,20 @@
 
 package org.workcraft.plugins.cpog.serialisation;
 
-import org.w3c.dom.Element;
-import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.cpog.BooleanFunction;
-import org.workcraft.serialisation.xml.BasicXMLSerialiser;
+import org.workcraft.plugins.cpog.Vertex;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class ConditionSerialiser implements BasicXMLSerialiser
+public class VertexSerialiser extends BooleanFormulaSerialiser
 {
 	@Override
 	public String getClassName()
 	{
-		return BooleanFunction.class.getName();
+		return Vertex.class.getName();
 	}
 
 	@Override
-	public void serialise(Element element, Object object) throws SerialisationException
+	protected BooleanFormula getFormula(Object serialisee)
 	{
-		BooleanFunction condition = (BooleanFunction) object;
-		element.setAttribute("value", condition.value);
+		return ((Vertex) serialisee).getCondition();
 	}
 }

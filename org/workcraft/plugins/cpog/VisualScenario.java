@@ -36,6 +36,7 @@ public class VisualScenario extends VisualGroup
 
 	private final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
+	private Rectangle2D contentsBB = null;
 	private Rectangle2D labelBB = null;
 	private Rectangle2D encodingBB = null;
 
@@ -75,8 +76,14 @@ public class VisualScenario extends VisualGroup
 		for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class))
 			bb = BoundingBoxHelper.union(bb, v.getBoundingBoxWithLabel());
 
+		if (bb == null) bb = contentsBB;
+		else
 		bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
 				   bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+
+		if (bb == null) bb = new Rectangle2D.Double(0, 0, 1, 1);
+
+		contentsBB = (Rectangle2D) bb.clone();
 
 		return bb;
 	}

@@ -61,7 +61,7 @@ public class VisualRhoClause extends VisualComponent
 	public void draw(Graphics2D g)
 	{
 		FontRenderContext fontRenderContext = g.getFontRenderContext();
-		GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, FormulaToString.toString(getFormula()));
+		GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, FormulaToString.toString(getFormula(), true));
 		Rectangle2D textBB = glyphVector.getLogicalBounds();
 
 		float textX = (float)-textBB.getCenterX();

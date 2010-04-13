@@ -48,8 +48,8 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		BooleanNumber var2Number = generateInt("f"+funcId + "_v2_", arg2.length);
 		//BooleanFormula less = numberProvider.less(var1Number, var2Number);
 		//rho.add(less);
-		BooleanFormula noNegate1 = new FV("f"+funcId + "_v1_plain");
-		BooleanFormula noNegate2 = new FV("f"+funcId + "_v2_plain");
+		BooleanFormula noNegate1 = new FreeVariable("f"+funcId + "_v1_plain");
+		BooleanFormula noNegate2 = new FreeVariable("f"+funcId + "_v2_plain");
 		BooleanFormula var1 = numberProvider.select(arg1, var1Number);
 		BooleanFormula var2 = numberProvider.select(arg2, var2Number);
 
@@ -159,7 +159,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 								cell = forcedVariables.get(c);
 								if(cell == null)
 								{
-									BooleanVariable var = new FV(c.toString());
+									BooleanVariable var = new FreeVariable(c.toString());
 									forcedVariables.put(c, var);
 									cell = var;
 								}
@@ -208,7 +208,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		char nextVar = 'x';
 		for(int i=0;i<freeVarsCount;i++)
 		{
-			freeVariables.add(new FV(""+(nextVar++)));
+			freeVariables.add(new FreeVariable(""+(nextVar++)));
 			if(nextVar>'z')
 				nextVar = 'p';
 			if(nextVar == 'x')
@@ -230,7 +230,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		for(int i=0;i<functionCount;i++)
 		{
 			BooleanNumber varId = generateInt("cpog_f"+i+"_",allVariables.size());
-			BooleanFormula plain = new FV("cpog_f"+i+"_plain");
+			BooleanFormula plain = new FreeVariable("cpog_f"+i+"_plain");
 
 			BooleanFormula value = iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
 
@@ -247,11 +247,11 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 				for(int j=0;j<freeVarsCount;j++)
 					encodings[i][j] = ZERO;
 				for(int j=0;j<0 && j<freeVarsCount;j++)
-					encodings[i][j] = new FV("x"+j+"_s"+i);
+					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
 			}
 			else
 				for(int j=0;j<freeVarsCount;j++)
-					encodings[i][j] = new FV("x"+j+"_s"+i);
+					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
 		}
 
 		//Verify results

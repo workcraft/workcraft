@@ -23,10 +23,12 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 public class Arc extends MathConnection
 {
-	private BooleanFunction condition;
+	private BooleanFormula condition;
 
 	public Arc()
 	{
@@ -35,16 +37,16 @@ public class Arc extends MathConnection
 	public Arc(Vertex first, Vertex second)
 	{
 		super(first, second);
-		condition = BooleanFunction.TRUE;
+		condition = One.instance();
 	}
 
-	public void setCondition(BooleanFunction condition)
+	public void setCondition(BooleanFormula condition)
 	{
 		this.condition = condition;
 		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 
-	public BooleanFunction getCondition()
+	public BooleanFormula getCondition()
 	{
 		return condition;
 	}

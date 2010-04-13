@@ -32,8 +32,8 @@ public class CnfLiteral implements BooleanFormula
 	{
 	}
 
-	public static CnfLiteral Zero = new CnfLiteral(new FV("0"));
-	public static CnfLiteral One = new CnfLiteral(new FV("1"));
+	public static CnfLiteral Zero = new CnfLiteral(new FreeVariable("0"));
+	public static CnfLiteral One = new CnfLiteral(new FreeVariable("1"));
 
 	public CnfLiteral(BooleanVariable variable) {
 		this.variable = variable;
@@ -45,7 +45,7 @@ public class CnfLiteral implements BooleanFormula
 	}
 
 	public CnfLiteral(String varName) {
-		this(new FV(varName));
+		this(new FreeVariable(varName));
 	}
 
 	public void setVariable(BooleanVariable variable) {

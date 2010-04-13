@@ -22,7 +22,8 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class VisualArc extends VisualConnection
 {
@@ -34,26 +35,20 @@ public class VisualArc extends VisualConnection
 		this.mathConnection = mathConnection;
 	}
 
-	@Override
-	protected void initialise()
-	{
-		super.initialise();
-		addPropertyDeclaration(new PropertyDeclaration(this, "Condition", "getCondition", "setCondition", String.class));
-	}
-
 	public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second)
 	{
 		super(mathConnection, first, second);
 		this.mathConnection = mathConnection;
 	}
 
-	public String getCondition()
+	public BooleanFormula getCondition()
 	{
-		return mathConnection.getCondition().value;
+		return mathConnection.getCondition();
 	}
 
-	public void setCondition(String condition)
+	public void setCondition(BooleanFormula condition)
 	{
-		mathConnection.setCondition(new BooleanFunction(condition));
+		mathConnection.setCondition(condition);
+		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 }

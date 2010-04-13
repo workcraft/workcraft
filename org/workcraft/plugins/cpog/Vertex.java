@@ -25,20 +25,22 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 @DisplayName("Vertex")
 @VisualClass("org.workcraft.plugins.cpog.VisualVertex")
 public class Vertex extends MathNode
 {
-	private BooleanFunction condition = BooleanFunction.TRUE;
+	private BooleanFormula condition = One.instance();
 
-	public void setCondition(BooleanFunction condition)
+	public void setCondition(BooleanFormula condition)
 	{
 		this.condition = condition;
 		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 
-	public BooleanFunction getCondition()
+	public BooleanFormula getCondition()
 	{
 		return condition;
 	}

@@ -21,29 +21,20 @@
 
 package org.workcraft.plugins.cpog.serialisation;
 
-import org.w3c.dom.Element;
-import org.workcraft.plugins.cpog.RhoClause;
+import org.workcraft.plugins.cpog.Arc;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.serialisation.ReferenceResolver;
 
-public class RhoClauseDeserialiser extends BooleanFunctionDeserialiser
+public class ArcSerialiser extends BooleanFormulaSerialiser
 {
 	@Override
 	public String getClassName()
 	{
-		return RhoClause.class.getName();
+		return Arc.class.getName();
 	}
 
 	@Override
-	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters)
+	protected BooleanFormula getFormula(Object serialisee)
 	{
-		return new RhoClause();
-	}
-
-	@Override
-	protected void setFormula(Object deserialisee, BooleanFormula formula)
-	{
-		((RhoClause)deserialisee).setFormula(formula);
+		return ((Arc) serialisee).getCondition();
 	}
 }

@@ -17,7 +17,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 	public ThermometerBooleanFormula generate(String varPrefix, int range) {
 		List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
 		for(int i=0;i<range-1;i++)
-			vars.add(new FV(varPrefix + "sel"+i));
+			vars.add(new FreeVariable(varPrefix + "sel"+i));
 
 		for(int i=0;i<range-2;i++)
 			rho.add(imply(vars.get(i+1), vars.get(i)));
