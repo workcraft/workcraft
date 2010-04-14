@@ -24,7 +24,6 @@ package org.workcraft.plugins.petri;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.Icon;
@@ -67,7 +66,16 @@ public class SimulationTool extends AbstractTool {
 		saveMarkingButton = new JButton ("Save marking");
 		loadMarkingButton = new JButton ("Load marking");
 
+		stepButton.setEnabled(false);
+		loadTraceButton.setEnabled(false);
+		saveMarkingButton.setEnabled(false);
+		loadMarkingButton.setEnabled(false);
+
 		interfacePanel.add(autoPlayButton);
+		interfacePanel.add(stepButton);
+		interfacePanel.add(loadTraceButton);
+		interfacePanel.add(saveMarkingButton);
+		interfacePanel.add(loadMarkingButton);
 	}
 
 	private void highlightEnabledTransitions(Container root) {

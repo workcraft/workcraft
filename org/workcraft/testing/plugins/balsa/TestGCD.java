@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DocumentFormatException;
@@ -459,19 +458,23 @@ public class TestGCD {
 		System.out.println("total chunks: " + allChunks.size());
 		for(Chunk chunk : allChunks)
 		{
+
 			Integer petrifyCost = null;//readCost(getEqnFile(chunk), "# Estimated area = ");
 			Integer mpsatCost = readCost(new File(outDir, "mpsat/" + getChunkName(chunk) + ".eqn"), "literals=");
-			Integer cost = petrifyCost;
-			if(cost == null)
-				cost = mpsatCost;
-			else
-				if(mpsatCost != null && mpsatCost < cost)
-					cost = mpsatCost;
+			Integer cost = best(petrifyCost, mpsatCost);
 
 			if(cost != null)
 				costs.put(chunk, cost);
 		}
 		return costs;
+	}
+
+	private static Integer best(Integer petrifyCost, Integer mpsatCost) {
+		if(mpsatCost == null)
+			return petrifyCost;
+		if(petrifyCost == null)
+			return mpsatCost;
+		return Math.min(mpsatCost, petrifyCost);
 	}
 
 	private Integer readCost(File eqnFile, String literalsPrefix) throws NumberFormatException, IOException {

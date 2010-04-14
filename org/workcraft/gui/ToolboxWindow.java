@@ -40,7 +40,6 @@ import javax.swing.SwingConstants;
 import org.workcraft.Framework;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.Colorisable;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;

@@ -21,15 +21,12 @@
 
 package org.workcraft.util;
 
-import java.util.AbstractSequentialList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import org.workcraft.gui.DockableWindow;
 
 public class ListMap <K,V> {
 	private HashMap<K,LinkedList<V>> map =  new HashMap<K, LinkedList<V>>();

@@ -72,7 +72,7 @@ public class BreezeImporter implements Importer
 		BalsaCircuit circuit = new BalsaCircuit();
 		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-		lib.get("BMU").instantiate(lib, factory, EmptyValueList.instance());
+		lib.get("buffer1").instantiate(lib, factory, EmptyValueList.instance());
 
 		return circuit;
 	}
