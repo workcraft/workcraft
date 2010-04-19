@@ -30,6 +30,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -52,10 +53,19 @@ public class VisualVertex extends VisualComponent
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;
 	private Rectangle2D labelBB = null;
+	public LabelPositioning labelPositioning = LabelPositioning.TOP;
 
 	public VisualVertex(Vertex vertex)
 	{
 		super(vertex);
+
+		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
+
+		for(LabelPositioning lp : LabelPositioning.values())
+			positions.put(lp.name, lp);
+
+		PropertyDescriptor declaration = new PropertyDeclaration(this, "Label positioning", "getLabelPositioning", "setLabelPositioning", LabelPositioning.class, positions);
+		addPropertyDeclaration(declaration);
 	}
 
 	public void draw(Graphics2D g)
@@ -82,8 +92,9 @@ public class VisualVertex extends VisualComponent
 
 		labelBB = glyphs.getLogicalBounds();
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		Point2D labelPosition = new Point2D.Double(bb.getMinX() + (bb.getWidth() - labelBB.getWidth()) * 0.5,
-				bb.getMinY() - 0.2);
+		Point2D labelPosition = new Point2D.Double(
+				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
+				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
 
 		labelBB = glyphs.getVisualBounds();
 		labelBB.setRect(labelBB.getMinX() + labelPosition.getX(), labelBB.getMinY() + labelPosition.getY(),
@@ -124,5 +135,16 @@ public class VisualVertex extends VisualComponent
 	{
 		getMathVertex().setCondition(condition);
 		sendNotification(new PropertyChangedEvent(this, "condition"));
+	}
+
+	public LabelPositioning getLabelPositioning()
+	{
+		return labelPositioning;
+	}
+
+	public void setLabelPositioning(LabelPositioning labelPositioning)
+	{
+		this.labelPositioning = labelPositioning;
+		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
 }
