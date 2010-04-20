@@ -236,4 +236,14 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	public void invalidate() {
 		valid = false;
 	}
+
+	@Override
+	public Point2D getDerivativeAt(double t) {
+		return Geometry.getDerivativeOfCubicCurve(curve, t);
+	}
+
+	@Override
+	public Point2D getSecondDerivativeAt(double t) {
+		return Geometry.getSecondDerivativeOfCubicCurve(curve, t);
+	}
 }

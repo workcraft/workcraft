@@ -66,6 +66,12 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 		public void workspaceSaved() {
 			listener.restructured(Path.root(getRoot()));
 		}
+
+		@Override
+		public void workspaceLoaded()
+		{
+			listener.restructured(Path.root(getRoot()));
+		}
 	}
 
 	Workspace workspace;

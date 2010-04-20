@@ -381,5 +381,26 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		valid = false;
 	}
 
+	@Override
+	public Point2D getDerivativeAt(double t)
+	{
+		if (t < 0) t = 0;
+		if (t > 1) t = 1;
+
+		int segmentIndex = getSegmentIndex(t);
+		Line2D segment = getSegment(segmentIndex);
+
+		return Geometry.subtract(segment.getP2(), segment.getP1());
+	}
+
+	@Override
+	public Point2D getSecondDerivativeAt(double t)
+	{
+		Point2D left = getDerivativeAt(t - 0.05);
+		Point2D right = getDerivativeAt(t + 0.05);
+
+		return Geometry.subtract(right, left);
+	}
+
 
 }

@@ -112,12 +112,16 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 
     public final Rectangle2D getBoundingBox() {
-    	Rectangle2D parentBB = getBoundingBoxInLocalSpace();
-    	if(parentBB == null)
+    	return transformToParentSpace(getBoundingBoxInLocalSpace());
+    }
+
+	protected Rectangle2D transformToParentSpace(Rectangle2D rect)
+	{
+		if(rect == null)
     		return null;
 
-		Point2D p0 = new Point2D.Double(parentBB.getMinX(), parentBB.getMinY());
-		Point2D p1 = new Point2D.Double(parentBB.getMaxX(), parentBB.getMaxY());
+		Point2D p0 = new Point2D.Double(rect.getMinX(), rect.getMinY());
+		Point2D p1 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
 
 		AffineTransform t = getLocalToParentTransform();
 		t.transform(p0, p0);
@@ -127,7 +131,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		result.add(p1);
 
 		return result;
-    }
+	}
 
 	public AffineTransform getLocalToParentTransform() {
 		return localToParentTransform;

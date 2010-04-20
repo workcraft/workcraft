@@ -26,6 +26,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -192,7 +193,7 @@ public class PluginManager implements PluginProvider {
 		if (!className.startsWith("org.workcraft.plugins"))
 			return;
 
-		System.out.print(".class file found: " + path + ", ");
+//		System.out.print(".class file found: " + path + ", ");
 
 
 		className = className.substring(0, className.length() - ".class".length());
@@ -200,14 +201,13 @@ public class PluginManager implements PluginProvider {
 		try {
 			Class<?> cls = Class.forName(className);
 
-
+ 			if (!Modifier.isAbstract(cls.getModifiers()))
 			if(Plugin.class.isAssignableFrom(cls)) {
 				PluginInfo info = new PluginInfo(cls);
 				plugins.add(info);
 				nameToInfoMap.put(className, info);
 				System.out.println("plugin " + cls.getName());
-			} else
-				System.out.println("not a plugin class, ignored");
+			}
 
 		} catch (ClassFormatError e) {
 			System.out.println ("bad class: " + e.getMessage());

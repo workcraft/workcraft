@@ -28,7 +28,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class ImplicitArcSerialiser implements CustomXMLSerialiser {
+public class ImplicitPlaceArcSerialiser implements CustomXMLSerialiser {
 	@Override
 	public String getClassName() {
 		return VisualImplicitPlaceArc.class.getName();

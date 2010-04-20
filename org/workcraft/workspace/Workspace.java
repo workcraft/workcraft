@@ -146,8 +146,6 @@ public class Workspace {
 		return Path.combine(bestMount.getKey(), bestRel);
 	}
 
-
-
 	private Path<String> getRelative(File ancestor, File descendant) {
 		ancestor = ancestor.getAbsoluteFile();
 		descendant = descendant.getAbsoluteFile();
@@ -167,7 +165,6 @@ public class Workspace {
 		}
 		return null;
 	}
-
 
 	public WorkspaceEntry add(Path<String> directory, String desiredName, Model model, boolean temporary) {
 		final Path<String> path = newName(directory, desiredName);
@@ -200,6 +197,8 @@ public class Workspace {
 
 	private void fireSomethingChanged() {
 		// TODO : categorize and route events
+		for(WorkspaceListener listener : workspaceListeners)
+			listener.workspaceLoaded();
 	}
 
 	private Path<String> newName(Path<String> dir, String desired) {
@@ -283,6 +282,7 @@ public class Workspace {
 		} catch (IOException e) {
 			throw new DeserialisationException (e);
 		}
+		fireSomethingChanged();
 	}
 
 	public void clear() {
