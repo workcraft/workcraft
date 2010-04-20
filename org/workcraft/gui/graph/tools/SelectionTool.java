@@ -293,10 +293,10 @@ public class SelectionTool extends AbstractTool {
 			if (!e.isShiftDown()) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_PAGE_UP:
-					currentLevelUp(e);
+					currentLevelUp(e.getModel());
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
-					currentLevelDown(e);
+					currentLevelDown(e.getModel());
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
 					//e.getModel().rotateSelection(-Math.PI/2);
@@ -353,25 +353,25 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	private void currentLevelDown(GraphEditorKeyEvent e) {
-		Collection<Node> selection = e.getModel().getSelection();
+	protected void currentLevelDown(VisualModel model) {
+		Collection<Node> selection = model.getSelection();
 		if(selection.size() == 1)
 		{
 			Node selectedNode = selection.iterator().next();
 			if(selectedNode instanceof VisualGroup)
-				e.getModel().setCurrentLevel((VisualGroup)selectedNode);
+				model.setCurrentLevel((VisualGroup)selectedNode);
 		}
-		grayOutNotActive(e.getModel());
+		grayOutNotActive(model);
 	}
 
-	private void currentLevelUp(GraphEditorKeyEvent e) {
-		Container level = e.getModel().getCurrentLevel();
+	protected void currentLevelUp(VisualModel model) {
+		Container level = model.getCurrentLevel();
 		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
 		if(parent!=null)
 		{
-			e.getModel().setCurrentLevel(parent);
-			e.getModel().addToSelection(level);
-			grayOutNotActive(e.getModel());
+			model.setCurrentLevel(parent);
+			model.addToSelection(level);
+			grayOutNotActive(model);
 		}
 	}
 

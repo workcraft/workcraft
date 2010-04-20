@@ -69,6 +69,7 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 
 	public void setColorisation (Color color) {
 		colorisation = color;
+		sendNotification(new PropertyChangedEvent(this, "colorisation"));
 	}
 
 	public Color getColorisation () {

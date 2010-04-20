@@ -42,7 +42,7 @@ public class SelectionColoriser implements StateObserver {
 	public void update() {
 		if(model==null)
 			return;
-		((Colorisable) model.getRoot()).clearColorisation();
+		((Colorisable) model.getCurrentLevel()).clearColorisation();
 		colorise(model.getSelection());
 	}
 

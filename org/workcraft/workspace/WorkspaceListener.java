@@ -25,6 +25,7 @@ import java.util.EventListener;
 
 public interface WorkspaceListener extends EventListener {
 	//public void workspaceChanged();
+	public void workspaceLoaded();
 	public void workspaceSaved();
 	public void entryAdded(WorkspaceEntry we);
 	public void entryRemoved(WorkspaceEntry we);

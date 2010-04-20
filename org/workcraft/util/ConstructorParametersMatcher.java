@@ -47,6 +47,20 @@ public class ConstructorParametersMatcher
 		for(Constructor<?> constructor : c.getConstructors())
 			constructors.add(new ConstructorInfo(constructor));
 
-		return MethodParametersMatcher.match(constructors, parameters).constructor;
+		try
+		{
+			return MethodParametersMatcher.match(constructors, parameters).constructor;
+		}
+		catch(NoSuchMethodException e)
+		{
+			String s = "";
+			for(Class<?> parameter : parameters)
+			{
+				if(s.length()>0)
+					s+=", ";
+				s += parameter.getCanonicalName();
+			}
+			throw new NoSuchMethodException("Unable to find a constructor for class " + c.getCanonicalName() + " with parameters (" + s + ")");
+		}
 	}
 }
