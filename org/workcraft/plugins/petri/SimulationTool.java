@@ -43,7 +43,7 @@ import org.workcraft.util.GUI;
 
 public class SimulationTool extends AbstractTool {
 	private VisualModel visualNet;
-	private PetriNet net;
+	private PetriNetModel net;
 	private JPanel interfacePanel;
 
 	private JButton autoPlayButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
@@ -98,7 +98,7 @@ public class SimulationTool extends AbstractTool {
 	public void activated(GraphEditor editor)
 	{
 		visualNet = editor.getModel();
-		net = (PetriNet)visualNet.getMathModel();
+		net = (PetriNetModel)visualNet.getMathModel();
 
 		for (Place p : net.getPlaces()) {
 			tokens.put(p, p.getTokens());
