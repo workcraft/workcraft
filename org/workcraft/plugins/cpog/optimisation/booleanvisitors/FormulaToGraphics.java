@@ -234,7 +234,7 @@ public class FormulaToGraphics
 	{
 		@Override
 		public FormulaRenderingResult visit(And node) {
-			return visitBinary(this, unicodeAllowed ? " \u2022 " : " * ", node);
+			return visitBinary(this, unicodeAllowed ? "\u00b7" : " * ", node);
 		}
 	}
 

@@ -44,7 +44,7 @@ import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection
 {
-	private final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private final static Font labelFont = new Font("Century Schoolbook", Font.ITALIC, 1).deriveFont(0.5f);
 
 	Arc mathConnection;
 

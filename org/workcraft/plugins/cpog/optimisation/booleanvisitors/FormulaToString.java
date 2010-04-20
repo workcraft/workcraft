@@ -207,7 +207,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	{
 		@Override
 		public Void visit(And node) {
-			return visitBinary(this, unicodeAllowed ? " \u2022 " : " * ", node);
+			return visitBinary(this, unicodeAllowed ? "\u00b7" : " * ", node);
 		}
 	}
 
