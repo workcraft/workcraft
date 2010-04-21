@@ -123,6 +123,30 @@ public class Geometry {
 		return lerp(b1, b2, t);
 	}
 
+	public static Point2D getDerivativeOfCubicCurve (CubicCurve2D curve, double t) {
+
+		Point2D a1 = subtract(curve.getCtrlP1(), curve.getP1());
+		Point2D a2 = subtract(curve.getCtrlP2(), curve.getCtrlP1());
+		Point2D a3 = subtract(curve.getP2(), curve.getCtrlP2());
+
+		Point2D b1 = lerp(a1, a2, t);
+		Point2D b2 = lerp(a2, a3, t);
+
+		return multiply(lerp(b1, b2, t), 3.0);
+	}
+
+	public static Point2D getSecondDerivativeOfCubicCurve (CubicCurve2D curve, double t)
+	{
+		Point2D a1 = subtract(curve.getCtrlP1(), curve.getP1());
+		Point2D a2 = subtract(curve.getCtrlP2(), curve.getCtrlP1());
+		Point2D a3 = subtract(curve.getP2(), curve.getCtrlP2());
+
+		Point2D b1 = subtract(a2, a1);
+		Point2D b2 = subtract(a3, a2);
+
+		return multiply(lerp(b1, b2, t), 9.0);
+	}
+
 	public static AffineTransform optimisticInverse(AffineTransform transform)
 	{
 		try
@@ -199,5 +223,16 @@ public class Geometry {
 		result.setLocation(dotProduct(p, vx) / vxsq, dotProduct(p, vy) / vysq);
 
 		return result;
+	}
+
+	public static double crossProduct(Point2D p, Point2D q)
+	{
+		double x1 = p.getX();
+		double y1 = p.getY();
+
+		double x2 = q.getX();
+		double y2 = q.getY();
+
+		return x1 * y2 - y1 * x2;
 	}
 }

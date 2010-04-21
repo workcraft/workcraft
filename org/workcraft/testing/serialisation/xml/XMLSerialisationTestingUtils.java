@@ -46,7 +46,7 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.serialisation.ImplicitArcSerialiser;
+import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 
 public class XMLSerialisationTestingUtils {
@@ -65,7 +65,7 @@ public class XMLSerialisationTestingUtils {
 						new PluginInfo (EnumSerialiser.class),
 						new PluginInfo (AffineTransformSerialiser.class),
 						new PluginInfo (VisualConnectionSerialiser.class),
-						new PluginInfo (ImplicitArcSerialiser.class)
+						new PluginInfo (ImplicitPlaceArcSerialiser.class)
 				};
 			} else if (interfaceName.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class.getName()))
 			{

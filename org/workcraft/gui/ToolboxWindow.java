@@ -42,6 +42,7 @@ import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
+import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
@@ -207,15 +208,10 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 		setLayout(new SimpleFlowLayout (5, 5));
 
-		addCommonTools();
-
-		for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
-			NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
-			addTool(tool, false);
-		}
 		Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
 		if(customTools != null)
 		{
+			boolean selected = true;
 			CustomToolsProvider provider = null;
 			try {
 				provider = customTools.getConstructor().newInstance();
@@ -224,7 +220,19 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			}
 			if(provider != null)
 				for(GraphEditorTool tool : provider.getTools())
-					addTool(tool, false);
+				{
+					addTool(tool, selected);
+					selected = false;
+				}
+		}
+		else
+		{
+			addCommonTools();
+		}
+
+		for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
+			NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
+			addTool(tool, false);
 		}
 
 		for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass()))

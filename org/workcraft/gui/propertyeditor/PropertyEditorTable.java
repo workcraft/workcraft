@@ -31,6 +31,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import org.workcraft.gui.propertyeditor.cpog.EncodingProperty;
+import org.workcraft.plugins.cpog.Encoding;
+
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
 	HashMap<Class<?>, PropertyClass> propertyClasses;
@@ -50,10 +53,14 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 		propertyClasses = new HashMap<Class<?>, PropertyClass>();
 		propertyClasses.put(int.class, new IntegerProperty());
+		propertyClasses.put(Integer.class, new IntegerProperty());
 		propertyClasses.put(double.class, new DoubleProperty());
+		propertyClasses.put(Double.class, new DoubleProperty());
 		propertyClasses.put(String.class, new StringProperty());
 		propertyClasses.put(boolean.class, new BooleanProperty());
+		propertyClasses.put(Boolean.class, new BooleanProperty());
 		propertyClasses.put(Color.class, new ColorProperty());
+		propertyClasses.put(Encoding.class, new EncodingProperty());
 	}
 
 	@Override

@@ -86,7 +86,7 @@ class DefaultNodeDeserialiser {
 				// the property is writable and is not of array type, try to get a deserialiser
 				XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
 
-				if (!(deserialiser != null  && deserialiser instanceof BasicXMLDeserialiser))
+				if (!(deserialiser instanceof BasicXMLDeserialiser))
 				{
 					// no deserialiser, try to use the special case enum deserialiser
 					if (desc.getPropertyType().isEnum())

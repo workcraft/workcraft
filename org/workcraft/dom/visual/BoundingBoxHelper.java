@@ -26,28 +26,39 @@ import java.util.Collection;
 
 public class BoundingBoxHelper {
 
-	private static Rectangle2D.Double addBoundingBox(Rectangle2D.Double rect, Touchable node)
+	public static Rectangle2D union(Rectangle2D rect1, Rectangle2D rect2)
 	{
-		Rectangle2D addedRect = node.getBoundingBox();
+		if (rect1 == null) return rect2;
+		if (rect2 == null) return rect1;
 
-		if(addedRect == null)
-			return rect;
+		Rectangle2D result = new Rectangle2D.Double();
 
-		if(rect==null) {
-			rect = new Rectangle2D.Double();
-			rect.setRect(addedRect);
-		}
-		else
-			rect.add(addedRect);
+		result.setRect(rect1);
+		result.add(rect2);
 
-		return rect;
+		return result;
 	}
 
 	public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
-		Rectangle2D.Double bb = null;
+		Rectangle2D bb = null;
 		for(Touchable node : nodes)
-			bb = addBoundingBox(bb, node);
+			bb = union(bb, node.getBoundingBox());
 		return bb;
 	}
+
+	public static Rectangle2D expand(Rectangle2D rect, double x, double y)
+	{
+		Rectangle2D res = new Rectangle2D.Double();
+		res.setRect(rect);
+
+		x /= 2.0f;
+		y /= 2.0f;
+
+		res.add(rect.getMinX() - x, rect.getMinY() - y);
+		res.add(rect.getMaxX() + x, rect.getMaxY() + y);
+
+		return res;
+	}
+
 
 }

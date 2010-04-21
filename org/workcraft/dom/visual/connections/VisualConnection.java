@@ -238,7 +238,9 @@ public class VisualConnection extends VisualNode implements
 	/* (non-Javadoc)
 	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getArrowLength()
 	 */
-	public double getArrowLength() {
+	public double getArrowLength()
+	{
+		if (!hasArrow()) return 0.0;
 		return arrowLength;
 	}
 
