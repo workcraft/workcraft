@@ -65,7 +65,7 @@ static final long[] jjbitVec4 = {
    0x8000000000L, 0x0L, 0x0L, 0x0L
 };
 static final long[] jjbitVec5 = {
-   0x0L, 0x0L, 0x0L, 0x2000000000000000L
+   0x0L, 0x0L, 0x100000000000L, 0x0L
 };
 private int jjMoveNfa_0(int startState, int curPos)
 {
@@ -443,7 +443,7 @@ private static final boolean jjCanMove_4(int hiByte, int i1, int i2, long l1, lo
 {
    switch(hiByte)
    {
-      case 255:
+      case 0:
          return ((jjbitVec5[i2] & l2) != 0L);
       default :
          return false;
