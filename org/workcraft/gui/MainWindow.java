@@ -226,6 +226,10 @@ public class MainWindow extends JFrame {
 	private Framework framework;
 
 	private WorkspaceWindow workspaceWindow;
+	public WorkspaceWindow getWorkspaceWindow() {
+		return workspaceWindow;
+	}
+
 	private OutputWindow outputWindow;
 	private ErrorWindow errorWindow;
 	private JavaScriptWindow jsWindow;
