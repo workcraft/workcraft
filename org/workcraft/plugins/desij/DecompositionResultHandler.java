@@ -37,9 +37,12 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 
 				try {
 
-					Path<String> partsDirectoryPath = Path.fromString("Components");
-					File partsDir = framework.getWorkspace().getFile(partsDirectoryPath);
-					partsDir.mkdirs();
+					Path<String> componentsDirectoryPath = Path.fromString(
+							desijResult.getSpecificationModel().getDisplayName() + "-components");
+					File componentsDir = framework.getWorkspace().getFile(componentsDirectoryPath);
+					//if (componentsDir.exists()) framework.getWorkspace().delete(componentsDirectoryPath);
+					deleteDirectory(componentsDir);
+					componentsDir.mkdirs();
 
 					Model[] componentModels = new Model[componentSTGFiles.length];
 
@@ -47,9 +50,12 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 						componentModels[i] =
 							Import.importFromFile(new DotGImporter(), componentSTGFiles[i]);
 
-						framework.getWorkspace().add(partsDirectoryPath, "component" + i , componentModels[i], true);
+						framework.getWorkspace().add(componentsDirectoryPath,
+								getComponentSuffix(componentSTGFiles[i]),
+								componentModels[i], true);
 					}
 
+					// updating the view, manually
 					framework.getMainWindow().getWorkspaceWindow().repaint();
 
 				} catch (IOException e) {
@@ -80,6 +86,33 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 		}
 
 
+	}
+
+	private boolean deleteDirectory(File directory) {
+
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (File file: files) {
+				if (file.isDirectory())
+					deleteDirectory(file);
+				else
+					file.delete();
+			}
+		}
+
+		return directory.delete();
+	}
+
+	private String getComponentSuffix(File componentFile) {
+
+		String fileName = componentFile.getName(); // stg.g__final_suffix.g
+
+		// determine the suffix
+		String suffix = fileName.substring(
+				fileName.lastIndexOf("__final_") + 8,
+				fileName.lastIndexOf(".g"));
+
+		return suffix;
 	}
 
 }
