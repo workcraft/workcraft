@@ -41,7 +41,7 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 							desijResult.getSpecificationModel().getDisplayName() + "-components");
 					File componentsDir = framework.getWorkspace().getFile(componentsDirectoryPath);
 					//if (componentsDir.exists()) framework.getWorkspace().delete(componentsDirectoryPath);
-					deleteDirectory(componentsDir);
+					//deleteDirectory(componentsDir);
 					componentsDir.mkdirs();
 
 					Model[] componentModels = new Model[componentSTGFiles.length];
