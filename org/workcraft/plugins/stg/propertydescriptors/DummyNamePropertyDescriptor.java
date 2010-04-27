@@ -1,16 +1,18 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.stg.propertydescriptors;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.stg.DummyTransition;
+import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition;
 
-public class NamePropertyDescriptor implements PropertyDescriptor {
+public class DummyNamePropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
-	private final Node node;
+	private final DummyTransition node;
 
-	public NamePropertyDescriptor(STG stg, Node node) {
+	public DummyNamePropertyDescriptor(STG stg, DummyTransition node) {
 		this.stg = stg;
 		this.node = node;
 	}
@@ -22,7 +24,7 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Name";
+		return "Dummy name";
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return stg.getName(node);
+		return node.getName();
 	}
 
 	@Override

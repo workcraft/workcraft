@@ -42,6 +42,10 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.propertydescriptors.DummyNamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.NamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -74,7 +78,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public Transition createTransition() {
-		return createTransition(null);
+		return createDummyTransition(null);
 	}
 
 	final public SignalTransition createSignalTransition() {
@@ -99,8 +103,8 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 
-	final public Transition createTransition(String name) {
-		Transition newTransition = new Transition();
+	final public DummyTransition createDummyTransition(String name) {
+		DummyTransition newTransition = new DummyTransition();
 		if (name!=null)
 			setName(newTransition, name);
 		getRoot().add(newTransition);
@@ -175,8 +179,12 @@ public class STG extends AbstractMathModel implements STGModel {
 		return result;
 	}
 
-	public int getInstanceNumber (SignalTransition st) {
+	public int getInstanceNumber (Node st) {
 		return referenceManager.getInstanceNumber(st);
+	}
+
+	public void setInstanceNumber (Node st, int number) {
+		referenceManager.setInstanceNumber(st, number);
 	}
 
 	public String makeReference (Triple<String, Direction, Integer> label) {
@@ -200,8 +208,13 @@ public class STG extends AbstractMathModel implements STGModel {
 			if (!((STGPlace) node).isImplicit())
 				result.add (new NamePropertyDescriptor(this, node));
 		}
-		if (node instanceof SignalTransition)
-			result.add(new InstancePropertyDescriptor(this, (SignalTransition)node));
+		if (node instanceof SignalTransition) {
+			result.add(new SignalNamePropertyDescriptor(this, (SignalTransition) node));
+			result.add(new InstancePropertyDescriptor(this, node));
+		} if (node instanceof DummyTransition) {
+			result.add(new DummyNamePropertyDescriptor(this, (DummyTransition) node));
+			result.add(new InstancePropertyDescriptor(this, node));
+		}
 		return result;
 	}
 

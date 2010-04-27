@@ -4,8 +4,9 @@
  
 options {
   JDK_VERSION = "1.5";
-  LOOKAHEAD = 2;
+  LOOKAHEAD = 3;
   STATIC = false;
+  DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN(DotGParser)
@@ -45,9 +46,30 @@ public class DotGParser {
 			if (t==null)
 				return stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
-				return stg.createTransition(name);
+				return stg.createDummyTransition(name);
 			else
 				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+		}
+	}
+	
+	private Node getOrCreate (Pair<String, Integer> ref)
+	{
+		String reference = ref.getFirst()+"/"+ref.getSecond();
+		String name = ref.getFirst();
+		
+		try {
+			return stg.getNodeByReference (reference);
+		} catch (NotFoundException e) {
+			Type t = signals.get (name);
+			if (t == null || !t.equals(Type.DUMMY))
+				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
+			else
+			{
+				DummyTransition dt = stg.createDummyTransition(null);
+				stg.setName(dt, reference);
+				dt.setName(name);
+				return dt;
+			}
 		}
 	}
 	
@@ -247,21 +269,41 @@ Triple<String, Direction, Integer> signalTransition() :
 	
 }
 
+Pair<String, Integer> dummyTransition() :
+{
+	Token t;
+	String name;
+	Integer instance = null;
+}
+{
+	t = <NAME> { name = t.image; }
+	( "/" t = <INTEGER> ) { instance = Integer.parseInt(t.image); } 
+	
+	{ return Pair.of (name, instance); }	
+	
+}
+
 void graphLine() : 
 {
 	Token t;
+	Token t2;
+	String name;
+	Integer instance;
 	Triple<String, Direction, Integer> r;
+	Pair<String, Integer> r2;
 	Node from, to;
 }
 {
 	( 
 		r = signalTransition() { from = getOrCreate(r); }
+		| r2 = dummyTransition() { from = getOrCreate(r2); }
 		| t = <NAME> { from = getOrCreate(t.image); }
 	)
 
 	(
 		(
 		r = signalTransition() { to = getOrCreate(r); }
+		| r2 = dummyTransition() { to = getOrCreate(r2); }
 		| t = <NAME> { to = getOrCreate(t.image); }
 		
 		) { createArc(from, to); } 

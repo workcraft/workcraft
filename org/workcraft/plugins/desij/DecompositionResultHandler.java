@@ -16,7 +16,6 @@ import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.desij.tasks.DesiJResult;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 
 public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult> {

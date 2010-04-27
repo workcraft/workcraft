@@ -39,13 +39,12 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.petri.SimulationTool;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
-@DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, Transition.class } )
+@DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, DummyTransition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
 public class VisualSTG extends AbstractVisualModel {
 	private STG stg;

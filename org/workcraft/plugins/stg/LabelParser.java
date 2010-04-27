@@ -9,12 +9,11 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
 public class LabelParser {
-	private static final Pattern signalTransitionPattern = Pattern
+	private static final Pattern fullPattern = Pattern
 			.compile("([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])(\\/([0-9]+))?");
 
-	private static final Pattern signalTransitionPattern2 = Pattern
-		.compile("([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~])(\\/([0-9]+))?");
-
+	private static final Pattern pattern = Pattern
+	.compile("([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~]?)(\\/([0-9]+))?");
 
 	public static Pair<String, String> parseImplicitPlaceReference(String ref) {
 		String[] parts = ref.replaceAll(" ", "").split(",");
@@ -26,7 +25,7 @@ public class LabelParser {
 	}
 
 	public static Triple<String, SignalTransition.Direction, Integer> parseFull(String s) {
-		final Matcher matcher = signalTransitionPattern.matcher(s);
+		final Matcher matcher = fullPattern.matcher(s);
 
 		if (!matcher.find())
 			throw new ArgumentException("\"" + s
@@ -53,7 +52,7 @@ public class LabelParser {
 	}
 
 	public static Pair<String, Integer> parse(String s) {
-		final Matcher matcher = signalTransitionPattern2.matcher(s);
+		final Matcher matcher = pattern.matcher(s);
 
 		if (!matcher.find())
 			throw new ArgumentException("\"" + s
