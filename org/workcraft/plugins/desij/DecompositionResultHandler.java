@@ -10,11 +10,13 @@ import org.workcraft.Framework;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.desij.tasks.DesiJResult;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 
 public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult> {
@@ -40,7 +42,12 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 					Path<String> componentsDirectoryPath = Path.fromString(
 							desijResult.getSpecificationModel().getDisplayName() + "-components");
 					File componentsDir = framework.getWorkspace().getFile(componentsDirectoryPath);
-					//if (componentsDir.exists()) framework.getWorkspace().delete(componentsDirectoryPath);
+					framework.getWorkspace().getFile(componentsDirectoryPath).delete();
+					if (componentsDir.exists()) {
+						FileUtils.deleteDirectoryTree(componentsDir);
+						//.DecompositionResultHandler.componentsDir.delete();
+
+					}
 					//deleteDirectory(componentsDir);
 					componentsDir.mkdirs();
 
