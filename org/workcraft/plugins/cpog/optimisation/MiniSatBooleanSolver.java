@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class MiniSatBooleanSolver {
 
-	static final String minisatPath = "C:\\Cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
+	static final String minisatPath = "D:\\cheetah\\Programs\\cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
 	static final String claspPath = "C:\\Work\\Tools\\clasp-1.3.1\\clasp-1.3.1.exe";
 
 	public BooleanSolution solve(CnfTask task)
@@ -44,7 +44,7 @@ public class MiniSatBooleanSolver {
 	}
 
 	private String solve(String cnf) {
-		if(false)
+		if(true)
 			return ProcessIO.minisat(cnf);
 		else
 			return ProcessIO.runViaStreams(cnf, new String[]{claspPath});

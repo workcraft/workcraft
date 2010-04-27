@@ -35,9 +35,30 @@ public class DotGParser implements DotGParserConstants {
                         if (t==null)
                                 return stg.createPlace(name);
                         else if (t.equals(Type.DUMMY))
-                                return stg.createTransition(name);
+                                return stg.createDummyTransition(name);
                         else
                                 throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+                }
+        }
+
+        private Node getOrCreate (Pair<String, Integer> ref)
+        {
+                String reference = ref.getFirst()+"/"+ref.getSecond();
+                String name = ref.getFirst();
+
+                try {
+                        return stg.getNodeByReference (reference);
+                } catch (NotFoundException e) {
+                        Type t = signals.get (name);
+                        if (t == null || !t.equals(Type.DUMMY))
+                                throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
+                        else
+                        {
+                                DummyTransition dt = stg.createDummyTransition(null);
+                                stg.setName(dt, reference);
+                                dt.setName(name);
+                                return dt;
+                        }
                 }
         }
 
@@ -89,267 +110,365 @@ public class DotGParser implements DotGParserConstants {
         }
 
   final public STG parse() throws ParseException {
+    trace_call("parse");
+    try {
           init();
-    label_1:
-    while (true) {
-      if (jj_2_1(2)) {
-        ;
-      } else {
-        break label_1;
+      label_1:
+      while (true) {
+        if (jj_2_1(3)) {
+          ;
+        } else {
+          break label_1;
+        }
+        header();
+        jj_consume_token(LINEBREAK);
       }
-      header();
-      jj_consume_token(LINEBREAK);
-    }
-    graph();
-    label_2:
-    while (true) {
-      if (jj_2_2(2)) {
-        ;
-      } else {
-        break label_2;
+      graph();
+      label_2:
+      while (true) {
+        if (jj_2_2(3)) {
+          ;
+        } else {
+          break label_2;
+        }
+        footer();
+        jj_consume_token(LINEBREAK);
       }
-      footer();
-      jj_consume_token(LINEBREAK);
-    }
-    jj_consume_token(0);
+      jj_consume_token(0);
           {if (true) return stg;}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parse");
+    }
   }
 
   final public void header() throws ParseException {
+    trace_call("header");
+    try {
                   List<String> list;
-    if (jj_2_4(2)) {
-      jj_consume_token(INPUT_HEADER);
-      list = signalList();
+      if (jj_2_4(3)) {
+        jj_consume_token(INPUT_HEADER);
+        list = signalList();
                                              setSignalsType (list, Type.INPUT);
-    } else if (jj_2_5(2)) {
-      jj_consume_token(OUTPUT_HEADER);
-      list = signalList();
+      } else if (jj_2_5(3)) {
+        jj_consume_token(OUTPUT_HEADER);
+        list = signalList();
                                                setSignalsType (list, Type.OUTPUT);
-    } else if (jj_2_6(2)) {
-      jj_consume_token(INTERNAL_HEADER);
-      list = signalList();
+      } else if (jj_2_6(3)) {
+        jj_consume_token(INTERNAL_HEADER);
+        list = signalList();
                                                  setSignalsType (list, Type.INTERNAL);
-    } else if (jj_2_7(2)) {
-      jj_consume_token(DUMMY_HEADER);
-      list = signalList();
+      } else if (jj_2_7(3)) {
+        jj_consume_token(DUMMY_HEADER);
+        list = signalList();
                                               setSignalsType (list, Type.DUMMY);
-    } else if (jj_2_8(2)) {
-      jj_consume_token(UNSUPPORTED_HEADER);
-      label_3:
-      while (true) {
-        if (jj_2_3(2)) {
-          ;
-        } else {
-          break label_3;
+      } else if (jj_2_8(3)) {
+        jj_consume_token(UNSUPPORTED_HEADER);
+        label_3:
+        while (true) {
+          if (jj_2_3(3)) {
+            ;
+          } else {
+            break label_3;
+          }
+          jj_consume_token(ANY);
         }
-        jj_consume_token(ANY);
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
+    } finally {
+      trace_return("header");
     }
   }
 
   final public List<String> signalList() throws ParseException {
+    trace_call("signalList");
+    try {
                               Token t; List<String> list = new LinkedList<String>();
-    label_4:
-    while (true) {
-      if (jj_2_9(2)) {
-        ;
-      } else {
-        break label_4;
-      }
-      t = jj_consume_token(NAME);
+      label_4:
+      while (true) {
+        if (jj_2_9(3)) {
+          ;
+        } else {
+          break label_4;
+        }
+        t = jj_consume_token(NAME);
                        list.add (t.image);
-    }
+      }
          {if (true) return list;}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("signalList");
+    }
   }
 
   final public void footer() throws ParseException {
-    if (jj_2_11(2)) {
-      jj_consume_token(MARKING);
-      marking();
-    } else if (jj_2_12(2)) {
-      jj_consume_token(CAPACITY);
-      capacity();
-    } else if (jj_2_13(2)) {
-      jj_consume_token(UNSUPPORTED_HEADER);
-      label_5:
-      while (true) {
-        if (jj_2_10(2)) {
-          ;
-        } else {
-          break label_5;
+    trace_call("footer");
+    try {
+      if (jj_2_11(3)) {
+        jj_consume_token(MARKING);
+        marking();
+      } else if (jj_2_12(3)) {
+        jj_consume_token(CAPACITY);
+        capacity();
+      } else if (jj_2_13(3)) {
+        jj_consume_token(UNSUPPORTED_HEADER);
+        label_5:
+        while (true) {
+          if (jj_2_10(3)) {
+            ;
+          } else {
+            break label_5;
+          }
+          jj_consume_token(ANY);
         }
-        jj_consume_token(ANY);
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
+    } finally {
+      trace_return("footer");
     }
   }
 
   final public void capacity() throws ParseException {
-    label_6:
-    while (true) {
-      if (jj_2_14(2)) {
-        ;
-      } else {
-        break label_6;
+    trace_call("capacity");
+    try {
+      label_6:
+      while (true) {
+        if (jj_2_14(3)) {
+          ;
+        } else {
+          break label_6;
+        }
+        capacityEntry();
       }
-      capacityEntry();
+    } finally {
+      trace_return("capacity");
     }
   }
 
   final public void capacityEntry() throws ParseException {
+    trace_call("capacityEntry");
+    try {
                          STGPlace p; int value;
-    if (jj_2_15(2)) {
-      p = implicitPlaceReference();
-    } else if (jj_2_16(2)) {
-      p = explicitPlaceReference();
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    value = assignment();
+      if (jj_2_15(3)) {
+        p = implicitPlaceReference();
+      } else if (jj_2_16(3)) {
+        p = explicitPlaceReference();
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      value = assignment();
                 p.setCapacity(value);
+    } finally {
+      trace_return("capacityEntry");
+    }
   }
 
   final public void marking() throws ParseException {
-    jj_consume_token(16);
-    label_7:
-    while (true) {
-      if (jj_2_17(2)) {
-        ;
-      } else {
-        break label_7;
+    trace_call("marking");
+    try {
+      jj_consume_token(16);
+      label_7:
+      while (true) {
+        if (jj_2_17(3)) {
+          ;
+        } else {
+          break label_7;
+        }
+        markingEntry();
       }
-      markingEntry();
+      jj_consume_token(17);
+    } finally {
+      trace_return("marking");
     }
-    jj_consume_token(17);
   }
 
   final public int assignment() throws ParseException {
+    trace_call("assignment");
+    try {
                      Token t;
-    jj_consume_token(22);
-    t = jj_consume_token(INTEGER);
+      jj_consume_token(22);
+      t = jj_consume_token(INTEGER);
                             {if (true) return Integer.parseInt(t.image);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("assignment");
+    }
   }
 
   final public void markingEntry() throws ParseException {
+    trace_call("markingEntry");
+    try {
                         STGPlace p; int value = 1;
-    if (jj_2_18(2)) {
-      p = implicitPlaceReference();
-    } else if (jj_2_19(2)) {
-      p = explicitPlaceReference();
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    if (jj_2_20(2)) {
-      value = assignment();
-    } else {
-      ;
-    }
+      if (jj_2_18(3)) {
+        p = implicitPlaceReference();
+      } else if (jj_2_19(3)) {
+        p = explicitPlaceReference();
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      if (jj_2_20(3)) {
+        value = assignment();
+      } else {
+        ;
+      }
                 p.setTokens(value);
+    } finally {
+      trace_return("markingEntry");
+    }
   }
 
   final public STGPlace implicitPlaceReference() throws ParseException {
+    trace_call("implicitPlaceReference");
+    try {
         Triple<String, Direction, Integer> r1, r2;
         Token t;
         Integer tokens = null;
-    jj_consume_token(18);
-    r1 = signalTransition();
-    jj_consume_token(20);
-    r2 = signalTransition();
-    jj_consume_token(19);
+      jj_consume_token(18);
+      r1 = signalTransition();
+      jj_consume_token(20);
+      r2 = signalTransition();
+      jj_consume_token(19);
                 Node st1 = stg.getNodeByReference(stg.makeReference(r1));
                 Node st2 = stg.getNodeByReference(stg.makeReference(r2));
 
                 {if (true) return implicitPlaces.get(Pair.of(st1,st2));}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("implicitPlaceReference");
+    }
   }
 
   final public STGPlace explicitPlaceReference() throws ParseException {
+    trace_call("explicitPlaceReference");
+    try {
         Token t;
         String name;
         Integer tokens = null;
-    t = jj_consume_token(NAME);
+      t = jj_consume_token(NAME);
                        name = t.image;
                 {if (true) return (STGPlace) stg.getNodeByReference (name);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("explicitPlaceReference");
+    }
   }
 
   final public void graph() throws ParseException {
-    jj_consume_token(GRAPH);
-    jj_consume_token(LINEBREAK);
-    label_8:
-    while (true) {
-      graphLine();
+    trace_call("graph");
+    try {
+      jj_consume_token(GRAPH);
       jj_consume_token(LINEBREAK);
-      if (jj_2_21(2)) {
-        ;
-      } else {
-        break label_8;
+      label_8:
+      while (true) {
+        graphLine();
+        jj_consume_token(LINEBREAK);
+        if (jj_2_21(3)) {
+          ;
+        } else {
+          break label_8;
+        }
       }
+    } finally {
+      trace_return("graph");
     }
   }
 
   final public Triple<String, Direction, Integer> signalTransition() throws ParseException {
+    trace_call("signalTransition");
+    try {
         Token t;
         String name;
         Direction direction;
         Integer instance = null;
-    t = jj_consume_token(NAME);
+      t = jj_consume_token(NAME);
                      name = t.image;
-    t = jj_consume_token(DIRECTION);
+      t = jj_consume_token(DIRECTION);
                           direction = Direction.fromString(t.image);
-    if (jj_2_22(2)) {
-      jj_consume_token(21);
-      t = jj_consume_token(INTEGER);
+      if (jj_2_22(3)) {
+        jj_consume_token(21);
+        t = jj_consume_token(INTEGER);
                                         instance = Integer.parseInt(t.image);
-    } else {
-      ;
-    }
+      } else {
+        ;
+      }
           {if (true) return Triple.of (name, direction, instance);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("signalTransition");
+    }
+  }
+
+  final public Pair<String, Integer> dummyTransition() throws ParseException {
+    trace_call("dummyTransition");
+    try {
+        Token t;
+        String name;
+        Integer instance = null;
+      t = jj_consume_token(NAME);
+                     name = t.image;
+      jj_consume_token(21);
+      t = jj_consume_token(INTEGER);
+                                instance = Integer.parseInt(t.image);
+          {if (true) return Pair.of (name, instance);}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("dummyTransition");
+    }
   }
 
   final public void graphLine() throws ParseException {
+    trace_call("graphLine");
+    try {
         Token t;
+        Token t2;
+        String name;
+        Integer instance;
         Triple<String, Direction, Integer> r;
+        Pair<String, Integer> r2;
         Node from, to;
-    if (jj_2_23(2)) {
-      r = signalTransition();
-                                         from = getOrCreate(r);
-    } else if (jj_2_24(2)) {
-      t = jj_consume_token(NAME);
-                               from = getOrCreate(t.image);
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    label_9:
-    while (true) {
-      if (jj_2_25(2)) {
-        ;
-      } else {
-        break label_9;
-      }
-      if (jj_2_26(2)) {
+      if (jj_2_23(3)) {
         r = signalTransition();
-                                         to = getOrCreate(r);
-      } else if (jj_2_27(2)) {
+                                         from = getOrCreate(r);
+      } else if (jj_2_24(3)) {
+        r2 = dummyTransition();
+                                           from = getOrCreate(r2);
+      } else if (jj_2_25(3)) {
         t = jj_consume_token(NAME);
-                               to = getOrCreate(t.image);
+                               from = getOrCreate(t.image);
       } else {
         jj_consume_token(-1);
         throw new ParseException();
       }
+      label_9:
+      while (true) {
+        if (jj_2_26(3)) {
+          ;
+        } else {
+          break label_9;
+        }
+        if (jj_2_27(3)) {
+          r = signalTransition();
+                                         to = getOrCreate(r);
+        } else if (jj_2_28(3)) {
+          r2 = dummyTransition();
+                                           to = getOrCreate(r2);
+        } else if (jj_2_29(3)) {
+          t = jj_consume_token(NAME);
+                               to = getOrCreate(t.image);
+        } else {
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
                     createArc(from, to);
+      }
+    } finally {
+      trace_return("graphLine");
     }
   }
 
@@ -542,93 +661,18 @@ public class DotGParser implements DotGParserConstants {
     finally { jj_save(26, xla); }
   }
 
-  private boolean jj_3_10() {
-    if (jj_scan_token(ANY)) return true;
-    return false;
+  private boolean jj_2_28(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_28(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(27, xla); }
   }
 
-  private boolean jj_3_27() {
-    if (jj_scan_token(NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_13() {
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3_15() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3_26() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  private boolean jj_3_25() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_26()) {
-    jj_scanpos = xsp;
-    if (jj_3_27()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_24() {
-    if (jj_scan_token(NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3_23() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_15()) {
-    jj_scanpos = xsp;
-    if (jj_3_16()) return true;
-    }
-    if (jj_3R_19()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_scan_token(ANY)) return true;
-    return false;
-  }
-
-  private boolean jj_3_14() {
-    if (jj_3R_15()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_20() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_23()) {
-    jj_scanpos = xsp;
-    if (jj_3_24()) return true;
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_25()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_14()) { jj_scanpos = xsp; break; }
-    }
-    return false;
+  private boolean jj_2_29(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_29(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(28, xla); }
   }
 
   private boolean jj_3_13() {
@@ -689,6 +733,9 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_21() {
     if (jj_scan_token(NAME)) return true;
     if (jj_scan_token(DIRECTION)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_22()) jj_scanpos = xsp;
     return false;
   }
 
@@ -789,8 +836,46 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+  private boolean jj_3_29() {
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3_28() {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
   private boolean jj_3_18() {
     if (jj_3R_16()) return true;
+    return false;
+  }
+
+  private boolean jj_3_27() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  private boolean jj_3_26() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_27()) {
+    jj_scanpos = xsp;
+    if (jj_3_28()) {
+    jj_scanpos = xsp;
+    if (jj_3_29()) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_25() {
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3_24() {
+    if (jj_3R_22()) return true;
     return false;
   }
 
@@ -806,6 +891,11 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+  private boolean jj_3_23() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
   private boolean jj_3R_19() {
     if (jj_scan_token(22)) return true;
     if (jj_scan_token(INTEGER)) return true;
@@ -814,6 +904,81 @@ public class DotGParser implements DotGParserConstants {
 
   private boolean jj_3_17() {
     if (jj_3R_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_20() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_23()) {
+    jj_scanpos = xsp;
+    if (jj_3_24()) {
+    jj_scanpos = xsp;
+    if (jj_3_25()) return true;
+    }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_26()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_10() {
+    if (jj_scan_token(ANY)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_scan_token(16)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_17()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(17)) return true;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_3R_16()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_15() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_15()) {
+    jj_scanpos = xsp;
+    if (jj_3_16()) return true;
+    }
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_scan_token(ANY)) return true;
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_3R_15()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_22() {
+    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_14()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -836,7 +1001,7 @@ public class DotGParser implements DotGParserConstants {
    private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[27];
+  final private JJCalls[] jj_2_rtns = new JJCalls[29];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -929,6 +1094,7 @@ public class DotGParser implements DotGParserConstants {
           }
         }
       }
+      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -966,6 +1132,7 @@ public class DotGParser implements DotGParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
+      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -1051,17 +1218,60 @@ public class DotGParser implements DotGParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
+  private int trace_indent = 0;
+  private boolean trace_enabled = true;
+
+/** Enable tracing. */
   final public void enable_tracing() {
+    trace_enabled = true;
   }
 
-  /** Disable tracing. */
+/** Disable tracing. */
   final public void disable_tracing() {
+    trace_enabled = false;
+  }
+
+  private void trace_call(String s) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Call:   " + s);
+    }
+    trace_indent = trace_indent + 2;
+  }
+
+  private void trace_return(String s) {
+    trace_indent = trace_indent - 2;
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Return: " + s);
+    }
+  }
+
+  private void trace_token(Token t, String where) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Consumed token: <" + tokenImage[t.kind]);
+      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
+        System.out.print(": \"" + t.image + "\"");
+      }
+      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
+    }
+  }
+
+  private void trace_scan(Token t1, int t2) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Visited token: <" + tokenImage[t1.kind]);
+      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
+        System.out.print(": \"" + t1.image + "\"");
+      }
+      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
+    }
   }
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 27; i++) {
+    for (int i = 0; i < 29; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1095,6 +1305,8 @@ public class DotGParser implements DotGParserConstants {
             case 24: jj_3_25(); break;
             case 25: jj_3_26(); break;
             case 26: jj_3_27(); break;
+            case 27: jj_3_28(); break;
+            case 28: jj_3_29(); break;
           }
         }
         p = p.next;

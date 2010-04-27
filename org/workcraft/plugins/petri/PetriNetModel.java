@@ -11,7 +11,7 @@ public interface PetriNetModel extends Model {
 	public Place createPlace(String name);
 	public Place createPlace();
 
-	public Transition createTransition(String name);
+	public Transition createDummyTransition(String name);
 	public Transition createTransition();
 
 	public boolean isEnabled (Transition t);

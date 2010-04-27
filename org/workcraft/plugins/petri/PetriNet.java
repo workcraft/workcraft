@@ -77,7 +77,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	final public Transition createTransition() {
-		return createTransition(null);
+		return createDummyTransition(null);
 	}
 
 	final public Place createPlace(String name) {
@@ -88,7 +88,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return newPlace;
 	}
 
-	final public Transition createTransition(String name) {
+	final public Transition createDummyTransition(String name) {
 		Transition newTransition = new Transition();
 		if (name!=null)
 			setName(newTransition, name);

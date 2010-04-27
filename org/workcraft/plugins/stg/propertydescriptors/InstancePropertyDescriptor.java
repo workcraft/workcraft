@@ -1,16 +1,18 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.stg.propertydescriptors;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.stg.STG;
 
 public class InstancePropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
-	private final SignalTransition st;
+	private final Node st;
 
-	public InstancePropertyDescriptor(STG stg, SignalTransition st) {
+	public InstancePropertyDescriptor(STG stg, Node st) {
 		this.stg = stg;
 		this.st = st;
 	}
@@ -28,6 +30,7 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		throw new NotSupportedException();
+		//stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
 	}
 
 	@Override
