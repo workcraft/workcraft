@@ -67,6 +67,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -82,8 +83,10 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
@@ -351,10 +354,17 @@ public class MainWindow extends JFrame {
 			try {
 				visualModel = ModelFactory.createVisualModel((MathModel)object);
 				we.setObject(visualModel);
+
+				DotLayout layout = (DotLayout)framework.getPluginManager().getSingletonByName("org.workcraft.plugins.layout.DotLayout");
+				layout.run(visualModel, framework);
+			} catch (LayoutException e) {
+				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
 				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 				return;
+			} catch (PluginInstantiationException e) {
+				// no Dot layout plugin found, ignore
 			}
 
 			GraphEditorPanel editor = new GraphEditorPanel(this, we);
@@ -919,6 +929,7 @@ public class MainWindow extends JFrame {
 						Model model;
 						try {
 							model = Import.importFromFile(importer, f);
+							model.setTitle(FileUtils.getFileNameWithoutExtension(f));
 							WorkspaceEntry we = framework.getWorkspace().add(Path.<String>empty(), f.getName(), model, false);
 							if (we.getObject() instanceof VisualModel)
 								createEditorWindow(we);

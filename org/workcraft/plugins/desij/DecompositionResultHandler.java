@@ -1,21 +1,18 @@
 package org.workcraft.plugins.desij;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.desij.tasks.DesiJResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.Import;
-import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.desij.tasks.DesiJResult;
-import org.workcraft.dom.Model;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.workspace.Path;
+import org.workcraft.workspace.Workspace;
 
 public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult> {
 
@@ -29,34 +26,31 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 	public void finished(Result<? extends DesiJResult> result, String description) {
 
 		if (result.getOutcome() == Outcome.FINISHED) {
+			final Workspace workspace = framework.getWorkspace();
 
 			DesiJResult desijResult = result.getReturnValue();
 			File[] componentSTGFiles = desijResult.getComponentFiles();
 
 			if (componentSTGFiles != null) {
 
+				Path<String> componentsDirectoryPath = Path.fromString(
+						desijResult.getSpecificationModel().getTitle() + "-components");
+
 				try {
-
-					Path<String> partsDirectoryPath = Path.fromString("Components");
-					File partsDir = framework.getWorkspace().getFile(partsDirectoryPath);
-					partsDir.mkdirs();
-
-					Model[] componentModels = new Model[componentSTGFiles.length];
-
-					for (int i = 0; i < componentSTGFiles.length; i++) {
-						componentModels[i] =
-							Import.importFromFile(new DotGImporter(), componentSTGFiles[i]);
-
-						framework.getWorkspace().add(partsDirectoryPath, "component" + i , componentModels[i], true);
-					}
-
-					framework.getMainWindow().getWorkspaceWindow().repaint();
-
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				} catch (DeserialisationException e) {
-					throw new RuntimeException(e);
+					workspace.delete(componentsDirectoryPath);
+				} catch (OperationCancelledException e) {
+					return;
 				}
+
+				File componentsDir = workspace.getFile(componentsDirectoryPath);
+				componentsDir.mkdirs();
+
+				for (File file : componentSTGFiles) {
+					File target = new File(componentsDir, getComponentSuffix(file) + ".g");
+					file.renameTo(target);
+				}
+
+				workspace.fireWorkspaceChanged();
 
 				// pop up MessageBox
 				final String successMessage = "Decomposition succeeded!";
@@ -80,6 +74,33 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 		}
 
 
+	}
+
+	private boolean deleteDirectory(File directory) {
+
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (File file: files) {
+				if (file.isDirectory())
+					deleteDirectory(file);
+				else
+					file.delete();
+			}
+		}
+
+		return directory.delete();
+	}
+
+	private String getComponentSuffix(File componentFile) {
+
+		String fileName = componentFile.getName(); // stg.g__final_suffix.g
+
+		// determine the suffix
+		String suffix = fileName.substring(
+				fileName.lastIndexOf("__final_") + 8,
+				fileName.lastIndexOf(".g"));
+
+		return suffix;
 	}
 
 }

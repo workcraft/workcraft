@@ -47,6 +47,15 @@ public class FileUtils{
 		   }
 	}
 
+	public static String getFileNameWithoutExtension(File file) {
+		String name = file.getName();
+		int k = name.lastIndexOf('.');
+		if (k==-1)
+			return name;
+		else
+			return name.substring(0, k);
+	}
+
 	public static void dumpString (File out, String string) throws IOException {
 		FileOutputStream fos = new FileOutputStream(out);
 		fos.write(string.getBytes());

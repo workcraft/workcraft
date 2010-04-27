@@ -25,11 +25,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.workcraft.PluginInfo;
+import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.interop.Importer;
 
 public class Import {
+
 	static public Model importFromFile (Importer importer, File file) throws IOException, DeserialisationException {
 		FileInputStream fileInputStream = new FileInputStream(file);
 		Model model = importer.importFrom(fileInputStream);
@@ -42,5 +46,24 @@ public class Import {
 		Model model = importer.importFrom(fileInputStream);
 		fileInputStream.close();
 		return model;
+	}
+
+	static public Importer chooseBestImporter (PluginProvider provider, File file) {
+		PluginInfo[] plugins = provider.getPluginsImplementing(Importer.class.getName());
+
+		for (PluginInfo info : plugins) {
+			Importer importer;
+			try {
+				importer = (Importer)provider.getSingleton(info);
+			} catch (PluginInstantiationException e) {
+				throw new RuntimeException (e);
+			}
+
+			if (importer.accept(file)) {
+				return importer;
+			}
+		}
+
+		return null;
 	}
 }
