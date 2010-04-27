@@ -11,6 +11,8 @@ import org.workcraft.plugins.verification.gui.MpsatConfigurationDialog;
 import org.workcraft.plugins.verification.tasks.MpsatChainTask;
 import org.workcraft.util.GUI;
 
+import org.workcraft.plugins.desij.gui.DesiJConfigurationDialog;
+
 @DisplayName("DesiJ - customise function")
 public class DesiJCustomFunction implements Tool {
 
@@ -29,10 +31,10 @@ public class DesiJCustomFunction implements Tool {
 
 	@Override
 	public void run(Model model, Framework framework) {
-//		MpsatPresetManager pmgr = new MpsatPresetManager();
-//		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
-//		GUI.centerFrameToParent(dialog, framework.getMainWindow());
-//		dialog.setVisible(true);
+		MpsatPresetManager pmgr = new MpsatPresetManager();
+		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
+		GUI.centerFrameToParent(dialog, framework.getMainWindow());
+		dialog.setVisible(true);
 //		if (dialog.getModalResult() == 1)
 //		{
 //			framework.getTaskManager().queue(new MpsatChainTask(model, dialog.getSettings(), framework), "MPSat tool chain",
