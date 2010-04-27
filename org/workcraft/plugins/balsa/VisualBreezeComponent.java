@@ -62,7 +62,7 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 {
 	HandshakeComponentLayout layout;
 	Map<String, VisualHandshake> visualHandshakes;
-	Map<Handshake,HandshakeComponent> handshakeComponents;
+	Map<Handshake,BreezeHandshake> handshakeComponents;
 	Map<String,Handshake> handshakes;
 	HandshakeVisualLayout visualLayout;
 	Component balsaComponent;

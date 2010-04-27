@@ -28,35 +28,35 @@ import org.workcraft.parsers.breeze.Block;
 import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 
-public class SplitResult implements Netlist<HandshakeComponent, Block<HandshakeComponent>, BreezeConnection>
+public class SplitResult implements Netlist<BreezeHandshake, Block<BreezeHandshake>, BreezeConnection>
 {
-	private final Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data;
-	private final Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control;
+	private final Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> data;
+	private final Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> control;
 	private final List<BreezeConnection> connections;
 
-	public SplitResult(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> control, Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> data, List<BreezeConnection> connections)
+	public SplitResult(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> control, Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> data, List<BreezeConnection> connections)
 	{
 		this.data = data;
 		this.control = control;
 		this.connections = connections;
 	}
 
-	public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> getData()
+	public Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> getData()
 	{
 		return data;
 	}
 
-	public Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> getControl()
+	public Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> getControl()
 	{
 		return control;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Block<HandshakeComponent>> getBlocks() {
-		return Arrays.asList((Block<HandshakeComponent>[])new Block[]{data, control});
+	public List<Block<BreezeHandshake>> getBlocks() {
+		return Arrays.asList((Block<BreezeHandshake>[])new Block[]{data, control});
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class SplitResult implements Netlist<HandshakeComponent, Block<HandshakeC
 	}
 
 	@Override
-	public List<HandshakeComponent> getPorts() {
-		ArrayList<HandshakeComponent> result = new ArrayList<HandshakeComponent>();
+	public List<BreezeHandshake> getPorts() {
+		ArrayList<BreezeHandshake> result = new ArrayList<BreezeHandshake>();
 		result.addAll(data.getPorts());
 		result.addAll(control.getPorts());
 		for(BreezeConnection c : connections)

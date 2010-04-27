@@ -26,9 +26,12 @@ import java.io.IOException;
 import org.junit.Test;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.parsers.breeze.BreezeLibrary;
+import org.workcraft.parsers.breeze.EmptyParameterScope;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
-import org.workcraft.plugins.balsa.components.While;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.util.Export;
 
@@ -38,7 +41,7 @@ public class BalsaToGatesExporterTests {
 	{
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent component = new BreezeComponent();
-		component.setUnderlyingComponent(new While());
+		component.setUnderlyingComponent(new DynamicComponent(new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive("While"), EmptyParameterScope.instance()));
 		circuit.add(component);
 		Export.exportToFile(new BalsaToGatesExporter(), circuit, "while.eqn");
 	}

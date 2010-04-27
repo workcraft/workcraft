@@ -35,6 +35,6 @@
 	<classpathentry kind="lib" path="lib/batik/batik-xml.jar"/>
 	<classpathentry kind="lib" path="lib/batik/xml-apis-ext.jar"/>
 	<classpathentry kind="lib" path="lib/batik/xml-apis.jar"/>
-	<classpathentry kind="lib" path="lib/pcollections-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/pcollections-1.0.0.jar" sourcepath="/home/dell/libs/pcollections"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

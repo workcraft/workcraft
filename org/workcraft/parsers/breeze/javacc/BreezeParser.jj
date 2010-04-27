@@ -5,7 +5,7 @@
 options {
   JDK_VERSION = "1.5";
   STATIC = false;
-  DEBUG_LOOKAHEAD = true;
+  DEBUG_LOOKAHEAD = false;
 }
 
 PARSER_BEGIN(BreezeParser)
@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
+import pcollections.*;
 
 public class BreezeParser {
 	public static LispNode parse (InputStream is) throws ParseException {
@@ -229,14 +231,14 @@ ParameterDeclaration parameter() :
 	{ return new ParameterDeclaration (name, type); }
 }
 
-List<ParameterDeclaration> parameters() :
+PVector<ParameterDeclaration> parameters() :
 {
-   ArrayList<ParameterDeclaration> result = new ArrayList<ParameterDeclaration>();
+   PVector<ParameterDeclaration> result = TreePVector.<ParameterDeclaration>empty();
    ParameterDeclaration o;
 }
 {
  <OBR> <PARAMETERS>
-( o = parameter() {result.add(o);})* 
+( o = parameter() {result = result.plus(o);})* 
  <CBR>
  { return result; }
 }
@@ -534,14 +536,14 @@ PortDeclaration port() :
 	}
 }
 
-List<PortDeclaration> ports() :
+PVector<PortDeclaration> ports() :
 {
-	ArrayList<PortDeclaration> result = new ArrayList<PortDeclaration>();
+	PVector<PortDeclaration> result = TreePVector.<PortDeclaration>empty();
 	PortDeclaration o;
 }
 {
  <OBR> <PORTS>
-	( o = port() {result.add(o);})* 
+	( o = port() {result = result.plus(o);})* 
  <CBR>
  	{return result;}
 }
@@ -561,9 +563,9 @@ Expression<String> symbol() : { Expression<String> str; }
 PrimitivePart primitivePart() :
 {
 	String name;
-	List<ParameterDeclaration> parameters;
+	PVector<ParameterDeclaration> parameters;
 	Expression<String> symbol;
-	List<PortDeclaration> ports;
+	PVector<PortDeclaration> ports;
 }
 {
   <OBR> <PRIMITIVE_PART>
@@ -674,6 +676,7 @@ RawBreezePartReference component() :
 	name = value()
 	parameters = paramValues()
 	connections = connections()
+	listBody()
 	<CBR>
 	{
 		return new RawBreezePartReference(name, parameters, connections);

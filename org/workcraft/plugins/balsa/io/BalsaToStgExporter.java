@@ -38,7 +38,7 @@ import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivenessSelector;
@@ -65,9 +65,9 @@ public abstract class BalsaToStgExporter {
 		this.protocolName = protocolName;
 	}
 
-	private static class BalsaCircuit extends CachedCircuit<HandshakeComponent, BreezeComponent, BreezeConnection>
+	private static class BalsaCircuit extends CachedCircuit<BreezeHandshake, BreezeComponent, BreezeConnection>
 	{
-		public BalsaCircuit(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> c) {
+		public BalsaCircuit(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> c) {
 			super(c);
 		}
 	}
@@ -77,7 +77,7 @@ public abstract class BalsaToStgExporter {
 		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
 	}
 
-	public void export(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit balsa = new BalsaCircuit(circuit);
 
@@ -190,7 +190,7 @@ public abstract class BalsaToStgExporter {
 	}
 
 	private BreezeConnection getInternalConnection(BalsaCircuit balsa, Iterable<? extends BreezeComponent> components, BreezeComponent component, Handshake handshake) {
-		HandshakeComponent hs = component.getHandshakeComponents().get(handshake);
+		BreezeHandshake hs = component.getHandshakeComponents().get(handshake);
 		if(hs==null)
 			return null;
 		BreezeConnection connection = balsa.getConnection(hs);
@@ -214,7 +214,7 @@ public abstract class BalsaToStgExporter {
 		return false;
 	}
 
-	protected Iterable<? extends BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
+	protected Iterable<? extends BreezeComponent> getComponentsToSave(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> balsa) {
 		return balsa.getBlocks();
 	}
 
@@ -267,12 +267,12 @@ public abstract class BalsaToStgExporter {
 
 		final HashMap<Handshake, String> names = new HashMap<Handshake, String>();
 
-		List<? extends HandshakeComponent> externalPorts = circuit.getPorts();
+		List<? extends BreezeHandshake> externalPorts = circuit.getPorts();
 
-		for(HandshakeComponent hs : externalPorts)
+		for(BreezeHandshake hs : externalPorts)
 			names.put(hs.getHandshake(), "port_" + hs.getHandshakeName());
 		for(BreezeComponent comp : circuit.getBlocks())
-			for(HandshakeComponent hs : comp.getPorts())
+			for(BreezeHandshake hs : comp.getPorts())
 				names.put(hs.getHandshake(), componentNames.getName(comp) + "_" + hs.getHandshakeName());
 
 		return new NameProvider<Handshake>()

@@ -60,7 +60,7 @@ public class BreezePart implements BreezeDefinition
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Port> BreezeInstance instantiate(BreezeLibrary library, BreezeFactory<Port> factory, ParameterValueList parameters)
+	public <Port> BreezeInstance<Port> instantiate(BreezeLibrary library, BreezeFactory<Port> factory, ParameterValueList parameters)
 	{
 		ensureEmpty(parameters);
 
@@ -68,7 +68,7 @@ public class BreezePart implements BreezeDefinition
 		for(int i=0;i<getChannels().size();i++)
 			connections[i] = new ArrayList<Port>();
 
-		ArrayList<BreezeInstance> contained = new ArrayList<BreezeInstance>();
+		ArrayList<BreezeInstance<Port>> contained = new ArrayList<BreezeInstance<Port>>();
 		for(BreezePartReference part : resolve(library,getParts()))
 		{
 			BreezeInstance<Port> instance = part.definition().instantiate(library, factory, part.parameters());

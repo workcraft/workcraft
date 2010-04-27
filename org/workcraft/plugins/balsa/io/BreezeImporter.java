@@ -36,7 +36,6 @@ public class BreezeImporter implements Importer
 {
 	private final BalsaSystem balsa;
 
-
 	public BreezeImporter()
 	{
 		balsa = BalsaSystem.DEFAULT();
@@ -56,12 +55,9 @@ public class BreezeImporter implements Importer
 		return "Breeze handshake circuit (.breeze)";
 	}
 
-	@Override
-	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException,
-			IOException {
-		BreezeLibrary lib = new BreezeLibrary();
-
-		lib.registerPrimitives(balsa.getDefinitionsDir());
+	public BalsaCircuit importFromBreeze(InputStream in, String breezeName) throws DeserialisationException, IOException
+	{
+		BreezeLibrary lib = new BreezeLibrary(balsa);
 
 		try {
 			lib.registerParts(in);
@@ -72,8 +68,14 @@ public class BreezeImporter implements Importer
 		BalsaCircuit circuit = new BalsaCircuit();
 		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-		lib.get("buffer1").instantiate(lib, factory, EmptyValueList.instance());
+		lib.get(breezeName).instantiate(lib, factory, EmptyValueList.instance());
 
 		return circuit;
+	}
+
+	@Override
+	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException, IOException
+	{
+		return importFromBreeze(in, "buffer1");
 	}
 }

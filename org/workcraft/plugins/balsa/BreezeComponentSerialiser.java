@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.ReferenceResolver;
 
@@ -63,7 +64,8 @@ public class BreezeComponentSerialiser {
 		}
 
 
-		private org.workcraft.plugins.balsa.components.Component readUnderlyingComponent(Element e) {
+		private DynamicComponent readUnderlyingComponent(Element e) {
+			//TODO: make sure DynamicComponent works (it probably doesn't)
 			NodeList breezeElements = e.getElementsByTagName("breeze");
 			if(breezeElements.getLength() != 1)
 				throw new RuntimeException("Breeze component description must have at least one <breeze> tag");
@@ -78,7 +80,7 @@ public class BreezeComponentSerialiser {
 			ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
 			XMLDecoder dec = new XMLDecoder(stream);
 			Object obj = dec.readObject();
-			return (org.workcraft.plugins.balsa.components.Component) obj;
+			return (DynamicComponent) obj;
 		}
 
 }

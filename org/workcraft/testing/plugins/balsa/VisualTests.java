@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,14 +35,19 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.parsers.breeze.BreezeLibrary;
+import org.workcraft.parsers.breeze.EmptyParameterScope;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.VisualBalsaCircuit;
 import org.workcraft.plugins.balsa.VisualBreezeComponent;
 import org.workcraft.plugins.balsa.VisualHandshake;
 import org.workcraft.plugins.balsa.components.Concur;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.While;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 
 public class VisualTests {
@@ -50,7 +56,7 @@ public class VisualTests {
 	{
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent mathComp = new BreezeComponent();
-		mathComp.setUnderlyingComponent(new While());
+		mathComp.setUnderlyingComponent(createWhile());
 		circuit.add(mathComp);
 		VisualBreezeComponent visual = new VisualBreezeComponent(mathComp);
 
@@ -60,12 +66,28 @@ public class VisualTests {
 		assertFalse(visual.hitTest(new Point2D.Double(3, 0)));
 	}
 
+	private DynamicComponent createWhile() {
+		return create("While");
+	}
+
+	private DynamicComponent createConcur() {
+		return create("Concur");
+	}
+
+	private DynamicComponent create(String name) {
+		try {
+			return new DynamicComponent(new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive(name), EmptyParameterScope.instance());
+		} catch (IOException e) {
+			throw new java.lang.RuntimeException(e);
+		}
+	}
+
 	@Test
 	public void concurBoundingBoxTest()
 	{
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent mathComp = new BreezeComponent();
-		mathComp.setUnderlyingComponent(new Concur());
+		mathComp.setUnderlyingComponent(createConcur());
 		circuit.add(mathComp);
 		VisualBreezeComponent visual = new VisualBreezeComponent(mathComp);
 
@@ -91,8 +113,8 @@ public class VisualTests {
 		BalsaCircuit circuit = new BalsaCircuit();
 		BreezeComponent mathComp1 = new BreezeComponent();
 		BreezeComponent mathComp2 = new BreezeComponent();
-		mathComp1.setUnderlyingComponent(new Concur());
-		mathComp2.setUnderlyingComponent(new Concur());
+		mathComp1.setUnderlyingComponent(createConcur());
+		mathComp2.setUnderlyingComponent(createConcur());
 		circuit.add(mathComp1);
 		circuit.add(mathComp2);
 		VisualBreezeComponent visual1 = new VisualBreezeComponent(mathComp1);

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import pcollections.*;
+
 public class BreezeParser implements BreezeParserConstants {
         public static LispNode parse (InputStream is) throws ParseException {
                 BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
@@ -31,661 +33,367 @@ public class BreezeParser implements BreezeParserConstants {
         }
 
   final public List<LispNode> listBody() throws ParseException {
-    trace_call("listBody");
-    try {
         ArrayList<LispNode> result = new ArrayList<LispNode>();
         LispNode o;
-      label_1:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PRIMITIVE_PART:
-        case ZERO:
-        case VARIABLE_ARRAY_TYPE:
-        case INTEGER:
-        case ACTIVE:
-        case PASSIVE:
-        case INPUT:
-        case INP:
-        case OUTPUT:
-        case NAMED_TYPE:
-        case NUMERIC_TYPE:
-        case BOOL_FALSE:
-        case PARAMETERS:
-        case PARAM:
-        case PORTS:
-        case PORT:
-        case SYNC_PORT:
-        case ARRAYED_PORT:
-        case ARRAYED_SYNC_PORT:
-        case SYMBOL:
-        case CENTER_STRING:
-        case IMPLEMENTATION:
-        case TYPE_STRING:
-        case TYPE_CARDINAL:
-        case TYPE_BOOLEAN:
-        case TYPE_BINARYOPERATOR:
-        case TYPE_UNARYOPERATOR:
-        case CASE:
-        case ELSE:
-        case STRING_APPEND:
-        case NUMBER_TO_STRING:
-        case PLUS:
-        case SYNC:
-        case PUSH:
-        case PULL:
-        case CHANNELS:
-        case ATTRIBUTES:
-        case COMPONENTS:
-        case COMPONENT:
-        case BREEZE_PART:
-        case TYPE:
-        case IMPORT:
-        case OBR:
-        case QUOTED_VALUE:
-        case VALUE:
-          ;
-          break;
-        default:
-          jj_la1[0] = jj_gen;
-          break label_1;
-        }
-        o = listElement();
-                       result.add(o);
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PRIMITIVE_PART:
+      case ZERO:
+      case VARIABLE_ARRAY_TYPE:
+      case INTEGER:
+      case ACTIVE:
+      case PASSIVE:
+      case INPUT:
+      case INP:
+      case OUTPUT:
+      case NAMED_TYPE:
+      case NUMERIC_TYPE:
+      case BOOL_FALSE:
+      case PARAMETERS:
+      case PARAM:
+      case PORTS:
+      case PORT:
+      case SYNC_PORT:
+      case ARRAYED_PORT:
+      case ARRAYED_SYNC_PORT:
+      case SYMBOL:
+      case CENTER_STRING:
+      case IMPLEMENTATION:
+      case TYPE_STRING:
+      case TYPE_CARDINAL:
+      case TYPE_BOOLEAN:
+      case TYPE_BINARYOPERATOR:
+      case TYPE_UNARYOPERATOR:
+      case CASE:
+      case ELSE:
+      case STRING_APPEND:
+      case NUMBER_TO_STRING:
+      case PLUS:
+      case SYNC:
+      case PUSH:
+      case PULL:
+      case CHANNELS:
+      case ATTRIBUTES:
+      case COMPONENTS:
+      case COMPONENT:
+      case BREEZE_PART:
+      case TYPE:
+      case IMPORT:
+      case OBR:
+      case QUOTED_VALUE:
+      case VALUE:
+        ;
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
       }
+      o = listElement();
+                       result.add(o);
+    }
    {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("listBody");
-    }
   }
 
   final public LispNode list() throws ParseException {
-    trace_call("list");
-    try {
         List<LispNode> result;
-      jj_consume_token(OBR);
-      result = listBody();
-      jj_consume_token(CBR);
+    jj_consume_token(OBR);
+    result = listBody();
+    jj_consume_token(CBR);
    {if (true) return new LispNode(result);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("list");
-    }
   }
 
   final public String value() throws ParseException {
-    trace_call("value");
-    try {
                   Token t;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case VALUE:
-        t = jj_consume_token(VALUE);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case VALUE:
+      t = jj_consume_token(VALUE);
                         {if (true) return t.image;}
-        break;
-      case QUOTED_VALUE:
-        t = jj_consume_token(QUOTED_VALUE);
+      break;
+    case QUOTED_VALUE:
+      t = jj_consume_token(QUOTED_VALUE);
                                {if (true) return t.image.substring(1, t.image.length()-1);}
-        break;
-      case PRIMITIVE_PART:
-      case VARIABLE_ARRAY_TYPE:
-      case ACTIVE:
-      case PASSIVE:
-      case INPUT:
-      case INP:
-      case OUTPUT:
-      case NAMED_TYPE:
-      case NUMERIC_TYPE:
-      case BOOL_FALSE:
-      case PARAMETERS:
-      case PARAM:
-      case PORTS:
-      case PORT:
-      case SYNC_PORT:
-      case ARRAYED_PORT:
-      case ARRAYED_SYNC_PORT:
-      case SYMBOL:
-      case CENTER_STRING:
-      case IMPLEMENTATION:
-      case TYPE_STRING:
-      case TYPE_CARDINAL:
-      case TYPE_BOOLEAN:
-      case TYPE_BINARYOPERATOR:
-      case TYPE_UNARYOPERATOR:
-      case CASE:
-      case ELSE:
-      case STRING_APPEND:
-      case NUMBER_TO_STRING:
-      case PLUS:
-      case SYNC:
-      case PUSH:
-      case PULL:
-      case CHANNELS:
-      case ATTRIBUTES:
-      case COMPONENTS:
-      case COMPONENT:
-      case BREEZE_PART:
-      case TYPE:
-      case IMPORT:
-        t = keyword();
+      break;
+    case PRIMITIVE_PART:
+    case VARIABLE_ARRAY_TYPE:
+    case ACTIVE:
+    case PASSIVE:
+    case INPUT:
+    case INP:
+    case OUTPUT:
+    case NAMED_TYPE:
+    case NUMERIC_TYPE:
+    case BOOL_FALSE:
+    case PARAMETERS:
+    case PARAM:
+    case PORTS:
+    case PORT:
+    case SYNC_PORT:
+    case ARRAYED_PORT:
+    case ARRAYED_SYNC_PORT:
+    case SYMBOL:
+    case CENTER_STRING:
+    case IMPLEMENTATION:
+    case TYPE_STRING:
+    case TYPE_CARDINAL:
+    case TYPE_BOOLEAN:
+    case TYPE_BINARYOPERATOR:
+    case TYPE_UNARYOPERATOR:
+    case CASE:
+    case ELSE:
+    case STRING_APPEND:
+    case NUMBER_TO_STRING:
+    case PLUS:
+    case SYNC:
+    case PUSH:
+    case PULL:
+    case CHANNELS:
+    case ATTRIBUTES:
+    case COMPONENTS:
+    case COMPONENT:
+    case BREEZE_PART:
+    case TYPE:
+    case IMPORT:
+      t = keyword();
                           {if (true) return t.image;}
-        break;
-      case ZERO:
-      case INTEGER:
-        t = integerToken();
+      break;
+    case ZERO:
+    case INTEGER:
+      t = integerToken();
                                {if (true) return t.image;}
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("value");
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
   final public LispNode listElement() throws ParseException {
-    trace_call("listElement");
-    try {
                            String t; LispNode l;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case PRIMITIVE_PART:
-      case ZERO:
-      case VARIABLE_ARRAY_TYPE:
-      case INTEGER:
-      case ACTIVE:
-      case PASSIVE:
-      case INPUT:
-      case INP:
-      case OUTPUT:
-      case NAMED_TYPE:
-      case NUMERIC_TYPE:
-      case BOOL_FALSE:
-      case PARAMETERS:
-      case PARAM:
-      case PORTS:
-      case PORT:
-      case SYNC_PORT:
-      case ARRAYED_PORT:
-      case ARRAYED_SYNC_PORT:
-      case SYMBOL:
-      case CENTER_STRING:
-      case IMPLEMENTATION:
-      case TYPE_STRING:
-      case TYPE_CARDINAL:
-      case TYPE_BOOLEAN:
-      case TYPE_BINARYOPERATOR:
-      case TYPE_UNARYOPERATOR:
-      case CASE:
-      case ELSE:
-      case STRING_APPEND:
-      case NUMBER_TO_STRING:
-      case PLUS:
-      case SYNC:
-      case PUSH:
-      case PULL:
-      case CHANNELS:
-      case ATTRIBUTES:
-      case COMPONENTS:
-      case COMPONENT:
-      case BREEZE_PART:
-      case TYPE:
-      case IMPORT:
-      case QUOTED_VALUE:
-      case VALUE:
-        t = value();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PRIMITIVE_PART:
+    case ZERO:
+    case VARIABLE_ARRAY_TYPE:
+    case INTEGER:
+    case ACTIVE:
+    case PASSIVE:
+    case INPUT:
+    case INP:
+    case OUTPUT:
+    case NAMED_TYPE:
+    case NUMERIC_TYPE:
+    case BOOL_FALSE:
+    case PARAMETERS:
+    case PARAM:
+    case PORTS:
+    case PORT:
+    case SYNC_PORT:
+    case ARRAYED_PORT:
+    case ARRAYED_SYNC_PORT:
+    case SYMBOL:
+    case CENTER_STRING:
+    case IMPLEMENTATION:
+    case TYPE_STRING:
+    case TYPE_CARDINAL:
+    case TYPE_BOOLEAN:
+    case TYPE_BINARYOPERATOR:
+    case TYPE_UNARYOPERATOR:
+    case CASE:
+    case ELSE:
+    case STRING_APPEND:
+    case NUMBER_TO_STRING:
+    case PLUS:
+    case SYNC:
+    case PUSH:
+    case PULL:
+    case CHANNELS:
+    case ATTRIBUTES:
+    case COMPONENTS:
+    case COMPONENT:
+    case BREEZE_PART:
+    case TYPE:
+    case IMPORT:
+    case QUOTED_VALUE:
+    case VALUE:
+      t = value();
                         {if (true) return new LispNode(t);}
-        break;
-      case OBR:
-        l = list();
+      break;
+    case OBR:
+      l = list();
                        {if (true) return l;}
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("listElement");
+      break;
+    default:
+      jj_la1[2] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
   final public Token keyword() throws ParseException {
-    trace_call("keyword");
-    try {
                    Token t;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case PRIMITIVE_PART:
-        t = jj_consume_token(PRIMITIVE_PART);
-        break;
-      case VARIABLE_ARRAY_TYPE:
-        t = jj_consume_token(VARIABLE_ARRAY_TYPE);
-        break;
-      case ACTIVE:
-        t = jj_consume_token(ACTIVE);
-        break;
-      case PASSIVE:
-        t = jj_consume_token(PASSIVE);
-        break;
-      case INPUT:
-        t = jj_consume_token(INPUT);
-        break;
-      case INP:
-        t = jj_consume_token(INP);
-        break;
-      case OUTPUT:
-        t = jj_consume_token(OUTPUT);
-        break;
-      case NAMED_TYPE:
-        t = jj_consume_token(NAMED_TYPE);
-        break;
-      case NUMERIC_TYPE:
-        t = jj_consume_token(NUMERIC_TYPE);
-        break;
-      case BOOL_FALSE:
-        t = jj_consume_token(BOOL_FALSE);
-        break;
-      case PARAMETERS:
-        t = jj_consume_token(PARAMETERS);
-        break;
-      case PARAM:
-        t = jj_consume_token(PARAM);
-        break;
-      case PORTS:
-        t = jj_consume_token(PORTS);
-        break;
-      case PORT:
-        t = jj_consume_token(PORT);
-        break;
-      case SYNC_PORT:
-        t = jj_consume_token(SYNC_PORT);
-        break;
-      case ARRAYED_PORT:
-        t = jj_consume_token(ARRAYED_PORT);
-        break;
-      case ARRAYED_SYNC_PORT:
-        t = jj_consume_token(ARRAYED_SYNC_PORT);
-        break;
-      case SYMBOL:
-        t = jj_consume_token(SYMBOL);
-        break;
-      case CENTER_STRING:
-        t = jj_consume_token(CENTER_STRING);
-        break;
-      case IMPLEMENTATION:
-        t = jj_consume_token(IMPLEMENTATION);
-        break;
-      case TYPE_STRING:
-        t = jj_consume_token(TYPE_STRING);
-        break;
-      case TYPE_CARDINAL:
-        t = jj_consume_token(TYPE_CARDINAL);
-        break;
-      case TYPE_BOOLEAN:
-        t = jj_consume_token(TYPE_BOOLEAN);
-        break;
-      case TYPE_BINARYOPERATOR:
-        t = jj_consume_token(TYPE_BINARYOPERATOR);
-        break;
-      case TYPE_UNARYOPERATOR:
-        t = jj_consume_token(TYPE_UNARYOPERATOR);
-        break;
-      case CASE:
-        t = jj_consume_token(CASE);
-        break;
-      case ELSE:
-        t = jj_consume_token(ELSE);
-        break;
-      case STRING_APPEND:
-        t = jj_consume_token(STRING_APPEND);
-        break;
-      case NUMBER_TO_STRING:
-        t = jj_consume_token(NUMBER_TO_STRING);
-        break;
-      case PLUS:
-        t = jj_consume_token(PLUS);
-        break;
-      case SYNC:
-        t = jj_consume_token(SYNC);
-        break;
-      case PUSH:
-        t = jj_consume_token(PUSH);
-        break;
-      case PULL:
-        t = jj_consume_token(PULL);
-        break;
-      case CHANNELS:
-        t = jj_consume_token(CHANNELS);
-        break;
-      case ATTRIBUTES:
-        t = jj_consume_token(ATTRIBUTES);
-        break;
-      case COMPONENTS:
-        t = jj_consume_token(COMPONENTS);
-        break;
-      case COMPONENT:
-        t = jj_consume_token(COMPONENT);
-        break;
-      case BREEZE_PART:
-        t = jj_consume_token(BREEZE_PART);
-        break;
-      case TYPE:
-        t = jj_consume_token(TYPE);
-        break;
-      case IMPORT:
-        t = jj_consume_token(IMPORT);
-        break;
-      default:
-        jj_la1[3] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PRIMITIVE_PART:
+      t = jj_consume_token(PRIMITIVE_PART);
+      break;
+    case VARIABLE_ARRAY_TYPE:
+      t = jj_consume_token(VARIABLE_ARRAY_TYPE);
+      break;
+    case ACTIVE:
+      t = jj_consume_token(ACTIVE);
+      break;
+    case PASSIVE:
+      t = jj_consume_token(PASSIVE);
+      break;
+    case INPUT:
+      t = jj_consume_token(INPUT);
+      break;
+    case INP:
+      t = jj_consume_token(INP);
+      break;
+    case OUTPUT:
+      t = jj_consume_token(OUTPUT);
+      break;
+    case NAMED_TYPE:
+      t = jj_consume_token(NAMED_TYPE);
+      break;
+    case NUMERIC_TYPE:
+      t = jj_consume_token(NUMERIC_TYPE);
+      break;
+    case BOOL_FALSE:
+      t = jj_consume_token(BOOL_FALSE);
+      break;
+    case PARAMETERS:
+      t = jj_consume_token(PARAMETERS);
+      break;
+    case PARAM:
+      t = jj_consume_token(PARAM);
+      break;
+    case PORTS:
+      t = jj_consume_token(PORTS);
+      break;
+    case PORT:
+      t = jj_consume_token(PORT);
+      break;
+    case SYNC_PORT:
+      t = jj_consume_token(SYNC_PORT);
+      break;
+    case ARRAYED_PORT:
+      t = jj_consume_token(ARRAYED_PORT);
+      break;
+    case ARRAYED_SYNC_PORT:
+      t = jj_consume_token(ARRAYED_SYNC_PORT);
+      break;
+    case SYMBOL:
+      t = jj_consume_token(SYMBOL);
+      break;
+    case CENTER_STRING:
+      t = jj_consume_token(CENTER_STRING);
+      break;
+    case IMPLEMENTATION:
+      t = jj_consume_token(IMPLEMENTATION);
+      break;
+    case TYPE_STRING:
+      t = jj_consume_token(TYPE_STRING);
+      break;
+    case TYPE_CARDINAL:
+      t = jj_consume_token(TYPE_CARDINAL);
+      break;
+    case TYPE_BOOLEAN:
+      t = jj_consume_token(TYPE_BOOLEAN);
+      break;
+    case TYPE_BINARYOPERATOR:
+      t = jj_consume_token(TYPE_BINARYOPERATOR);
+      break;
+    case TYPE_UNARYOPERATOR:
+      t = jj_consume_token(TYPE_UNARYOPERATOR);
+      break;
+    case CASE:
+      t = jj_consume_token(CASE);
+      break;
+    case ELSE:
+      t = jj_consume_token(ELSE);
+      break;
+    case STRING_APPEND:
+      t = jj_consume_token(STRING_APPEND);
+      break;
+    case NUMBER_TO_STRING:
+      t = jj_consume_token(NUMBER_TO_STRING);
+      break;
+    case PLUS:
+      t = jj_consume_token(PLUS);
+      break;
+    case SYNC:
+      t = jj_consume_token(SYNC);
+      break;
+    case PUSH:
+      t = jj_consume_token(PUSH);
+      break;
+    case PULL:
+      t = jj_consume_token(PULL);
+      break;
+    case CHANNELS:
+      t = jj_consume_token(CHANNELS);
+      break;
+    case ATTRIBUTES:
+      t = jj_consume_token(ATTRIBUTES);
+      break;
+    case COMPONENTS:
+      t = jj_consume_token(COMPONENTS);
+      break;
+    case COMPONENT:
+      t = jj_consume_token(COMPONENT);
+      break;
+    case BREEZE_PART:
+      t = jj_consume_token(BREEZE_PART);
+      break;
+    case TYPE:
+      t = jj_consume_token(TYPE);
+      break;
+    case IMPORT:
+      t = jj_consume_token(IMPORT);
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
           {if (true) return t;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("keyword");
-    }
   }
 
   final public ParameterType type() throws ParseException {
-    trace_call("type");
-    try {
                          ParameterType result; String typeName;
-      if (jj_2_1(2147483647)) {
-        jj_consume_token(OBR);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case TYPE_STRING:
-          jj_consume_token(TYPE_STRING);
+    if (jj_2_1(2147483647)) {
+      jj_consume_token(OBR);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case TYPE_STRING:
+        jj_consume_token(TYPE_STRING);
                                         result = ParameterType.STRING;
-          break;
-        case NAMED_TYPE:
-          jj_consume_token(NAMED_TYPE);
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case TYPE_CARDINAL:
-            jj_consume_token(TYPE_CARDINAL);
+        break;
+      case NAMED_TYPE:
+        jj_consume_token(NAMED_TYPE);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case TYPE_CARDINAL:
+          jj_consume_token(TYPE_CARDINAL);
                                                   result = ParameterType.CARDINAL;
-            break;
-          case TYPE_BOOLEAN:
-            jj_consume_token(TYPE_BOOLEAN);
+          break;
+        case TYPE_BOOLEAN:
+          jj_consume_token(TYPE_BOOLEAN);
                                                  result = ParameterType.BOOLEAN;
-            break;
-          case TYPE_BINARYOPERATOR:
-            jj_consume_token(TYPE_BINARYOPERATOR);
+          break;
+        case TYPE_BINARYOPERATOR:
+          jj_consume_token(TYPE_BINARYOPERATOR);
                                                         result = ParameterType.BINARY_OPERATOR;
-            break;
-          case TYPE_UNARYOPERATOR:
-            jj_consume_token(TYPE_UNARYOPERATOR);
+          break;
+        case TYPE_UNARYOPERATOR:
+          jj_consume_token(TYPE_UNARYOPERATOR);
                                                        result = ParameterType.UNARY_OPERATOR;
-            break;
-          case PRIMITIVE_PART:
-          case ZERO:
-          case VARIABLE_ARRAY_TYPE:
-          case INTEGER:
-          case ACTIVE:
-          case PASSIVE:
-          case INPUT:
-          case INP:
-          case OUTPUT:
-          case NAMED_TYPE:
-          case NUMERIC_TYPE:
-          case BOOL_FALSE:
-          case PARAMETERS:
-          case PARAM:
-          case PORTS:
-          case PORT:
-          case SYNC_PORT:
-          case ARRAYED_PORT:
-          case ARRAYED_SYNC_PORT:
-          case SYMBOL:
-          case CENTER_STRING:
-          case IMPLEMENTATION:
-          case TYPE_STRING:
-          case CASE:
-          case ELSE:
-          case STRING_APPEND:
-          case NUMBER_TO_STRING:
-          case PLUS:
-          case SYNC:
-          case PUSH:
-          case PULL:
-          case CHANNELS:
-          case ATTRIBUTES:
-          case COMPONENTS:
-          case COMPONENT:
-          case BREEZE_PART:
-          case TYPE:
-          case IMPORT:
-          case QUOTED_VALUE:
-          case VALUE:
-            typeName = value();
-                                                     result = ParameterType.OTHER;
-            break;
-          default:
-            jj_la1[4] = jj_gen;
-            jj_consume_token(-1);
-            throw new ParseException();
-          }
           break;
-        default:
-          jj_la1[5] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-        jj_consume_token(CBR);
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          numericType();
-                                  result = ParameterType.CARDINAL;
-          break;
-        default:
-          jj_la1[6] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-      }
-          {if (true) return result;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("type");
-    }
-  }
-
-  final public ParameterDeclaration parameter() throws ParseException {
-    trace_call("parameter");
-    try {
-  String name;
-  ParameterType type;
-      jj_consume_token(OBR);
-      name = value();
-      type = type();
-      listBody();
-      jj_consume_token(CBR);
-          {if (true) return new ParameterDeclaration (name, type);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parameter");
-    }
-  }
-
-  final public List<ParameterDeclaration> parameters() throws ParseException {
-    trace_call("parameters");
-    try {
-   ArrayList<ParameterDeclaration> result = new ArrayList<ParameterDeclaration>();
-   ParameterDeclaration o;
-      jj_consume_token(OBR);
-      jj_consume_token(PARAMETERS);
-      label_2:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[7] = jj_gen;
-          break label_2;
-        }
-        o = parameter();
-                   result.add(o);
-      }
-      jj_consume_token(CBR);
-   {if (true) return result;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parameters");
-    }
-  }
-
-  final public boolean dataDirectionIsInput() throws ParseException {
-    trace_call("dataDirectionIsInput");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INPUT:
-      case INP:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case INPUT:
-          jj_consume_token(INPUT);
-          break;
-        case INP:
-          jj_consume_token(INP);
-          break;
-        default:
-          jj_la1[8] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-                          {if (true) return true;}
-        break;
-      case OUTPUT:
-        jj_consume_token(OUTPUT);
-                     {if (true) return false;}
-        break;
-      default:
-        jj_la1[9] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("dataDirectionIsInput");
-    }
-  }
-
-  final public Token integerToken() throws ParseException {
-    trace_call("integerToken");
-    try {
-  Token t;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER:
-        t = jj_consume_token(INTEGER);
-        break;
-      case ZERO:
-        t = jj_consume_token(ZERO);
-        break;
-      default:
-        jj_la1[10] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-                                       {if (true) return t;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("integerToken");
-    }
-  }
-
-  final public int integer() throws ParseException {
-    trace_call("integer");
-    try {
-        Token t;
-      t = integerToken();
-                {if (true) return Integer.parseInt(t.image);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("integer");
-    }
-  }
-
-  final public Expression<Integer> constantIntegerExpression() throws ParseException {
-    trace_call("constantIntegerExpression");
-    try {
-        int result;
-      result = integer();
-          {if (true) return new Constant<Integer>(result);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("constantIntegerExpression");
-    }
-  }
-
-  final public Expression<String> constantStringExpression() throws ParseException {
-    trace_call("constantStringExpression");
-    try {
-        String s;
-      s = value();
-   {if (true) return new Constant<String>(s);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("constantStringExpression");
-    }
-  }
-
-  final public Expression<?> parameterizedExpression() throws ParseException {
-    trace_call("parameterizedExpression");
-    try {
-        String paramName;
-      jj_consume_token(OBR);
-      jj_consume_token(PARAM);
-      paramName = value();
-      jj_consume_token(CBR);
-          {if (true) return new ParameterReference<Object>(paramName);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parameterizedExpression");
-    }
-  }
-
-  final public Expression<String> numberToStringExpression() throws ParseException {
-    trace_call("numberToStringExpression");
-    try {
-  Expression<Integer> intExpression;
-      jj_consume_token(OBR);
-      jj_consume_token(NUMBER_TO_STRING);
-      intExpression = integerExpression();
-      jj_consume_token(CBR);
-          {if (true) return new ToStringExpression<Integer>(intExpression);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("numberToStringExpression");
-    }
-  }
-
-  final public Expression<String> stringAppendExpression() throws ParseException {
-    trace_call("stringAppendExpression");
-    try {
-        Expression<String> result;
-        Expression<String> str2;
-      jj_consume_token(OBR);
-      jj_consume_token(STRING_APPEND);
-      result = stringAppendBody();
-      jj_consume_token(CBR);
-          {if (true) return result;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("stringAppendExpression");
-    }
-  }
-
-  final public Expression<String> stringAppendBody() throws ParseException {
-    trace_call("stringAppendBody");
-    try {
-        Expression<String> str;
-        List<Expression<String>> strs = new ArrayList<Expression<String>>();
-      label_3:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PRIMITIVE_PART:
         case ZERO:
         case VARIABLE_ARRAY_TYPE:
@@ -709,10 +417,6 @@ public class BreezeParser implements BreezeParserConstants {
         case CENTER_STRING:
         case IMPLEMENTATION:
         case TYPE_STRING:
-        case TYPE_CARDINAL:
-        case TYPE_BOOLEAN:
-        case TYPE_BINARYOPERATOR:
-        case TYPE_UNARYOPERATOR:
         case CASE:
         case ELSE:
         case STRING_APPEND:
@@ -728,28 +432,239 @@ public class BreezeParser implements BreezeParserConstants {
         case BREEZE_PART:
         case TYPE:
         case IMPORT:
-        case OBR:
         case QUOTED_VALUE:
         case VALUE:
-          ;
+          typeName = value();
+                                                     result = ParameterType.OTHER;
           break;
         default:
-          jj_la1[11] = jj_gen;
-          break label_3;
+          jj_la1[4] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
         }
-        str = stringExpression();
-                                    strs.add(str);
+        break;
+      default:
+        jj_la1[5] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
+      jj_consume_token(CBR);
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        numericType();
+                                  result = ParameterType.CARDINAL;
+        break;
+      default:
+        jj_la1[6] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+          {if (true) return result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ParameterDeclaration parameter() throws ParseException {
+  String name;
+  ParameterType type;
+    jj_consume_token(OBR);
+    name = value();
+    type = type();
+    listBody();
+    jj_consume_token(CBR);
+          {if (true) return new ParameterDeclaration (name, type);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public PVector<ParameterDeclaration> parameters() throws ParseException {
+   PVector<ParameterDeclaration> result = TreePVector.<ParameterDeclaration>empty();
+   ParameterDeclaration o;
+    jj_consume_token(OBR);
+    jj_consume_token(PARAMETERS);
+    label_2:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        break label_2;
+      }
+      o = parameter();
+                   result = result.plus(o);
+    }
+    jj_consume_token(CBR);
+   {if (true) return result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public boolean dataDirectionIsInput() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INPUT:
+    case INP:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INPUT:
+        jj_consume_token(INPUT);
+        break;
+      case INP:
+        jj_consume_token(INP);
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+                          {if (true) return true;}
+      break;
+    case OUTPUT:
+      jj_consume_token(OUTPUT);
+                     {if (true) return false;}
+      break;
+    default:
+      jj_la1[9] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Token integerToken() throws ParseException {
+  Token t;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INTEGER:
+      t = jj_consume_token(INTEGER);
+      break;
+    case ZERO:
+      t = jj_consume_token(ZERO);
+      break;
+    default:
+      jj_la1[10] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+                                       {if (true) return t;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public int integer() throws ParseException {
+        Token t;
+    t = integerToken();
+                {if (true) return Integer.parseInt(t.image);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<Integer> constantIntegerExpression() throws ParseException {
+        int result;
+    result = integer();
+          {if (true) return new Constant<Integer>(result);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> constantStringExpression() throws ParseException {
+        String s;
+    s = value();
+   {if (true) return new Constant<String>(s);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<?> parameterizedExpression() throws ParseException {
+        String paramName;
+    jj_consume_token(OBR);
+    jj_consume_token(PARAM);
+    paramName = value();
+    jj_consume_token(CBR);
+          {if (true) return new ParameterReference<Object>(paramName);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> numberToStringExpression() throws ParseException {
+  Expression<Integer> intExpression;
+    jj_consume_token(OBR);
+    jj_consume_token(NUMBER_TO_STRING);
+    intExpression = integerExpression();
+    jj_consume_token(CBR);
+          {if (true) return new ToStringExpression<Integer>(intExpression);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> stringAppendExpression() throws ParseException {
+        Expression<String> result;
+        Expression<String> str2;
+    jj_consume_token(OBR);
+    jj_consume_token(STRING_APPEND);
+    result = stringAppendBody();
+    jj_consume_token(CBR);
+          {if (true) return result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> stringAppendBody() throws ParseException {
+        Expression<String> str;
+        List<Expression<String>> strs = new ArrayList<Expression<String>>();
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PRIMITIVE_PART:
+      case ZERO:
+      case VARIABLE_ARRAY_TYPE:
+      case INTEGER:
+      case ACTIVE:
+      case PASSIVE:
+      case INPUT:
+      case INP:
+      case OUTPUT:
+      case NAMED_TYPE:
+      case NUMERIC_TYPE:
+      case BOOL_FALSE:
+      case PARAMETERS:
+      case PARAM:
+      case PORTS:
+      case PORT:
+      case SYNC_PORT:
+      case ARRAYED_PORT:
+      case ARRAYED_SYNC_PORT:
+      case SYMBOL:
+      case CENTER_STRING:
+      case IMPLEMENTATION:
+      case TYPE_STRING:
+      case TYPE_CARDINAL:
+      case TYPE_BOOLEAN:
+      case TYPE_BINARYOPERATOR:
+      case TYPE_UNARYOPERATOR:
+      case CASE:
+      case ELSE:
+      case STRING_APPEND:
+      case NUMBER_TO_STRING:
+      case PLUS:
+      case SYNC:
+      case PUSH:
+      case PULL:
+      case CHANNELS:
+      case ATTRIBUTES:
+      case COMPONENTS:
+      case COMPONENT:
+      case BREEZE_PART:
+      case TYPE:
+      case IMPORT:
+      case OBR:
+      case QUOTED_VALUE:
+      case VALUE:
+        ;
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        break label_3;
+      }
+      str = stringExpression();
+                                    strs.add(str);
+    }
           {if (true) return new StringConcatenateExpression(strs);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("stringAppendBody");
-    }
   }
 
   final public Expression<String> stringCaseExpression() throws ParseException {
-    trace_call("stringCaseExpression");
-    try {
         Expression<String> condition;
         Expression<String> value;
 
@@ -757,809 +672,657 @@ public class BreezeParser implements BreezeParserConstants {
         List<Expression<String>> conditions = new ArrayList<Expression<String>>();
         List<Expression<String>> values = new ArrayList<Expression<String>>();
         Expression<String> elseValue;
-      jj_consume_token(OBR);
-      jj_consume_token(CASE);
-      toCheck = stringExpression();
-      label_4:
-      while (true) {
-        if (jj_2_2(2147483647)) {
-          ;
-        } else {
-          break label_4;
-        }
-        jj_consume_token(OBR);
-        jj_consume_token(OBR);
-        condition = stringExpression();
-        jj_consume_token(CBR);
-        value = stringExpression();
-        jj_consume_token(CBR);
-                          conditions.add(condition); values.add(value);
+    jj_consume_token(OBR);
+    jj_consume_token(CASE);
+    toCheck = stringExpression();
+    label_4:
+    while (true) {
+      if (jj_2_2(2147483647)) {
+        ;
+      } else {
+        break label_4;
       }
       jj_consume_token(OBR);
-      jj_consume_token(ELSE);
-      elseValue = stringExpression();
+      jj_consume_token(OBR);
+      condition = stringExpression();
       jj_consume_token(CBR);
+      value = stringExpression();
       jj_consume_token(CBR);
+                          conditions.add(condition); values.add(value);
+    }
+    jj_consume_token(OBR);
+    jj_consume_token(ELSE);
+    elseValue = stringExpression();
+    jj_consume_token(CBR);
+    jj_consume_token(CBR);
           {if (true) return new CaseExpression<String, String>(toCheck, conditions, values, elseValue);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("stringCaseExpression");
-    }
   }
 
   final public Expression<Integer> addExpression() throws ParseException {
-    trace_call("addExpression");
-    try {
         List<Expression<Integer>> args = new ArrayList<Expression<Integer>>();
-      jj_consume_token(OBR);
-      jj_consume_token(PLUS);
-      label_5:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ZERO:
-        case INTEGER:
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[12] = jj_gen;
-          break label_5;
-        }
-        integerExpression();
+    jj_consume_token(OBR);
+    jj_consume_token(PLUS);
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ZERO:
+      case INTEGER:
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        break label_5;
       }
-      jj_consume_token(CBR);
+      integerExpression();
+    }
+    jj_consume_token(CBR);
                 {if (true) return new AddExpression(args);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("addExpression");
-    }
   }
 
   final public Expression<Integer> integerExpression() throws ParseException {
-    trace_call("integerExpression");
-    try {
         Expression<?> result;
-      if (jj_2_3(2147483647)) {
-        result = parameterizedExpression();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ZERO:
-        case INTEGER:
-          result = constantIntegerExpression();
-          break;
-        case OBR:
-          result = addExpression();
-          break;
-        default:
-          jj_la1[13] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-      }
-         {if (true) return (Expression<Integer>)result;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("integerExpression");
-    }
-  }
-
-  final public Expression<String> implicitNumberToString() throws ParseException {
-    trace_call("implicitNumberToString");
-    try {
-        Expression<Integer> res;
-      res = integerExpression();
-         {if (true) return new ToStringExpression(res);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("implicitNumberToString");
-    }
-  }
-
-  final public Expression<String> stringExpression() throws ParseException {
-    trace_call("stringExpression");
-    try {
-        Expression<?> result;
-      if (jj_2_4(2147483647)) {
-        result = parameterizedExpression();
-      } else if (jj_2_5(2147483647)) {
-        result = stringCaseExpression();
-      } else if (jj_2_6(2147483647)) {
-        result = stringAppendExpression();
-      } else if (jj_2_7(2147483647)) {
-        result = numberToStringExpression();
-      } else if (jj_2_8(2147483647)) {
-        result = implicitNumberToString();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PRIMITIVE_PART:
-        case ZERO:
-        case VARIABLE_ARRAY_TYPE:
-        case INTEGER:
-        case ACTIVE:
-        case PASSIVE:
-        case INPUT:
-        case INP:
-        case OUTPUT:
-        case NAMED_TYPE:
-        case NUMERIC_TYPE:
-        case BOOL_FALSE:
-        case PARAMETERS:
-        case PARAM:
-        case PORTS:
-        case PORT:
-        case SYNC_PORT:
-        case ARRAYED_PORT:
-        case ARRAYED_SYNC_PORT:
-        case SYMBOL:
-        case CENTER_STRING:
-        case IMPLEMENTATION:
-        case TYPE_STRING:
-        case TYPE_CARDINAL:
-        case TYPE_BOOLEAN:
-        case TYPE_BINARYOPERATOR:
-        case TYPE_UNARYOPERATOR:
-        case CASE:
-        case ELSE:
-        case STRING_APPEND:
-        case NUMBER_TO_STRING:
-        case PLUS:
-        case SYNC:
-        case PUSH:
-        case PULL:
-        case CHANNELS:
-        case ATTRIBUTES:
-        case COMPONENTS:
-        case COMPONENT:
-        case BREEZE_PART:
-        case TYPE:
-        case IMPORT:
-        case QUOTED_VALUE:
-        case VALUE:
-          result = constantStringExpression();
-          break;
-        default:
-          jj_la1[14] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-      }
-         {if (true) return new ToStringExpression((Expression<Object>) result);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("stringExpression");
-    }
-  }
-
-  final public Expression<Integer> numericType() throws ParseException {
-    trace_call("numericType");
-    try {
-        Expression<Integer> result;
-      jj_consume_token(OBR);
-      jj_consume_token(NUMERIC_TYPE);
-      jj_consume_token(BOOL_FALSE);
-      result = integerExpression();
-      jj_consume_token(CBR);
-                {if (true) return result;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("numericType");
-    }
-  }
-
-  final public VariableArrayType variable_array_type() throws ParseException {
-    trace_call("variable_array_type");
-    try {
-        Expression<Integer> defaultWidth;
-        Expression<Integer> portCount;
-        Expression<String> specification;
-      jj_consume_token(OBR);
-      jj_consume_token(VARIABLE_ARRAY_TYPE);
-      defaultWidth = numericType();
-      jj_consume_token(ZERO);
-      portCount = integerExpression();
-      specification = stringExpression();
-      jj_consume_token(CBR);
-          {if (true) return new VariableArrayType(defaultWidth, portCount, specification);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("variable_array_type");
-    }
-  }
-
-  final public boolean isActive() throws ParseException {
-    trace_call("isActive");
-    try {
+    if (jj_2_3(2147483647)) {
+      result = parameterizedExpression();
+    } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ACTIVE:
-        jj_consume_token(ACTIVE);
-                   {if (true) return true;}
+      case ZERO:
+      case INTEGER:
+        result = constantIntegerExpression();
         break;
-      case PASSIVE:
-        jj_consume_token(PASSIVE);
-                      {if (true) return false;}
+      case OBR:
+        result = addExpression();
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("isActive");
     }
+         {if (true) return (Expression<Integer>)result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> implicitNumberToString() throws ParseException {
+        Expression<Integer> res;
+    res = integerExpression();
+         {if (true) return new ToStringExpression(res);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<String> stringExpression() throws ParseException {
+        Expression<?> result;
+    if (jj_2_4(2147483647)) {
+      result = parameterizedExpression();
+    } else if (jj_2_5(2147483647)) {
+      result = stringCaseExpression();
+    } else if (jj_2_6(2147483647)) {
+      result = stringAppendExpression();
+    } else if (jj_2_7(2147483647)) {
+      result = numberToStringExpression();
+    } else if (jj_2_8(2147483647)) {
+      result = implicitNumberToString();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PRIMITIVE_PART:
+      case ZERO:
+      case VARIABLE_ARRAY_TYPE:
+      case INTEGER:
+      case ACTIVE:
+      case PASSIVE:
+      case INPUT:
+      case INP:
+      case OUTPUT:
+      case NAMED_TYPE:
+      case NUMERIC_TYPE:
+      case BOOL_FALSE:
+      case PARAMETERS:
+      case PARAM:
+      case PORTS:
+      case PORT:
+      case SYNC_PORT:
+      case ARRAYED_PORT:
+      case ARRAYED_SYNC_PORT:
+      case SYMBOL:
+      case CENTER_STRING:
+      case IMPLEMENTATION:
+      case TYPE_STRING:
+      case TYPE_CARDINAL:
+      case TYPE_BOOLEAN:
+      case TYPE_BINARYOPERATOR:
+      case TYPE_UNARYOPERATOR:
+      case CASE:
+      case ELSE:
+      case STRING_APPEND:
+      case NUMBER_TO_STRING:
+      case PLUS:
+      case SYNC:
+      case PUSH:
+      case PULL:
+      case CHANNELS:
+      case ATTRIBUTES:
+      case COMPONENTS:
+      case COMPONENT:
+      case BREEZE_PART:
+      case TYPE:
+      case IMPORT:
+      case QUOTED_VALUE:
+      case VALUE:
+        result = constantStringExpression();
+        break;
+      default:
+        jj_la1[14] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+         {if (true) return new ToStringExpression((Expression<Object>) result);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression<Integer> numericType() throws ParseException {
+        Expression<Integer> result;
+    jj_consume_token(OBR);
+    jj_consume_token(NUMERIC_TYPE);
+    jj_consume_token(BOOL_FALSE);
+    result = integerExpression();
+    jj_consume_token(CBR);
+                {if (true) return result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public VariableArrayType variable_array_type() throws ParseException {
+        Expression<Integer> defaultWidth;
+        Expression<Integer> portCount;
+        Expression<String> specification;
+    jj_consume_token(OBR);
+    jj_consume_token(VARIABLE_ARRAY_TYPE);
+    defaultWidth = numericType();
+    jj_consume_token(ZERO);
+    portCount = integerExpression();
+    specification = stringExpression();
+    jj_consume_token(CBR);
+          {if (true) return new VariableArrayType(defaultWidth, portCount, specification);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public boolean isActive() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ACTIVE:
+      jj_consume_token(ACTIVE);
+                   {if (true) return true;}
+      break;
+    case PASSIVE:
+      jj_consume_token(PASSIVE);
+                      {if (true) return false;}
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
   }
 
   final public Expression<Integer> arrayCount() throws ParseException {
-    trace_call("arrayCount");
-    try {
                                      Expression<Integer> result;
-      jj_consume_token(ZERO);
-      result = integerExpression();
+    jj_consume_token(ZERO);
+    result = integerExpression();
           {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("arrayCount");
-    }
   }
 
   final public PortDeclaration arrayedSyncPort(String name, boolean isActive) throws ParseException {
-    trace_call("arrayedSyncPort");
-    try {
         Expression<Integer> count;
-      count = arrayCount();
+    count = arrayCount();
           {if (true) return PortDeclaration.createArrayedSync(name, isActive, count);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("arrayedSyncPort");
-    }
   }
 
   final public PortDeclaration arrayedDataPort(String name, boolean isActive) throws ParseException {
-    trace_call("arrayedDataPort");
-    try {
         Expression<Integer> count;
         Expression<Integer[]> width = null;
         Expression<Integer> simpleWidth = null;
         boolean isInput;
-      isInput = dataDirectionIsInput();
-      if (jj_2_9(2147483647)) {
-        width = variable_array_type();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          simpleWidth = numericType();
-          break;
-        default:
-          jj_la1[16] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+    isInput = dataDirectionIsInput();
+    if (jj_2_9(2147483647)) {
+      width = variable_array_type();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        simpleWidth = numericType();
+        break;
+      default:
+        jj_la1[16] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      count = arrayCount();
+    }
+    count = arrayCount();
           if(width == null) width = new ConstantArrayType(simpleWidth, count);
           {if (true) return PortDeclaration.createArrayedData(name, isActive, count, isInput, width);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("arrayedDataPort");
-    }
   }
 
   final public PortDeclaration simpleSyncPort(String name, boolean isActive) throws ParseException {
-    trace_call("simpleSyncPort");
-    try {
           {if (true) return PortDeclaration.createSync(name, isActive);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("simpleSyncPort");
-    }
   }
 
   final public PortDeclaration simpleDataPort(String name, boolean isActive) throws ParseException {
-    trace_call("simpleDataPort");
-    try {
         Expression<Integer> width;
         boolean isInput;
-      isInput = dataDirectionIsInput();
-      width = numericType();
+    isInput = dataDirectionIsInput();
+    width = numericType();
           {if (true) return PortDeclaration.createData(name, isActive, isInput, width);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("simpleDataPort");
-    }
   }
 
   final public PortDeclaration port() throws ParseException {
-    trace_call("port");
-    try {
   PortDeclaration result; String name; boolean isActive;
-      jj_consume_token(OBR);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case PORT:
-        jj_consume_token(PORT);
-        name = value();
-        isActive = isActive();
-        result = simpleDataPort(name, isActive);
-        break;
-      case SYNC_PORT:
-        jj_consume_token(SYNC_PORT);
-        name = value();
-        isActive = isActive();
-        result = simpleSyncPort(name, isActive);
-        break;
-      case ARRAYED_PORT:
-        jj_consume_token(ARRAYED_PORT);
-        name = value();
-        isActive = isActive();
-        result = arrayedDataPort(name, isActive);
-        break;
-      case ARRAYED_SYNC_PORT:
-        jj_consume_token(ARRAYED_SYNC_PORT);
-        name = value();
-        isActive = isActive();
-        result = arrayedSyncPort(name, isActive);
-        break;
-      default:
-        jj_la1[17] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      listBody();
-      jj_consume_token(CBR);
+    jj_consume_token(OBR);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PORT:
+      jj_consume_token(PORT);
+      name = value();
+      isActive = isActive();
+      result = simpleDataPort(name, isActive);
+      break;
+    case SYNC_PORT:
+      jj_consume_token(SYNC_PORT);
+      name = value();
+      isActive = isActive();
+      result = simpleSyncPort(name, isActive);
+      break;
+    case ARRAYED_PORT:
+      jj_consume_token(ARRAYED_PORT);
+      name = value();
+      isActive = isActive();
+      result = arrayedDataPort(name, isActive);
+      break;
+    case ARRAYED_SYNC_PORT:
+      jj_consume_token(ARRAYED_SYNC_PORT);
+      name = value();
+      isActive = isActive();
+      result = arrayedSyncPort(name, isActive);
+      break;
+    default:
+      jj_la1[17] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    listBody();
+    jj_consume_token(CBR);
                 {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("port");
-    }
   }
 
-  final public List<PortDeclaration> ports() throws ParseException {
-    trace_call("ports");
-    try {
-        ArrayList<PortDeclaration> result = new ArrayList<PortDeclaration>();
+  final public PVector<PortDeclaration> ports() throws ParseException {
+        PVector<PortDeclaration> result = TreePVector.<PortDeclaration>empty();
         PortDeclaration o;
-      jj_consume_token(OBR);
-      jj_consume_token(PORTS);
-      label_6:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[18] = jj_gen;
-          break label_6;
-        }
-        o = port();
-                      result.add(o);
+    jj_consume_token(OBR);
+    jj_consume_token(PORTS);
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[18] = jj_gen;
+        break label_6;
       }
-      jj_consume_token(CBR);
+      o = port();
+                      result = result.plus(o);
+    }
+    jj_consume_token(CBR);
          {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("ports");
-    }
   }
 
   final public Expression<String> symbol() throws ParseException {
-    trace_call("symbol");
-    try {
                                 Expression<String> str;
-      jj_consume_token(OBR);
-      jj_consume_token(SYMBOL);
-      jj_consume_token(OBR);
-      jj_consume_token(CENTER_STRING);
-      str = stringAppendBody();
-      jj_consume_token(CBR);
-      jj_consume_token(CBR);
+    jj_consume_token(OBR);
+    jj_consume_token(SYMBOL);
+    jj_consume_token(OBR);
+    jj_consume_token(CENTER_STRING);
+    str = stringAppendBody();
+    jj_consume_token(CBR);
+    jj_consume_token(CBR);
           {if (true) return str;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("symbol");
-    }
   }
 
   final public PrimitivePart primitivePart() throws ParseException {
-    trace_call("primitivePart");
-    try {
         String name;
-        List<ParameterDeclaration> parameters;
+        PVector<ParameterDeclaration> parameters;
         Expression<String> symbol;
-        List<PortDeclaration> ports;
-      jj_consume_token(OBR);
-      jj_consume_token(PRIMITIVE_PART);
-      name = value();
-      parameters = parameters();
-      ports = ports();
-      symbol = symbol();
-      listBody();
-      jj_consume_token(CBR);
+        PVector<PortDeclaration> ports;
+    jj_consume_token(OBR);
+    jj_consume_token(PRIMITIVE_PART);
+    name = value();
+    parameters = parameters();
+    ports = ports();
+    symbol = symbol();
+    listBody();
+    jj_consume_token(CBR);
     {if (true) return new PrimitivePart(name, parameters, ports, symbol);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("primitivePart");
-    }
   }
 
   final public void attributes() throws ParseException {
-    trace_call("attributes");
-    try {
-      list();
-    } finally {
-      trace_return("attributes");
-    }
+    list();
   }
 
   final public ChannelDeclaration channel() throws ParseException {
-    trace_call("channel");
-    try {
         ChannelType type;
         int bits = 0;
-      jj_consume_token(OBR);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SYNC:
-        jj_consume_token(SYNC);
+    jj_consume_token(OBR);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case SYNC:
+      jj_consume_token(SYNC);
                          type = ChannelType.SYNC;
+      break;
+    case PUSH:
+    case PULL:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PULL:
+        jj_consume_token(PULL);
+                          type = ChannelType.PULL;
         break;
       case PUSH:
-      case PULL:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PULL:
-          jj_consume_token(PULL);
-                          type = ChannelType.PULL;
-          break;
-        case PUSH:
-          jj_consume_token(PUSH);
+        jj_consume_token(PUSH);
                             type = ChannelType.PUSH;
-          break;
-        default:
-          jj_la1[19] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-        bits = integer();
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[19] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      listBody();
-      jj_consume_token(CBR);
+      bits = integer();
+      break;
+    default:
+      jj_la1[20] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    listBody();
+    jj_consume_token(CBR);
           {if (true) return new ChannelDeclaration(type, bits);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("channel");
-    }
   }
 
   final public List<ChannelDeclaration> channels() throws ParseException {
-    trace_call("channels");
-    try {
         List<ChannelDeclaration> list = new ArrayList<ChannelDeclaration>();
         ChannelDeclaration channel;
-      jj_consume_token(OBR);
-      jj_consume_token(CHANNELS);
-      label_7:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[21] = jj_gen;
-          break label_7;
-        }
-        channel = channel();
-                               list.add(channel);
+    jj_consume_token(OBR);
+    jj_consume_token(CHANNELS);
+    label_7:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[21] = jj_gen;
+        break label_7;
       }
-      jj_consume_token(CBR);
+      channel = channel();
+                               list.add(channel);
+    }
+    jj_consume_token(CBR);
           {if (true) return list;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("channels");
-    }
   }
 
   final public List<String> paramValues() throws ParseException {
-    trace_call("paramValues");
-    try {
         List<String> values = new ArrayList<String>();
         String value;
-      jj_consume_token(OBR);
-      label_8:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PRIMITIVE_PART:
-        case ZERO:
-        case VARIABLE_ARRAY_TYPE:
-        case INTEGER:
-        case ACTIVE:
-        case PASSIVE:
-        case INPUT:
-        case INP:
-        case OUTPUT:
-        case NAMED_TYPE:
-        case NUMERIC_TYPE:
-        case BOOL_FALSE:
-        case PARAMETERS:
-        case PARAM:
-        case PORTS:
-        case PORT:
-        case SYNC_PORT:
-        case ARRAYED_PORT:
-        case ARRAYED_SYNC_PORT:
-        case SYMBOL:
-        case CENTER_STRING:
-        case IMPLEMENTATION:
-        case TYPE_STRING:
-        case TYPE_CARDINAL:
-        case TYPE_BOOLEAN:
-        case TYPE_BINARYOPERATOR:
-        case TYPE_UNARYOPERATOR:
-        case CASE:
-        case ELSE:
-        case STRING_APPEND:
-        case NUMBER_TO_STRING:
-        case PLUS:
-        case SYNC:
-        case PUSH:
-        case PULL:
-        case CHANNELS:
-        case ATTRIBUTES:
-        case COMPONENTS:
-        case COMPONENT:
-        case BREEZE_PART:
-        case TYPE:
-        case IMPORT:
-        case QUOTED_VALUE:
-        case VALUE:
-          ;
-          break;
-        default:
-          jj_la1[22] = jj_gen;
-          break label_8;
-        }
-        value = value();
-                          values.add(value);
+    jj_consume_token(OBR);
+    label_8:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PRIMITIVE_PART:
+      case ZERO:
+      case VARIABLE_ARRAY_TYPE:
+      case INTEGER:
+      case ACTIVE:
+      case PASSIVE:
+      case INPUT:
+      case INP:
+      case OUTPUT:
+      case NAMED_TYPE:
+      case NUMERIC_TYPE:
+      case BOOL_FALSE:
+      case PARAMETERS:
+      case PARAM:
+      case PORTS:
+      case PORT:
+      case SYNC_PORT:
+      case ARRAYED_PORT:
+      case ARRAYED_SYNC_PORT:
+      case SYMBOL:
+      case CENTER_STRING:
+      case IMPLEMENTATION:
+      case TYPE_STRING:
+      case TYPE_CARDINAL:
+      case TYPE_BOOLEAN:
+      case TYPE_BINARYOPERATOR:
+      case TYPE_UNARYOPERATOR:
+      case CASE:
+      case ELSE:
+      case STRING_APPEND:
+      case NUMBER_TO_STRING:
+      case PLUS:
+      case SYNC:
+      case PUSH:
+      case PULL:
+      case CHANNELS:
+      case ATTRIBUTES:
+      case COMPONENTS:
+      case COMPONENT:
+      case BREEZE_PART:
+      case TYPE:
+      case IMPORT:
+      case QUOTED_VALUE:
+      case VALUE:
+        ;
+        break;
+      default:
+        jj_la1[22] = jj_gen;
+        break label_8;
       }
-      jj_consume_token(CBR);
+      value = value();
+                          values.add(value);
+    }
+    jj_consume_token(CBR);
          {if (true) return values;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("paramValues");
-    }
   }
 
   final public List<List<Integer>> connections() throws ParseException {
-    trace_call("connections");
-    try {
         List<List<Integer>> result = new ArrayList<List<Integer>>();
         List<Integer> subList;
-      jj_consume_token(OBR);
-      label_9:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ZERO:
-        case INTEGER:
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[23] = jj_gen;
-          break label_9;
-        }
-        subList = intList();
-                              result.add(subList);
+    jj_consume_token(OBR);
+    label_9:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ZERO:
+      case INTEGER:
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[23] = jj_gen;
+        break label_9;
       }
-      jj_consume_token(CBR);
+      subList = intList();
+                              result.add(subList);
+    }
+    jj_consume_token(CBR);
          {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("connections");
-    }
   }
 
   final public List<Integer> intList() throws ParseException {
-    trace_call("intList");
-    try {
         List<Integer> result;
         int val;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case OBR:
-        result = plainIntList();
-        break;
-      case ZERO:
-      case INTEGER:
-        val = integer();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OBR:
+      result = plainIntList();
+      break;
+    case ZERO:
+    case INTEGER:
+      val = integer();
                                   result = new LinkedList<Integer>(); result.add(val);
-        break;
-      default:
-        jj_la1[24] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      break;
+    default:
+      jj_la1[24] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
           {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("intList");
-    }
   }
 
   final public List<Integer> plainIntList() throws ParseException {
-    trace_call("plainIntList");
-    try {
         List<Integer> result = new ArrayList<Integer>();
         Integer value;
-      jj_consume_token(OBR);
-      label_10:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ZERO:
-        case INTEGER:
-          ;
-          break;
-        default:
-          jj_la1[25] = jj_gen;
-          break label_10;
-        }
-        value = integer();
-                            result.add(value);
+    jj_consume_token(OBR);
+    label_10:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ZERO:
+      case INTEGER:
+        ;
+        break;
+      default:
+        jj_la1[25] = jj_gen;
+        break label_10;
       }
-      jj_consume_token(CBR);
+      value = integer();
+                            result.add(value);
+    }
+    jj_consume_token(CBR);
          {if (true) return result;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("plainIntList");
-    }
   }
 
   final public RawBreezePartReference component() throws ParseException {
-    trace_call("component");
-    try {
         String name;
         List<String> parameters;
         List<List<Integer>> connections;
-      jj_consume_token(OBR);
-      jj_consume_token(COMPONENT);
-      name = value();
-      parameters = paramValues();
-      connections = connections();
-      jj_consume_token(CBR);
+    jj_consume_token(OBR);
+    jj_consume_token(COMPONENT);
+    name = value();
+    parameters = paramValues();
+    connections = connections();
+    listBody();
+    jj_consume_token(CBR);
                 {if (true) return new RawBreezePartReference(name, parameters, connections);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("component");
-    }
   }
 
   final public List<RawBreezePartReference> components() throws ParseException {
-    trace_call("components");
-    try {
         List<RawBreezePartReference> list = new ArrayList<RawBreezePartReference>();
         RawBreezePartReference part;
-      jj_consume_token(OBR);
-      jj_consume_token(COMPONENTS);
-      label_11:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[26] = jj_gen;
-          break label_11;
-        }
-        part = component();
-                             list.add(part);
+    jj_consume_token(OBR);
+    jj_consume_token(COMPONENTS);
+    label_11:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[26] = jj_gen;
+        break label_11;
       }
-      jj_consume_token(CBR);
+      part = component();
+                             list.add(part);
+    }
+    jj_consume_token(CBR);
          {if (true) return list;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("components");
-    }
   }
 
   final public BreezePart breezePart() throws ParseException {
-    trace_call("breezePart");
-    try {
         String name;
         List<PortDeclaration> ports;
         List<ChannelDeclaration> channels;
         List<RawBreezePartReference> components;
-      jj_consume_token(OBR);
-      jj_consume_token(BREEZE_PART);
-      name = value();
-      ports = ports();
-      attributes();
-      channels = channels();
-      components = components();
-      listBody();
-      jj_consume_token(CBR);
+    jj_consume_token(OBR);
+    jj_consume_token(BREEZE_PART);
+    name = value();
+    ports = ports();
+    attributes();
+    channels = channels();
+    components = components();
+    listBody();
+    jj_consume_token(CBR);
           {if (true) return new BreezePart(name, ports, channels, components);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("breezePart");
-    }
   }
 
   final public void typeDefinition() throws ParseException {
-    trace_call("typeDefinition");
-    try {
-      jj_consume_token(OBR);
-      jj_consume_token(TYPE);
-      listBody();
-      jj_consume_token(CBR);
-    } finally {
-      trace_return("typeDefinition");
-    }
+    jj_consume_token(OBR);
+    jj_consume_token(TYPE);
+    listBody();
+    jj_consume_token(CBR);
   }
 
   final public void breezeDef(List<BreezePart> defs) throws ParseException {
-    trace_call("breezeDef");
-    try {
                                          BreezePart def;
-      if (jj_2_10(2147483647)) {
-        typeDefinition();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          def = breezePart();
+    if (jj_2_10(2147483647)) {
+      typeDefinition();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        def = breezePart();
                                defs.add(def);
-          break;
-        default:
-          jj_la1[27] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+        break;
+      default:
+        jj_la1[27] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } finally {
-      trace_return("breezeDef");
     }
   }
 
   final public void importDef() throws ParseException {
-    trace_call("importDef");
-    try {
-      jj_consume_token(OBR);
-      jj_consume_token(IMPORT);
-      listBody();
-      jj_consume_token(CBR);
-    } finally {
-      trace_return("importDef");
-    }
+    jj_consume_token(OBR);
+    jj_consume_token(IMPORT);
+    listBody();
+    jj_consume_token(CBR);
   }
 
   final public List<BreezePart> breezeFile() throws ParseException {
-    trace_call("breezeFile");
-    try {
                                   List<BreezePart > defs = new LinkedList<BreezePart >();
-      label_12:
-      while (true) {
-        if (jj_2_11(2147483647)) {
-          ;
-        } else {
-          break label_12;
-        }
-        importDef();
+    label_12:
+    while (true) {
+      if (jj_2_11(2147483647)) {
+        ;
+      } else {
+        break label_12;
       }
-      label_13:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OBR:
-          ;
-          break;
-        default:
-          jj_la1[28] = jj_gen;
-          break label_13;
-        }
-        breezeDef(defs);
+      importDef();
+    }
+    label_13:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OBR:
+        ;
+        break;
+      default:
+        jj_la1[28] = jj_gen;
+        break label_13;
       }
+      breezeDef(defs);
+    }
          {if (true) return defs;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("breezeFile");
-    }
   }
 
   private boolean jj_2_1(int xla) {
@@ -1639,12 +1402,6 @@ public class BreezeParser implements BreezeParserConstants {
     finally { jj_save(10, xla); }
   }
 
-  private boolean jj_3R_20() {
-    if (!jj_rescan) trace_call("constantIntegerExpression(LOOKING AHEAD...)");
-    if (jj_3R_23()) { if (!jj_rescan) trace_return("constantIntegerExpression(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("constantIntegerExpression(LOOKAHEAD SUCCEEDED)"); return false; }
-  }
-
   private boolean jj_3_10() {
     if (jj_scan_token(OBR)) return true;
     if (jj_scan_token(TYPE)) return true;
@@ -1652,9 +1409,8 @@ public class BreezeParser implements BreezeParserConstants {
   }
 
   private boolean jj_3R_23() {
-    if (!jj_rescan) trace_call("integer(LOOKING AHEAD...)");
-    if (jj_3R_29()) { if (!jj_rescan) trace_return("integer(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("integer(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_3R_29()) return true;
+    return false;
   }
 
   private boolean jj_3_9() {
@@ -1681,20 +1437,18 @@ public class BreezeParser implements BreezeParserConstants {
   }
 
   private boolean jj_3R_14() {
-    if (!jj_rescan) trace_call("implicitNumberToString(LOOKING AHEAD...)");
-    if (jj_3R_15()) { if (!jj_rescan) trace_return("implicitNumberToString(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("implicitNumberToString(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_3R_15()) return true;
+    return false;
   }
 
   private boolean jj_3R_29() {
-    if (!jj_rescan) trace_call("integerToken(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(9)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(7)) { if (!jj_rescan) trace_return("integerToken(LOOKAHEAD FAILED)"); return true; }
+    if (jj_scan_token(7)) return true;
     }
-    { if (!jj_rescan) trace_return("integerToken(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3R_18() {
@@ -1713,26 +1467,24 @@ public class BreezeParser implements BreezeParserConstants {
   }
 
   private boolean jj_3R_19() {
-    if (!jj_rescan) trace_call("parameterizedExpression(LOOKING AHEAD...)");
-    if (jj_scan_token(OBR)) { if (!jj_rescan) trace_return("parameterizedExpression(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(PARAM)) { if (!jj_rescan) trace_return("parameterizedExpression(LOOKAHEAD FAILED)"); return true; }
-    if (jj_3R_22()) { if (!jj_rescan) trace_return("parameterizedExpression(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(CBR)) { if (!jj_rescan) trace_return("parameterizedExpression(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("parameterizedExpression(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_scan_token(OBR)) return true;
+    if (jj_scan_token(PARAM)) return true;
+    if (jj_3R_22()) return true;
+    if (jj_scan_token(CBR)) return true;
+    return false;
   }
 
   private boolean jj_3R_15() {
-    if (!jj_rescan) trace_call("integerExpression(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_16()) {
     jj_scanpos = xsp;
     if (jj_3R_17()) {
     jj_scanpos = xsp;
-    if (jj_3R_18()) { if (!jj_rescan) trace_return("integerExpression(LOOKAHEAD FAILED)"); return true; }
+    if (jj_3R_18()) return true;
     }
     }
-    { if (!jj_rescan) trace_return("integerExpression(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3_8() {
@@ -1741,7 +1493,6 @@ public class BreezeParser implements BreezeParserConstants {
   }
 
   private boolean jj_3R_30() {
-    if (!jj_rescan) trace_call("keyword(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(6)) {
@@ -1822,7 +1573,7 @@ public class BreezeParser implements BreezeParserConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(46)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(47)) { if (!jj_rescan) trace_return("keyword(LOOKAHEAD FAILED)"); return true; }
+    if (jj_scan_token(47)) return true;
     }
     }
     }
@@ -1862,7 +1613,7 @@ public class BreezeParser implements BreezeParserConstants {
     }
     }
     }
-    { if (!jj_rescan) trace_return("keyword(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3_7() {
@@ -1894,6 +1645,12 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
+  private boolean jj_3_11() {
+    if (jj_scan_token(OBR)) return true;
+    if (jj_scan_token(IMPORT)) return true;
+    return false;
+  }
+
   private boolean jj_3R_28() {
     if (jj_3R_29()) return true;
     return false;
@@ -1902,12 +1659,6 @@ public class BreezeParser implements BreezeParserConstants {
   private boolean jj_3_2() {
     if (jj_scan_token(OBR)) return true;
     if (jj_scan_token(OBR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_11() {
-    if (jj_scan_token(OBR)) return true;
-    if (jj_scan_token(IMPORT)) return true;
     return false;
   }
 
@@ -1927,7 +1678,6 @@ public class BreezeParser implements BreezeParserConstants {
   }
 
   private boolean jj_3R_22() {
-    if (!jj_rescan) trace_call("value(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_25()) {
@@ -1936,24 +1686,28 @@ public class BreezeParser implements BreezeParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_27()) {
     jj_scanpos = xsp;
-    if (jj_3R_28()) { if (!jj_rescan) trace_return("value(LOOKAHEAD FAILED)"); return true; }
+    if (jj_3R_28()) return true;
     }
     }
     }
-    { if (!jj_rescan) trace_return("value(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3R_21() {
-    if (!jj_rescan) trace_call("addExpression(LOOKING AHEAD...)");
-    if (jj_scan_token(OBR)) { if (!jj_rescan) trace_return("addExpression(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(PLUS)) { if (!jj_rescan) trace_return("addExpression(LOOKAHEAD FAILED)"); return true; }
+    if (jj_scan_token(OBR)) return true;
+    if (jj_scan_token(PLUS)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_24()) { jj_scanpos = xsp; break; }
     }
-    if (jj_scan_token(CBR)) { if (!jj_rescan) trace_return("addExpression(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("addExpression(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_scan_token(CBR)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_20() {
+    if (jj_3R_23()) return true;
+    return false;
   }
 
   /** Generated Token Manager. */
@@ -2073,7 +1827,6 @@ public class BreezeParser implements BreezeParserConstants {
           }
         }
       }
-      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -2098,8 +1851,6 @@ public class BreezeParser implements BreezeParserConstants {
       int i = 0; Token tok = token;
       while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
       if (tok != null) jj_add_error_token(kind, i);
-    } else {
-      trace_scan(jj_scanpos, kind);
     }
     if (jj_scanpos.kind != kind) return true;
     if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
@@ -2113,7 +1864,6 @@ public class BreezeParser implements BreezeParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
-      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -2202,55 +1952,12 @@ public class BreezeParser implements BreezeParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  private int trace_indent = 0;
-  private boolean trace_enabled = true;
-
-/** Enable tracing. */
+  /** Enable tracing. */
   final public void enable_tracing() {
-    trace_enabled = true;
   }
 
-/** Disable tracing. */
+  /** Disable tracing. */
   final public void disable_tracing() {
-    trace_enabled = false;
-  }
-
-  private void trace_call(String s) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Call:   " + s);
-    }
-    trace_indent = trace_indent + 2;
-  }
-
-  private void trace_return(String s) {
-    trace_indent = trace_indent - 2;
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Return: " + s);
-    }
-  }
-
-  private void trace_token(Token t, String where) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Consumed token: <" + tokenImage[t.kind]);
-      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
-        System.out.print(": \"" + t.image + "\"");
-      }
-      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
-    }
-  }
-
-  private void trace_scan(Token t1, int t2) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Visited token: <" + tokenImage[t1.kind]);
-      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
-        System.out.print(": \"" + t1.image + "\"");
-      }
-      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
-    }
   }
 
   private void jj_rescan_token() {

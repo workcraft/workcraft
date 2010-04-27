@@ -27,10 +27,10 @@ import java.util.List;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 
-public class DefaultBreezeFactory implements BreezeFactory<HandshakeComponent> {
+public class DefaultBreezeFactory implements BreezeFactory<BreezeHandshake> {
 
 	private final BalsaCircuit circuit;
 
@@ -39,7 +39,7 @@ public class DefaultBreezeFactory implements BreezeFactory<HandshakeComponent> {
 	}
 
 	@Override
-	public void connect(HandshakeComponent port1, HandshakeComponent port2) {
+	public void connect(BreezeHandshake port1, BreezeHandshake port2) {
 		try {
 			circuit.connect(port1, port2);
 		} catch (InvalidConnectionException e) {
@@ -48,17 +48,17 @@ public class DefaultBreezeFactory implements BreezeFactory<HandshakeComponent> {
 	}
 
 	@Override
-	public BreezeInstance<HandshakeComponent> create(PrimitivePart declaration,
-			ParameterScope parameters) {
+	public BreezeInstance<BreezeHandshake> create(PrimitivePart declaration, ParameterScope parameters)
+	{
 		BreezeComponent comp = new BreezeComponent();
 		comp.setUnderlyingComponent(new DynamicComponent(declaration, parameters));
 		circuit.add(comp);
-		final ArrayList<HandshakeComponent> result = new ArrayList<HandshakeComponent>();
-		for(HandshakeComponent hs : comp.getHandshakeComponents().values())
+		final ArrayList<BreezeHandshake> result = new ArrayList<BreezeHandshake>();
+		for(BreezeHandshake hs : comp.getHandshakeComponents().values())
 			result.add(hs);
-		return new BreezeInstance<HandshakeComponent>()
+		return new BreezeInstance<BreezeHandshake>()
 		{
-			@Override public List<HandshakeComponent> ports() {
+			@Override public List<BreezeHandshake> ports() {
 				return result;
 			}
 		};
