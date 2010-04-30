@@ -25,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.plugins.desij.DesiJOperation;
 import org.workcraft.plugins.verification.MpsatMode;
 import org.workcraft.plugins.verification.MpsatPreset;
 import org.workcraft.plugins.verification.MpsatPresetManager;
@@ -159,8 +160,8 @@ public class DesiJConfigurationDialog extends JDialog {
 		operationCombo.setEditable(false);
 
 		// DesiJ Operation: Decomposition, redundant place deletion, secure dummy contraction
-		for (MpsatMode mode : MpsatMode.modes)
-			operationCombo.addItem(mode);
+		for (DesiJOperation op : DesiJOperation.operations)
+			operationCombo.addItem(op);
 
 		operationCombo.addActionListener(new ActionListener() {
 			@Override
@@ -318,7 +319,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	}
 
 	public DesiJConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
-		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
+		super(owner, "DesiJ configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
 
 		createPresetPanel();
