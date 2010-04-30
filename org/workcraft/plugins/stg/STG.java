@@ -168,7 +168,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	public Set<String> getDummyNames() {
 		Set<String> result = new HashSet<String>();
 		for (Transition t : getDummies())
-			result.add(getName(t));
+			result.add(referenceManager.getNamePair(t).getFirst());
 		return result;
 	}
 

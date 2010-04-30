@@ -118,16 +118,6 @@ public class SelectionTool extends AbstractTool {
 					e.getModel().selectNone();
 			}
 		}
-		else if(e.getButton()==MouseEvent.BUTTON3 && !notClick) {
-
-			/* POPUP MENU */
-			// FIXME implement real popup menu
-			JPopupMenu popup = new JPopupMenu();
-			popup.add(new JMenuItem("Test popup menu"));
-			popup.show(e.getSystemEvent().getComponent(), e.getSystemEvent().getX(), e.getSystemEvent().getY());
-
-		}
-
 	}
 
 	@Override
