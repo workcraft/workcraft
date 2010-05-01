@@ -22,14 +22,18 @@
 package org.workcraft.plugins.cpog;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
@@ -41,6 +45,8 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -49,11 +55,25 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 @SVGIcon("images/icons/svg/vertex.svg")
 public class VisualVertex extends VisualComponent
 {
-	private final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;
 	private Rectangle2D labelBB = null;
 	public LabelPositioning labelPositioning = LabelPositioning.TOP;
+
+	private static Font labelFont;
+
+	static {
+		try {
+			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 	public VisualVertex(Vertex vertex)
 	{
@@ -85,23 +105,25 @@ public class VisualVertex extends VisualComponent
 	protected void drawLabelInLocalSpace(Graphics2D g)
 	{
 		String text = getLabel();
-		String condition = FormulaToString.toString(getCondition(), true);
-		if (getCondition() != One.instance()) text += ": " + condition;
+		if (getCondition() != One.instance()) text += ": ";
 
-		final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
+		FormulaRenderingResult result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
 
-		labelBB = glyphs.getLogicalBounds();
+		if (getCondition() != One.instance()) result.add(FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont));
+
+
+		labelBB = result.boundingBox;
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 		Point2D labelPosition = new Point2D.Double(
 				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
 				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
 
-		labelBB = glyphs.getVisualBounds();
-		labelBB.setRect(labelBB.getMinX() + labelPosition.getX(), labelBB.getMinY() + labelPosition.getY(),
-				labelBB.getWidth(), labelBB.getHeight());
+		AffineTransform transform = g.getTransform();
+		g.translate(labelPosition.getX(), labelPosition.getY());
 
-		g.setColor(Coloriser.colorise(getLabelColor(), getColorisation()));
-		g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
+		result.draw(g, Coloriser.colorise(getLabelColor(), getColorisation()));
+
+		g.setTransform(transform);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()

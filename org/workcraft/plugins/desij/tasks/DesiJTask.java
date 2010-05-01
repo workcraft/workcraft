@@ -27,6 +27,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	private boolean userCancelled = false; // user cancelled the execution of desiJ
 	private int returnCode = 0;
 
+	private Model specModel;
 	private File specificationFile; // specified in the last argument of desiJArgs
 	private String[] desiJArgs; // parameters to call desiJMain(desijArgs);
 
@@ -35,6 +36,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	 */
 	public DesiJTask(Model model, Framework framework, String[] desiJParameters) {
 
+		this.specModel = model;
 		desiJArgs = new String[desiJParameters.length+1];
 
 		// copy content from desiJParameters to desiJArgs
@@ -87,7 +89,7 @@ public class DesiJTask implements Task<DesiJResult> {
 			return new Result<DesiJResult>(Outcome.CANCELLED); // maybe input or output files are not released
 
 		// build DesiJResult
-		DesiJResult result = new DesiJResult(this.specificationFile,
+		DesiJResult result = new DesiJResult(this.specModel, this.specificationFile,
 				getResultingComponents());
 
 		if (returnCode < 2)

@@ -38,6 +38,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
@@ -110,7 +111,7 @@ public class DotLayout implements Tool, PluginConsumer {
 				applyLayout(in, (VisualModel)model);
 			}
 			else
-				throw new RuntimeException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
+				throw new LayoutException("External process (dot) failed (code " + p.getReturnCode() +")\n\n"+new String(p.getOutputData())+"\n\n"+new String(p.getErrorData()) );
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		} catch (ModelValidationException e) {

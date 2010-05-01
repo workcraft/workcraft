@@ -21,11 +21,14 @@
 package org.workcraft.plugins.cpog.optimisation.booleanvisitors;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.font.TextAttribute;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +53,88 @@ import com.sun.org.apache.bcel.internal.classfile.Node;
 public class FormulaToGraphics
 {
 	public class Void{ private Void(){} }
+
+	public static Font defaultFont;
+	public static Font defaultSubFont;
+
+	static {
+		try {
+			defaultFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
+
+			Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+			attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
+			defaultSubFont = defaultFont.deriveFont(attributes);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext)
+	{
+		Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+		attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
+		Font subfont = font.deriveFont(attributes);
+
+		float fontSize = font.getSize2D();
+
+		FormulaRenderingResult res = print(text.charAt(0), font, fontRenderContext);
+
+		if (!font.canDisplay(text.charAt(0))) res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
+
+
+		int subIndex = text.lastIndexOf('_');
+		if (subIndex < 0) subIndex = text.length();
+
+		for(int i = 1; i < text.length(); i++)
+		{
+			if (i == subIndex) continue;
+
+			if (i < subIndex)
+			{
+				if (font.canDisplay(text.charAt(i)))
+					res.add(print(text.charAt(i), font, fontRenderContext));
+				else
+					res.add(print(text.charAt(i), defaultFont.deriveFont(fontSize), fontRenderContext));
+			}
+			else
+			{
+				if (subfont.canDisplay(text.charAt(i)))
+					res.add(print(text.charAt(i), subfont, fontRenderContext));
+				else
+					res.add(print(text.charAt(i), defaultSubFont.deriveFont(fontSize), fontRenderContext));
+			}
+		}
+
+		return res;
+	}
+
+	public static FormulaRenderingResult print(char c, Font font, FontRenderContext fontRenderContext)
+	{
+		FormulaRenderingResult result = new FormulaRenderingResult();
+
+		GlyphVector glyphs;
+
+		glyphs = font.createGlyphVector(fontRenderContext, "" + c);
+
+		result.boundingBox = glyphs.getLogicalBounds();
+		result.visualTop = glyphs.getVisualBounds().getMinY();
+
+		result.glyphs = new ArrayList<GlyphVector>();
+		result.glyphs.add(glyphs);
+
+		result.glyphCoordinates = new ArrayList<Point2D>();
+		result.glyphCoordinates.add(new Point2D.Double(0, 0));
+
+		result.inversionLines = new ArrayList<Line2D>();
+
+		return result;
+	}
+
+
 	public static class PrinterSuite
 	{
 		public PrinterSuite()
@@ -123,23 +208,9 @@ public class FormulaToGraphics
 
 		public FormulaRenderingResult print(String text)
 		{
-			FormulaRenderingResult result = new FormulaRenderingResult();
-
-			final GlyphVector glyphs = font.createGlyphVector(fontRenderContext, text);
-
-			result.boundingBox = glyphs.getLogicalBounds();
-			result.visualTop = glyphs.getVisualBounds().getMinY();
-
-			result.glyphs = new ArrayList<GlyphVector>();
-			result.glyphs.add(glyphs);
-
-			result.glyphCoordinates = new ArrayList<Point2D>();
-			result.glyphCoordinates.add(new Point2D.Double(0, 0));
-
-			result.inversionLines = new ArrayList<Line2D>();
-
-			return result;
+			return FormulaToGraphics.print(text, font, fontRenderContext);
 		}
+
 
 		protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node)
 		{
@@ -234,7 +305,7 @@ public class FormulaToGraphics
 	{
 		@Override
 		public FormulaRenderingResult visit(And node) {
-			return visitBinary(this, unicodeAllowed ? "\u00b7" : " * ", node);
+			return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);
 		}
 	}
 
@@ -252,11 +323,12 @@ public class FormulaToGraphics
 		{
 			FormulaRenderingResult res = node.getX().accept(iff);
 
-			res.inversionLines.add(new Line2D.Double(
-				res.boundingBox.getMinX(), res.visualTop - font.getSize2D() / 8.0,
-				res.boundingBox.getMaxX(), res.visualTop - font.getSize2D() / 8.0));
-
 			res.visualTop -= font.getSize2D() / 8.0;
+
+			res.inversionLines.add(new Line2D.Double(
+				res.boundingBox.getMinX(), res.visualTop,
+				res.boundingBox.getMaxX(), res.visualTop));
+
 
 			res.boundingBox.add(new Point2D.Double(res.boundingBox.getMaxX(), res.boundingBox.getMinY() - font.getSize2D() / 8.0));
 

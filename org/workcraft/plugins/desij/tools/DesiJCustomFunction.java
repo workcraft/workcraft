@@ -30,7 +30,7 @@ public class DesiJCustomFunction implements Tool {
 	@Override
 	public void run(Model model, Framework framework) {
 //		MpsatPresetManager pmgr = new MpsatPresetManager();
-//		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
+//		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
 //		GUI.centerFrameToParent(dialog, framework.getMainWindow());
 //		dialog.setVisible(true);
 //		if (dialog.getModalResult() == 1)

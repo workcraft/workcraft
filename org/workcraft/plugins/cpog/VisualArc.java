@@ -24,12 +24,15 @@ package org.workcraft.plugins.cpog;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
 
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -44,9 +47,21 @@ import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection
 {
-	private final static Font labelFont = new Font("Century Schoolbook", Font.ITALIC, 1).deriveFont(0.5f);
+	private static Font labelFont;
 
 	Arc mathConnection;
+
+	static {
+		try {
+			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public VisualArc(Arc mathConnection)
 	{
@@ -99,17 +114,7 @@ public class VisualArc extends VisualConnection
 		g.translate(p.getX() - labelPosition.getX(), p.getY() - labelPosition.getY());
 		g.transform(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
-		g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
-
-		int k = 0;
-		for(GlyphVector glyph : result.glyphs)
-		{
-			Point2D pos = result.glyphCoordinates.get(k++);
-			g.drawGlyphVector(glyph, (float) pos.getX(), (float) pos.getY());
-		}
-
-		g.setStroke(new BasicStroke(0.025f));
-		for(Line2D line : result.inversionLines) g.draw(line);
+		result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
 
 		g.setTransform(transform);
 

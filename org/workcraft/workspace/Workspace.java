@@ -129,7 +129,7 @@ public class Workspace {
 		return getFile(we.getWorkspacePath());
 	}
 
-	private Path<String> getWorkspacePath(File file) {
+	public Path<String> getWorkspacePath(File file) {
 		Entry<Path<String>,File> bestMount = null;
 		Path<String> bestRel = null;
 		for(Entry<Path<String>,File> e : mounts.entrySet())
@@ -177,6 +177,10 @@ public class Workspace {
 		return we;
 	}
 
+	public void add (String pathRelativeToWorkspace, File file, boolean temporary) {
+		addMount (Path.fromString(pathRelativeToWorkspace), file, temporary);
+	}
+
 	public void addMount(Path<String> path, File file, boolean temporary)
 	{
 		final Path<String> wsPath = getWorkspacePath(file);
@@ -185,8 +189,19 @@ public class Workspace {
 		mounts.put(path, file.getAbsoluteFile());
 		if(!temporary)
 			permanentMounts.put(path, tryMakeRelative(file, baseDir()));
-		fireSomethingChanged();
+		fireWorkspaceChanged();
 	}
+
+	/*public void remove (String pathRelativeToWorkspace, boolean deleteFromDisk) {
+		remove (Path.fromString(pathRelativeToWorkspace), deleteFromDisk);
+	}
+
+	public void remove (Path<String> path, boolean deleteFromDisk) {
+		File file = getFile(path);
+		if (file.isDirectory()) {
+
+		}
+	}*/
 
 	private File tryMakeRelative(File file, File base) {
 		final Path<String> relative = getRelative(base, file);
@@ -195,7 +210,7 @@ public class Workspace {
 		return new File(relative.toString().replaceAll("/", File.pathSeparator));
 	}
 
-	private void fireSomethingChanged() {
+	public void fireWorkspaceChanged() {
 		// TODO : categorize and route events
 		for(WorkspaceListener listener : workspaceListeners)
 			listener.workspaceLoaded();
@@ -282,7 +297,7 @@ public class Workspace {
 		} catch (IOException e) {
 			throw new DeserialisationException (e);
 		}
-		fireSomethingChanged();
+		fireWorkspaceChanged();
 	}
 
 	public void clear() {
@@ -442,7 +457,6 @@ public class Workspace {
 		moved(from, to);
 
 		File mountFrom = mounts.get(from);
-		File mountTo = mounts.get(to);
 
 		if(mountFrom != null)
 		{
@@ -492,8 +506,7 @@ public class Workspace {
 		return openFiles.getValue(path);
 	}
 
-
-	public void delete(Path<String> path) throws OperationCancelledException {
+	private void deleteFile (Path<String> path) throws OperationCancelledException {
 		final WorkspaceEntry openFile = getOpenFile(path);
 		if(openFile != null)
 				framework.getMainWindow().closeEditors(openFile);
@@ -503,6 +516,23 @@ public class Workspace {
 			JOptionPane.showMessageDialog(null, "Deletion failed");
 	}
 
+	public void delete(Path<String> path) throws OperationCancelledException {
+		final File file = getFile(path);
+
+		if (!file.exists())
+			return;
+
+		if (file.isDirectory())
+		{
+			for (File f : file.listFiles())
+				delete(getWorkspacePath(f));
+
+			if (!file.delete())
+				JOptionPane.showMessageDialog(null, "Deletion failed");
+		} else {
+			deleteFile(path);
+		}
+	}
 
 	public Framework getFramework() {
 		return framework;

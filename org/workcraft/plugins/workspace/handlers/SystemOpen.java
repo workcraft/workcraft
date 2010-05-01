@@ -29,7 +29,7 @@ import org.workcraft.Framework;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.workspace.FileHandler;
 
-@DisplayName("Open")
+@DisplayName("Open using system default program")
 public class SystemOpen implements FileHandler {
 
 
