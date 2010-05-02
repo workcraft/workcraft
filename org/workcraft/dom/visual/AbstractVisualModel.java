@@ -24,7 +24,6 @@ package org.workcraft.dom.visual;
 import java.awt.Graphics2D;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -123,72 +122,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 					createdNodes.get(mc.getSecond()), new Polyline(vc), mc);
 			getRoot().add(vc);
 		}
-	}
-
-	private static Rectangle2D bbUnion(Rectangle2D bb1, Rectangle2D bb2)
-	{
-		if(bb1 == null)
-			return bb2;
-		if(bb2 == null)
-			return bb1;
-		Rectangle2D.union(bb1, bb2, bb1);
-		return bb1;
-	}
-
-	public static Rectangle2D getNodesBoundingBox(Collection<Node> nodes) {
-		Rectangle2D selectionBB = null;
-
-		if (nodes.isEmpty()) return selectionBB;
-
-		for (Node vn: nodes) {
-			if(vn instanceof Touchable)
-				selectionBB = bbUnion(selectionBB, ((Touchable)vn).getBoundingBox());
-		}
-		return selectionBB;
-	}
-
-	public Rectangle2D getSelectionBoundingBox() {
-		return getNodesBoundingBox(selection);
-	}
-
-	public void transformNodePosition(Collection<Node> nodes, AffineTransform t) {
-		assert nodes!=null;
-		for (Node node: nodes)
-			TransformHelper.applyTransform(node, t);
-	}
-
-	public void translateNodes(Collection<Node> nodes, double tx, double ty) {
-		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
-
-		transformNodePosition(nodes, t);
-	}
-
-	public void translateSelection(double tx, double ty) {
-		translateNodes(selection, tx, ty);
-	}
-
-	public void scaleSelection(double sx, double sy) {
-		Rectangle2D selectionBB = getSelectionBoundingBox();
-
-		AffineTransform t = new AffineTransform();
-
-		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
-		t.scale(sx, sy);
-		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
-
-		transformNodePosition(selection, t);
-	}
-
-	public void rotateSelection(double theta) {
-		Rectangle2D selectionBB = getSelectionBoundingBox();
-
-		AffineTransform t = new AffineTransform();
-
-		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
-		t.rotate(theta);
-		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
-
-		transformNodePosition(selection, t);
 	}
 
 	public void draw (Graphics2D g) {

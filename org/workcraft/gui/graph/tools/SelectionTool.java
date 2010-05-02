@@ -32,8 +32,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -43,6 +41,7 @@ import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -289,32 +288,34 @@ public class SelectionTool extends AbstractTool {
 					currentLevelDown(e.getModel());
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
-					//e.getModel().rotateSelection(-Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getModel(),-Math.PI/2);
 					break;
 				case KeyEvent.VK_CLOSE_BRACKET:
-					//e.getModel().rotateSelection(Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getModel(),Math.PI/2);
 					break;
 				case KeyEvent.VK_LEFT:
-					//e.getModel().translateSelection(-1,0);
+					VisualModelTransformer.translateSelection(e.getModel(), -1,0);
 					break;
 				case KeyEvent.VK_RIGHT:
-					//e.getModel().translateSelection(1,0);
+					VisualModelTransformer.translateSelection(e.getModel(), 1,0);
 					break;
 				case KeyEvent.VK_UP:
-					//e.getModel().translateSelection(0,-1);
+					VisualModelTransformer.translateSelection(e.getModel(),0,-1);
 					break;
 				case KeyEvent.VK_DOWN:
-					//	e.getModel().translateSelection(0,1);
+					VisualModelTransformer.translateSelection(e.getModel(),0,1);
 					break;
 				}
 			} else { // Shift is pressed
 
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					//e.getModel().scaleSelection(-1,1);
+				case KeyEvent.VK_RIGHT:
+					VisualModelTransformer.scaleSelection(e.getModel(),-1,1);
 					break;
 				case KeyEvent.VK_UP:
-					//e.getModel().scaleSelection(1,-1);
+				case KeyEvent.VK_DOWN:
+					VisualModelTransformer.scaleSelection(e.getModel(),1,-1);
 					break;
 				}
 			}
