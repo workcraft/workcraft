@@ -9,13 +9,27 @@ import org.workcraft.dom.Node;
 
 public class VisualModelTransformer {
 	/**
+	 * Only transforms node position (not orientation)
 	 * @author Stanislav Golubtsov
-	 *   Only transforms node position (not orientation)
+	 *
 	 **/
 	public static void transformNodePosition(Collection<Node> nodes, AffineTransform t) {
 		assert nodes!=null;
 		for (Node node: nodes) {
-			if (node instanceof VisualTransformableNode) {
+			// do transformation group children
+			if (node instanceof VisualGroup) {
+				VisualGroup vg = (VisualGroup) node;
+
+//				t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
+
+				AffineTransform t2 = new AffineTransform();
+
+				t2.translate(-vg.getX(), -vg.getY());
+				t2.concatenate(t);
+				t2.translate(vg.getX(), vg.getY());
+
+				transformNodePosition(vg.getChildren(), t2);
+			} else if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode vn = (VisualTransformableNode) node;
 
 				Point2D np=vn.getPosition();
@@ -36,7 +50,7 @@ public class VisualModelTransformer {
 	}
 
 	public static void scaleSelection(VisualModel vm, double sx, double sy) {
-		Rectangle2D selectionBB = getNodesBoundingBox(vm.getSelection());
+		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
 
 		AffineTransform t = new AffineTransform();
 
@@ -48,7 +62,7 @@ public class VisualModelTransformer {
 	}
 
 	public static void rotateSelection(VisualModel vm, double theta) {
-		Rectangle2D selectionBB = getNodesBoundingBox(vm.getSelection());
+		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
 
 		AffineTransform t = new AffineTransform();
 
@@ -59,24 +73,38 @@ public class VisualModelTransformer {
 		transformNodePosition(vm.getSelection(), t);
 	}
 
-	private static Rectangle2D bbUnion(Rectangle2D bb1, Rectangle2D bb2)
+	private static Rectangle2D bbUnion(Rectangle2D bb1, Point2D bb2)
 	{
-		if(bb1 == null)
-			return bb2;
 		if(bb2 == null)
 			return bb1;
-		Rectangle2D.union(bb1, bb2, bb1);
+
+		Rectangle2D r = new Rectangle2D.Double(bb2.getX(), bb2.getY(), 0, 0);
+
+		if (bb1 == null) {
+			bb1=r;
+		} else Rectangle2D.union(bb1, r, bb1);
+
 		return bb1;
 	}
 
-	public static Rectangle2D getNodesBoundingBox(Collection<Node> nodes) {
+	public static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
 		Rectangle2D selectionBB = null;
 
-		if (nodes.isEmpty()) return selectionBB;
 
 		for (Node vn: nodes) {
-			if(vn instanceof Touchable)
-				selectionBB = bbUnion(selectionBB, ((Touchable)vn).getBoundingBox());
+			if (vn instanceof VisualGroup) {
+				Rectangle2D r = getNodesCoordinateBox(((VisualGroup)vn).getChildren());
+				Point2D p = ((VisualGroup)vn).getPosition();
+				r.setRect(r.getX()+p.getX(), r.getY()+p.getY(), r.getWidth(), r.getHeight());
+
+//				System.out.printf("%f %f %f %f\n", r.getX(), r.getY(), r.getWidth(), r.getHeight());
+
+				if (selectionBB==null)
+					selectionBB = r;
+				else if (r!=null)
+					Rectangle2D.union(selectionBB, r, selectionBB);
+			} else if(vn instanceof VisualTransformableNode)
+				selectionBB = bbUnion(selectionBB, ((VisualTransformableNode)vn).getPosition());
 		}
 		return selectionBB;
 	}
