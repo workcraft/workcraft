@@ -19,8 +19,7 @@
 *
 */
 package org.workcraft.parsers.breeze;
-public interface BreezeFactory<Port>
+public interface BreezeFactory<Port> extends PrimitiveFactory<Port>
 {
-	BreezeInstance<Port> create(PrimitivePart declaration, ParameterScope parameters);
 	void connect(Port port1, Port port2);
 }

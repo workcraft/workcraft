@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.stgbuilder.Event;
 import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
@@ -41,9 +42,9 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 public class StgModelStgBuilder implements StgBuilder {
 
 	private final STG model;
-	HandshakeNameProvider nameProvider;
+	NameProvider<? super Handshake> nameProvider;
 
-	public StgModelStgBuilder(STG model, HandshakeNameProvider nameProvider)
+	public StgModelStgBuilder(STG model, NameProvider<? super Handshake> nameProvider)
 	{
 		this.model = model;
 		this.nameProvider = nameProvider;

@@ -37,7 +37,7 @@ public class VisualHandshake extends VisualComponent {
 
 	private final Handshake handshake;
 
-	VisualHandshake(HandshakeComponent handshake)
+	VisualHandshake(BreezeHandshake handshake)
 	{
 		super(handshake);
 		this.handshake = handshake.getHandshake();

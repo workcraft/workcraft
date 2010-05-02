@@ -19,8 +19,30 @@
 *
 */
 
-package org.workcraft.plugins.balsa.stgmodelstgbuilder;
+package org.workcraft.plugins.balsa;
 
-public interface HandshakeNameProvider {
-	public String getName(Object handshake);
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+
+public class BreezeHandshake extends MathNode {
+	private BreezeComponent owner;
+	private String handshakeName;
+
+	public BreezeHandshake(BreezeComponent owner, String handshakeName)
+	{
+		this.owner = owner;
+		this.handshakeName = handshakeName;
+	}
+
+	public BreezeComponent getOwner() {
+		return owner;
+	}
+
+	public Handshake getHandshake() {
+		return owner.getHandshakes().get(handshakeName);
+	}
+
+	public String getHandshakeName() {
+		return handshakeName;
+	}
 }

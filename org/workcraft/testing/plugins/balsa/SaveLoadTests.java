@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -44,17 +43,22 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.VisualBalsaCircuit;
 import org.workcraft.plugins.balsa.VisualBreezeComponent;
 import org.workcraft.plugins.balsa.VisualHandshake;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.Loop;
 import org.workcraft.plugins.balsa.components.While;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SaveLoadTests {
-
+	//TODO: Re-write tests
 	//@Test
 	public void TestMathModelLoad() throws Exception
 	{
@@ -89,7 +93,7 @@ public class SaveLoadTests {
 		BreezeComponent loop;
 		BreezeComponent wh;
 
-		if(brz0.getUnderlyingComponent() instanceof Loop)
+		if(brz0.getUnderlyingComponent().declaration().getName().equals("Loop"))
 		{
 			loop = brz0;
 			wh = brz1;
@@ -134,9 +138,9 @@ public class SaveLoadTests {
 			else if(node instanceof VisualBreezeComponent)
 			{
 				VisualBreezeComponent brz = (VisualBreezeComponent)node;
-				if(brz.getRefComponent().getUnderlyingComponent() instanceof Loop)
+				if(brz.getRefComponent().getUnderlyingComponent().declaration().getName().equals("Loop"))
 					loop = brz;
-				if(brz.getRefComponent().getUnderlyingComponent() instanceof While)
+				if(brz.getRefComponent().getUnderlyingComponent().declaration().getName().equals("While"))
 					wh = brz;
 			}
 
@@ -163,7 +167,7 @@ public class SaveLoadTests {
 		for(Node component : wh.getChildren())
 		{
 			VisualHandshake handshake = (VisualHandshake) component;
-			if(((HandshakeComponent)handshake.getReferencedComponent()).getHandshakeName().equals(name))
+			if(((BreezeHandshake)handshake.getReferencedComponent()).getHandshakeName().equals(name))
 				return handshake;
 		}
 		return null;
@@ -204,9 +208,9 @@ public class SaveLoadTests {
 		VisualBalsaCircuit visual = new VisualBalsaCircuit(math);
 
 		BreezeComponent wh = new BreezeComponent();
-		wh.setUnderlyingComponent(new While());
+		wh.setUnderlyingComponent(createWhile());
 		BreezeComponent loop = new BreezeComponent();
-		loop.setUnderlyingComponent(new Loop());
+		loop.setUnderlyingComponent(createLoop());
 		math.add(wh);
 		math.add(loop);
 		MathConnection con = (MathConnection)math.connect(loop.getHandshakeComponentByName("activateOut"), wh.getHandshakeComponentByName("activate"));
@@ -224,14 +228,28 @@ public class SaveLoadTests {
 		return visual;
 	}
 
+	private DynamicComponent createWhile() {
+		return create("While");
+	}
+
+	private DynamicComponent createLoop() {
+		return create("Loop");
+	}
+
+	private DynamicComponent create(String name) {
+		throw new NotImplementedException();
+		//return  new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive(name).instantiate();
+	}
+
 	private BalsaCircuit createWhileWhileMathCircuit()
 			throws InvalidConnectionException {
 		BalsaCircuit circuit = new BalsaCircuit();
 
 		BreezeComponent wh = new BreezeComponent();
-		wh.setUnderlyingComponent(new While());
+
+		wh.setUnderlyingComponent(createWhile());
 		BreezeComponent loop = new BreezeComponent();
-		loop.setUnderlyingComponent(new Loop());
+		loop.setUnderlyingComponent(createLoop());
 		circuit.add(wh);
 		circuit.add(loop);
 		circuit.connect(loop.getHandshakeComponentByName("activateOut"), wh.getHandshakeComponentByName("activate"));

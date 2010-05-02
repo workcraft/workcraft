@@ -516,7 +516,11 @@ public class MainWindow extends JFrame {
 	}
 
 	public void closeDockableWindow(int ID) throws OperationCancelledException {
-		closeDockableWindow(IDToDockableWindowMap.get(ID));
+		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+		if (dockableWindow != null)
+			closeDockableWindow(dockableWindow);
+		else
+			System.err.println ("closeDockableWindow: window with ID="+ID+" was not found.");
 	}
 
 	public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
@@ -525,7 +529,6 @@ public class MainWindow extends JFrame {
 
 		int ID = dockableWindow.getID();
 
-		if (dockableWindow != null) {
 			if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
 				GraphEditorPanel editor = (GraphEditorPanel)dockableWindow.getContentPanel().getContent();
 				// handle editor window close
@@ -571,7 +574,6 @@ public class MainWindow extends JFrame {
 				DockingManager.close(dockableWindow);
 				dockableWindow.setClosed(true);
 			}
-		}
 	}
 
 	public void displayDockableWindow(int ID) {

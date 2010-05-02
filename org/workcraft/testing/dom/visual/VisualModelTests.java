@@ -28,12 +28,13 @@ import static org.workcraft.testing.dom.visual.Tools.createGroup;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultReferenceManager;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -528,15 +529,20 @@ public class VisualModelTests {
 		SquareNode sq2 = new SquareNode(root, new Rectangle2D.Double(0, 5, 1, 1));
 		root.add(sq2);
 
-		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(group1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
-		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
-		Assert.assertEquals(sq2, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).iterator().next());
+		Assert.assertEquals(0, boxHitTest(model,new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, boxHitTest(model,new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(group1, boxHitTest(model,new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+		Assert.assertEquals(1, boxHitTest(model,new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+		Assert.assertEquals(sq2, boxHitTest(model,new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).iterator().next());
 		model.setCurrentLevel(group1);
-		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(1, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-		Assert.assertEquals(sq, model.boxHitTest(new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
-		Assert.assertEquals(0, model.boxHitTest(new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+		Assert.assertEquals(0, boxHitTest(model,new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(1, boxHitTest(model,new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+		Assert.assertEquals(sq, boxHitTest(model,new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+		Assert.assertEquals(0, boxHitTest(model,new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+	}
+
+	private Collection<Node> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
+		return model.boxHitTest(new Point2D.Double(rect.getMinX(), rect.getMinY()),
+				new Point2D.Double(rect.getMaxX(), rect.getMaxY()));
 	}
 }

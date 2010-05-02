@@ -26,7 +26,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class EnumDeserialiser implements BasicXMLDeserialiser {
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object deserialise(Element element) throws DeserialisationException {
 		try {
 			Class<? extends Enum> cls = Class.forName(element.getAttribute("enum-class")).asSubclass(Enum.class);

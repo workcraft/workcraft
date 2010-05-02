@@ -23,7 +23,7 @@ package org.workcraft.plugins.balsa;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.parsers.breeze.Connection;
 
-public class BreezeConnection implements Connection<HandshakeComponent> {
+public class BreezeConnection implements Connection<BreezeHandshake> {
 
 	private final MathConnection connection;
 
@@ -33,13 +33,13 @@ public class BreezeConnection implements Connection<HandshakeComponent> {
 	}
 
 	@Override
-	public HandshakeComponent getFirst() {
-		return (HandshakeComponent) connection.getFirst();
+	public BreezeHandshake getFirst() {
+		return (BreezeHandshake) connection.getFirst();
 	}
 
 	@Override
-	public HandshakeComponent getSecond() {
-		return (HandshakeComponent) connection.getSecond();
+	public BreezeHandshake getSecond() {
+		return (BreezeHandshake) connection.getSecond();
 	}
 
 }
