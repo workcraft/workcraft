@@ -86,4 +86,10 @@ public class TouchableTransformer implements Touchable {
 		inverseTransformation.transform(point, transformed);
 		return toTransform.hitTest(transformed);
 	}
+
+	@Override
+	public Point2D getCenter()
+	{
+		return transformation.transform(toTransform.getCenter(), null);
+	}
 }

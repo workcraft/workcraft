@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -34,6 +35,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
@@ -45,10 +47,13 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_V)
@@ -93,11 +98,24 @@ public class VisualVertex extends VisualComponent
 		Shape shape = new Ellipse2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
-		g.setStroke(new BasicStroke(strokeWidth));
+		BooleanFormula value = evaluate();
 
 		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
 		g.fill(shape);
+
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		if (value == Zero.instance())
+		{
+			g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT,
+			        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
+		}
+		else
+		{
+			g.setStroke(new BasicStroke(strokeWidth));
+			if (value != One.instance())
+				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, getColorisation()));
+		}
+
 		g.draw(shape);
 		drawLabelInLocalSpace(g);
 	}
@@ -113,31 +131,34 @@ public class VisualVertex extends VisualComponent
 
 
 		labelBB = result.boundingBox;
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
+/*		Rectangle2D bb = getBoundingBoxInLocalSpace();
 		Point2D labelPosition = new Point2D.Double(
 				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
 				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
+*/
+		Point2D labelPosition = new Point2D.Double(
+				-labelBB.getCenterX() + 0.5 * labelPositioning.dx * (1.0 + labelBB.getWidth() + 0.2),
+				-labelBB.getCenterY() + 0.5 * labelPositioning.dy * (1.0 + labelBB.getHeight() + 0.2));
 
-		AffineTransform transform = g.getTransform();
+		AffineTransform oldTransform = g.getTransform();
+		AffineTransform transform = AffineTransform.getTranslateInstance(labelPosition.getX(), labelPosition.getY());
+
 		g.translate(labelPosition.getX(), labelPosition.getY());
-
 		result.draw(g, Coloriser.colorise(getLabelColor(), getColorisation()));
+		g.setTransform(oldTransform);
 
-		g.setTransform(transform);
+		labelBB = BoundingBoxHelper.transform(labelBB, transform);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()
 	{
-		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-	}
-
-	public Rectangle2D getBoundingBoxWithLabel()
-	{
-		return transformToParentSpace(BoundingBoxHelper.union(getBoundingBoxInLocalSpace(), labelBB));
+		return BoundingBoxHelper.union(labelBB, new Rectangle2D.Double(-size / 2, -size / 2, size, size));
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
+		if (labelBB != null && labelBB.contains(pointInLocalSpace)) return true;
+
 		double size = CommonVisualSettings.getSize();
 
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
@@ -168,5 +189,25 @@ public class VisualVertex extends VisualComponent
 	{
 		this.labelPositioning = labelPositioning;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
+	}
+
+	public BooleanFormula evaluate() {
+		return getCondition().accept(
+			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
+			{
+				@Override
+				public BooleanFormula visit(BooleanVariable node) {
+					switch(((Variable)node).getState())
+					{
+					case TRUE:
+						return One.instance();
+					case FALSE:
+						return Zero.instance();
+					default:
+						return node;
+					}
+				}
+			}
+		);
 	}
 }

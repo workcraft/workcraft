@@ -90,10 +90,13 @@ public class VisualScenario extends VisualGroup
 		Rectangle2D bb = null;
 
 		for(VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class))
-			bb = BoundingBoxHelper.union(bb, v.getBoundingBoxWithLabel());
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
 
 		for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class))
-			bb = BoundingBoxHelper.union(bb, v.getBoundingBoxWithLabel());
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		for(VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class))
+			bb = BoundingBoxHelper.union(bb, a.getLabelBoundingBox());
 
 		if (bb == null) bb = contentsBB;
 		else

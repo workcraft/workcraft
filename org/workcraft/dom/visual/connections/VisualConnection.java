@@ -21,8 +21,10 @@
 
 package org.workcraft.dom.visual.connections;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -359,5 +361,17 @@ public class VisualConnection extends VisualNode implements
 
 	public void setScaleMode(ScaleMode scaleMode) {
 		this.scaleMode = scaleMode;
+	}
+
+	@Override
+	public Point2D getCenter()
+	{
+		return graphic.getCenter();
+	}
+
+	@Override
+	public Stroke getStroke()
+	{
+		return new BasicStroke((float)getLineWidth());
 	}
 }

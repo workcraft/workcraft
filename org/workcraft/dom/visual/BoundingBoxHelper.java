@@ -21,6 +21,8 @@
 
 package org.workcraft.dom.visual;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
@@ -60,5 +62,20 @@ public class BoundingBoxHelper {
 		return res;
 	}
 
+	public static Rectangle2D transform(Rectangle2D rect, AffineTransform transform)
+	{
+		if(rect == null)
+    		return null;
 
+		Point2D p0 = new Point2D.Double(rect.getMinX(), rect.getMinY());
+		Point2D p1 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
+
+		transform.transform(p0, p0);
+		transform.transform(p1, p1);
+
+		Rectangle2D.Double result = new Rectangle2D.Double(p0.getX(), p0.getY(), 0, 0);
+		result.add(p1);
+
+		return result;
+	}
 }

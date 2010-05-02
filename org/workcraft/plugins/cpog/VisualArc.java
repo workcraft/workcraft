@@ -26,28 +26,32 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection
 {
 	private static Font labelFont;
+	private Rectangle2D labelBB = null;
 
 	Arc mathConnection;
 
@@ -80,6 +84,54 @@ public class VisualArc extends VisualConnection
 		return mathConnection.getCondition();
 	}
 
+	@Override
+	public Stroke getStroke()
+	{
+		BooleanFormula value = evaluate();
+
+		if (value == Zero.instance())
+			return new BasicStroke((float) super.getLineWidth(), BasicStroke.CAP_BUTT,
+		        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f);
+
+		return super.getStroke();
+	}
+
+	@Override
+	public Color getDrawColor()
+	{
+		BooleanFormula value = evaluate();
+
+		if (value == Zero.instance() || value == One.instance()) return super.getDrawColor();
+
+		return Color.LIGHT_GRAY;
+	}
+
+	private BooleanFormula evaluate()
+	{
+		BooleanFormula condition = getCondition();
+
+		condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
+		condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
+
+		return condition.accept(
+				new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
+				{
+					@Override
+					public BooleanFormula visit(BooleanVariable node) {
+						switch(((Variable)node).getState())
+						{
+						case TRUE:
+							return One.instance();
+						case FALSE:
+							return Zero.instance();
+						default:
+							return node;
+						}
+					}
+				}
+			);
+	}
+
 	public void setCondition(BooleanFormula condition)
 	{
 		mathConnection.setCondition(condition);
@@ -89,11 +141,13 @@ public class VisualArc extends VisualConnection
 	@Override
 	public void draw(Graphics2D g)
 	{
+		labelBB = null;
+
 		if (getCondition() == One.instance()) return;
 
 		FormulaRenderingResult result = FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont);
 
-		Rectangle2D labelBB = result.boundingBox;
+		labelBB = result.boundingBox;
 
 		ConnectionGraphic graphic = getGraphic();
 
@@ -110,29 +164,33 @@ public class VisualArc extends VisualConnection
 		Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getMaxY());
 		if (Geometry.crossProduct(d, dd) < 0) labelPosition.setLocation(labelPosition.getX(), labelBB.getMinY());
 
-		AffineTransform transform = g.getTransform();
-		g.translate(p.getX() - labelPosition.getX(), p.getY() - labelPosition.getY());
-		g.transform(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
+		AffineTransform oldTransform = g.getTransform();
+		AffineTransform transform = AffineTransform.getTranslateInstance(p.getX() - labelPosition.getX(), p.getY() - labelPosition.getY());
+		transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
+		g.transform(transform);
 		result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+		g.setTransform(oldTransform);
 
-		g.setTransform(transform);
+		labelBB = BoundingBoxHelper.transform(labelBB, transform);
+	}
 
+	@Override
+	public Rectangle2D getBoundingBox()
+	{
+		return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
+	}
 
-/* This code has a high artistic value and henceforth is permitted to stay here forever.
- *
- * 			d = Geometry.multiply(d, 0.1);
-			dd = Geometry.multiply(dd, 0.02);
+	public Rectangle2D getLabelBoundingBox()
+	{
+		return labelBB;
+	}
 
-			Line2D l1 = new Line2D.Double(p, Geometry.add(p, d));
-			Line2D l2 = new Line2D.Double(p, Geometry.add(p, dd));
+	@Override
+	public boolean hitTest(Point2D pointInParentSpace)
+	{
+		if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
 
-			g.setStroke(new BasicStroke(0.02f));
-			g.setColor(Color.BLUE);
-			g.draw(l1);
-
-			g.setColor(Color.ORANGE);
-			g.draw(l2);
-		}*/
+		return super.hitTest(pointInParentSpace);
 	}
 }

@@ -156,23 +156,25 @@ public class VisualVariable extends VisualComponent
 				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
 				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
 
-		AffineTransform transform = g.getTransform();
+		AffineTransform oldTransform = g.getTransform();
+		AffineTransform transform = AffineTransform.getTranslateInstance(labelPosition.getX(), labelPosition.getY());
+
 		g.translate(labelPosition.getX(), labelPosition.getY());
-
 		result.draw(g, Coloriser.colorise(getLabelColor(), getColorisation()));
+		g.setTransform(oldTransform);
 
-		g.setTransform(transform);
+		labelBB = BoundingBoxHelper.transform(labelBB, transform);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()
 	{
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+		return BoundingBoxHelper.union(labelBB, new Rectangle2D.Double(-size / 2, -size / 2, size, size));
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+		if (labelBB != null && labelBB.contains(pointInLocalSpace)) return true;
+		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
 	public Variable getMathVariable()
@@ -188,11 +190,6 @@ public class VisualVariable extends VisualComponent
 	public void setState(VariableState state)
 	{
 		getMathVariable().setState(state);
-	}
-
-	public Rectangle2D getBoundingBoxWithLabel()
-	{
-		return transformToParentSpace(BoundingBoxHelper.union(getBoundingBoxInLocalSpace(), labelBB));
 	}
 
 	public void toggle()

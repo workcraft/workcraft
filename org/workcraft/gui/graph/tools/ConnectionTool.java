@@ -27,8 +27,10 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -61,7 +63,7 @@ public class ConnectionTool extends AbstractTool {
 
 		double w_2 = boundingRect.getWidth()/2;
 		double h_2 = boundingRect.getHeight()/2;
-		double r = Math.sqrt( w_2*w_2 + h_2*h_2);
+		double r = Math.sqrt(w_2 * w_2 + h_2 * h_2);
 
 		return new Ellipse2D.Double(boundingRect.getCenterX() - r, boundingRect.getCenterY() - r, r*2, r*2);
 	}
@@ -90,9 +92,7 @@ public class ConnectionTool extends AbstractTool {
 	private void drawConnectingLine(Graphics2D g, VisualGroup root, Color color) {
 		g.setColor(color);
 
-
-		Rectangle2D bb = TransformHelper.transform(first, TransformHelper.getTransformToAncestor(first, root)).getBoundingBox();
-		Point2D center = new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+		Point2D center = first.getCenter();
 
 		Line2D line = new Line2D.Double(center.getX(), center.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
 		g.draw(line);

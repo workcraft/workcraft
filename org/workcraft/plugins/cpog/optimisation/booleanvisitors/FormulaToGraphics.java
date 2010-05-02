@@ -75,6 +75,8 @@ public class FormulaToGraphics
 
 	public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext)
 	{
+		if (text.length() < 1) text = " ";
+
 		Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
 		attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
 		Font subfont = font.deriveFont(attributes);
