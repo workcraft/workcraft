@@ -33,12 +33,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.ChannelType;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
@@ -73,7 +71,6 @@ import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.BreezeImporter;
 import org.workcraft.util.Export;
-import org.workcraft.util.Pair;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -207,9 +204,7 @@ public class TESTS {
 	class BalsaDataPrinter
 	{
 		public void print(PrintStream out) {
-
-
-			new Breeze
+			//new Breeze
 		}
 	}
 

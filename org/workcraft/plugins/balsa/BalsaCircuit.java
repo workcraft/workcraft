@@ -42,7 +42,6 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.parsers.breeze.Netlist;
-import org.workcraft.plugins.balsa.components.Component;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.DataHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataHandshake;
@@ -151,7 +150,7 @@ public final class BalsaCircuit extends AbstractMathModel
 		}
 	}
 
-	public MathConnection connect (HandshakeComponent first, HandshakeComponent second) throws InvalidConnectionException {
+	public MathConnection connect (BreezeHandshake first, BreezeHandshake second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		MathConnection con = new MathConnection(first, second);

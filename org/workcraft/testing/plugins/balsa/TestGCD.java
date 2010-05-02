@@ -40,13 +40,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
@@ -56,7 +55,6 @@ import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
 import org.workcraft.parsers.breeze.Netlist;
-import org.workcraft.parsers.breeze.ParameterValueList;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
@@ -706,7 +704,7 @@ public class TestGCD {
 		}
 	}
 
-	private HandshakeComponent getHc(BreezeComponent comp, String hc) {
+	private BreezeHandshake getHc(BreezeComponent comp, String hc) {
 		BreezeHandshake hcc = comp.getHandshakeComponentByName(hc);
 		assertTrue("Handshake "+ hc +" not found in component " + comp.getUnderlyingComponent().getClass().toString(), hcc != null);
 

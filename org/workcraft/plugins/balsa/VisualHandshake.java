@@ -43,8 +43,8 @@ public class VisualHandshake extends VisualComponent {
 		this.handshake = handshake.getHandshake();
 	}
 
-	public HandshakeComponent getHandshakeComponent() {
-		return (HandshakeComponent)getReferencedComponent();
+	public BreezeHandshake getHandshakeComponent() {
+		return (BreezeHandshake)getReferencedComponent();
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
