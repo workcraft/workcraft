@@ -1,19 +1,19 @@
 package org.workcraft.plugins.desij;
 
 public enum DesiJOperation {
-	DECOMPOSITION ("operation=decompose", "STG decomposition", false),
+	DECOMPOSITION ("operation=decompose", "STG decomposition", true),
 	REMOVE_DUMMIES ("operation=killdummies", "Contract all dummy transitions", true),
-	REDUNDANT_PLACE_DELETION ("operation=reddel", "Deletion of redundant places", true);
+	IMPLICIT_PLACE_DELETION ("operation=reddel", "Deletion of implicit places", false);
 
 	private String argument;
 	private String description;
-	private boolean reach;
+	private boolean inclContraction;
 
 	public static final DesiJOperation[] operations =
 	{
 		DECOMPOSITION,
 		REMOVE_DUMMIES,
-		REDUNDANT_PLACE_DELETION
+		IMPLICIT_PLACE_DELETION
 	};
 
 	public static DesiJOperation getOperation (String arg) {
@@ -23,10 +23,10 @@ public enum DesiJOperation {
 		return null;
 	}
 
-	DesiJOperation(String argument, String description, boolean reach) {
+	DesiJOperation(String argument, String description, boolean inclContraction) {
 		this.argument = argument;
 		this.description = description;
-		this.reach = reach;
+		this.inclContraction = inclContraction;
 	}
 
 	public String toString() {
@@ -37,8 +37,8 @@ public enum DesiJOperation {
 		return argument;
 	}
 
-	public boolean isReach() {
-		return reach;
+	public boolean usesContraction() {
+		return inclContraction;
 	}
 
 }
