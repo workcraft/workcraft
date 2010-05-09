@@ -22,8 +22,11 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -31,9 +34,15 @@ import java.util.Collection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class VisualContact extends VisualComponent {
+	public enum Direction {north, south, east, west};
+
+	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private GlyphVector nameGlyphs = null;
+	private Direction direction = Direction.west;
 
 	VisualCircuitComponent parentComponent;
 
@@ -49,7 +58,9 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+		g.transform(localToParentTransform);
+
+		//drawLabelInLocalSpace(g);
 
 		double size = 0.5;
 		double strokeWidth = 0.05;
@@ -84,6 +95,70 @@ public class VisualContact extends VisualComponent {
 	public Collection<MathNode> getMathReferences() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/////////////////////////////////////////////////////////
+	public GlyphVector getNameGlyphs(Graphics2D g) {
+		if (nameGlyphs == null) {
+			if (getDirection()==Direction.north||getDirection()==Direction.south) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(1);
+			}
+			nameGlyphs = nameFont.createGlyphVector(g.getFontRenderContext(), getContactName());
+		}
+
+		return nameGlyphs;
+	}
+
+	public Rectangle2D getNameBB(Graphics2D g) {
+		return getNameGlyphs(g).getVisualBounds();
+	}
+
+	public String getContactName() {
+//		if (getReferencedComponent()!=null) return getReferencedComponent().getLabel();
+		return getLabel();
+	}
+
+	public void setContactName(String name) {
+//		nameGlyphs = null;
+		setLabel(name);
+//		if (getReferencedComponent()!=null) getReferencedComponent().setLabel(name);
+	}
+
+	public void setDirection(Direction dir) {
+		if (parentComponent!=null) {
+			parentComponent.updateDirection(this, dir);
+		}
+		this.direction=dir;
+		nameGlyphs = null;
+	}
+
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public void setIOType(IOType type) {
+		((Contact)getReferencedComponent()).setIOType(type);
+	}
+
+	public IOType getIOType() {
+		return ((Contact)getReferencedComponent()).getIOType();
+	}
+
+	public VisualContact(Contact component, Direction dir, String label) {
+		super(component);
+		setLabel(label);
+		if (dir==null) {
+			if (component!=null) {
+				if (component.getIOType()==IOType.output) {
+					setDirection(Direction.east);
+				}
+			}
+		} else {
+			direction = dir;
+		}
+		parentComponent = null;
+
 	}
 
 }

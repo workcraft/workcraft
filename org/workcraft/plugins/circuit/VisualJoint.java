@@ -38,7 +38,7 @@ public class VisualJoint extends VisualCircuitComponent {
 
 	@Override
 	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+//		drawLabelInLocalSpace(g);
 
 
 		Shape shape = new Ellipse2D.Double(
@@ -47,7 +47,7 @@ public class VisualJoint extends VisualCircuitComponent {
 				jointSize,
 				jointSize);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+//		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.fill(shape);
 	}
 

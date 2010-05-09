@@ -288,10 +288,10 @@ public class SelectionTool extends AbstractTool {
 					currentLevelDown(e.getModel());
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
-					VisualModelTransformer.rotateSelection(e.getModel(),-Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),-Math.PI/2);
 					break;
 				case KeyEvent.VK_CLOSE_BRACKET:
-					VisualModelTransformer.rotateSelection(e.getModel(),Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),Math.PI/2);
 					break;
 				case KeyEvent.VK_LEFT:
 					VisualModelTransformer.translateSelection(e.getModel(), -1,0);
@@ -349,8 +349,8 @@ public class SelectionTool extends AbstractTool {
 		if(selection.size() == 1)
 		{
 			Node selectedNode = selection.iterator().next();
-			if(selectedNode instanceof VisualGroup)
-				model.setCurrentLevel((VisualGroup)selectedNode);
+			if(selectedNode instanceof Container)
+				model.setCurrentLevel((Container)selectedNode);
 		}
 		grayOutNotActive(model);
 	}

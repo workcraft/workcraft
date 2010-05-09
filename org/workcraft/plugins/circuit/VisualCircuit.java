@@ -21,13 +21,18 @@
 
 package org.workcraft.plugins.circuit;
 
+import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 
+@DisplayName("Visual Circuit")
+//@CustomTools ( STGToolsProvider.class )
+@DefaultCreateButtons ( { CircuitComponent.class } )
+//@CustomToolButtons ( { SimulationTool.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
 
