@@ -30,12 +30,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class VisualContact extends VisualComponent {
 	public enum Direction {north, south, east, west};
@@ -46,11 +46,6 @@ public class VisualContact extends VisualComponent {
 
 	VisualCircuitComponent parentComponent;
 
-	public VisualContact(Contact component) {
-		super(component);
-		parentComponent = null;
-	}
-
 	public VisualCircuitComponent getParentConnection() {
 //		return parentConnection;
 		return null;
@@ -58,11 +53,7 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public void draw(Graphics2D g) {
-		g.transform(localToParentTransform);
-
-		//drawLabelInLocalSpace(g);
-
-		double size = 0.5;
+		double size = getSize();
 		double strokeWidth = 0.05;
 
 
@@ -81,10 +72,13 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
+		double size = getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 
+	private double getSize() {
+		return 0.5;
+	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
@@ -93,8 +87,8 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public Collection<MathNode> getMathReferences() {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO
+		return Collections.emptyList();
 	}
 
 	/////////////////////////////////////////////////////////

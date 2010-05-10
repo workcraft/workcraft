@@ -30,21 +30,24 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Hierarchy;
 
 //@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
 @DisplayName("C.Component")
 
-public class VisualCircuitComponent extends VisualComponent {
+public class VisualCircuitComponent extends VisualComponent implements Container{
 
 	private LinkedList<VisualContact> east = new LinkedList<VisualContact>();
 	private LinkedList<VisualContact> west = new LinkedList<VisualContact>();
@@ -147,6 +150,7 @@ public class VisualCircuitComponent extends VisualComponent {
 	public void addContact(VisualContact vc) {
 		if (!contacts.contains(vc)) {
 			contacts.add(vc);
+			vc.setParent(this);
 			switch (vc.getDirection()) {
 				case north: north.add(vc); updateStepPosition(north); break;
 				case south: south.add(vc); updateStepPosition(south); break;
@@ -240,9 +244,6 @@ public class VisualCircuitComponent extends VisualComponent {
 
 		double step_pos;
 
-		AffineTransform tt = g.getTransform();
-
-
 		for (VisualContact c: west) {
 			GlyphVector gv = c.getNameGlyphs(g);
 			cur = gv.getVisualBounds();
@@ -286,13 +287,6 @@ public class VisualCircuitComponent extends VisualComponent {
 			step_pos = c.getX();
 			g.drawGlyphVector(gv, (float)(BB.getMinY()+marginSize), (float)(step_pos+(cur.getHeight())/2));
 		}
-
-		for (VisualContact c: contacts) {
-
-			g.setTransform(tt);
-			c.draw(g);
-		}
-		g.setTransform(tt);
 	}
 
 	@Override
@@ -314,6 +308,7 @@ public class VisualCircuitComponent extends VisualComponent {
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+		if (contactLabelBB!=null) return contactLabelBB;
 		double size = CommonVisualSettings.getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
@@ -324,4 +319,49 @@ public class VisualCircuitComponent extends VisualComponent {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
+	@Override
+	public Collection<Node> getChildren() {
+		return Collections.<Node>unmodifiableCollection(contacts);
+	}
+
+	@Override
+	public void add(Node node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void add(Collection<Node> nodes) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void remove(Node node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void remove(Collection<Node> node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		// TODO Auto-generated method stub
+	}
+
+	public void setColorisation(Color color) {
+		super.setColorisation(color);
+		for (Colorisable node : Hierarchy.getChildrenOfType(this, Colorisable.class))
+			node.setColorisation(color);
+	}
 }
