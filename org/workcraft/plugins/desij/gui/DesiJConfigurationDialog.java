@@ -38,11 +38,10 @@ import org.workcraft.util.GUI;
 @SuppressWarnings("serial")
 public class DesiJConfigurationDialog extends JDialog {
 
+	// elements of this form
 	private JPanel content, presetPanel, buttonsPanel;
-	private JScrollPane partitionPanel;
-	private JLabel aggregationLabel;
-	private JLabel synthesiserLabel;
-	private JScrollPane optionsPanel;
+	private JScrollPane partitionPanel, optionsPanel;
+	private JLabel aggregationLabel, synthesiserLabel;
 	private JComboBox presetCombo, operationCombo, synthesiserCombo, verbosityCombo;
 	private JButton manageButton, saveAsNewButton, runButton, updatePresetButton, cancelButton;
 	private JTextField aggregationFactorText;
@@ -57,6 +56,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	private TableLayout layout;
 	private int modalResult = 0;
 
+	// dedicated for synthesiser Combo box
 	class IntMode {
 		public int value;
 		public String description;
@@ -70,6 +70,8 @@ public class DesiJConfigurationDialog extends JDialog {
 			return description;
 		}
 	}
+
+	// ************** Preset panel stuff *****************
 
 	private void createPresetPanel() {
 		presetPanel = new JPanel(new SimpleFlowLayout(15, 3));
@@ -155,6 +157,65 @@ public class DesiJConfigurationDialog extends JDialog {
 
 	}
 
+	private void createPreset() {
+		String desc = JOptionPane.showInputDialog(this, "Please enter the description of the new preset:");
+
+		if (! (desc == null || desc.isEmpty())) {
+			MpsatSettings settings = getSettingsFromControls();
+			MpsatPreset preset = presetManager.save(settings, desc);
+			presetCombo.addItem(preset);
+			presetCombo.setSelectedItem(preset);
+		}
+	}
+
+	// apply preset settings to controls
+	private void applySettingsToControls() {
+		MpsatPreset p = (MpsatPreset)presetCombo.getSelectedItem();
+
+		if (p == null)
+			return;
+
+		if (p.isBuiltIn()) {
+			updatePresetButton.setEnabled(false);
+			updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
+		}
+		else {
+			updatePresetButton.setEnabled(true);
+			updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
+		}
+
+		MpsatSettings settings = p.getSettings();
+
+		operationCombo.setSelectedItem(settings.getMode());
+		synthesiserCombo.setSelectedIndex(settings.getSatSolver());
+		verbosityCombo.setSelectedIndex(settings.getVerbosity());
+		switch (settings.getSolutionMode()) {
+		case ALL:
+			singleLazyDeco.setSelected(true);
+			enableAggregationControls();
+			break;
+		case MINIMUM_COST:
+			treeDeco.setSelected(true);
+			disableAggregationControls();
+			break;
+		case FIRST:
+			basicDeco.setSelected(true);
+			disableAggregationControls();
+			break;
+		}
+		int n = settings.getSolutionNumberLimit();
+
+		if (n>0)
+			aggregationFactorText.setText(Integer.toString(n));
+		else
+			aggregationFactorText.setText("");
+
+		partitionText.setText(settings.getReach());
+	}
+
+	// ************** Main Panel stuff **********************
+
+	// creates the the main panel or options panel resp.
 	private void createOptionsPanel() {
 		JPanel optionsPanelContent = new JPanel(new SimpleFlowLayout());
 
@@ -215,6 +276,8 @@ public class DesiJConfigurationDialog extends JDialog {
 		createSynthesisControls(optionsPanelContent);
 
 	}
+
+	// --------------- Helper routines for creating the main panel --------------
 
 	private void createSynthesisControls(JPanel optionsPanelContent) {
 
@@ -545,50 +608,43 @@ public class DesiJConfigurationDialog extends JDialog {
 		partitionPanelContent.add(partitionText);
 	}
 
-	private void applySettingsToControls() {
-		MpsatPreset p = (MpsatPreset)presetCombo.getSelectedItem();
+	// ----------------- End of Helper routines for creating options panel -----------------
 
-		if (p == null)
-			return;
+	// ***************** Buttons Panel stuff *****************************
 
-		if (p.isBuiltIn()) {
-			updatePresetButton.setEnabled(false);
-			updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
-		}
-		else {
-			updatePresetButton.setEnabled(true);
-			updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
-		}
+	private void createButtonsPanel() {
+		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
-		MpsatSettings settings = p.getSettings();
+		runButton = new JButton ("Run");
+		runButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				modalResult = 1;
+				setVisible(false);
+			}
+		});
 
-		operationCombo.setSelectedItem(settings.getMode());
-		synthesiserCombo.setSelectedIndex(settings.getSatSolver());
-		verbosityCombo.setSelectedIndex(settings.getVerbosity());
-		switch (settings.getSolutionMode()) {
-		case ALL:
-			singleLazyDeco.setSelected(true);
-			enableAggregationControls();
-			break;
-		case MINIMUM_COST:
-			treeDeco.setSelected(true);
-			disableAggregationControls();
-			break;
-		case FIRST:
-			basicDeco.setSelected(true);
-			disableAggregationControls();
-			break;
-		}
-		int n = settings.getSolutionNumberLimit();
+		cancelButton = new JButton ("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				modalResult = 0;
+				setVisible(false);
+			}
+		});
 
-		if (n>0)
-			aggregationFactorText.setText(Integer.toString(n));
-		else
-			aggregationFactorText.setText("");
-
-		partitionText.setText(settings.getReach());
+		buttonsPanel.add(runButton);
+		buttonsPanel.add(cancelButton);
 	}
 
+
+
+	/**
+	 * Constructor of the Configuration Dialog
+	 *
+	 * @param owner
+	 * @param presetManager - ... of DesiJ settings
+	 */
 	public DesiJConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
 		super(owner, "DesiJ configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
@@ -620,44 +676,11 @@ public class DesiJConfigurationDialog extends JDialog {
 		//presetCombo.setSelectedIndex(0);
 	}
 
+
+	// **************** for external use **********************
+
 	public MpsatSettings getSettings() {
 		return getSettingsFromControls();
-	}
-
-	private void createButtonsPanel() {
-		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
-		runButton = new JButton ("Run");
-		runButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				modalResult = 1;
-				setVisible(false);
-			}
-		});
-
-		cancelButton = new JButton ("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				modalResult = 0;
-				setVisible(false);
-			}
-		});
-
-		buttonsPanel.add(runButton);
-		buttonsPanel.add(cancelButton);
-	}
-
-	private void createPreset() {
-		String desc = JOptionPane.showInputDialog(this, "Please enter the description of the new preset:");
-
-		if (! (desc == null || desc.isEmpty())) {
-			MpsatSettings settings = getSettingsFromControls();
-			MpsatPreset preset = presetManager.save(settings, desc);
-			presetCombo.addItem(preset);
-			presetCombo.setSelectedItem(preset);
-		}
 	}
 
 	private MpsatSettings getSettingsFromControls() {
