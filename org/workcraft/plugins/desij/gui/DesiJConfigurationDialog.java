@@ -41,8 +41,9 @@ public class DesiJConfigurationDialog extends JDialog {
 	private JPanel content, presetPanel, buttonsPanel;
 	private JScrollPane partitionPanel;
 	private JLabel aggregationLabel;
+	private JLabel synthesiserLabel;
 	private JScrollPane optionsPanel;
-	private JComboBox presetCombo, operationCombo, satCombo, verbosityCombo;
+	private JComboBox presetCombo, operationCombo, synthesiserCombo, verbosityCombo;
 	private JButton manageButton, saveAsNewButton, runButton, updatePresetButton, cancelButton;
 	private JTextField aggregationFactorText;
 	private JTextArea partitionText;
@@ -50,6 +51,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	private JRadioButton finestPartition, bestPartition, customPartition;
 	private JCheckBox riskyDeco, outdetDeco, safenessContraction;
 	private JCheckBox loopDuplicatePlaces, shortcutPlaces, implicitPlaces;
+	private JCheckBox inclSynthesis, cscAware, intCom;
 	private MpsatPresetManager presetManager;
 
 	private TableLayout layout;
@@ -176,10 +178,12 @@ public class DesiJConfigurationDialog extends JDialog {
 				if (selectedOp == DesiJOperation.DECOMPOSITION) {
 					enableDecoStrategyControls();
 					enablePartitionControls();
+					enableSynthesisControls();
 				}
 				else {
 					disableDecoStrategyControls();
 					disablePartitionControls();
+					disableSynthesisControls();
 				}
 
 				if (selectedOp.usesContraction()) {
@@ -208,17 +212,76 @@ public class DesiJConfigurationDialog extends JDialog {
 		createContractionModeControls(optionsPanelContent);
 		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(8));
 
-		satCombo = new JComboBox();
-		satCombo.addItem(new IntMode(0, "ZChaff"));
-		satCombo.addItem(new IntMode(1, "MiniSat"));
+		createSynthesisControls(optionsPanelContent);
 
-		optionsPanelContent.add(GUI.createLabeledComponent(satCombo, "SAT solver:"));
+	}
 
-		verbosityCombo = new JComboBox();
-		for (int i=0; i<=9; i++)
-			verbosityCombo.addItem(new IntMode(i, Integer.toString(i)));
+	private void createSynthesisControls(JPanel optionsPanelContent) {
 
-		optionsPanelContent.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity level:"));
+		optionsPanelContent.add(new JLabel("Synthesis options:"));
+		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(-2));
+
+		synthesiserCombo = new JComboBox();
+		synthesiserCombo.addItem(new IntMode(0, "Petrify"));
+		synthesiserCombo.addItem(new IntMode(1, "MpSat"));
+
+		JPanel synthesiserPanel = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
+		synthesiserLabel = new JLabel("Logic Synthesiser:");
+		synthesiserPanel.add(synthesiserLabel);
+		synthesiserPanel.add(synthesiserCombo);
+
+		disableSynthesiserCombo(); // initially
+
+		inclSynthesis = new JCheckBox("Component Synthesis");
+		inclSynthesis.setSelected(false);
+		inclSynthesis.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (inclSynthesis.isSelected())
+					enableSynthesiserCombo();
+				else
+					disableSynthesiserCombo();
+
+			}
+		});
+
+		optionsPanelContent.add(synthesiserPanel);
+		//optionsPanelContent.add(GUI.createLabeledComponent(synthesiserCombo, "Logic Synthesiser:"));
+		optionsPanelContent.add(inclSynthesis);
+
+		optionsPanelContent.add(new SimpleFlowLayout.LineBreak());
+
+		cscAware = new JCheckBox("CSC-Aware");
+		intCom = new JCheckBox ("Internal Communication (Self-Triggers)");
+
+		optionsPanelContent.add(cscAware);
+		optionsPanelContent.add(intCom);
+
+	}
+
+	private void enableSynthesiserCombo() {
+		synthesiserLabel.setEnabled(true);
+		synthesiserCombo.setEnabled(true);
+	}
+
+	private void disableSynthesiserCombo() {
+		synthesiserLabel.setEnabled(false);
+		synthesiserCombo.setEnabled(false);
+	}
+
+	private void enableSynthesisControls() {
+		inclSynthesis.setEnabled(true);
+		if (inclSynthesis.isSelected())
+			enableSynthesiserCombo();
+		cscAware.setEnabled(true);
+		intCom.setEnabled(true);
+	}
+
+	private void disableSynthesisControls() {
+		inclSynthesis.setEnabled(false);
+		disableSynthesiserCombo();
+		cscAware.setEnabled(false);
+		intCom.setEnabled(false);
 	}
 
 	private void createImplicitPlaceControls(JPanel optionsPanelContent) {
@@ -290,6 +353,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
+				// update GUI
 			}
 		});
 
@@ -299,6 +363,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
+				// update GUI
 			}
 		});
 
@@ -308,6 +373,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				partitionPanel.setVisible(true);
 				layout.setRow(2, TableLayout.FILL);
+				// update GUI
 			}
 		});
 
@@ -497,7 +563,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		MpsatSettings settings = p.getSettings();
 
 		operationCombo.setSelectedItem(settings.getMode());
-		satCombo.setSelectedIndex(settings.getSatSolver());
+		synthesiserCombo.setSelectedIndex(settings.getSatSolver());
 		verbosityCombo.setSelectedIndex(settings.getVerbosity());
 		switch (settings.getSolutionMode()) {
 		case ALL:
@@ -551,7 +617,7 @@ public class DesiJConfigurationDialog extends JDialog {
 
 		setContentPane(content);
 
-		presetCombo.setSelectedIndex(0);
+		//presetCombo.setSelectedIndex(0);
 	}
 
 	public MpsatSettings getSettings() {
@@ -616,7 +682,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			n=0;
 
 		MpsatSettings settings = new MpsatSettings((MpsatMode) operationCombo
-				.getSelectedItem(), verbosityCombo.getSelectedIndex(), satCombo
+				.getSelectedItem(), verbosityCombo.getSelectedIndex(), synthesiserCombo
 				.getSelectedIndex(), m, n, partitionText.getText());
 		return settings;
 	}
