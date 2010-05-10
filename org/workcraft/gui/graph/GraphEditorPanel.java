@@ -260,6 +260,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			else
 				propertyWindow.setObject(mix);
 		}
+		else propertyWindow.clearObject();
 	}
 
 	public void notify(StateEvent e) {
