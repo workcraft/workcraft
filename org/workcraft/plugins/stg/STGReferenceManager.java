@@ -10,6 +10,7 @@ import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
+import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
@@ -229,8 +230,12 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			dt.setName(name);
 
 			instancedNameManager.assign(dt);
-		} else
-			defaultNameManager.setDefaultNameIfUnnamed(node);
+		  } else if (node instanceof STGPlace) {
+			   if (!((STGPlace) node).isImplicit())
+			    defaultNameManager.setDefaultNameIfUnnamed(node);
+			  }
+		  else
+			  defaultNameManager.setDefaultNameIfUnnamed(node);
 	}
 
 	private void nodeRemoved(Node node) {

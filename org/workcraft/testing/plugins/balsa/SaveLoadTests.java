@@ -40,6 +40,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.LoadFromXMLException;
 import org.workcraft.exceptions.ModelSaveFailedException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -55,7 +56,6 @@ import org.workcraft.plugins.balsa.components.Loop;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SaveLoadTests {
 	//TODO: Re-write tests

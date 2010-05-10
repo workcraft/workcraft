@@ -19,21 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.balsa.stgmodelstgbuilder;
+package org.workcraft;
 
-import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
-import org.workcraft.plugins.stg.StgTransition;
-
-public class StgModelStgTransition implements InputOutputEvent
-{
-	private final StgTransition modelTransition;
-
-	StgModelStgTransition(StgTransition modelTransition)
-	{
-		this.modelTransition = modelTransition;
-	}
-
-	public StgTransition getModelTransition() {
-		return modelTransition;
-	}
+public interface FrameworkConsumer {
+	public void acceptFramework (Framework framework);
 }

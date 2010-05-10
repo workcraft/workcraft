@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.ChannelType;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
@@ -70,9 +71,9 @@ import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.BreezeImporter;
+import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
 import org.workcraft.util.Export;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 //TODO!
 //@SuppressWarnings({"deprecation", "unused"})
@@ -102,7 +103,7 @@ public class TESTS {
 
 		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "c:\\viterbi.g");
 
-		new BalsaToGatesExporter().export(circuit, stream);
+		new SynthesisWithMpsat().export(circuit, stream);
 	}
 
 	static abstract class ClassicHandshakeVisitor<T> implements HandshakeVisitor<T>

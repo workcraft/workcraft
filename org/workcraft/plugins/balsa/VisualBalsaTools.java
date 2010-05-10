@@ -24,10 +24,11 @@ package org.workcraft.plugins.balsa;
 import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.AbstractNodeGenerator;
+import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.parsers.breeze.BreezeLibrary;
+import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.balsa.components.ActiveEagerFalseVariable;
 import org.workcraft.plugins.balsa.components.Adapt;
 import org.workcraft.plugins.balsa.components.Arbiter;
@@ -75,7 +76,6 @@ import org.workcraft.plugins.balsa.components.UnaryFunc;
 import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.components.WireFork;
-import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 public class VisualBalsaTools implements CustomToolsProvider
 {
@@ -103,7 +103,6 @@ public class VisualBalsaTools implements CustomToolsProvider
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
@@ -160,6 +159,8 @@ public class VisualBalsaTools implements CustomToolsProvider
 				WireFork.class
 			};
 
+		tools.add(new SelectionTool());
+		tools.add(new ConnectionTool());
 		//for(Class<?> c : balsaClasses)
 		//	tools.add(getComponentTool((Class<? extends org.workcraft.plugins.balsa.components.Component>) c));
 

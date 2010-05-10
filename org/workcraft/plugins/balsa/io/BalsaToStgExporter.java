@@ -275,6 +275,15 @@ public abstract class BalsaToStgExporter {
 			for(BreezeHandshake hs : comp.getPorts())
 				names.put(hs.getHandshake(), componentNames.getName(comp) + "_" + hs.getHandshakeName());
 
+		for(BreezeConnection con : circuit.getConnections())
+		{
+			Handshake first = con.getFirst().getHandshake();
+			Handshake second = con.getSecond().getHandshake();
+			String fullName = names.get(first) + "__" + names.get(second);
+			names.put(first, fullName);
+			names.put(second, fullName);
+		}
+
 		return new NameProvider<Handshake>()
 		{
 			public String getName(Handshake handshake)
@@ -296,7 +305,7 @@ public abstract class BalsaToStgExporter {
 	}
 
 	public int getCompatibility(Model model) {
-		if (model instanceof BalsaCircuit)
+		if (model instanceof org.workcraft.plugins.balsa.BalsaCircuit)
 			return Exporter.BEST_COMPATIBILITY;
 		else
 			return Exporter.NOT_COMPATIBLE;

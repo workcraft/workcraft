@@ -33,6 +33,7 @@ import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
+import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
 import org.workcraft.util.Export;
 
 public class BalsaToGatesExporterTests {
@@ -43,6 +44,6 @@ public class BalsaToGatesExporterTests {
 		BreezeComponent component = new BreezeComponent();
 		component.setUnderlyingComponent(new DynamicComponent(new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive("While"), EmptyParameterScope.instance()));
 		circuit.add(component);
-		Export.exportToFile(new BalsaToGatesExporter(), circuit, "while.eqn");
+		Export.exportToFile(new SynthesisWithMpsat(), circuit, "while.eqn");
 	}
 }

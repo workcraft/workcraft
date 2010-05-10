@@ -36,9 +36,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-import com.sun.org.apache.bcel.internal.classfile.Node;
-
-
 public class FormulaToString implements BooleanVisitor<String>
 {
 	public class Void{ private Void(){} }

@@ -65,36 +65,9 @@ public class PluginManager implements PluginProvider {
 		}
 	}
 
-	/*private class PluginClassLoader extends ClassLoader {
-		protected Class<?> findClass(File f) throws ClassNotFoundException, ClassFormatError,
-		IOException {
-			InputStream in = null;
-			ByteArrayOutputStream data = new ByteArrayOutputStream();
-
-			ClassLoader.getSystemClassLoader().
-
-			try {
-				in = new BufferedInputStream(new FileInputStream(f));
-				for(int avail = in.available(); avail > 0; avail = in.available()) {
-					byte[] buf = new byte[avail];
-					in.read(buf, 0, avail);
-					data.write(buf);
-				}
-			} catch(IOException e) {
-				if(in != null)
-					in.close();
-				throw e;
-			}
-
-			return defineClass(null, data.toByteArray(), 0, data.size());
-		}
-	}*/
-
 	private ClassFileFilter classFilter = new ClassFileFilter();
 	private LinkedList<PluginInfo> plugins = new LinkedList<PluginInfo>();
 	private HashMap<String, PluginInfo> nameToInfoMap = new HashMap<String, PluginInfo>();
-
-	//private PluginClassLoader activeLoader = null;
 
 	public PluginManager(Framework framework) {
 		this.framework = framework;
@@ -194,7 +167,6 @@ public class PluginManager implements PluginProvider {
 			return;
 
 //		System.out.print(".class file found: " + path + ", ");
-
 
 		className = className.substring(0, className.length() - ".class".length());
 
@@ -306,6 +278,9 @@ public class PluginManager implements PluginProvider {
 
 			if (instance instanceof PluginConsumer)
 				((PluginConsumer)instance).processPlugins(this);
+
+			if (instance instanceof FrameworkConsumer)
+				((FrameworkConsumer)instance).acceptFramework(framework);
 
 			return instance;
 

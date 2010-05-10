@@ -22,6 +22,7 @@
 package org.workcraft.plugins.balsa;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
@@ -62,9 +63,10 @@ public class VisualHandshake extends VisualComponent {
 	public void draw(Graphics2D g) {
 		g.setStroke(new BasicStroke(0.1f));
 		Ellipse2D.Double circle = new Ellipse2D.Double(-0.5, -0.5, 1, 1);
+		g.setColor(handshake.isActive()?Color.BLACK : Color.WHITE);
+		g.fill(circle);
+		g.setColor(Color.BLACK);
 		g.draw(circle);
-		if(handshake.isActive())
-			g.fill(circle);
 
 
 		/*if(handshake instanceof DataHandshake)

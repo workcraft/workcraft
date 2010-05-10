@@ -21,14 +21,12 @@
 package org.workcraft.plugins.cpog.optimisation.booleanvisitors;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
@@ -44,7 +42,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-import com.sun.org.apache.bcel.internal.classfile.Node;
 
 
 public class FormulaToGraphics

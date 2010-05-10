@@ -26,26 +26,45 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.UUID;
 
+import org.workcraft.Framework;
+import org.workcraft.FrameworkConsumer;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig.DummyContractionMode;
 import org.workcraft.plugins.interop.CSCResolver;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.verification.MpsatMode;
+import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
 import org.workcraft.plugins.verification.PetriNetToolsSettings;
+import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
+import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
+import org.workcraft.plugins.verification.tasks.MpsatTask;
+import org.workcraft.plugins.verification.tasks.PunfTask;
 import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
-public class BalsaToGatesExporter implements Exporter {
+public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsumer {
+
+	private TaskManager taskManager;
+
+	@Override
+	public void acceptFramework(Framework framework) {
+		this.taskManager = framework.getTaskManager();
+	}
 
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
@@ -59,23 +78,25 @@ public class BalsaToGatesExporter implements Exporter {
 
 			File synthesised = File.createTempFile("result", ".eqn");
 
-			synthesiseStg(original, synthesised, BalsaExportConfig.DEFAULT);
+			synthesiseStg(taskManager, original, synthesised, getConfig());
 
 			FileUtils.copyFileToStream(synthesised, out);
 		}
 	}
+
+	abstract protected BalsaExportConfig getConfig();
 
 	private void exportFromStg(STG model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 		File dotG = File.createTempFile("original", ".g");
 		File eqn = File.createTempFile("result", ".eqn");
 		Export.exportToFile(new DotGExporter(), model, dotG);
 
-		synthesiseStg(dotG, eqn, BalsaExportConfig.DEFAULT);
+		synthesiseStg(taskManager, dotG, eqn, getConfig());
 
 		FileUtils.copyFileToStream(eqn, out);
 	}
 
-	public static void synthesiseStg(File original, File synthesised, BalsaExportConfig config)
+	public static void synthesiseStg(TaskManager taskManager, File original, File synthesised, BalsaExportConfig config)
 			throws IOException {
 
 		File implicitRemoved = File.createTempFile("remImplicit", ".g");
@@ -95,7 +116,7 @@ public class BalsaToGatesExporter implements Exporter {
 			switch(config.dummyContractionMode())
 			{
 			case PETRIFY:
-				contractDummies(implicitRemoved, contracted);
+				contractDummies(taskManager, implicitRemoved, contracted);
 			case DESIJ:
 				contractDummiesDesiJ(implicitRemoved, contracted);
 			default:
@@ -104,7 +125,7 @@ public class BalsaToGatesExporter implements Exporter {
 			}
 		}
 
-		synthesise(afterContraction, synthesised, config);
+		synthesise(taskManager, afterContraction, synthesised, config);
 	}
 
 	private static void removeImplicitPlaces(File original, File renamed2)
@@ -121,7 +142,7 @@ public class BalsaToGatesExporter implements Exporter {
 		}
 	}
 
-	private static void synthesise(File original, File synthesised, BalsaExportConfig config) throws IOException {
+	private static void synthesise(TaskManager taskManager, File original, File synthesised, BalsaExportConfig config) throws IOException {
 		switch(config.synthesisTool())
 		{
 		case MPSAT:
@@ -130,24 +151,27 @@ public class BalsaToGatesExporter implements Exporter {
 
 			File unfolding = new File(tempDir, "composition.mci");
 
-			makeUnfolding(original, unfolding);
+			makeUnfolding(taskManager, original, unfolding);
 
 			File csc_resolved_mci = new File(tempDir, "resolved.mci");
 
-			CSCResolver.resolveConflicts(unfolding, csc_resolved_mci, null);
+			CSCResolver.resolveConflicts(taskManager, unfolding, csc_resolved_mci, null);
 
-			mpsatMakeEqn(csc_resolved_mci, synthesised);
+			mpsatMakeEqn(taskManager, csc_resolved_mci, synthesised);
 			break;
 		}
 		case PETRIFY:
-			petrifyMakeEqn(original, synthesised);
+			petrifyMakeEqn(taskManager, original, synthesised);
 			break;
 			default:
 		}
 	}
 
-	private static void petrifyMakeEqn(File original, File synthesised) throws IOException {
-		SynchronousExternalProcess process = new SynchronousExternalProcess(
+	private static void petrifyMakeEqn(TaskManager taskManager, File original, File synthesised) throws IOException {
+
+
+
+		ExternalProcessTask task = new ExternalProcessTask(Arrays.asList(
 				new String[]{
 						PetriNetToolsSettings.getPetrifyCommand(),
 						"-hide",
@@ -156,15 +180,29 @@ public class BalsaToGatesExporter implements Exporter {
 						synthesised.getAbsolutePath(),
 						"-cg",
 						original.getAbsolutePath()
-				}, ".");
+				}), new File("."));
 
-		process.start(500000);
+		Result<ExternalProcessResult> result = taskManager.execute(task, "PETRIFY synthesis");
+
+		switch(result.getOutcome())
+		{
+		case CANCELLED:
+			throw new RuntimeException("Operation cancelled");
+		case FAILED:
+			throw new RuntimeException(result.getCause());
+		}
+
+
+		ExternalProcessResult retVal = result.getReturnValue();
 
 		System.out.println("Petrify complex gate synthesis output: ");
-		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
+		System.out.write(retVal.getOutput());System.out.println();System.out.println("----------------------------------------");
 
 		System.out.println("Petrify complex gate synthesis errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
+		System.out.write(retVal.getErrors());System.out.println();System.out.println("----------------------------------------");
+
+		if(retVal.getReturnCode() != 0)
+			throw new RuntimeException("PETRIFY failed: " + new String(retVal.getErrors()));
 	}
 
 
@@ -173,65 +211,91 @@ public class BalsaToGatesExporter implements Exporter {
 		throw new RuntimeException("Not implemented");
 	}
 
-	private static void contractDummies(File original, File contracted) throws IOException
+	private static void contractDummies(TaskManager taskManager, File original, File contracted) throws IOException
 	{
-		SynchronousExternalProcess process = new SynchronousExternalProcess(
+
+		Result<ExternalProcessResult> result = taskManager.execute(
+		new ExternalProcessTask(
+				Arrays.asList(
 				new String[]{
 						PetriNetToolsSettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						original.getAbsolutePath()
-				}, ".");
+				}), new File(".")),
+				"PETRIFY dummy contraction");
 
-		process.start(200000);
+		if(result.getOutcome() == Outcome.CANCELLED)
+			throw new RuntimeException("Cancelled");
+
+		if(result.getOutcome() == Outcome.FAILED)
+			throw new RuntimeException(result.getCause());
 
 		FileOutputStream outStream = new FileOutputStream(contracted);
-		outStream.write(process.getOutputData());
+		ExternalProcessResult retVal = result.getReturnValue();
+		outStream.write(retVal.getOutput());
 		outStream.close();
 
 		System.out.println("Petrify Dummy contraction errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
-		if(process.getReturnCode() != 0)
-			throw new RuntimeException("Dummy contraction failed! " + process.getErrorData().toString());
+		System.out.write(retVal.getErrors());System.out.println();System.out.println("----------------------------------------");
+		if(retVal.getReturnCode() != 0)
+			throw new RuntimeException("Dummy contraction failed! " + retVal.getErrors().toString());
 	}
 
-	private static void mpsatMakeEqn(File cscResolvedMci, File synthesised) throws IOException
+	private static void mpsatMakeEqn(TaskManager taskManager, File cscResolvedMci, File synthesised) throws IOException
 	{
-		SynchronousExternalProcess process = new SynchronousExternalProcess(
-				new String[]{
-						PetriNetToolsSettings.getMpsatCommand(),
-						"-E",
-						cscResolvedMci.getAbsolutePath()
-				}, ".");
+		MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
 
-		process.start(300000);
+		Result<ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), cscResolvedMci.getAbsolutePath()), "MPSat Complex gate synthesis");
 
-		FileOutputStream outStream = new FileOutputStream(synthesised);
-		outStream.write(process.getOutputData());
-		outStream.close();
+		System.out.println("MPSat complex gate synthesis output: ");
+		System.out.write(result.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");
+		byte[] errors = result.getReturnValue().getErrors();
 
-		System.out.println("MPSAT complex gate synthesis errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
-		if(process.getReturnCode() != 0)
-			throw new RuntimeException("MPSAT complex gate synthesis failed! " + process.getErrorData().toString());
+		if(errors.length != 0)
+		{
+			System.out.println("MPSAT complex gate synthesis error stream: ");
+			System.out.write(errors);System.out.println();System.out.println("----------------------------------------");
+		}
+
+		switch(result.getOutcome())
+		{
+		case CANCELLED:
+			throw new RuntimeException("Complex gate synthesis cancelled by user.");
+		case FAILED:
+			throw new RuntimeException("Complex gate synthesis by MPSat failed: " + new String(errors), result.getCause());
+		case FINISHED:
+			FileUtils.writeAllBytes(result.getReturnValue().getOutput(), synthesised);
+		}
 	}
 
-	public static void makeUnfolding(File original, File unfolding) throws IOException {
+	public static void makeUnfolding(TaskManager taskManager, File original, File unfolding) throws IOException
+	{
+		PunfTask task = new PunfTask(original.getAbsolutePath(), unfolding.getAbsolutePath());
 
-		SynchronousExternalProcess process =
-			new SynchronousExternalProcess(
-					new String[]{
-							PetriNetToolsSettings.getPunfCommand(),
-							"-f="+original.getAbsolutePath(),
-							"-m="+unfolding.getAbsolutePath()},
-							".");
-		process.start(100000);
+		Result<ExternalProcessResult> res = taskManager.execute(task, "Unfolding the Balsa circuit STG");
+
 		System.out.println("Unfolding output: ");
-		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
-		System.out.println("Unfolding errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
-		if(process.getReturnCode() != 0)
-			throw new RuntimeException("PUNF Failed: " + new String(process.getErrorData()));
+		System.out.write(res.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");
+
+		byte[] errors = res.getReturnValue().getErrors();
+
+		if(errors.length > 0)
+		{
+			System.out.println("Unfolding errors stream: ");
+			System.out.write(errors);System.out.println();System.out.println("----------------------------------------");
+		}
+
+		Outcome outcome = res.getOutcome();
+		switch(outcome)
+		{
+		case CANCELLED:
+			throw new RuntimeException("Unfolding operation cancelled by user");
+		case FINISHED:
+			return;
+		case FAILED:
+			throw new RuntimeException("Punf failed: " + new String(res.getReturnValue().getErrors()), res.getCause());
+		}
 	}
 
 	private void exportOriginal(Model model, File original)
@@ -246,10 +310,6 @@ public class BalsaToGatesExporter implements Exporter {
 		{
 			tempFileStream.close();
 		}
-	}
-
-	public String getDescription() {
-		return "To Gates";
 	}
 
 	public String getExtenstion() {

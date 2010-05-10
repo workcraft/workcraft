@@ -168,14 +168,13 @@ public class Framework {
 
 	private ContextFactory contextFactory = new ContextFactory();
 
-
 	private boolean silent = false;
 
 	private MainWindow mainWindow;
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
-		taskManager = new DefaultTaskManager(this);
+		taskManager = new DefaultTaskManager();
 		modelManager = new ModelManager();
 		config = new Config();
 		workspace = new Workspace(this);

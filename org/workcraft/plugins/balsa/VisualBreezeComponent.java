@@ -201,7 +201,11 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 
 	private void drawCircle(Graphics2D g, double x, double y, double r)
 	{
-		g.draw(new Ellipse2D.Double(x-r, y-r, r*2, r*2));
+		Ellipse2D.Double circle = new Ellipse2D.Double(x-r, y-r, r*2, r*2);
+		g.setColor(Color.WHITE);
+		g.fill(circle);
+		g.setColor(Color.BLACK);
+		g.draw(circle);
 	}
 
 	@Override

@@ -73,6 +73,7 @@ import org.workcraft.plugins.balsa.io.BalsaExportConfig;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
+import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
@@ -679,7 +680,7 @@ public class TestGCD {
 
 			try
 			{
-				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, BalsaExportConfig.DEFAULT);
+				BalsaToGatesExporter.synthesiseStg(new DefaultTaskManager(), stgFile, eqnFile, BalsaExportConfig.DEFAULT);
 			}
 			catch(RuntimeException e)
 			{

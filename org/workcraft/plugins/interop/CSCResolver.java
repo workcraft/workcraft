@@ -26,19 +26,29 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import org.workcraft.Framework;
+import org.workcraft.FrameworkConsumer;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.PetriNetToolsSettings;
+import org.workcraft.plugins.verification.MpsatMode;
+import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
+import org.workcraft.plugins.verification.tasks.MpsatTask;
 import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 
-public class CSCResolver implements Exporter {
+public class CSCResolver implements Exporter, FrameworkConsumer {
+
+	private TaskManager taskManager;
 
 	@Override
 	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
@@ -46,41 +56,48 @@ public class CSCResolver implements Exporter {
 		File mci = File.createTempFile("toResolve", ".mci");
 		File output = File.createTempFile("resolved", ".g");
 		Export.exportToFile(new DotGExporter(), model, tmp);
-		BalsaToGatesExporter.makeUnfolding(tmp, mci);
-		resolveConflicts(mci, null, output);
+		BalsaToGatesExporter.makeUnfolding(taskManager, tmp, mci);
+		resolveConflicts(taskManager, mci, null, output);
 		FileUtils.copyFileToStream(output, out);
 	}
 
-	private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
+	//private static String mpsatArgsFormat = "-R -f -$1 -p0 -@ -cl";
 
-	public static void resolveConflicts(File unfolding, File cscResolvedMci, File cscResolvedG) throws IOException {
-		File resolutionDir = FileUtils.createTempDirectory("CSCResolution");
+	public static void resolveConflicts(TaskManager taskManager, File unfolding, File cscResolvedMci, File cscResolvedG) throws IOException
+	{
+		MpsatSettings settings = new MpsatSettings(MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
 
-		String[] split = mpsatArgsFormat.split(" ");
-		String[] args = new String[split.length + 2];
-		args[0] = PetriNetToolsSettings.getMpsatCommand();
-		for(int i=0;i<split.length;i++)
-			args[i+1] = split[i];
-		args[split.length+1] = unfolding.getAbsolutePath();
+		Result<ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), unfolding.getAbsolutePath()), "CSC conflict resolution");
 
-		SynchronousExternalProcess process = new SynchronousExternalProcess(args, resolutionDir.getAbsolutePath());
-
-		if(!process.start(300000000))
-			throw new RuntimeException("MPSAT SCS resolution timed out. \nProcess Output:\n" + new String(process.getErrorData()));
 		System.out.println("MPSAT CSC resolution output: ");
-		System.out.write(process.getOutputData());System.out.println();System.out.println("----------------------------------------");
-		System.out.println("MPSAT CSC resolution errors: ");
-		System.out.write(process.getErrorData());System.out.println();System.out.println("----------------------------------------");
+		System.out.write(result.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");
+		byte[] errors = result.getReturnValue().getErrors();
 
-		if(process.getReturnCode() != 0)
-			throw new RuntimeException("MPSAT SCS resolution failed: " + new String(process.getErrorData()));
+		if(errors.length != 0)
+		{
+			System.out.println("MPSAT CSC resolution errors: ");
+			System.out.write(errors);System.out.println();System.out.println("----------------------------------------");
+		}
 
-		if(cscResolvedMci != null)
-			FileUtils.copyFile(new File(resolutionDir, "mpsat.mci"), cscResolvedMci);
-		if(cscResolvedG != null)
-			FileUtils.copyFile(new File(resolutionDir, "mpsat.g"), cscResolvedG);
+		Outcome outcome = result.getOutcome();
 
-		FileUtils.deleteDirectoryTree(resolutionDir);
+		if(new String(result.getReturnValue().getErrors()).contains("Warning: failed to resolve some of the encoding conflicts"))
+			outcome = Outcome.FAILED;
+
+		switch(outcome)
+		{
+		case CANCELLED:
+			throw new RuntimeException("CSC resolution cancelled by user.");
+		case FAILED:
+			throw new RuntimeException("CSC resolution by MPSat failed: " + new String(errors), result.getCause());
+		case FINISHED:
+			{
+				if(cscResolvedMci != null)
+					FileUtils.writeAllBytes(result.getReturnValue().getOutputFile("mpsat.mci"), cscResolvedMci);
+				if(cscResolvedG != null)
+					FileUtils.writeAllBytes(result.getReturnValue().getOutputFile("mpsat.g"), cscResolvedG);
+			}
+		}
 	}
 
 	@Override
@@ -104,5 +121,10 @@ public class CSCResolver implements Exporter {
 	@Override
 	public UUID getTargetFormat() {
 		return Format.STG;
+	}
+
+	@Override
+	public void acceptFramework(Framework framework) {
+		this.taskManager = framework.getTaskManager();
 	}
 }
