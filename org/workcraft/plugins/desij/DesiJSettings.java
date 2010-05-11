@@ -72,7 +72,7 @@ public class DesiJSettings {
 			DecompositionStrategy decoStrategy, int aggregationFactor,
 			PartitionMode partitionMode, String partition,
 			boolean loopDupDelet, boolean shortcutDelet, boolean implicitDelet,
-			boolean safenesPreserv, boolean outputDeterminacy, boolean risky,
+			boolean safenessPreserv, boolean outputDeterminacy, boolean risky,
 			boolean postSynthesis, int synthesiser, boolean cscAware, boolean internCommun) {
 		super();
 		this.operation = operation;
@@ -83,7 +83,7 @@ public class DesiJSettings {
 		this.loopDupDeletion = loopDupDelet;
 		this.shortcutDeletion = shortcutDelet;
 		this.implicitDeletion = implicitDelet;
-		this.safenessPreserving = safenesPreserv;
+		this.safenessPreserving = safenessPreserv;
 		this.outDet = outputDeterminacy;
 		this.risky = risky;
 		this.postSynthesis = postSynthesis;
@@ -214,7 +214,7 @@ public class DesiJSettings {
 
 	/**
 	 * for building the command line string as parameter for DesiJ
-	 * @return - only the arguments exluding "desij"
+	 * @return - only the arguments excluding "desij"
 	 */
 	public String[] getDesiJArguments() {
 		ArrayList<String> args = new ArrayList<String>();
