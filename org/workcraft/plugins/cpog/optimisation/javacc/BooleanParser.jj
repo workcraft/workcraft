@@ -5,6 +5,7 @@
 options {
   JDK_VERSION = "1.5";
   STATIC = false;
+  UNICODE_INPUT = true;
 }
 PARSER_BEGIN(BooleanParser)
 package org.workcraft.plugins.cpog.optimisation.javacc;
@@ -100,7 +101,7 @@ TOKEN : /* OPERATORS */
 |  	< OR: "or" | "|" | "+" | "\u2228" >
 |  	< XOR: "xor" | "^" | "\u2295" >
 |	< AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
-|	< NOT: "not" | "!" | "¬" >
+|	< NOT: "not" | "!" | "ï¿½" >
 |   < POSTNOT: "'" >
 }
 TOKEN :

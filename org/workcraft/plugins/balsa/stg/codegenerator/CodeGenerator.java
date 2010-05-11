@@ -92,8 +92,6 @@ import org.workcraft.plugins.balsa.stg.MyDumpVisitor;
 import org.workcraft.plugins.balsa.stg.StgHandshakeInterpreter;
 import org.workcraft.util.FileUtils;
 
-import pcollections.PVector;
-
 public class CodeGenerator {
 	public void generateBaseClasses(File projectPath, BalsaSystem balsa) throws IOException
 	{

@@ -36,7 +36,6 @@ public class CleverCnfGeneratorTests {
 
 		BooleanVariable var1 = new FreeVariable("x");
 		BooleanVariable var2 = new FreeVariable("y");
-		BooleanVariable var3 = new FreeVariable("z");
 		System.out.println(gen.generateCnf(or(or(and(var1, var2), and(var2, var1)), and(var1, var2))).toString(new HumanReadableCnfPrinter()));
 	}
 }

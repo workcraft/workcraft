@@ -32,8 +32,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -67,7 +65,8 @@ public class SelectionTool extends AbstractTool {
 	private SelectionColoriser coloriser;
 
 	private int drag = DRAG_NONE;
-	private boolean notClick = false;
+	private boolean notClick1 = false;
+	private boolean notClick3 = false;
 
 	private Point2D snapOffset;
 
@@ -94,6 +93,11 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
+
+		if(notClick1 && e.getButton() == MouseEvent.BUTTON1)
+			return;
+		if(notClick3 && e.getButton() == MouseEvent.BUTTON3)
+			return;
 
 		VisualModel model = e.getEditor().getModel();
 
@@ -206,15 +210,19 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		if(e.getButton()==MouseEvent.BUTTON1)
+			notClick1 = false;
+
 		if(e.getButton()==MouseEvent.BUTTON3) {
 
 			if(isDragging()) {
 				cancelDrag(e);
 				e.getEditor().repaint();
-				notClick = true; // TODO left click still generated but it should not
+				notClick1 = true;
+				notClick3 = true;
 			}
 			else {
-				notClick = false;
+				notClick3 = false;
 			}
 		}
 	}

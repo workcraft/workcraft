@@ -107,6 +107,8 @@ public class VisualBalsaTools implements CustomToolsProvider
 	public ArrayList<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
 
+		//TODO
+		@SuppressWarnings("unused")
 		Class<?> [] balsaClasses =
 			new Class<?>[]
 			{
@@ -118,7 +120,6 @@ public class VisualBalsaTools implements CustomToolsProvider
 				SequenceOptimised.class,
 				Variable.class,
 				While.class,
-
 				Adapt.class,
 				ActiveEagerFalseVariable.class,
 				Arbiter.class,

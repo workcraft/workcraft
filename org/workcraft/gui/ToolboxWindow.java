@@ -42,7 +42,6 @@ import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
-import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;

@@ -5,11 +5,6 @@ import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.MpsatChainResultHandler;
-import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.gui.MpsatConfigurationDialog;
-import org.workcraft.plugins.verification.tasks.MpsatChainTask;
-import org.workcraft.util.GUI;
 
 @DisplayName("DesiJ - customise function")
 public class DesiJCustomFunction implements Tool {

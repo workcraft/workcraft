@@ -44,7 +44,6 @@ import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeHandshake;
@@ -54,7 +53,6 @@ import org.workcraft.plugins.balsa.VisualHandshake;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.Loop;
 import org.workcraft.plugins.balsa.components.While;
-import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 
 public class SaveLoadTests {

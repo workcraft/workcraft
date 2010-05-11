@@ -27,22 +27,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.parsers.breeze.BreezeFactory;
-import org.workcraft.parsers.breeze.EmptyParameterScope;
 import org.workcraft.parsers.breeze.Netlist;
-import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.BreezeHandshake;
-import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPull;
 import org.workcraft.plugins.balsa.handshakebuilder.FullDataPush;
 import org.workcraft.plugins.balsa.handshakebuilder.HandshakeVisitor;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
-import org.workcraft.plugins.balsa.stg.codegenerator.DataPathSplitters;
-import org.workcraft.plugins.balsa.stg.codegenerator.PrimitiveDataPathSplitter;
 
 public class Splitter {
 	public static SplitResult splitControlAndData(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit)
@@ -170,10 +164,10 @@ public class Splitter {
 		List<BreezeHandshake> controlPorts = new ArrayList<BreezeHandshake>();
 		List<BreezeHandshake> dataPorts = new ArrayList<BreezeHandshake>();
 
-		DynamicComponent component = part.getUnderlyingComponent();
-		PrimitiveDataPathSplitter splitter = DataPathSplitters.getSplitter(component.declaration().getName());
+		//DynamicComponent component = part.getUnderlyingComponent();
+		//PrimitiveDataPathSplitter splitter = DataPathSplitters.getSplitter(component.declaration().getName());
 
-		PrimitivePart primitive = splitter.getControlDefinition();
+		//PrimitivePart primitive = splitter.getControlDefinition();
 
 		boolean changed = false;
 		for(BreezeHandshake p : part.getPorts())

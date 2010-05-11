@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.SelectionTool;
 
 public class STGToolsProvider implements CustomToolsProvider {
 

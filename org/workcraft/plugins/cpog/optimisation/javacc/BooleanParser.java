@@ -11,6 +11,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.*;
 import org.workcraft.plugins.cpog.optimisation.*;
 import org.workcraft.util.Func;
 
+@SuppressWarnings("all")
 public class BooleanParser implements BooleanParserConstants {
   public BooleanParser(Reader reader, Func<String, ? extends BooleanFormula> vars)
   {

@@ -29,13 +29,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.EmptyParameterScope;
@@ -44,9 +41,7 @@ import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.VisualBalsaCircuit;
 import org.workcraft.plugins.balsa.VisualBreezeComponent;
 import org.workcraft.plugins.balsa.VisualHandshake;
-import org.workcraft.plugins.balsa.components.Concur;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
-import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 

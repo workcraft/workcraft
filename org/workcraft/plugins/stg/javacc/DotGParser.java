@@ -16,6 +16,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
+@SuppressWarnings("all")
 public class DotGParser implements DotGParserConstants {
         private Map<String, Type> signals;
         private Map<Pair<Node, Node>, STGPlace> implicitPlaces;

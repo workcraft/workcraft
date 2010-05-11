@@ -26,10 +26,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.plugins.petri.PetriNet;
 
 @DefaultCreateButtons ( { Vertex.class } )
 public class VisualGraph extends AbstractVisualModel {

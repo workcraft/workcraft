@@ -20,14 +20,11 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-
-
-import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class TwoHotRangeProvider
 {

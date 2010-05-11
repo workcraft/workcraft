@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import pcollections.*;
 
 /** Token Manager. */
+@SuppressWarnings("all")
 public class BreezeParserTokenManager implements BreezeParserConstants
 {
 

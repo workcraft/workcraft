@@ -10,7 +10,6 @@ import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;

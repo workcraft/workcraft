@@ -46,8 +46,12 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 {
 	Cnf result = new Cnf();
 
-	static class ConstantExpectingCnfGenerator implements BooleanVisitor<Object>
+	private static class Void { private Void(){} }
+
+	static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void>
 	{
+		private static boolean cleverOptimiseAnd = true;
+
 		private BooleanVisitor<CnfLiteral> dumbGenerator;
 		private Cnf result;
 
@@ -60,7 +64,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		boolean currentResult = true;
 
 		@Override
-		public Object visit(And and)
+		public Void visit(And and)
 		{
 			if(currentResult)
 			{
@@ -69,7 +73,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 			}
 			else
 			{
-				if(false)
+				if(!cleverOptimiseAnd)
 				{
 					CnfLiteral x = and.getX().accept(dumbGenerator);
 					CnfLiteral y = and.getY().accept(dumbGenerator);
@@ -162,7 +166,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		}
 
 		@Override
-		public Object visit(Iff iff)
+		public Void visit(Iff iff)
 		{
 			CnfLiteral x = iff.getX().accept(dumbGenerator);
 			CnfLiteral y = iff.getY().accept(dumbGenerator);
@@ -180,7 +184,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		}
 
 		@Override
-		public Object visit(Not not)
+		public Void visit(Not not)
 		{
 			boolean store = currentResult;
 			currentResult = !currentResult;
@@ -190,7 +194,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		}
 
 		@Override
-		public Object visit(BooleanVariable node) {
+		public Void visit(BooleanVariable node) {
 			if(currentResult)
 				result.add(or(literal(node)));
 			else
@@ -198,24 +202,24 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 			return null;
 		}
 		@Override
-		public Object visit(Zero node) {
+		public Void visit(Zero node) {
 			throw new RuntimeException("not implemented");
 		}
 		@Override
-		public Object visit(One node) {
+		public Void visit(One node) {
 			throw new RuntimeException("not implemented");
 		}
 		@Override
-		public Object visit(Imply node) {
+		public Void visit(Imply node) {
 			throw new RuntimeException("not implemented");
 		}
 		@Override
-		public Object visit(Or node) {
+		public Void visit(Or node) {
 			throw new RuntimeException("not implemented");
 		}
 
 		@Override
-		public Object visit(Xor node) {
+		public Void visit(Xor node) {
 			throw new RuntimeException("not implemented");
 		}
 	}

@@ -21,14 +21,11 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
-
+@SuppressWarnings("all")
 public class Main {
 	static String [] scenarios =
 	{

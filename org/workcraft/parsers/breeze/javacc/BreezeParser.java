@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 
 import pcollections.*;
 
+@SuppressWarnings("all")
 public class BreezeParser implements BreezeParserConstants {
         public static LispNode parse (InputStream is) throws ParseException {
                 BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));

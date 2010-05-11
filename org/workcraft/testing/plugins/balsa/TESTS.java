@@ -68,7 +68,6 @@ import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.BreezeImporter;
 import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
@@ -168,8 +167,6 @@ public class TESTS {
 	@Test
 	public void toVerilog() throws Exception
 	{
-		BreezeLibrary lib;
-
 		File inFile = new File(ClassLoader.getSystemResource("org/workcraft/testing/plugins/balsa/tests/buffer1a.breeze").getFile());
 		final BalsaCircuit balsa = new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile));
 		Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit = balsa.asNetlist();
@@ -183,8 +180,8 @@ public class TESTS {
 		System.out.println("Control circuit components: " + control.getBlocks().size());
 		System.out.println("Data circuit components: " + data.getBlocks().size());
 
-		VerilogComponent controller = synthesiseThroughStg(control);
-		VerilogComponent dataPath = directMap(data);
+		synthesiseThroughStg(control);
+		directMap(data);
 
 		//VerilogComponent completeVerilog = createDataControlInterconnect(controller, dataPath, split);
 		//File
@@ -412,6 +409,7 @@ public class TESTS {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private void mapSimple(BreezeComponent component, BalsaCircuit preSplit, Map<BreezeHandshake, BreezeHandshake> portMapping) {
 		BreezeComponent result = preSplit.addNew(component.getUnderlyingComponent());
 		for(String portName : component.getHandshakes().keySet())
