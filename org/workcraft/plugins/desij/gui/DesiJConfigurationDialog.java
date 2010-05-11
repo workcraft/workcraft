@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -314,7 +315,20 @@ public class DesiJConfigurationDialog extends JDialog {
 
 		optionsPanelContent.add(new SimpleFlowLayout.LineBreak());
 
-		cscAware = new JCheckBox("CSC-Aware");
+		cscAware = new JCheckBox("CSC-Aware (Tree-Deco)");
+		cscAware.setSelected(false);
+		cscAware.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (cscAware.isSelected()) {
+					disableDecoStrategyRadioButtons();
+					enableAggregationControls();
+				}
+				else {
+					enableDecoStrategyControls();
+				}
+			}
+		});
 		intCom = new JCheckBox ("Internal Communication (Self-Triggers)");
 
 		optionsPanelContent.add(cscAware);
@@ -488,7 +502,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		aggregationFactorText.setPreferredSize(preferredSize);
 
 		JPanel aggregationPanel = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
-		aggregationLabel = new JLabel("Signal aggregation count:");
+		aggregationLabel = new JLabel("Aggregation - Signal count:");
 		aggregationPanel.add(aggregationLabel);
 		aggregationPanel.add(aggregationFactorText);
 
@@ -497,23 +511,32 @@ public class DesiJConfigurationDialog extends JDialog {
 		optionsPanelContent.add(aggregationPanel);
 	}
 
-	private void enableDecoStrategyControls() {
+
+	private void enableDecoStrategyRadioButtons() {
 		basicDeco.setEnabled(true);
 		treeDeco.setEnabled(true);
 		singleLazyDeco.setEnabled(true);
 		multiLazyDeco.setEnabled(true);
-
-		if (treeDeco.isSelected())
-			enableAggregationControls();
-
 	}
 
-	private void disableDecoStrategyControls() {
+	private void disableDecoStrategyRadioButtons() {
 		basicDeco.setEnabled(false);
 		treeDeco.setEnabled(false);
 		singleLazyDeco.setEnabled(false);
 		multiLazyDeco.setEnabled(false);
+	}
 
+	private void enableDecoStrategyControls() {
+		if (!cscAware.isSelected())
+			enableDecoStrategyRadioButtons();
+		if (treeDeco.isSelected() || cscAware.isSelected())
+			enableAggregationControls();
+		else
+			disableAggregationControls();
+	}
+
+	private void disableDecoStrategyControls() {
+		disableDecoStrategyRadioButtons();
 		disableAggregationControls();
 	}
 

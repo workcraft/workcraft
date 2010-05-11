@@ -57,12 +57,14 @@ public class DesiJSettings {
 
 	// Options for transition contraction mode
 	private boolean safenessPreserving;
-	private boolean outdet;
+	private boolean outDet;
 	private boolean risky;
 
+	// Options for logic synthesis of the components
 	private boolean postSynthesis;
 	private int logicSynthesiser;
-	private SynthesisOptions synthesisOptions;
+	private boolean cscAware;
+	private boolean intCom;
 
 	// ******** Constructors to create a DesiJSetting *******************
 
@@ -71,7 +73,7 @@ public class DesiJSettings {
 			PartitionMode partitionMode, String partition,
 			boolean loopDupDelet, boolean shortcutDelet, boolean implicitDelet,
 			boolean safenesPreserv, boolean outputDeterminacy, boolean risky,
-			boolean postSynthesis, int synthesiser, SynthesisOptions synOptions) {
+			boolean postSynthesis, int synthesiser, boolean cscAware, boolean internCommun) {
 		super();
 		this.operation = operation;
 		this.decoStrategy = decoStrategy;
@@ -82,11 +84,12 @@ public class DesiJSettings {
 		this.shortcutDeletion = shortcutDelet;
 		this.implicitDeletion = implicitDelet;
 		this.safenessPreserving = safenesPreserv;
-		this.outdet = outputDeterminacy;
+		this.outDet = outputDeterminacy;
 		this.risky = risky;
 		this.postSynthesis = postSynthesis;
 		this.logicSynthesiser = synthesiser;
-		this.synthesisOptions = synOptions;
+		this.cscAware = cscAware;
+		this.intCom = internCommun;
 	}
 
 	public DesiJSettings(Element element) {
@@ -104,12 +107,13 @@ public class DesiJSettings {
 		implicitDeletion = XmlUtil.readBoolAttr(element, "implicitDeletion");
 
 		safenessPreserving = XmlUtil.readBoolAttr(element, "safenessPreserving");
-		outdet = XmlUtil.readBoolAttr(element, "outputDeterminacy");
+		outDet = XmlUtil.readBoolAttr(element, "outputDeterminacy");
 		risky = XmlUtil.readBoolAttr(element, "risky");
 
 		postSynthesis = XmlUtil.readBoolAttr(element, "postSynthesis");
 		logicSynthesiser = XmlUtil.readIntAttr(element, "logicSynthesiser", 0);
-		synthesisOptions = SynthesisOptions.valueOf(XmlUtil.readStringAttr(element, "synthesisOptions"));
+		cscAware = XmlUtil.readBoolAttr(element, "cscAware");
+		intCom = XmlUtil.readBoolAttr(element, "internalCommunication");
 	}
 
 	/**
@@ -133,12 +137,13 @@ public class DesiJSettings {
 		e.setAttribute("implicitDeletion", Boolean.toString(implicitDeletion));
 
 		e.setAttribute("safenessPreserving", Boolean.toString(safenessPreserving));
-		e.setAttribute("outputDeterminacy", Boolean.toString(outdet));
+		e.setAttribute("outputDeterminacy", Boolean.toString(outDet));
 		e.setAttribute("risky", Boolean.toString(risky));
 
 		e.setAttribute("postSynthesis", Boolean.toString(postSynthesis));
 		e.setAttribute("logicSynthesiser", Integer.toString(logicSynthesiser));
-		e.setAttribute("synthesisOptions", synthesisOptions.name());
+		e.setAttribute("cscAware", Boolean.toString(cscAware));
+		e.setAttribute("internalCommunication", Boolean.toString(intCom));
 
 		parent.appendChild(e);
 	}
@@ -182,7 +187,7 @@ public class DesiJSettings {
 	}
 
 	public boolean getOutputDeterminacyOption() {
-		return outdet;
+		return outDet;
 	}
 
 	public boolean getRiskyOption() {
@@ -197,8 +202,12 @@ public class DesiJSettings {
 		return logicSynthesiser;
 	}
 
-	public SynthesisOptions getSynthesisOptions() {
-		return synthesisOptions;
+	public boolean getCSCAwareOption() {
+		return cscAware;
+	}
+
+	public boolean getInternalCommunicationOption() {
+		return intCom;
 	}
 
 	// for building the command line string as parameter for DesiJ
