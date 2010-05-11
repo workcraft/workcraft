@@ -35,18 +35,6 @@ public class DesiJSettings {
 		CUSTOM
 	}
 
-	public enum PlaceHandling {
-		LOOP_DUPLICATE,
-		SHORTCUT,
-		IMPLICIT
-	}
-
-	public enum ContractionMode {
-		SAFENESS_PRESERVING,
-		OUT_DET,
-		RISKY
-	}
-
 	public enum SynthesisOptions {
 		CSC_AWARE,
 		INT_COM
@@ -62,9 +50,15 @@ public class DesiJSettings {
 	private PartitionMode partitionMode;
 	private String partition;
 
-	private PlaceHandling placeDeletion;
+	// Options for place deletion
+	private boolean loopDupDeletion;
+	private boolean shortcutDeletion;
+	private boolean implicitDeletion;
 
-	private ContractionMode contractionMode;
+	// Options for transition contraction mode
+	private boolean safenessPreserving;
+	private boolean outdet;
+	private boolean risky;
 
 	private boolean postSynthesis;
 	private int logicSynthesiser;
@@ -75,7 +69,8 @@ public class DesiJSettings {
 	public DesiJSettings(DesiJOperation operation,
 			DecompositionStrategy decoStrategy, int aggregationFactor,
 			PartitionMode partitionMode, String partition,
-			PlaceHandling placeDeletion, ContractionMode contractionMode,
+			boolean loopDupDelet, boolean shortcutDelet, boolean implicitDelet,
+			boolean safenesPreserv, boolean outputDeterminacy, boolean risky,
 			boolean postSynthesis, int synthesiser, SynthesisOptions synOptions) {
 		super();
 		this.operation = operation;
@@ -83,8 +78,12 @@ public class DesiJSettings {
 		this.aggregationFactor = aggregationFactor;
 		this.partitionMode = partitionMode;
 		this.partition = partition;
-		this.placeDeletion = placeDeletion;
-		this.contractionMode = contractionMode;
+		this.loopDupDeletion = loopDupDelet;
+		this.shortcutDeletion = shortcutDelet;
+		this.implicitDeletion = implicitDelet;
+		this.safenessPreserving = safenesPreserv;
+		this.outdet = outputDeterminacy;
+		this.risky = risky;
 		this.postSynthesis = postSynthesis;
 		this.logicSynthesiser = synthesiser;
 		this.synthesisOptions = synOptions;
@@ -100,9 +99,13 @@ public class DesiJSettings {
 		Element part = XmlUtil.getChildElement("partition", element);
 		partition = part.getTextContent();
 
-		placeDeletion = PlaceHandling.valueOf(XmlUtil.readStringAttr(element, "placeDeletion"));
+		loopDupDeletion = XmlUtil.readBoolAttr(element, "loopDuplicateDeletion");
+		shortcutDeletion = XmlUtil.readBoolAttr(element, "shorcutDeletion");
+		implicitDeletion = XmlUtil.readBoolAttr(element, "implicitDeletion");
 
-		contractionMode = ContractionMode.valueOf(XmlUtil.readStringAttr(element, "contractionMode"));
+		safenessPreserving = XmlUtil.readBoolAttr(element, "safenessPreserving");
+		outdet = XmlUtil.readBoolAttr(element, "outputDeterminacy");
+		risky = XmlUtil.readBoolAttr(element, "risky");
 
 		postSynthesis = XmlUtil.readBoolAttr(element, "postSynthesis");
 		logicSynthesiser = XmlUtil.readIntAttr(element, "logicSynthesiser", 0);
@@ -125,9 +128,13 @@ public class DesiJSettings {
 		part.setTextContent(partition);
 		e.appendChild(part);
 
-		e.setAttribute("placeDeletion", placeDeletion.name());
+		e.setAttribute("loopDuplicateDeletion", Boolean.toString(loopDupDeletion));
+		e.setAttribute("shorcutDeletion", Boolean.toString(shortcutDeletion));
+		e.setAttribute("implicitDeletion", Boolean.toString(implicitDeletion));
 
-		e.setAttribute("contractionMode", contractionMode.name());
+		e.setAttribute("safenessPreserving", Boolean.toString(safenessPreserving));
+		e.setAttribute("outputDeterminacy", Boolean.toString(outdet));
+		e.setAttribute("risky", Boolean.toString(risky));
 
 		e.setAttribute("postSynthesis", Boolean.toString(postSynthesis));
 		e.setAttribute("logicSynthesiser", Integer.toString(logicSynthesiser));
@@ -158,12 +165,28 @@ public class DesiJSettings {
 		return partition;
 	}
 
-	public PlaceHandling getPlaceHandlingStrategy () {
-		return placeDeletion;
+	public boolean getLoopDuplicatePlaceHandling() {
+		return loopDupDeletion;
 	}
 
-	public ContractionMode getContractionMode() {
-		return contractionMode;
+	public boolean getShortcutPlaceHandling() {
+		return shortcutDeletion;
+	}
+
+	public boolean getImplicitPlaceHandling() {
+		return implicitDeletion;
+	}
+
+	public boolean getSafenessPreservingContractionOption() {
+		return safenessPreserving;
+	}
+
+	public boolean getOutputDeterminacyOption() {
+		return outdet;
+	}
+
+	public boolean getRiskyOption() {
+		return risky;
 	}
 
 	public boolean getPostSynthesisOption() {
