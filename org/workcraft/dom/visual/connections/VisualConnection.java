@@ -65,6 +65,7 @@ public class VisualConnection extends VisualNode implements
 	public enum ScaleMode
 	{
 		NONE,
+		LOCK_RELATIVELY,
 		SCALE,
 		STRETCH,
 		ADAPTIVE
@@ -77,7 +78,7 @@ public class VisualConnection extends VisualNode implements
 	private VisualComponent second;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
-	private ScaleMode scaleMode = ScaleMode.ADAPTIVE;
+	private ScaleMode scaleMode = ScaleMode.LOCK_RELATIVELY;
 
 	private ConnectionGraphic graphic = null;
 
@@ -116,6 +117,7 @@ public class VisualConnection extends VisualNode implements
 		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
 
 		hm2.put("Lock anchors", ScaleMode.NONE);
+		hm2.put("Lock relatively", ScaleMode.LOCK_RELATIVELY);
 		hm2.put("Proportional", ScaleMode.SCALE);
 		hm2.put("Stretch", ScaleMode.STRETCH);
 		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
