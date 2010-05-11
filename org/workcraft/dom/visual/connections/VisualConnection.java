@@ -117,7 +117,7 @@ public class VisualConnection extends VisualNode implements
 		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
 
 		hm2.put("Lock anchors", ScaleMode.NONE);
-		hm2.put("Lock relatively", ScaleMode.LOCK_RELATIVELY);
+		hm2.put("Bind to components", ScaleMode.LOCK_RELATIVELY);
 		hm2.put("Proportional", ScaleMode.SCALE);
 		hm2.put("Stretch", ScaleMode.STRETCH);
 		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
