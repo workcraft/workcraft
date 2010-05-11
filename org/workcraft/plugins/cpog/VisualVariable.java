@@ -23,12 +23,15 @@ package org.workcraft.plugins.cpog;
 
 import java.awt.BasicStroke;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
@@ -39,6 +42,9 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -46,13 +52,28 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent
 {
-	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private static double size = 1;
-	private static float strokeWidth = 0.1f;
+	private static float strokeWidth = 0.08f;
 
-	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
+	private static Font valueFont;
+
+	private static Font labelFont;
+
+	static {
+		try {
+			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+			valueFont = labelFont.deriveFont(0.75f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	private Rectangle2D labelBB = null;
+	public LabelPositioning labelPositioning = LabelPositioning.TOP;
 
 	public VisualVariable(Variable variable)
 	{
@@ -64,6 +85,14 @@ public class VisualVariable extends VisualComponent
 		states.put("[?] undefined", VariableState.UNDEFINED);
 
 		PropertyDescriptor declaration = new PropertyDeclaration(this, "State", "getState", "setState", VariableState.class, states);
+		addPropertyDeclaration(declaration);
+
+		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
+
+		for(LabelPositioning lp : LabelPositioning.values())
+			positions.put(lp.name, lp);
+
+		declaration = new PropertyDeclaration(this, "Label positioning", "getLabelPositioning", "setLabelPositioning", LabelPositioning.class, positions);
 		addPropertyDeclaration(declaration);
 	}
 
@@ -80,18 +109,22 @@ public class VisualVariable extends VisualComponent
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.draw(shape);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
-		g.setFont(font);
-
 		String text = getState().toString();
 
-		GlyphVector glyphVector = font.createGlyphVector(g.getFontRenderContext(), text);
-		Rectangle2D textBB = glyphVector.getLogicalBounds();
+		FormulaRenderingResult result = FormulaToGraphics.print(text, valueFont, g.getFontRenderContext());
+
+		Rectangle2D textBB = result.boundingBox;
 
 		float textX = (float)-textBB.getCenterX();
-		float textY = (float)-textBB.getCenterY();
+		float textY = (float)-textBB.getCenterY() + 0.08f;
 
-		g.drawGlyphVector(glyphVector, textX, textY);
+		AffineTransform transform = g.getTransform();
+		g.translate(textX, textY);
+
+		result.draw(g, Coloriser.colorise(getForegroundColor(), getColorisation()));
+
+		g.setTransform(transform);
+
 		drawLabelInLocalSpace(g);
 	}
 
@@ -114,30 +147,33 @@ public class VisualVariable extends VisualComponent
 	{
 		String text = getLabel();
 
-		final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
+		FormulaRenderingResult result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
 
-		labelBB = glyphs.getLogicalBounds();
+		labelBB = result.boundingBox;
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		Point2D labelPosition = new Point2D.Double(bb.getMinX() + (bb.getWidth() - labelBB.getWidth()) * 0.5,
-				bb.getMinY() - 0.2);
+		Point2D labelPosition = new Point2D.Double(
+				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
+				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
 
-		labelBB = glyphs.getVisualBounds();
-		labelBB.setRect(labelBB.getMinX() + labelPosition.getX(), labelBB.getMinY() + labelPosition.getY(),
-				labelBB.getWidth(), labelBB.getHeight());
+		AffineTransform oldTransform = g.getTransform();
+		AffineTransform transform = AffineTransform.getTranslateInstance(labelPosition.getX(), labelPosition.getY());
 
-		g.setColor(Coloriser.colorise(getLabelColor(), getColorisation()));
-		g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
+		g.translate(labelPosition.getX(), labelPosition.getY());
+		result.draw(g, Coloriser.colorise(getLabelColor(), getColorisation()));
+		g.setTransform(oldTransform);
+
+		labelBB = BoundingBoxHelper.transform(labelBB, transform);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()
 	{
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+		return BoundingBoxHelper.union(labelBB, new Rectangle2D.Double(-size / 2, -size / 2, size, size));
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+		if (labelBB != null && labelBB.contains(pointInLocalSpace)) return true;
+		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
 	public Variable getMathVariable()
@@ -155,13 +191,19 @@ public class VisualVariable extends VisualComponent
 		getMathVariable().setState(state);
 	}
 
-	public Rectangle2D getBoundingBoxWithLabel()
-	{
-		return transformToParentSpace(BoundingBoxHelper.union(getBoundingBoxInLocalSpace(), labelBB));
-	}
-
 	public void toggle()
 	{
 		setState(getState().toggle());
+	}
+
+	public LabelPositioning getLabelPositioning()
+	{
+		return labelPositioning;
+	}
+
+	public void setLabelPositioning(LabelPositioning labelPositioning)
+	{
+		this.labelPositioning = labelPositioning;
+		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
 }

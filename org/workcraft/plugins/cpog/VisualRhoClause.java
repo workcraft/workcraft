@@ -24,12 +24,15 @@ package org.workcraft.plugins.cpog;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.workcraft.annotations.Hotkey;
@@ -39,6 +42,8 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
@@ -49,9 +54,21 @@ public class VisualRhoClause extends VisualComponent
 {
 	private static float strokeWidth = 0.038f;
 
-	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-
 	private Rectangle2D boudingBox = new Rectangle2D.Float(0, 0, 0, 0);
+
+	private static Font font;
+
+	static {
+		try {
+			font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public VisualRhoClause(RhoClause rhoClause)
 	{
@@ -60,9 +77,9 @@ public class VisualRhoClause extends VisualComponent
 
 	public void draw(Graphics2D g)
 	{
-		FontRenderContext fontRenderContext = g.getFontRenderContext();
-		GlyphVector glyphVector = font.createGlyphVector(fontRenderContext, FormulaToString.toString(getFormula(), true));
-		Rectangle2D textBB = glyphVector.getLogicalBounds();
+		FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
+
+		Rectangle2D textBB = result.boundingBox;
 
 		float textX = (float)-textBB.getCenterX();
 		float textY = (float)-textBB.getCenterY();
@@ -79,8 +96,12 @@ public class VisualRhoClause extends VisualComponent
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.draw(boudingBox);
 
-		g.setColor(Coloriser.colorise(getColor(), getColorisation()));
-		g.drawGlyphVector(glyphVector, textX, textY);
+		AffineTransform transform = g.getTransform();
+		g.translate(textX, textY);
+
+		result.draw(g, Coloriser.colorise(getColor(), getColorisation()));
+
+		g.setTransform(transform);
 	}
 
 	private Color getColor() {
@@ -95,7 +116,7 @@ public class VisualRhoClause extends VisualComponent
 	}
 
 	private BooleanFormula evaluate() {
-		return getMathRhoClause().getFormula().accept(
+		return getFormula().accept(
 			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
 			{
 				@Override

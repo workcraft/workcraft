@@ -57,4 +57,10 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
+
+	@Override
+	public Point2D getCenterInLocalSpace()
+	{
+		return new Point2D.Double(0, 0);
+	}
 }

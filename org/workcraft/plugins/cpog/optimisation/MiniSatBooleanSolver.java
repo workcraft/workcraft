@@ -23,7 +23,7 @@ package org.workcraft.plugins.cpog.optimisation;
 
 public class MiniSatBooleanSolver {
 
-	static final String minisatPath = "C:\\Cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
+	static final String minisatPath = "D:\\cheetah\\Programs\\cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
 	static final String claspPath = "C:\\Work\\Tools\\clasp-1.3.1\\clasp-1.3.1.exe";
 
 	static final boolean useClasp = true;

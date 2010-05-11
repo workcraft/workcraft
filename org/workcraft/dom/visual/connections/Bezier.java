@@ -87,7 +87,8 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 			update();
 
 		g.setColor(connectionInfo.getDrawColor());
-		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
+//		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
+		g.setStroke(connectionInfo.getStroke());
 
 		g.draw(visibleCurve);
 
@@ -245,5 +246,11 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	@Override
 	public Point2D getSecondDerivativeAt(double t) {
 		return Geometry.getSecondDerivativeOfCubicCurve(curve, t);
+	}
+
+	@Override
+	public Point2D getCenter()
+	{
+		return getPointOnCurve(0.5);
 	}
 }

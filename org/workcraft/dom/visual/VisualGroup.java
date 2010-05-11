@@ -161,4 +161,10 @@ ObservableHierarchy, Colorisable {
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
+
+	@Override
+	public Point2D getCenterInLocalSpace()
+	{
+		return new Point2D.Double(0, 0);
+	}
 }

@@ -93,11 +93,8 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 		firstShape = TransformHelper.transform(connection.getFirst(), TransformHelper.getTransform(connection.getFirst(), connection));
 		secondShape = TransformHelper.transform(connection.getSecond(), TransformHelper.getTransform(connection.getSecond(), connection));
 
-		Rectangle2D firstBB = firstShape.getBoundingBox();
-		Rectangle2D secondBB = secondShape.getBoundingBox();
-
-		firstCenter.setLocation(firstBB.getCenterX(), firstBB.getCenterY());
-		secondCenter.setLocation(secondBB.getCenterX(), secondBB.getCenterY());
+		firstCenter = firstShape.getCenter();
+		secondCenter = secondShape.getCenter();
 
 		valid = true;
 	}
