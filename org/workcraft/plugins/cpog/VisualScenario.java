@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -162,12 +161,6 @@ public class VisualScenario extends VisualGroup
 
 			for(Variable var : sortedVariables)
 			{
-				Color color = Color.BLACK;
-
-				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
-				if (perfectMatch) color = Color.GREEN;
-
-
 				String text = var.getLabel();
 
 				result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
@@ -225,7 +218,11 @@ public class VisualScenario extends VisualGroup
 				transform = g.getTransform();
 				g.translate(labelPosition.getX(), labelPosition.getY());
 
-				result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+				Color color = Color.BLACK;
+				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
+				if (perfectMatch) color = Color.GREEN;
+
+				result.draw(g, Coloriser.colorise(color, getColorisation()));
 
 				g.setTransform(transform);
 

@@ -22,8 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.util.Geometry;
