@@ -5,9 +5,9 @@ import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.MpsatPresetManager;
 import org.workcraft.util.GUI;
 
+import org.workcraft.plugins.desij.DesiJPresetManager;
 import org.workcraft.plugins.desij.gui.DesiJConfigurationDialog;
 
 @DisplayName("DesiJ - customise function")
@@ -28,7 +28,7 @@ public class DesiJCustomFunction implements Tool {
 
 	@Override
 	public void run(Model model, Framework framework) {
-		MpsatPresetManager pmgr = new MpsatPresetManager();
+		DesiJPresetManager pmgr = new DesiJPresetManager();
 		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerFrameToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);

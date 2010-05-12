@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="build/|config/|scripts/|src/" kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/flexdock-0.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/jedit.jar"/>
@@ -36,5 +35,6 @@
 	<classpathentry kind="lib" path="lib/batik/xml-apis-ext.jar"/>
 	<classpathentry kind="lib" path="lib/batik/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/desij.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

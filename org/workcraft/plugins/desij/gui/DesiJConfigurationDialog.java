@@ -28,12 +28,9 @@ import javax.swing.JTextField;
 
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.desij.DesiJOperation;
-import org.workcraft.plugins.verification.MpsatMode;
-import org.workcraft.plugins.verification.MpsatPreset;
-import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.MpsatSettings;
-import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
-import org.workcraft.plugins.verification.gui.MpsatPresetManagerDialog;
+import org.workcraft.plugins.desij.DesiJPreset;
+import org.workcraft.plugins.desij.DesiJPresetManager;
+import org.workcraft.plugins.desij.DesiJSettings;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
@@ -43,7 +40,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	private JPanel content, presetPanel, buttonsPanel;
 	private JScrollPane partitionPanel, optionsPanel;
 	private JLabel aggregationLabel, synthesiserLabel;
-	private JComboBox presetCombo, operationCombo, synthesiserCombo, verbosityCombo;
+	private JComboBox presetCombo, operationCombo, synthesiserCombo;
 	private JButton manageButton, saveAsNewButton, runButton, updatePresetButton, cancelButton;
 	private JTextField aggregationFactorText;
 	private JTextArea partitionText;
@@ -52,7 +49,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	private JCheckBox riskyDeco, outdetDeco, safenessContraction;
 	private JCheckBox loopDuplicatePlaces, shortcutPlaces, implicitPlaces;
 	private JCheckBox inclSynthesis, cscAware, intCom;
-	private MpsatPresetManager presetManager;
+	private DesiJPresetManager presetManager;
 
 	private TableLayout layout;
 	private int modalResult = 0;
@@ -78,7 +75,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		presetPanel = new JPanel(new SimpleFlowLayout(15, 3));
 
 		presetCombo = new JComboBox();
-		for (MpsatPreset p : presetManager.list())
+		for (DesiJPreset p : presetManager.list())
 			presetCombo.addItem(p);
 
 		presetCombo.addActionListener( new ActionListener() {
@@ -94,7 +91,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				boolean haveCustomPresets = false;
-				for (MpsatPreset p : presetManager.list())
+				for (DesiJPreset p : presetManager.list())
 					if (!p.isBuiltIn()) {
 						haveCustomPresets = true;
 						break;
@@ -111,7 +108,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		updatePresetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MpsatPreset selected = (MpsatPreset)presetCombo.getSelectedItem();
+				DesiJPreset selected = (DesiJPreset)presetCombo.getSelectedItem();
 				presetManager.update(selected, getSettingsFromControls());
 			}
 		});
@@ -133,19 +130,19 @@ public class DesiJConfigurationDialog extends JDialog {
 	}
 
 	private void managePresets() {
-		MpsatPreset selected = (MpsatPreset)presetCombo.getSelectedItem();
+		DesiJPreset selected = (DesiJPreset)presetCombo.getSelectedItem();
 
-		MpsatPresetManagerDialog dlg = new MpsatPresetManagerDialog(this, presetManager);
+		DesiJPresetManagerDialog dlg = new DesiJPresetManagerDialog(this, presetManager);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
 		GUI.centerFrameToParent(dlg, this);
 		dlg.setVisible(true);
 
 		presetCombo.removeAllItems();
-		List<MpsatPreset> presets = presetManager.list();
+		List<DesiJPreset> presets = presetManager.list();
 
 		boolean haveOldSelection = false;
 
-		for (MpsatPreset p : presets) {
+		for (DesiJPreset p : presets) {
 			presetCombo.addItem(p);
 			if (p == selected)
 				haveOldSelection = true;
@@ -162,8 +159,8 @@ public class DesiJConfigurationDialog extends JDialog {
 		String desc = JOptionPane.showInputDialog(this, "Please enter the description of the new preset:");
 
 		if (! (desc == null || desc.isEmpty())) {
-			MpsatSettings settings = getSettingsFromControls();
-			MpsatPreset preset = presetManager.save(settings, desc);
+			DesiJSettings settings = getSettingsFromControls();
+			DesiJPreset preset = presetManager.save(settings, desc);
 			presetCombo.addItem(preset);
 			presetCombo.setSelectedItem(preset);
 		}
@@ -171,7 +168,7 @@ public class DesiJConfigurationDialog extends JDialog {
 
 	// apply preset settings to controls
 	private void applySettingsToControls() {
-		MpsatPreset p = (MpsatPreset)presetCombo.getSelectedItem();
+		DesiJPreset p = (DesiJPreset)presetCombo.getSelectedItem();
 
 		if (p == null)
 			return;
@@ -185,33 +182,75 @@ public class DesiJConfigurationDialog extends JDialog {
 			updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
 		}
 
-		MpsatSettings settings = p.getSettings();
+		// apply settings to controls
+		DesiJSettings settings = p.getSettings();
 
-		operationCombo.setSelectedItem(settings.getMode());
-		synthesiserCombo.setSelectedIndex(settings.getSatSolver());
-		verbosityCombo.setSelectedIndex(settings.getVerbosity());
-		switch (settings.getSolutionMode()) {
-		case ALL:
-			singleLazyDeco.setSelected(true);
-			enableAggregationControls();
-			break;
-		case MINIMUM_COST:
-			treeDeco.setSelected(true);
-			disableAggregationControls();
-			break;
-		case FIRST:
-			basicDeco.setSelected(true);
-			disableAggregationControls();
-			break;
+		// Operation:
+		operationCombo.setSelectedItem(settings.getOperation());
+
+		// Decomposition strategy:
+		if (settings.getDecoStrategy() != null) {
+			switch (settings.getDecoStrategy()) {
+			case LAZYSINGLE:
+				singleLazyDeco.doClick();
+				break;
+			case TREE:
+				treeDeco.doClick();
+				break;
+			case BASIC:
+				basicDeco.doClick();
+				break;
+			case LAZYMULTI:
+				multiLazyDeco.doClick();
+				break;
+			}
 		}
-		int n = settings.getSolutionNumberLimit();
 
+		int n = settings.getAggregationFactor();
 		if (n>0)
 			aggregationFactorText.setText(Integer.toString(n));
 		else
 			aggregationFactorText.setText("");
 
-		partitionText.setText(settings.getReach());
+		// Output partition:
+		if (settings.getPartitionMode() != null) {
+			switch (settings.getPartitionMode()) {
+			case FINEST:
+				finestPartition.doClick();
+				break;
+			case BEST:
+				bestPartition.doClick();
+				break;
+			case CUSTOM:
+				customPartition.doClick();
+				break;
+			}
+		}
+
+		partitionText.setText(settings.getPartition());
+
+		// Deletion of implicit Places:
+		loopDuplicatePlaces.setSelected(settings.getLoopDuplicatePlaceHandling());
+		shortcutPlaces.setSelected(settings.getShortcutPlaceHandling());
+		implicitPlaces.setSelected(settings.getImplicitPlaceHandling());
+
+		// Transition contraction mode:
+		safenessContraction.setSelected(settings.getSafenessPreservingContractionOption());
+		outdetDeco.setSelected(settings.getOutputDeterminacyOption());
+		riskyDeco.setSelected(settings.getRiskyOption());
+
+		// Synthesis options:
+		synthesiserCombo.setSelectedIndex(settings.getSynthesiser());
+		// because the Enabling of inclSynthesis has influence on other controls
+		if (inclSynthesis.isEnabled() &&
+				(inclSynthesis.isSelected() != settings.getPostSynthesisOption()) )
+			inclSynthesis.doClick();
+		if (cscAware.isEnabled() &&
+				(cscAware.isSelected() != settings.getCSCAwareOption()) )
+			cscAware.doClick();
+		if (intCom.isEnabled() &&
+				(intCom.isSelected() != settings.getInternalCommunicationOption()) )
+			intCom.doClick();
 	}
 
 	// ************** Main Panel stuff **********************
@@ -431,6 +470,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
 				// update GUI
+				optionsPanel.doLayout();
 			}
 		});
 
@@ -441,6 +481,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
 				// update GUI
+				optionsPanel.doLayout();
 			}
 		});
 
@@ -451,6 +492,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(true);
 				layout.setRow(2, TableLayout.FILL);
 				// update GUI
+				optionsPanel.doLayout();
 			}
 		});
 
@@ -668,7 +710,7 @@ public class DesiJConfigurationDialog extends JDialog {
 	 * @param owner
 	 * @param presetManager - ... of DesiJ settings
 	 */
-	public DesiJConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
+	public DesiJConfigurationDialog(Window owner, DesiJPresetManager presetManager) {
 		super(owner, "DesiJ configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
 
@@ -696,41 +738,42 @@ public class DesiJConfigurationDialog extends JDialog {
 
 		setContentPane(content);
 
-		//presetCombo.setSelectedIndex(0);
+		presetCombo.setSelectedIndex(0);
 	}
 
 
 	// **************** for external use **********************
 
-	public MpsatSettings getSettings() {
+	public DesiJSettings getSettings() {
 		return getSettingsFromControls();
 	}
 
-	private MpsatSettings getSettingsFromControls() {
-		SolutionMode m;
-
-		if (basicDeco.isSelected())
-			m = SolutionMode.FIRST;
-		else if (treeDeco.isSelected())
-			m = SolutionMode.MINIMUM_COST;
-		else
-			m = SolutionMode.ALL;
-
-		int n;
-
-		try {
-			n = Integer.parseInt(aggregationFactorText.getText());
-		} catch (NumberFormatException e) {
-			n = 0;
-		}
-
-		if (n<0)
-			n=0;
-
-		MpsatSettings settings = new MpsatSettings((MpsatMode) operationCombo
-				.getSelectedItem(), verbosityCombo.getSelectedIndex(), synthesiserCombo
-				.getSelectedIndex(), m, n, partitionText.getText());
-		return settings;
+	private DesiJSettings getSettingsFromControls() {
+//		SolutionMode m;
+//
+//		if (basicDeco.isSelected())
+//			m = SolutionMode.FIRST;
+//		else if (treeDeco.isSelected())
+//			m = SolutionMode.MINIMUM_COST;
+//		else
+//			m = SolutionMode.ALL;
+//
+//		int n;
+//
+//		try {
+//			n = Integer.parseInt(aggregationFactorText.getText());
+//		} catch (NumberFormatException e) {
+//			n = 0;
+//		}
+//
+//		if (n<0)
+//			n=0;
+//
+//		MpsatSettings settings = new MpsatSettings((MpsatMode) operationCombo
+//				.getSelectedItem(), verbosityCombo.getSelectedIndex(), synthesiserCombo
+//				.getSelectedIndex(), m, n, partitionText.getText());
+//		return settings;
+		return null;
 	}
 
 	public int getModalResult() {

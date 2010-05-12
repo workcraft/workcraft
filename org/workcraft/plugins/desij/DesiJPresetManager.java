@@ -25,18 +25,18 @@ public class DesiJPresetManager {
 		presets.add(new DesiJPreset("Decomposition (basic)",
 				new DesiJSettings(DesiJOperation.DECOMPOSITION,
 						DecompositionStrategy.BASIC, -1, // decomposition strategy
-						PartitionMode.FINEST, null, // partitioning
+						PartitionMode.FINEST, "", // partitioning
 						true, true, false, // implicit place handling
 						false, false, false, // contraction mode
-						false, -1, false, false),  // component synthesis
+						false, 0, false, false),  // component synthesis
 					true) ); // built-in preset
 		presets.add(new DesiJPreset("Dummy removal",
 				new DesiJSettings(DesiJOperation.REMOVE_DUMMIES,
 						DecompositionStrategy.BASIC, -1, // decomposition strategy
-						null, null, // partitioning
+						null, "", // partitioning
 						true, true, false, // implicit place handling
 						false, false, false, // contraction mode
-						false, -1, false, false),  // component synthesis
+						false, 0, false, false),  // component synthesis
 					true) ); // built-in preset
 	}
 
