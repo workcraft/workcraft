@@ -470,7 +470,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
 				// update GUI
-				optionsPanel.doLayout();
+				content.doLayout();
 			}
 		});
 
@@ -481,7 +481,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(false);
 				layout.setRow(2, 0);
 				// update GUI
-				optionsPanel.doLayout();
+				content.doLayout();
 			}
 		});
 
@@ -492,7 +492,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				partitionPanel.setVisible(true);
 				layout.setRow(2, TableLayout.FILL);
 				// update GUI
-				optionsPanel.doLayout();
+				content.doLayout();
 			}
 		});
 
@@ -509,6 +509,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		if (customPartition.isSelected()) {
 			partitionPanel.setVisible(true);
 			layout.setRow(2, TableLayout.FILL);
+			content.doLayout(); // update the GUI
 		}
 	}
 
@@ -516,6 +517,7 @@ public class DesiJConfigurationDialog extends JDialog {
 		if (customPartition.isSelected()) {
 			partitionPanel.setVisible(false);
 			layout.setRow(2, 0);
+			content.doLayout(); // update the GUI
 		}
 
 		finestPartition.setEnabled(false);
