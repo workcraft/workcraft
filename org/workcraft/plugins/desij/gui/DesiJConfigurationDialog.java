@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -31,6 +30,8 @@ import org.workcraft.plugins.desij.DesiJOperation;
 import org.workcraft.plugins.desij.DesiJPreset;
 import org.workcraft.plugins.desij.DesiJPresetManager;
 import org.workcraft.plugins.desij.DesiJSettings;
+import org.workcraft.plugins.desij.DesiJSettings.DecompositionStrategy;
+import org.workcraft.plugins.desij.DesiJSettings.PartitionMode;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
@@ -471,6 +472,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				layout.setRow(2, 0);
 				// update GUI
 				content.doLayout();
+				optionsPanel.doLayout(); // for the scrollbar
 			}
 		});
 
@@ -482,6 +484,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				layout.setRow(2, 0);
 				// update GUI
 				content.doLayout();
+				optionsPanel.doLayout(); // for the scrollbar
 			}
 		});
 
@@ -493,6 +496,7 @@ public class DesiJConfigurationDialog extends JDialog {
 				layout.setRow(2, TableLayout.FILL);
 				// update GUI
 				content.doLayout();
+				optionsPanel.doLayout(); // for the scrollbar
 			}
 		});
 
@@ -510,6 +514,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			partitionPanel.setVisible(true);
 			layout.setRow(2, TableLayout.FILL);
 			content.doLayout(); // update the GUI
+			optionsPanel.doLayout(); // for the scrollbar
 		}
 	}
 
@@ -518,6 +523,7 @@ public class DesiJConfigurationDialog extends JDialog {
 			partitionPanel.setVisible(false);
 			layout.setRow(2, 0);
 			content.doLayout(); // update the GUI
+			optionsPanel.doLayout(); // for the scrollbar
 		}
 
 		finestPartition.setEnabled(false);
@@ -686,8 +692,16 @@ public class DesiJConfigurationDialog extends JDialog {
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				modalResult = 1;
-				setVisible(false);
+				if (customPartition.isEnabled() && customPartition.isSelected() &&
+						(partitionText.getText() == null || partitionText.getText().equals("")) ) {
+					final String hint = "Please specify your custom partition in the text field!";
+					JOptionPane.showMessageDialog(buttonsPanel, hint);
+					modalResult = 0;
+				}
+				else {
+					modalResult = 1;
+					setVisible(false);
+				}
 			}
 		});
 
@@ -751,31 +765,48 @@ public class DesiJConfigurationDialog extends JDialog {
 	}
 
 	private DesiJSettings getSettingsFromControls() {
-//		SolutionMode m;
-//
-//		if (basicDeco.isSelected())
-//			m = SolutionMode.FIRST;
-//		else if (treeDeco.isSelected())
-//			m = SolutionMode.MINIMUM_COST;
-//		else
-//			m = SolutionMode.ALL;
-//
-//		int n;
-//
-//		try {
-//			n = Integer.parseInt(aggregationFactorText.getText());
-//		} catch (NumberFormatException e) {
-//			n = 0;
-//		}
-//
-//		if (n<0)
-//			n=0;
-//
-//		MpsatSettings settings = new MpsatSettings((MpsatMode) operationCombo
-//				.getSelectedItem(), verbosityCombo.getSelectedIndex(), synthesiserCombo
-//				.getSelectedIndex(), m, n, partitionText.getText());
-//		return settings;
-		return null;
+
+		DecompositionStrategy decoStrategy;
+
+		if (basicDeco.isEnabled() && basicDeco.isSelected())
+			decoStrategy = DecompositionStrategy.BASIC;
+		else if (treeDeco.isEnabled() && treeDeco.isSelected())
+			decoStrategy = DecompositionStrategy.TREE;
+		else if (singleLazyDeco.isEnabled() && singleLazyDeco.isSelected())
+			decoStrategy = DecompositionStrategy.LAZYSINGLE;
+		else if (multiLazyDeco.isEnabled() && multiLazyDeco.isSelected())
+			decoStrategy = DecompositionStrategy.LAZYMULTI;
+		else
+			decoStrategy = null;
+
+		int aggSignalCount;
+
+		try {
+			aggSignalCount = Integer.parseInt(aggregationFactorText.getText());
+		} catch (NumberFormatException e) {
+			aggSignalCount = 0; // default? I think!
+		}
+
+		PartitionMode partitionMode;
+
+		if (finestPartition.isEnabled() && finestPartition.isSelected())
+			partitionMode = PartitionMode.FINEST;
+		else if (bestPartition.isEnabled() && bestPartition.isSelected())
+			partitionMode = PartitionMode.BEST;
+		else if (customPartition.isEnabled() && customPartition.isSelected())
+			partitionMode = PartitionMode.CUSTOM;
+		else
+			partitionMode = null;
+
+		DesiJSettings settings = new DesiJSettings(
+				(DesiJOperation) operationCombo.getSelectedItem(),
+				decoStrategy, aggSignalCount, partitionMode, partitionText.getText(),
+				loopDuplicatePlaces.isSelected(), shortcutPlaces.isSelected(), implicitPlaces.isSelected(),
+				safenessContraction.isSelected(), outdetDeco.isSelected(), riskyDeco.isSelected(),
+				inclSynthesis.isSelected(), synthesiserCombo.getSelectedIndex(), cscAware.isSelected(), intCom.isSelected()
+				);
+
+		return settings;
 	}
 
 	public int getModalResult() {

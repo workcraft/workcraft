@@ -19,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import org.workcraft.plugins.desij.DesiJPresetManager;
 import org.workcraft.plugins.desij.DesiJPreset;
 
+@SuppressWarnings("serial")
 public class DesiJPresetManagerDialog extends JDialog {
 	private JPanel content;
 	private JList list;
