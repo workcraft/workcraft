@@ -31,9 +31,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Visual Circuit")

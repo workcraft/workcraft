@@ -23,14 +23,8 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.util.Hierarchy;
 
 @DisplayName("Contact")
 @VisualClass("org.workcraft.plugins.circuit.VisualContact")

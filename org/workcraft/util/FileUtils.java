@@ -22,6 +22,7 @@
 package org.workcraft.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -68,8 +69,7 @@ public class FileUtils{
 	        FileInputStream(in).getChannel();
 	    WritableByteChannel outChannel = Channels.newChannel(out);
 	    try {
-	        inChannel.transferTo(0, inChannel.size(),
-	                outChannel);
+	        inChannel.transferTo(0, inChannel.size(), outChannel);
 	    }
 	    catch (IOException e) {
 	        throw e;
@@ -146,5 +146,17 @@ public class FileUtils{
 	public static void moveFile(File from, File to) throws IOException {
 		copyFile(from, to);
 		from.delete();
+	}
+
+	public static byte[] readAllBytes(File in) throws IOException {
+		ByteArrayOutputStream mem = new ByteArrayOutputStream();
+		copyFileToStream(in, mem);
+		return mem.toByteArray();
+	}
+
+	public static void writeAllBytes(byte[] bytes, File out) throws IOException {
+		OutputStream stream = new FileOutputStream(out);
+		stream.write(bytes);
+		stream.close();
 	}
 }

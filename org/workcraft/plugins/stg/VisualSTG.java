@@ -39,8 +39,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.tools.CustomToolsProvider;
-import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.SimulationTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;

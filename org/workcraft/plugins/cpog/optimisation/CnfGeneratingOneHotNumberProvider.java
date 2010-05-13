@@ -24,16 +24,10 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 			vars.add(new FreeVariable(varPrefix + "sel"+i));
 
 		List<CnfLiteral> literals = new ArrayList<CnfLiteral>();
-		List<CnfLiteral> sorted = new ArrayList<CnfLiteral>();
-		for(int i=0;i<range;i++)
-		{
-			literals.add(new CnfLiteral(vars.get(i)));
-			sorted.add(new CnfLiteral(varPrefix + "sorted"+i));
-		}
 
-		Cnf sorting = CnfSorter.sortRound(sorted, literals);
+		boolean useSorting = true;
 
-		if(false)
+		if(!useSorting)
 		{
 			for(int i=0;i<range;i++)
 				for(int j=i+1;j<range;j++)
@@ -43,6 +37,15 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		}
 		else
 		{
+			List<CnfLiteral> sorted = new ArrayList<CnfLiteral>();
+			for(int i=0;i<range;i++)
+			{
+				literals.add(new CnfLiteral(vars.get(i)));
+				sorted.add(new CnfLiteral(varPrefix + "sorted"+i));
+			}
+
+			Cnf sorting = CnfSorter.sortRound(sorted, literals);
+
 			for(int i=0;i<range-1;i++)
 				rho.add(or(not(sorted.get(i))));
 			rho.add(or(sorted.get(range-1)));

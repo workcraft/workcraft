@@ -301,10 +301,10 @@ public class HitMan
 
 			if (p1.getX()<=p2.getX()) {
 				if (TouchableHelper.insideRectangle(n, rect))
-					hit.add((VisualNode)n);
+					hit.add((Node)n);
 			} else {
 				if (TouchableHelper.touchesRectangle(n, rect))
-					hit.add((VisualNode)n);
+					hit.add((Node)n);
 			}
 		}
 		return hit;

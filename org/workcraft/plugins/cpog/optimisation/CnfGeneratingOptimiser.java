@@ -222,6 +222,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 				throw new RuntimeException("o_O");
 	}
 
+	@SuppressWarnings("unused")
 	private void evaluate(CnfLiteral result, AndFunction<OneHotIntBooleanFormula> function, CnfLiteral[] f)
 	{
 		CnfLiteral sel1 = new CnfLiteral(result.getVariable().getLabel() + "_sel1");

@@ -3,6 +3,7 @@
 package org.workcraft.plugins.stg.javacc;
 
 /** Token Manager Error. */
+@SuppressWarnings("all")
 public class TokenMgrError extends Error
 {
 

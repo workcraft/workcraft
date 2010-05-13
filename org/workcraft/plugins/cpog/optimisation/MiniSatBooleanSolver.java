@@ -20,20 +20,13 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-import java.io.BufferedReader;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MiniSatBooleanSolver {
 
-	static final String minisatPath = "C:\\Cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
+	static final String minisatPath = "D:\\cheetah\\Programs\\cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
 	static final String claspPath = "C:\\Work\\Tools\\clasp-1.3.1\\clasp-1.3.1.exe";
+
+	static final boolean useClasp = true;
 
 	public BooleanSolution solve(CnfTask task)
 	{
@@ -44,7 +37,7 @@ public class MiniSatBooleanSolver {
 	}
 
 	private String solve(String cnf) {
-		if(false)
+		if(!useClasp)
 			return ProcessIO.minisat(cnf);
 		else
 			return ProcessIO.runViaStreams(cnf, new String[]{claspPath});

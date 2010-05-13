@@ -95,12 +95,12 @@ import org.workcraft.util.FileUtils;
 public class CodeGenerator {
 	public void generateBaseClasses(File projectPath, BalsaSystem balsa) throws IOException
 	{
-		BreezeLibrary lib = new BreezeLibrary();
-		lib.registerPrimitives(balsa.getDefinitionsDir());
+		Collection<? extends PrimitivePart> definitions = getBreezeDefinitions(balsa);
+
 		File destinationFolder = appendPath(projectPath, BASE_CLASSES_PATH);
 		String pckg = "org.workcraft.plugins.balsa.stg.generated";
 
-		for(BreezeDefinition def : lib.values())
+		for(PrimitivePart def : definitions)
 		{
 			CompilationUnit cu = new CompilationUnit();
 			cu.setPackage(new PackageDeclaration(new NameExpr(pckg)));
@@ -113,31 +113,42 @@ public class CodeGenerator {
 		}
 	}
 
+	private static Collection<? extends PrimitivePart> getBreezeDefinitions(BalsaSystem balsa) throws IOException {
+		ArrayList<PrimitivePart> list = new ArrayList<PrimitivePart>();
+		for(PrimitivePart primitive : new BreezeLibrary(balsa).getPrimitives())
+		{
+			list.add(getSplitter(primitive).getControlDefinition());
+		}
+		return list;
+	}
+
+	private static PrimitiveDataPathSplitter getSplitter(PrimitivePart primitive) {
+		return DataPathSplitters.getSplitter(primitive.getName());
+	}
+
 	String[] BASE_CLASSES_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "generated"};
 	String[] STUBS_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "implementations_stubs"};
 
 	public void generateStubs(File path, BalsaSystem balsa) throws IOException
 	{
-		BreezeLibrary lib = new BreezeLibrary();
-		lib.registerPrimitives(balsa.getDefinitionsDir());
 		File destinationFolder = appendPath(path, STUBS_PATH);
 		String pckg = "org.workcraft.plugins.balsa.stg.implementations";
 		String generatedPckg = "org.workcraft.plugins.balsa.stg.generated";
 
 		PackageDeclaration pakageDecl = new PackageDeclaration(new NameExpr(pckg));
 
+		Collection<? extends PrimitivePart> breezeParts = getBreezeDefinitions(balsa);
+
 		CompilationUnit selectorCU = new CompilationUnit();
 		selectorCU.setPackage(pakageDecl);
-		ASTHelper.addTypeDeclaration(selectorCU, generateSelector(lib.values()));
+		ASTHelper.addTypeDeclaration(selectorCU, generateSelector(breezeParts));
 		MyDumpVisitor dump = new MyDumpVisitor();
 		selectorCU.accept(dump, null);
 		String selectorText = dump.getSource();
 		FileUtils.writeAllText(new File(destinationFolder, getSelectorClassName() + ".java"), selectorText);
 
-		for(BreezeDefinition def : lib.values())
+		for(PrimitivePart p : breezeParts)
 		{
-			PrimitivePart p = (PrimitivePart)def;
-
 			CompilationUnit cu = new CompilationUnit();
 			ArrayList<ImportDeclaration> imports = new ArrayList<ImportDeclaration>(1);
 			imports.add(new ImportDeclaration(new NameExpr(generatedPckg), false, true));
@@ -162,7 +173,7 @@ public class CodeGenerator {
 		return result;
 	}
 
-	private TypeDeclaration generateSelector(Collection<BreezeDefinition> breezeDefs) {
+	private TypeDeclaration generateSelector(Collection<? extends BreezeDefinition> breezeDefs) {
 		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, false, getSelectorClassName());
 
 		ClassOrInterfaceType returnType = new ClassOrInterfaceType(ComponentStgBuilder.class.getCanonicalName() + "<" + DynamicComponent.class.getCanonicalName() + ">");

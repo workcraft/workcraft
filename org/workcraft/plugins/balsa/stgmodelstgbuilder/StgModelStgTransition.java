@@ -22,18 +22,18 @@
 package org.workcraft.plugins.balsa.stgmodelstgbuilder;
 
 import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
-import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.StgTransition;
 
 public class StgModelStgTransition implements InputOutputEvent
 {
-	private final SignalTransition modelTransition;
+	private final StgTransition modelTransition;
 
-	StgModelStgTransition(SignalTransition modelTransition)
+	StgModelStgTransition(StgTransition modelTransition)
 	{
 		this.modelTransition = modelTransition;
 	}
 
-	public SignalTransition getModelTransition() {
+	public StgTransition getModelTransition() {
 		return modelTransition;
 	}
 }

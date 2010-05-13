@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.observation.PropertyChangedEvent;

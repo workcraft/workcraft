@@ -25,7 +25,6 @@ import java.awt.Graphics2D;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -450,12 +449,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);
 		return HitMan.boxHitTest(currentLevel, p1, p2);
-	}
-
-	public Collection<Node> boxHitTest(Rectangle2D selectionRect) {
-		return boxHitTest(
-				new Point2D.Double(selectionRect.getMinX(), selectionRect.getMinY()),
-				new Point2D.Double(selectionRect.getMaxX(), selectionRect.getMaxY()));
 	}
 
 	public void addObserver(StateObserver obs) {

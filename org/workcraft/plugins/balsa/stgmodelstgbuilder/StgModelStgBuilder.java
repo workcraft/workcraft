@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.stgbuilder.Event;
 import org.workcraft.plugins.balsa.stgbuilder.InputOutputEvent;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
@@ -33,17 +34,19 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.StgTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class StgModelStgBuilder implements StgBuilder {
 
 	private final STG model;
-	HandshakeNameProvider nameProvider;
+	NameProvider<? super Handshake> nameProvider;
 
-	public StgModelStgBuilder(STG model, HandshakeNameProvider nameProvider)
+	public StgModelStgBuilder(STG model, NameProvider<? super Handshake> nameProvider)
 	{
 		this.model = model;
 		this.nameProvider = nameProvider;
@@ -51,12 +54,12 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	public void addConnection(StgModelStgPlace source, StgModelStgTransition destination)
 	{
-		addConnection(source.getPetriPlace(), destination.getModelTransition());
+		addConnection(source.getPetriPlace(), destination.getModelTransition().getTransition());
 	}
 
 	public void addConnection(StgModelStgTransition source, StgModelStgPlace destination)
 	{
-		addConnection(source.getModelTransition(), destination.getPetriPlace());
+		addConnection(source.getModelTransition().getTransition(), destination.getPetriPlace());
 	}
 
 	public void addConnection(MathNode source, MathNode destination)
@@ -88,11 +91,28 @@ public class StgModelStgBuilder implements StgBuilder {
 		return buildPlace(0);
 	}
 
-	public StgModelStgTransition buildTransition() {
-		SignalTransition transition = null;//new SignalTransition();
-		//transition.setSignalType(Type.DUMMY); // TODO!!!
-		model.add(transition);
-		return new StgModelStgTransition(transition);
+	public StgModelStgTransition buildTransition()
+	{
+		return buildTransition(Type.DUMMY);
+	}
+
+	public StgModelStgTransition buildTransition(Type type) {
+		StgTransition t;
+		if(type == Type.DUMMY)
+		{
+			DummyTransition transition = new DummyTransition();
+			model.add(transition);
+			t = transition;
+		}
+		else
+		{
+			SignalTransition transition = new SignalTransition();
+			model.add(transition);
+			transition.setSignalType(type);
+			t = transition;
+		}
+
+		return new StgModelStgTransition(t);
 	}
 
 	private StgModelStgPlace buildStgPlace(int tokenCount) {
@@ -103,19 +123,16 @@ public class StgModelStgBuilder implements StgBuilder {
 	}
 
 	public StgSignal buildSignal(SignalId id, boolean isOutput) {
-		final StgModelStgTransition transitionP = buildTransition();
-		final StgModelStgTransition transitionM = buildTransition();
-		final String sname = nameProvider.getName(id.getOwner()) + "_" + id.getName();
-		transitionP.getModelTransition().setSignalName(sname);
-		transitionM.getModelTransition().setSignalName(sname);
-
-		transitionP.getModelTransition().setDirection(Direction.PLUS);
-		transitionM.getModelTransition().setDirection(Direction.MINUS);
-
 		Type type = isOutput ? Type.OUTPUT : Type.INPUT;
+		final StgModelStgTransition transitionP = buildTransition(type);
+		final StgModelStgTransition transitionM = buildTransition(type);
+		final String sname = nameProvider.getName(id.getOwner()) + "_" + id.getName();
+		transitionP.getModelTransition().asSignal().setSignalName(sname);
+		transitionM.getModelTransition().asSignal().setSignalName(sname);
 
-		transitionP.getModelTransition().setSignalType(type);
-		transitionM.getModelTransition().setSignalType(type);
+		transitionP.getModelTransition().asSignal().setDirection(Direction.PLUS);
+		transitionM.getModelTransition().asSignal().setDirection(Direction.MINUS);
+
 
 		final StgSignal result = new StgSignal()
 		{

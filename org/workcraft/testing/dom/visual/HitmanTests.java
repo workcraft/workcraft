@@ -74,6 +74,12 @@ public class HitmanTests {
 		public boolean hitTest(Point2D point) {
 			return true;
 		}
+
+		@Override
+		public Point2D getCenter()
+		{
+			return new Point2D.Double(0, 0);
+		}
 	}
 
 	@Test

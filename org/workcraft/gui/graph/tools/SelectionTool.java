@@ -39,10 +39,8 @@ import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.SelectionColoriser;
@@ -67,7 +65,8 @@ public class SelectionTool extends AbstractTool {
 	private SelectionColoriser coloriser;
 
 	private int drag = DRAG_NONE;
-	private boolean notClick = false;
+	private boolean notClick1 = false;
+	private boolean notClick3 = false;
 
 	private Point2D snapOffset;
 
@@ -95,10 +94,15 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 
+		if(notClick1 && e.getButton() == MouseEvent.BUTTON1)
+			return;
+		if(notClick3 && e.getButton() == MouseEvent.BUTTON3)
+			return;
+
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
 				switch(e.getKeyModifiers()) {
@@ -151,7 +155,7 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButtonModifiers()==MouseEvent.BUTTON1_DOWN_MASK) {
-			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getStartPosition(), model);
+			Node hitNode = HitMan.hitTestForSelection(e.getStartPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
@@ -206,15 +210,19 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		if(e.getButton()==MouseEvent.BUTTON1)
+			notClick1 = false;
+
 		if(e.getButton()==MouseEvent.BUTTON3) {
 
 			if(isDragging()) {
 				cancelDrag(e);
 				e.getEditor().repaint();
-				notClick = true; // TODO left click still generated but it should not
+				notClick1 = true;
+				notClick3 = true;
 			}
 			else {
-				notClick = false;
+				notClick3 = false;
 			}
 		}
 	}

@@ -21,23 +21,23 @@
 
 package org.workcraft.parsers.breeze;
 
-import java.util.List;
-
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.expressions.Expression;
 import org.workcraft.plugins.balsa.components.BinaryOperator;
 import org.workcraft.plugins.balsa.components.UnaryOperator;
 
+import pcollections.PVector;
+
 public class PrimitivePart implements BreezeDefinition {
 	private final String name;
-	List<ParameterDeclaration> parameters;
+	PVector<ParameterDeclaration> parameters;
 	Expression<String> symbol;
-	List<PortDeclaration> ports;
+	PVector<PortDeclaration> ports;
 
 
-	public PrimitivePart(String name, List<ParameterDeclaration> parameters,
-			List<PortDeclaration> ports, Expression<String> symbol) {
+	public PrimitivePart(String name, PVector<ParameterDeclaration> parameters,
+			PVector<PortDeclaration> ports, Expression<String> symbol) {
 		super();
 		this.name = name;
 		this.parameters = parameters;
@@ -49,11 +49,15 @@ public class PrimitivePart implements BreezeDefinition {
 		return "("+getName()+" " + parameters + " " + symbol + " " + ports + ")";
 	}
 
-	public List<PortDeclaration> getPorts() {
+	public PVector<PortDeclaration> getPorts() {
 		return ports;
 	}
 
 	@Override public <Port> BreezeInstance<Port> instantiate(BreezeLibrary library, BreezeFactory<Port> factory, ParameterValueList parameters) {
+		return instantiate(factory, parameters);
+	}
+
+	public <Port> BreezeInstance<Port> instantiate(PrimitiveFactory<Port> factory, ParameterValueList parameters) {
 		return factory.create(this, parseParameters(parameters));
 	}
 
@@ -106,7 +110,7 @@ public class PrimitivePart implements BreezeDefinition {
 		return name;
 	}
 
-	public List<ParameterDeclaration> getParameters() {
+	public PVector<ParameterDeclaration> getParameters() {
 		return parameters;
 	}
 }

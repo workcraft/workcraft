@@ -20,14 +20,11 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-
-
-import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class TwoHotRangeProvider
 {
@@ -106,13 +103,13 @@ public class TwoHotRangeProvider
 
 	public static BooleanFormula selectAnd(BooleanFormula[] vars, TwoHotRange number) {
 		throw new RuntimeException("incorrect");
-		/*
-		List<FreeVariable> params = new ArrayList<FreeVariable>();
+
+		/*List<FreeVariable> params = new ArrayList<FreeVariable>();
 		CnfLiteral []literals = new CnfLiteral[vars.length];
 
 		for(int i=0;i<vars.length;i++)
 		{
-			FreeVariable var = new FV("param"+i);
+			FreeVariable var = new FreeVariable("param"+i);
 			params.add(var);
 			literals[i] = new CnfLiteral(var);
 		}

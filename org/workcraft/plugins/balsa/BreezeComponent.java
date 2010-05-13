@@ -29,36 +29,37 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.parsers.breeze.Block;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 
 @VisualClass("org.workcraft.plugins.balsa.VisualBreezeComponent")
 @VisualComponentGeneratorAttribute(generator="org.workcraft.plugins.balsa.BreezeVisualComponentGenerator")
-public class BreezeComponent extends MathNode implements Block<HandshakeComponent> {
+public class BreezeComponent extends MathNode implements Block<BreezeHandshake> {
 
-	private org.workcraft.plugins.balsa.components.Component underlyingComponent;
+	private DynamicComponent underlyingComponent;
 	public BreezeComponent() {
 	}
 
-	public void setUnderlyingComponent(org.workcraft.plugins.balsa.components.Component underlyingComponent) {
+	public void setUnderlyingComponent(DynamicComponent underlyingComponent) {
 		this.underlyingComponent = underlyingComponent;
 	}
 
-	public org.workcraft.plugins.balsa.components.Component getUnderlyingComponent() {
+	public DynamicComponent getUnderlyingComponent() {
 		return underlyingComponent;
 	}
 
-	public void setHandshakeComponents(Map<Handshake, HandshakeComponent> handshakes) {
+	public void setHandshakeComponents(Map<Handshake, BreezeHandshake> handshakes) {
 		this.handshakeComponents = handshakes;
 	}
 
-	public final HandshakeComponent getHandshakeComponentByName(String name) {
+	public final BreezeHandshake getHandshakeComponentByName(String name) {
 		final Handshake hc = getHandshakes().get(name);
 		if(hc == null)
 			return null;
 		return getHandshakeComponents().get(hc);
 	}
 
-	public Map<Handshake, HandshakeComponent> getHandshakeComponents() {
+	public Map<Handshake, BreezeHandshake> getHandshakeComponents() {
 		return handshakeComponents;
 	}
 
@@ -70,11 +71,11 @@ public class BreezeComponent extends MathNode implements Block<HandshakeComponen
 		return handshakes;
 	}
 
-	private Map<Handshake, HandshakeComponent> handshakeComponents;
+	private Map<Handshake, BreezeHandshake> handshakeComponents;
 	private Map<String, Handshake> handshakes;
 
 	@Override
-	public List<HandshakeComponent> getPorts() {
-		return Arrays.asList(handshakeComponents.values().toArray(new HandshakeComponent[0]));
+	public List<BreezeHandshake> getPorts() {
+		return Arrays.asList(handshakeComponents.values().toArray(new BreezeHandshake[0]));
 	}
 }
