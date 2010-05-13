@@ -446,11 +446,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return newPoint;
 	}
 
-	public VisualNode hitTest(Point2D pointInRootSpace)
-	{
-		return (VisualNode) HitMan.hitTestForSelection(transformToCurrentSpace(pointInRootSpace), currentLevel);
-	}
-
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2) {
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);

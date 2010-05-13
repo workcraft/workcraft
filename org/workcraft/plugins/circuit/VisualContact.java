@@ -29,26 +29,44 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 
 public class VisualContact extends VisualComponent {
-	public enum Direction {north, south, east, west};
+	public enum Direction {NORTH, SOUTH, EAST, WEST};
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+
+	private String name = "";
 	private GlyphVector nameGlyphs = null;
-	private Direction direction = Direction.west;
+	private Direction direction = Direction.WEST;
 
-	VisualCircuitComponent parentComponent;
+//	VisualCircuitComponent parentComponent;
 
-	public VisualCircuitComponent getParentConnection() {
+/*	public VisualCircuitComponent getParentConnection() {
 //		return parentConnection;
 		return null;
+	}
+*/
+
+	private void addPropertyDeclarations() {
+		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
+		types.put("Input", Contact.IOType.INPUT);
+		types.put("Output", Contact.IOType.OUTPUT);
+
+		LinkedHashMap<String, Object> directions = new LinkedHashMap<String, Object>();
+		directions.put("North", VisualContact.Direction.NORTH);
+		directions.put("East", VisualContact.Direction.EAST);
+		directions.put("South", VisualContact.Direction.SOUTH);
+		directions.put("West", VisualContact.Direction.WEST);
+
+		addPropertyDeclaration(new PropertyDeclaration(this, "Direction", "getDirection", "setDirection", VisualContact.Direction.class, directions));
+		addPropertyDeclaration(new PropertyDeclaration(this, "I/O type", "getIOType", "setIOType", Contact.IOType.class, types));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
 	}
 
 	@Override
@@ -85,20 +103,22 @@ public class VisualContact extends VisualComponent {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
-	@Override
-	public Collection<MathNode> getMathReferences() {
-		//TODO
+
+/*	@Override
+ * 	public Collection<MathNode> getMathReferences() {
 		return Collections.emptyList();
 	}
+
+	*/
 
 	/////////////////////////////////////////////////////////
 	public GlyphVector getNameGlyphs(Graphics2D g) {
 		if (nameGlyphs == null) {
-			if (getDirection()==Direction.north||getDirection()==Direction.south) {
+			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
-			nameGlyphs = nameFont.createGlyphVector(g.getFontRenderContext(), getContactName());
+			nameGlyphs = nameFont.createGlyphVector(g.getFontRenderContext(), getName());
 		}
 
 		return nameGlyphs;
@@ -108,51 +128,65 @@ public class VisualContact extends VisualComponent {
 		return getNameGlyphs(g).getVisualBounds();
 	}
 
-	public String getContactName() {
-//		if (getReferencedComponent()!=null) return getReferencedComponent().getLabel();
-		return getLabel();
-	}
+	public void setDirection(VisualContact.Direction dir) {
+		if (dir==direction) return;
 
-	public void setContactName(String name) {
-//		nameGlyphs = null;
-		setLabel(name);
-//		if (getReferencedComponent()!=null) getReferencedComponent().setLabel(name);
-	}
-
-	public void setDirection(Direction dir) {
-		if (parentComponent!=null) {
-			parentComponent.updateDirection(this, dir);
+		if (getParent()!=null) {
+			((VisualCircuitComponent)getParent()).updateDirection(this, dir);
 		}
 		this.direction=dir;
+
 		nameGlyphs = null;
+
+		sendNotification(new PropertyChangedEvent(this, "direction"));
 	}
 
-	public Direction getDirection() {
+	public VisualContact.Direction getDirection() {
 		return direction;
 	}
 
-	public void setIOType(IOType type) {
+	public void setIOType(Contact.IOType type) {
 		((Contact)getReferencedComponent()).setIOType(type);
 	}
 
-	public IOType getIOType() {
+	public Contact.IOType getIOType() {
 		return ((Contact)getReferencedComponent()).getIOType();
 	}
 
-	public VisualContact(Contact component, Direction dir, String label) {
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String label) {
+		this.name = label;
+		nameGlyphs = null;
+
+		sendNotification(new PropertyChangedEvent(this, "name"));
+	}
+
+	public VisualContact(Contact component, VisualContact.Direction dir, String label) {
 		super(component);
-		setLabel(label);
-		if (dir==null) {
+
+		addPropertyDeclarations();
+
+		setName(label);
+
+		/*if (dir==null) {
 			if (component!=null) {
-				if (component.getIOType()==IOType.output) {
-					setDirection(Direction.east);
+				if (component.getIOType()==IOType.OUTPUT) {
+					setDirection(VisualContact.Direction.EAST);
+				} else {
+					setDirection(VisualContact.Direction.WEST);
 				}
 			}
 		} else {
 			direction = dir;
-		}
-		parentComponent = null;
+		}*/
+		direction = dir;
+//		parentComponent = null;
 
 	}
+
 
 }
