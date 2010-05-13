@@ -75,13 +75,12 @@ public class HitMan
 				return result;
 		}
 
-		if (filter.fn(node) && hitBranch (point, node))
-			return node;
-
+		if (filter.fn(node))
+			return hitBranch(point, node);
 		return null;
 	}
 
-	public static boolean hitBranch (Point2D point, Node node) {
+	public static boolean isBranchHit (Point2D point, Node node) {
 
 		if (node instanceof Touchable && ((Touchable)node).hitTest(point))	{
 			if (node instanceof Hidable)
@@ -93,7 +92,7 @@ public class HitMan
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
 		for (Node n : getFilteredChildren(transformedPoint, node)) {
-			if (hitBranch(transformedPoint, n))
+			if (isBranchHit(transformedPoint, n))
 				return true;
 		}
 
@@ -111,13 +110,20 @@ public class HitMan
 
 	public static Node hitFirst(Point2D point, Node node, UnaryFunctor<Node, Boolean> filter) {
 		if (filter.fn(node)) {
-			if (hitBranch(point, node))
-				return node;
-			else
-				return null;
+			return hitBranch(point, node);
 		} else {
 			return hitFirstChild(point, node, filter);
 		}
+	}
+
+	private static Node hitBranch(Point2D point, Node node) {
+		if(node instanceof CustomTouchable)
+			return ((CustomTouchable)node).customHitTest(point);
+
+		if (isBranchHit(point, node))
+			return node;
+		else
+			return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -197,7 +203,7 @@ public class HitMan
 				if (n instanceof Hidable)
 					return !((Hidable)n).isHidden();
 				else
-					return false;
+					return true;
 			}
 		});
 
