@@ -27,8 +27,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.gui.Coloriser;
-
 public class VisualJoint extends VisualCircuitComponent {
 	static double jointSize = 0.25;
 
@@ -38,7 +36,7 @@ public class VisualJoint extends VisualCircuitComponent {
 
 	@Override
 	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+//		drawLabelInLocalSpace(g);
 
 
 		Shape shape = new Ellipse2D.Double(
@@ -47,7 +45,7 @@ public class VisualJoint extends VisualCircuitComponent {
 				jointSize,
 				jointSize);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+//		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.fill(shape);
 	}
 
