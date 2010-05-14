@@ -21,11 +21,73 @@
 
 package org.workcraft.parsers.breeze;
 
-public enum ParameterType {
-	STRING,
-	CARDINAL,
-	BOOLEAN,
-	BINARY_OPERATOR,
-	UNARY_OPERATOR,
-	OTHER
+import java.util.HashMap;
+import java.util.Map;
+
+import org.workcraft.exceptions.NotSupportedException;
+import org.workcraft.parsers.breeze.expressions.Expression;
+
+public interface ParameterType {
+	Class<?> getJavaType();
+	Object parse(String text);
+}
+
+ interface DataType extends ParameterType {
+	Expression<Integer> getWidth();
+}
+
+class StringParameter implements ParameterType
+{
+	@Override public Class<?> getJavaType() {
+		return String.class;
+	}
+	@Override public Object parse(String text) {
+		return text;
+	}
+}
+
+class CardinalParameter implements ParameterType
+{
+	@Override public Class<?> getJavaType() {
+		return int.class;
+	}
+	@Override public Object parse(String text) {
+		return Integer.parseInt(text);
+	}
+}
+
+class BooleanParameter implements ParameterType
+{
+	@Override public Class<?> getJavaType() {
+		return boolean.class;
+	}
+	@Override public Object parse(String text) {
+		if(text.toLowerCase().equals("true"))
+			return true;
+		if(text.toLowerCase().equals("false"))
+			return false;
+		throw new NotSupportedException();
+	}
+}
+
+class EnumParameter<T> implements ParameterType
+{
+	private final Class<T> type;
+	private final Map<String, ? extends T> values;
+	public EnumParameter(Class<T> type, Map<String, ? extends T> values)
+	{
+		this.type = type;
+		HashMap<String, T> lowercasedValues = new HashMap<String, T>();
+		for(String key : values.keySet())
+			lowercasedValues.put(key.toLowerCase(), values.get(key));
+		this.values = lowercasedValues;
+	}
+	@Override
+	public Class<?> getJavaType() {
+		return type;
+	}
+	@Override
+	public Object parse(String text) {
+		return values.get(text.toLowerCase());
+	}
 }

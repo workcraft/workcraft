@@ -24,12 +24,18 @@ package org.workcraft.plugins.balsa.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Importer;
+import org.workcraft.parsers.breeze.BreezeDefinition;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
+import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 
 public class BreezeImporter implements Importer
@@ -55,7 +61,7 @@ public class BreezeImporter implements Importer
 		return "Breeze handshake circuit (.breeze)";
 	}
 
-	public BalsaCircuit importFromBreeze(InputStream in, String breezeName) throws DeserialisationException, IOException
+	public BalsaCircuit importFromBreeze(InputStream in, String breezeName) throws DeserialisationException, IOException, OperationCancelledException
 	{
 		BreezeLibrary lib = new BreezeLibrary(balsa);
 
@@ -68,14 +74,37 @@ public class BreezeImporter implements Importer
 		BalsaCircuit circuit = new BalsaCircuit();
 		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-		lib.get(breezeName).instantiate(lib, factory, EmptyValueList.instance());
+		BreezeDefinition choice;
+		if(breezeName!=null)
+			choice = lib.get(breezeName);
+		else
+		{
+			Collection<BreezePart> parts = lib.getTopLevelParts();
 
-		return circuit;
+			Object[] possibilities = parts.toArray();
+			choice = (BreezePart)JOptionPane.showInputDialog(
+			                    null,
+			                    "Select the part to instantiate:",
+			                    "Breeze part selection",
+			                    JOptionPane.QUESTION_MESSAGE,
+			                    null,
+			                    possibilities,
+			                    possibilities[0]);
+			if(choice == null)
+				throw new OperationCancelledException();
+		}
+
+		choice.instantiate(lib, factory, EmptyValueList.instance());
+	    return circuit;
 	}
 
 	@Override
 	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException, IOException
 	{
-		return importFromBreeze(in, "buffer1");
+		try {
+			return importFromBreeze(in, null);
+		} catch (OperationCancelledException e) {
+			throw new java.lang.RuntimeException(e);
+		}
 	}
 }

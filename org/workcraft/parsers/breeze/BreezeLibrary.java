@@ -28,9 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.workcraft.parsers.breeze.dom.BreezeFile;
 import org.workcraft.parsers.breeze.dom.BreezePart;
+import org.workcraft.parsers.breeze.dom.RawBreezePartReference;
 import org.workcraft.parsers.breeze.javacc.BreezeParser;
 import org.workcraft.parsers.breeze.javacc.ParseException;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
@@ -38,7 +41,7 @@ import org.workcraft.plugins.balsa.io.BalsaSystem;
 public class BreezeLibrary
 {
 	private static final String $BRZ = "$Brz";
-	HashMap<String, BreezeDefinition> breezeParts = new HashMap<String, BreezeDefinition>();
+	HashMap<String, BreezePart> breezeParts = new HashMap<String, BreezePart>();
 	HashMap<String, PrimitivePart> primitiveParts = new HashMap<String, PrimitivePart>();
 
 	FilenameFilter absFilter =
@@ -93,8 +96,9 @@ public class BreezeLibrary
 	}
 
 	public void registerParts(InputStream is) throws IOException, ParseException {
-		List<BreezePart> parts = BreezeParser.parseBreezeParts(is);
-		for (BreezePart part : parts)
+		BreezeFile file = BreezeParser.parseBreezeFile(is);
+		//TODO
+		for (BreezePart part : file.parts)
 			breezeParts.put(part.getName(), part);
 	}
 
@@ -104,5 +108,13 @@ public class BreezeLibrary
 
 	public PrimitivePart getPrimitive(String name) {
 		return primitiveParts.get(name);
+	}
+
+	public Collection<BreezePart> getTopLevelParts() {
+		Set<BreezePart> parts = new HashSet<BreezePart>(breezeParts.values());
+		for(BreezePart part : breezeParts.values())
+			for(RawBreezePartReference ref : part.getParts())
+				parts.remove(get(ref.name()));
+		return parts;
 	}
 }

@@ -134,5 +134,10 @@ public class BreezePart implements BreezeDefinition
 	public List<RawBreezePartReference> getParts() {
 		return parts;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }
 

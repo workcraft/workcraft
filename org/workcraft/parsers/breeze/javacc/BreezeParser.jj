@@ -36,10 +36,9 @@ public class BreezeParser {
 	  return parser.primitivePart();
 	}
  	
-	public static List<BreezePart> parseBreezeParts(InputStream is) throws ParseException
+	public static BreezeFile parseBreezeFile(InputStream is) throws ParseException
 	{
-		BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
-		return parser.breezeFile();
+		return new BreezeParser(new BufferedReader(new InputStreamReader(is))).breezeFile();
 	}
 }
 PARSER_END(BreezeParser)
@@ -78,10 +77,6 @@ TOKEN :
  	|<CENTER_STRING :  "centre-string" >
 	|<IMPLEMENTATION :  "implementation" > 
 	|<TYPE_STRING : "string">	
-	|<TYPE_CARDINAL : "\"cardinal\"">
-	|<TYPE_BOOLEAN : "\"boolean\"">
-	|<TYPE_BINARYOPERATOR : "\"BinaryOperator\"">
-	|<TYPE_UNARYOPERATOR : "\"UnaryOperator\"">
 	|<CASE : "case">
 	|<ELSE : "else">
 	|<STRING_APPEND : "string-append">
@@ -165,10 +160,6 @@ Token keyword() : {Token t;}
  	| t = <CENTER_STRING>
 	| t = <IMPLEMENTATION> 
 	| t = <TYPE_STRING>	
-	| t = <TYPE_CARDINAL>
-	| t = <TYPE_BOOLEAN>
-	| t = <TYPE_BINARYOPERATOR>
-	| t = <TYPE_UNARYOPERATOR>
 	| t = <CASE>
 	| t = <ELSE>
 	| t = <STRING_APPEND>
@@ -714,29 +705,33 @@ BreezePart breezePart() :
 	{ return new BreezePart(name, ports, channels, components);}
 }
 
-void typeDefinition() : {}
+BreezeType breezeType() : {}
 {
 	<OBR><TYPE>
 		listBody()
 	<CBR>
 }
 
-void breezeDef(List<BreezePart> defs) : {BreezePart def;}
-{
-	LOOKAHEAD(<OBR><TYPE>) typeDefinition()
-	| def = breezePart() { defs.add(def); }
-}
-
-void importDef() : {}
+String importDef() : { String value; }
 {
 	<OBR><IMPORT>
-	listBody()
-	<CBR>
+	value = value()	<CBR>
+	{ return value; }
 }
 
-List<BreezePart> breezeFile() : { List<BreezePart > defs = new LinkedList<BreezePart >();}
+BreezeFile breezeFile() :
 {
-	(LOOKAHEAD(<OBR><IMPORT>) importDef())*
-	(breezeDef(defs))*
-	{return defs;}
+    String imp;
+    BreezeType type;
+    BreezePart part;
+	List<String> imports = new LinkedList<String>();
+	List<BreezeType> typeDefs = new LinkedList<BreezeType>();
+	List<BreezePart> partDefs = new LinkedList<BreezePart>();
+}
+{
+	(
+	  LOOKAHEAD(<OBR><IMPORT>) imp = importDef() { imports.add(imp); }	| LOOKAHEAD(<OBR><BREEZE_PART>) part = breezePart() { partDefs.add(part); }
+	| type = breezeType(typeDefs) { typeDefs.add(type); }
+	)*
+	{return new BreezeFile(imports, typeDefs, partDefs);}
 }

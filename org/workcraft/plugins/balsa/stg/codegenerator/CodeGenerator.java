@@ -33,6 +33,7 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.ClassExpr;
 import japa.parser.ast.expr.Expression;
@@ -40,7 +41,6 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
-import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.ReturnStmt;
@@ -48,9 +48,9 @@ import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.stmt.ThrowStmt;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.PrimitiveType;
+import japa.parser.ast.type.PrimitiveType.Primitive;
 import japa.parser.ast.type.Type;
 import japa.parser.ast.type.VoidType;
-import japa.parser.ast.type.PrimitiveType.Primitive;
 import japa.parser.ast.visitor.GenericVisitorAdapter;
 
 import java.io.File;
@@ -65,7 +65,6 @@ import org.workcraft.parsers.breeze.BreezeDefinition;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.ParameterDeclaration;
 import org.workcraft.parsers.breeze.ParameterScope;
-import org.workcraft.parsers.breeze.ParameterType;
 import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
@@ -74,9 +73,7 @@ import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortVisitor;
 import org.workcraft.parsers.breeze.dom.SyncPortDeclaration;
 import org.workcraft.parsers.breeze.expressions.visitors.ToJavaAstConverter;
-import org.workcraft.plugins.balsa.components.BinaryOperator;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
-import org.workcraft.plugins.balsa.components.UnaryOperator;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
@@ -273,19 +270,35 @@ public class CodeGenerator {
 	}
 
 	private Type getParameterType(ParameterDeclaration param) {
-		ParameterType t = param.getType();
-		if (t == ParameterType.BOOLEAN)
-			return new PrimitiveType(Primitive.Boolean);
-		else if (t == ParameterType.STRING)
-			return new ClassOrInterfaceType(String.class.getCanonicalName());
-		else if (t == ParameterType.CARDINAL)
-			return new PrimitiveType(Primitive.Int);
-		else if (t == ParameterType.BINARY_OPERATOR)
-			return new ClassOrInterfaceType(BinaryOperator.class.getCanonicalName());
-		else if (t == ParameterType.UNARY_OPERATOR)
-			return new ClassOrInterfaceType(UnaryOperator.class.getCanonicalName());
+		Class<?> type = param.getType().getJavaType();
+
+		if(type.isPrimitive())
+			return new PrimitiveType(classToPrimitive(type));
 		else
-			throw new NotSupportedException("Type " + param.getType() + " of parameter " + param.getName() + " is not supported");
+			return new ClassOrInterfaceType(type.getCanonicalName());
+	}
+
+	private Primitive classToPrimitive(Class<?> type)
+	{
+		if(type == java.lang.Boolean.TYPE)
+			return Primitive.Boolean;
+		if(type == java.lang.Character.TYPE)
+			return Primitive.Char;
+		if(type == java.lang.Byte.TYPE)
+			return Primitive.Byte;
+		if(type == java.lang.Short.TYPE)
+			return Primitive.Short;
+		if(type == java.lang.Integer.TYPE)
+			return Primitive.Int;
+		if(type == java.lang.Long.TYPE)
+			return Primitive.Long;
+		if(type == java.lang.Float.TYPE)
+			return Primitive.Float;
+		if(type == java.lang.Double.TYPE)
+			return Primitive.Double;
+		if(type == java.lang.Void.TYPE)
+			throw new NotSupportedException("Void primitive type is not supported");
+		throw new NotSupportedException(type.getCanonicalName() + " is not a primitive type");
 	}
 
 	private TypeDeclaration generateStgInterfaceClass(PrimitivePart p) {

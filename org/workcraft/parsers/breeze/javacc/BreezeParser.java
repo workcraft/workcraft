@@ -27,10 +27,9 @@ public class BreezeParser implements BreezeParserConstants {
           return parser.primitivePart();
         }
 
-        public static List<BreezePart> parseBreezeParts(InputStream is) throws ParseException
+        public static BreezeFile parseBreezeFile(InputStream is) throws ParseException
         {
-                BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
-                return parser.breezeFile();
+                return new BreezeParser(new BufferedReader(new InputStreamReader(is))).breezeFile();
         }
 
   final public List<LispNode> listBody() throws ParseException {
@@ -1267,62 +1266,60 @@ public class BreezeParser implements BreezeParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public void typeDefinition() throws ParseException {
+  final public BreezeType breezeType() throws ParseException {
     jj_consume_token(OBR);
     jj_consume_token(TYPE);
     listBody();
     jj_consume_token(CBR);
   }
 
-  final public void breezeDef(List<BreezePart> defs) throws ParseException {
-                                         BreezePart def;
-    if (jj_2_10(2147483647)) {
-      typeDefinition();
-    } else {
+  final public String importDef() throws ParseException {
+                       String value;
+    jj_consume_token(OBR);
+    jj_consume_token(IMPORT);
+    value = value();
+    jj_consume_token(CBR);
+          {if (true) return value;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public BreezeFile breezeFile() throws ParseException {
+    String imp;
+    BreezeType type;
+    BreezePart part;
+        List<String> imports = new LinkedList<String>();
+        List<BreezeType> typeDefs = new LinkedList<BreezeType>();
+        List<BreezePart> partDefs = new LinkedList<BreezePart>();
+    label_12:
+    while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case OBR:
-        def = breezePart();
-                               defs.add(def);
+        ;
         break;
       default:
         jj_la1[27] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    }
-  }
-
-  final public void importDef() throws ParseException {
-    jj_consume_token(OBR);
-    jj_consume_token(IMPORT);
-    listBody();
-    jj_consume_token(CBR);
-  }
-
-  final public List<BreezePart> breezeFile() throws ParseException {
-                                  List<BreezePart > defs = new LinkedList<BreezePart >();
-    label_12:
-    while (true) {
-      if (jj_2_11(2147483647)) {
-        ;
-      } else {
         break label_12;
       }
-      importDef();
-    }
-    label_13:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case OBR:
-        ;
-        break;
-      default:
-        jj_la1[28] = jj_gen;
-        break label_13;
+      if (jj_2_10(2147483647)) {
+        imp = importDef();
+                                                       imports.add(imp);
+      } else if (jj_2_11(2147483647)) {
+        part = breezePart();
+                                                              partDefs.add(part);
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case OBR:
+          type = breezeType(typeDefs);
+                                        typeDefs.add(type);
+          break;
+        default:
+          jj_la1[28] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
-      breezeDef(defs);
     }
-         {if (true) return defs;}
+         {if (true) return new BreezeFile(imports, typeDefs, partDefs);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1403,14 +1400,8 @@ public class BreezeParser implements BreezeParserConstants {
     finally { jj_save(10, xla); }
   }
 
-  private boolean jj_3_10() {
-    if (jj_scan_token(OBR)) return true;
-    if (jj_scan_token(TYPE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_23() {
-    if (jj_3R_29()) return true;
+  private boolean jj_3R_22() {
+    if (jj_3R_28()) return true;
     return false;
   }
 
@@ -1437,23 +1428,18 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
-  private boolean jj_3R_14() {
-    if (jj_3R_15()) return true;
+  private boolean jj_3R_13() {
+    if (jj_3R_14()) return true;
     return false;
   }
 
-  private boolean jj_3R_29() {
+  private boolean jj_3R_28() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(9)) {
     jj_scanpos = xsp;
     if (jj_scan_token(7)) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_3R_21()) return true;
     return false;
   }
 
@@ -1467,33 +1453,38 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
-  private boolean jj_3R_19() {
+  private boolean jj_3R_15() {
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
     if (jj_scan_token(OBR)) return true;
     if (jj_scan_token(PARAM)) return true;
-    if (jj_3R_22()) return true;
+    if (jj_3R_21()) return true;
     if (jj_scan_token(CBR)) return true;
     return false;
   }
 
-  private boolean jj_3R_15() {
+  private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
     if (jj_3R_16()) {
     jj_scanpos = xsp;
-    if (jj_3R_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
+    if (jj_3R_17()) return true;
     }
     }
     return false;
   }
 
   private boolean jj_3_8() {
-    if (jj_3R_14()) return true;
+    if (jj_3R_13()) return true;
     return false;
   }
 
-  private boolean jj_3R_30() {
+  private boolean jj_3R_29() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(6)) {
@@ -1629,8 +1620,14 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
-  private boolean jj_3R_24() {
-    if (jj_3R_15()) return true;
+  private boolean jj_3R_23() {
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_scan_token(OBR)) return true;
+    if (jj_scan_token(BREEZE_PART)) return true;
     return false;
   }
 
@@ -1640,20 +1637,20 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
+  private boolean jj_3_10() {
+    if (jj_scan_token(OBR)) return true;
+    if (jj_scan_token(IMPORT)) return true;
+    return false;
+  }
+
   private boolean jj_3_4() {
     if (jj_scan_token(OBR)) return true;
     if (jj_scan_token(PARAM)) return true;
     return false;
   }
 
-  private boolean jj_3_11() {
-    if (jj_scan_token(OBR)) return true;
-    if (jj_scan_token(IMPORT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_28() {
-    if (jj_3R_29()) return true;
+  private boolean jj_3R_27() {
+    if (jj_3R_28()) return true;
     return false;
   }
 
@@ -1663,51 +1660,51 @@ public class BreezeParser implements BreezeParserConstants {
     return false;
   }
 
-  private boolean jj_3R_27() {
-    if (jj_3R_30()) return true;
-    return false;
-  }
-
   private boolean jj_3R_26() {
-    if (jj_scan_token(QUOTED_VALUE)) return true;
+    if (jj_3R_29()) return true;
     return false;
   }
 
   private boolean jj_3R_25() {
+    if (jj_scan_token(QUOTED_VALUE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_24() {
     if (jj_scan_token(VALUE)) return true;
     return false;
   }
 
-  private boolean jj_3R_22() {
+  private boolean jj_3R_21() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_3R_24()) {
+    jj_scanpos = xsp;
     if (jj_3R_25()) {
     jj_scanpos = xsp;
     if (jj_3R_26()) {
     jj_scanpos = xsp;
-    if (jj_3R_27()) {
-    jj_scanpos = xsp;
-    if (jj_3R_28()) return true;
+    if (jj_3R_27()) return true;
     }
     }
     }
     return false;
   }
 
-  private boolean jj_3R_21() {
+  private boolean jj_3R_20() {
     if (jj_scan_token(OBR)) return true;
     if (jj_scan_token(PLUS)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_24()) { jj_scanpos = xsp; break; }
+      if (jj_3R_23()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(CBR)) return true;
     return false;
   }
 
-  private boolean jj_3R_20() {
-    if (jj_3R_23()) return true;
+  private boolean jj_3R_19() {
+    if (jj_3R_22()) return true;
     return false;
   }
 

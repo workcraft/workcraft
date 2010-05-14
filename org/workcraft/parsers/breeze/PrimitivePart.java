@@ -21,11 +21,8 @@
 
 package org.workcraft.parsers.breeze;
 
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.expressions.Expression;
-import org.workcraft.plugins.balsa.components.BinaryOperator;
-import org.workcraft.plugins.balsa.components.UnaryOperator;
 
 import pcollections.PVector;
 
@@ -79,27 +76,7 @@ public class PrimitivePart implements BreezeDefinition {
 	}
 
 	private static Object parse(ParameterDeclaration parameter, String string) {
-		ParameterType type = parameter.getType();
-		if(type == ParameterType.BOOLEAN)
-			return parseBoolean(string);
-		else if(type == ParameterType.CARDINAL)
-			return Integer.parseInt(string);
-		else if(type == ParameterType.STRING)
-			return string;
-		else if(type == ParameterType.BINARY_OPERATOR)
-			return BinaryOperator.parse(string);
-		else if(type == ParameterType.UNARY_OPERATOR)
-			return UnaryOperator.valueOf(string);
-		else
-			throw new NotSupportedException();
-	}
-
-	private static Object parseBoolean(String string) {
-		if(string.toLowerCase().equals("true"))
-			return true;
-		if(string.toLowerCase().equals("false"))
-			return false;
-		throw new NotSupportedException();
+		return parameter.getType().parse(string);
 	}
 
 	public Expression<String> getSymbol() {
