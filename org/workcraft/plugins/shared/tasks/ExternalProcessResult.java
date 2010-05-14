@@ -1,4 +1,4 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 public class ExternalProcessResult {
 	private byte[] output;

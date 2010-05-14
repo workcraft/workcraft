@@ -1,4 +1,4 @@
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;

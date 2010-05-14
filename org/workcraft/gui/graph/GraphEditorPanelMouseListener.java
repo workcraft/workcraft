@@ -130,8 +130,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		editor.getViewport().zoom(-e.getWheelRotation(), e.getPoint());
-		editor.repaint();
+		if (editor.hasFocus()) {
+			editor.getViewport().zoom(-e.getWheelRotation(), e.getPoint());
+			editor.repaint();
+		}
 	}
 }
 

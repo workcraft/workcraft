@@ -1,11 +1,11 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;

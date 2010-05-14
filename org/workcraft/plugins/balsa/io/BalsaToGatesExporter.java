@@ -40,7 +40,6 @@ import org.workcraft.plugins.interop.CSCResolver;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.PetriNetToolsSettings;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;

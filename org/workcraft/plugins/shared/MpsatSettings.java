@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 import java.io.File;
 import java.io.IOException;

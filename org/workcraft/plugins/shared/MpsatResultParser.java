@@ -1,4 +1,4 @@
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
 	private String mpsatOutput;

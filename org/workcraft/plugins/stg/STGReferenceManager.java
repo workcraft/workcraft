@@ -92,6 +92,8 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	public Node getNodeByReference(String reference) {
 		try {
 			Pair<String, Integer> instancedName = LabelParser.parse(reference);
+			if (instancedName.getSecond() == null)
+				instancedName = Pair.of(instancedName.getFirst(), 0);
 			return instancedNameManager.getObject(instancedName);
 		} catch (NotFoundException e) {
 			return defaultNameManager.get(reference);
@@ -229,6 +231,9 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			dt.setName(name);
 
 			instancedNameManager.assign(dt);
+		} else if (node instanceof STGPlace) {
+			if (!((STGPlace) node).isImplicit())
+				defaultNameManager.setDefaultNameIfUnnamed(node);
 		} else
 			defaultNameManager.setDefaultNameIfUnnamed(node);
 	}

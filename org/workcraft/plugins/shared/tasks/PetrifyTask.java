@@ -1,18 +1,18 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.verification.MpsatUtilitySettings;
+import org.workcraft.plugins.shared.MpsatUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DataAccumulator;
 
-public class MpsatTask implements Task<ExternalProcessResult>, ExternalProcessListener {
+public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 		private String[] args;
 		private String inputFileName;
 
@@ -24,7 +24,7 @@ public class MpsatTask implements Task<ExternalProcessResult>, ExternalProcessLi
 		private DataAccumulator stdoutAccum = new DataAccumulator();
 		private DataAccumulator stderrAccum = new DataAccumulator();
 
-		public MpsatTask(String[] args, String inputFileName) {
+		public PetrifyTask(String[] args, String inputFileName) {
 			this.args = args;
 			this.inputFileName = inputFileName;
 		}

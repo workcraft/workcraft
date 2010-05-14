@@ -1,11 +1,11 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.verification.PunfUtilitySettings;
+import org.workcraft.plugins.shared.PunfUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;

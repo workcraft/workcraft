@@ -1,14 +1,14 @@
 /**
  *
  */
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.verification.tasks.MpsatChainResult;
+import org.workcraft.plugins.shared.tasks.MpsatChainResult;
 import org.workcraft.tasks.Result;
 
 final class MpsatDeadlockResultHandler implements Runnable {

@@ -43,7 +43,7 @@ public class DotGParser implements DotGParserConstants {
 
         private Node getOrCreate (Pair<String, Integer> ref)
         {
-                String reference = ref.getFirst()+"/"+ref.getSecond();
+                String reference = stg.makeReference(ref);
                 String name = ref.getFirst();
 
                 try {
@@ -82,6 +82,9 @@ public class DotGParser implements DotGParserConstants {
         }
 
         private void createArc (Node first, Node second) {
+
+        System.out.println ("Creating arc: " + stg.getNodeReference(first) + "->" + stg.getNodeReference(second));
+
                 try {
                         ConnectionResult result = stg.connect(first, second);
                         STGPlace implicitPlace = result.getImplicitPlace();
@@ -600,22 +603,6 @@ public class DotGParser implements DotGParserConstants {
     finally { jj_save(28, xla); }
   }
 
-  private boolean jj_3_13() {
-    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_10()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3_12() {
-    if (jj_scan_token(CAPACITY)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
   private boolean jj_3_22() {
     if (jj_scan_token(21)) return true;
     if (jj_scan_token(INTEGER)) return true;
@@ -904,6 +891,22 @@ public class DotGParser implements DotGParserConstants {
       xsp = jj_scanpos;
       if (jj_3_14()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_10()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_12() {
+    if (jj_scan_token(CAPACITY)) return true;
+    if (jj_3R_14()) return true;
     return false;
   }
 

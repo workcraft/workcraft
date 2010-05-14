@@ -1,6 +1,6 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
-import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.tasks.Result;
 
 public class MpsatChainResult {

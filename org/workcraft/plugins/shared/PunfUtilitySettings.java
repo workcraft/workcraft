@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 import java.util.LinkedList;
 import java.util.List;
 
