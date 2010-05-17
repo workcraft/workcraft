@@ -159,4 +159,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		result.add(getReferencedComponent());
 		return result;
 	}
+
+	@Override
+	public Point2D getCenterInLocalSpace()
+	{
+		return new Point2D.Double(0, 0);
+	}
 }

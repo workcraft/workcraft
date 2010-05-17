@@ -60,7 +60,7 @@ public class SVGExporter implements Exporter {
 				Rectangle2D bounds = ((VisualGroup)model.getRoot()).getBoundingBoxInLocalSpace();
 
 				g2d.translate(-bounds.getMinX(), -bounds.getMinY());
-				g2d.setSVGCanvasSize(new Dimension((int)bounds.getWidth()*50, (int)bounds.getHeight()*50));
+				g2d.setSVGCanvasSize(new Dimension((int)(bounds.getWidth()*50), (int)(bounds.getHeight()*50)));
 
 				((VisualModel)model).draw(g2d);
 

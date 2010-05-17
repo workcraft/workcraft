@@ -24,9 +24,11 @@ package org.workcraft.plugins.balsa;
 import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.AbstractNodeGenerator;
+import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.balsa.components.ActiveEagerFalseVariable;
 import org.workcraft.plugins.balsa.components.Adapt;
 import org.workcraft.plugins.balsa.components.Arbiter;
@@ -48,6 +50,7 @@ import org.workcraft.plugins.balsa.components.Constant;
 import org.workcraft.plugins.balsa.components.Continue;
 import org.workcraft.plugins.balsa.components.ContinuePush;
 import org.workcraft.plugins.balsa.components.DecisionWait;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.Encode;
 import org.workcraft.plugins.balsa.components.FalseVariable;
 import org.workcraft.plugins.balsa.components.Fetch;
@@ -76,15 +79,16 @@ import org.workcraft.plugins.balsa.components.WireFork;
 
 public class VisualBalsaTools implements CustomToolsProvider
 {
-	GraphEditorTool getComponentTool(final Class<? extends org.workcraft.plugins.balsa.components.Component> balsaClass)
+	GraphEditorTool getComponentTool(final String componentName)
 	{
 		return new NodeGeneratorTool(new AbstractNodeGenerator(){
 			@Override
 			protected BreezeComponent createMathNode() {
 				BreezeComponent comp = new BreezeComponent();
-				org.workcraft.plugins.balsa.components.Component instance;
+				DynamicComponent instance = null;
 				try {
-					instance = balsaClass.newInstance();
+					//TODO: Instantiate a DynamicComponent
+					//instance = new BreezeLibrary(BalsaSystem.DEFAULT()).get(name) balsaClass.newInstance();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -94,16 +98,17 @@ public class VisualBalsaTools implements CustomToolsProvider
 
 			@Override
 			public String getLabel() {
-				return balsaClass.getSimpleName();
+				return componentName;
 			}
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
 
+		//TODO
+		@SuppressWarnings("unused")
 		Class<?> [] balsaClasses =
 			new Class<?>[]
 			{
@@ -115,7 +120,6 @@ public class VisualBalsaTools implements CustomToolsProvider
 				SequenceOptimised.class,
 				Variable.class,
 				While.class,
-
 				Adapt.class,
 				ActiveEagerFalseVariable.class,
 				Arbiter.class,
@@ -156,8 +160,10 @@ public class VisualBalsaTools implements CustomToolsProvider
 				WireFork.class
 			};
 
-		for(Class<?> c : balsaClasses)
-			tools.add(getComponentTool((Class<? extends org.workcraft.plugins.balsa.components.Component>) c));
+		tools.add(new SelectionTool());
+		tools.add(new ConnectionTool());
+		//for(Class<?> c : balsaClasses)
+		//	tools.add(getComponentTool((Class<? extends org.workcraft.plugins.balsa.components.Component>) c));
 
 		return tools;
 	}

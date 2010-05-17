@@ -19,8 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.balsa.stgmodelstgbuilder;
+package org.workcraft;
 
-public interface HandshakeNameProvider {
-	public String getName(Object handshake);
+public interface FrameworkConsumer {
+	public void acceptFramework (Framework framework);
 }

@@ -20,16 +20,13 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-
-
-import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumber>
 {

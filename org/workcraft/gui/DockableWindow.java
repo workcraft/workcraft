@@ -116,9 +116,8 @@ public class DockableWindow extends AbstractDockable {
 		super.undockingComplete(evt);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public List getDragSources() {
+	public List<Component> getDragSources() {
 		return dragSources;
 	}
 

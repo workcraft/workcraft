@@ -182,8 +182,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		//g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+
 		visualModel.draw(g2d);
 
 		if (hasFocus())
@@ -259,8 +265,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 				propertyWindow.clearObject();
 			else
 				propertyWindow.setObject(mix);
-		} else
-			propertyWindow.clearObject();
+		}
+		else propertyWindow.clearObject();
 	}
 
 	public void notify(StateEvent e) {

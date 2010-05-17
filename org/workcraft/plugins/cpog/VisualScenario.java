@@ -3,10 +3,12 @@ package org.workcraft.plugins.cpog;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,8 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.util.Hierarchy;
 
 public class VisualScenario extends VisualGroup
@@ -33,8 +37,7 @@ public class VisualScenario extends VisualGroup
 	private static final float frameDepth = 0.25f;
 	private static final float strokeWidth = 0.03f;
 	private static final float minVariableWidth = 0.7f;
-
-	private final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private static final float minVariableHeight = 0.85f;
 
 	private Rectangle2D contentsBB = null;
 	private Rectangle2D labelBB = null;
@@ -44,6 +47,21 @@ public class VisualScenario extends VisualGroup
 
 	private String label = "";
 	private Encoding encoding = new Encoding();
+
+	private static Font labelFont;
+
+	static {
+		try {
+			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 	public VisualScenario()
 	{
@@ -71,10 +89,13 @@ public class VisualScenario extends VisualGroup
 		Rectangle2D bb = null;
 
 		for(VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class))
-			bb = BoundingBoxHelper.union(bb, v.getBoundingBoxWithLabel());
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
 
 		for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class))
-			bb = BoundingBoxHelper.union(bb, v.getBoundingBoxWithLabel());
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		for(VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class))
+			bb = BoundingBoxHelper.union(bb, a.getLabelBoundingBox());
 
 		if (bb == null) bb = contentsBB;
 		else
@@ -103,17 +124,24 @@ public class VisualScenario extends VisualGroup
 
 			// draw label
 
-			GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), label);
+			FormulaRenderingResult result = FormulaToGraphics.print(label, labelFont, g.getFontRenderContext());
 
-			labelBB = BoundingBoxHelper.expand(glyphs.getLogicalBounds(), 0.4, 0.2);
+			labelBB = BoundingBoxHelper.expand(result.boundingBox, 0.4, 0.2);
 
 			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
 
 			g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
 			g.fill(getLabelBB());
+			g.setStroke(new BasicStroke(strokeWidth));
 			g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
-			g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
 			g.draw(getLabelBB());
+
+			AffineTransform transform = g.getTransform();
+			g.translate(labelPosition.getX(), labelPosition.getY());
+
+			result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+
+			g.setTransform(transform);
 
 			// draw encoding
 
@@ -133,20 +161,15 @@ public class VisualScenario extends VisualGroup
 
 			for(Variable var : sortedVariables)
 			{
-				Color color = Color.BLACK;
-
-				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
-				if (perfectMatch) color = Color.GREEN;
-
-
 				String text = var.getLabel();
 
-				glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
+				result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
 
-				bb = glyphs.getLogicalBounds();
+				bb = result.boundingBox;
 				bb = BoundingBoxHelper.expand(bb, 0.4, 0.2);
 
 				if (bb.getWidth() < minVariableWidth) bb = BoundingBoxHelper.expand(bb, minVariableWidth - bb.getWidth(), 0);
+				if (bb.getHeight() < minVariableHeight) bb = BoundingBoxHelper.expand(bb, 0, minVariableHeight - bb.getHeight());
 
 				labelPosition = new Point2D.Double(right - bb.getMaxX(), top - bb.getMinY());
 
@@ -159,18 +182,25 @@ public class VisualScenario extends VisualGroup
 
 				g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
 				g.fill(tmpBB);
+				g.setStroke(new BasicStroke(strokeWidth));
 				g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
-				g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
 				g.draw(tmpBB);
+
+				transform = g.getTransform();
+				g.translate(labelPosition.getX(), labelPosition.getY());
+
+				result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+
+				g.setTransform(transform);
 
 				variableBBs.put(tmpBB, var);
 
 				text = encoding.getState(var).toString();
 				if (text.equals("?")) text = "\u2013";
 
-				glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), text);
+				result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
 
-				bb = glyphs.getLogicalBounds();
+				bb = result.boundingBox;
 				bb = BoundingBoxHelper.expand(bb, tmpBB.getWidth() - bb.getWidth(), tmpBB.getHeight() - bb.getHeight());
 
 				labelPosition = new Point2D.Double(right - bb.getMaxX(), bottom - bb.getMinY());
@@ -181,11 +211,20 @@ public class VisualScenario extends VisualGroup
 
 				g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
 				g.fill(tmpBB);
-
-				g.setColor(Coloriser.colorise(color, getColorisation()));
-				g.drawGlyphVector(glyphs, (float) labelPosition.getX(), (float) labelPosition.getY());
+				g.setStroke(new BasicStroke(strokeWidth));
 				g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
 				g.draw(tmpBB);
+
+				transform = g.getTransform();
+				g.translate(labelPosition.getX(), labelPosition.getY());
+
+				Color color = Color.BLACK;
+				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
+				if (perfectMatch) color = Color.GREEN;
+
+				result.draw(g, Coloriser.colorise(color, getColorisation()));
+
+				g.setTransform(transform);
 
 				variableBBs.put(tmpBB, var);
 

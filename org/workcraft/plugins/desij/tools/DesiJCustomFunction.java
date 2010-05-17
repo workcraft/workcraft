@@ -8,8 +8,6 @@ import org.workcraft.plugins.shared.MpsatChainResultHandler;
 import org.workcraft.plugins.shared.MpsatPresetManager;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.gui.MpsatConfigurationDialog;
-import org.workcraft.util.GUI;
 
 @DisplayName("DesiJ - customise function")
 public class DesiJCustomFunction implements Tool {

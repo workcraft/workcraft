@@ -40,24 +40,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.junit.Test;
 import org.workcraft.Framework;
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.parsers.breeze.BreezeLibrary;
+import org.workcraft.parsers.breeze.DefaultBreezeFactory;
+import org.workcraft.parsers.breeze.EmptyValueList;
 import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.components.BinaryFunc;
 import org.workcraft.plugins.balsa.components.BinaryOperator;
 import org.workcraft.plugins.balsa.components.CallMux;
@@ -69,8 +70,10 @@ import org.workcraft.plugins.balsa.components.SequenceOptimised;
 import org.workcraft.plugins.balsa.components.Variable;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
+import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
@@ -81,7 +84,7 @@ public class TestGCD {
 	private BreezeComponent addComponent(Component component)
 	{
 		BreezeComponent comp = new BreezeComponent();
-		comp.setUnderlyingComponent(component);
+		//comp.setUnderlyingComponent(component);
 		circuit.add(comp);
 		return comp;
 	}
@@ -233,8 +236,8 @@ public class TestGCD {
 	private Iterable<BreezeComponent> getConnected(BreezeComponent comp) {
 		HashSet<BreezeComponent> result = new HashSet<BreezeComponent>();
 
-		for(HandshakeComponent hs : comp.getHandshakeComponents().values()) {
-			HandshakeComponent otherHs = circuit.getConnectedHandshake(hs);
+		for(BreezeHandshake hs : comp.getHandshakeComponents().values()) {
+			BreezeHandshake otherHs = circuit.getConnectedHandshake(hs);
 			if(otherHs != null)
 				result.add(otherHs.getOwner());
 		}
@@ -376,6 +379,10 @@ public class TestGCD {
 
 		circuit = new BalsaCircuit();
 
+		BreezeLibrary lib = new BreezeLibrary(BalsaSystem.DEFAULT());
+		DefaultBreezeFactory bf = new DefaultBreezeFactory(circuit);
+		lib.getPrimitive("SequenceOptimised").instantiate(lib, bf, new EmptyValueList());
+
 		seq = addComponent(new SequenceOptimised() { { setOutputCount(2); } });
 		concur = addComponent(new Concur() { { setOutputCount(2); } });
 		fetchA = addComponent(new Fetch() { { setWidth(8); } });
@@ -459,19 +466,23 @@ public class TestGCD {
 		System.out.println("total chunks: " + allChunks.size());
 		for(Chunk chunk : allChunks)
 		{
+
 			Integer petrifyCost = null;//readCost(getEqnFile(chunk), "# Estimated area = ");
 			Integer mpsatCost = readCost(new File(outDir, "mpsat/" + getChunkName(chunk) + ".eqn"), "literals=");
-			Integer cost = petrifyCost;
-			if(cost == null)
-				cost = mpsatCost;
-			else
-				if(mpsatCost != null && mpsatCost < cost)
-					cost = mpsatCost;
+			Integer cost = best(petrifyCost, mpsatCost);
 
 			if(cost != null)
 				costs.put(chunk, cost);
 		}
 		return costs;
+	}
+
+	private static Integer best(Integer petrifyCost, Integer mpsatCost) {
+		if(mpsatCost == null)
+			return petrifyCost;
+		if(petrifyCost == null)
+			return mpsatCost;
+		return Math.min(mpsatCost, petrifyCost);
 	}
 
 	private Integer readCost(File eqnFile, String literalsPrefix) throws NumberFormatException, IOException {
@@ -658,7 +669,7 @@ public class TestGCD {
 	{
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
 			{
-				@Override protected Iterable<BreezeComponent> getComponentsToSave(Netlist<HandshakeComponent, BreezeComponent, BreezeConnection> balsa) {
+				@Override protected Iterable<BreezeComponent> getComponentsToSave(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> balsa) {
 					return Arrays.asList(components);
 				}
 			};
@@ -669,7 +680,7 @@ public class TestGCD {
 
 			try
 			{
-				BalsaToGatesExporter.synthesiseStg(stgFile, eqnFile, BalsaExportConfig.DEFAULT);
+				BalsaToGatesExporter.synthesiseStg(new DefaultTaskManager(), stgFile, eqnFile, BalsaExportConfig.DEFAULT);
 			}
 			catch(RuntimeException e)
 			{
@@ -694,8 +705,8 @@ public class TestGCD {
 		}
 	}
 
-	private HandshakeComponent getHc(BreezeComponent comp, String hc) {
-		HandshakeComponent hcc = comp.getHandshakeComponentByName(hc);
+	private BreezeHandshake getHc(BreezeComponent comp, String hc) {
+		BreezeHandshake hcc = comp.getHandshakeComponentByName(hc);
 		assertTrue("Handshake "+ hc +" not found in component " + comp.getUnderlyingComponent().getClass().toString(), hcc != null);
 
 		return hcc;

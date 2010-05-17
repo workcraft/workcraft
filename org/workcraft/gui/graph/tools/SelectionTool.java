@@ -32,8 +32,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -41,9 +39,8 @@ import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.SelectionColoriser;
@@ -68,7 +65,8 @@ public class SelectionTool extends AbstractTool {
 	private SelectionColoriser coloriser;
 
 	private int drag = DRAG_NONE;
-	private boolean notClick = false;
+	private boolean notClick1 = false;
+	private boolean notClick3 = false;
 
 	private Point2D snapOffset;
 
@@ -96,10 +94,15 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 
+		if(notClick1 && e.getButton() == MouseEvent.BUTTON1)
+			return;
+		if(notClick3 && e.getButton() == MouseEvent.BUTTON3)
+			return;
+
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButton()==MouseEvent.BUTTON1) {
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
 				switch(e.getKeyModifiers()) {
@@ -152,7 +155,7 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = e.getEditor().getModel();
 
 		if(e.getButtonModifiers()==MouseEvent.BUTTON1_DOWN_MASK) {
-			VisualNode hitNode = (VisualNode) HitMan.hitTestForSelection(e.getStartPosition(), model);
+			Node hitNode = HitMan.hitTestForSelection(e.getStartPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
@@ -207,15 +210,19 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		if(e.getButton()==MouseEvent.BUTTON1)
+			notClick1 = false;
+
 		if(e.getButton()==MouseEvent.BUTTON3) {
 
 			if(isDragging()) {
 				cancelDrag(e);
 				e.getEditor().repaint();
-				notClick = true; // TODO left click still generated but it should not
+				notClick1 = true;
+				notClick3 = true;
 			}
 			else {
-				notClick = false;
+				notClick3 = false;
 			}
 		}
 	}
@@ -289,32 +296,34 @@ public class SelectionTool extends AbstractTool {
 					currentLevelDown(e.getModel());
 					break;
 				case KeyEvent.VK_OPEN_BRACKET:
-					//e.getModel().rotateSelection(-Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),-Math.PI/2);
 					break;
 				case KeyEvent.VK_CLOSE_BRACKET:
-					//e.getModel().rotateSelection(Math.PI/2);
+					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),Math.PI/2);
 					break;
 				case KeyEvent.VK_LEFT:
-					//e.getModel().translateSelection(-1,0);
+					VisualModelTransformer.translateSelection(e.getModel(), -1,0);
 					break;
 				case KeyEvent.VK_RIGHT:
-					//e.getModel().translateSelection(1,0);
+					VisualModelTransformer.translateSelection(e.getModel(), 1,0);
 					break;
 				case KeyEvent.VK_UP:
-					//e.getModel().translateSelection(0,-1);
+					VisualModelTransformer.translateSelection(e.getModel(),0,-1);
 					break;
 				case KeyEvent.VK_DOWN:
-					//	e.getModel().translateSelection(0,1);
+					VisualModelTransformer.translateSelection(e.getModel(),0,1);
 					break;
 				}
 			} else { // Shift is pressed
 
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					//e.getModel().scaleSelection(-1,1);
+				case KeyEvent.VK_RIGHT:
+					VisualModelTransformer.scaleSelection(e.getModel(),-1,1);
 					break;
 				case KeyEvent.VK_UP:
-					//e.getModel().scaleSelection(1,-1);
+				case KeyEvent.VK_DOWN:
+					VisualModelTransformer.scaleSelection(e.getModel(),1,-1);
 					break;
 				}
 			}
@@ -348,8 +357,8 @@ public class SelectionTool extends AbstractTool {
 		if(selection.size() == 1)
 		{
 			Node selectedNode = selection.iterator().next();
-			if(selectedNode instanceof VisualGroup)
-				model.setCurrentLevel((VisualGroup)selectedNode);
+			if(selectedNode instanceof Container)
+				model.setCurrentLevel((Container)selectedNode);
 		}
 		grayOutNotActive(model);
 	}

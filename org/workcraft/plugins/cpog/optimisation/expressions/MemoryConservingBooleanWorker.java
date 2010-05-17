@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 
 class Inverter implements BooleanVisitor<BooleanFormula> {
@@ -97,10 +96,6 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
 			code = newCode(f);
 		}
 		return code;
-	}
-
-	private String formulaToStr(BooleanFormula f) {
-		return FormulaToString.toString(f);
 	}
 
 	private Integer newCode(BooleanFormula f) {

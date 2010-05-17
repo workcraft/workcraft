@@ -21,7 +21,6 @@
 
 package org.workcraft.dom.visual.connections;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -84,7 +83,8 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
 		g.setColor(connectionInfo.getDrawColor());
-		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
+//		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
+		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 
 		if (connectionInfo.hasArrow())
@@ -400,6 +400,12 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		Point2D right = getDerivativeAt(t + 0.05);
 
 		return Geometry.subtract(right, left);
+	}
+
+	@Override
+	public Point2D getCenter()
+	{
+		return getPointOnCurve(0.5);
 	}
 
 

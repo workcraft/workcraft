@@ -1,5 +1,7 @@
 package org.workcraft.util;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,7 +12,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +41,18 @@ public class GUI {
 		JPanel result = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
 		result.add(new JLabel(labelText));
 		result.add(component);
+		return result;
+	}
+
+	public static JPanel createWideLabeledComponent (JComponent component, String labelText) {
+		double[][] sizes = {
+				{TableLayout.PREFERRED, TableLayout.FILL},
+				{TableLayout.PREFERRED},
+		};
+
+		JPanel result = new JPanel (new TableLayout(sizes));
+		result.add(new JLabel(labelText), "0 0");
+		result.add(component, "1 0");
 		return result;
 	}
 

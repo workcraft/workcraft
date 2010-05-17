@@ -29,7 +29,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
 @VisualClass("org.workcraft.plugins.stg.VisualDummyTransition")
-public class DummyTransition extends Transition {
+public class DummyTransition extends Transition implements StgTransition {
 	private String name;
 
 	@NoAutoSerialisation
@@ -42,5 +42,20 @@ public class DummyTransition extends Transition {
 		this.name = name;
 
 		sendNotification(new PropertyChangedEvent(this, "name"));
+	}
+
+	@Override
+	public DummyTransition asDummy() {
+		return this;
+	}
+
+	@Override
+	public SignalTransition asSignal() {
+		return null;
+	}
+
+	@Override
+	public Transition getTransition() {
+		return this;
 	}
 }

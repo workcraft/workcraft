@@ -1,5 +1,6 @@
 package org.workcraft.tasks;
 
+
 public class Result<T> {
 
 	public enum Outcome {
@@ -46,5 +47,21 @@ public class Result<T> {
 
 	public T getReturnValue() {
 		return result;
+	}
+
+	public static <R> Result<R> failed(Throwable e) {
+		return new Result<R>(e);
+	}
+
+	public static <R> Result<R> cancelled(){
+		return new Result<R>(Outcome.CANCELLED);
+	}
+
+	public static <R> Result<R> finished(R res){
+		return new Result<R>(res);
+	}
+
+	public static <R> Result<R> failed(R res) {
+		return new Result<R>(Outcome.FAILED, res);
 	}
 }

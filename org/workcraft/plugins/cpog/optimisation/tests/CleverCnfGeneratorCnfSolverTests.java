@@ -25,7 +25,6 @@ import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.CnfGeneratingOptimiser;
 import org.workcraft.plugins.cpog.optimisation.CpogSolver;
 import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
 
 public class CleverCnfGeneratorCnfSolverTests extends SolverTests {
 	public CleverCnfGeneratorCnfSolverTests()

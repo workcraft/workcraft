@@ -10,7 +10,7 @@ public class GenerateStubs {
 	{
 		if(args.length < 1)
 		{
-			System.err.print("Need at leas 1 parameter: path to the Workcraft project to generate code there");
+			System.err.print("Need at least 1 parameter: path to the Workcraft project to generate code there");
 			return 1;
 		}
 		if(args.length > 2)
@@ -18,11 +18,7 @@ public class GenerateStubs {
 			System.err.print("Need at most 2 parameters: path to the Workcraft project to generate code there + path to BALSA home folder");
 			return 1;
 		}
-		BalsaSystem system;
-		if(args.length == 2)
-			system = new BalsaSystem(new File(args[1]));
-		else
-			system = new BalsaSystem();
+		BalsaSystem system  = args.length == 2 ? new BalsaSystem(new File(args[1])) : new BalsaSystem();
 
 		new CodeGenerator().generateStubs(new File(args[0]), system);
 		return 0;

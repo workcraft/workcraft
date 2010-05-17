@@ -43,7 +43,7 @@ public class CleverBooleanWorker implements BooleanWorker
 	@Override
 	public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
 		if(x==y)
-			return x;
+			return ONE;
 		if(x == ONE)
 			return y;
 		if(x == ZERO)
@@ -98,7 +98,7 @@ public class CleverBooleanWorker implements BooleanWorker
 	@Override
 	public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
 		if(x==y)
-			return x;
+			return ZERO;
 		if(x == ONE)
 			return not(y);
 		if(x == ZERO)

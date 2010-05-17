@@ -30,20 +30,20 @@ import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
-@DisplayName("punf")
+@DisplayName("petrify")
 public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String punfCommand = "punf";
-	private static String punfArgs = "";
+	private static String petrifyCommand = "petrify";
+	private static String petrifyArgs = "";
 
-	private static final String punfCommandKey = "Verification.punf.command";
-	private static final String punfArgsKey = "Verification.punf.args";
+	private static final String petrifyCommandKey = "Tools.petrify.command";
+	private static final String petrifyArgsKey = "Tools.petrify.args";
 
 	public PetrifyUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
+		properties.add(new PropertyDeclaration(this, "Petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPetrifyArgs", "setPetrifyArgs", String.class));
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -51,32 +51,32 @@ public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugi
 	}
 
 	public void loadPersistentProperties(Config config) {
-		punfCommand = config.getString(punfCommandKey, "punf");
-		punfArgs = config.getString(punfArgsKey, "");
+		petrifyCommand = config.getString(petrifyCommandKey, "petrify");
+		petrifyArgs = config.getString(petrifyArgsKey, "");
 	}
 
 	public void storePersistentProperties(Config config) {
-		config.set(punfCommandKey, punfCommand);
-		config.set(punfArgsKey, punfArgs);
+		config.set(petrifyCommandKey, petrifyCommand);
+		config.set(petrifyArgsKey, petrifyArgs);
 	}
 
 	public String getSection() {
-		return "Verification";
+		return "External tools";
 	}
 
-	public static String getPunfCommand() {
-		return punfCommand;
+	public static String getPetrifyCommand() {
+		return petrifyCommand;
 	}
 
-	public static void setPunfCommand(String punfCommand) {
-		PetrifyUtilitySettings.punfCommand = punfCommand;
+	public static void setPetrifyCommand(String petrifyCommand) {
+		PetrifyUtilitySettings.petrifyCommand = petrifyCommand;
 	}
 
-	public static String getPunfArgs() {
-		return punfArgs;
+	public static String getPetrifyArgs() {
+		return petrifyArgs;
 	}
 
-	public static void setPunfArgs(String punfArgs) {
-		PetrifyUtilitySettings.punfArgs = punfArgs;
+	public static void setPetrifyArgs(String petrifyArgs) {
+		PetrifyUtilitySettings.petrifyArgs = petrifyArgs;
 	}
 }

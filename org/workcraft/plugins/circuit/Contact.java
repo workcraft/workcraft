@@ -24,18 +24,21 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Contact")
 @VisualClass("org.workcraft.plugins.circuit.VisualContact")
 
 public class Contact extends MathNode {
 
-	public enum IOType {input, output};
-	private IOType iotype;
+	public enum IOType {INPUT, OUTPUT};
+	private IOType ioType;
+
 	//private boolean invertSignal = false;
 
 	public Contact() {
 	}
+
 
 	public Contact(IOType iot) {
 		super();
@@ -43,11 +46,15 @@ public class Contact extends MathNode {
 		setIOType(iot);
 	}
 
+
 	public void setIOType(IOType t) {
-		this.iotype = t;
+		this.ioType = t;
+		sendNotification(new PropertyChangedEvent(this, "ioType"));
 	}
 
 	public IOType getIOType() {
-		return iotype;
+		return ioType;
 	}
+
+
 }

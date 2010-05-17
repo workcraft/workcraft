@@ -18,13 +18,31 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.gui.workspace;
 
-import javax.swing.Icon;
-import javax.swing.JPopupMenu;
+package org.workcraft.plugins.balsa;
 
-public interface TreeDecorator<Node> {
-	public String getName(Node node);
-	public Icon getIcon(Node node);
-	public JPopupMenu getPopupMenu(Node node);
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+
+public class BreezeHandshake extends MathNode {
+	private BreezeComponent owner;
+	private String handshakeName;
+
+	public BreezeHandshake(BreezeComponent owner, String handshakeName)
+	{
+		this.owner = owner;
+		this.handshakeName = handshakeName;
+	}
+
+	public BreezeComponent getOwner() {
+		return owner;
+	}
+
+	public Handshake getHandshake() {
+		return owner.getHandshakes().get(handshakeName);
+	}
+
+	public String getHandshakeName() {
+		return handshakeName;
+	}
 }

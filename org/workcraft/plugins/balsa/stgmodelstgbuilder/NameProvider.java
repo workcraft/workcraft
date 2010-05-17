@@ -18,11 +18,9 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.gui.workspace;
 
-public interface TreeListener<Node> {
-	public void added(Path<Node> path);
-	public void removed(Path<Node> path);
-	public void changed(Path<Node> path);
-	public void restructured(Path<Node> path);
+package org.workcraft.plugins.balsa.stgmodelstgbuilder;
+
+public interface NameProvider<T> {
+	public String getName(T obj);
 }

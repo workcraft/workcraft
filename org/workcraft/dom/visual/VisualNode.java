@@ -22,6 +22,7 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +47,12 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 
 	public Rectangle2D getBoundingBox() {
 		return null;
+	}
+
+	@Override
+	public Point2D getCenter()
+	{
+		return new Point2D.Double(getBoundingBox().getCenterX(), getBoundingBox().getCenterY());
 	}
 
 	public Collection<Node> getChildren() {

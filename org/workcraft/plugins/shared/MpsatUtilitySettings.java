@@ -37,8 +37,8 @@ public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin 
 	private static String mpsatCommand = "mpsat";
 	private static String mpsatArgs = "";
 
-	private static final String mpsatCommandKey = "Verification.mpsat.command";
-	private static final String mpsatArgsKey = "Verification.mpsat.args";
+	private static final String mpsatCommandKey = "Tools.mpsat.command";
+	private static final String mpsatArgsKey = "Tools.mpsat.args";
 
 	public MpsatUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -61,7 +61,7 @@ public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin 
 	}
 
 	public String getSection() {
-		return "Verification";
+		return "External tools";
 	}
 
 	public static String getMpsatCommand() {

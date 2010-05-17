@@ -21,29 +21,19 @@
 package org.workcraft.gui;
 
 import javax.swing.Icon;
-import javax.swing.JPopupMenu;
 
+import org.workcraft.gui.trees.TreeDecorator;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.gui.workspace.TreeDecorator;
-import org.workcraft.gui.workspace.WorkspacePopupProvider;
-import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>>
 {
-	private final WorkspacePopupProvider popups;
 	private final Workspace workspace;
 
-	public WorkspaceTreeDecorator(WorkspaceWindow window)
+	public WorkspaceTreeDecorator(Workspace workspace)
 	{
-		workspace = window.getWorkspace();
-		popups = new WorkspacePopupProvider(window);
-	}
-
-	@Override
-	public JPopupMenu getPopupMenu(Path<String> node) {
-		return popups.getPopup(node);
+		this.workspace = workspace;
 	}
 
 	@Override

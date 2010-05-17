@@ -31,7 +31,8 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
 @VisualClass("org.workcraft.plugins.stg.VisualSignalTransition")
-public class SignalTransition extends Transition {
+public class SignalTransition extends Transition implements StgTransition
+{
 	public enum Type {
 		INPUT,
 		OUTPUT,
@@ -105,5 +106,20 @@ public class SignalTransition extends Transition {
 		this.signalName = signalName;
 
 		sendNotification(new PropertyChangedEvent(this, "signalName"));
+	}
+
+	@Override
+	public DummyTransition asDummy() {
+		return null;
+	}
+
+	@Override
+	public SignalTransition asSignal() {
+		return this;
+	}
+
+	@Override
+	public Transition getTransition() {
+		return this;
 	}
 }

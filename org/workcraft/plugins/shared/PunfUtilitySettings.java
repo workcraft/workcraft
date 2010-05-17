@@ -37,8 +37,8 @@ public class PunfUtilitySettings implements PersistentPropertyEditable, Plugin {
 	private static String punfCommand = "punf";
 	private static String punfArgs = "";
 
-	private static final String punfCommandKey = "Verification.punf.command";
-	private static final String punfArgsKey = "Verification.punf.args";
+	private static final String punfCommandKey = "Tools.punf.command";
+	private static final String punfArgsKey = "Tools.punf.args";
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -61,7 +61,7 @@ public class PunfUtilitySettings implements PersistentPropertyEditable, Plugin {
 	}
 
 	public String getSection() {
-		return "Verification";
+		return "External tools";
 	}
 
 	public static String getPunfCommand() {

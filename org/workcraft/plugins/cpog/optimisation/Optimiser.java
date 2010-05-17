@@ -21,6 +21,13 @@
 
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.ONE;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.ZERO;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.and;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.iff;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.or;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,11 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
-
-import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
 public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<BooleanFormula>
 {

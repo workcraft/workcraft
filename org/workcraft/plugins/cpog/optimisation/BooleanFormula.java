@@ -20,7 +20,6 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator.ConstantExpectingCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 

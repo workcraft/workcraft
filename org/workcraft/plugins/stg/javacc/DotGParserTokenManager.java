@@ -15,6 +15,7 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
 /** Token Manager. */
+@SuppressWarnings("all")
 public class DotGParserTokenManager implements DotGParserConstants
 {
 
