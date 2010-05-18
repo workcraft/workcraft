@@ -118,6 +118,11 @@ public class Export {
 		return best;
 	}
 
+	static public void exportToFile (Model model, File file, UUID targetFormat, PluginProvider provider) throws IOException, ModelValidationException, SerialisationException {
+		Exporter exporter = chooseBestExporter(provider, model, targetFormat);
+		exportToFile(exporter, model, file);
+	}
+
 	static public void exportToFile (Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);

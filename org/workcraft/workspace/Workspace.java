@@ -41,7 +41,9 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.interop.Importer;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.Import;
 import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
@@ -94,9 +96,6 @@ public class Workspace {
 		if (file.exists()) {
 			Path<String> workspacePath = getWorkspacePath(file);
 
-			if (workspacePath == null)
-				workspacePath = tempMountExternalFile(file);
-
 			for(WorkspaceEntry we : openFiles.values())
 				if(we.getWorkspacePath().equals(workspacePath))
 					return we;
@@ -105,8 +104,31 @@ public class Workspace {
 			we.setTemporary(temporary);
 			we.setChanged(false);
 			if (file.getName().endsWith(".work")) {
+				if (workspacePath == null)
+					workspacePath = tempMountExternalFile(file);
+
 				Model model = framework.load(file.getPath());
 				we.setObject(model);
+			} else {
+				try {
+					Path<String> parent;
+					if(workspacePath == null)
+						parent = Path.empty();
+					else
+						parent = workspacePath.getParent();
+
+					final Importer importer = Import.chooseBestImporter(framework.getPluginManager(), file);
+					Model model = Import.importFromFile(importer, file);
+					we.setObject(model);
+
+					workspacePath = newName(parent, FileUtils.getFileNameWithoutExtension(file));
+				} catch (IOException e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
+				} catch (DeserialisationException e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			openFiles.put(workspacePath, we);
 			fireModelLoaded(we);

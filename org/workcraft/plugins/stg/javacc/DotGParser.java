@@ -116,10 +116,15 @@ public class DotGParser implements DotGParserConstants {
         }
 
   final public STG parse() throws ParseException {
+    if (jj_2_1(3)) {
+      jj_consume_token(LINEBREAK);
+    } else {
+      ;
+    }
           init();
     label_1:
     while (true) {
-      if (jj_2_1(3)) {
+      if (jj_2_2(3)) {
         ;
       } else {
         break label_1;
@@ -130,7 +135,7 @@ public class DotGParser implements DotGParserConstants {
     graph();
     label_2:
     while (true) {
-      if (jj_2_2(3)) {
+      if (jj_2_3(3)) {
         ;
       } else {
         break label_2;
@@ -145,32 +150,32 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
                   List<String> list;
-    if (jj_2_3(3)) {
+    if (jj_2_4(3)) {
       jj_consume_token(LINEBREAK);
     } else {
       ;
     }
-    if (jj_2_5(3)) {
+    if (jj_2_6(3)) {
       jj_consume_token(INPUT_HEADER);
       list = signalList();
                                                      setSignalsType (list, Type.INPUT);
-    } else if (jj_2_6(3)) {
+    } else if (jj_2_7(3)) {
       jj_consume_token(OUTPUT_HEADER);
       list = signalList();
                                                        setSignalsType (list, Type.OUTPUT);
-    } else if (jj_2_7(3)) {
+    } else if (jj_2_8(3)) {
       jj_consume_token(INTERNAL_HEADER);
       list = signalList();
                                                          setSignalsType (list, Type.INTERNAL);
-    } else if (jj_2_8(3)) {
+    } else if (jj_2_9(3)) {
       jj_consume_token(DUMMY_HEADER);
       list = signalList();
                                                       setSignalsType (list, Type.DUMMY);
-    } else if (jj_2_9(3)) {
+    } else if (jj_2_10(3)) {
       jj_consume_token(UNSUPPORTED_HEADER);
       label_3:
       while (true) {
-        if (jj_2_4(3)) {
+        if (jj_2_5(3)) {
           ;
         } else {
           break label_3;
@@ -187,7 +192,7 @@ public class DotGParser implements DotGParserConstants {
                               Token t; List<String> list = new LinkedList<String>();
     label_4:
     while (true) {
-      if (jj_2_10(3)) {
+      if (jj_2_11(3)) {
         ;
       } else {
         break label_4;
@@ -200,17 +205,17 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public void footer() throws ParseException {
-    if (jj_2_12(3)) {
+    if (jj_2_13(3)) {
       jj_consume_token(MARKING);
       marking();
-    } else if (jj_2_13(3)) {
+    } else if (jj_2_14(3)) {
       jj_consume_token(CAPACITY);
       capacity();
-    } else if (jj_2_14(3)) {
+    } else if (jj_2_15(3)) {
       jj_consume_token(UNSUPPORTED_HEADER);
       label_5:
       while (true) {
-        if (jj_2_11(3)) {
+        if (jj_2_12(3)) {
           ;
         } else {
           break label_5;
@@ -226,7 +231,7 @@ public class DotGParser implements DotGParserConstants {
   final public void capacity() throws ParseException {
     label_6:
     while (true) {
-      if (jj_2_15(3)) {
+      if (jj_2_16(3)) {
         ;
       } else {
         break label_6;
@@ -237,9 +242,9 @@ public class DotGParser implements DotGParserConstants {
 
   final public void capacityEntry() throws ParseException {
                          STGPlace p; int value;
-    if (jj_2_16(3)) {
+    if (jj_2_17(3)) {
       p = implicitPlaceReference();
-    } else if (jj_2_17(3)) {
+    } else if (jj_2_18(3)) {
       p = explicitPlaceReference();
     } else {
       jj_consume_token(-1);
@@ -253,7 +258,7 @@ public class DotGParser implements DotGParserConstants {
     jj_consume_token(16);
     label_7:
     while (true) {
-      if (jj_2_18(3)) {
+      if (jj_2_19(3)) {
         ;
       } else {
         break label_7;
@@ -273,15 +278,15 @@ public class DotGParser implements DotGParserConstants {
 
   final public void markingEntry() throws ParseException {
                         STGPlace p; int value = 1;
-    if (jj_2_19(3)) {
+    if (jj_2_20(3)) {
       p = implicitPlaceReference();
-    } else if (jj_2_20(3)) {
+    } else if (jj_2_21(3)) {
       p = explicitPlaceReference();
     } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
-    if (jj_2_21(3)) {
+    if (jj_2_22(3)) {
       value = assignment();
     } else {
       ;
@@ -319,7 +324,7 @@ public class DotGParser implements DotGParserConstants {
     while (true) {
       graphLine();
       jj_consume_token(LINEBREAK);
-      if (jj_2_22(3)) {
+      if (jj_2_23(3)) {
         ;
       } else {
         break label_8;
@@ -336,7 +341,7 @@ public class DotGParser implements DotGParserConstants {
                      name = t.image;
     t = jj_consume_token(DIRECTION);
                           direction = Direction.fromString(t.image);
-    if (jj_2_23(3)) {
+    if (jj_2_24(3)) {
       jj_consume_token(21);
       t = jj_consume_token(INTEGER);
                                         instance = Integer.parseInt(t.image);
@@ -353,7 +358,7 @@ public class DotGParser implements DotGParserConstants {
         Integer instance = null;
     t = jj_consume_token(NAME);
                      name = t.image;
-    if (jj_2_24(3)) {
+    if (jj_2_25(3)) {
       jj_consume_token(21);
       t = jj_consume_token(INTEGER);
                                instance = Integer.parseInt(t.image);
@@ -368,10 +373,10 @@ public class DotGParser implements DotGParserConstants {
         Triple<String, Direction, Integer> r;
         Pair<String, Integer> r2;
         Node t;
-    if (jj_2_25(3)) {
+    if (jj_2_26(3)) {
       r = signalTransition();
                                    t = getOrCreate(r);
-    } else if (jj_2_26(3)) {
+    } else if (jj_2_27(3)) {
       r2 = dummyTransition();
                                    t = getOrCreate(r2);
     } else {
@@ -385,9 +390,9 @@ public class DotGParser implements DotGParserConstants {
   final public void graphLine() throws ParseException {
         Token t;
         Node from, to;
-    if (jj_2_27(2147483647)) {
+    if (jj_2_28(2147483647)) {
       from = anyTransition();
-    } else if (jj_2_28(3)) {
+    } else if (jj_2_29(3)) {
       t = jj_consume_token(NAME);
                        from = getOrCreate(t.image);
     } else {
@@ -396,14 +401,14 @@ public class DotGParser implements DotGParserConstants {
     }
     label_9:
     while (true) {
-      if (jj_2_29(3)) {
+      if (jj_2_30(3)) {
         ;
       } else {
         break label_9;
       }
-      if (jj_2_30(2147483647)) {
+      if (jj_2_31(2147483647)) {
         to = anyTransition();
-      } else if (jj_2_31(3)) {
+      } else if (jj_2_32(3)) {
         t = jj_consume_token(NAME);
                                to = getOrCreate(t.image);
       } else {
@@ -631,24 +636,20 @@ public class DotGParser implements DotGParserConstants {
     finally { jj_save(30, xla); }
   }
 
-  private boolean jj_3_10() {
-    if (jj_scan_token(NAME)) return true;
-    return false;
+  private boolean jj_2_32(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_32(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(31, xla); }
   }
 
   private boolean jj_3_8() {
-    if (jj_scan_token(DUMMY_HEADER)) return true;
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
     if (jj_scan_token(INTERNAL_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
   }
 
-  private boolean jj_3_6() {
+  private boolean jj_3_7() {
     if (jj_scan_token(OUTPUT_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -658,12 +659,12 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_10()) { jj_scanpos = xsp; break; }
+      if (jj_3_11()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  private boolean jj_3_5() {
+  private boolean jj_3_6() {
     if (jj_scan_token(INPUT_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -674,11 +675,11 @@ public class DotGParser implements DotGParserConstants {
     if (jj_scan_token(DIRECTION)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_23()) jj_scanpos = xsp;
+    if (jj_3_24()) jj_scanpos = xsp;
     return false;
   }
 
-  private boolean jj_3_3() {
+  private boolean jj_3_4() {
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
@@ -686,17 +687,17 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_3()) jj_scanpos = xsp;
+    if (jj_3_4()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_3_5()) {
-    jj_scanpos = xsp;
     if (jj_3_6()) {
     jj_scanpos = xsp;
     if (jj_3_7()) {
     jj_scanpos = xsp;
     if (jj_3_8()) {
     jj_scanpos = xsp;
-    if (jj_3_9()) return true;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) return true;
     }
     }
     }
@@ -704,25 +705,30 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_20() {
+  private boolean jj_3_21() {
     if (jj_3R_17()) return true;
     return false;
   }
 
-  private boolean jj_3_2() {
+  private boolean jj_3_3() {
     if (jj_3R_11()) return true;
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
 
-  private boolean jj_3_22() {
+  private boolean jj_3_23() {
     if (jj_3R_20()) return true;
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
+  private boolean jj_3_2() {
     if (jj_3R_10()) return true;
+    if (jj_scan_token(LINEBREAK)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
@@ -732,12 +738,12 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_17() {
+  private boolean jj_3_18() {
     if (jj_3R_17()) return true;
     return false;
   }
 
-  private boolean jj_3_30() {
+  private boolean jj_3_31() {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -748,7 +754,7 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_31() {
+  private boolean jj_3_32() {
     if (jj_scan_token(NAME)) return true;
     return false;
   }
@@ -760,17 +766,17 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_29() {
+  private boolean jj_3_30() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_23()) {
     jj_scanpos = xsp;
-    if (jj_3_31()) return true;
+    if (jj_3_32()) return true;
     }
     return false;
   }
 
-  private boolean jj_3_27() {
+  private boolean jj_3_28() {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -781,7 +787,7 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_21() {
+  private boolean jj_3_22() {
     if (jj_3R_19()) return true;
     return false;
   }
@@ -791,12 +797,12 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_19() {
+  private boolean jj_3_20() {
     if (jj_3R_16()) return true;
     return false;
   }
 
-  private boolean jj_3_28() {
+  private boolean jj_3_29() {
     if (jj_scan_token(NAME)) return true;
     return false;
   }
@@ -809,12 +815,12 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_18() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_19()) {
+    if (jj_3_20()) {
     jj_scanpos = xsp;
-    if (jj_3_20()) return true;
+    if (jj_3_21()) return true;
     }
     xsp = jj_scanpos;
-    if (jj_3_21()) jj_scanpos = xsp;
+    if (jj_3_22()) jj_scanpos = xsp;
     return false;
   }
 
@@ -823,11 +829,11 @@ public class DotGParser implements DotGParserConstants {
     xsp = jj_scanpos;
     if (jj_3R_25()) {
     jj_scanpos = xsp;
-    if (jj_3_28()) return true;
+    if (jj_3_29()) return true;
     }
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_29()) { jj_scanpos = xsp; break; }
+      if (jj_3_30()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -838,12 +844,12 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_18() {
+  private boolean jj_3_19() {
     if (jj_3R_18()) return true;
     return false;
   }
 
-  private boolean jj_3_11() {
+  private boolean jj_3_12() {
     if (jj_scan_token(ANY)) return true;
     return false;
   }
@@ -853,28 +859,28 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_18()) { jj_scanpos = xsp; break; }
+      if (jj_3_19()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(17)) return true;
     return false;
   }
 
-  private boolean jj_3_16() {
+  private boolean jj_3_17() {
     if (jj_3R_16()) return true;
     return false;
   }
 
-  private boolean jj_3_26() {
+  private boolean jj_3_27() {
     if (jj_3R_22()) return true;
     return false;
   }
 
-  private boolean jj_3_25() {
+  private boolean jj_3_26() {
     if (jj_3R_21()) return true;
     return false;
   }
 
-  private boolean jj_3_4() {
+  private boolean jj_3_5() {
     if (jj_scan_token(ANY)) return true;
     return false;
   }
@@ -882,9 +888,9 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_25()) {
+    if (jj_3_26()) {
     jj_scanpos = xsp;
-    if (jj_3_26()) return true;
+    if (jj_3_27()) return true;
     }
     return false;
   }
@@ -892,15 +898,15 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_15() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_16()) {
+    if (jj_3_17()) {
     jj_scanpos = xsp;
-    if (jj_3_17()) return true;
+    if (jj_3_18()) return true;
     }
     if (jj_3R_19()) return true;
     return false;
   }
 
-  private boolean jj_3_15() {
+  private boolean jj_3_16() {
     if (jj_3R_15()) return true;
     return false;
   }
@@ -909,7 +915,56 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_15()) { jj_scanpos = xsp; break; }
+      if (jj_3_16()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_25() {
+    if (jj_scan_token(21)) return true;
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_22() {
+    if (jj_scan_token(NAME)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_25()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_12()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_scan_token(CAPACITY)) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_scan_token(MARKING)) return true;
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_11() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_13()) {
+    jj_scanpos = xsp;
+    if (jj_3_14()) {
+    jj_scanpos = xsp;
+    if (jj_3_15()) return true;
+    }
     }
     return false;
   }
@@ -920,62 +975,24 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3R_22() {
-    if (jj_scan_token(NAME)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_24()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3_14() {
+  private boolean jj_3_10() {
     if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3_11()) { jj_scanpos = xsp; break; }
+      if (jj_3_5()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  private boolean jj_3_13() {
-    if (jj_scan_token(CAPACITY)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  private boolean jj_3_12() {
-    if (jj_scan_token(MARKING)) return true;
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_11() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_12()) {
-    jj_scanpos = xsp;
-    if (jj_3_13()) {
-    jj_scanpos = xsp;
-    if (jj_3_14()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3_23() {
-    if (jj_scan_token(21)) return true;
-    if (jj_scan_token(INTEGER)) return true;
+  private boolean jj_3_11() {
+    if (jj_scan_token(NAME)) return true;
     return false;
   }
 
   private boolean jj_3_9() {
-    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_4()) { jj_scanpos = xsp; break; }
-    }
+    if (jj_scan_token(DUMMY_HEADER)) return true;
+    if (jj_3R_12()) return true;
     return false;
   }
 
@@ -998,7 +1015,7 @@ public class DotGParser implements DotGParserConstants {
    private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[31];
+  final private JJCalls[] jj_2_rtns = new JJCalls[32];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1223,7 +1240,7 @@ public class DotGParser implements DotGParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 31; i++) {
+    for (int i = 0; i < 32; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1261,6 +1278,7 @@ public class DotGParser implements DotGParserConstants {
             case 28: jj_3_29(); break;
             case 29: jj_3_30(); break;
             case 30: jj_3_31(); break;
+            case 31: jj_3_32(); break;
           }
         }
         p = p.next;

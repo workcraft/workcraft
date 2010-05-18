@@ -153,6 +153,7 @@ TOKEN :
 
 STG parse() : { }
 {
+	(<LINEBREAK>)?
 	{ init(); }
 	 ( header() <LINEBREAK> )*
 	 graph()

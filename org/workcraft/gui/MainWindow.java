@@ -342,54 +342,58 @@ public class MainWindow extends JFrame {
 		return dockable;
 	}
 
-	public void createEditorWindow(WorkspaceEntry we) {
-		Object object = we.getObject();
+	public void createEditorWindow(final WorkspaceEntry we) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Object object = we.getObject();
 
-		if (!(object instanceof Model))
-			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
+				if (!(object instanceof Model))
+					throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
 
-		VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
+				VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
 
-		if (visualModel == null)
-			try {
-				visualModel = ModelFactory.createVisualModel((MathModel)object);
-				we.setObject(visualModel);
+				if (visualModel == null)
+					try {
+						visualModel = ModelFactory.createVisualModel((MathModel)object);
+						we.setObject(visualModel);
 
-				DotLayout layout = (DotLayout)framework.getPluginManager().getSingletonByName("org.workcraft.plugins.layout.DotLayout");
-				layout.run(visualModel, framework);
-			} catch (LayoutException e) {
-				// Layout failed for whatever reason, ignore
-			} catch (VisualModelInstantiationException e) {
-				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-				return;
-			} catch (PluginInstantiationException e) {
-				// no Dot layout plugin found, ignore
-			}
+						DotLayout layout = (DotLayout)framework.getPluginManager().getSingletonByName("org.workcraft.plugins.layout.DotLayout");
+						layout.run(visualModel, framework);
+					} catch (LayoutException e) {
+						// Layout failed for whatever reason, ignore
+					} catch (VisualModelInstantiationException e) {
+						JOptionPane.showMessageDialog(MainWindow.this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					} catch (PluginInstantiationException e) {
+						// no Dot layout plugin found, ignore
+					}
 
-			GraphEditorPanel editor = new GraphEditorPanel(this, we);
-			String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
+					GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+					String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
 
-			DockableWindow editorWindow;
+					DockableWindow editorWindow;
 
-			if (editorWindows.isEmpty()) {
-				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+					if (editorWindows.isEmpty()) {
+						editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
+								DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 
-				DockingManager.close(documentPlaceholder);
-				DockingManager.unregisterDockable(documentPlaceholder);
-				utilityWindows.remove(documentPlaceholder);
-			}
-			else {
-				DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
-			}
+						DockingManager.close(documentPlaceholder);
+						DockingManager.unregisterDockable(documentPlaceholder);
+						utilityWindows.remove(documentPlaceholder);
+					}
+					else {
+						DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
+						editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
+								DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+					}
 
-			editorWindows.put(we, editorWindow);
-			requestFocus(editor);
+					editorWindows.put(we, editorWindow);
+					requestFocus(editor);
 
-			enableWorkActions();
+					enableWorkActions();
+			}}) ;
 	}
 
 	private void registerUtilityWindow(DockableWindow dockableWindow) {
