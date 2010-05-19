@@ -21,14 +21,11 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
-
+@SuppressWarnings("all")
 public class Main {
 	static String [] scenarios =
 	{
@@ -48,6 +45,44 @@ public class Main {
 		"10---",
 		"11010",
 		"11-01",
+	};
+
+	static String [] phase_encoder_3 =
+	{
+		"1010-0",
+		"-00110",
+		"01-010",
+		"0-1001",
+		"100-01",
+		"01010-",
+	};
+
+	static String [] phase_encoder_4 =
+	{
+	"---000000111",
+	"-11000001--0",
+	"--100001001-",
+	"1-00001-00-1",
+	"-1000010-1-0",
+	"1-0000-110-0",
+	"-1-00100010-",
+	"-0101000--10",
+	"1--00101000-",
+	"0-0100--0011",
+	"10001010---0",
+	"010100--10-0",
+	"10-01-000-01",
+	"10-0-1001-00",
+	"01110-0-000-",
+	"010-011-000-",
+	"0001-0-0-110",
+	"000-10-1-010",
+	"00-1--000101",
+	"0011--001-00",
+	"001-1-01000-",
+	"000-1-1-0001",
+	"000--110-100",
+	"000--1-11000",
 	};
 
 	static String [] smallscenarios =
@@ -86,11 +121,12 @@ public class Main {
 			"A01-0101111A",
 			"A111010111aA",
 	                                 };
+
 	public static void main(String[] args) throws Exception, IOException
 	{
 
-		int freeVariables = 4;
-		int derivedVariables = 7;
+		int freeVariables = 5;
+		int derivedVariables = 8;
 
 		System.out.println(freeVariables + " " + derivedVariables);
 
@@ -101,11 +137,11 @@ public class Main {
 		//Optimiser<BinaryIntBooleanFormula> optimiser = new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider());
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 
-		CpogSolver solverCnf = new DefaultCpogSolver<Cnf>(cnfGenerator, new SimpleCnfTaskProvider());
+		CpogSolver solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
 		CpogSolver solverCnfLimboole = new DefaultCpogSolver<BooleanFormula>(cnfGenerator, new LimBooleCnfGenerator());
 		CpogSolver solverOneHot = new DefaultCpogSolver<BooleanFormula>(oneHot, new LimBooleCnfGenerator());
 
-		CpogOptimisationTask<BooleanFormula> formula = oneHot.getFormula(withGe, 3, 11);
+	/*	CpogOptimisationTask<BooleanFormula> formula = oneHot.getFormula(phase_encoder_3, 3, 0);
 		Cnf cnf = new CleverCnfGenerator().generateCnf(formula.getTask());
 		CnfTask task = new SimpleCnfTaskProvider().getCnf(cnf);
 
@@ -120,7 +156,7 @@ public class Main {
 			System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
 		}
 		if(true)
-			throw new RuntimeException("qwe");
+			throw new RuntimeException("qwe");*/
 
 
 		//System.out.println(cnf.toString(new MiniSatCnfPrinter()));
@@ -129,7 +165,7 @@ public class Main {
 		//System.out.println(FormulaToString.toString(oneHot.getFormula(smallscenarios, null, freeVariables, derivedVariables).getTask()));
 		long start = System.currentTimeMillis();
 
-		CpogEncoding solution = solverCnf.solve(processor, freeVariables, derivedVariables);
+		CpogEncoding solution = solverCnf.solve(phase_encoder_4, freeVariables, derivedVariables);
 		long end = System.currentTimeMillis();
 
 		System.out.println("time: " + (end-start)/1000.0);

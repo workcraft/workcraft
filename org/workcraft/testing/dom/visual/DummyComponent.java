@@ -28,7 +28,6 @@ import java.util.Collection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
 
 class SquareNode extends VisualComponent
 {

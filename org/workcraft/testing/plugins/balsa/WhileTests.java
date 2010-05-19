@@ -37,17 +37,21 @@ import org.workcraft.exceptions.ModelSaveFailedException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.parsers.breeze.BreezeLibrary;
+import org.workcraft.parsers.breeze.EmptyParameterScope;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.components.While;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
-import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
+import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
@@ -67,19 +71,19 @@ public class WhileTests {
 
 		final Map<String, Handshake> handshakes = MainHandshakeMaker.getHandshakes(wh);
 
-		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new HandshakeNameProvider()
+		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, new NameProvider<Handshake>()
 		{
-			HashMap<Object, String> names;
+			HashMap<Handshake, String> names;
 
 			{
-				names = new HashMap<Object, String>();
+				names = new HashMap<Handshake, String>();
 				for(Entry<String, Handshake> entry : handshakes.entrySet())
 				{
 					names.put(entry.getValue(), entry.getKey());
 				}
 			}
 
-			public String getName(Object handshake) {
+			public String getName(Handshake handshake) {
 				return names.get(handshake);
 			}
 		});
@@ -99,15 +103,15 @@ public class WhileTests {
 		BalsaCircuit balsa = new BalsaCircuit();
 
 		BreezeComponent while1 = new BreezeComponent();
-		while1.setUnderlyingComponent(new While());
+		while1.setUnderlyingComponent(createWhile());
 		BreezeComponent while2 = new BreezeComponent();
-		while2.setUnderlyingComponent(new While());
+		while2.setUnderlyingComponent(createWhile());
 
 		balsa.add(while1);
 		balsa.add(while2);
 
-		HandshakeComponent wh1Out = while1.getHandshakeComponents().get(while1.getHandshakes().get("activateOut"));
-		HandshakeComponent wh2In = while2.getHandshakeComponents().get(while2.getHandshakes().get("activate"));
+		BreezeHandshake wh1Out = while1.getHandshakeComponents().get(while1.getHandshakes().get("activateOut"));
+		BreezeHandshake wh2In = while2.getHandshakeComponents().get(while2.getHandshakes().get("activate"));
 
 		balsa.connect(wh1Out, wh2In);
 
@@ -119,5 +123,13 @@ public class WhileTests {
 		VisualSTG visualStg = new VisualSTG(stg);
 
 		new org.workcraft.Framework().save(visualStg, "while_while.stg.work");
+	}
+
+	private DynamicComponent createWhile() {
+		try {
+			return new DynamicComponent(new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive("While"), EmptyParameterScope.instance());
+		} catch (IOException e) {
+			throw new java.lang.RuntimeException(e);
+		}
 	}
 }

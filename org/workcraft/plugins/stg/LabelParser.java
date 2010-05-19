@@ -10,10 +10,10 @@ import org.workcraft.util.Triple;
 
 public class LabelParser {
 	private static final Pattern fullPattern = Pattern
-			.compile("([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])(\\/([0-9]+))?");
+			.compile("^([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])(\\/([0-9]+))?");
 
 	private static final Pattern pattern = Pattern
-	.compile("([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~]?)(\\/([0-9]+))?");
+	.compile("^([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~]?)(\\/([0-9]+))?");
 
 	public static Pair<String, String> parseImplicitPlaceReference(String ref) {
 		String[] parts = ref.replaceAll(" ", "").split(",");
@@ -64,6 +64,6 @@ public class LabelParser {
 
 		final String instanceGroup = matcher.group(3);
 
-		return Pair.of(matcher.group(1), instanceGroup == null? 0 : Integer.parseInt(instanceGroup));
+		return Pair.of(matcher.group(1), instanceGroup == null? null : Integer.parseInt(instanceGroup));
 	}
 }

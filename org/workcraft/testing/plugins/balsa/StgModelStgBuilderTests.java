@@ -27,7 +27,7 @@ import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakebuilder.HandshakeVisitor;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
-import org.workcraft.plugins.balsa.stgmodelstgbuilder.HandshakeNameProvider;
+import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -54,9 +54,9 @@ public class StgModelStgBuilderTests {
 			}
 		};
 
-		StgBuilder builder =  new StgModelStgBuilder(stg, new HandshakeNameProvider(){
+		StgBuilder builder =  new StgModelStgBuilder(stg, new NameProvider<Handshake>(){
 			@Override
-			public String getName(Object handshake) {
+			public String getName(Handshake handshake) {
 				return handshake.toString();
 			}
 		});

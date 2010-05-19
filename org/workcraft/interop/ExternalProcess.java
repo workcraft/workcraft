@@ -116,6 +116,10 @@ public class ExternalProcess {
 		processBuilder.directory(workingDirectory == null? null : new File(workingDirectory));
 	}
 
+	public ExternalProcess(String[] array, File workingDir) {
+		this(array, workingDir.getAbsolutePath());
+	}
+
 	private void outputData(byte[] data) {
 		for (ExternalProcessListener l : listeners)
 			l.outputData(data);

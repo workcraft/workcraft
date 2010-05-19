@@ -1,14 +1,14 @@
 package org.workcraft.parsers.breeze.splitting;
 
-import org.workcraft.plugins.balsa.HandshakeComponent;
+import org.workcraft.plugins.balsa.BreezeHandshake;
 
 class SplitPort
 {
-	public SplitPort(HandshakeComponent controlPort, HandshakeComponent dataPort)
+	public SplitPort(BreezeHandshake controlPort, BreezeHandshake dataPort)
 	{
 		this.controlPort = controlPort;
 		this.dataPort = dataPort;
 	}
-	public final HandshakeComponent controlPort;
-	public final HandshakeComponent dataPort;
+	public final BreezeHandshake controlPort;
+	public final BreezeHandshake dataPort;
 }

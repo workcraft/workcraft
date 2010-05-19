@@ -66,7 +66,16 @@ public class SimulationTool extends AbstractTool {
 		saveMarkingButton = new JButton ("Save marking");
 		loadMarkingButton = new JButton ("Load marking");
 
+		stepButton.setEnabled(false);
+		loadTraceButton.setEnabled(false);
+		saveMarkingButton.setEnabled(false);
+		loadMarkingButton.setEnabled(false);
+
 		interfacePanel.add(autoPlayButton);
+		interfacePanel.add(stepButton);
+		interfacePanel.add(loadTraceButton);
+		interfacePanel.add(saveMarkingButton);
+		interfacePanel.add(loadMarkingButton);
 	}
 
 	private void highlightEnabledTransitions(Container root) {

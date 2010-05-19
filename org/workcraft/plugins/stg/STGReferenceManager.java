@@ -121,6 +121,12 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			return defaultNameManager.getName(node);
 	}
 
+	public Pair<String, Integer> getNamePair(Node node) {
+		if (node instanceof Transition)
+			return instancedNameManager.getInstance(node);
+		return null;
+	}
+
 	public String getName (Node node) {
 		if (node instanceof Transition) {
 			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
@@ -223,8 +229,12 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			dt.setName(name);
 
 			instancedNameManager.assign(dt);
-		} else
-			defaultNameManager.setDefaultNameIfUnnamed(node);
+		  } else if (node instanceof STGPlace) {
+			   if (!((STGPlace) node).isImplicit())
+			    defaultNameManager.setDefaultNameIfUnnamed(node);
+			  }
+		  else
+			  defaultNameManager.setDefaultNameIfUnnamed(node);
 	}
 
 	private void nodeRemoved(Node node) {

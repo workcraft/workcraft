@@ -42,6 +42,12 @@ public class TouchableTransformerTests {
 		public boolean hitTest(Point2D point) {
 			throw new RuntimeException("not implemented");
 		}
+
+		@Override
+		public Point2D getCenter()
+		{
+			throw new RuntimeException("not implemented");
+		}
 	}
 
 	@Test

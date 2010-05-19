@@ -6,6 +6,7 @@ package org.workcraft.plugins.stg.javacc;
  * Describes the input token stream.
  */
 
+@SuppressWarnings("all")
 public class Token implements java.io.Serializable {
 
   /**

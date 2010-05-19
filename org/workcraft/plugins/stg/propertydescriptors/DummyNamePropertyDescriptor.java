@@ -6,7 +6,6 @@ import java.util.Map;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.SignalTransition;
 
 public class DummyNamePropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;

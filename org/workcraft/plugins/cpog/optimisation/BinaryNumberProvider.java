@@ -20,6 +20,10 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.and;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.or;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +31,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.And;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
-
-import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
 public class BinaryNumberProvider implements
 		NumberProvider<BinaryIntBooleanFormula> {

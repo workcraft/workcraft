@@ -28,5 +28,4 @@ import org.workcraft.dom.math.MathNode;
 @DisplayName("Vertex")
 @VisualClass("org.workcraft.plugins.graph.VisualVertex")
 public class Vertex extends MathNode {
-
 }

@@ -25,11 +25,13 @@ import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.EditorOverlay;
 import org.workcraft.gui.graph.Viewport;
 
 public interface GraphEditor {
 	public Viewport getViewport();
 	public MainWindow getMainWindow();
+	public EditorOverlay getOverlay();
 	public VisualModel getModel();
 	public int getWidth();
 	public int getHeight();

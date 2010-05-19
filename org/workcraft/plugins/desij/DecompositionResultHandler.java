@@ -72,8 +72,6 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 				}
 			});
 		}
-
-
 	}
 
 	private String getComponentSuffix(File componentFile) {

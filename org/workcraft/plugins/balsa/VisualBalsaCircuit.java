@@ -34,6 +34,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.TwoWayMap;
 
 @CustomTools(VisualBalsaTools.class)
 public final class VisualBalsaCircuit extends AbstractVisualModel {
@@ -78,14 +79,21 @@ public final class VisualBalsaCircuit extends AbstractVisualModel {
 
 	}
 
+	int ncnt = 0;
+	TwoWayMap<String, Node> refMap = new TwoWayMap<String, Node>();
 	@Override
 	public Node getNodeByReference(String reference) {
-		throw new org.workcraft.exceptions.NotImplementedException();
+		if(refMap.containsKey(reference))
+			return refMap.getValue(reference);
+		else
+			return null;
 	}
 
 	@Override
 	public String getNodeReference(Node node) {
-		throw new org.workcraft.exceptions.NotImplementedException();
+		if(!refMap.containsValue(node))
+			refMap.put(""+ncnt++, node);
+		return refMap.getKey(node);
 	}
 
 	@Override

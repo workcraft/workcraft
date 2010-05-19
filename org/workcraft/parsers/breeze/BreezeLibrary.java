@@ -26,41 +26,83 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.javacc.BreezeParser;
 import org.workcraft.parsers.breeze.javacc.ParseException;
+import org.workcraft.plugins.balsa.io.BalsaSystem;
 
-@SuppressWarnings("serial")
-public class BreezeLibrary extends HashMap<String, BreezeDefinition> {
-	public void registerPrimitives(File dir) throws IOException {
-		FilenameFilter absFilter = new FilenameFilter(){
+public class BreezeLibrary
+{
+	private static final String $BRZ = "$Brz";
+	HashMap<String, BreezeDefinition> breezeParts = new HashMap<String, BreezeDefinition>();
+	HashMap<String, PrimitivePart> primitiveParts = new HashMap<String, PrimitivePart>();
+
+	FilenameFilter absFilter =
+		new FilenameFilter()
+		{
 			@Override public boolean accept(File dir, String name) {
 				return name.endsWith(".abs") && Character.isUpperCase(name.charAt(0));
-			}};
-
-			for(File file : dir.listFiles(absFilter))
-			{
-				InputStream is = new FileInputStream(file);
-				try
-				{
-					PrimitivePart primitivePart = BreezeParser.parsePrimitivePart(is);
-					put("$Brz"+primitivePart.getName(), primitivePart);
-				} catch (ParseException e) {
-					System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
-				}
-				finally
-				{
-					is.close();
-				}
 			}
+		};
+
+	public BreezeLibrary(BalsaSystem balsa) throws IOException {
+			registerPrimitives(balsa);
+	}
+
+	public void registerPrimitives(BalsaSystem balsa) throws IOException
+	{
+		registerPrimitives(balsa.getDefinitionsDir());
+	}
+
+	public void registerPrimitives(File dir) throws IOException
+	{
+		if(!dir.isDirectory())
+			throw new IOException("\""+dir+"\""+" is not a directory.");
+
+		File[] files = dir.listFiles(absFilter);
+		if(files == null)
+			throw new IOException("Error listing contents of \"" + dir + "\".");
+
+		for(File file : files)
+		{
+			InputStream is = new FileInputStream(file);
+			try
+			{
+				PrimitivePart primitivePart = BreezeParser.parsePrimitivePart(is);
+				primitiveParts.put(primitivePart.getName(), primitivePart);
+			} catch (ParseException e) {
+				System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
+			}
+			finally
+			{
+				is.close();
+			}
+		}
+	}
+
+	public BreezeDefinition get(String name)
+	{
+		if(name.startsWith($BRZ))
+			return primitiveParts.get(name.substring($BRZ.length()));
+		else
+			return breezeParts.get(name);
 	}
 
 	public void registerParts(InputStream is) throws IOException, ParseException {
 		List<BreezePart> parts = BreezeParser.parseBreezeParts(is);
 		for (BreezePart part : parts)
-			put (part.getName(), part);
+			breezeParts.put(part.getName(), part);
+	}
+
+	public Collection<PrimitivePart> getPrimitives() {
+		return primitiveParts.values();
+	}
+
+	public PrimitivePart getPrimitive(String name) {
+		return primitiveParts.get(name);
 	}
 }

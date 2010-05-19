@@ -38,10 +38,14 @@ public class DotGParser {
 	}
 	
 	private Node getOrCreate (String name) {
+
+		Type t = signals.get (name);
 		try {
 			return stg.getNodeByReference(name);
 		} catch (NotFoundException e) {
-			Type t = signals.get (name);
+		try {
+			return stg.getNodeByReference(name+"/0");
+		} catch (NotFoundException ee) {
 			if (t==null)
 				return stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
@@ -49,12 +53,14 @@ public class DotGParser {
 			else
 				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
+		}
 	}
 	
 	private Node getOrCreate (Pair<String, Integer> ref)
 	{
-		String reference = ref.getFirst()+"/"+ref.getSecond();
+	  	Integer instance = ref.getSecond();
 		String name = ref.getFirst();
+		String reference = name+"/"+((instance==null)?0:instance);
 		
 		try {
 			return stg.getNodeByReference (reference);
@@ -158,11 +164,13 @@ STG parse() : { }
 
 void header() : { List<String> list; }
 {
-	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
-	|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
-	|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
-	|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
-	|<UNSUPPORTED_HEADER> (<ANY>)*
+  	(<LINEBREAK>)?
+	(	  	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
+		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
+		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
+		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
+		|<UNSUPPORTED_HEADER> (<ANY>)*
+	)
 }
 
 List<String> signalList() : { Token t; List<String> list = new LinkedList<String>(); }
@@ -216,18 +224,15 @@ void markingEntry() : { STGPlace p; int value = 1; }
 }
 
 STGPlace implicitPlaceReference() : 
-{ 
-	Triple<String, Direction, Integer> r1, r2;
+{
+  	Node t1, t2;
 	Token t;
 	Integer tokens = null;
 }
 {
-	("<" r1 = signalTransition() "," r2 = signalTransition() ">")
+	("<" t1 = anyTransition() "," t2 = anyTransition() ">")
 	{
-		Node st1 = stg.getNodeByReference(stg.makeReference(r1));
-		Node st2 = stg.getNodeByReference(stg.makeReference(r2));
-		
-		return implicitPlaces.get(Pair.of(st1,st2));
+		return implicitPlaces.get(Pair.of(t1,t2));
 	}
 }
 
@@ -276,35 +281,41 @@ Pair<String, Integer> dummyTransition() :
 }
 {
 	t = <NAME> { name = t.image; }
-	( "/" t = <INTEGER> ) { instance = Integer.parseInt(t.image); } 
+	( "/" t = <INTEGER>  { instance = Integer.parseInt(t.image); } )?
 	
 	{ return Pair.of (name, instance); }	
 	
 }
 
+Node anyTransition() :
+{	Triple<String, Direction, Integer> r;
+	Pair<String, Integer> r2;
+	Node t;
+}
+{	(	  r = signalTransition() { t = getOrCreate(r); }
+	| r2 = dummyTransition() { t = getOrCreate(r2); }
+)
+	{		return t;
+	}
+}
+
 void graphLine() : 
 {
 	Token t;
-	Token t2;
-	String name;
-	Integer instance;
-	Triple<String, Direction, Integer> r;
-	Pair<String, Integer> r2;
 	Node from, to;
 }
 {
-	( 
-		r = signalTransition() { from = getOrCreate(r); }
-		| r2 = dummyTransition() { from = getOrCreate(r2); }
-		| t = <NAME> { from = getOrCreate(t.image); }
+	(
+	  LOOKAHEAD(<NAME>(<DIRECTION>|"/"))
+	  from = anyTransition()
+	| t = <NAME> { from = getOrCreate(t.image); }
 	)
 
 	(
 		(
-		r = signalTransition() { to = getOrCreate(r); }
-		| r2 = dummyTransition() { to = getOrCreate(r2); }
+	  LOOKAHEAD(<NAME>(<DIRECTION>|"/"))
+		to = anyTransition()
 		| t = <NAME> { to = getOrCreate(t.image); }
-		
 		) { createArc(from, to); } 
 	)* 	
 }

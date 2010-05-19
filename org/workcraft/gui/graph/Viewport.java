@@ -26,6 +26,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 /**
@@ -210,6 +211,13 @@ public class Viewport {
 		Point result = new Point();
 		finalTransform.transform(pointInUserSpace, result);
 		return result;
+	}
+
+	public Rectangle userToScreen (Rectangle2D rectInUserSpace) {
+		Point ul = userToScreen (new Point2D.Double(rectInUserSpace.getMinX(), rectInUserSpace.getMinY()));
+		Point lr = userToScreen (new Point2D.Double(rectInUserSpace.getMaxX(), rectInUserSpace.getMaxY()));
+
+		return new Rectangle(ul.x, ul.y, lr.x-ul.x, lr.y-ul.y);
 	}
 
 	/**

@@ -1,110 +1,71 @@
 package org.workcraft.plugins.verification.tasks;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.workcraft.interop.ExternalProcess;
-import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.verification.MpsatUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DataAccumulator;
+import org.workcraft.tasks.Task;
+import org.workcraft.util.FileUtils;
 
-public class MpsatTask implements Task<ExternalProcessResult>, ExternalProcessListener {
-		private String[] args;
-		private String inputFileName;
+public class MpsatTask implements Task<ExternalProcessResult> {
+	private String[] args;
+	private String inputFileName;
 
-		private volatile boolean finished;
-		private volatile int returnCode;
-		private boolean userCancelled = false;
-		private ProgressMonitor<ExternalProcessResult> monitor;
+	public MpsatTask(String[] args, String inputFileName) {
+		this.args = args;
+		this.inputFileName = inputFileName;
+	}
 
-		private DataAccumulator stdoutAccum = new DataAccumulator();
-		private DataAccumulator stderrAccum = new DataAccumulator();
+	@Override
+	public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor) {
 
-		public MpsatTask(String[] args, String inputFileName) {
-			this.args = args;
-			this.inputFileName = inputFileName;
-		}
+		ArrayList<String> command = new ArrayList<String>();
+		command.add(MpsatUtilitySettings.getMpsatCommand());
 
-		@Override
-		public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor) {
-			this.monitor = monitor;
-
-			ArrayList<String> command = new ArrayList<String>();
-			command.add(MpsatUtilitySettings.getMpsatCommand());
-
-			for (String arg : MpsatUtilitySettings.getMpsatArgs().split(" "))
-				if (!arg.isEmpty())
-					command.add(arg);
-
-			for (String arg : args)
+		for (String arg : MpsatUtilitySettings.getMpsatArgs().split(" "))
+			if (!arg.isEmpty())
 				command.add(arg);
 
-			command.add(inputFileName);
+		for (String arg : args)
+			command.add(arg);
 
-			ExternalProcess mpsatProcess = new ExternalProcess(command.toArray(new String[command.size()]), ".");
+		command.add(inputFileName);
 
-			mpsatProcess.addListener(this);
+		File workingDir = FileUtils.createTempDirectory("mpsat_");
 
-			try {
-				mpsatProcess.start();
-			} catch (IOException e) {
-				return new Result<ExternalProcessResult>(e);
-			}
+		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDir);
 
-			while (true) {
-				if (monitor.isCancelRequested() && mpsatProcess.isRunning()) {
-					mpsatProcess.cancel();
-					userCancelled = true;
-				}
-				if (finished)
-					break;
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					mpsatProcess.cancel();
-					userCancelled = true;
-					break;
-				}
-			}
+		Result<ExternalProcessResult> res = externalProcessTask.run(monitor);
 
-			if (userCancelled)
-				return new Result<ExternalProcessResult>(Outcome.CANCELLED);
+		if(res.getOutcome() == Outcome.CANCELLED)
+			return res;
 
-			ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData());
+		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 
-			if (returnCode < 2)
-				return new Result<ExternalProcessResult>(Outcome.FINISHED, result);
+		try {
+			File mci = new File(workingDir, "mpsat.mci");
+			if(mci.exists())
+				outputFiles.put("mpsat.mci", FileUtils.readAllBytes(mci));
 
-			return new Result<ExternalProcessResult>(Outcome.FAILED, result);
+			File g = new File(workingDir, "mpsat.g");
+			if(g.exists())
+				outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
+		} catch (IOException e) {
+			return new Result<ExternalProcessResult>(e);
 		}
 
-		@Override
-		public void errorData(byte[] data) {
-			try {
-				stderrAccum.write(data);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			monitor.stderr(data);
-		}
+		ExternalProcessResult retVal = res.getReturnValue();
+		ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
 
-		@Override
-		public void outputData(byte[] data) {
-			try {
-				stdoutAccum.write(data);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			monitor.stdout(data);
-		}
-
-		@Override
-		public void processFinished(int returnCode) {
-			this.returnCode = returnCode;
-			this.finished = true;
-		}
+		if (retVal.getReturnCode() < 2)
+			return Result.finished(result);
+		else
+			return Result.failed(result);
 	}
+}

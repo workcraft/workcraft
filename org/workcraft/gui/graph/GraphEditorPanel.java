@@ -22,6 +22,7 @@
 package org.workcraft.gui.graph;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -40,6 +41,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxWindow;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -121,9 +123,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	protected Stroke borderStroke = new BasicStroke(2);
 
+	private Overlay overlay = new Overlay();
+
 	private boolean firstPaint = true;
 
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
+		super (new BorderLayout());
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
 		visualModel = (VisualModel) workspaceEntry.getObject();
@@ -149,6 +154,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		addComponentListener(new Resizer());
 
 		addKeyListener(keyListener);
+
+		add(overlay, BorderLayout.CENTER);
 	}
 
 	private void reshape() {
@@ -175,8 +182,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.transform(view.getTransform());
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		//g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+
 		visualModel.draw(g2d);
 
 		if (hasFocus())
@@ -194,6 +207,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			g2d.setColor(CommonVisualSettings.getForegroundColor());
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
+
+		paintChildren(g2d);
 	}
 
 	public VisualModel getModel() {
@@ -251,6 +266,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			else
 				propertyWindow.setObject(mix);
 		}
+		else propertyWindow.clearObject();
 	}
 
 	public void notify(StateEvent e) {
@@ -258,5 +274,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			updatePropertyView();
 			repaint();
 		}
+	}
+
+	@Override
+	public EditorOverlay getOverlay() {
+		return overlay;
 	}
 }

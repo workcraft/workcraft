@@ -2,15 +2,7 @@ package org.workcraft.tasks;
 
 import java.util.ArrayList;
 
-import org.workcraft.Framework;
-
 public class DefaultTaskManager implements TaskManager {
-
-	private final Framework framework;
-
-	public DefaultTaskManager(Framework framework) {
-		this.framework = framework;
-	}
 
 	TaskObserverList taskObserverList = new TaskObserverList();
 
@@ -76,9 +68,5 @@ public class DefaultTaskManager implements TaskManager {
 	@Override
 	public void removeObserver(TaskMonitor obs) {
 		taskObserverList.remove(obs);
-	}
-
-	public Framework getFramework() {
-		return framework;
 	}
 }

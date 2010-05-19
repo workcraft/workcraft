@@ -25,6 +25,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
@@ -44,6 +45,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
+@CustomTools ( STGToolsProvider.class )
 @DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, DummyTransition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
 public class VisualSTG extends AbstractVisualModel {
