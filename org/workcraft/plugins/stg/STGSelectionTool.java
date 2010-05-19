@@ -6,8 +6,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JLabel;
@@ -101,13 +99,6 @@ public class STGSelectionTool extends SelectionTool
 				editor.repaint();
 			}
 		});
-
-		text.addMouseWheelListener(new MouseWheelListener() {
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				text.getParent().remove(text);
-			}
-		});
 	}
 
 	@Override
@@ -146,7 +137,6 @@ public class STGSelectionTool extends SelectionTool
 			if (popup!=null)
 				popup.show(e.getSystemEvent().getComponent(), e.getSystemEvent().getX(), e.getSystemEvent().getY());
 		}
-
 	}
 
 	private JPopupMenu createPopupMenu(VisualNode node) {

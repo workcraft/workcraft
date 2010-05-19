@@ -18,7 +18,7 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.trees;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,9 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-final class TreeListenerWrapper<Node> implements TreeListener<Node> {
+import org.workcraft.gui.workspace.Path;
+
+class TreeListenerWrapper<Node> implements TreeListener<Node> {
 	private final TreeModelListener l;
 
 	TreeListenerWrapper(TreeModelListener l) {

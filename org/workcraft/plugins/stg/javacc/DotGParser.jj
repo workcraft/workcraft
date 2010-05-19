@@ -58,10 +58,8 @@ public class DotGParser {
 	
 	private Node getOrCreate (Pair<String, Integer> ref)
 	{
-	  	Integer instance = ref.getSecond();
+		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
-		String reference = name+"/"+((instance==null)?0:instance);
-		
 		try {
 			return stg.getNodeByReference (reference);
 		} catch (NotFoundException e) {
@@ -98,6 +96,7 @@ public class DotGParser {
 	}
 	
 	private void createArc (Node first, Node second) {
+
 		try {
 			ConnectionResult result = stg.connect(first, second);
 			STGPlace implicitPlace = result.getImplicitPlace();
@@ -154,6 +153,7 @@ TOKEN :
 
 STG parse() : { }
 {
+	(<LINEBREAK>)?
 	{ init(); }
 	 ( header() <LINEBREAK> )*
 	 graph()

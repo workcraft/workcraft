@@ -40,6 +40,7 @@ import org.workcraft.gui.WorkspaceTreeDecorator;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -108,7 +109,7 @@ public class WorkspaceWindow extends JPanel {
 
 	public void startup() {
 		final Workspace workspace = framework.getWorkspace();
-		workspaceTree  = TreeWindow.create(workspace.getTree(), new WorkspaceTreeDecorator(this));
+		workspaceTree  = TreeWindow.create(workspace.getTree(), new WorkspaceTreeDecorator(workspace), new WorkspacePopupProvider(this));
 		scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(8);
 

@@ -1,13 +1,14 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import org.workcraft.plugins.verification.PunfUtilitySettings;
+import org.workcraft.plugins.shared.PunfUtilitySettings;
+import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 
 public class PunfTask implements Task<ExternalProcessResult> {
 	private String inputPath, outputPath;

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.verification.tools;
 
-import org.workcraft.plugins.verification.MpsatPreset;
-import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.MpsatSettings;
+import org.workcraft.plugins.shared.MpsatPreset;
+import org.workcraft.plugins.shared.MpsatPresetManager;
+import org.workcraft.plugins.shared.MpsatSettings;
 
 public abstract class PresetMpsatChecker extends AbstractMpsatChecker {
 	protected abstract String getPresetName();

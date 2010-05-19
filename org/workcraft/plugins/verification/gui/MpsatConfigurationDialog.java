@@ -25,11 +25,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.workcraft.gui.SimpleFlowLayout;
-import org.workcraft.plugins.verification.MpsatMode;
-import org.workcraft.plugins.verification.MpsatPreset;
-import org.workcraft.plugins.verification.MpsatPresetManager;
-import org.workcraft.plugins.verification.MpsatSettings;
-import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.shared.MpsatMode;
+import org.workcraft.plugins.shared.MpsatPreset;
+import org.workcraft.plugins.shared.MpsatPresetManager;
+import org.workcraft.plugins.shared.MpsatSettings;
+import org.workcraft.plugins.shared.MpsatSettings.SolutionMode;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")

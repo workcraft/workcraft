@@ -1,4 +1,4 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.util.HashMap;
 import java.util.Map;

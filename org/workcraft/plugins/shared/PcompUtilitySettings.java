@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,20 +30,20 @@ import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
-@DisplayName("MPSat")
-public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin {
+@DisplayName("PComp")
+public class PcompUtilitySettings implements PersistentPropertyEditable, Plugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String mpsatCommand = "mpsat";
-	private static String mpsatArgs = "";
+	private static String pcompCommand = "pcomp";
+	private static String pcompArgs = "";
 
-	private static final String mpsatCommandKey = "Verification.mpsat.command";
-	private static final String mpsatArgsKey = "Verification.mpsat.args";
+	private static final String pcompCommandKey = "Tools.pcomp.command";
+	private static final String pcompArgsKey = "Tools.pcomp.args";
 
-	public MpsatUtilitySettings() {
+	public PcompUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "MPSat command", "getMpsatCommand", "setMpsatCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "MPSat additional arguments", "getMpsatArgs", "setMpsatArgs", String.class));
+		properties.add(new PropertyDeclaration(this, "PComp command", "getPcompCommand", "setPcompCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPcompArgs", "setPcompArgs", String.class));
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -51,33 +51,32 @@ public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin 
 	}
 
 	public void loadPersistentProperties(Config config) {
-		mpsatCommand = config.getString(mpsatCommandKey, "mpsat");
-		mpsatArgs = config.getString(mpsatArgsKey, "");
+		pcompCommand = config.getString(pcompCommandKey, "pcomp");
+		pcompArgs = config.getString(pcompArgsKey, "");
 	}
 
 	public void storePersistentProperties(Config config) {
-		config.set(mpsatCommandKey, mpsatCommand);
-		config.set(mpsatArgsKey, mpsatArgs);
+		config.set(pcompCommandKey, pcompCommand);
+		config.set(pcompArgsKey, pcompArgs);
 	}
 
 	public String getSection() {
-		return "Verification";
+		return "External tools";
 	}
 
-	public static String getMpsatCommand() {
-		return mpsatCommand;
+	public static String getPcompCommand() {
+		return pcompCommand;
 	}
 
-	public static void setMpsatCommand(String mpsatCommand) {
-		MpsatUtilitySettings.mpsatCommand = mpsatCommand;
+	public static void setPcompCommand(String pcompCommand) {
+		PcompUtilitySettings.pcompCommand = pcompCommand;
 	}
 
-	public static String getMpsatArgs() {
-		return mpsatArgs;
+	public static String getPcompArgs() {
+		return pcompArgs;
 	}
 
-	public static void setMpsatArgs(String mpsatArgs) {
-		MpsatUtilitySettings.mpsatArgs = mpsatArgs;
+	public static void setPcompArgs(String pcompArgs) {
+		PcompUtilitySettings.pcompArgs = pcompArgs;
 	}
-
 }

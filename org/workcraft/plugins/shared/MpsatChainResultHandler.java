@@ -1,13 +1,13 @@
 /**
  *
  */
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
-import org.workcraft.plugins.verification.tasks.MpsatChainResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.MpsatChainResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

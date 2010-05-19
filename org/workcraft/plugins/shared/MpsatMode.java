@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.workcraft.plugins.verification;
+package org.workcraft.plugins.shared;
 
 public enum MpsatMode {
 	DEADLOCK ("-D", "Deadlock checking", false),

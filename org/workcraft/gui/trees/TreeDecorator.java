@@ -18,15 +18,11 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.trees;
 
-import java.util.List;
+import javax.swing.Icon;
 
-public interface TreeSource<Node>
-{
-	public void addListener(TreeListener<Node> listener);
-	public void removeListener(TreeListener<Node> listener);
-	public Node getRoot();
-	public boolean isLeaf(Node node);
-	public List<Node> getChildren(Node node);
+public interface TreeDecorator<Node> {
+	public String getName(Node node);
+	public Icon getIcon(Node node);
 }

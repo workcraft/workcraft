@@ -11,7 +11,7 @@ import org.workcraft.Framework;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
-import org.workcraft.plugins.verification.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.PunfTask;
 import org.workcraft.workspace.FileHandler;
 
 @DisplayName("Unfold using punf")

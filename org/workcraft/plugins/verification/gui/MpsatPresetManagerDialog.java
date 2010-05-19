@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import org.workcraft.plugins.verification.MpsatPreset;
-import org.workcraft.plugins.verification.MpsatPresetManager;
+import org.workcraft.plugins.shared.MpsatPreset;
+import org.workcraft.plugins.shared.MpsatPresetManager;
 
 @SuppressWarnings("serial")
 public class MpsatPresetManagerDialog extends JDialog {

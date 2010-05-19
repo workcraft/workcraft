@@ -47,10 +47,17 @@ public class ControlPointScaler {
 			int i=0;
 			for (ControlPoint cp : controlPoints)
 			{
+				Point2D delta;
 				if(i<n/2)
-					cp.setPosition(add(cp.getPosition(), dC1));
-				if(i>(n-1)/2)
-					cp.setPosition(add(cp.getPosition(), dC2));
+					delta = dC1;
+				else
+					if(i>(n-1)/2)
+						delta = dC2;
+					else
+						delta = multiply(add(dC1, dC2), 0.5);
+
+				cp.setPosition(add(cp.getPosition(), delta));
+
 				i++;
 			}
 			return;

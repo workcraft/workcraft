@@ -20,16 +20,18 @@
 */
 package org.workcraft.workspace;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.workcraft.exceptions.NotSupportedException;
+import org.workcraft.gui.trees.TreeListener;
+import org.workcraft.gui.trees.TreeSource;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.gui.workspace.TreeListener;
-import org.workcraft.gui.workspace.TreeSource;
 
 public class WorkspaceTree implements TreeSource<Path<String>>
 {
@@ -136,5 +138,24 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 	@Override
 	public void removeListener(TreeListener<Path<String>> listener) {
 		throw new NotSupportedException();//TODO
+	}
+
+	@Override
+	public Path<Path<String>> getPath(Path<String> node) {
+		Path<Path<String>> result = Path.empty();
+
+		Deque<Path<String>> qq = new ArrayDeque<Path<String>>();
+
+		while (true) {
+			qq.push(node);
+			if (node.isEmpty())
+				break;
+			node = node.getParent();
+		}
+
+		for (Path<String> n : qq)
+			result = Path.append(result, n);
+
+		return result;
 	}
 }

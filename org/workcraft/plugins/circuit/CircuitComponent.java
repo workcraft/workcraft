@@ -36,18 +36,20 @@ public class CircuitComponent extends MathNode {
 	private HashSet<Contact> inputs = new HashSet<Contact>();
 	private HashSet<Contact> outputs = new HashSet<Contact>();
 
-	public CircuitComponent() {
-	}
 
 	public Contact addInput() {
-		Contact c = new Contact( IOType.input);
+		Contact c = new Contact(IOType.INPUT);
+
 		inputs.add(c);
+		c.setParent(this);
 		return c;
 	}
 
 	public Contact addOutput() {
-		Contact c = new Contact(IOType.output);
+		Contact c = new Contact(IOType.OUTPUT);
 		outputs.add(c);
+		c.setParent(this);
 		return c;
 	}
+
 }

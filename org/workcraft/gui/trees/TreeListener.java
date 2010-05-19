@@ -18,7 +18,9 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.trees;
+
+import org.workcraft.gui.workspace.Path;
 
 public interface TreeListener<Node> {
 	public void added(Path<Node> path);

@@ -40,6 +40,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
@@ -48,7 +49,7 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
 
-public class WorkspacePopupProvider {
+public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 	private Framework framework;
 	private WorkspaceWindow wsWindow;
 
@@ -111,6 +112,8 @@ public class WorkspacePopupProvider {
 							} else
 								break;
 						}
+
+						workspace.fireWorkspaceChanged();
 					}
 				});
 				popup.add(miCreateFolder);

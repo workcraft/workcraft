@@ -1,4 +1,4 @@
-package org.workcraft.plugins.verification.tasks;
+package org.workcraft.plugins.shared.tasks;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.plugins.verification.MpsatUtilitySettings;
+import org.workcraft.plugins.shared.MpsatUtilitySettings;
+import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
