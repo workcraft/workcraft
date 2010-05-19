@@ -48,7 +48,7 @@ public class DesiJCustomFunction implements Tool {
 		}
 	}
 
-	// ************ private methods to generate Paramter String Array ***********
+	// ************ private methods to generate Parameter String Array ***********
 
 	private String[] generateCommandLineParameters(DesiJSettings settings) {
 		ArrayList<String> parameters = new ArrayList<String>();
