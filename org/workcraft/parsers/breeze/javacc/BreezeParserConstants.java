@@ -58,51 +58,43 @@ public interface BreezeParserConstants {
   /** RegularExpression Id. */
   int TYPE_STRING = 28;
   /** RegularExpression Id. */
-  int TYPE_CARDINAL = 29;
+  int CASE = 29;
   /** RegularExpression Id. */
-  int TYPE_BOOLEAN = 30;
+  int ELSE = 30;
   /** RegularExpression Id. */
-  int TYPE_BINARYOPERATOR = 31;
+  int STRING_APPEND = 31;
   /** RegularExpression Id. */
-  int TYPE_UNARYOPERATOR = 32;
+  int NUMBER_TO_STRING = 32;
   /** RegularExpression Id. */
-  int CASE = 33;
+  int PLUS = 33;
   /** RegularExpression Id. */
-  int ELSE = 34;
+  int SYNC = 34;
   /** RegularExpression Id. */
-  int STRING_APPEND = 35;
+  int PUSH = 35;
   /** RegularExpression Id. */
-  int NUMBER_TO_STRING = 36;
+  int PULL = 36;
   /** RegularExpression Id. */
-  int PLUS = 37;
+  int CHANNELS = 37;
   /** RegularExpression Id. */
-  int SYNC = 38;
+  int ATTRIBUTES = 38;
   /** RegularExpression Id. */
-  int PUSH = 39;
+  int COMPONENTS = 39;
   /** RegularExpression Id. */
-  int PULL = 40;
+  int COMPONENT = 40;
   /** RegularExpression Id. */
-  int CHANNELS = 41;
+  int BREEZE_PART = 41;
   /** RegularExpression Id. */
-  int ATTRIBUTES = 42;
+  int TYPE = 42;
   /** RegularExpression Id. */
-  int COMPONENTS = 43;
+  int IMPORT = 43;
   /** RegularExpression Id. */
-  int COMPONENT = 44;
+  int OBR = 44;
   /** RegularExpression Id. */
-  int BREEZE_PART = 45;
+  int CBR = 45;
   /** RegularExpression Id. */
-  int TYPE = 46;
+  int QUOTED_VALUE = 46;
   /** RegularExpression Id. */
-  int IMPORT = 47;
-  /** RegularExpression Id. */
-  int OBR = 48;
-  /** RegularExpression Id. */
-  int CBR = 49;
-  /** RegularExpression Id. */
-  int QUOTED_VALUE = 50;
-  /** RegularExpression Id. */
-  int VALUE = 51;
+  int VALUE = 47;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -138,10 +130,6 @@ public interface BreezeParserConstants {
     "\"centre-string\"",
     "\"implementation\"",
     "\"string\"",
-    "\"\\\"cardinal\\\"\"",
-    "\"\\\"boolean\\\"\"",
-    "\"\\\"BinaryOperator\\\"\"",
-    "\"\\\"UnaryOperator\\\"\"",
     "\"case\"",
     "\"else\"",
     "\"string-append\"",

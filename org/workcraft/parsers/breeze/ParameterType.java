@@ -30,6 +30,13 @@ import org.workcraft.parsers.breeze.expressions.Expression;
 public interface ParameterType {
 	Class<?> getJavaType();
 	Object parse(String text);
+
+	public class Create
+	{
+		public static ParameterType string() { return StringParameter.INSTANCE; }
+		public static ParameterType cardinal() { return CardinalParameter.INSTANCE; }
+		public static ParameterType named(String name) { return new NamedParameterType(name); }
+	}
 }
 
  interface DataType extends ParameterType {
@@ -38,6 +45,7 @@ public interface ParameterType {
 
 class StringParameter implements ParameterType
 {
+	public static final StringParameter INSTANCE = new StringParameter();
 	@Override public Class<?> getJavaType() {
 		return String.class;
 	}
@@ -48,6 +56,7 @@ class StringParameter implements ParameterType
 
 class CardinalParameter implements ParameterType
 {
+	public static final ParameterType INSTANCE = new CardinalParameter();
 	@Override public Class<?> getJavaType() {
 		return int.class;
 	}
@@ -67,6 +76,26 @@ class BooleanParameter implements ParameterType
 		if(text.toLowerCase().equals("false"))
 			return false;
 		throw new NotSupportedException();
+	}
+}
+
+class NamedParameterType implements ParameterType
+{
+	private final String name;
+
+	public NamedParameterType(String name)
+	{
+		this.name = name;
+	}
+
+	@Override
+	public Class<?> getJavaType() {
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	@Override
+	public Object parse(String text) {
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }
 

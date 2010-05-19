@@ -40,6 +40,21 @@ public class BreezeParser {
 	{
 		return new BreezeParser(new BufferedReader(new InputStreamReader(is))).breezeFile();
 	}
+
+	ParameterType stringType()
+	{
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	ParameterType cardinalType()
+	{
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
+
+	ParameterType namedType(String name)
+	{
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
 }
 PARSER_END(BreezeParser)
 
@@ -181,33 +196,21 @@ Token keyword() : {Token t;}
 	{ return t; } 	
 }
 
-ParameterType type() : { ParameterType result; String typeName; }
+ParameterType parameterType() : { ParameterType result; String typeName; }
 {
 	(
 		LOOKAHEAD(<OBR>(<TYPE_STRING>|<NAMED_TYPE> ))
 		<OBR>
 		(
-			<TYPE_STRING> { result = ParameterType.STRING; }
+			<TYPE_STRING> { result = stringType(); }
 			|
 			<NAMED_TYPE> 
 			(
-				LOOKAHEAD(1)
-				<TYPE_CARDINAL> { result = ParameterType.CARDINAL; }
-				|
-				LOOKAHEAD(1)
-				<TYPE_BOOLEAN> { result = ParameterType.BOOLEAN; }
-				|
-				LOOKAHEAD(1)
-				<TYPE_BINARYOPERATOR> { result = ParameterType.BINARY_OPERATOR; }
-				|
-				LOOKAHEAD(1)
-				<TYPE_UNARYOPERATOR> { result = ParameterType.UNARY_OPERATOR; }
-				|
-				typeName = value() { result = ParameterType.OTHER; }
+				typeName = value() { result = namedType(typeName); }
 			)
 		)
 		<CBR>
-		| numericType() { result = ParameterType.CARDINAL; }
+		| numericType() { result = cardinalType(); }
 	)
 	{ return result; }
 }
@@ -218,7 +221,7 @@ ParameterDeclaration parameter() :
   ParameterType type;
 }
 {
-	<OBR> name = value() type = type() listBody() <CBR>
+	<OBR> name = value() type = parameterType() listBody() <CBR>
 	{ return new ParameterDeclaration (name, type); }
 }
 
@@ -710,6 +713,8 @@ BreezeType breezeType() : {}
 	<OBR><TYPE>
 		listBody()
 	<CBR>
+	{
+	  throw new org.workcraft.exceptions.NotImplementedException();	}
 }
 
 String importDef() : { String value; }
@@ -730,8 +735,9 @@ BreezeFile breezeFile() :
 }
 {
 	(
-	  LOOKAHEAD(<OBR><IMPORT>) imp = importDef() { imports.add(imp); }	| LOOKAHEAD(<OBR><BREEZE_PART>) part = breezePart() { partDefs.add(part); }
-	| type = breezeType(typeDefs) { typeDefs.add(type); }
+		(		  	LOOKAHEAD(<OBR><IMPORT>) imp = importDef() { imports.add(imp); }			| LOOKAHEAD(<OBR><BREEZE_PART>) part = breezePart() { partDefs.add(part); }
+			| type = breezeType() { typeDefs.add(type); }
+		)
 	)*
 	{return new BreezeFile(imports, typeDefs, partDefs);}
 }
