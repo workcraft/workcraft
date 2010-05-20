@@ -31,6 +31,8 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 			DesiJResult desijResult = result.getReturnValue();
 			File[] componentSTGFiles = desijResult.getComponentFiles();
 
+			// logfile output ... tomorrow
+
 			if (componentSTGFiles != null) {
 
 				Path<String> componentsDirectoryPath = Path.fromString(
@@ -50,6 +52,10 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 					file.renameTo(target);
 				}
 
+				if (desijResult.getEquationFile() != null) { // synthesis successful
+					// tomorrow ...
+				}
+
 				workspace.fireWorkspaceChanged();
 
 				// pop up MessageBox
@@ -60,6 +66,9 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 						JOptionPane.showMessageDialog(null, successMessage);
 					}
 				});
+			}
+			if (desijResult.getModifiedSpecResult() != null) {
+				// tomorrow
 			}
 		}
 		else if (result.getOutcome() != Outcome.CANCELLED) {
