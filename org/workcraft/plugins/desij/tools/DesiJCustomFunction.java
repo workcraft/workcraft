@@ -37,7 +37,7 @@ public class DesiJCustomFunction implements Tool {
 		if (dialog.getModalResult() == 1)
 		{
 			framework.getTaskManager().queue(new DesiJTask(model, framework, dialog.getSettings()),
-					"DesiJ Execution", new DecompositionResultHandler(framework));
+					"DesiJ Execution", new DecompositionResultHandler(framework, false));
 		}
 	}
 

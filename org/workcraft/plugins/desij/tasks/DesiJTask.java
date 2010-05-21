@@ -136,8 +136,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	}
 
 	private File getLogFile() {
-		File workingDirectory = null; // working directory of Workcraft or desij resp. --> current directory
-		return new File(workingDirectory, "desij.logfile"); // current DesiJ naming convention
+		return new File("desij.logfile"); // current DesiJ naming convention
 	}
 
 	/**
@@ -159,9 +158,8 @@ public class DesiJTask implements Task<DesiJResult> {
 			}
 		}
 		else if (desiJSettings.getOperation() == DesiJOperation.REMOVE_DUMMIES) {
-			File workingDirectory = null; // working directory of Workcraft or desij resp. --> current directory
 			// get specification without dummy transitions
-			return new File(workingDirectory, "STGwithoutDummies.g"); // naming convention, see generateCommandLineParameters()
+			return new File("STGwithoutDummies.g"); // naming convention, see generateCommandLineParameters()
 		}
 
 		return null; // should be not reachable, see first line of this method

@@ -30,7 +30,7 @@ public class Decomposition implements Tool {
 
 		// call desiJ asynchronous (w/o blocking the GUI)
 		framework.getTaskManager().queue(new DesiJTask(model, framework, new String[0]),
-				"Execution of DesiJ", new DecompositionResultHandler(framework));
+				"Execution of DesiJ", new DecompositionResultHandler(framework, true));
 
 	}
 
