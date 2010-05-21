@@ -7,3 +7,4 @@ config
 *.dot
 *.g
 *.stackdump
+desij.logfile*
