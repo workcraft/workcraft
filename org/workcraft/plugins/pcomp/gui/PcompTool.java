@@ -1,7 +1,6 @@
 package org.workcraft.plugins.pcomp.gui;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.workcraft.Framework;
@@ -14,9 +13,8 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.stg.DotGProvider;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Parallel composition")
+@DisplayName("PComp: Parallel composition")
 public class PcompTool implements Tool {
 
 	public final String getSection() {
@@ -44,12 +42,7 @@ public class PcompTool implements Tool {
 				inputs.add(dotGProvider.getDotG(p));
 			}
 
-			try {
-				File result = File.createTempFile("pcompresult", ".g");
-				framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0])), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0])), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
 		}
 	}
 }
