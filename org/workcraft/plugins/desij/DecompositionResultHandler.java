@@ -89,7 +89,7 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 					workspace.fireWorkspaceChanged();
 
 					// pop up MessageBox
-					final String successMessage = "Decomposition succeeded!";
+					final String successMessage = "Decomposition succeeded.";
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
@@ -110,6 +110,15 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 				desijResult.getModifiedSpecResult().renameTo(modifiedSpecification);
 
 				workspace.fireWorkspaceChanged(); // update of workspace window
+
+				// pop up MessageBox
+				final String successMessage = "DesiJ operation succeeded.";
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						JOptionPane.showMessageDialog(null, successMessage);
+					}
+				});
 			}
 		}
 		else if (result.getOutcome() != Outcome.CANCELLED) {
