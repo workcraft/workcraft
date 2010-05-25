@@ -1,0 +1,765 @@
+;;; Breeze intermediate file (list format)
+;;; Created: Thu May 13 17:25:55 2010
+;;; By: dell@dell-laptop (Linux)
+;;; With balsa-c version: 3.5.1
+;;; Command: balsa-c HU.balsa 
+
+;;; Imports
+(import "balsa.types.builtin")
+(import "balsa.types.synthesis")
+(import "balsa.types.basic")
+(import "def_2")
+;;; Types
+
+(type "A4_t" (array-type (numeric-type #f 1) 0 4))
+(type "testbit" (numeric-type #f 1))
+;;; Constants
+
+;;; Parts
+(breeze-part "HistoryHunit"
+  (ports
+    (sync-port "activate" passive (at 20 1 "HU.balsa" 0))
+    (port "In_HU" active input (named-type "Bundle_PMU_HU") (at 21 17 "HU.balsa" 0))
+    (port "Out_state" active output (named-type "State") (at 23 22 "HU.balsa" 0))
+    (port "Data_out" active output (numeric-type #f 1) (at 24 21 "HU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 20 1 "HU.balsa" 0)
+  )
+  (channels
+    (sync (at 58 2 "HU.balsa" 1)) ; 1
+    (pull 7 (at 77 9 "HU.balsa" 1) (name "In_HU") (type (named-type "Bundle_PMU_HU"))) ; 2
+    (push 2 (at 70 13 "HU.balsa" 1) (name "Out_state") (type (named-type "State"))) ; 3
+    (push 1 (at 72 13 "HU.balsa" 1) (name "Data_out")) ; 4
+    (pull 4 (at 141 45 "HU.balsa" 1) (name "nHead")) ; 5
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 6
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 7
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 8
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 9
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 10
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 11
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 12
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 13
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 14
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 15
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 16
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 17
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 18
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 19
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 20
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 21
+    (pull 2 (at 141 44 "HU.balsa" 1) (type (named-type "State"))) ; 22
+    (push 2 (at 141 28 "HU.balsa" 1) (name "Global_Winner_Head") (type (named-type "State"))) ; 23
+    (sync (at 141 28 "HU.balsa" 1)) ; 24
+    (sync (at 138 19 "HU.balsa" 1)) ; 25
+    (pull 4 (at 137 12 "HU.balsa" 1) (name "nHead")) ; 26
+    (pull 1 (at 137 18 "HU.balsa" 1)) ; 27
+    (sync (at 137 9 "HU.balsa" 1)) ; 28
+    (push 1 (at 137 9 "HU.balsa" 1)) ; 29
+    (pull 4 (at 135 17 "HU.balsa" 1) (name "nHead")) ; 30
+    (push 4 (at 135 14 "HU.balsa" 1) (name "Head")) ; 31
+    (sync (at 135 14 "HU.balsa" 1)) ; 32
+    (sync (at 136 6 "HU.balsa" 1)) ; 33
+    (pull 4 (at 133 19 "HU.balsa" 1) (name "Head")) ; 34
+    (pull 4 (at 133 28 "HU.balsa" 1)) ; 35
+    (push 4 (at 133 15 "HU.balsa" 1) (name "nHead")) ; 36
+    (sync (at 133 15 "HU.balsa" 1)) ; 37
+    (pull 4 (at 131 18 "HU.balsa" 1) (name "Head")) ; 38
+    (push 4 (at 131 15 "HU.balsa" 1) (name "pHead")) ; 39
+    (sync (at 131 15 "HU.balsa" 1)) ; 40
+    (pull 4 (at 117 28 "HU.balsa" 1) (name "Child")) ; 41
+    (pull 4 (at 117 38 "HU.balsa" 1)) ; 42
+    (push 4 (at 117 24 "HU.balsa" 1) (name "pChild")) ; 43
+    (sync (at 117 24 "HU.balsa" 1)) ; 44
+    (pull 4 (at 115 28 "HU.balsa" 1) (name "Child")) ; 45
+    (push 4 (at 115 25 "HU.balsa" 1) (name "pParent")) ; 46
+    (sync (at 115 25 "HU.balsa" 1)) ; 47
+    (pull 2 (at 107 17 "HU.balsa" 1) (name "Var_div2") (type (named-type "State"))) ; 48
+    (pull 2 (at 111 37 "HU.balsa" 1) (name "Var_div2") (type (named-type "State"))) ; 49
+    (push 2 (at 111 34 "HU.balsa" 1) (name "Var_div1") (type (named-type "State"))) ; 50
+    (sync (at 111 34 "HU.balsa" 1)) ; 51
+    (sync (at 109 31 "HU.balsa" 1)) ; 52
+    (pull 4 (at 108 101 "HU.balsa" 1) (name "Head")) ; 53
+    (pull 4 (at 108 93 "HU.balsa" 1) (name "Child")) ; 54
+    (pull 1 (at 108 99 "HU.balsa" 1)) ; 55
+    (pull 4 (at 108 81 "HU.balsa" 1) (name "Child")) ; 56
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 57
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 58
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 59
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 60
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 61
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 62
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 63
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 64
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 65
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 66
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 67
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 68
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 69
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 70
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 71
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 72
+    (pull 1 (at 108 80 "HU.balsa" 1)) ; 73
+    (pull 4 (at 108 50 "HU.balsa" 1) (name "Child")) ; 74
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 75
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 76
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 77
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 78
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 79
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 80
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 81
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 82
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 83
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 84
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 85
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 86
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 87
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 88
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 89
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 90
+    (pull 2 (at 108 49 "HU.balsa" 1) (type (named-type "State"))) ; 91
+    (pull 2 (at 108 25 "HU.balsa" 1) (name "Var_div2") (type (named-type "State"))) ; 92
+    (pull 1 (at 108 34 "HU.balsa" 1)) ; 93
+    (pull 1 (at 108 57 "HU.balsa" 1)) ; 94
+    (pull 1 (at 108 90 "HU.balsa" 1)) ; 95
+    (push 1 (at 108 21 "HU.balsa" 1)) ; 96
+    (sync (at 107 26 "HU.balsa" 1)) ; 97
+    (sync (at 107 26 "HU.balsa" 1)) ; 98
+    (pull 4 (at 94 28 "HU.balsa" 1) (name "Return_direction") (type (array-type (numeric-type #f 1) 0 4))) ; 99
+    (pull 2 (at 94 17 "HU.balsa" 1) (name "GW_single")) ; 100
+    (sync (at 97 34 "HU.balsa" 1)) ; 101
+    (sync (at 99 34 "HU.balsa" 1)) ; 102
+    (sync (at 101 34 "HU.balsa" 1)) ; 103
+    (sync (at 103 34 "HU.balsa" 1)) ; 104
+    (push 2 (at 103 25 "HU.balsa" 1) (name "Var_div2") (type (named-type "State"))) ; 105
+    (pull 2 (at 95 59 "HU.balsa" 1) (name "GW_single")) ; 106
+    (pull 1 (at 95 58 "HU.balsa" 1)) ; 107
+    (pull 1 (at 95 58 "HU.balsa" 1)) ; 108
+    (pull 1 (at 95 58 "HU.balsa" 1)) ; 109
+    (pull 1 (at 95 58 "HU.balsa" 1)) ; 110
+    (pull 1 (at 95 58 "HU.balsa" 1)) ; 111
+    (pull 2 (at 95 28 "HU.balsa" 1) (name "GW_single")) ; 112
+    (pull 3 (at 95 38 "HU.balsa" 1) (type (named-type "trellisState"))) ; 113
+    (push 3 (at 95 38 "HU.balsa" 1) (type (named-type "trellisState"))) ; 114
+    (sync (at 94 45 "HU.balsa" 1)) ; 115
+    (sync (at 94 45 "HU.balsa" 1)) ; 116
+    (sync (at 94 45 "HU.balsa" 1)) ; 117
+    (sync (at 94 45 "HU.balsa" 1)) ; 118
+    (sync (at 94 45 "HU.balsa" 1)) ; 119
+    (sync (at 94 45 "HU.balsa" 1)) ; 120
+    (pull 4 (at 92 49 "HU.balsa" 1) (name "Parent")) ; 121
+    (pull 4 (at 92 48 "HU.balsa" 1) (type (array-type (numeric-type #f 1) 0 4))) ; 122
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 123
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 124
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 125
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 126
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 127
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 128
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 129
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 130
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 131
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 132
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 133
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 134
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 135
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 136
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 137
+    (pull 4 (at 92 48 "HU.balsa" 1)) ; 138
+    (push 4 (at 92 17 "HU.balsa" 1) (name "Return_direction") (type (array-type (numeric-type #f 1) 0 4))) ; 139
+    (sync (at 92 34 "HU.balsa" 1)) ; 140
+    (pull 4 (at 90 45 "HU.balsa" 1) (name "Parent")) ; 141
+    (pull 2 (at 90 44 "HU.balsa" 1)) ; 142
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 143
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 144
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 145
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 146
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 147
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 148
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 149
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 150
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 151
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 152
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 153
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 154
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 155
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 156
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 157
+    (pull 2 (at 90 44 "HU.balsa" 1) (type (named-type "State"))) ; 158
+    (push 2 (at 90 17 "HU.balsa" 1) (name "GW_single")) ; 159
+    (sync (at 90 27 "HU.balsa" 1)) ; 160
+    (sync (at 91 14 "HU.balsa" 1)) ; 161
+    (pull 2 (at 126 47 "HU.balsa" 1) (name "Var_div1") (type (named-type "State"))) ; 162
+    (pull 4 (at 126 35 "HU.balsa" 1) (name "pParent")) ; 163
+    (push 4 (at 126 35 "HU.balsa" 1) (name "pParent")) ; 164
+    (sync (at 126 44 "HU.balsa" 1)) ; 165
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 166
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 167
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 168
+    (sync (at 126 44 "HU.balsa" 1)) ; 169
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 170
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 171
+    (sync (at 126 44 "HU.balsa" 1)) ; 172
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 173
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 174
+    (sync (at 126 44 "HU.balsa" 1)) ; 175
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 176
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 177
+    (sync (at 126 44 "HU.balsa" 1)) ; 178
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 179
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 180
+    (sync (at 126 44 "HU.balsa" 1)) ; 181
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 182
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 183
+    (sync (at 126 44 "HU.balsa" 1)) ; 184
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 185
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 186
+    (sync (at 126 44 "HU.balsa" 1)) ; 187
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 188
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 189
+    (sync (at 126 44 "HU.balsa" 1)) ; 190
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 191
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 192
+    (sync (at 126 44 "HU.balsa" 1)) ; 193
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 194
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 195
+    (sync (at 126 44 "HU.balsa" 1)) ; 196
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 197
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 198
+    (sync (at 126 44 "HU.balsa" 1)) ; 199
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 200
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 201
+    (sync (at 126 44 "HU.balsa" 1)) ; 202
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 203
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 204
+    (sync (at 126 44 "HU.balsa" 1)) ; 205
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 206
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 207
+    (sync (at 126 44 "HU.balsa" 1)) ; 208
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 209
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 210
+    (sync (at 126 44 "HU.balsa" 1)) ; 211
+    (push 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 212
+    (pull 2 (at 126 44 "HU.balsa" 1) (type (named-type "State"))) ; 213
+    (sync (at 126 44 "HU.balsa" 1)) ; 214
+    (sync (at 126 44 "HU.balsa" 1)) ; 215
+    (pull 1 (at 125 23 "HU.balsa" 1) (name "Token")) ; 216
+    (pull 1 (at 125 19 "HU.balsa" 1)) ; 217
+    (sync (at 125 16 "HU.balsa" 1)) ; 218
+    (push 1 (at 125 16 "HU.balsa" 1)) ; 219
+    (pull 4 (at 123 27 "HU.balsa" 1) (name "pParent")) ; 220
+    (push 4 (at 123 24 "HU.balsa" 1) (name "Parent")) ; 221
+    (sync (at 123 24 "HU.balsa" 1)) ; 222
+    (pull 4 (at 121 26 "HU.balsa" 1) (name "pChild")) ; 223
+    (push 4 (at 121 23 "HU.balsa" 1) (name "Child")) ; 224
+    (sync (at 121 23 "HU.balsa" 1)) ; 225
+    (pull 4 (at 119 23 "HU.balsa" 1) (name "i")) ; 226
+    (pull 4 (at 119 29 "HU.balsa" 1)) ; 227
+    (push 4 (at 119 19 "HU.balsa" 1) (name "i")) ; 228
+    (sync (at 119 19 "HU.balsa" 1)) ; 229
+    (sync (at 119 19 "HU.balsa" 1)) ; 230
+    (sync (at 119 19 "HU.balsa" 1)) ; 231
+    (push 4 (at 119 29 "HU.balsa" 1)) ; 232
+    (pull 4 (at 119 29 "HU.balsa" 1)) ; 233
+    (sync (at 120 14 "HU.balsa" 1)) ; 234
+    (pull 4 (at 118 47 "HU.balsa" 1) (name "i")) ; 235
+    (pull 4 (at 118 34 "HU.balsa" 1) (name "Safeguard")) ; 236
+    (pull 1 (at 118 44 "HU.balsa" 1)) ; 237
+    (pull 1 (at 118 20 "HU.balsa" 1) (name "Token")) ; 238
+    (pull 1 (at 118 26 "HU.balsa" 1)) ; 239
+    (pull 1 (at 118 30 "HU.balsa" 1)) ; 240
+    (sync (at 89 13 "HU.balsa" 1)) ; 241
+    (sync (at 89 13 "HU.balsa" 1)) ; 242
+    (sync (at 89 13 "HU.balsa" 1)) ; 243
+    (sync (at 89 13 "HU.balsa" 1)) ; 244
+    (sync (at 89 13 "HU.balsa" 1)) ; 245
+    (pull 1 (at 88 12 "HU.balsa" 1) (name "doLoop")) ; 246
+    (sync (at 88 9 "HU.balsa" 1)) ; 247
+    (push 1 (at 88 9 "HU.balsa" 1)) ; 248
+    (sync (at 130 6 "HU.balsa" 1)) ; 249
+    (pull 1 (at 85 28 "HU.balsa" 1) (name "In_HU")) ; 250
+    (push 1 (at 85 20 "HU.balsa" 1) (name "doLoop")) ; 251
+    (sync (at 85 20 "HU.balsa" 1)) ; 252
+    (pull 1 (at 83 47 "HU.balsa" 1) (name "In_HU")) ; 253
+    (pull 4 (at 83 33 "HU.balsa" 1) (name "Head")) ; 254
+    (push 4 (at 83 33 "HU.balsa" 1) (name "Head")) ; 255
+    (sync (at 83 39 "HU.balsa" 1)) ; 256
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 257
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 258
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 259
+    (sync (at 83 39 "HU.balsa" 1)) ; 260
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 261
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 262
+    (sync (at 83 39 "HU.balsa" 1)) ; 263
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 264
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 265
+    (sync (at 83 39 "HU.balsa" 1)) ; 266
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 267
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 268
+    (sync (at 83 39 "HU.balsa" 1)) ; 269
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 270
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 271
+    (sync (at 83 39 "HU.balsa" 1)) ; 272
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 273
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 274
+    (sync (at 83 39 "HU.balsa" 1)) ; 275
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 276
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 277
+    (sync (at 83 39 "HU.balsa" 1)) ; 278
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 279
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 280
+    (sync (at 83 39 "HU.balsa" 1)) ; 281
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 282
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 283
+    (sync (at 83 39 "HU.balsa" 1)) ; 284
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 285
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 286
+    (sync (at 83 39 "HU.balsa" 1)) ; 287
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 288
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 289
+    (sync (at 83 39 "HU.balsa" 1)) ; 290
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 291
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 292
+    (sync (at 83 39 "HU.balsa" 1)) ; 293
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 294
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 295
+    (sync (at 83 39 "HU.balsa" 1)) ; 296
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 297
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 298
+    (sync (at 83 39 "HU.balsa" 1)) ; 299
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 300
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 301
+    (sync (at 83 39 "HU.balsa" 1)) ; 302
+    (push 1 (at 83 39 "HU.balsa" 1)) ; 303
+    (pull 1 (at 83 39 "HU.balsa" 1)) ; 304
+    (sync (at 83 39 "HU.balsa" 1)) ; 305
+    (sync (at 83 39 "HU.balsa" 1)) ; 306
+    (pull 2 (at 81 40 "HU.balsa" 1) (name "In_HU") (type (named-type "State"))) ; 307
+    (pull 4 (at 81 27 "HU.balsa" 1) (name "Head")) ; 308
+    (push 4 (at 81 27 "HU.balsa" 1) (name "Head")) ; 309
+    (sync (at 81 32 "HU.balsa" 1)) ; 310
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 311
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 312
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 313
+    (sync (at 81 32 "HU.balsa" 1)) ; 314
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 315
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 316
+    (sync (at 81 32 "HU.balsa" 1)) ; 317
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 318
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 319
+    (sync (at 81 32 "HU.balsa" 1)) ; 320
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 321
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 322
+    (sync (at 81 32 "HU.balsa" 1)) ; 323
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 324
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 325
+    (sync (at 81 32 "HU.balsa" 1)) ; 326
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 327
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 328
+    (sync (at 81 32 "HU.balsa" 1)) ; 329
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 330
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 331
+    (sync (at 81 32 "HU.balsa" 1)) ; 332
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 333
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 334
+    (sync (at 81 32 "HU.balsa" 1)) ; 335
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 336
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 337
+    (sync (at 81 32 "HU.balsa" 1)) ; 338
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 339
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 340
+    (sync (at 81 32 "HU.balsa" 1)) ; 341
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 342
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 343
+    (sync (at 81 32 "HU.balsa" 1)) ; 344
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 345
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 346
+    (sync (at 81 32 "HU.balsa" 1)) ; 347
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 348
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 349
+    (sync (at 81 32 "HU.balsa" 1)) ; 350
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 351
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 352
+    (sync (at 81 32 "HU.balsa" 1)) ; 353
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 354
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 355
+    (sync (at 81 32 "HU.balsa" 1)) ; 356
+    (push 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 357
+    (pull 2 (at 81 32 "HU.balsa" 1) (type (named-type "State"))) ; 358
+    (sync (at 81 32 "HU.balsa" 1)) ; 359
+    (sync (at 81 32 "HU.balsa" 1)) ; 360
+    (pull 1 (at 78 83 "HU.balsa" 1) (name "In_HU")) ; 361
+    (pull 1 (at 78 70 "HU.balsa" 1) (name "In_HU")) ; 362
+    (pull 1 (at 78 57 "HU.balsa" 1) (name "In_HU")) ; 363
+    (pull 1 (at 78 44 "HU.balsa" 1) (name "In_HU")) ; 364
+    (pull 4 (at 78 33 "HU.balsa" 1)) ; 365
+    (pull 4 (at 78 23 "HU.balsa" 1) (name "Head")) ; 366
+    (push 4 (at 78 23 "HU.balsa" 1) (name "Head")) ; 367
+    (sync (at 78 29 "HU.balsa" 1)) ; 368
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 369
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 370
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 371
+    (sync (at 78 29 "HU.balsa" 1)) ; 372
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 373
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 374
+    (sync (at 78 29 "HU.balsa" 1)) ; 375
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 376
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 377
+    (sync (at 78 29 "HU.balsa" 1)) ; 378
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 379
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 380
+    (sync (at 78 29 "HU.balsa" 1)) ; 381
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 382
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 383
+    (sync (at 78 29 "HU.balsa" 1)) ; 384
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 385
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 386
+    (sync (at 78 29 "HU.balsa" 1)) ; 387
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 388
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 389
+    (sync (at 78 29 "HU.balsa" 1)) ; 390
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 391
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 392
+    (sync (at 78 29 "HU.balsa" 1)) ; 393
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 394
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 395
+    (sync (at 78 29 "HU.balsa" 1)) ; 396
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 397
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 398
+    (sync (at 78 29 "HU.balsa" 1)) ; 399
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 400
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 401
+    (sync (at 78 29 "HU.balsa" 1)) ; 402
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 403
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 404
+    (sync (at 78 29 "HU.balsa" 1)) ; 405
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 406
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 407
+    (sync (at 78 29 "HU.balsa" 1)) ; 408
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 409
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 410
+    (sync (at 78 29 "HU.balsa" 1)) ; 411
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 412
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 413
+    (sync (at 78 29 "HU.balsa" 1)) ; 414
+    (push 4 (at 78 29 "HU.balsa" 1)) ; 415
+    (pull 4 (at 78 29 "HU.balsa" 1)) ; 416
+    (sync (at 78 29 "HU.balsa" 1)) ; 417
+    (sync (at 78 29 "HU.balsa" 1)) ; 418
+    (sync (at 77 15 "HU.balsa" 1)) ; 419
+    (sync (at 77 15 "HU.balsa" 1)) ; 420
+    (pull 4 (at 74 26 "HU.balsa" 1) (name "Head")) ; 421
+    (push 4 (at 74 23 "HU.balsa" 1) (name "Safeguard")) ; 422
+    (sync (at 74 23 "HU.balsa" 1)) ; 423
+    (pull 1 (at 72 27 "HU.balsa" 1) (name "Global_Winner_Head")) ; 424
+    (sync (at 72 22 "HU.balsa" 1)) ; 425
+    (pull 2 (at 70 26 "HU.balsa" 1) (name "Global_Winner_Head") (type (named-type "State"))) ; 426
+    (sync (at 70 23 "HU.balsa" 1)) ; 427
+    (sync (at 71 10 "HU.balsa" 1)) ; 428
+    (pull 1 (at 69 12 "HU.balsa" 1) (name "Start")) ; 429
+    (sync (at 69 9 "HU.balsa" 1)) ; 430
+    (push 1 (at 69 9 "HU.balsa" 1)) ; 431
+    (pull 4 (at 66 21 "HU.balsa" 1)) ; 432
+    (push 4 (at 66 11 "HU.balsa" 1) (name "i")) ; 433
+    (sync (at 66 11 "HU.balsa" 1)) ; 434
+    (sync (at 64 15 "HU.balsa" 1)) ; 435
+    (pull 4 (at 62 19 "HU.balsa" 1) (name "Head")) ; 436
+    (push 4 (at 62 16 "HU.balsa" 1) (name "Parent")) ; 437
+    (sync (at 62 16 "HU.balsa" 1)) ; 438
+    (pull 4 (at 60 18 "HU.balsa" 1) (name "pHead")) ; 439
+    (push 4 (at 60 15 "HU.balsa" 1) (name "Child")) ; 440
+    (sync (at 60 15 "HU.balsa" 1)) ; 441
+    (sync (at 61 6 "HU.balsa" 1)) ; 442
+    (sync (at 87 6 "HU.balsa" 1)) ; 443
+    (sync (at 59 5 "HU.balsa" 1)) ; 444
+    (sync (at 57 11 "HU.balsa" 1)) ; 445
+    (pull 4 (at 55 21 "HU.balsa" 1)) ; 446
+    (push 4 (at 55 11 "HU.balsa" 1) (name "pHead")) ; 447
+    (sync (at 55 11 "HU.balsa" 1)) ; 448
+    (pull 4 (at 53 13 "HU.balsa" 1)) ; 449
+    (push 4 (at 53 10 "HU.balsa" 1) (name "Head")) ; 450
+    (sync (at 53 10 "HU.balsa" 1)) ; 451
+    (sync (at 54 2 "HU.balsa" 1)) ; 452
+    (push 4 (at 48 1 "HU.balsa" 1) (name "i")) ; 453
+    (push 1 (at 45 1 "HU.balsa" 1) (name "Start")) ; 454
+    (push 1 (at 39 1 "HU.balsa" 1) (name "Token")) ; 455
+    (push 4 (at 36 1 "HU.balsa" 1) (name "Parent")) ; 456
+    (push 4 (at 35 1 "HU.balsa" 1) (name "Child")) ; 457
+    (push 4 (at 34 1 "HU.balsa" 1) (name "pHead")) ; 458
+    (push 4 (at 34 1 "HU.balsa" 1) (name "Head")) ; 459
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 460
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 461
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 462
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 463
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 464
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 465
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 466
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 467
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 468
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 469
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 470
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 471
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 472
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 473
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 474
+    (push 2 (at 30 1 "HU.balsa" 1) (type (named-type "State"))) ; 475
+  )
+  (components
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[0..0]" "") (258 (58)) (at 29 1 "HU.balsa" 0)) ; 0
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[1..1]" "") (261 (59)) (at 29 1 "HU.balsa" 0)) ; 1
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[2..2]" "") (264 (60)) (at 29 1 "HU.balsa" 0)) ; 2
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[3..3]" "") (267 (61)) (at 29 1 "HU.balsa" 0)) ; 3
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[4..4]" "") (270 (62)) (at 29 1 "HU.balsa" 0)) ; 4
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[5..5]" "") (273 (63)) (at 29 1 "HU.balsa" 0)) ; 5
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[6..6]" "") (276 (64)) (at 29 1 "HU.balsa" 0)) ; 6
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[7..7]" "") (279 (65)) (at 29 1 "HU.balsa" 0)) ; 7
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[8..8]" "") (282 (66)) (at 29 1 "HU.balsa" 0)) ; 8
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[9..9]" "") (285 (67)) (at 29 1 "HU.balsa" 0)) ; 9
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[10..10]" "") (288 (68)) (at 29 1 "HU.balsa" 0)) ; 10
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[11..11]" "") (291 (69)) (at 29 1 "HU.balsa" 0)) ; 11
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[12..12]" "") (294 (70)) (at 29 1 "HU.balsa" 0)) ; 12
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[13..13]" "") (297 (71)) (at 29 1 "HU.balsa" 0)) ; 13
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[14..14]" "") (300 (72)) (at 29 1 "HU.balsa" 0)) ; 14
+    (component "$BrzVariable" (1 1 "Global_Winner_Valid[15..15]" "") (303 (73)) (at 29 1 "HU.balsa" 0)) ; 15
+    (component "$BrzVariable" (2 3 "Global_Winner[0..1]" "") (475 (143 76 7)) (at 30 1 "HU.balsa" 0)) ; 16
+    (component "$BrzVariable" (2 3 "Global_Winner[2..3]" "") (474 (144 77 8)) (at 30 1 "HU.balsa" 0)) ; 17
+    (component "$BrzVariable" (2 3 "Global_Winner[4..5]" "") (473 (145 78 9)) (at 30 1 "HU.balsa" 0)) ; 18
+    (component "$BrzVariable" (2 3 "Global_Winner[6..7]" "") (472 (146 79 10)) (at 30 1 "HU.balsa" 0)) ; 19
+    (component "$BrzVariable" (2 3 "Global_Winner[8..9]" "") (471 (147 80 11)) (at 30 1 "HU.balsa" 0)) ; 20
+    (component "$BrzVariable" (2 3 "Global_Winner[10..11]" "") (470 (148 81 12)) (at 30 1 "HU.balsa" 0)) ; 21
+    (component "$BrzVariable" (2 3 "Global_Winner[12..13]" "") (469 (149 82 13)) (at 30 1 "HU.balsa" 0)) ; 22
+    (component "$BrzVariable" (2 3 "Global_Winner[14..15]" "") (468 (150 83 14)) (at 30 1 "HU.balsa" 0)) ; 23
+    (component "$BrzVariable" (2 3 "Global_Winner[16..17]" "") (467 (151 84 15)) (at 30 1 "HU.balsa" 0)) ; 24
+    (component "$BrzVariable" (2 3 "Global_Winner[18..19]" "") (466 (152 85 16)) (at 30 1 "HU.balsa" 0)) ; 25
+    (component "$BrzVariable" (2 3 "Global_Winner[20..21]" "") (465 (153 86 17)) (at 30 1 "HU.balsa" 0)) ; 26
+    (component "$BrzVariable" (2 3 "Global_Winner[22..23]" "") (464 (154 87 18)) (at 30 1 "HU.balsa" 0)) ; 27
+    (component "$BrzVariable" (2 3 "Global_Winner[24..25]" "") (463 (155 88 19)) (at 30 1 "HU.balsa" 0)) ; 28
+    (component "$BrzVariable" (2 3 "Global_Winner[26..27]" "") (462 (156 89 20)) (at 30 1 "HU.balsa" 0)) ; 29
+    (component "$BrzVariable" (2 3 "Global_Winner[28..29]" "") (461 (157 90 21)) (at 30 1 "HU.balsa" 0)) ; 30
+    (component "$BrzVariable" (2 3 "Global_Winner[30..31]" "") (460 (158 91 22)) (at 30 1 "HU.balsa" 0)) ; 31
+    (component "$BrzCallMux" (2 2) ((167 312) 475)) ; 32
+    (component "$BrzCallMux" (2 2) ((170 315) 474)) ; 33
+    (component "$BrzCallMux" (2 2) ((173 318) 473)) ; 34
+    (component "$BrzCallMux" (2 2) ((176 321) 472)) ; 35
+    (component "$BrzCallMux" (2 2) ((179 324) 471)) ; 36
+    (component "$BrzCallMux" (2 2) ((182 327) 470)) ; 37
+    (component "$BrzCallMux" (2 2) ((185 330) 469)) ; 38
+    (component "$BrzCallMux" (2 2) ((188 333) 468)) ; 39
+    (component "$BrzCallMux" (2 2) ((191 336) 467)) ; 40
+    (component "$BrzCallMux" (2 2) ((194 339) 466)) ; 41
+    (component "$BrzCallMux" (2 2) ((197 342) 465)) ; 42
+    (component "$BrzCallMux" (2 2) ((200 345) 464)) ; 43
+    (component "$BrzCallMux" (2 2) ((203 348) 463)) ; 44
+    (component "$BrzCallMux" (2 2) ((206 351) 462)) ; 45
+    (component "$BrzCallMux" (2 2) ((209 354) 461)) ; 46
+    (component "$BrzCallMux" (2 2) ((212 357) 460)) ; 47
+    (component "$BrzVariable" (2 2 "Global_Winner_Head[0..1]" ";0..0") (23 (426 424)) (at 31 1 "HU.balsa" 0)) ; 48
+    (component "$BrzVariable" (4 1 "DL_Winner[0..3]" "") (370 (123)) (at 32 1 "HU.balsa" 0)) ; 49
+    (component "$BrzVariable" (4 1 "DL_Winner[4..7]" "") (373 (124)) (at 32 1 "HU.balsa" 0)) ; 50
+    (component "$BrzVariable" (4 1 "DL_Winner[8..11]" "") (376 (125)) (at 32 1 "HU.balsa" 0)) ; 51
+    (component "$BrzVariable" (4 1 "DL_Winner[12..15]" "") (379 (126)) (at 32 1 "HU.balsa" 0)) ; 52
+    (component "$BrzVariable" (4 1 "DL_Winner[16..19]" "") (382 (127)) (at 32 1 "HU.balsa" 0)) ; 53
+    (component "$BrzVariable" (4 1 "DL_Winner[20..23]" "") (385 (128)) (at 32 1 "HU.balsa" 0)) ; 54
+    (component "$BrzVariable" (4 1 "DL_Winner[24..27]" "") (388 (129)) (at 32 1 "HU.balsa" 0)) ; 55
+    (component "$BrzVariable" (4 1 "DL_Winner[28..31]" "") (391 (130)) (at 32 1 "HU.balsa" 0)) ; 56
+    (component "$BrzVariable" (4 1 "DL_Winner[32..35]" "") (394 (131)) (at 32 1 "HU.balsa" 0)) ; 57
+    (component "$BrzVariable" (4 1 "DL_Winner[36..39]" "") (397 (132)) (at 32 1 "HU.balsa" 0)) ; 58
+    (component "$BrzVariable" (4 1 "DL_Winner[40..43]" "") (400 (133)) (at 32 1 "HU.balsa" 0)) ; 59
+    (component "$BrzVariable" (4 1 "DL_Winner[44..47]" "") (403 (134)) (at 32 1 "HU.balsa" 0)) ; 60
+    (component "$BrzVariable" (4 1 "DL_Winner[48..51]" "") (406 (135)) (at 32 1 "HU.balsa" 0)) ; 61
+    (component "$BrzVariable" (4 1 "DL_Winner[52..55]" "") (409 (136)) (at 32 1 "HU.balsa" 0)) ; 62
+    (component "$BrzVariable" (4 1 "DL_Winner[56..59]" "") (412 (137)) (at 32 1 "HU.balsa" 0)) ; 63
+    (component "$BrzVariable" (4 1 "DL_Winner[60..63]" "") (415 (138)) (at 32 1 "HU.balsa" 0)) ; 64
+    (component "$BrzVariable" (4 8 "Head[0..3]" "") (459 (436 421 366 308 254 53 38 34)) (at 34 1 "HU.balsa" 0)) ; 65
+    (component "$BrzCallMux" (4 2) ((31 450) 459)) ; 66
+    (component "$BrzVariable" (4 1 "pHead[0..3]" "") (458 (439)) (at 34 1 "HU.balsa" 0)) ; 67
+    (component "$BrzCallMux" (4 2) ((39 447) 458)) ; 68
+    (component "$BrzVariable" (4 3 "nHead[0..3]" "") (36 (30 26 5)) (at 34 1 "HU.balsa" 0)) ; 69
+    (component "$BrzVariable" (4 5 "Child[0..3]" "") (457 (74 56 54 45 41)) (at 35 1 "HU.balsa" 0)) ; 70
+    (component "$BrzCallMux" (4 2) ((224 440) 457)) ; 71
+    (component "$BrzVariable" (4 1 "pChild[0..3]" "") (43 (223)) (at 35 1 "HU.balsa" 0)) ; 72
+    (component "$BrzVariable" (4 2 "Parent[0..3]" "") (456 (141 121)) (at 36 1 "HU.balsa" 0)) ; 73
+    (component "$BrzCallMux" (4 2) ((221 437) 456)) ; 74
+    (component "$BrzVariable" (4 2 "pParent[0..3]" "") (46 (220 163)) (at 36 1 "HU.balsa" 0)) ; 75
+    (component "$BrzVariable" (1 2 "Token[0..0]" "") (455 (238 216)) (at 39 1 "HU.balsa" 0)) ; 76
+    (component "$BrzVariable" (2 1 "Var_div1[0..1]" "") (50 (162)) (at 42 1 "HU.balsa" 0)) ; 77
+    (component "$BrzVariable" (1 1 "Start[0..0]" "") (454 (429)) (at 45 1 "HU.balsa" 0)) ; 78
+    (component "$BrzVariable" (1 1 "doLoop[0..0]" "") (251 (246)) (at 45 1 "HU.balsa" 0)) ; 79
+    (component "$BrzVariable" (4 1 "Safeguard[0..3]" "") (422 (236)) (at 47 1 "HU.balsa" 0)) ; 80
+    (component "$BrzVariable" (4 2 "i[0..3]" "") (453 (235 226)) (at 48 1 "HU.balsa" 0)) ; 81
+    (component "$BrzCallMux" (4 2) ((228 433) 453)) ; 82
+    (component "$BrzSequenceOptimised" (2 "S") (1 (452 444))) ; 83
+    (component "$BrzConcur" (3) (452 (451 448 445))) ; 84
+    (component "$BrzFetch" (4 "false") (451 449 450)) ; 85
+    (component "$BrzConstant" (4 0) (449)) ; 86
+    (component "$BrzFetch" (4 "false") (448 446 447)) ; 87
+    (component "$BrzConstant" (4 15) (446)) ; 88
+    (component "$BrzLoop" () (444 443)) ; 89
+    (component "$BrzSequenceOptimised" (3 "SS") (443 (442 249 33))) ; 90
+    (component "$BrzConcur" (6) (442 (441 438 435 434 430 420))) ; 91
+    (component "$BrzFetch" (4 "false") (441 439 440)) ; 92
+    (component "$BrzFetch" (4 "false") (438 436 437)) ; 93
+    (component "$BrzFetch" (4 "false") (434 432 433)) ; 94
+    (component "$BrzConstant" (4 15) (432)) ; 95
+    (component "$BrzCase" (1 2 "0;1") (431 (423 428))) ; 96
+    (component "$BrzFetch" (1 "false") (430 429 431)) ; 97
+    (component "$BrzConcur" (2) (428 (427 425))) ; 98
+    (component "$BrzFetch" (2 "false") (427 426 3)) ; 99
+    (component "$BrzFetch" (1 "false") (425 424 4)) ; 100
+    (component "$BrzFetch" (4 "false") (423 421 422)) ; 101
+    (component "$BrzActiveEagerFalseVariable" (7 7 "3..3;4..4;5..5;6..6;1..2;0..0;0..0") (420 2 419 (364 363 362 361 307 253 250))) ; 102
+    (component "$BrzConcur" (4) (419 (418 360 306 252))) ; 103
+    (component "$BrzFetch" (4 "false") (418 365 369)) ; 104
+    (component "$BrzCase" (4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (367 (417 414 411 408 405 402 399 396 393 390 387 384 381 378 375 372))) ; 105
+    (component "$BrzFetch" (4 "false") (368 366 367)) ; 106
+    (component "$BrzFalseVariable" (4 16 "") (369 368 (416 413 410 407 404 401 398 395 392 389 386 383 380 377 374 371))) ; 107
+    (component "$BrzFetch" (4 "false") (417 416 415)) ; 108
+    (component "$BrzFetch" (4 "false") (414 413 412)) ; 109
+    (component "$BrzFetch" (4 "false") (411 410 409)) ; 110
+    (component "$BrzFetch" (4 "false") (408 407 406)) ; 111
+    (component "$BrzFetch" (4 "false") (405 404 403)) ; 112
+    (component "$BrzFetch" (4 "false") (402 401 400)) ; 113
+    (component "$BrzFetch" (4 "false") (399 398 397)) ; 114
+    (component "$BrzFetch" (4 "false") (396 395 394)) ; 115
+    (component "$BrzFetch" (4 "false") (393 392 391)) ; 116
+    (component "$BrzFetch" (4 "false") (390 389 388)) ; 117
+    (component "$BrzFetch" (4 "false") (387 386 385)) ; 118
+    (component "$BrzFetch" (4 "false") (384 383 382)) ; 119
+    (component "$BrzFetch" (4 "false") (381 380 379)) ; 120
+    (component "$BrzFetch" (4 "false") (378 377 376)) ; 121
+    (component "$BrzFetch" (4 "false") (375 374 373)) ; 122
+    (component "$BrzFetch" (4 "false") (372 371 370)) ; 123
+    (component "$BrzFetch" (2 "false") (360 307 311)) ; 124
+    (component "$BrzCase" (4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (309 (359 356 353 350 347 344 341 338 335 332 329 326 323 320 317 314))) ; 125
+    (component "$BrzFetch" (4 "false") (310 308 309)) ; 126
+    (component "$BrzFalseVariable" (2 16 "") (311 310 (358 355 352 349 346 343 340 337 334 331 328 325 322 319 316 313))) ; 127
+    (component "$BrzFetch" (2 "false") (359 358 357)) ; 128
+    (component "$BrzFetch" (2 "false") (356 355 354)) ; 129
+    (component "$BrzFetch" (2 "false") (353 352 351)) ; 130
+    (component "$BrzFetch" (2 "false") (350 349 348)) ; 131
+    (component "$BrzFetch" (2 "false") (347 346 345)) ; 132
+    (component "$BrzFetch" (2 "false") (344 343 342)) ; 133
+    (component "$BrzFetch" (2 "false") (341 340 339)) ; 134
+    (component "$BrzFetch" (2 "false") (338 337 336)) ; 135
+    (component "$BrzFetch" (2 "false") (335 334 333)) ; 136
+    (component "$BrzFetch" (2 "false") (332 331 330)) ; 137
+    (component "$BrzFetch" (2 "false") (329 328 327)) ; 138
+    (component "$BrzFetch" (2 "false") (326 325 324)) ; 139
+    (component "$BrzFetch" (2 "false") (323 322 321)) ; 140
+    (component "$BrzFetch" (2 "false") (320 319 318)) ; 141
+    (component "$BrzFetch" (2 "false") (317 316 315)) ; 142
+    (component "$BrzFetch" (2 "false") (314 313 312)) ; 143
+    (component "$BrzFetch" (1 "false") (306 253 257)) ; 144
+    (component "$BrzCase" (4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (255 (305 302 299 296 293 290 287 284 281 278 275 272 269 266 263 260))) ; 145
+    (component "$BrzFetch" (4 "false") (256 254 255)) ; 146
+    (component "$BrzFalseVariable" (1 16 "") (257 256 (304 301 298 295 292 289 286 283 280 277 274 271 268 265 262 259))) ; 147
+    (component "$BrzFetch" (1 "false") (305 304 303)) ; 148
+    (component "$BrzFetch" (1 "false") (302 301 300)) ; 149
+    (component "$BrzFetch" (1 "false") (299 298 297)) ; 150
+    (component "$BrzFetch" (1 "false") (296 295 294)) ; 151
+    (component "$BrzFetch" (1 "false") (293 292 291)) ; 152
+    (component "$BrzFetch" (1 "false") (290 289 288)) ; 153
+    (component "$BrzFetch" (1 "false") (287 286 285)) ; 154
+    (component "$BrzFetch" (1 "false") (284 283 282)) ; 155
+    (component "$BrzFetch" (1 "false") (281 280 279)) ; 156
+    (component "$BrzFetch" (1 "false") (278 277 276)) ; 157
+    (component "$BrzFetch" (1 "false") (275 274 273)) ; 158
+    (component "$BrzFetch" (1 "false") (272 271 270)) ; 159
+    (component "$BrzFetch" (1 "false") (269 268 267)) ; 160
+    (component "$BrzFetch" (1 "false") (266 265 264)) ; 161
+    (component "$BrzFetch" (1 "false") (263 262 261)) ; 162
+    (component "$BrzFetch" (1 "false") (260 259 258)) ; 163
+    (component "$BrzFetch" (1 "false") (252 250 251)) ; 164
+    (component "$BrzConcur" (3) (249 (247 40 37))) ; 165
+    (component "$BrzCase" (1 1 "1") (248 (241))) ; 166
+    (component "$BrzFetch" (1 "false") (247 246 248)) ; 167
+    (component "$BrzSequenceOptimised" (2 "S") (245 (234 242))) ; 168
+    (component "$BrzSequenceOptimised" (2 "S") (241 (243 244))) ; 169
+    (component "$BrzCall" (2) ((243 242) 161)) ; 170
+    (component "$BrzWhile" () (244 240 245)) ; 171
+    (component "$BrzBinaryFunc" (1 1 1 "And""false" "false" "false") (240 239 237)) ; 172
+    (component "$BrzUnaryFunc" (1 1 "Invert" "false") (239 238)) ; 173
+    (component "$BrzBinaryFunc" (1 4 4 "NotEquals""false" "false" "false") (237 236 235)) ; 174
+    (component "$BrzConcur" (4) (234 (229 225 222 218))) ; 175
+    (component "$BrzSequenceOptimised" (2 "S") (229 (230 231))) ; 176
+    (component "$BrzFetch" (4 "false") (230 227 232)) ; 177
+    (component "$BrzFetch" (4 "false") (231 233 228)) ; 178
+    (component "$BrzVariable" (4 1 "aux:i" "") (232 (233))) ; 179
+    (component "$BrzBinaryFuncConstR" (4 4 1 "Add" "false" "false" "false" 1) (227 226)) ; 180
+    (component "$BrzFetch" (4 "false") (225 223 224)) ; 181
+    (component "$BrzFetch" (4 "false") (222 220 221)) ; 182
+    (component "$BrzCase" (1 1 "1") (219 (215))) ; 183
+    (component "$BrzFetch" (1 "false") (218 217 219)) ; 184
+    (component "$BrzUnaryFunc" (1 1 "Invert" "false") (217 216)) ; 185
+    (component "$BrzFetch" (2 "false") (215 162 166)) ; 186
+    (component "$BrzCase" (4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (164 (214 211 208 205 202 199 196 193 190 187 184 181 178 175 172 169))) ; 187
+    (component "$BrzFetch" (4 "false") (165 163 164)) ; 188
+    (component "$BrzFalseVariable" (2 16 "") (166 165 (213 210 207 204 201 198 195 192 189 186 183 180 177 174 171 168))) ; 189
+    (component "$BrzFetch" (2 "false") (214 213 212)) ; 190
+    (component "$BrzFetch" (2 "false") (211 210 209)) ; 191
+    (component "$BrzFetch" (2 "false") (208 207 206)) ; 192
+    (component "$BrzFetch" (2 "false") (205 204 203)) ; 193
+    (component "$BrzFetch" (2 "false") (202 201 200)) ; 194
+    (component "$BrzFetch" (2 "false") (199 198 197)) ; 195
+    (component "$BrzFetch" (2 "false") (196 195 194)) ; 196
+    (component "$BrzFetch" (2 "false") (193 192 191)) ; 197
+    (component "$BrzFetch" (2 "false") (190 189 188)) ; 198
+    (component "$BrzFetch" (2 "false") (187 186 185)) ; 199
+    (component "$BrzFetch" (2 "false") (184 183 182)) ; 200
+    (component "$BrzFetch" (2 "false") (181 180 179)) ; 201
+    (component "$BrzFetch" (2 "false") (178 177 176)) ; 202
+    (component "$BrzFetch" (2 "false") (175 174 173)) ; 203
+    (component "$BrzFetch" (2 "false") (172 171 170)) ; 204
+    (component "$BrzFetch" (2 "false") (169 168 167)) ; 205
+    (component "$BrzPassivatorPush" (2 1) ((48) 105)) ; 206
+    (component "$BrzPassivatorPush" (2 1) ((100) 159)) ; 207
+    (component "$BrzPassivatorPush" (4 1) ((99) 139)) ; 208
+    (component "$BrzConcur" (6) (161 (160 140 119 98 47 44))) ; 209
+    (component "$BrzFetch" (2 "false") (160 142 159)) ; 210
+    (component "$BrzCaseFetch" (2 4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (142 141 (158 157 156 155 154 153 152 151 150 149 148 147 146 145 144 143))) ; 211
+    (component "$BrzFetch" (4 "false") (140 122 139)) ; 212
+    (component "$BrzCaseFetch" (4 4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (122 121 (138 137 136 135 134 133 132 131 130 129 128 127 126 125 124 123))) ; 213
+    (component "$BrzSynch" (2) ((117 115) 120)) ; 214
+    (component "$BrzFork" (2) (119 (118 116))) ; 215
+    (component "$BrzActiveEagerFalseVariable" (2 2 "") (118 100 117 (112 106))) ; 216
+    (component "$BrzActiveEagerFalseVariable" (4 4 "3..3;2..2;1..1;0..0") (116 99 115 (111 110 109 108))) ; 217
+    (component "$BrzCase" (3 4 "1,0;3,2;5,4;7,6") (114 (101 102 103 104))) ; 218
+    (component "$BrzFetch" (3 "false") (120 113 114)) ; 219
+    (component "$BrzCombine" (3 2 1) (113 112 107)) ; 220
+    (component "$BrzCaseFetch" (1 2 4 "3;2;1;0") (107 106 (111 110 109 108))) ; 221
+    (component "$BrzActiveEagerFalseVariable" (2 2 "") (98 48 97 (49 92))) ; 222
+    (component "$BrzCase" (1 2 "0;1") (96 (51 52))) ; 223
+    (component "$BrzFetch" (1 "false") (97 95 96)) ; 224
+    (component "$BrzBinaryFunc" (1 1 1 "Or""false" "false" "false") (95 94 55)) ; 225
+    (component "$BrzBinaryFunc" (1 1 1 "And""false" "false" "false") (94 93 57)) ; 226
+    (component "$BrzBinaryFunc" (1 2 2 "Equals""false" "false" "false") (93 92 75)) ; 227
+    (component "$BrzCaseFetch" (2 4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (75 74 (91 90 89 88 87 86 85 84 83 82 81 80 79 78 77 76))) ; 228
+    (component "$BrzCaseFetch" (1 4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (57 56 (73 72 71 70 69 68 67 66 65 64 63 62 61 60 59 58))) ; 229
+    (component "$BrzBinaryFunc" (1 4 4 "Equals""false" "false" "false") (55 54 53)) ; 230
+    (component "$BrzFetch" (2 "false") (51 49 50)) ; 231
+    (component "$BrzFetch" (4 "false") (47 45 46)) ; 232
+    (component "$BrzFetch" (4 "false") (44 42 43)) ; 233
+    (component "$BrzBinaryFuncConstR" (4 4 1 "Subtract" "false" "false" "false" 1) (42 41)) ; 234
+    (component "$BrzFetch" (4 "false") (40 38 39)) ; 235
+    (component "$BrzFetch" (4 "false") (37 35 36)) ; 236
+    (component "$BrzBinaryFuncConstR" (4 4 1 "Add" "false" "false" "false" 1) (35 34)) ; 237
+    (component "$BrzConcur" (3) (33 (32 28 24))) ; 238
+    (component "$BrzFetch" (4 "false") (32 30 31)) ; 239
+    (component "$BrzCase" (1 1 "1") (29 (25))) ; 240
+    (component "$BrzFetch" (1 "false") (28 27 29)) ; 241
+    (component "$BrzBinaryFuncConstR" (1 4 4 "Equals" "false" "false" "false" 15) (27 26)) ; 242
+    (component "$BrzFetch" (2 "false") (24 6 23)) ; 243
+    (component "$BrzCaseFetch" (2 4 16 "15;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0") (6 5 (22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7))) ; 244
+    (component "$BrzCombineEqual" (4 1 4) (365 (364 363 362 361))) ; 245
+    (component "$BrzEncode" (2 4 "3;2;1;0") ((104 103 102 101) 105)) ; 246
+    (component "$BrzEncode" (1 2 "1;0") ((25 445) 454)) ; 247
+    (component "$BrzEncode" (1 2 "1;0") ((52 435) 455)) ; 248
+  )
+  (call-contexts
+    (call-context 1 "HistoryHunit" (at 20 1 "HU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+
+;;; EOF

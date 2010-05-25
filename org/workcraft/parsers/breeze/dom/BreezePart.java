@@ -23,6 +23,7 @@ package org.workcraft.parsers.breeze.dom;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.workcraft.exceptions.NotSupportedException;
@@ -51,6 +52,7 @@ public class BreezePart implements BreezeDefinition
 
 	private static List<BreezePartReference> resolve(BreezeLibrary library, List<RawBreezePartReference> parts) {
 		ArrayList<BreezePartReference> result = new ArrayList<BreezePartReference>();
+
 		for(RawBreezePartReference ref : parts)
 		{
 			result.add(new BreezePartReference(library, ref));

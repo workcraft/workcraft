@@ -1,0 +1,23 @@
+;;; Breeze intermediate file (list format)
+;;; Created: Thu May 13 17:25:34 2010
+;;; By: dell@dell-laptop (Linux)
+;;; With balsa-c version: 3.5.1
+;;; Command: balsa-c def_2.balsa 
+
+;;; Imports
+(import "balsa.types.builtin")
+(import "balsa.types.synthesis")
+(import "balsa.types.basic")
+;;; Types
+
+(type "bit3" (numeric-type #f 3))
+(type "State" (enumeration-type #f 2 ("S0" 0) ("S1" 1) ("S2" 2) ("S3" 3)))
+(type "trellisState" (enumeration-type #f 3 ("LS0" 0) ("LS1" 1) ("LS2" 2) ("LS3" 3) ("US0" 4) ("US1" 5) ("US2" 6) ("US3" 7)))
+(type "Bundle_BMU_PMU" (record-type 16 ("a_c" (numeric-type #f 4)) ("a_d" (numeric-type #f 4)) ("b_c" (numeric-type #f 4)) ("b_d" (numeric-type #f 4)) ))
+(type "Bundle_PMU_HU" (record-type 7 ("Global_winner_found" (numeric-type #f 1)) ("Global_winner" (named-type "State")) ("dir_S0" (numeric-type #f 1)) ("dir_S1" (numeric-type #f 1)) ("dir_S2" (numeric-type #f 1)) ("dir_S3" (numeric-type #f 1)) ))
+;;; Constants
+
+;;; Parts
+
+
+;;; EOF

@@ -55,6 +55,11 @@ public class BreezeParser {
 	{
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
+	
+	Expression<Integer> namedDataType(String name)
+	{
+		throw new org.workcraft.exceptions.NotImplementedException();
+	}
 }
 PARSER_END(BreezeParser)
 
@@ -461,6 +466,24 @@ PortDeclaration arrayedSyncPort(String name, boolean isActive) :
 	{ return PortDeclaration.createArrayedSync(name, isActive, count); }
 }
 
+Expression<Integer> dataType() :
+{
+	String typeName;
+	Expression<Integer> result;
+}
+{
+	LOOKAHEAD(<OBR> <NUMERIC_TYPE>) result = numericType() { return result; }
+	| 
+	(
+		<OBR><NAMED_TYPE>
+		typeName = value()
+		<CBR>
+		{
+			return namedDataType(typeName);
+		}
+	)
+}
+
 PortDeclaration arrayedDataPort(String name, boolean isActive) :
 {
 	Expression<Integer> count;
@@ -472,7 +495,7 @@ PortDeclaration arrayedDataPort(String name, boolean isActive) :
 	isInput = dataDirectionIsInput()
 	(
 		LOOKAHEAD(<OBR><VARIABLE_ARRAY_TYPE>) width = variable_array_type() | 
-			simpleWidth = numericType()
+			simpleWidth = dataType()
 	)
 	count = arrayCount()
 	{ if(width == null) width = new ConstantArrayType(simpleWidth, count); }
@@ -492,7 +515,7 @@ PortDeclaration simpleDataPort(String name, boolean isActive) :
 }
 {
 	isInput = dataDirectionIsInput()
-	width = numericType()
+	width = dataType()
 	{ return PortDeclaration.createData(name, isActive, isInput, width); }
 }
 
