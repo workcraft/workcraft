@@ -27,6 +27,6 @@ public abstract class AbstractMpsatChecker {
 		if (!title.isEmpty())
 			description += "(" + title +")";
 
-		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler());
+		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler(framework));
 	}
 }

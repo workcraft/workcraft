@@ -7,15 +7,21 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.plugins.shared.tasks.MpsatChainResult;
+import org.workcraft.plugins.verification.gui.SolutionsDialog;
 import org.workcraft.tasks.Result;
+import org.workcraft.util.GUI;
 
 final class MpsatDeadlockResultHandler implements Runnable {
 	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Framework framework;
 
 	MpsatDeadlockResultHandler(
+			Framework framework,
 			Result<? extends MpsatChainResult> mpsatChainResult) {
+		this.framework = framework;
 		this.mpsatChainResult = mpsatChainResult;
 	}
 
@@ -28,15 +34,11 @@ final class MpsatDeadlockResultHandler implements Runnable {
 		if (!solutions.isEmpty()) {
 			String message = "The system has a deadlock.\n";
 
-			int i = 1;
-			for (Trace t : mdp.getSolutions()) {
-				if (mdp.getSolutions().size() > 1)
-					message += "Trace " + Integer.toString(++i) + ": ";
-				message += t.size()>0 ? t: "Initial marking is a deadlock state.";
-				message += "\n";
-			}
+			final SolutionsDialog solutionsDialog = new SolutionsDialog(message, solutions);
 
-			JOptionPane.showMessageDialog(null, message);
+			GUI.centerFrameToParent(solutionsDialog, framework.getMainWindow());
+
+			solutionsDialog.setVisible(true);
 		} else
 			JOptionPane.showMessageDialog(null, "The system is deadlock-free.");
 	}

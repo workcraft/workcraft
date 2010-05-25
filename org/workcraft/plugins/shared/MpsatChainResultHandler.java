@@ -6,6 +6,7 @@ package org.workcraft.plugins.shared;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.workcraft.Framework;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.MpsatChainResult;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -14,6 +15,12 @@ import org.workcraft.tasks.Result.Outcome;
 
 public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResult> {
 	private String errorMessage;
+	private final Framework framework;
+
+	public MpsatChainResultHandler(Framework framework) {
+		this.framework = framework;
+
+	}
 
 	@Override
 	public void finished(final Result<? extends MpsatChainResult> mpsatChainResult, String description) {
@@ -21,7 +28,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			final MpsatMode mpsatMode = mpsatChainResult.getReturnValue().getMpsatSettings().getMode();
 			switch (mpsatMode) {
 			case DEADLOCK:
-				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(mpsatChainResult));
+				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(framework, mpsatChainResult));
 				break;
 			default:
 				SwingUtilities.invokeLater(new Runnable() {

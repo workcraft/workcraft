@@ -36,7 +36,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 		if (dialog.getModalResult() == 1)
 		{
 			framework.getTaskManager().queue(new MpsatChainTask(model, dialog.getSettings(), framework), "MPSat tool chain",
-					new MpsatChainResultHandler());
+					new MpsatChainResultHandler(framework));
 		}
 	}
 }

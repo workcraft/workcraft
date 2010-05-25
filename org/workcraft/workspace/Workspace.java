@@ -61,6 +61,8 @@ public class Workspace {
 	private Map<Path<String>, File> permanentMounts;
 	private final Framework framework;
 
+	private final DependencyManager dependencyManager = new DependencyManager();
+
 	public WorkspaceTree getTree()
 	{
 		return new WorkspaceTree(this);
@@ -568,5 +570,14 @@ public class Workspace {
 
 	public Path<String> getPath(WorkspaceEntry entry) {
 		return openFiles.getKey(entry);
+	}
+
+	public void createAssociation(Path<String> dependentFile,
+			Path<String> masterFile) {
+		dependencyManager.createAssociation(dependentFile, masterFile);
+	}
+
+	public List<Path<String>> getAssociatedFiles(Path<String> masterFile) {
+		return dependencyManager.getAssociatedFiles(masterFile);
 	}
 }
