@@ -1,6 +1,10 @@
 package org.workcraft.plugins.desij;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -17,9 +21,11 @@ import org.workcraft.workspace.Workspace;
 public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult> {
 
 	private Framework framework;
+	private boolean logFileOutput;
 
-	public DecompositionResultHandler(Framework framework) {
+	public DecompositionResultHandler(Framework framework, boolean logFileOutput) {
 		this.framework = framework;
+		this.logFileOutput = logFileOutput;
 	}
 
 	@Override
@@ -29,31 +35,84 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 			final Workspace workspace = framework.getWorkspace();
 
 			DesiJResult desijResult = result.getReturnValue();
-			File[] componentSTGFiles = desijResult.getComponentFiles();
 
-			if (componentSTGFiles != null) {
+			// logfile output at console
+			if (this.logFileOutput)
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(desijResult.getLogFile()));
+					String currentLine;
+					while ((currentLine = br.readLine()) != null) {
+						System.out.println(currentLine);
+					}
+				} catch (FileNotFoundException e1) {
+					throw new RuntimeException(e1);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 
-				Path<String> componentsDirectoryPath = Path.fromString(
-						desijResult.getSpecificationModel().getTitle() + "-components");
+			// components output in workspace
+			if (desijResult.getComponentFiles() != null)  // independent from the compiler
+				if (desijResult.getComponentFiles().length > 0) {
+
+					Path<String> componentsDirectoryPath = Path.fromString(
+							desijResult.getSpecificationModel().getTitle() + "-components");
+
+					try {
+						workspace.delete(componentsDirectoryPath);
+					} catch (OperationCancelledException e) {
+						return;
+					}
+
+					File componentsDir = workspace.getFile(componentsDirectoryPath);
+					componentsDir.mkdirs();
+
+					for (File file : desijResult.getComponentFiles()) {
+						File target = new File(componentsDir, getComponentSuffix(file) + ".g");
+						file.renameTo(target);
+					}
+
+					// output of the petrify- or mpsat-equations
+					if (desijResult.getEquationFile() != null) { // synthesis successful
+						try {
+							BufferedReader br = new BufferedReader(new FileReader(desijResult.getEquationFile()));
+							String currentLine;
+							while ((currentLine = br.readLine()) != null) {
+								System.out.println(currentLine);
+							}
+						} catch (FileNotFoundException e1) {
+							throw new RuntimeException(e1);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
+
+					workspace.fireWorkspaceChanged();
+
+					// pop up MessageBox
+					final String successMessage = "Decomposition succeeded.";
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(null, successMessage);
+						}
+					});
+				}
+			if (desijResult.getModifiedSpecResult() != null) {
+				String resultPath = desijResult.getSpecificationModel().getTitle() + "_modifiedResult.g";
 
 				try {
-					workspace.delete(componentsDirectoryPath);
+					workspace.delete(Path.fromString(resultPath));
 				} catch (OperationCancelledException e) {
 					return;
 				}
 
-				File componentsDir = workspace.getFile(componentsDirectoryPath);
-				componentsDir.mkdirs();
+				File modifiedSpecification = workspace.getFile(Path.fromString(resultPath));
+				desijResult.getModifiedSpecResult().renameTo(modifiedSpecification);
 
-				for (File file : componentSTGFiles) {
-					File target = new File(componentsDir, getComponentSuffix(file) + ".g");
-					file.renameTo(target);
-				}
-
-				workspace.fireWorkspaceChanged();
+				workspace.fireWorkspaceChanged(); // update of workspace window
 
 				// pop up MessageBox
-				final String successMessage = "Decomposition succeeded!";
+				final String successMessage = "DesiJ operation succeeded.";
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {

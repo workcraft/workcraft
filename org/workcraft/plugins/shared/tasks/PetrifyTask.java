@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.shared.MpsatUtilitySettings;
+import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -34,9 +34,9 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 			this.monitor = monitor;
 
 			ArrayList<String> command = new ArrayList<String>();
-			command.add(MpsatUtilitySettings.getMpsatCommand());
+			command.add(PetrifyUtilitySettings.getPetrifyCommand());
 
-			for (String arg : MpsatUtilitySettings.getMpsatArgs().split(" "))
+			for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" "))
 				if (!arg.isEmpty())
 					command.add(arg);
 
@@ -45,19 +45,19 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 
 			command.add(inputFileName);
 
-			ExternalProcess mpsatProcess = new ExternalProcess(command.toArray(new String[command.size()]), ".");
+			ExternalProcess petrifyProcess = new ExternalProcess(command.toArray(new String[command.size()]), ".");
 
-			mpsatProcess.addListener(this);
+			petrifyProcess.addListener(this);
 
 			try {
-				mpsatProcess.start();
+				petrifyProcess.start();
 			} catch (IOException e) {
 				return new Result<ExternalProcessResult>(e);
 			}
 
 			while (true) {
-				if (monitor.isCancelRequested() && mpsatProcess.isRunning()) {
-					mpsatProcess.cancel();
+				if (monitor.isCancelRequested() && petrifyProcess.isRunning()) {
+					petrifyProcess.cancel();
 					userCancelled = true;
 				}
 				if (finished)
@@ -65,7 +65,7 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {
-					mpsatProcess.cancel();
+					petrifyProcess.cancel();
 					userCancelled = true;
 					break;
 				}
