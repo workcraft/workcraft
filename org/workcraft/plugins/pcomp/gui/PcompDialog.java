@@ -3,18 +3,22 @@ package org.workcraft.plugins.pcomp.gui;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
@@ -26,6 +30,10 @@ public class PcompDialog extends JDialog {
 	protected boolean result;
 	private Set<Path<String>> sourcePaths;
 	private JCheckBox showInEditor;
+
+	JRadioButton leaveOutputs;
+	JRadioButton internalize;
+	JRadioButton dummify;
 
 	public PcompDialog(Window owner, Framework framework) {
 		super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
@@ -41,6 +49,17 @@ public class PcompDialog extends JDialog {
 
 	public boolean showInEditor() {
 		return showInEditor.isSelected();
+	}
+
+	public PCompOutputMode getMode()
+	{
+		if(leaveOutputs.isSelected())
+			return PCompOutputMode.OUTPUT;
+		if(internalize.isSelected())
+			return PCompOutputMode.INTERNAL;
+		if(dummify.isSelected())
+			return PCompOutputMode.DUMMY;
+		throw new NotSupportedException("No button is selected. Cannot proceed.");
 	}
 
 	public boolean run() {
@@ -63,13 +82,26 @@ public class PcompDialog extends JDialog {
 
 		content.add(chooser, "0 0 0 1");
 
-		JPanel options = new JPanel(new FlowLayout());
+		JPanel options = new JPanel(new GridLayout(4, 1));
 		options.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Options"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 
 		showInEditor = new JCheckBox();
 		showInEditor.setText("Show result in editor");
 
-		options.add(showInEditor);
+		ButtonGroup dummifyGroup = new ButtonGroup();
+		leaveOutputs = new JRadioButton("Leave as outputs");
+		internalize = new JRadioButton("Make internal");
+		dummify = new JRadioButton("Make dummy");
+		leaveOutputs.setSelected(true);
+
+		dummifyGroup.add(leaveOutputs);
+		dummifyGroup.add(dummify);
+		dummifyGroup.add(internalize);
+
+		options.add(showInEditor, 0);
+		options.add(leaveOutputs, 1);
+		options.add(internalize, 2);
+		options.add(dummify, 3);
 
 		content.add(options, "1 0");
 
