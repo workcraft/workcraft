@@ -56,6 +56,14 @@ import org.workcraft.util.Export;
 
 public abstract class BalsaToStgExporter {
 
+	public static class Settings
+	{
+		public boolean eventBasedInternal;
+		public boolean improvedPcomp;
+	}
+
+	private Settings settings = new Settings();
+
 	private final HandshakeProtocol protocol;
 	private final String protocolName;
 
@@ -105,12 +113,13 @@ public abstract class BalsaToStgExporter {
 
 			if(tempFiles.size() > 0)
 			{
-				String [] args = new String [tempFiles.size() + 3];
+				String [] args = new String [tempFiles.size() + 4];
 				args[0] = PetriNetToolsSettings.getPcompCommand();
 				args[1] = "-d";
 				args[2] = "-r";
+				args[3] = "-p";
 				for(int i=0;i<tempFiles.size();i++)
-					args[i+3] = tempFiles.get(i).getPath();
+					args[i+4] = tempFiles.get(i).getPath();
 
 				SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
 
@@ -309,5 +318,13 @@ public abstract class BalsaToStgExporter {
 			return Exporter.BEST_COMPATIBILITY;
 		else
 			return Exporter.NOT_COMPATIBLE;
+	}
+
+	public void setSettings(Settings settings) {
+		this.settings = settings;
+	}
+
+	public Settings getSettings() {
+		return settings;
 	}
 }

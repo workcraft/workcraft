@@ -31,6 +31,13 @@ public class DynamicComponentStgBuilder extends ComponentStgBuilder<DynamicCompo
 
 	public void buildStg(DynamicComponent component,
 			Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
-		StgBuilderSelector.create(component.declaration().getName()).buildStg(component, handshakes, builder);
+		getBuilder(component).buildStg(component, handshakes, builder);
+	}
+	private ComponentStgBuilder<DynamicComponent> getBuilder(DynamicComponent component) {
+		return StgBuilderSelector.create(component.declaration().getName());
+	}
+	public void buildEnvironment(DynamicComponent component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
+	{
+		getBuilder(component).buildEnvironmentConstraint(component, handshakes, builder);
 	}
 }

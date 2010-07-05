@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.parsers.breeze.expressions.Expression;
+import org.workcraft.plugins.balsa.components.BinaryOperator;
+import org.workcraft.plugins.balsa.components.UnaryOperator;
 
 public interface ParameterType {
 	Class<?> getJavaType();
@@ -35,7 +37,10 @@ public interface ParameterType {
 	{
 		public static ParameterType string() { return StringParameter.INSTANCE; }
 		public static ParameterType cardinal() { return CardinalParameter.INSTANCE; }
+		public static ParameterType bool() { return BooleanParameter.INSTANCE; }
 		public static ParameterType named(String name) { return new NamedParameterType(name); }
+		public static ParameterType unaryOp() { return new EnumParameter<UnaryOperator>(UnaryOperator.class, UnaryOperator.nameToValue()); }
+		public static ParameterType binaryOp() { return new EnumParameter<BinaryOperator>(BinaryOperator.class, BinaryOperator.textToValue()); }
 	}
 }
 
@@ -67,6 +72,7 @@ class CardinalParameter implements ParameterType
 
 class BooleanParameter implements ParameterType
 {
+	public static final ParameterType INSTANCE = new BooleanParameter();
 	@Override public Class<?> getJavaType() {
 		return boolean.class;
 	}

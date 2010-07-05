@@ -7,7 +7,11 @@ import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 public class GenerateMainClasses
 {
-	public static int main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException
+	{
+		System.exit(_main(args));
+	}
+	public static int _main(String[] args) throws IOException
 	{
 		if(args.length < 1)
 		{

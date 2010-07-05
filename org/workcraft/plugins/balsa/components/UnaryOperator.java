@@ -21,7 +21,26 @@
 
 package org.workcraft.plugins.balsa.components;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum UnaryOperator {
-	NEGATE,
-	INVERT
+	NEGATE("Negate"),
+	INVERT("Invert");
+
+	private final String name;
+	UnaryOperator(String name)
+	{
+		this.name = name;
+	}
+	static Map<String, UnaryOperator> nameToValue = new HashMap<String, UnaryOperator>();
+	static
+	{
+		for(UnaryOperator op : EnumSet.allOf(UnaryOperator.class))
+			nameToValue.put(op.name, op);
+	}
+	public static Map<String, ? extends UnaryOperator> nameToValue() {
+		return nameToValue;
+	}
 }

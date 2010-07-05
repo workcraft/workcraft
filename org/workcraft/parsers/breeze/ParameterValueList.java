@@ -20,9 +20,21 @@
 */
 package org.workcraft.parsers.breeze;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public interface ParameterValueList
 {
 	public int size();
 	public String get(int index);
+
+	static class StringList extends ArrayList<String> implements ParameterValueList
+	{
+		public StringList(String... values)
+		{
+			super(Arrays.asList(values));
+		}
+		private static final long serialVersionUID = 1L;
+	}
 }

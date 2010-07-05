@@ -43,17 +43,25 @@ public class BreezeParser {
 
 	ParameterType stringType()
 	{
-		throw new org.workcraft.exceptions.NotImplementedException();
+		return ParameterType.Create.string();
 	}
 
 	ParameterType cardinalType()
 	{
-		throw new org.workcraft.exceptions.NotImplementedException();
+		return ParameterType.Create.cardinal();
 	}
 
 	ParameterType namedType(String name)
 	{
-		throw new org.workcraft.exceptions.NotImplementedException();
+		if("cardinal".equals(name))
+			return ParameterType.Create.cardinal();
+		if("boolean".equals(name))
+			return ParameterType.Create.bool();
+		if("UnaryOperator".equals(name))
+			return ParameterType.Create.unaryOp();
+		if("BinaryOperator".equals(name))
+			return ParameterType.Create.binaryOp();
+		throw new org.workcraft.exceptions.NotImplementedException(name+" is not implemented");
 	}
 	
 	Expression<Integer> namedDataType(String name)
@@ -514,6 +522,8 @@ PortDeclaration simpleDataPort(String name, boolean isActive) :
 	boolean isInput;
 }
 {
+
+
 	isInput = dataDirectionIsInput()
 	width = dataType()
 	{ return PortDeclaration.createData(name, isActive, isInput, width); }

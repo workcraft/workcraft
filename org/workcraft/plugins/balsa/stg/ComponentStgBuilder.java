@@ -41,7 +41,5 @@ public abstract class ComponentStgBuilder <T> {
 	}
 
 	public abstract void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder);
-	public void buildEnvironment(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
-	{
-	}
+	public void buildEnvironment(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {}
 }

@@ -114,7 +114,7 @@ public class CodeGenerator {
 		ArrayList<PrimitivePart> list = new ArrayList<PrimitivePart>();
 		for(PrimitivePart primitive : new BreezeLibrary(balsa).getPrimitives())
 		{
-			list.add(getSplitter(primitive).getControlDefinition());
+			list.add(primitive);//getSplitter(primitive).getControlDefinition());
 		}
 		return list;
 	}
@@ -301,8 +301,8 @@ public class CodeGenerator {
 		throw new NotSupportedException(type.getCanonicalName() + " is not a primitive type");
 	}
 
-	private TypeDeclaration generateStgInterfaceClass(PrimitivePart p) {
-		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getHandshakesClassName(p));
+	private TypeDeclaration generateStgInterfaceClass(PrimitivePart p, boolean environment) {
+		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getHandshakesClassName(p, environment));
 
 		ConstructorDeclaration ctor = MyAstHelper.addNewConstructor(c);
 		String componentArg = "component";
@@ -316,7 +316,7 @@ public class CodeGenerator {
 		for(PortDeclaration port : p.getPorts())
 		{
 			String portName = port.getName();
-			ClassOrInterfaceType singlePortType = getPortType(port);
+			ClassOrInterfaceType singlePortType = getPortType(port, environment);
 			ClassOrInterfaceType portType = singlePortType;
 			if(port.isArrayed())
 				portType = new ClassOrInterfaceType("java.util.List<"+portType.getName()+">");
@@ -351,7 +351,7 @@ public class CodeGenerator {
 		return count.accept(new ToJavaAstConverter(scope));
 	}
 
-	private ClassOrInterfaceType getPortType(PortDeclaration port) {
+	private ClassOrInterfaceType getPortType(PortDeclaration port, final boolean environment) {
 		String type;
 		Class<?> c;
 
@@ -362,7 +362,7 @@ public class CodeGenerator {
 					}
 
 					private Class<?> dataClass(boolean active, boolean input) {
-						if(active)
+						if(active ^ environment)
 							if(input)
 								return ActivePullStg.class;
 							else
@@ -383,7 +383,7 @@ public class CodeGenerator {
 					}
 
 					private Class<?> syncClass(PortDeclaration port) {
-						if(port.isActive())
+						if(port.isActive() ^ environment)
 							return ActiveSync.class;
 						else
 							return PassiveSync.class;
@@ -408,7 +408,8 @@ public class CodeGenerator {
 		c.setExtends(extendsList);
 
 		ASTHelper.addMember(c, generatePropertiesClass(p));
-		ASTHelper.addMember(c, generateStgInterfaceClass(p));
+		ASTHelper.addMember(c, generateStgInterfaceClass(p, true));
+		ASTHelper.addMember(c, generateStgInterfaceClass(p, false));
 
 		ASTHelper.addMember(c, generatePropertiesMethod(p));
 		ASTHelper.addMember(c, generateHandshakesMethod(p));
@@ -420,7 +421,7 @@ public class CodeGenerator {
 		"<"
 		+ getStgBuilderClassName(p) + "." + getPropertiesClassName(p) +
 		", "
-		+ getStgBuilderClassName(p) + "." + getHandshakesClassName(p) + ">";
+		+ getStgBuilderClassName(p) + "." + getHandshakesClassName(p, false) + ">";
 	}
 
 	private BodyDeclaration generatePropertiesMethod(PrimitivePart p) {
@@ -443,7 +444,7 @@ public class CodeGenerator {
 	private BodyDeclaration generateHandshakesMethod(PrimitivePart p) {
 		MethodDeclaration m = new MethodDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, new VoidType(), "makeHandshakes");
 		MyAstHelper.addMarkerAnnotation(m, "Override");
-		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getHandshakesClassName(p));
+		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getHandshakesClassName(p, false));
 		m.setType(returnClass);
 
 		String componentParameterName = "component";
@@ -461,8 +462,8 @@ public class CodeGenerator {
 		return Map.class.getCanonicalName() + "<" + String.class.getCanonicalName() + ", " + StgInterface.class.getCanonicalName() +">";
 	}
 
-	private String getHandshakesClassName(PrimitivePart p) {
-		return p.getName() + "Handshakes";
+	private String getHandshakesClassName(PrimitivePart p, boolean environment) {
+		return p.getName() + "Handshakes" + (environment?"Env":"");
 	}
 
 	private String getPropertiesClassName(PrimitivePart p) {
