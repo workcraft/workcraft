@@ -570,7 +570,7 @@ public class Framework {
 			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 			// TODO: get proper deserialiser for format
 
-			ModelDeserialiser mathDeserialiser = (ModelDeserialiser) pluginManager.getSingletonByName(XMLDeserialiser.class.getName());
+			ModelDeserialiser mathDeserialiser = pluginManager.getSingleton(XMLDeserialiser.class);
 
 			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
 
@@ -627,7 +627,7 @@ public class Framework {
 		ModelSerialiser mathSerialiser = null;
 
 		try {
-			mathSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
+			mathSerialiser = pluginManager.getSingleton(XMLSerialiser.class);
 
 
 			String mathEntryName = "model" + mathSerialiser.getExtension();

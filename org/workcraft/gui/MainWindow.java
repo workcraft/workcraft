@@ -355,7 +355,7 @@ public class MainWindow extends JFrame {
 				visualModel = ModelFactory.createVisualModel((MathModel)object);
 				we.setObject(visualModel);
 
-				DotLayout layout = (DotLayout)framework.getPluginManager().getSingletonByName("org.workcraft.plugins.layout.DotLayout");
+				DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
 				layout.run(visualModel, framework);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
@@ -950,9 +950,9 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void runTool (String className) {
+	public void runTool (Class<? extends Tool> toolClass) {
 		try {
-			Tool tool = (Tool)framework.getPluginManager().getSingletonByName(className);
+			Tool tool = (Tool)framework.getPluginManager().getSingleton(toolClass);
 
 			VisualModel model = editorInFocus.getModel();
 
@@ -962,11 +962,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void exportTo(String exporterClassName) throws OperationCancelledException {
+	public void exportTo(Class<? extends Exporter> exporterClass) throws OperationCancelledException {
 		Exporter exporter;
 
 		try {
-			exporter = (Exporter)framework.getPluginManager().getSingletonByName(exporterClassName);
+			exporter = framework.getPluginManager().getSingleton(exporterClass);
 		} catch (PluginInstantiationException e1) {
 			JOptionPane.showMessageDialog(this, e1.getMessage(), "Export failed", JOptionPane.ERROR_MESSAGE);
 			e1.printStackTrace();

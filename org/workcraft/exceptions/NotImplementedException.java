@@ -29,6 +29,11 @@ public class NotImplementedException extends RuntimeException {
 		super("The feature is not implemented yet");
 	}
 
+	public NotImplementedException(String message)
+	{
+		super(message);
+	}
+
 	private static final long serialVersionUID = -6828334836877473788L;
 
 }

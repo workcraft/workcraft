@@ -40,6 +40,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
@@ -51,21 +52,22 @@ import org.workcraft.util.Tools;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
-	class ToolAction extends ScriptedAction {
-		String className;
+	class ToolAction extends Action {
+		Class<? extends Tool> toolClass;
 		String text;
 
 		public ToolAction(Pair<String, Tool> tool) {
-			this.className = tool.getSecond().getClass().getCanonicalName();
+			this.toolClass = tool.getSecond().getClass();
 			this.text = tool.getFirst();
-		}
-
-		public String getScript() {
-			return "mainWindow.runTool(\""+className+"\")";
 		}
 
 		public String getText() {
 			return text;
+		}
+
+		@Override
+		public void run(Framework framework) {
+			framework.getMainWindow().runTool(toolClass);
 		}
 	}
 	class ToggleWindowAction extends ScriptedAction {
@@ -83,23 +85,23 @@ public class MainMenu extends JMenuBar {
 			return windowTitle;
 		}
 	}
-	class ExportAction extends ScriptedAction {
-		private String exporterClassName;
+	class ExportAction extends Action {
+		private Class<? extends Exporter> exporterClass;
 		private String displayName;
 
 		public ExportAction(Exporter exporter) {
-			exporterClassName = exporter.getClass().getName();
+			exporterClass = exporter.getClass();
 			displayName = exporter.getDescription();
 		}
 
-		public String getScript() {
-			return tryOperation("mainWindow.exportTo(\""+exporterClassName+"\");");
+		@Override
+		public void run(Framework framework) {
+			try {framework.getMainWindow().exportTo(exporterClass);} catch (OperationCancelledException e) {}
 		}
 
 		public String getText() {
 			return displayName;
 		}
-
 	}
 
 	private JMenu mnFile, mnEdit, mnView, mnSettings, mnHelp, mnWindows;
