@@ -63,7 +63,13 @@ public class PrimitivePart implements BreezeDefinition {
 		MapParameterScope result = new MapParameterScope();
 
 		if(parameters.size() != parameterValues.size())
-			throw new RuntimeException("Incorrect number of parameter values for component " + getName() + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
+		{
+			StringBuilder messageBuilder = new StringBuilder("Incorrect number of parameter values for component " + getName() + " (expected " + parameters.size() + ", got " + parameterValues.size() + ")");
+			messageBuilder.append("\nExpected parameters are:\n");
+			for(ParameterDeclaration parameter : parameters)
+				messageBuilder.append(parameter.toString()+"\n");
+			throw new RuntimeException(messageBuilder.toString());
+		}
 
 		for(int i=0;i<parameters.size();i++)
 		{

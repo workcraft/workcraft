@@ -244,7 +244,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 
 	private static void mpsatMakeEqn(TaskManager taskManager, File cscResolvedMci, File synthesised) throws IOException
 	{
-		MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
+		MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
 
 		Result<ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), cscResolvedMci.getAbsolutePath()), "MPSat Complex gate synthesis");
 

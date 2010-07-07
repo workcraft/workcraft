@@ -113,15 +113,15 @@ public abstract class BalsaToStgExporter {
 
 			if(tempFiles.size() > 0)
 			{
-				String [] args = new String [tempFiles.size() + 4];
-				args[0] = PetriNetToolsSettings.getPcompCommand();
-				args[1] = "-d";
-				args[2] = "-r";
-				args[3] = "-p";
+				List<String>  args = new ArrayList<String> ();
+				args.add(PetriNetToolsSettings.getPcompCommand());
+				args.add("-d");
+				args.add("-r");
+				if(settings.improvedPcomp) args.add("-p");
 				for(int i=0;i<tempFiles.size();i++)
-					args[i+4] = tempFiles.get(i).getPath();
+					args.add(tempFiles.get(i).getPath());
 
-				SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args, ".");
+				SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args.toArray(new String[0]), ".");
 
 				pcomp.start(10000);
 

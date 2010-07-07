@@ -42,7 +42,7 @@ public class VariableArrayType implements Expression<Integer[]> {
 		Integer[] result = new Integer[readPortCount.evaluate(parameters)];
 
 		if (specification.evaluate(parameters).length() != 0 )
-			throw new RuntimeException ("Not implemented");
+			throw new RuntimeException ("Specification is not supported");
 
 		for (int i=0; i < result.length; i++)
 			result[i] = getWidth().evaluate(parameters);

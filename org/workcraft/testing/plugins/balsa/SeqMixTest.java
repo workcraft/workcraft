@@ -49,15 +49,15 @@ public class SeqMixTest {
 		PrimitivePart call = lib.getPrimitive("Call");
 		PrimitivePart passivate = lib.getPrimitive("Passivator");
 		//ParameterValueList params = new ParameterValueList.StringList();
-		BreezeInstance<BreezeHandshake> loopInst = loop.instantiate(factory,  EmptyValueList.instance());
-		BreezeInstance<BreezeHandshake> seqInst = seq.instantiate(factory,  new ParameterValueList.StringList("3", "3"));
-		BreezeInstance<BreezeHandshake> concurInst = concur.instantiate(factory,  new ParameterValueList.StringList("2"));
-		BreezeInstance<BreezeHandshake> mix1 = call.instantiate(factory,  new ParameterValueList.StringList("2"));
-		BreezeInstance<BreezeHandshake> mix2 = call.instantiate(factory,  new ParameterValueList.StringList("2"));
-		BreezeInstance<BreezeHandshake> passivate1 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
-		BreezeInstance<BreezeHandshake> passivate2 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
+		//BreezeInstance<BreezeHandshake> loopInst = loop.instantiate(factory,  EmptyValueList.instance());
+		//BreezeInstance<BreezeHandshake> seqInst = seq.instantiate(factory,  new ParameterValueList.StringList("3", "3"));
+		//BreezeInstance<BreezeHandshake> concurInst = concur.instantiate(factory,  new ParameterValueList.StringList("2"));
+		//BreezeInstance<BreezeHandshake> mix1 = call.instantiate(factory,  new ParameterValueList.StringList("2"));
+		//BreezeInstance<BreezeHandshake> mix2 = call.instantiate(factory,  new ParameterValueList.StringList("2"));
+		//BreezeInstance<BreezeHandshake> passivate1 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
+		//BreezeInstance<BreezeHandshake> passivate2 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
 
-		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "/home/dell/export_unconnected.g");
+		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "/home/dell/export_unconnected_mixer.g");
 
 		Export.exportToFile(synthesiser, circuit, "/home/dell/export_unconnected.eqn");
 	}
@@ -94,9 +94,91 @@ public class SeqMixTest {
 
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
 		exporter.getSettings().eventBasedInternal = false;
-		exporter.getSettings().improvedPcomp = true;
-		Export.exportToFile(exporter, circuit, "/home/dell/export.g");
+		exporter.getSettings().improvedPcomp = false;
+		Export.exportToFile(exporter, circuit, "/home/dell/export_standard.g");
 
 		Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
+	}
+
+	static class Generator
+	{
+		BalsaCircuit circuit = new BalsaCircuit();
+		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
+
+		BreezeLibrary lib;
+		PrimitivePart seq;
+		PrimitivePart loop;
+		PrimitivePart concur;
+		PrimitivePart call;
+		PrimitivePart sync;
+		PrimitivePart passivate;
+
+		Generator() throws IOException
+		{
+			circuit = new BalsaCircuit();
+			factory = new DefaultBreezeFactory(circuit);
+
+			lib = new BreezeLibrary(BalsaSystem.DEFAULT());
+			seq = lib.getPrimitive("SequenceOptimised");
+			loop = lib.getPrimitive("Loop");
+			concur = lib.getPrimitive("Concur");
+			call = lib.getPrimitive("Call");
+			passivate = lib.getPrimitive("Passivator");
+			sync = lib.getPrimitive("Synch");
+		}
+
+		void build(int depth, BreezeHandshake top, BreezeHandshake bottom) throws InvalidConnectionException
+		{
+			if(depth == 0)
+			{
+				if(top != null && bottom != null)
+					circuit.connect(top, bottom);
+			}
+			else
+			{
+
+				BreezeInstance<BreezeHandshake> topPart;
+				BreezeInstance<BreezeHandshake> bottomPart;
+				if((depth & 1) == 1)
+				{
+					topPart = concur.instantiate(factory,  new ParameterValueList.StringList("2"));
+					bottomPart = sync.instantiate(factory,  new ParameterValueList.StringList("2"));
+				}
+				else
+				{
+					topPart = seq.instantiate(factory,  new ParameterValueList.StringList("2", "2"));
+					bottomPart = call.instantiate(factory,  new ParameterValueList.StringList("2"));
+				}
+
+				if(top != null)
+					circuit.connect(top, topPart.ports().get(0));
+
+				build(depth-1, topPart.ports().get(1), bottomPart.ports().get(0));
+				build(depth-1, topPart.ports().get(2), bottomPart.ports().get(1));
+
+				if(bottom != null)
+					circuit.connect(bottom, bottomPart.ports().get(2));
+			}
+		}
+
+		public BalsaCircuit build(int depth) throws InvalidConnectionException {
+			build(depth, null, null);
+			return circuit;
+		}
+	}
+
+	@Test
+	public void recursiveTest() throws Exception
+	{
+		for(int k = 0;k < 2;k++)
+		for(int depth = 1;depth < 10;depth++)
+		{
+			BalsaCircuit circuit = new Generator().build(depth);
+
+			BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
+			exporter.getSettings().eventBasedInternal = false;
+			exporter.getSettings().improvedPcomp = 1==(k&1);
+			Export.exportToFile(exporter, circuit, "/home/dell/SeqMixParSync_"+(k==0?"std":"opt")+"_"+depth+".g");
+		}
 	}
 }

@@ -363,12 +363,12 @@ public class CodeGenerator {
 
 					private Class<?> dataClass(boolean active, boolean input) {
 						if(active ^ environment)
-							if(input)
+							if(input ^ environment)
 								return ActivePullStg.class;
 							else
 								return ActivePushStg.class;
 						else
-							if(input)
+							if(input ^ environment)
 								return PassivePushStg.class;
 							else
 								return PassivePullStg.class;

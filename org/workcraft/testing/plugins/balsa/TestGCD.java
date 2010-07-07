@@ -45,16 +45,23 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import junit.framework.Assert;
+
+import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.interop.Exporter;
+import org.workcraft.parsers.breeze.BreezeInstance;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
 import org.workcraft.parsers.breeze.Netlist;
+import org.workcraft.parsers.breeze.ParameterValueList;
+import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
@@ -73,6 +80,7 @@ import org.workcraft.plugins.balsa.io.BalsaExportConfig;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
+import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
@@ -80,15 +88,6 @@ import org.workcraft.util.Hierarchy;
 
 public class TestGCD {
 	BalsaCircuit circuit;
-
-	private BreezeComponent addComponent(Component component)
-	{
-		BreezeComponent comp = new BreezeComponent();
-		//comp.setUnderlyingComponent(component);
-		circuit.add(comp);
-		return comp;
-	}
-
 	Queue<Chunk> queue = new ArrayBlockingQueue<Chunk>(50000);
 
 	//@Test
@@ -299,11 +298,25 @@ public class TestGCD {
 		System.out.println("Total cost of separate components: " + totalCost);
 	}
 
-	public void synthesiseSample() throws IOException, FormatException, PluginInstantiationException
+	@Test
+	public void synthesiseSample() throws IOException, FormatException, PluginInstantiationException, ModelValidationException, SerialisationException
 	{
+		Framework f;
+		Exporter synthesiser;
+
+			f = new Framework();
+			f.initPlugins();
+			synthesiser = f.getPluginManager().getSingleton(SynthesisWithMpsat.class);
+
 		init();
 
-		synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
+		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
+		exporter.getSettings().eventBasedInternal = false;
+		exporter.getSettings().improvedPcomp = false;
+		Export.exportToFile(exporter, circuit, "/home/dell/export_gcd.g");
+
+		//Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
+		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchBmA, casE})));
 
 		//synthesize(new Chunk(getAllComponents()));
@@ -332,7 +345,6 @@ public class TestGCD {
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{seq, concur, fetchA, fetchB, whilE})));
 	}
 
-	//@Test
 	public void FindBestSplit() throws IOException, ModelValidationException, SerialisationException, FormatException, PluginInstantiationException
 	{
 		init();
@@ -353,23 +365,23 @@ public class TestGCD {
 		System.out.println("");
 	}
 
-	BreezeComponent seq;
-	BreezeComponent bfGreater;
-	BreezeComponent whilE;
-	BreezeComponent casE;
-	BreezeComponent concur;
-	BreezeComponent fetchA;
-	BreezeComponent fetchB;
-	BreezeComponent fetchAmB;
-	BreezeComponent fetchBmA;
-	BreezeComponent fetchGT;
-	BreezeComponent varB;
-	BreezeComponent varA;
-	BreezeComponent muxB;
-	BreezeComponent muxA;
-	BreezeComponent bfNotEquals;
-	BreezeComponent bfAmB;
-	BreezeComponent bfBmA;
+	BreezeInstance<BreezeHandshake> seq;
+	BreezeInstance<BreezeHandshake> bfGreater;
+	BreezeInstance<BreezeHandshake> whilE;
+	BreezeInstance<BreezeHandshake> casE;
+	BreezeInstance<BreezeHandshake> concur;
+	BreezeInstance<BreezeHandshake> fetchA;
+	BreezeInstance<BreezeHandshake> fetchB;
+	BreezeInstance<BreezeHandshake> fetchAmB;
+	BreezeInstance<BreezeHandshake> fetchBmA;
+	BreezeInstance<BreezeHandshake> fetchGT;
+	BreezeInstance<BreezeHandshake> varB;
+	BreezeInstance<BreezeHandshake> varA;
+	BreezeInstance<BreezeHandshake> muxB;
+	BreezeInstance<BreezeHandshake> muxA;
+	BreezeInstance<BreezeHandshake> bfNotEquals;
+	BreezeInstance<BreezeHandshake> bfAmB;
+	BreezeInstance<BreezeHandshake> bfBmA;
 
 	private void init() throws IOException, FormatException,
 			PluginInstantiationException {
@@ -380,29 +392,39 @@ public class TestGCD {
 		circuit = new BalsaCircuit();
 
 		BreezeLibrary lib = new BreezeLibrary(BalsaSystem.DEFAULT());
-		DefaultBreezeFactory bf = new DefaultBreezeFactory(circuit);
-		lib.getPrimitive("SequenceOptimised").instantiate(lib, bf, new EmptyValueList());
 
-		seq = addComponent(new SequenceOptimised() { { setOutputCount(2); } });
-		concur = addComponent(new Concur() { { setOutputCount(2); } });
-		fetchA = addComponent(new Fetch() { { setWidth(8); } });
-		fetchB = addComponent(new Fetch() { { setWidth(8); } });
-		fetchAmB = addComponent(new Fetch() { { setWidth(8); } });
-		fetchBmA = addComponent(new Fetch() { { setWidth(8); } });
-		fetchGT = addComponent(new Fetch() { { setWidth(1); } });
-		varA = addComponent(new Variable() { { setWidth(8); setName("A"); setReadPortCount(5); } });
-		varB = addComponent(new Variable() { { setWidth(8); setName("B"); setReadPortCount(4); } });
-		muxB = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
-		muxA = addComponent(new CallMux() { { setWidth(8); setInputCount(2); } });
-		bfNotEquals = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.NOT_EQUALS); } });
-		bfAmB = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
-		bfBmA = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(8); setOp(BinaryOperator.SUBTRACT); } });
-		bfGreater = addComponent(new BinaryFunc() { { setInputAWidth(8); setInputBWidth(8); setOutputWidth(1); setOp(BinaryOperator.SUBTRACT); } }); // Should be GREATER_THAN. Used SUBTRACT to make it transfer data on the data-path.
-		whilE = addComponent(new While());
-		casE = addComponent(new Case() {{ setInputWidth(1); setOutputCount(2); setSpecification("хз"); }});
+		PrimitivePart seq = lib.getPrimitive("SequenceOptimised");
+		PrimitivePart concur = lib.getPrimitive("Concur");
+		PrimitivePart fetch = lib.getPrimitive("Fetch");
+		PrimitivePart variable = lib.getPrimitive("Variable");
+		PrimitivePart callMux = lib.getPrimitive("CallMux");
+		PrimitivePart binaryFunc = lib.getPrimitive("BinaryFunc");
+		PrimitivePart _while = lib.getPrimitive("While");
+		PrimitivePart _case = lib.getPrimitive("Case");
 
-		registerName("seq", seq);
-		registerName("concur", concur);
+		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
+
+
+		this.seq = seq.instantiate(factory, new ParameterValueList.StringList("2", "2"));
+		this.concur = concur.instantiate(factory, new ParameterValueList.StringList("2"));
+		this.fetchA = fetch.instantiate(factory, new ParameterValueList.StringList("8","false"));
+		this.fetchB = fetch.instantiate(factory, new ParameterValueList.StringList("8","false"));
+		this.fetchAmB = fetch.instantiate(factory, new ParameterValueList.StringList("8","false"));
+		this.fetchBmA = fetch.instantiate(factory, new ParameterValueList.StringList("8","false"));
+		this.fetchGT = fetch.instantiate(factory, new ParameterValueList.StringList("1","false"));
+		this.varA = variable.instantiate(factory, new ParameterValueList.StringList("8", "5", "A", ""));
+		this.varB = variable.instantiate(factory, new ParameterValueList.StringList("8", "4", "B", ""));
+		this.muxB = callMux.instantiate(factory, new ParameterValueList.StringList("8","2"));
+		this.muxA = callMux.instantiate(factory, new ParameterValueList.StringList("8","2"));
+		this.bfNotEquals = binaryFunc.instantiate(factory, new ParameterValueList.StringList("1","8","8","NotEquals","false","false","false"));
+		this.bfAmB = binaryFunc.instantiate(factory, new ParameterValueList.StringList("8","8","8","Subtract","false","false","false"));
+		this.bfBmA = binaryFunc.instantiate(factory, new ParameterValueList.StringList("8","8","8","Subtract","false","false","false"));
+		this.bfGreater = binaryFunc.instantiate(factory, new ParameterValueList.StringList("1","8","8","GreaterThan","false","false","false")); // Should be GREATER_THAN. Used SUBTRACT to make it transfer data on the data-path.
+		this.whilE = _while.instantiate(factory, new EmptyValueList());
+		this.casE = _case.instantiate(factory, new ParameterValueList.StringList("1","2","хз"));
+
+		registerName("seq", this.seq);
+		registerName("concur", this.concur);
 		registerName("fetchA", fetchA);
 		registerName("fetchB", fetchB);
 		registerName("fetchAmB", fetchAmB);
@@ -419,10 +441,10 @@ public class TestGCD {
 		registerName("whilE", whilE);
 		registerName("casE", casE);
 
-		connect(seq, "activateOut0", concur, "activate");
-		connect(seq, "activateOut1", whilE, "activate");
-		connect(concur, "activateOut0", fetchA, "activate");
-		connect(concur, "activateOut1", fetchB, "activate");
+		connect(this.seq, "activateOut0", this.concur, "activate");
+		connect(this.seq, "activateOut1", whilE, "activate");
+		connect(this.concur, "activateOut0", fetchA, "activate");
+		connect(this.concur, "activateOut1", fetchB, "activate");
 		connect(fetchA, "out", muxA, "inp0");
 		connect(fetchB, "out", muxB, "inp0");
 		connect(muxA, "out", varA, "write");
@@ -452,9 +474,9 @@ public class TestGCD {
 		connect(fetchBmA, "out", muxB, "inp1");
 	}
 
-	Map<BreezeComponent, String> componentNames = new HashMap<BreezeComponent, String>();
+	Map<BreezeInstance<BreezeHandshake> , String> componentNames = new HashMap<BreezeInstance<BreezeHandshake> , String>();
 
-	private void registerName(String name, BreezeComponent component) {
+	private void registerName(String name, BreezeInstance<BreezeHandshake> component) {
 		componentNames.put(component, name);
 	}
 
@@ -696,8 +718,8 @@ public class TestGCD {
 		}
 	}
 
-	private void connect(BreezeComponent comp1, String hc1,
-			BreezeComponent comp2, String hc2) {
+	private void connect(BreezeInstance<BreezeHandshake> comp1, String hc1,
+			BreezeInstance<BreezeHandshake> comp2, String hc2) {
 		try {
 			circuit.connect(getHc(comp1, hc1), getHc(comp2, hc2));
 		} catch (InvalidConnectionException e) {
@@ -705,10 +727,12 @@ public class TestGCD {
 		}
 	}
 
-	private BreezeHandshake getHc(BreezeComponent comp, String hc) {
-		BreezeHandshake hcc = comp.getHandshakeComponentByName(hc);
-		assertTrue("Handshake "+ hc +" not found in component " + comp.getUnderlyingComponent().getClass().toString(), hcc != null);
-
-		return hcc;
+	private BreezeHandshake getHc(BreezeInstance<BreezeHandshake> comp, String hc) {
+		for(BreezeHandshake hs : comp.ports())
+		{
+			if(hs.getHandshakeName().equals(hc))
+				return hs;
+		}
+		throw new RuntimeException("cannot find " + hc);
 	}
 }

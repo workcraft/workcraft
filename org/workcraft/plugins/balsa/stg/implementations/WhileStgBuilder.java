@@ -6,8 +6,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 public final class WhileStgBuilder extends WhileStgBuilderBase {
 
 	@Override
-	public void buildStg(While component, WhileHandshakes h,
-			StrictPetriBuilder b) {
+	public void buildStg(While component, WhileHandshakes h, StrictPetriBuilder b) {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }
