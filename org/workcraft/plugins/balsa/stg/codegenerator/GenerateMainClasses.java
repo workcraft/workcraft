@@ -24,6 +24,7 @@ public class GenerateMainClasses
 			return 1;
 		}
 		new CodeGenerator().generateBaseClasses(new File(args[0]), args.length == 2 ? new BalsaSystem(new File(args[1])): new BalsaSystem());
+		System.out.println("Generated!");
 		return 0;
 	}
 }

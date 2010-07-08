@@ -25,4 +25,5 @@ public interface PortVisitor<T> {
 	T visit(ArrayedSyncPortDeclaration port);
 	T visit(SyncPortDeclaration port);
 	T visit(DataPortDeclaration port);
+	T visit(BooleanPortDeclaration port);
 }

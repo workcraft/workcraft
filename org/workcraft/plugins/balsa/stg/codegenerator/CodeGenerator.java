@@ -68,15 +68,20 @@ import org.workcraft.parsers.breeze.ParameterScope;
 import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
+import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
 import org.workcraft.parsers.breeze.dom.DataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortVisitor;
 import org.workcraft.parsers.breeze.dom.SyncPortDeclaration;
 import org.workcraft.parsers.breeze.expressions.visitors.ToJavaAstConverter;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPullStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveSync;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveFullDataPullStg;
+import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveFullDataPushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassivePushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.PassiveSync;
@@ -114,13 +119,9 @@ public class CodeGenerator {
 		ArrayList<PrimitivePart> list = new ArrayList<PrimitivePart>();
 		for(PrimitivePart primitive : new BreezeLibrary(balsa).getPrimitives())
 		{
-			list.add(primitive);//getSplitter(primitive).getControlDefinition());
+			list.add(DataPathSplitters.getControl(primitive));
 		}
 		return list;
-	}
-
-	private static PrimitiveDataPathSplitter getSplitter(PrimitivePart primitive) {
-		return DataPathSplitters.getSplitter(primitive.getName());
 	}
 
 	String[] BASE_CLASSES_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "generated"};
@@ -391,6 +392,24 @@ public class CodeGenerator {
 
 					@Override public Class<?> visit(DataPortDeclaration port) {
 						return dataClass(port.isActive(), port.isInput());
+					}
+
+					@Override
+					public Class<?> visit(BooleanPortDeclaration port) {
+						return fullDataClass(port.isActive(), port.isInput());
+					}
+
+					private Class<?> fullDataClass(boolean active, boolean input) {
+						if(active ^ environment)
+							if(input ^ environment)
+								return ActiveFullDataPullStg.class;
+							else
+								return ActiveFullDataPushStg.class;
+						else
+							if(input ^ environment)
+								return PassiveFullDataPushStg.class;
+							else
+								return PassiveFullDataPullStg.class;
 					}
 
 				});

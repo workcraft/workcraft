@@ -2,6 +2,8 @@ package org.workcraft.testing.plugins.balsa;
 
 import java.io.IOException;
 
+import net.strongdesign.desij.DesiJ;
+
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.InvalidConnectionException;

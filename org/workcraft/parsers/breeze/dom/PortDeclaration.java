@@ -58,6 +58,10 @@ public abstract class PortDeclaration
 			@Override public Expression<Integer> visit(DataPortDeclaration port) {
 				return new Constant<Integer>(1);
 			}
+
+			@Override public Expression<Integer> visit(BooleanPortDeclaration port) {
+				return new Constant<Integer>(1);
+			}
 		}
 		);
 	}
@@ -80,6 +84,10 @@ public abstract class PortDeclaration
 					}
 
 					@Override public Boolean visit(DataPortDeclaration port) {
+						return false;
+					}
+
+					@Override public Boolean visit(BooleanPortDeclaration port) {
 						return false;
 					}
 				}

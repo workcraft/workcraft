@@ -26,6 +26,7 @@ import java.util.Stack;
 
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
+import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
 import org.workcraft.parsers.breeze.dom.BreezeDocument;
 import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.dom.ChannelDeclaration;
@@ -244,6 +245,11 @@ public class Writer
 						literal(portType);
 						quoted(port.getName());
 						literal(port.isActive() ? "active" : "passive");
+					}
+
+					@Override
+					public Object visit(BooleanPortDeclaration port) {
+						throw new org.workcraft.exceptions.NotImplementedException();
 					}
 				}
 		);
