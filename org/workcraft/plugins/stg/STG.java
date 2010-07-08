@@ -187,6 +187,12 @@ public class STG extends AbstractMathModel implements STGModel {
 		referenceManager.setInstanceNumber(st, number);
 	}
 
+	public String makeReference (Pair<String, Integer> label) {
+		String name = label.getFirst();
+		Integer instance = label.getSecond();
+		return name+"/"+((instance==null)?0:instance);
+	}
+
 	public String makeReference (Triple<String, Direction, Integer> label) {
 		String name = label.getFirst();
 		Integer instance = label.getThird();

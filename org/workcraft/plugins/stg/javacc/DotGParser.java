@@ -49,10 +49,17 @@ public class DotGParser implements DotGParserConstants {
 
         private Node getOrCreate (Pair<String, Integer> ref)
         {
+<<<<<<< TREE
                 Integer instance = ref.getSecond();
+=======
+                String reference = stg.makeReference(ref);
+>>>>>>> MERGE-SOURCE
                 String name = ref.getFirst();
+<<<<<<< TREE
                 String reference = name+"/"+((instance==null)?0:instance);
 
+=======
+>>>>>>> MERGE-SOURCE
                 try {
                         return stg.getNodeByReference (reference);
                 } catch (NotFoundException e) {
@@ -89,6 +96,10 @@ public class DotGParser implements DotGParserConstants {
         }
 
         private void createArc (Node first, Node second) {
+<<<<<<< TREE
+=======
+
+>>>>>>> MERGE-SOURCE
                 try {
                         ConnectionResult result = stg.connect(first, second);
                         STGPlace implicitPlace = result.getImplicitPlace();
@@ -117,10 +128,22 @@ public class DotGParser implements DotGParserConstants {
         }
 
   final public STG parse() throws ParseException {
+<<<<<<< TREE
+=======
+    if (jj_2_1(3)) {
+      jj_consume_token(LINEBREAK);
+    } else {
+      ;
+    }
+>>>>>>> MERGE-SOURCE
           init();
     label_1:
     while (true) {
+<<<<<<< TREE
       if (jj_2_1(3)) {
+=======
+      if (jj_2_2(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_1;
@@ -131,7 +154,11 @@ public class DotGParser implements DotGParserConstants {
     graph();
     label_2:
     while (true) {
+<<<<<<< TREE
       if (jj_2_2(3)) {
+=======
+      if (jj_2_3(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_2;
@@ -146,32 +173,60 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
                   List<String> list;
+<<<<<<< TREE
     if (jj_2_3(3)) {
+=======
+    if (jj_2_4(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(LINEBREAK);
     } else {
       ;
     }
+<<<<<<< TREE
     if (jj_2_5(3)) {
+=======
+    if (jj_2_6(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(INPUT_HEADER);
       list = signalList();
                                                      setSignalsType (list, Type.INPUT);
+<<<<<<< TREE
     } else if (jj_2_6(3)) {
+=======
+    } else if (jj_2_7(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(OUTPUT_HEADER);
       list = signalList();
                                                        setSignalsType (list, Type.OUTPUT);
+<<<<<<< TREE
     } else if (jj_2_7(3)) {
+=======
+    } else if (jj_2_8(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(INTERNAL_HEADER);
       list = signalList();
                                                          setSignalsType (list, Type.INTERNAL);
+<<<<<<< TREE
     } else if (jj_2_8(3)) {
+=======
+    } else if (jj_2_9(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(DUMMY_HEADER);
       list = signalList();
                                                       setSignalsType (list, Type.DUMMY);
+<<<<<<< TREE
     } else if (jj_2_9(3)) {
+=======
+    } else if (jj_2_10(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(UNSUPPORTED_HEADER);
       label_3:
       while (true) {
+<<<<<<< TREE
         if (jj_2_4(3)) {
+=======
+        if (jj_2_5(3)) {
+>>>>>>> MERGE-SOURCE
           ;
         } else {
           break label_3;
@@ -188,7 +243,11 @@ public class DotGParser implements DotGParserConstants {
                               Token t; List<String> list = new LinkedList<String>();
     label_4:
     while (true) {
+<<<<<<< TREE
       if (jj_2_10(3)) {
+=======
+      if (jj_2_11(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_4;
@@ -201,17 +260,33 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public void footer() throws ParseException {
+<<<<<<< TREE
     if (jj_2_12(3)) {
+=======
+    if (jj_2_13(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(MARKING);
       marking();
+<<<<<<< TREE
     } else if (jj_2_13(3)) {
+=======
+    } else if (jj_2_14(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(CAPACITY);
       capacity();
+<<<<<<< TREE
     } else if (jj_2_14(3)) {
+=======
+    } else if (jj_2_15(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(UNSUPPORTED_HEADER);
       label_5:
       while (true) {
+<<<<<<< TREE
         if (jj_2_11(3)) {
+=======
+        if (jj_2_12(3)) {
+>>>>>>> MERGE-SOURCE
           ;
         } else {
           break label_5;
@@ -227,7 +302,11 @@ public class DotGParser implements DotGParserConstants {
   final public void capacity() throws ParseException {
     label_6:
     while (true) {
+<<<<<<< TREE
       if (jj_2_15(3)) {
+=======
+      if (jj_2_16(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_6;
@@ -238,9 +317,17 @@ public class DotGParser implements DotGParserConstants {
 
   final public void capacityEntry() throws ParseException {
                          STGPlace p; int value;
+<<<<<<< TREE
     if (jj_2_16(3)) {
+=======
+    if (jj_2_17(3)) {
+>>>>>>> MERGE-SOURCE
       p = implicitPlaceReference();
+<<<<<<< TREE
     } else if (jj_2_17(3)) {
+=======
+    } else if (jj_2_18(3)) {
+>>>>>>> MERGE-SOURCE
       p = explicitPlaceReference();
     } else {
       jj_consume_token(-1);
@@ -254,7 +341,11 @@ public class DotGParser implements DotGParserConstants {
     jj_consume_token(16);
     label_7:
     while (true) {
+<<<<<<< TREE
       if (jj_2_18(3)) {
+=======
+      if (jj_2_19(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_7;
@@ -274,15 +365,27 @@ public class DotGParser implements DotGParserConstants {
 
   final public void markingEntry() throws ParseException {
                         STGPlace p; int value = 1;
+<<<<<<< TREE
     if (jj_2_19(3)) {
+=======
+    if (jj_2_20(3)) {
+>>>>>>> MERGE-SOURCE
       p = implicitPlaceReference();
+<<<<<<< TREE
     } else if (jj_2_20(3)) {
+=======
+    } else if (jj_2_21(3)) {
+>>>>>>> MERGE-SOURCE
       p = explicitPlaceReference();
     } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
+<<<<<<< TREE
     if (jj_2_21(3)) {
+=======
+    if (jj_2_22(3)) {
+>>>>>>> MERGE-SOURCE
       value = assignment();
     } else {
       ;
@@ -320,7 +423,11 @@ public class DotGParser implements DotGParserConstants {
     while (true) {
       graphLine();
       jj_consume_token(LINEBREAK);
+<<<<<<< TREE
       if (jj_2_22(3)) {
+=======
+      if (jj_2_23(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_8;
@@ -337,7 +444,11 @@ public class DotGParser implements DotGParserConstants {
                      name = t.image;
     t = jj_consume_token(DIRECTION);
                           direction = Direction.fromString(t.image);
+<<<<<<< TREE
     if (jj_2_23(3)) {
+=======
+    if (jj_2_24(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(21);
       t = jj_consume_token(INTEGER);
                                         instance = Integer.parseInt(t.image);
@@ -354,7 +465,11 @@ public class DotGParser implements DotGParserConstants {
         Integer instance = null;
     t = jj_consume_token(NAME);
                      name = t.image;
+<<<<<<< TREE
     if (jj_2_24(3)) {
+=======
+    if (jj_2_25(3)) {
+>>>>>>> MERGE-SOURCE
       jj_consume_token(21);
       t = jj_consume_token(INTEGER);
                                instance = Integer.parseInt(t.image);
@@ -369,10 +484,18 @@ public class DotGParser implements DotGParserConstants {
         Triple<String, Direction, Integer> r;
         Pair<String, Integer> r2;
         Node t;
+<<<<<<< TREE
     if (jj_2_25(3)) {
+=======
+    if (jj_2_26(3)) {
+>>>>>>> MERGE-SOURCE
       r = signalTransition();
                                    t = getOrCreate(r);
+<<<<<<< TREE
     } else if (jj_2_26(3)) {
+=======
+    } else if (jj_2_27(3)) {
+>>>>>>> MERGE-SOURCE
       r2 = dummyTransition();
                                    t = getOrCreate(r2);
     } else {
@@ -386,9 +509,17 @@ public class DotGParser implements DotGParserConstants {
   final public void graphLine() throws ParseException {
         Token t;
         Node from, to;
+<<<<<<< TREE
     if (jj_2_27(2147483647)) {
+=======
+    if (jj_2_28(2147483647)) {
+>>>>>>> MERGE-SOURCE
       from = anyTransition();
+<<<<<<< TREE
     } else if (jj_2_28(3)) {
+=======
+    } else if (jj_2_29(3)) {
+>>>>>>> MERGE-SOURCE
       t = jj_consume_token(NAME);
                        from = getOrCreate(t.image);
     } else {
@@ -397,14 +528,26 @@ public class DotGParser implements DotGParserConstants {
     }
     label_9:
     while (true) {
+<<<<<<< TREE
       if (jj_2_29(3)) {
+=======
+      if (jj_2_30(3)) {
+>>>>>>> MERGE-SOURCE
         ;
       } else {
         break label_9;
       }
+<<<<<<< TREE
       if (jj_2_30(2147483647)) {
+=======
+      if (jj_2_31(2147483647)) {
+>>>>>>> MERGE-SOURCE
         to = anyTransition();
+<<<<<<< TREE
       } else if (jj_2_31(3)) {
+=======
+      } else if (jj_2_32(3)) {
+>>>>>>> MERGE-SOURCE
         t = jj_consume_token(NAME);
                                to = getOrCreate(t.image);
       } else {
@@ -632,13 +775,32 @@ public class DotGParser implements DotGParserConstants {
     finally { jj_save(30, xla); }
   }
 
+<<<<<<< TREE
+=======
+  private boolean jj_2_32(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_32(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(31, xla); }
+  }
+
+  private boolean jj_3_8() {
+    if (jj_scan_token(INTERNAL_HEADER)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+>>>>>>> MERGE-SOURCE
   private boolean jj_3_7() {
+<<<<<<< TREE
     if (jj_scan_token(INTERNAL_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
   }
 
   private boolean jj_3_6() {
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(OUTPUT_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -648,12 +810,20 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
+<<<<<<< TREE
       if (jj_3_10()) { jj_scanpos = xsp; break; }
+=======
+      if (jj_3_11()) { jj_scanpos = xsp; break; }
+>>>>>>> MERGE-SOURCE
     }
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_5() {
+=======
+  private boolean jj_3_6() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(INPUT_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -664,11 +834,19 @@ public class DotGParser implements DotGParserConstants {
     if (jj_scan_token(DIRECTION)) return true;
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_23()) jj_scanpos = xsp;
+=======
+    if (jj_3_24()) jj_scanpos = xsp;
+>>>>>>> MERGE-SOURCE
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_3() {
+=======
+  private boolean jj_3_4() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
@@ -676,17 +854,30 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_3()) jj_scanpos = xsp;
+=======
+    if (jj_3_4()) jj_scanpos = xsp;
+>>>>>>> MERGE-SOURCE
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_5()) {
     jj_scanpos = xsp;
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_3_6()) {
     jj_scanpos = xsp;
     if (jj_3_7()) {
     jj_scanpos = xsp;
     if (jj_3_8()) {
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_9()) return true;
+=======
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) return true;
+>>>>>>> MERGE-SOURCE
     }
     }
     }
@@ -694,25 +885,49 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_20() {
+=======
+  private boolean jj_3_21() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_17()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_2() {
+=======
+  private boolean jj_3_3() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_11()) return true;
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_22() {
+=======
+  private boolean jj_3_23() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_20()) return true;
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
+<<<<<<< TREE
+=======
+  private boolean jj_3_2() {
     if (jj_3R_10()) return true;
+    if (jj_scan_token(LINEBREAK)) return true;
+    return false;
+  }
+
+>>>>>>> MERGE-SOURCE
+  private boolean jj_3_1() {
+<<<<<<< TREE
+    if (jj_3R_10()) return true;
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(LINEBREAK)) return true;
     return false;
   }
@@ -722,11 +937,16 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_17() {
+=======
+  private boolean jj_3_18() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_17()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_30() {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
@@ -738,8 +958,24 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+=======
+>>>>>>> MERGE-SOURCE
   private boolean jj_3_31() {
     if (jj_scan_token(NAME)) return true;
+<<<<<<< TREE
+=======
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(14)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(21)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_32() {
+    if (jj_scan_token(NAME)) return true;
+>>>>>>> MERGE-SOURCE
     return false;
   }
 
@@ -750,17 +986,29 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_29() {
+=======
+  private boolean jj_3_30() {
+>>>>>>> MERGE-SOURCE
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_23()) {
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_31()) return true;
+=======
+    if (jj_3_32()) return true;
+>>>>>>> MERGE-SOURCE
     }
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_27() {
+=======
+  private boolean jj_3_28() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -771,7 +1019,11 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_21() {
+=======
+  private boolean jj_3_22() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_19()) return true;
     return false;
   }
@@ -781,12 +1033,20 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_19() {
+=======
+  private boolean jj_3_20() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_16()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_28() {
+=======
+  private boolean jj_3_29() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(NAME)) return true;
     return false;
   }
@@ -799,12 +1059,24 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_18() {
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_19()) {
+=======
+    if (jj_3_20()) {
+>>>>>>> MERGE-SOURCE
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_20()) return true;
+=======
+    if (jj_3_21()) return true;
+>>>>>>> MERGE-SOURCE
     }
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_21()) jj_scanpos = xsp;
+=======
+    if (jj_3_22()) jj_scanpos = xsp;
+>>>>>>> MERGE-SOURCE
     return false;
   }
 
@@ -813,11 +1085,19 @@ public class DotGParser implements DotGParserConstants {
     xsp = jj_scanpos;
     if (jj_3R_25()) {
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_28()) return true;
+=======
+    if (jj_3_29()) return true;
+>>>>>>> MERGE-SOURCE
     }
     while (true) {
       xsp = jj_scanpos;
+<<<<<<< TREE
       if (jj_3_29()) { jj_scanpos = xsp; break; }
+=======
+      if (jj_3_30()) { jj_scanpos = xsp; break; }
+>>>>>>> MERGE-SOURCE
     }
     return false;
   }
@@ -828,12 +1108,20 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_18() {
+=======
+  private boolean jj_3_19() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_18()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_11() {
+=======
+  private boolean jj_3_12() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(ANY)) return true;
     return false;
   }
@@ -843,28 +1131,51 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
+<<<<<<< TREE
       if (jj_3_18()) { jj_scanpos = xsp; break; }
+=======
+      if (jj_3_19()) { jj_scanpos = xsp; break; }
+>>>>>>> MERGE-SOURCE
     }
     if (jj_scan_token(17)) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_16() {
+=======
+  private boolean jj_3_17() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_16()) return true;
     return false;
   }
 
+<<<<<<< TREE
+=======
+  private boolean jj_3_27() {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+>>>>>>> MERGE-SOURCE
   private boolean jj_3_26() {
+<<<<<<< TREE
     if (jj_3R_22()) return true;
     return false;
   }
 
   private boolean jj_3_25() {
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_3R_21()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_4() {
+=======
+  private boolean jj_3_5() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(ANY)) return true;
     return false;
   }
@@ -872,9 +1183,17 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_25()) {
+=======
+    if (jj_3_26()) {
+>>>>>>> MERGE-SOURCE
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_26()) return true;
+=======
+    if (jj_3_27()) return true;
+>>>>>>> MERGE-SOURCE
     }
     return false;
   }
@@ -882,15 +1201,27 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_15() {
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_16()) {
+=======
+    if (jj_3_17()) {
+>>>>>>> MERGE-SOURCE
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_17()) return true;
+=======
+    if (jj_3_18()) return true;
+>>>>>>> MERGE-SOURCE
     }
     if (jj_3R_19()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_15() {
+=======
+  private boolean jj_3_16() {
+>>>>>>> MERGE-SOURCE
     if (jj_3R_15()) return true;
     return false;
   }
@@ -899,12 +1230,20 @@ public class DotGParser implements DotGParserConstants {
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
+<<<<<<< TREE
       if (jj_3_15()) { jj_scanpos = xsp; break; }
+=======
+      if (jj_3_16()) { jj_scanpos = xsp; break; }
+>>>>>>> MERGE-SOURCE
     }
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_24() {
+=======
+  private boolean jj_3_25() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(21)) return true;
     if (jj_scan_token(INTEGER)) return true;
     return false;
@@ -914,11 +1253,26 @@ public class DotGParser implements DotGParserConstants {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_24()) jj_scanpos = xsp;
+=======
+    if (jj_3_25()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_12()) { jj_scanpos = xsp; break; }
+    }
+>>>>>>> MERGE-SOURCE
     return false;
   }
 
   private boolean jj_3_14() {
+<<<<<<< TREE
     if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
     Token xsp;
     while (true) {
@@ -929,12 +1283,18 @@ public class DotGParser implements DotGParserConstants {
   }
 
   private boolean jj_3_13() {
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(CAPACITY)) return true;
     if (jj_3R_14()) return true;
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_12() {
+=======
+  private boolean jj_3_13() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(MARKING)) return true;
     if (jj_3R_13()) return true;
     return false;
@@ -943,23 +1303,55 @@ public class DotGParser implements DotGParserConstants {
   private boolean jj_3R_11() {
     Token xsp;
     xsp = jj_scanpos;
+<<<<<<< TREE
     if (jj_3_12()) {
     jj_scanpos = xsp;
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_3_13()) {
     jj_scanpos = xsp;
+<<<<<<< TREE
     if (jj_3_14()) return true;
+=======
+    if (jj_3_14()) {
+    jj_scanpos = xsp;
+    if (jj_3_15()) return true;
+>>>>>>> MERGE-SOURCE
     }
     }
     return false;
   }
 
+<<<<<<< TREE
   private boolean jj_3_23() {
+=======
+  private boolean jj_3_24() {
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(21)) return true;
     if (jj_scan_token(INTEGER)) return true;
     return false;
   }
 
+<<<<<<< TREE
+=======
+  private boolean jj_3_10() {
+    if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_5()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
+>>>>>>> MERGE-SOURCE
   private boolean jj_3_9() {
+<<<<<<< TREE
     if (jj_scan_token(UNSUPPORTED_HEADER)) return true;
     Token xsp;
     while (true) {
@@ -975,6 +1367,8 @@ public class DotGParser implements DotGParserConstants {
   }
 
   private boolean jj_3_8() {
+=======
+>>>>>>> MERGE-SOURCE
     if (jj_scan_token(DUMMY_HEADER)) return true;
     if (jj_3R_12()) return true;
     return false;
@@ -999,7 +1393,11 @@ public class DotGParser implements DotGParserConstants {
    private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {};
    }
+<<<<<<< TREE
   final private JJCalls[] jj_2_rtns = new JJCalls[31];
+=======
+  final private JJCalls[] jj_2_rtns = new JJCalls[32];
+>>>>>>> MERGE-SOURCE
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1224,7 +1622,11 @@ public class DotGParser implements DotGParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
+<<<<<<< TREE
     for (int i = 0; i < 31; i++) {
+=======
+    for (int i = 0; i < 32; i++) {
+>>>>>>> MERGE-SOURCE
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1262,6 +1664,10 @@ public class DotGParser implements DotGParserConstants {
             case 28: jj_3_29(); break;
             case 29: jj_3_30(); break;
             case 30: jj_3_31(); break;
+<<<<<<< TREE
+=======
+            case 31: jj_3_32(); break;
+>>>>>>> MERGE-SOURCE
           }
         }
         p = p.next;

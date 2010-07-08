@@ -40,11 +40,11 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 
 public class BreezeImporter implements Importer
 {
-	private final BalsaSystem balsa;
+	private BalsaSystem balsa = null;
 
 	public BreezeImporter()
 	{
-		balsa = BalsaSystem.DEFAULT();
+
 	}
 
 	public BreezeImporter(BalsaSystem balsa) {
@@ -63,6 +63,9 @@ public class BreezeImporter implements Importer
 
 	public BalsaCircuit importFromBreeze(InputStream in, String breezeName) throws DeserialisationException, IOException, OperationCancelledException
 	{
+		if (balsa == null)
+			balsa = BalsaSystem.DEFAULT();
+
 		BreezeLibrary lib = new BreezeLibrary(balsa);
 
 		try {

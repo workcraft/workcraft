@@ -2,10 +2,10 @@ package org.workcraft.plugins.verification.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.plugins.shared.MpsatChainResultHandler;
+import org.workcraft.plugins.shared.MpsatSettings;
+import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.MpsatChainResultHandler;
-import org.workcraft.plugins.verification.MpsatSettings;
-import org.workcraft.plugins.verification.tasks.MpsatChainTask;
 
 public abstract class AbstractMpsatChecker {
 	public final String getSection() {
@@ -27,6 +27,6 @@ public abstract class AbstractMpsatChecker {
 		if (!title.isEmpty())
 			description += "(" + title +")";
 
-		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler());
+		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler(framework));
 	}
 }

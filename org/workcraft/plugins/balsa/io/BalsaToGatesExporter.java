@@ -41,19 +41,19 @@ import org.workcraft.plugins.balsa.io.BalsaExportConfig.DummyContractionMode;
 import org.workcraft.plugins.interop.CSCResolver;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.shared.MpsatMode;
+import org.workcraft.plugins.shared.MpsatSettings;
+import org.workcraft.plugins.shared.PetrifyUtilitySettings;
+import org.workcraft.plugins.shared.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.MpsatTask;
+import org.workcraft.plugins.shared.tasks.PunfTask;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.MpsatMode;
-import org.workcraft.plugins.verification.MpsatSettings;
-import org.workcraft.plugins.verification.MpsatSettings.SolutionMode;
-import org.workcraft.plugins.verification.PetriNetToolsSettings;
-import org.workcraft.plugins.verification.tasks.ExternalProcessResult;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
-import org.workcraft.plugins.verification.tasks.MpsatTask;
-import org.workcraft.plugins.verification.tasks.PunfTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
@@ -173,7 +173,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 
 		ExternalProcessTask task = new ExternalProcessTask(Arrays.asList(
 				new String[]{
-						PetriNetToolsSettings.getPetrifyCommand(),
+						PetrifyUtilitySettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						"-eqn",
@@ -218,7 +218,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 		new ExternalProcessTask(
 				Arrays.asList(
 				new String[]{
-						PetriNetToolsSettings.getPetrifyCommand(),
+						PetrifyUtilitySettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						original.getAbsolutePath()

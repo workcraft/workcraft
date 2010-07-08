@@ -50,8 +50,8 @@ import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.shared.PcompUtilitySettings;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.verification.PetriNetToolsSettings;
 import org.workcraft.util.Export;
 
 public abstract class BalsaToStgExporter {
@@ -114,7 +114,7 @@ public abstract class BalsaToStgExporter {
 			if(tempFiles.size() > 0)
 			{
 				List<String>  args = new ArrayList<String> ();
-				args.add(PetriNetToolsSettings.getPcompCommand());
+				args.add(PcompUtilitySettings.getPcompCommand());
 				args.add("-d");
 				args.add("-r");
 				if(settings.improvedPcomp) args.add("-p");

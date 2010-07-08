@@ -23,8 +23,12 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +48,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.batik.ext.awt.g2d.AbstractGraphics2D;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
@@ -87,6 +92,7 @@ import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
@@ -342,54 +348,58 @@ public class MainWindow extends JFrame {
 		return dockable;
 	}
 
-	public void createEditorWindow(WorkspaceEntry we) {
-		Object object = we.getObject();
+	public void createEditorWindow(final WorkspaceEntry we) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Object object = we.getObject();
 
-		if (!(object instanceof Model))
-			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
+				if (!(object instanceof Model))
+					throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
 
-		VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
+				VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
 
-		if (visualModel == null)
-			try {
-				visualModel = ModelFactory.createVisualModel((MathModel)object);
-				we.setObject(visualModel);
+				if (visualModel == null)
+					try {
+						visualModel = ModelFactory.createVisualModel((MathModel)object);
+						we.setObject(visualModel);
 
-				DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
-				layout.run(visualModel, framework);
-			} catch (LayoutException e) {
-				// Layout failed for whatever reason, ignore
-			} catch (VisualModelInstantiationException e) {
-				JOptionPane.showMessageDialog(this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-				return;
-			} catch (PluginInstantiationException e) {
-				// no Dot layout plugin found, ignore
-			}
+						DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
+						layout.run(visualModel, framework);
+					} catch (LayoutException e) {
+						// Layout failed for whatever reason, ignore
+					} catch (VisualModelInstantiationException e) {
+						JOptionPane.showMessageDialog(MainWindow.this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					} catch (PluginInstantiationException e) {
+						// no Dot layout plugin found, ignore
+					}
 
-			GraphEditorPanel editor = new GraphEditorPanel(this, we);
-			String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
+					GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+					String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
 
-			DockableWindow editorWindow;
+					DockableWindow editorWindow;
 
-			if (editorWindows.isEmpty()) {
-				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+					if (editorWindows.isEmpty()) {
+						editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
+								DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 
-				DockingManager.close(documentPlaceholder);
-				DockingManager.unregisterDockable(documentPlaceholder);
-				utilityWindows.remove(documentPlaceholder);
-			}
-			else {
-				DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
-			}
+						DockingManager.close(documentPlaceholder);
+						DockingManager.unregisterDockable(documentPlaceholder);
+						utilityWindows.remove(documentPlaceholder);
+					}
+					else {
+						DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
+						editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
+								DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+					}
 
-			editorWindows.put(we, editorWindow);
-			requestFocus(editor);
+					editorWindows.put(we, editorWindow);
+					requestFocus(editor);
 
-			enableWorkActions();
+					enableWorkActions();
+			}}) ;
 	}
 
 	private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -470,8 +480,8 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 
 		loadDockingLayout();
-		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
+		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
 		registerUtilityWindow (outputDockable);
 		registerUtilityWindow (problems);
@@ -482,6 +492,19 @@ public class MainWindow extends JFrame {
 		registerUtilityWindow (tasks);
 		registerUtilityWindow (tiw);
 		utilityWindows.add(documentPlaceholder);
+
+		new Thread(
+				new Runnable() {
+					@Override
+					public void run() {
+						// hack to fix the annoying delay occurring when createGlyphVector is called for the first time
+						Font font = new Font("Sans-serif", Font.PLAIN, 1);
+						font.createGlyphVector(new FontRenderContext(new AffineTransform(), true, true), "");
+
+						// force svg rendering classes to load
+						GUI.createIconFromSVG("images/icons/svg/place.svg");
+					}
+				}).start();
 
 		disableWorkActions();
 	}
@@ -529,51 +552,51 @@ public class MainWindow extends JFrame {
 
 		int ID = dockableWindow.getID();
 
-			if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
-				GraphEditorPanel editor = (GraphEditorPanel)dockableWindow.getContentPanel().getContent();
-				// handle editor window close
+		if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
+			GraphEditorPanel editor = (GraphEditorPanel)dockableWindow.getContentPanel().getContent();
+			// handle editor window close
 
-				WorkspaceEntry we = editor.getWorkspaceEntry();
+			WorkspaceEntry we = editor.getWorkspaceEntry();
 
-				if (we.isChanged()) {
-					int result = JOptionPane.showConfirmDialog(this, "Document \""+we.getTitle() + "\" has unsaved changes.\nSave before closing?",
-							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (we.isChanged()) {
+				int result = JOptionPane.showConfirmDialog(this, "Document \""+we.getTitle() + "\" has unsaved changes.\nSave before closing?",
+						"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-					if (result == JOptionPane.YES_OPTION) {
-						save(we);
-					}
-					else if (result == JOptionPane.CANCEL_OPTION)
-						throw new OperationCancelledException("Operation cancelled by user.");
+				if (result == JOptionPane.YES_OPTION) {
+					save(we);
 				}
-
-
-
-				if (DockingManager.isMaximized(dockableWindow)) {
-					toggleDockableWindowMaximized(dockableWindow.getID());
-				}
-
-				editorWindows.remove(we, dockableWindow);
-
-				if (editorWindows.get(we).isEmpty())
-					framework.getWorkspace().close(we);
-
-				if (editorWindows.isEmpty()) {
-					DockingManager.registerDockable(documentPlaceholder);
-					DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
-					utilityWindows.add(documentPlaceholder);
-
-					disableWorkActions();
-				}
-
-				DockingManager.close(dockableWindow);
-				DockingManager.unregisterDockable(dockableWindow);
-				dockableWindow.setClosed(true);
-			} else {
-				// handle utility window close
-				mainMenu.utilityWindowClosed(ID);
-				DockingManager.close(dockableWindow);
-				dockableWindow.setClosed(true);
+				else if (result == JOptionPane.CANCEL_OPTION)
+					throw new OperationCancelledException("Operation cancelled by user.");
 			}
+
+
+
+			if (DockingManager.isMaximized(dockableWindow)) {
+				toggleDockableWindowMaximized(dockableWindow.getID());
+			}
+
+			editorWindows.remove(we, dockableWindow);
+
+			if (editorWindows.get(we).isEmpty())
+				framework.getWorkspace().close(we);
+
+			if (editorWindows.isEmpty()) {
+				DockingManager.registerDockable(documentPlaceholder);
+				DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
+				utilityWindows.add(documentPlaceholder);
+
+				disableWorkActions();
+			}
+
+			DockingManager.close(dockableWindow);
+			DockingManager.unregisterDockable(dockableWindow);
+			dockableWindow.setClosed(true);
+		} else {
+			// handle utility window close
+			mainMenu.utilityWindowClosed(ID);
+			DockingManager.close(dockableWindow);
+			dockableWindow.setClosed(true);
+		}
 	}
 
 	public void displayDockableWindow(int ID) {
