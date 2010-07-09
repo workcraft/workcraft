@@ -1,11 +1,16 @@
 package org.workcraft.testing.plugins.balsa;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.strongdesign.desij.DesiJ;
 
 import org.junit.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.Model;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -24,7 +29,17 @@ import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
 import org.workcraft.plugins.balsa.io.SynthesisWithPetrify;
+import org.workcraft.plugins.desij.DesiJOperation;
+import org.workcraft.plugins.desij.DesiJSettings;
+import org.workcraft.plugins.desij.DesiJSettings.DecompositionStrategy;
+import org.workcraft.plugins.desij.DesiJSettings.PartitionMode;
+import org.workcraft.plugins.desij.tasks.DesiJResult;
+import org.workcraft.plugins.desij.tasks.DesiJTask;
+import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.tasks.Result;
 import org.workcraft.util.Export;
+import org.workcraft.util.FileUtils;
+import org.workcraft.util.Import;
 
 public class SeqMixTest {
 
@@ -172,15 +187,52 @@ public class SeqMixTest {
 	@Test
 	public void recursiveTest() throws Exception
 	{
+		new File("/home/dell/beautiful_table.txt").delete();
+		///recTest(false);
+		recTest(true);
+	}
+
+	private void recTest(boolean safenessPreserv) throws Exception {
 		for(int k = 0;k < 2;k++)
 		for(int depth = 1;depth < 10;depth++)
 		{
+			DesiJSettings desiJSettings = new DesiJSettings(DesiJOperation.REMOVE_DUMMIES, null, 0, null, null, true, true, false,
+					safenessPreserv, false, false,
+					false, 0, false, false);
+
 			BalsaCircuit circuit = new Generator().build(depth);
 
 			BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
 			exporter.getSettings().eventBasedInternal = false;
 			exporter.getSettings().improvedPcomp = 1==(k&1);
-			Export.exportToFile(exporter, circuit, "/home/dell/SeqMixParSync_"+(k==0?"std":"opt")+"_"+depth+".g");
+			String fileName = "/home/dell/SeqMixParSync_"+(k==0?"std":"opt")+"_"+depth;
+			File gFile = new File(fileName+".g");
+			File contractedGFile = new File(fileName+".contracted.g");
+			Export.exportToFile(exporter, circuit, fileName);
+
+			PrintStream defaultOut = System.out;
+			File desiJOutFile = File.createTempFile("desiJ", "out");
+			PrintStream desiJOut = new PrintStream(desiJOutFile);
+			System.setOut(desiJOut);
+			Model model = Import.importFromFile(Import.chooseBestImporter(f.getPluginManager(), gFile),gFile);
+			Result<DesiJResult> result = f.getTaskManager().execute(new DesiJTask(model, f, desiJSettings), "desij");
+			File resultingFile = result.getReturnValue().getModifiedSpecResult();
+			FileUtils.moveFile(resultingFile, contractedGFile);
+
+			System.setOut(defaultOut);
+			String log = FileUtils.readAllText(desiJOutFile);
+			Pattern pattern = Pattern.compile(".* ([0-9]+) dummy transitions removed.*", Pattern.MULTILINE);
+			Matcher matcher = pattern.matcher(log);
+			if(!matcher.find())
+			{
+				throw new RuntimeException("no contraction information! the only information is: " + log);
+			}
+			else
+			{
+				FileUtils.appendAllText(new File("/home/dell/beautiful_table.txt"), (k==0?"std":"opt") + "\t" + depth + "\t" + (safenessPreserv?"safe":"all") + "\t" + matcher.group(1) + "\n");
+				System.out.println();
+			}
+
 		}
 	}
 }

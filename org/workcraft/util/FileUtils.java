@@ -159,4 +159,10 @@ public class FileUtils{
 		stream.write(bytes);
 		stream.close();
 	}
+
+	public static void appendAllText(File file, String text) throws IOException {
+		FileWriter writer = new FileWriter(file, true);
+		writer.write(text);
+		writer.close();
+	}
 }
