@@ -69,16 +69,13 @@ public class UniqueNameManager<T> {
 			candidate = name + counter++;
 		} while (Ts.containsKey(candidate));
 
-		defaultNameCounters.put(candidate, counter);
+		defaultNameCounters.put(name, counter);
 
 		Ts.put(candidate, T);
 	}
 
 	public T get (String name) {
-		T n = Ts.getValue(name);
-		if (n==null)
-			throw new NotFoundException ("Object \"" + name + "\" not found.");
-		return n;
+		return Ts.getValue(name);
 	}
 
 	public void remove (T n) {

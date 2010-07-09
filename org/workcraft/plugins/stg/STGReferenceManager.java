@@ -9,7 +9,6 @@ import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
-import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
@@ -90,16 +89,17 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 	@Override
 	public Node getNodeByReference(String reference) {
-		try {
-			Pair<String, Integer> instancedName = LabelParser.parse(reference);
+		Pair<String, Integer> instancedName = LabelParser.parse(reference);
+		if (instancedName != null)
+		{
 			if (instancedName.getSecond() == null)
 				instancedName = Pair.of(instancedName.getFirst(), 0);
-			return instancedNameManager.getObject(instancedName);
-		} catch (NotFoundException e) {
-			return defaultNameManager.get(reference);
-		} catch (ArgumentException e) {
-			return defaultNameManager.get(reference);
+			Node n = instancedNameManager.getObject(instancedName);
+			if (n!=null)
+				return n;
 		}
+
+		return defaultNameManager.get(reference);
 	}
 
 	@Override
@@ -155,6 +155,9 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 			try {
 				final Triple<String, Direction, Integer> r = LabelParser.parseFull(s);
+				if (r==null)
+					throw new ArgumentException (s + " is not a valid signal transition label");
+
 				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()));
 
 				transitions.remove(st.getSignalName(), st);
@@ -180,6 +183,8 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 			try {
 				final Pair<String,Integer> r = LabelParser.parse(s);
+				if (r==null)
+					throw new ArgumentException (s + " is not a valid transition label");
 				if (r.getSecond() != null)
 					instancedNameManager.assign(dt, r);
 				else

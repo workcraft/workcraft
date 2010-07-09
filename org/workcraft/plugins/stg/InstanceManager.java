@@ -112,17 +112,11 @@ public class InstanceManager<T>
 	}
 
 	public Pair<String, Integer> getInstance (T t) {
-		Pair<String, Integer> ref = instances.getValue(t);
-		if(ref == null)
-			throw new NotFoundException("Instance not assigned");
-		return ref;
+		return instances.getValue(t);
 	}
 
 	public T getObject(Pair<String, Integer> ref) {
-		final T key = instances.getKey(ref);
-		if (key==null)
-			throw new NotFoundException("Object not found: " + ref);
-		return key;
+		return instances.getKey(ref);
 	}
 
 	public void remove(T T) {

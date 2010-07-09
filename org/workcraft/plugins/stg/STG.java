@@ -33,7 +33,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -269,8 +268,8 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	@Override
 	public Node getNodeByReference(String reference) {
-		try {
-			Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+		if (implicitPlaceTransitions!=null) {
 
 			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
@@ -286,8 +285,8 @@ public class STG extends AbstractMathModel implements STGModel {
 
 			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
 					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
-		} catch (ArgumentException e) {
+		}	else
 			return referenceManager.getNodeByReference(reference);
-		}
 	}
+
 }

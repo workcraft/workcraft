@@ -19,7 +19,7 @@ public class LabelParser {
 		String[] parts = ref.replaceAll(" ", "").split(",");
 
 		if (parts.length < 2 || !parts[0].startsWith("<") || !parts[0].endsWith(">"))
-			throw new ArgumentException ("Invalid implicit place reference: " + ref);
+			return null;
 
 		return Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length()-1));
 	}
@@ -55,12 +55,10 @@ public class LabelParser {
 		final Matcher matcher = pattern.matcher(s);
 
 		if (!matcher.find())
-			throw new ArgumentException("\"" + s
-					+ "\" is not a valid STG label.");
+			return null;
 
 		if (! (matcher.end() == s.length()))
-			throw new ArgumentException("\"" + s
-					+ "\" is not a valid STG label.");
+			return null;
 
 		final String instanceGroup = matcher.group(3);
 

@@ -40,29 +40,33 @@ public class DotGParser {
 	private Node getOrCreate (String name) {
 
 		Type t = signals.get (name);
-		try {
-			return stg.getNodeByReference(name);
-		} catch (NotFoundException e) {
-		try {
-			return stg.getNodeByReference(name+"/0");
-		} catch (NotFoundException ee) {
+		
+		Node existing = stg.getNodeByReference(name);
+		
+		if (existing == null)
+			existing = stg.getNodeByReference(name+"/0");
+			
+		if (existing == null)
+		{
 			if (t==null)
-				return stg.createPlace(name);
+				existing = stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
-				return stg.createDummyTransition(name);
+				existing = stg.createDummyTransition(name);
 			else
 				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
-		}
+		
+		return existing;
 	}
 	
 	private Node getOrCreate (Pair<String, Integer> ref)
 	{
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
-		try {
-			return stg.getNodeByReference (reference);
-		} catch (NotFoundException e) {
+		Node existing = stg.getNodeByReference(reference);
+		
+		if (existing == null)
+		{
 			Type t = signals.get (name);
 			if (t == null || !t.equals(Type.DUMMY))
 				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
@@ -71,17 +75,20 @@ public class DotGParser {
 				DummyTransition dt = stg.createDummyTransition(null);
 				stg.setName(dt, reference);
 				dt.setName(name);
-				return dt;
+				existing = dt;
 			}
 		}
+		
+		return existing;
 	}
 	
 	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst(); 
-		try {
-			return stg.getNodeByReference (reference);
-		} catch (NotFoundException e) {
+		Node existing = stg.getNodeByReference (reference);
+		
+		if (existing == null)
+		{
 		
 			SignalTransition st = stg.createSignalTransition();
 			stg.setName (st, reference);
@@ -90,9 +97,10 @@ public class DotGParser {
 				throw new FormatException ("Undeclared signal encountered: " + name + 
 				" ("+reference+"). Possibly malformed header.");
 			st.setSignalType(t);
-			return st;
-		
+			existing = st;
 		}
+		
+		return existing;
 	}
 	
 	private void createArc (Node first, Node second) {
