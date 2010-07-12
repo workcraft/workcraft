@@ -22,23 +22,23 @@ package org.workcraft.parsers.breeze.dom;
 
 import org.workcraft.parsers.breeze.expressions.Expression;
 
-public class BooleanPortDeclaration extends PortDeclaration
+public class FullDataPortDeclaration extends PortDeclaration
 {
 	private final boolean isInput;
-	private final Expression<Integer> width;
+	private final Expression<Integer> valueCount;
 
-	public BooleanPortDeclaration(String name, boolean isActive, boolean isInput, Expression<Integer> width) {
+	public FullDataPortDeclaration(String name, boolean isActive, boolean isInput, Expression<Integer> valueCount) {
 		super(name, isActive);
 		this.isInput = isInput;
-		this.width = width;
+		this.valueCount = valueCount;
 	}
 
 	public boolean isInput() {
 		return isInput;
 	}
 
-	public Expression<Integer> getWidth() {
-		return width;
+	public Expression<Integer> getValueCount() {
+		return valueCount;
 	}
 
 	@Override public <T> T accept(PortVisitor<T> visitor) {

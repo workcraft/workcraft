@@ -1,4 +1,4 @@
-package org.workcraft.plugins.balsa.stg.codegenerator;
+package org.workcraft.plugins.balsa;
 
 import org.workcraft.parsers.breeze.PrimitivePart;
 

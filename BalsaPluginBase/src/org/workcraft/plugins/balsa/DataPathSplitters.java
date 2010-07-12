@@ -1,4 +1,4 @@
-package org.workcraft.plugins.balsa.stg.codegenerator;
+package org.workcraft.plugins.balsa;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,11 +6,14 @@ import java.util.Map;
 import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
-import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
 import org.workcraft.parsers.breeze.dom.DataPortDeclaration;
+import org.workcraft.parsers.breeze.dom.FullDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortVisitor;
 import org.workcraft.parsers.breeze.dom.SyncPortDeclaration;
+import org.workcraft.parsers.breeze.expressions.Constant;
+import org.workcraft.parsers.breeze.expressions.ParameterReference;
+import org.workcraft.parsers.breeze.expressions.ShiftLeft;
 
 import pcollections.PVector;
 
@@ -22,6 +25,12 @@ public class DataPathSplitters
 	{
 		if("While".equals(part.getName()))
 			return new PrimitivePart(part.getName(), part.getParameters(), boolify(part.getPorts(), "guard"), part.getSymbol());
+		if("Case".equals(part.getName()))
+			return new PrimitivePart(
+					part.getName(),
+					part.getParameters(),
+					part.getPorts().plus(new FullDataPortDeclaration("dp", true, true, new ParameterReference<Integer>("outputCount"))),
+							part.getSymbol());
 		return part;
 	}
 
@@ -51,11 +60,11 @@ public class DataPathSplitters
 
 			@Override
 			public PortDeclaration visit(DataPortDeclaration port) {
-				return new BooleanPortDeclaration(port.getName(), port.isActive(), port.isInput(), port.getWidth());
+				return new FullDataPortDeclaration(port.getName(), port.isActive(), port.isInput(), ShiftLeft.create(Constant.create(1), port.getWidth()));
 			}
 
 			@Override
-			public PortDeclaration visit(BooleanPortDeclaration port) {
+			public PortDeclaration visit(FullDataPortDeclaration port) {
 				 throw new org.workcraft.exceptions.NotSupportedException();
 			}
 

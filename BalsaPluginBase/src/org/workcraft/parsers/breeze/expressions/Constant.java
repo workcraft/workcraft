@@ -49,4 +49,8 @@ public class Constant<T> implements Expression<T> {
 		return value;
 	}
 
+	public static <T> Expression<T> create(T value) {
+		return new Constant<T>(value);
+	}
+
 }

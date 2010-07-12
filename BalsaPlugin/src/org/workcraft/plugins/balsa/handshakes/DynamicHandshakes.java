@@ -26,7 +26,7 @@ import java.util.Map;
 import org.workcraft.parsers.breeze.ParameterScope;
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
-import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
+import org.workcraft.parsers.breeze.dom.FullDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.DataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortVisitor;
@@ -107,8 +107,8 @@ public class DynamicHandshakes extends HandshakeMaker<DynamicComponent> {
 			}
 
 			@Override
-			public Object visit(BooleanPortDeclaration port) {
-				handshakes.put(port.getName(), fullData(port.isActive(), port.isInput(), port.getWidth().evaluate(parameters)));
+			public Object visit(FullDataPortDeclaration port) {
+				handshakes.put(port.getName(), fullData(port.isActive(), port.isInput(), port.getValueCount().evaluate(parameters)));
 				return null;
 			}
 

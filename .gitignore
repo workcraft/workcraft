@@ -9,4 +9,5 @@ config
 *.stackdump
 desij.logfile*
 generated
+/.metadata
 

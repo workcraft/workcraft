@@ -36,6 +36,7 @@ import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.dom.RawBreezePartReference;
 import org.workcraft.parsers.breeze.javacc.generated.BreezeParser;
 import org.workcraft.parsers.breeze.javacc.generated.ParseException;
+import org.workcraft.plugins.balsa.DataPathSplitters;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 
 public class BreezeLibrary
@@ -75,7 +76,7 @@ public class BreezeLibrary
 			InputStream is = new FileInputStream(file);
 			try
 			{
-				PrimitivePart primitivePart = BreezeParser.parsePrimitivePart(is);
+				PrimitivePart primitivePart = DataPathSplitters.getControl(BreezeParser.parsePrimitivePart(is));
 				primitiveParts.put(primitivePart.getName(), primitivePart);
 			} catch (ParseException e) {
 				System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
