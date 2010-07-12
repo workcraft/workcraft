@@ -8,3 +8,5 @@ config
 *.g
 *.stackdump
 desij.logfile*
+generated
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-anim.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-bridge.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-codec.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-css.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-dom.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-ext.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-extension.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-gui-util.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-gvt.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-parser.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-script.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-svg-dom.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-svggen.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-swing.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-transcoder.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-util.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-xml.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/xml-apis-ext.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/xml-apis.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/flexdock-0.5.1.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/javaparser-1.0.7.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/jedit.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/jga-0.8-lgpl.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/js.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/pcollections-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/substance.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/desij.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
