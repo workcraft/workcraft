@@ -42,7 +42,7 @@ public class PcompTool implements Tool {
 				inputs.add(dotGProvider.getDotG(p));
 			}
 
-			framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0])), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
+			framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0]), dialog.getMode()), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
 		}
 	}
 }
