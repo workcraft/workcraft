@@ -108,7 +108,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		updateGlyph(g);
 
 		g.setColor(Coloriser.colorise(labelColor, getColorisation()));
-		g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
+		//g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
+		g.setFont(labelFont);
+		g.drawString(label, (float)labelPosition.getX(), (float)labelPosition.getY());
 	}
 
 	private void updateGlyph(Graphics2D g) {
