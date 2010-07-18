@@ -1,0 +1,260 @@
+;;; Breeze intermediate file (list format)
+;;; Created: Fri May 14 11:38:15 2010
+;;; By: dell@dell-laptop (Linux)
+;;; With balsa-c version: 3.5.1
+;;; Command: balsa-c -b -I . test-test1 
+
+;;; Imports
+(import "balsa.types.builtin")
+(import "balsa.types.synthesis")
+(import "balsa.sim.portio")
+(import "VD")
+;;; Types
+
+;;; Constants
+
+;;; Parts
+
+(breeze-part "balsa"
+  (ports
+    (sync-port "activate" passive (at 12 1 "test-test1.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (at 12 1 "test-test1.balsa" 0)
+  )
+  (channels
+    (sync (at 19 52 "test-test1.balsa" 26)) ; 1
+    (pull 1 (at 23 42 "test-test1.balsa" 26) (name "out_o")) ; 2
+    (sync (at 53 2 "portio.balsa" 25)) ; 3
+    (pull 1 (at 55 60 "portio.balsa" 25) (name "i")) ; 4
+    (pull 64 (at 55 56 "portio.balsa" 25) (type (named-type "String"))) ; 5
+    (pull 64 (at 44 76 "portio.balsa" 24) (name "message") (type (named-type "String"))) ; 6
+    (pull 64 (at 44 3 "portio.balsa" 24) (type (named-type "String"))) ; 7
+    (pull 64 (at 44 3 "portio.balsa" 24) (type (named-type "String"))) ; 8
+    (pull 64 (at 44 29 "portio.balsa" 24) (type (named-type "String"))) ; 9
+    (pull 64 (at 44 3 "portio.balsa" 24) (type (named-type "String"))) ; 10
+    (pull 1 (at 44 3 "portio.balsa" 24)) ; 11
+    (push 1 (at 44 3 "portio.balsa" 24)) ; 12
+    (push 64 (at 43 2 "portio.balsa" 24) (name "message") (type (named-type "String"))) ; 13
+    (sync (at 43 10 "portio.balsa" 24)) ; 14
+    (sync (at 54 5 "portio.balsa" 25)) ; 15
+    (push 1 (at 54 3 "portio.balsa" 25) (name "i")) ; 16
+    (sync (at 54 5 "portio.balsa" 25)) ; 17
+    (pull 2 (at 22 45 "test-test1.balsa" 26) (name "Out_state") (type (named-type "State"))) ; 18
+    (sync (at 53 2 "portio.balsa" 20)) ; 19
+    (pull 2 (at 55 60 "portio.balsa" 20) (name "i") (type (named-type "State"))) ; 20
+    (pull 64 (at 55 56 "portio.balsa" 20) (type (named-type "String"))) ; 21
+    (pull 64 (at 44 76 "portio.balsa" 19) (name "message") (type (named-type "String"))) ; 22
+    (pull 64 (at 44 3 "portio.balsa" 19) (type (named-type "String"))) ; 23
+    (pull 64 (at 44 3 "portio.balsa" 19) (type (named-type "String"))) ; 24
+    (pull 64 (at 44 29 "portio.balsa" 19) (type (named-type "String"))) ; 25
+    (pull 64 (at 44 3 "portio.balsa" 19) (type (named-type "String"))) ; 26
+    (pull 1 (at 44 3 "portio.balsa" 19)) ; 27
+    (push 1 (at 44 3 "portio.balsa" 19)) ; 28
+    (push 64 (at 43 2 "portio.balsa" 19) (name "message") (type (named-type "String"))) ; 29
+    (sync (at 43 10 "portio.balsa" 19)) ; 30
+    (sync (at 54 5 "portio.balsa" 20)) ; 31
+    (push 2 (at 54 3 "portio.balsa" 20) (name "i") (type (named-type "State"))) ; 32
+    (sync (at 54 5 "portio.balsa" 20)) ; 33
+    (push 3 (at 21 87 "test-test1.balsa" 26) (name "in_c")) ; 34
+    (pull 3 (at 21 80 "test-test1.balsa" 26) (type (named-type "FileMode"))) ; 35
+    (pull 64 (at 21 56 "test-test1.balsa" 26) (type (named-type "String"))) ; 36
+    (pull 64 (at 21 55 "test-test1.balsa" 26) (type (named-type "File"))) ; 37
+    (sync (at 134 7 "portio.balsa" 15)) ; 38
+    (pull 64 (at 137 66 "portio.balsa" 15) (name "line") (type (named-type "String"))) ; 39
+    (pull 64 (at 137 55 "portio.balsa" 15) (type (named-type "String"))) ; 40
+    (pull 64 (at 137 24 "portio.balsa" 15) (name "line") (type (named-type "String"))) ; 41
+    (pull 3 (at 137 20 "portio.balsa" 15)) ; 42
+    (sync (at 137 6 "portio.balsa" 15)) ; 43
+    (pull 64 (at 136 26 "portio.balsa" 15) (name "file") (type (named-type "File"))) ; 44
+    (pull 64 (at 136 25 "portio.balsa" 15) (type (named-type "String"))) ; 45
+    (push 64 (at 136 9 "portio.balsa" 15) (name "line") (type (named-type "String"))) ; 46
+    (sync (at 136 9 "portio.balsa" 15)) ; 47
+    (sync (at 136 31 "portio.balsa" 15)) ; 48
+    (pull 64 (at 135 27 "portio.balsa" 15) (name "file") (type (named-type "File"))) ; 49
+    (pull 1 (at 135 26 "portio.balsa" 15)) ; 50
+    (pull 1 (at 135 14 "portio.balsa" 15)) ; 51
+    (push 64 (at 134 2 "portio.balsa" 15) (name "file") (type (named-type "File"))) ; 52
+    (sync (at 134 7 "portio.balsa" 15)) ; 53
+    (push 3 (at 20 87 "test-test1.balsa" 26) (name "in_a")) ; 54
+    (pull 3 (at 20 80 "test-test1.balsa" 26) (type (named-type "FileMode"))) ; 55
+    (pull 64 (at 20 56 "test-test1.balsa" 26) (type (named-type "String"))) ; 56
+    (pull 64 (at 20 55 "test-test1.balsa" 26) (type (named-type "File"))) ; 57
+    (sync (at 134 7 "portio.balsa" 13)) ; 58
+    (pull 64 (at 137 66 "portio.balsa" 13) (name "line") (type (named-type "String"))) ; 59
+    (pull 64 (at 137 55 "portio.balsa" 13) (type (named-type "String"))) ; 60
+    (pull 64 (at 137 24 "portio.balsa" 13) (name "line") (type (named-type "String"))) ; 61
+    (pull 3 (at 137 20 "portio.balsa" 13)) ; 62
+    (sync (at 137 6 "portio.balsa" 13)) ; 63
+    (pull 64 (at 136 26 "portio.balsa" 13) (name "file") (type (named-type "File"))) ; 64
+    (pull 64 (at 136 25 "portio.balsa" 13) (type (named-type "String"))) ; 65
+    (push 64 (at 136 9 "portio.balsa" 13) (name "line") (type (named-type "String"))) ; 66
+    (sync (at 136 9 "portio.balsa" 13)) ; 67
+    (sync (at 136 31 "portio.balsa" 13)) ; 68
+    (pull 64 (at 135 27 "portio.balsa" 13) (name "file") (type (named-type "File"))) ; 69
+    (pull 1 (at 135 26 "portio.balsa" 13)) ; 70
+    (pull 1 (at 135 14 "portio.balsa" 13)) ; 71
+    (push 64 (at 134 2 "portio.balsa" 13) (name "file") (type (named-type "File"))) ; 72
+    (sync (at 134 7 "portio.balsa" 13)) ; 73
+    (push 1 (at 19 45 "test-test1.balsa" 26) (name "out_o")) ; 74
+    (push 2 (at 19 34 "test-test1.balsa" 26) (name "Out_state") (type (named-type "State"))) ; 75
+    (pull 3 (at 19 28 "test-test1.balsa" 26) (name "in_c")) ; 76
+    (pull 3 (at 19 22 "test-test1.balsa" 26) (name "in_a")) ; 77
+    (sync (at 19 21 "test-test1.balsa" 26)) ; 78
+  )
+  (components
+    (component "$BrzPassivatorPush" (1 1) ((2) 74)) ; 0
+    (component "$BrzPassivatorPush" (2 1) ((18) 75)) ; 1
+    (component "$BrzPassivatorPush" (3 1) ((76) 34)) ; 2
+    (component "$BrzConcur" (5) (1 (78 58 38 19 3))) ; 3
+    (component "$BrzPassivatorPush" (3 1) ((77) 54)) ; 4
+    (component "ViterbiDecoder_k2" () (78 77 76 75 74)) ; 5
+    (component "$BrzBuiltinVariable" (2 "line[0..63]") (66 (61 59)) (at 131 2 "portio.balsa" 0)) ; 6
+    (component "$BrzFalseVariable" (64 2 "") (72 73 (69 64))) ; 7
+    (component "$BrzFetch" (64 "false") (58 57 72)) ; 8
+    (component "$BrzWhile" () (73 71 68)) ; 9
+    (component "$BrzUnaryFunc" (1 1 "Invert" "false") (71 70)) ; 10
+    (component "FileEOF" () (70 69)) ; 11
+    (component "$BrzSequenceOptimised" (2 "T") (68 (67 63))) ; 12
+    (component "$BrzFetch" (64 "false") (67 65 66)) ; 13
+    (component "FileReadLine" () (65 64)) ; 14
+    (component "$BrzFetch" (3 "false") (63 62 54)) ; 15
+    (undeclared-component "FromString" ((numeric-type #f 3)) (62 61 60)
+      (implements "is-builtin-function" "FromString")
+      (parameters
+        (type-parameter "X")
+      )
+      (ports
+        (port "activate" passive output (numeric-type #f 3))
+        (port "source" active input (named-type "String"))
+        (port "remainder" active input (named-type "String"))
+      )) ; 16
+    (undeclared-component "ForwardValuePrintMessage" ("in_a") (60 59)
+      (implements "is-builtin-function" "ForwardValuePrintMessage")
+      (parameters
+        (parameter "portName" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+        (port "value" active input (named-type "String"))
+      )) ; 17
+    (component "FileOpen" () (57 56 55)) ; 18
+    (undeclared-component "String" ("../data/q0_EbNo2.txt") (56)
+      (implements "is-builtin-function" "String")
+      (parameters
+        (parameter "string" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+      )) ; 19
+    (component "$BrzConstant" (3 0) (55)) ; 20
+    (component "$BrzBuiltinVariable" (2 "line[0..63]") (46 (41 39)) (at 131 2 "portio.balsa" 0)) ; 21
+    (component "$BrzFalseVariable" (64 2 "") (52 53 (49 44))) ; 22
+    (component "$BrzFetch" (64 "false") (38 37 52)) ; 23
+    (component "$BrzWhile" () (53 51 48)) ; 24
+    (component "$BrzUnaryFunc" (1 1 "Invert" "false") (51 50)) ; 25
+    (component "FileEOF" () (50 49)) ; 26
+    (component "$BrzSequenceOptimised" (2 "T") (48 (47 43))) ; 27
+    (component "$BrzFetch" (64 "false") (47 45 46)) ; 28
+    (component "FileReadLine" () (45 44)) ; 29
+    (component "$BrzFetch" (3 "false") (43 42 34)) ; 30
+    (undeclared-component "FromString" ((numeric-type #f 3)) (42 41 40)
+      (implements "is-builtin-function" "FromString")
+      (parameters
+        (type-parameter "X")
+      )
+      (ports
+        (port "activate" passive output (numeric-type #f 3))
+        (port "source" active input (named-type "String"))
+        (port "remainder" active input (named-type "String"))
+      )) ; 31
+    (undeclared-component "ForwardValuePrintMessage" ("in_c") (40 39)
+      (implements "is-builtin-function" "ForwardValuePrintMessage")
+      (parameters
+        (parameter "portName" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+        (port "value" active input (named-type "String"))
+      )) ; 32
+    (component "FileOpen" () (37 36 35)) ; 33
+    (undeclared-component "String" ("../data/q1_EbNo2.txt") (36)
+      (implements "is-builtin-function" "String")
+      (parameters
+        (parameter "string" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+      )) ; 34
+    (component "$BrzConstant" (3 0) (35)) ; 35
+    (component "$BrzLoop" () (19 31)) ; 36
+    (component "$BrzFalseVariable" (2 1 "") (32 33 (20))) ; 37
+    (component "$BrzFetch" (2 "false") (31 18 32)) ; 38
+    (component "$BrzFalseVariable" (64 1 "") (29 30 (22))) ; 39
+    (component "$BrzFetch" (64 "false") (33 21 29)) ; 40
+    (component "$BrzFetch" (1 "false") (30 27 28)) ; 41
+    (component "$BrzContinuePush" (1) (28)) ; 42
+    (component "WriteMessage" () (27 26)) ; 43
+    (component "StringAppend" () (26 25 24)) ; 44
+    (component "BalsaSimulationTime" () (25)) ; 45
+    (component "StringAppend" () (24 23 22)) ; 46
+    (undeclared-component "String" (": chan 'Out_state' reading ") (23)
+      (implements "is-builtin-function" "String")
+      (parameters
+        (parameter "string" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+      )) ; 47
+    (undeclared-component "ToString" ((named-type "State")) (21 20)
+      (implements "is-builtin-function" "ToString")
+      (parameters
+        (type-parameter "X")
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+        (port "value" active input (named-type "State"))
+      )) ; 48
+    (component "$BrzLoop" () (3 15)) ; 49
+    (component "$BrzFalseVariable" (1 1 "") (16 17 (4))) ; 50
+    (component "$BrzFetch" (1 "false") (15 2 16)) ; 51
+    (component "$BrzFalseVariable" (64 1 "") (13 14 (6))) ; 52
+    (component "$BrzFetch" (64 "false") (17 5 13)) ; 53
+    (component "$BrzFetch" (1 "false") (14 11 12)) ; 54
+    (component "$BrzContinuePush" (1) (12)) ; 55
+    (component "WriteMessage" () (11 10)) ; 56
+    (component "StringAppend" () (10 9 8)) ; 57
+    (component "BalsaSimulationTime" () (9)) ; 58
+    (component "StringAppend" () (8 7 6)) ; 59
+    (undeclared-component "String" (": chan 'out_o' reading ") (7)
+      (implements "is-builtin-function" "String")
+      (parameters
+        (parameter "string" (named-type "String"))
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+      )) ; 60
+    (undeclared-component "ToString" ((numeric-type #f 1)) (5 4)
+      (implements "is-builtin-function" "ToString")
+      (parameters
+        (type-parameter "X")
+      )
+      (ports
+        (port "activate" passive output (named-type "String"))
+        (port "value" active input (numeric-type #f 1))
+      )) ; 61
+  )
+  (call-contexts
+    (call-context 13 "BalsaInputPortFromFile-1" (at 20 26 "test-test1.balsa" 26) (at 0 0 "" 0) 26 (port-channels 54 57 58))
+    (call-context 15 "BalsaInputPortFromFile-7" (at 21 26 "test-test1.balsa" 26) (at 0 0 "" 0) 26 (port-channels 34 37 38))
+    (call-context 19 "BalsaWriteLogLine-16" (at 55 22 "portio.balsa" 20) (at 0 0 "" 0) 20 (port-channels 21 33))
+    (call-context 20 "BalsaOutputPortToLog-13" (at 22 24 "test-test1.balsa" 26) (at 0 0 "" 0) 26 (port-channels 18 19))
+    (call-context 24 "BalsaWriteLogLine-28" (at 55 22 "portio.balsa" 25) (at 0 0 "" 0) 25 (port-channels 5 17))
+    (call-context 25 "BalsaOutputPortToLog-25" (at 23 24 "test-test1.balsa" 26) (at 0 0 "" 0) 26 (port-channels 2 3))
+    (call-context 26 "balsa" (at 12 1 "test-test1.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+
+;;; EOF

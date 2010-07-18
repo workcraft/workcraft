@@ -1,0 +1,786 @@
+;;; Breeze intermediate file (list format)
+;;; Created: Thu May 13 17:25:45 2010
+;;; By: dell@dell-laptop (Linux)
+;;; With balsa-c version: 3.5.1
+;;; Command: balsa-c PMU.balsa 
+
+;;; Imports
+(import "balsa.types.builtin")
+(import "balsa.types.synthesis")
+(import "balsa.types.basic")
+(import "def_2")
+;;; Types
+
+(type "word32" (numeric-type #f 32))
+(type "word5" (numeric-type #f 5))
+(type "word6" (numeric-type #f 6))
+;;; Constants
+(constant "upper" 1 (numeric-type #f 1))
+(constant "lower" 0 (numeric-type #f 1))
+
+;;; Parts
+(breeze-part "smaller6"
+  (ports
+    (sync-port "activate" passive (at 23 1 "PMU.balsa" 0))
+    (port "x" active input (numeric-type #f 6) (at 24 12 "PMU.balsa" 0))
+    (port "y" active input (numeric-type #f 6) (at 25 12 "PMU.balsa" 0))
+    (port "o" active output (numeric-type #f 6) (at 26 12 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 23 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 29 5 "PMU.balsa" 1)) ; 1
+    (pull 6 (at 30 9 "PMU.balsa" 1) (name "x")) ; 2
+    (pull 6 (at 30 12 "PMU.balsa" 1) (name "y")) ; 3
+    (push 6 (at 32 17 "PMU.balsa" 1) (name "o")) ; 4
+    (pull 6 (at 34 22 "PMU.balsa" 1) (name "y")) ; 5
+    (push 6 (at 34 17 "PMU.balsa" 1) (name "o")) ; 6
+    (sync (at 34 19 "PMU.balsa" 1)) ; 7
+    (pull 6 (at 32 22 "PMU.balsa" 1) (name "x")) ; 8
+    (push 6 (at 32 17 "PMU.balsa" 1) (name "o")) ; 9
+    (sync (at 32 19 "PMU.balsa" 1)) ; 10
+    (pull 6 (at 31 21 "PMU.balsa" 1) (name "y")) ; 11
+    (pull 6 (at 31 17 "PMU.balsa" 1) (name "x")) ; 12
+    (pull 1 (at 31 19 "PMU.balsa" 1)) ; 13
+    (push 1 (at 31 13 "PMU.balsa" 1)) ; 14
+    (sync (at 30 14 "PMU.balsa" 1)) ; 15
+    (sync (at 30 14 "PMU.balsa" 1)) ; 16
+    (sync (at 30 14 "PMU.balsa" 1)) ; 17
+    (sync (at 30 14 "PMU.balsa" 1)) ; 18
+    (sync (at 30 14 "PMU.balsa" 1)) ; 19
+    (sync (at 30 14 "PMU.balsa" 1)) ; 20
+  )
+  (components
+    (component "$BrzLoop" () (1 19)) ; 0
+    (component "$BrzSynch" (2) ((17 15) 20)) ; 1
+    (component "$BrzFork" (2) (19 (18 16))) ; 2
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (18 3 17 (5 11))) ; 3
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (16 2 15 (8 12))) ; 4
+    (component "$BrzCase" (1 2 "0;1") (14 (7 10))) ; 5
+    (component "$BrzFetch" (1 "false") (20 13 14)) ; 6
+    (component "$BrzBinaryFunc" (1 6 6 "LessThan""false" "false" "false") (13 12 11)) ; 7
+    (component "$BrzCallMux" (6 2) ((9 6) 4)) ; 8
+    (component "$BrzFetch" (6 "false") (10 8 9)) ; 9
+    (component "$BrzFetch" (6 "false") (7 5 6)) ; 10
+  )
+  (call-contexts
+    (call-context 1 "smaller6" (at 23 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "ACSUnit"
+  (ports
+    (sync-port "activate" passive (at 40 1 "PMU.balsa" 0))
+    (port "WState_A" active input (numeric-type #f 6) (at 41 20 "PMU.balsa" 0))
+    (port "BMU_A" active input (numeric-type #f 4) (at 42 17 "PMU.balsa" 0))
+    (port "WState_B" active input (numeric-type #f 6) (at 43 20 "PMU.balsa" 0))
+    (port "BMU_B" active input (numeric-type #f 4) (at 44 17 "PMU.balsa" 0))
+    (port "WState_O" active output (numeric-type #f 6) (at 45 21 "PMU.balsa" 0))
+    (port "direction" active output (numeric-type #f 1) (at 46 22 "PMU.balsa" 0))
+    (port "isZero" active output (numeric-type #f 1) (at 47 22 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 40 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 54 5 "PMU.balsa" 2)) ; 1
+    (pull 6 (at 55 9 "PMU.balsa" 2) (name "WState_A")) ; 2
+    (pull 4 (at 55 19 "PMU.balsa" 2) (name "BMU_A")) ; 3
+    (pull 6 (at 55 26 "PMU.balsa" 2) (name "WState_B")) ; 4
+    (pull 4 (at 55 36 "PMU.balsa" 2) (name "BMU_B")) ; 5
+    (push 6 (at 60 21 "PMU.balsa" 2) (name "WState_O")) ; 6
+    (push 1 (at 61 21 "PMU.balsa" 2) (name "direction")) ; 7
+    (push 1 (at 62 21 "PMU.balsa" 2) (name "isZero")) ; 8
+    (pull 6 (at 58 17 "PMU.balsa" 2) (name "WB")) ; 9
+    (pull 6 (at 58 13 "PMU.balsa" 2) (name "WA")) ; 10
+    (pull 6 (at 66 32 "PMU.balsa" 2) (name "WB")) ; 11
+    (pull 1 (at 66 35 "PMU.balsa" 2)) ; 12
+    (push 1 (at 66 21 "PMU.balsa" 2) (name "isZero")) ; 13
+    (sync (at 66 28 "PMU.balsa" 2)) ; 14
+    (sync (at 65 31 "PMU.balsa" 2)) ; 15
+    (pull 6 (at 64 33 "PMU.balsa" 2) (name "WB")) ; 16
+    (push 6 (at 64 21 "PMU.balsa" 2) (name "WState_O")) ; 17
+    (sync (at 64 30 "PMU.balsa" 2)) ; 18
+    (sync (at 64 40 "PMU.balsa" 2)) ; 19
+    (pull 6 (at 62 32 "PMU.balsa" 2) (name "WA")) ; 20
+    (pull 1 (at 62 35 "PMU.balsa" 2)) ; 21
+    (push 1 (at 62 21 "PMU.balsa" 2) (name "isZero")) ; 22
+    (sync (at 62 28 "PMU.balsa" 2)) ; 23
+    (sync (at 61 31 "PMU.balsa" 2)) ; 24
+    (pull 6 (at 60 33 "PMU.balsa" 2) (name "WA")) ; 25
+    (push 6 (at 60 21 "PMU.balsa" 2) (name "WState_O")) ; 26
+    (sync (at 60 30 "PMU.balsa" 2)) ; 27
+    (sync (at 60 40 "PMU.balsa" 2)) ; 28
+    (pull 6 (at 59 26 "PMU.balsa" 2) (name "WB")) ; 29
+    (pull 6 (at 59 20 "PMU.balsa" 2) (name "WA")) ; 30
+    (pull 1 (at 59 23 "PMU.balsa" 2)) ; 31
+    (push 1 (at 59 17 "PMU.balsa" 2)) ; 32
+    (sync (at 58 20 "PMU.balsa" 2)) ; 33
+    (sync (at 58 20 "PMU.balsa" 2)) ; 34
+    (sync (at 58 20 "PMU.balsa" 2)) ; 35
+    (sync (at 58 20 "PMU.balsa" 2)) ; 36
+    (sync (at 58 20 "PMU.balsa" 2)) ; 37
+    (sync (at 58 20 "PMU.balsa" 2)) ; 38
+    (pull 4 (at 57 31 "PMU.balsa" 2) (name "BMU_B")) ; 39
+    (pull 6 (at 57 20 "PMU.balsa" 2) (name "WState_B")) ; 40
+    (pull 6 (at 57 37 "PMU.balsa" 2)) ; 41
+    (push 6 (at 57 13 "PMU.balsa" 2) (name "WB")) ; 42
+    (sync (at 57 16 "PMU.balsa" 2)) ; 43
+    (pull 4 (at 56 31 "PMU.balsa" 2) (name "BMU_A")) ; 44
+    (pull 6 (at 56 20 "PMU.balsa" 2) (name "WState_A")) ; 45
+    (pull 6 (at 56 37 "PMU.balsa" 2)) ; 46
+    (push 6 (at 56 13 "PMU.balsa" 2) (name "WA")) ; 47
+    (sync (at 56 16 "PMU.balsa" 2)) ; 48
+    (sync (at 55 42 "PMU.balsa" 2)) ; 49
+    (push 6 (at 55 9 "PMU.balsa" 2) (name "WState_A")) ; 50
+    (sync (at 55 42 "PMU.balsa" 2)) ; 51
+    (sync (at 55 42 "PMU.balsa" 2)) ; 52
+    (push 4 (at 55 19 "PMU.balsa" 2) (name "BMU_A")) ; 53
+    (sync (at 55 42 "PMU.balsa" 2)) ; 54
+    (sync (at 55 42 "PMU.balsa" 2)) ; 55
+    (push 6 (at 55 26 "PMU.balsa" 2) (name "WState_B")) ; 56
+    (sync (at 55 42 "PMU.balsa" 2)) ; 57
+    (sync (at 55 42 "PMU.balsa" 2)) ; 58
+    (push 4 (at 55 36 "PMU.balsa" 2) (name "BMU_B")) ; 59
+    (sync (at 55 42 "PMU.balsa" 2)) ; 60
+    (sync (at 55 42 "PMU.balsa" 2)) ; 61
+    (sync (at 55 42 "PMU.balsa" 2)) ; 62
+  )
+  (components
+    (component "$BrzLoop" () (1 61)) ; 0
+    (component "$BrzSynch" (4) ((60 57 54 51) 62)) ; 1
+    (component "$BrzFork" (4) (61 (58 55 52 49))) ; 2
+    (component "$BrzFalseVariable" (4 1 "") (59 60 (39))) ; 3
+    (component "$BrzFetch" (4 "false") (58 5 59)) ; 4
+    (component "$BrzFalseVariable" (6 1 "") (56 57 (40))) ; 5
+    (component "$BrzFetch" (6 "false") (55 4 56)) ; 6
+    (component "$BrzFalseVariable" (4 1 "") (53 54 (44))) ; 7
+    (component "$BrzFetch" (4 "false") (52 3 53)) ; 8
+    (component "$BrzFalseVariable" (6 1 "") (50 51 (45))) ; 9
+    (component "$BrzFetch" (6 "false") (49 2 50)) ; 10
+    (component "$BrzPassivatorPush" (6 1) ((10) 47)) ; 11
+    (component "$BrzPassivatorPush" (6 1) ((9) 42)) ; 12
+    (component "$BrzConcur" (3) (62 (48 43 37))) ; 13
+    (component "$BrzFetch" (6 "false") (48 46 47)) ; 14
+    (component "$BrzBinaryFunc" (6 6 4 "Add""false" "false" "false") (46 45 44)) ; 15
+    (component "$BrzFetch" (6 "false") (43 41 42)) ; 16
+    (component "$BrzBinaryFunc" (6 6 4 "Add""false" "false" "false") (41 40 39)) ; 17
+    (component "$BrzSynch" (2) ((35 33) 38)) ; 18
+    (component "$BrzFork" (2) (37 (36 34))) ; 19
+    (component "$BrzActiveEagerFalseVariable" (6 3 "") (36 10 35 (25 20 30))) ; 20
+    (component "$BrzActiveEagerFalseVariable" (6 3 "") (34 9 33 (16 11 29))) ; 21
+    (component "$BrzCase" (1 2 "0;1") (32 (19 28))) ; 22
+    (component "$BrzFetch" (1 "false") (38 31 32)) ; 23
+    (component "$BrzBinaryFunc" (1 6 6 "LessOrEquals""false" "false" "false") (31 30 29)) ; 24
+    (component "$BrzCallMux" (1 2) ((22 13) 8)) ; 25
+    (component "$BrzCallMux" (6 2) ((26 17) 6)) ; 26
+    (component "$BrzConcur" (3) (28 (27 24 23))) ; 27
+    (component "$BrzFetch" (6 "false") (27 25 26)) ; 28
+    (component "$BrzFetch" (1 "false") (23 21 22)) ; 29
+    (component "$BrzBinaryFuncConstR" (1 6 1 "Equals" "false" "false" "false" 0) (21 20)) ; 30
+    (component "$BrzConcur" (3) (19 (18 15 14))) ; 31
+    (component "$BrzFetch" (6 "false") (18 16 17)) ; 32
+    (component "$BrzFetch" (1 "false") (14 12 13)) ; 33
+    (component "$BrzBinaryFuncConstR" (1 6 1 "Equals" "false" "false" "false" 0) (12 11)) ; 34
+    (component "$BrzEncode" (1 2 "0;1") ((24 15) 7)) ; 35
+  )
+  (call-contexts
+    (call-context 2 "ACSUnit" (at 40 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "reduction"
+  (ports
+    (sync-port "activate" passive (at 73 1 "PMU.balsa" 0))
+    (arrayed-port "WMSa" active input (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 74 5 "PMU.balsa" 0))
+    (arrayed-port "WMSb" active input (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 75 5 "PMU.balsa" 0))
+    (arrayed-port "NWMS" active output (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 76 5 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 73 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 83 46 "PMU.balsa" 3)) ; 1
+    (pull 6 (at 83 18 "PMU.balsa" 3) (name "WMSa[0]")) ; 2
+    (pull 6 (at 83 27 "PMU.balsa" 3) (name "WMSa[1]")) ; 3
+    (pull 6 (at 84 18 "PMU.balsa" 3) (name "WMSa[2]")) ; 4
+    (pull 6 (at 84 27 "PMU.balsa" 3) (name "WMSa[3]")) ; 5
+    (pull 6 (at 87 23 "PMU.balsa" 3) (name "WMSb[0]")) ; 6
+    (pull 6 (at 87 32 "PMU.balsa" 3) (name "WMSb[1]")) ; 7
+    (pull 6 (at 87 41 "PMU.balsa" 3) (name "WMSb[2]")) ; 8
+    (pull 6 (at 87 50 "PMU.balsa" 3) (name "WMSb[3]")) ; 9
+    (push 6 (at 89 21 "PMU.balsa" 3) (name "NWMS[0]")) ; 10
+    (push 6 (at 89 21 "PMU.balsa" 3) (name "NWMS[1]")) ; 11
+    (push 6 (at 89 21 "PMU.balsa" 3) (name "NWMS[2]")) ; 12
+    (push 6 (at 89 21 "PMU.balsa" 3) (name "NWMS[3]")) ; 13
+    (pull 6 (at 87 9 "PMU.balsa" 3) (name "smallest")) ; 14
+    (pull 6 (at 89 39 "PMU.balsa" 3) (name "smallest")) ; 15
+    (pull 6 (at 89 33 "PMU.balsa" 3) (name "WMSb[3]")) ; 16
+    (pull 6 (at 89 48 "PMU.balsa" 3)) ; 17
+    (sync (at 89 25 "PMU.balsa" 3)) ; 18
+    (pull 6 (at 89 39 "PMU.balsa" 3) (name "smallest")) ; 19
+    (pull 6 (at 89 33 "PMU.balsa" 3) (name "WMSb[2]")) ; 20
+    (pull 6 (at 89 48 "PMU.balsa" 3)) ; 21
+    (sync (at 89 25 "PMU.balsa" 3)) ; 22
+    (pull 6 (at 89 39 "PMU.balsa" 3) (name "smallest")) ; 23
+    (pull 6 (at 89 33 "PMU.balsa" 3) (name "WMSb[1]")) ; 24
+    (pull 6 (at 89 48 "PMU.balsa" 3)) ; 25
+    (sync (at 89 25 "PMU.balsa" 3)) ; 26
+    (pull 6 (at 89 39 "PMU.balsa" 3) (name "smallest")) ; 27
+    (pull 6 (at 89 33 "PMU.balsa" 3) (name "WMSb[0]")) ; 28
+    (pull 6 (at 89 48 "PMU.balsa" 3)) ; 29
+    (sync (at 89 25 "PMU.balsa" 3)) ; 30
+    (sync (at 87 54 "PMU.balsa" 3)) ; 31
+    (sync (at 87 54 "PMU.balsa" 3)) ; 32
+    (sync (at 87 54 "PMU.balsa" 3)) ; 33
+    (sync (at 87 54 "PMU.balsa" 3)) ; 34
+    (sync (at 87 54 "PMU.balsa" 3)) ; 35
+    (sync (at 87 54 "PMU.balsa" 3)) ; 36
+    (sync (at 87 54 "PMU.balsa" 3)) ; 37
+    (sync (at 87 54 "PMU.balsa" 3)) ; 38
+    (sync (at 87 54 "PMU.balsa" 3)) ; 39
+    (sync (at 87 54 "PMU.balsa" 3)) ; 40
+    (sync (at 87 54 "PMU.balsa" 3)) ; 41
+    (sync (at 87 54 "PMU.balsa" 3)) ; 42
+    (sync (at 86 5 "PMU.balsa" 3)) ; 43
+    (push 6 (at 85 36 "PMU.balsa" 3) (name "smallest")) ; 44
+    (pull 6 (at 85 25 "PMU.balsa" 3) (name "smallest2")) ; 45
+    (pull 6 (at 85 14 "PMU.balsa" 3) (name "smallest1")) ; 46
+    (sync (at 85 13 "PMU.balsa" 3)) ; 47
+    (push 6 (at 84 32 "PMU.balsa" 3) (name "smallest2")) ; 48
+    (sync (at 84 13 "PMU.balsa" 3)) ; 49
+    (push 6 (at 83 32 "PMU.balsa" 3) (name "smallest1")) ; 50
+    (sync (at 83 13 "PMU.balsa" 3)) ; 51
+  )
+  (components
+    (component "$BrzPassivatorPush" (6 1) ((14) 44)) ; 0
+    (component "$BrzPassivatorPush" (6 1) ((46) 50)) ; 1
+    (component "$BrzPassivatorPush" (6 1) ((45) 48)) ; 2
+    (component "$BrzWireFork" (4) (1 (51 49 47 43))) ; 3
+    (component "smaller6" () (51 2 3 50)) ; 4
+    (component "smaller6" () (49 4 5 48)) ; 5
+    (component "smaller6" () (47 46 45 44)) ; 6
+    (component "$BrzLoop" () (43 41)) ; 7
+    (component "$BrzSynch" (5) ((39 37 35 33 31) 42)) ; 8
+    (component "$BrzFork" (5) (41 (40 38 36 34 32))) ; 9
+    (component "$BrzActiveEagerFalseVariable" (6 1 "") (40 9 39 (16))) ; 10
+    (component "$BrzActiveEagerFalseVariable" (6 1 "") (38 8 37 (20))) ; 11
+    (component "$BrzActiveEagerFalseVariable" (6 1 "") (36 7 35 (24))) ; 12
+    (component "$BrzActiveEagerFalseVariable" (6 1 "") (34 6 33 (28))) ; 13
+    (component "$BrzActiveEagerFalseVariable" (6 4 "") (32 14 31 (27 23 19 15))) ; 14
+    (component "$BrzConcur" (4) (42 (30 26 22 18))) ; 15
+    (component "$BrzFetch" (6 "false") (30 29 10)) ; 16
+    (component "$BrzBinaryFunc" (6 6 6 "Subtract""false" "false" "false") (29 28 27)) ; 17
+    (component "$BrzFetch" (6 "false") (26 25 11)) ; 18
+    (component "$BrzBinaryFunc" (6 6 6 "Subtract""false" "false" "false") (25 24 23)) ; 19
+    (component "$BrzFetch" (6 "false") (22 21 12)) ; 20
+    (component "$BrzBinaryFunc" (6 6 6 "Subtract""false" "false" "false") (21 20 19)) ; 21
+    (component "$BrzFetch" (6 "false") (18 17 13)) ; 22
+    (component "$BrzBinaryFunc" (6 6 6 "Subtract""false" "false" "false") (17 16 15)) ; 23
+  )
+  (call-contexts
+    (call-context 3 "reduction" (at 73 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "trellis"
+  (ports
+    (sync-port "activate" passive (at 95 1 "PMU.balsa" 0))
+    (arrayed-port "wMS" active input (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 101 3 "PMU.balsa" 0))
+    (arrayed-port "bM" active input (numeric-type #f 4) 0 4 (numeric-type #f 2) (at 108 3 "PMU.balsa" 0))
+    (arrayed-port "wmA" active output (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 110 3 "PMU.balsa" 0))
+    (arrayed-port "wmB" active output (numeric-type #f 6) 0 4 (numeric-type #f 2) (at 111 3 "PMU.balsa" 0))
+    (arrayed-port "bmA" active output (numeric-type #f 4) 0 4 (numeric-type #f 2) (at 112 3 "PMU.balsa" 0))
+    (arrayed-port "bmB" active output (numeric-type #f 4) 0 4 (numeric-type #f 2) (at 113 3 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 95 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 122 9 "PMU.balsa" 4)) ; 1
+    (pull 6 (at 118 12 "PMU.balsa" 4) (name "wMS[0]")) ; 2
+    (pull 6 (at 124 12 "PMU.balsa" 4) (name "wMS[1]")) ; 3
+    (pull 6 (at 130 12 "PMU.balsa" 4) (name "wMS[2]")) ; 4
+    (pull 6 (at 136 12 "PMU.balsa" 4) (name "wMS[3]")) ; 5
+    (pull 4 (at 142 11 "PMU.balsa" 4) (name "bM[0]")) ; 6
+    (pull 4 (at 148 11 "PMU.balsa" 4) (name "bM[1]")) ; 7
+    (pull 4 (at 154 11 "PMU.balsa" 4) (name "bM[2]")) ; 8
+    (pull 4 (at 160 11 "PMU.balsa" 4) (name "bM[3]")) ; 9
+    (push 6 (at 119 16 "PMU.balsa" 4) (name "wmA[0]")) ; 10
+    (push 6 (at 120 16 "PMU.balsa" 4) (name "wmA[1]")) ; 11
+    (push 6 (at 125 16 "PMU.balsa" 4) (name "wmA[2]")) ; 12
+    (push 6 (at 126 16 "PMU.balsa" 4) (name "wmA[3]")) ; 13
+    (push 6 (at 131 16 "PMU.balsa" 4) (name "wmB[0]")) ; 14
+    (push 6 (at 132 16 "PMU.balsa" 4) (name "wmB[1]")) ; 15
+    (push 6 (at 137 16 "PMU.balsa" 4) (name "wmB[2]")) ; 16
+    (push 6 (at 138 16 "PMU.balsa" 4) (name "wmB[3]")) ; 17
+    (push 4 (at 143 16 "PMU.balsa" 4) (name "bmA[0]")) ; 18
+    (push 4 (at 162 16 "PMU.balsa" 4) (name "bmA[1]")) ; 19
+    (push 4 (at 149 16 "PMU.balsa" 4) (name "bmA[2]")) ; 20
+    (push 4 (at 156 16 "PMU.balsa" 4) (name "bmA[3]")) ; 21
+    (push 4 (at 161 16 "PMU.balsa" 4) (name "bmB[0]")) ; 22
+    (push 4 (at 144 16 "PMU.balsa" 4) (name "bmB[1]")) ; 23
+    (push 4 (at 155 16 "PMU.balsa" 4) (name "bmB[2]")) ; 24
+    (push 4 (at 150 16 "PMU.balsa" 4) (name "bmB[3]")) ; 25
+    (pull 4 (at 162 26 "PMU.balsa" 4) (name "bM[3]")) ; 26
+    (sync (at 162 21 "PMU.balsa" 4)) ; 27
+    (pull 4 (at 161 26 "PMU.balsa" 4) (name "bM[3]")) ; 28
+    (sync (at 161 21 "PMU.balsa" 4)) ; 29
+    (sync (at 160 15 "PMU.balsa" 4)) ; 30
+    (sync (at 160 15 "PMU.balsa" 4)) ; 31
+    (sync (at 159 5 "PMU.balsa" 4)) ; 32
+    (pull 4 (at 156 26 "PMU.balsa" 4) (name "bM[2]")) ; 33
+    (sync (at 156 21 "PMU.balsa" 4)) ; 34
+    (pull 4 (at 155 26 "PMU.balsa" 4) (name "bM[2]")) ; 35
+    (sync (at 155 21 "PMU.balsa" 4)) ; 36
+    (sync (at 154 15 "PMU.balsa" 4)) ; 37
+    (sync (at 154 15 "PMU.balsa" 4)) ; 38
+    (sync (at 153 5 "PMU.balsa" 4)) ; 39
+    (pull 4 (at 150 26 "PMU.balsa" 4) (name "bM[1]")) ; 40
+    (sync (at 150 21 "PMU.balsa" 4)) ; 41
+    (pull 4 (at 149 26 "PMU.balsa" 4) (name "bM[1]")) ; 42
+    (sync (at 149 21 "PMU.balsa" 4)) ; 43
+    (sync (at 148 15 "PMU.balsa" 4)) ; 44
+    (sync (at 148 15 "PMU.balsa" 4)) ; 45
+    (sync (at 147 5 "PMU.balsa" 4)) ; 46
+    (pull 4 (at 144 26 "PMU.balsa" 4) (name "bM[0]")) ; 47
+    (sync (at 144 21 "PMU.balsa" 4)) ; 48
+    (pull 4 (at 143 26 "PMU.balsa" 4) (name "bM[0]")) ; 49
+    (sync (at 143 21 "PMU.balsa" 4)) ; 50
+    (sync (at 142 15 "PMU.balsa" 4)) ; 51
+    (sync (at 142 15 "PMU.balsa" 4)) ; 52
+    (sync (at 141 5 "PMU.balsa" 4)) ; 53
+    (pull 6 (at 138 26 "PMU.balsa" 4) (name "wMS[3]")) ; 54
+    (sync (at 138 20 "PMU.balsa" 4)) ; 55
+    (pull 6 (at 137 26 "PMU.balsa" 4) (name "wMS[3]")) ; 56
+    (sync (at 137 20 "PMU.balsa" 4)) ; 57
+    (sync (at 136 16 "PMU.balsa" 4)) ; 58
+    (sync (at 136 16 "PMU.balsa" 4)) ; 59
+    (sync (at 135 5 "PMU.balsa" 4)) ; 60
+    (pull 6 (at 132 27 "PMU.balsa" 4) (name "wMS[2]")) ; 61
+    (sync (at 132 21 "PMU.balsa" 4)) ; 62
+    (pull 6 (at 131 27 "PMU.balsa" 4) (name "wMS[2]")) ; 63
+    (sync (at 131 21 "PMU.balsa" 4)) ; 64
+    (sync (at 130 16 "PMU.balsa" 4)) ; 65
+    (sync (at 130 16 "PMU.balsa" 4)) ; 66
+    (sync (at 129 5 "PMU.balsa" 4)) ; 67
+    (pull 6 (at 126 27 "PMU.balsa" 4) (name "wMS[1]")) ; 68
+    (sync (at 126 21 "PMU.balsa" 4)) ; 69
+    (pull 6 (at 125 27 "PMU.balsa" 4) (name "wMS[1]")) ; 70
+    (sync (at 125 21 "PMU.balsa" 4)) ; 71
+    (sync (at 124 16 "PMU.balsa" 4)) ; 72
+    (sync (at 124 16 "PMU.balsa" 4)) ; 73
+    (sync (at 123 5 "PMU.balsa" 4)) ; 74
+    (pull 6 (at 120 27 "PMU.balsa" 4) (name "wMS[0]")) ; 75
+    (sync (at 120 21 "PMU.balsa" 4)) ; 76
+    (pull 6 (at 119 27 "PMU.balsa" 4) (name "wMS[0]")) ; 77
+    (sync (at 119 21 "PMU.balsa" 4)) ; 78
+    (sync (at 118 16 "PMU.balsa" 4)) ; 79
+    (sync (at 118 16 "PMU.balsa" 4)) ; 80
+    (sync (at 117 5 "PMU.balsa" 4)) ; 81
+  )
+  (components
+    (component "$BrzWireFork" (8) (1 (81 74 67 60 53 46 39 32))) ; 0
+    (component "$BrzLoop" () (81 80)) ; 1
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (80 2 79 (77 75))) ; 2
+    (component "$BrzConcur" (2) (79 (78 76))) ; 3
+    (component "$BrzFetch" (6 "false") (78 77 10)) ; 4
+    (component "$BrzFetch" (6 "false") (76 75 11)) ; 5
+    (component "$BrzLoop" () (74 73)) ; 6
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (73 3 72 (70 68))) ; 7
+    (component "$BrzConcur" (2) (72 (71 69))) ; 8
+    (component "$BrzFetch" (6 "false") (71 70 12)) ; 9
+    (component "$BrzFetch" (6 "false") (69 68 13)) ; 10
+    (component "$BrzLoop" () (67 66)) ; 11
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (66 4 65 (63 61))) ; 12
+    (component "$BrzConcur" (2) (65 (64 62))) ; 13
+    (component "$BrzFetch" (6 "false") (64 63 14)) ; 14
+    (component "$BrzFetch" (6 "false") (62 61 15)) ; 15
+    (component "$BrzLoop" () (60 59)) ; 16
+    (component "$BrzActiveEagerFalseVariable" (6 2 "") (59 5 58 (56 54))) ; 17
+    (component "$BrzConcur" (2) (58 (57 55))) ; 18
+    (component "$BrzFetch" (6 "false") (57 56 16)) ; 19
+    (component "$BrzFetch" (6 "false") (55 54 17)) ; 20
+    (component "$BrzLoop" () (53 52)) ; 21
+    (component "$BrzActiveEagerFalseVariable" (4 2 "") (52 6 51 (49 47))) ; 22
+    (component "$BrzConcur" (2) (51 (50 48))) ; 23
+    (component "$BrzFetch" (4 "false") (50 49 18)) ; 24
+    (component "$BrzFetch" (4 "false") (48 47 23)) ; 25
+    (component "$BrzLoop" () (46 45)) ; 26
+    (component "$BrzActiveEagerFalseVariable" (4 2 "") (45 7 44 (42 40))) ; 27
+    (component "$BrzConcur" (2) (44 (43 41))) ; 28
+    (component "$BrzFetch" (4 "false") (43 42 20)) ; 29
+    (component "$BrzFetch" (4 "false") (41 40 25)) ; 30
+    (component "$BrzLoop" () (39 38)) ; 31
+    (component "$BrzActiveEagerFalseVariable" (4 2 "") (38 8 37 (35 33))) ; 32
+    (component "$BrzConcur" (2) (37 (36 34))) ; 33
+    (component "$BrzFetch" (4 "false") (36 35 24)) ; 34
+    (component "$BrzFetch" (4 "false") (34 33 21)) ; 35
+    (component "$BrzLoop" () (32 31)) ; 36
+    (component "$BrzActiveEagerFalseVariable" (4 2 "") (31 9 30 (28 26))) ; 37
+    (component "$BrzConcur" (2) (30 (29 27))) ; 38
+    (component "$BrzFetch" (4 "false") (29 28 22)) ; 39
+    (component "$BrzFetch" (4 "false") (27 26 19)) ; 40
+  )
+  (call-contexts
+    (call-context 4 "trellis" (at 95 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "pmBuff"
+  (ports
+    (sync-port "activate" passive (at 167 1 "PMU.balsa" 0))
+    (port "i" active input (numeric-type #f 6) (at 168 13 "PMU.balsa" 0))
+    (port "oa" active output (numeric-type #f 6) (at 169 13 "PMU.balsa" 0))
+    (port "ob" active output (numeric-type #f 6) (at 170 13 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 167 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 175 13 "PMU.balsa" 5)) ; 1
+    (pull 6 (at 177 9 "PMU.balsa" 5) (name "i")) ; 2
+    (push 6 (at 174 5 "PMU.balsa" 5) (name "oa")) ; 3
+    (push 6 (at 175 5 "PMU.balsa" 5) (name "ob")) ; 4
+    (pull 6 (at 179 15 "PMU.balsa" 5) (name "b")) ; 5
+    (push 6 (at 179 9 "PMU.balsa" 5) (name "ob")) ; 6
+    (sync (at 179 12 "PMU.balsa" 5)) ; 7
+    (pull 6 (at 178 15 "PMU.balsa" 5) (name "b")) ; 8
+    (push 6 (at 178 9 "PMU.balsa" 5) (name "oa")) ; 9
+    (sync (at 178 12 "PMU.balsa" 5)) ; 10
+    (sync (at 178 17 "PMU.balsa" 5)) ; 11
+    (push 6 (at 177 11 "PMU.balsa" 5) (name "b")) ; 12
+    (sync (at 177 11 "PMU.balsa" 5)) ; 13
+    (sync (at 177 17 "PMU.balsa" 5)) ; 14
+    (sync (at 176 5 "PMU.balsa" 5)) ; 15
+    (pull 6 (at 175 11 "PMU.balsa" 5)) ; 16
+    (push 6 (at 175 5 "PMU.balsa" 5) (name "ob")) ; 17
+    (sync (at 175 8 "PMU.balsa" 5)) ; 18
+    (pull 6 (at 174 11 "PMU.balsa" 5)) ; 19
+    (push 6 (at 174 5 "PMU.balsa" 5) (name "oa")) ; 20
+    (sync (at 174 8 "PMU.balsa" 5)) ; 21
+    (sync (at 174 13 "PMU.balsa" 5)) ; 22
+  )
+  (components
+    (component "$BrzVariable" (6 2 "b[0..5]" "") (12 (8 5)) (at 172 3 "PMU.balsa" 0)) ; 0
+    (component "$BrzSequenceOptimised" (2 "S") (1 (22 15))) ; 1
+    (component "$BrzCallMux" (6 2) ((17 6) 4)) ; 2
+    (component "$BrzCallMux" (6 2) ((20 9) 3)) ; 3
+    (component "$BrzConcur" (2) (22 (21 18))) ; 4
+    (component "$BrzFetch" (6 "false") (21 19 20)) ; 5
+    (component "$BrzConstant" (6 0) (19)) ; 6
+    (component "$BrzFetch" (6 "false") (18 16 17)) ; 7
+    (component "$BrzConstant" (6 0) (16)) ; 8
+    (component "$BrzLoop" () (15 14)) ; 9
+    (component "$BrzSequenceOptimised" (2 "T") (14 (13 11))) ; 10
+    (component "$BrzFetch" (6 "false") (13 2 12)) ; 11
+    (component "$BrzConcur" (2) (11 (10 7))) ; 12
+    (component "$BrzFetch" (6 "false") (10 8 9)) ; 13
+    (component "$BrzFetch" (6 "false") (7 5 6)) ; 14
+  )
+  (call-contexts
+    (call-context 5 "pmBuff" (at 167 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "globalWinner"
+  (ports
+    (sync-port "activate" passive (at 183 1 "PMU.balsa" 0))
+    (arrayed-port "isZero" active input (numeric-type #f 1) 0 4 (numeric-type #f 2) (at 184 3 "PMU.balsa" 0))
+    (port "globalWinner" active output (named-type "State") (at 185 23 "PMU.balsa" 0))
+    (port "globalWinner_found" active output (numeric-type #f 1) (at 186 29 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 183 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 189 5 "PMU.balsa" 6)) ; 1
+    (pull 1 (at 190 15 "PMU.balsa" 6) (name "isZero[0]")) ; 2
+    (pull 1 (at 190 26 "PMU.balsa" 6) (name "isZero[1]")) ; 3
+    (pull 1 (at 190 37 "PMU.balsa" 6) (name "isZero[2]")) ; 4
+    (pull 1 (at 190 48 "PMU.balsa" 6) (name "isZero[3]")) ; 5
+    (push 2 (at 202 17 "PMU.balsa" 6) (name "globalWinner") (type (named-type "State"))) ; 6
+    (push 1 (at 203 17 "PMU.balsa" 6) (name "globalWinner_found")) ; 7
+    (sync (at 206 36 "PMU.balsa" 6)) ; 8
+    (sync (at 205 30 "PMU.balsa" 6)) ; 9
+    (sync (at 205 41 "PMU.balsa" 6)) ; 10
+    (sync (at 194 36 "PMU.balsa" 6)) ; 11
+    (sync (at 193 30 "PMU.balsa" 6)) ; 12
+    (sync (at 193 41 "PMU.balsa" 6)) ; 13
+    (sync (at 197 36 "PMU.balsa" 6)) ; 14
+    (sync (at 196 30 "PMU.balsa" 6)) ; 15
+    (sync (at 196 41 "PMU.balsa" 6)) ; 16
+    (sync (at 200 36 "PMU.balsa" 6)) ; 17
+    (sync (at 199 30 "PMU.balsa" 6)) ; 18
+    (sync (at 199 41 "PMU.balsa" 6)) ; 19
+    (sync (at 203 36 "PMU.balsa" 6)) ; 20
+    (sync (at 202 30 "PMU.balsa" 6)) ; 21
+    (sync (at 202 41 "PMU.balsa" 6)) ; 22
+    (pull 1 (at 191 72 "PMU.balsa" 6) (name "isZero[3]")) ; 23
+    (pull 1 (at 191 57 "PMU.balsa" 6) (name "isZero[2]")) ; 24
+    (pull 1 (at 191 42 "PMU.balsa" 6) (name "isZero[1]")) ; 25
+    (pull 1 (at 191 27 "PMU.balsa" 6) (name "isZero[0]")) ; 26
+    (pull 4 (at 191 62 "PMU.balsa" 6)) ; 27
+    (push 4 (at 191 62 "PMU.balsa" 6)) ; 28
+    (sync (at 190 52 "PMU.balsa" 6)) ; 29
+    (sync (at 190 52 "PMU.balsa" 6)) ; 30
+    (sync (at 190 52 "PMU.balsa" 6)) ; 31
+    (sync (at 190 52 "PMU.balsa" 6)) ; 32
+    (sync (at 190 52 "PMU.balsa" 6)) ; 33
+    (sync (at 190 52 "PMU.balsa" 6)) ; 34
+    (sync (at 190 52 "PMU.balsa" 6)) ; 35
+    (sync (at 190 52 "PMU.balsa" 6)) ; 36
+    (sync (at 190 52 "PMU.balsa" 6)) ; 37
+    (sync (at 190 52 "PMU.balsa" 6)) ; 38
+  )
+  (components
+    (component "$BrzLoop" () (1 37)) ; 0
+    (component "$BrzSynch" (4) ((35 33 31 29) 38)) ; 1
+    (component "$BrzFork" (4) (37 (36 34 32 30))) ; 2
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (36 5 35 (23))) ; 3
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (34 4 33 (24))) ; 4
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (32 3 31 (25))) ; 5
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (30 2 29 (26))) ; 6
+    (component "$BrzCase" (4 5 "9,5m8,3m12,6m8,10,12,0;1;2;4;8") (28 (10 13 16 19 22))) ; 7
+    (component "$BrzFetch" (4 "false") (38 27 28)) ; 8
+    (component "$BrzConcur" (2) (22 (21 20))) ; 9
+    (component "$BrzConcur" (2) (19 (18 17))) ; 10
+    (component "$BrzConcur" (2) (16 (15 14))) ; 11
+    (component "$BrzConcur" (2) (13 (12 11))) ; 12
+    (component "$BrzConcur" (2) (10 (9 8))) ; 13
+    (component "$BrzCombineEqual" (4 1 4) (27 (26 25 24 23))) ; 14
+    (component "$BrzEncode" (2 5 "3;2;1;0;0") ((21 18 15 12 9) 6)) ; 15
+    (component "$BrzEncode" (1 5 "1;1;1;1;0") ((20 17 14 11 8) 7)) ; 16
+  )
+  (call-contexts
+    (call-context 6 "globalWinner" (at 183 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+(breeze-part "PathMetricUnit"
+  (ports
+    (sync-port "activate" passive (at 212 1 "PMU.balsa" 0))
+    (arrayed-port "Out_BMU" active input (numeric-type #f 4) 0 4 (numeric-type #f 2) (at 213 3 "PMU.balsa" 0))
+    (port "Out_PMU" active output (named-type "Bundle_PMU_HU") (at 214 18 "PMU.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 212 1 "PMU.balsa" 0)
+  )
+  (channels
+    (sync (at 237 50 "PMU.balsa" 7)) ; 1
+    (pull 4 (at 237 21 "PMU.balsa" 7) (name "Out_BMU[0]")) ; 2
+    (pull 4 (at 237 21 "PMU.balsa" 7) (name "Out_BMU[1]")) ; 3
+    (pull 4 (at 237 21 "PMU.balsa" 7) (name "Out_BMU[2]")) ; 4
+    (pull 4 (at 237 21 "PMU.balsa" 7) (name "Out_BMU[3]")) ; 5
+    (push 7 (at 252 13 "PMU.balsa" 7) (name "Out_PMU") (type (named-type "Bundle_PMU_HU"))) ; 6
+    (pull 1 (at 251 18 "PMU.balsa" 7) (name "direction[3]")) ; 7
+    (pull 1 (at 250 18 "PMU.balsa" 7) (name "direction[2]")) ; 8
+    (pull 1 (at 249 18 "PMU.balsa" 7) (name "direction[1]")) ; 9
+    (pull 1 (at 248 18 "PMU.balsa" 7) (name "direction[0]")) ; 10
+    (pull 1 (at 247 23 "PMU.balsa" 7) (name "globalWinner_found")) ; 11
+    (pull 2 (at 247 9 "PMU.balsa" 7) (name "globalWinner") (type (named-type "State"))) ; 12
+    (pull 1 (at 257 34 "PMU.balsa" 7) (name "direction[3]")) ; 13
+    (pull 1 (at 256 34 "PMU.balsa" 7) (name "direction[2]")) ; 14
+    (pull 1 (at 255 34 "PMU.balsa" 7) (name "direction[1]")) ; 15
+    (pull 1 (at 254 34 "PMU.balsa" 7) (name "direction[0]")) ; 16
+    (pull 2 (at 253 25 "PMU.balsa" 7) (name "globalWinner") (type (named-type "State"))) ; 17
+    (pull 1 (at 252 25 "PMU.balsa" 7) (name "globalWinner_found")) ; 18
+    (pull 7 (at 252 24 "PMU.balsa" 7) (type (named-type "Bundle_PMU_HU"))) ; 19
+    (sync (at 251 22 "PMU.balsa" 7)) ; 20
+    (sync (at 251 22 "PMU.balsa" 7)) ; 21
+    (sync (at 251 22 "PMU.balsa" 7)) ; 22
+    (sync (at 251 22 "PMU.balsa" 7)) ; 23
+    (sync (at 251 22 "PMU.balsa" 7)) ; 24
+    (sync (at 251 22 "PMU.balsa" 7)) ; 25
+    (sync (at 251 22 "PMU.balsa" 7)) ; 26
+    (sync (at 251 22 "PMU.balsa" 7)) ; 27
+    (sync (at 251 22 "PMU.balsa" 7)) ; 28
+    (sync (at 251 22 "PMU.balsa" 7)) ; 29
+    (sync (at 251 22 "PMU.balsa" 7)) ; 30
+    (sync (at 251 22 "PMU.balsa" 7)) ; 31
+    (sync (at 251 22 "PMU.balsa" 7)) ; 32
+    (sync (at 251 22 "PMU.balsa" 7)) ; 33
+    (sync (at 246 5 "PMU.balsa" 7)) ; 34
+    (push 6 (at 245 37 "PMU.balsa" 7) (name "WState[3]")) ; 35
+    (push 6 (at 245 37 "PMU.balsa" 7) (name "WState[2]")) ; 36
+    (push 6 (at 245 37 "PMU.balsa" 7) (name "WState[1]")) ; 37
+    (push 6 (at 245 37 "PMU.balsa" 7) (name "WState[0]")) ; 38
+    (pull 6 (at 245 26 "PMU.balsa" 7) (name "WState_Ob[3]")) ; 39
+    (pull 6 (at 245 26 "PMU.balsa" 7) (name "WState_Ob[2]")) ; 40
+    (pull 6 (at 245 26 "PMU.balsa" 7) (name "WState_Ob[1]")) ; 41
+    (pull 6 (at 245 26 "PMU.balsa" 7) (name "WState_Ob[0]")) ; 42
+    (pull 6 (at 245 15 "PMU.balsa" 7) (name "WState_Oa[3]")) ; 43
+    (pull 6 (at 245 15 "PMU.balsa" 7) (name "WState_Oa[2]")) ; 44
+    (pull 6 (at 245 15 "PMU.balsa" 7) (name "WState_Oa[1]")) ; 45
+    (pull 6 (at 245 15 "PMU.balsa" 7) (name "WState_Oa[0]")) ; 46
+    (sync (at 245 14 "PMU.balsa" 7)) ; 47
+    (push 6 (at 243 52 "PMU.balsa" 7) (name "WState_Ob[3]")) ; 48
+    (push 6 (at 243 38 "PMU.balsa" 7) (name "WState_Oa[3]")) ; 49
+    (pull 6 (at 243 24 "PMU.balsa" 7) (name "WState_O[3]")) ; 50
+    (sync (at 243 15 "PMU.balsa" 7)) ; 51
+    (push 6 (at 243 52 "PMU.balsa" 7) (name "WState_Ob[2]")) ; 52
+    (push 6 (at 243 38 "PMU.balsa" 7) (name "WState_Oa[2]")) ; 53
+    (pull 6 (at 243 24 "PMU.balsa" 7) (name "WState_O[2]")) ; 54
+    (sync (at 243 15 "PMU.balsa" 7)) ; 55
+    (push 6 (at 243 52 "PMU.balsa" 7) (name "WState_Ob[1]")) ; 56
+    (push 6 (at 243 38 "PMU.balsa" 7) (name "WState_Oa[1]")) ; 57
+    (pull 6 (at 243 24 "PMU.balsa" 7) (name "WState_O[1]")) ; 58
+    (sync (at 243 15 "PMU.balsa" 7)) ; 59
+    (push 6 (at 243 52 "PMU.balsa" 7) (name "WState_Ob[0]")) ; 60
+    (push 6 (at 243 38 "PMU.balsa" 7) (name "WState_Oa[0]")) ; 61
+    (pull 6 (at 243 24 "PMU.balsa" 7) (name "WState_O[0]")) ; 62
+    (sync (at 243 15 "PMU.balsa" 7)) ; 63
+    (push 1 (at 241 40 "PMU.balsa" 7) (name "globalWinner_found")) ; 64
+    (push 2 (at 241 26 "PMU.balsa" 7) (name "globalWinner") (type (named-type "State"))) ; 65
+    (pull 1 (at 241 18 "PMU.balsa" 7) (name "isZero[3]")) ; 66
+    (pull 1 (at 241 18 "PMU.balsa" 7) (name "isZero[2]")) ; 67
+    (pull 1 (at 241 18 "PMU.balsa" 7) (name "isZero[1]")) ; 68
+    (pull 1 (at 241 18 "PMU.balsa" 7) (name "isZero[0]")) ; 69
+    (sync (at 241 17 "PMU.balsa" 7)) ; 70
+    (push 1 (at 239 82 "PMU.balsa" 7) (name "isZero[3]")) ; 71
+    (push 1 (at 239 71 "PMU.balsa" 7) (name "direction[3]")) ; 72
+    (push 6 (at 239 57 "PMU.balsa" 7) (name "WState_O[3]")) ; 73
+    (pull 4 (at 239 44 "PMU.balsa" 7) (name "bmB[3]")) ; 74
+    (pull 6 (at 239 36 "PMU.balsa" 7) (name "wmB[3]")) ; 75
+    (pull 4 (at 239 28 "PMU.balsa" 7) (name "bmA[3]")) ; 76
+    (pull 6 (at 239 20 "PMU.balsa" 7) (name "wmA[3]")) ; 77
+    (sync (at 239 16 "PMU.balsa" 7)) ; 78
+    (push 1 (at 239 82 "PMU.balsa" 7) (name "isZero[2]")) ; 79
+    (push 1 (at 239 71 "PMU.balsa" 7) (name "direction[2]")) ; 80
+    (push 6 (at 239 57 "PMU.balsa" 7) (name "WState_O[2]")) ; 81
+    (pull 4 (at 239 44 "PMU.balsa" 7) (name "bmB[2]")) ; 82
+    (pull 6 (at 239 36 "PMU.balsa" 7) (name "wmB[2]")) ; 83
+    (pull 4 (at 239 28 "PMU.balsa" 7) (name "bmA[2]")) ; 84
+    (pull 6 (at 239 20 "PMU.balsa" 7) (name "wmA[2]")) ; 85
+    (sync (at 239 16 "PMU.balsa" 7)) ; 86
+    (push 1 (at 239 82 "PMU.balsa" 7) (name "isZero[1]")) ; 87
+    (push 1 (at 239 71 "PMU.balsa" 7) (name "direction[1]")) ; 88
+    (push 6 (at 239 57 "PMU.balsa" 7) (name "WState_O[1]")) ; 89
+    (pull 4 (at 239 44 "PMU.balsa" 7) (name "bmB[1]")) ; 90
+    (pull 6 (at 239 36 "PMU.balsa" 7) (name "wmB[1]")) ; 91
+    (pull 4 (at 239 28 "PMU.balsa" 7) (name "bmA[1]")) ; 92
+    (pull 6 (at 239 20 "PMU.balsa" 7) (name "wmA[1]")) ; 93
+    (sync (at 239 16 "PMU.balsa" 7)) ; 94
+    (push 1 (at 239 82 "PMU.balsa" 7) (name "isZero[0]")) ; 95
+    (push 1 (at 239 71 "PMU.balsa" 7) (name "direction[0]")) ; 96
+    (push 6 (at 239 57 "PMU.balsa" 7) (name "WState_O[0]")) ; 97
+    (pull 4 (at 239 44 "PMU.balsa" 7) (name "bmB[0]")) ; 98
+    (pull 6 (at 239 36 "PMU.balsa" 7) (name "wmB[0]")) ; 99
+    (pull 4 (at 239 28 "PMU.balsa" 7) (name "bmA[0]")) ; 100
+    (pull 6 (at 239 20 "PMU.balsa" 7) (name "wmA[0]")) ; 101
+    (sync (at 239 16 "PMU.balsa" 7)) ; 102
+    (push 4 (at 237 45 "PMU.balsa" 7) (name "bmB[3]")) ; 103
+    (push 4 (at 237 45 "PMU.balsa" 7) (name "bmB[2]")) ; 104
+    (push 4 (at 237 45 "PMU.balsa" 7) (name "bmB[1]")) ; 105
+    (push 4 (at 237 45 "PMU.balsa" 7) (name "bmB[0]")) ; 106
+    (push 4 (at 237 40 "PMU.balsa" 7) (name "bmA[3]")) ; 107
+    (push 4 (at 237 40 "PMU.balsa" 7) (name "bmA[2]")) ; 108
+    (push 4 (at 237 40 "PMU.balsa" 7) (name "bmA[1]")) ; 109
+    (push 4 (at 237 40 "PMU.balsa" 7) (name "bmA[0]")) ; 110
+    (push 6 (at 237 35 "PMU.balsa" 7) (name "wmB[3]")) ; 111
+    (push 6 (at 237 35 "PMU.balsa" 7) (name "wmB[2]")) ; 112
+    (push 6 (at 237 35 "PMU.balsa" 7) (name "wmB[1]")) ; 113
+    (push 6 (at 237 35 "PMU.balsa" 7) (name "wmB[0]")) ; 114
+    (push 6 (at 237 30 "PMU.balsa" 7) (name "wmA[3]")) ; 115
+    (push 6 (at 237 30 "PMU.balsa" 7) (name "wmA[2]")) ; 116
+    (push 6 (at 237 30 "PMU.balsa" 7) (name "wmA[1]")) ; 117
+    (push 6 (at 237 30 "PMU.balsa" 7) (name "wmA[0]")) ; 118
+    (pull 6 (at 237 13 "PMU.balsa" 7) (name "WState[3]")) ; 119
+    (pull 6 (at 237 13 "PMU.balsa" 7) (name "WState[2]")) ; 120
+    (pull 6 (at 237 13 "PMU.balsa" 7) (name "WState[1]")) ; 121
+    (pull 6 (at 237 13 "PMU.balsa" 7) (name "WState[0]")) ; 122
+    (sync (at 237 12 "PMU.balsa" 7)) ; 123
+    (pull 4 (at 254 34 "PMU.balsa" 7) (type (named-type "Bundle_PMU_HU"))) ; 124
+    (pull 3 (at 253 25 "PMU.balsa" 7)) ; 125
+  )
+  (components
+    (component "$BrzPassivatorPush" (1 1) ((7) 72)) ; 0
+    (component "$BrzPassivatorPush" (1 1) ((8) 80)) ; 1
+    (component "$BrzPassivatorPush" (1 1) ((9) 88)) ; 2
+    (component "$BrzPassivatorPush" (1 1) ((10) 96)) ; 3
+    (component "$BrzPassivatorPush" (2 1) ((12) 65)) ; 4
+    (component "$BrzPassivatorPush" (1 1) ((11) 64)) ; 5
+    (component "$BrzPassivatorPush" (6 1) ((43) 49)) ; 6
+    (component "$BrzPassivatorPush" (6 1) ((44) 53)) ; 7
+    (component "$BrzPassivatorPush" (6 1) ((45) 57)) ; 8
+    (component "$BrzPassivatorPush" (6 1) ((46) 61)) ; 9
+    (component "$BrzPassivatorPush" (6 1) ((39) 48)) ; 10
+    (component "$BrzPassivatorPush" (6 1) ((40) 52)) ; 11
+    (component "$BrzPassivatorPush" (6 1) ((41) 56)) ; 12
+    (component "$BrzPassivatorPush" (6 1) ((42) 60)) ; 13
+    (component "$BrzPassivatorPush" (6 1) ((119) 35)) ; 14
+    (component "$BrzPassivatorPush" (6 1) ((120) 36)) ; 15
+    (component "$BrzPassivatorPush" (6 1) ((121) 37)) ; 16
+    (component "$BrzPassivatorPush" (6 1) ((122) 38)) ; 17
+    (component "$BrzPassivatorPush" (6 1) ((50) 73)) ; 18
+    (component "$BrzPassivatorPush" (6 1) ((54) 81)) ; 19
+    (component "$BrzPassivatorPush" (6 1) ((58) 89)) ; 20
+    (component "$BrzPassivatorPush" (6 1) ((62) 97)) ; 21
+    (component "$BrzPassivatorPush" (1 1) ((66) 71)) ; 22
+    (component "$BrzPassivatorPush" (1 1) ((67) 79)) ; 23
+    (component "$BrzPassivatorPush" (1 1) ((68) 87)) ; 24
+    (component "$BrzPassivatorPush" (1 1) ((69) 95)) ; 25
+    (component "$BrzWireFork" (12) (1 (123 102 94 86 78 70 63 59 55 51 47 34))) ; 26
+    (component "$BrzPassivatorPush" (6 1) ((77) 115)) ; 27
+    (component "$BrzPassivatorPush" (6 1) ((85) 116)) ; 28
+    (component "$BrzPassivatorPush" (6 1) ((93) 117)) ; 29
+    (component "$BrzPassivatorPush" (6 1) ((101) 118)) ; 30
+    (component "$BrzPassivatorPush" (6 1) ((75) 111)) ; 31
+    (component "$BrzPassivatorPush" (6 1) ((83) 112)) ; 32
+    (component "$BrzPassivatorPush" (6 1) ((91) 113)) ; 33
+    (component "$BrzPassivatorPush" (6 1) ((99) 114)) ; 34
+    (component "$BrzPassivatorPush" (4 1) ((76) 107)) ; 35
+    (component "$BrzPassivatorPush" (4 1) ((84) 108)) ; 36
+    (component "$BrzPassivatorPush" (4 1) ((92) 109)) ; 37
+    (component "$BrzPassivatorPush" (4 1) ((100) 110)) ; 38
+    (component "$BrzPassivatorPush" (4 1) ((74) 103)) ; 39
+    (component "$BrzPassivatorPush" (4 1) ((82) 104)) ; 40
+    (component "$BrzPassivatorPush" (4 1) ((90) 105)) ; 41
+    (component "$BrzPassivatorPush" (4 1) ((98) 106)) ; 42
+    (component "trellis" () (123 (122 121 120 119) (2 3 4 5) (118 117 116 115) (114 113 112 111) (110 109 108 107) (106 105 104 103))) ; 43
+    (component "ACSUnit" () (102 101 100 99 98 97 96 95)) ; 44
+    (component "ACSUnit" () (94 93 92 91 90 89 88 87)) ; 45
+    (component "ACSUnit" () (86 85 84 83 82 81 80 79)) ; 46
+    (component "ACSUnit" () (78 77 76 75 74 73 72 71)) ; 47
+    (component "globalWinner" () (70 (69 68 67 66) 65 64)) ; 48
+    (component "pmBuff" () (63 62 61 60)) ; 49
+    (component "pmBuff" () (59 58 57 56)) ; 50
+    (component "pmBuff" () (55 54 53 52)) ; 51
+    (component "pmBuff" () (51 50 49 48)) ; 52
+    (component "reduction" () (47 (46 45 44 43) (42 41 40 39) (38 37 36 35))) ; 53
+    (component "$BrzLoop" () (34 32)) ; 54
+    (component "$BrzSynch" (6) ((30 28 26 24 22 20) 33)) ; 55
+    (component "$BrzFork" (6) (32 (31 29 27 25 23 21))) ; 56
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (31 7 30 (13))) ; 57
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (29 8 28 (14))) ; 58
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (27 9 26 (15))) ; 59
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (25 10 24 (16))) ; 60
+    (component "$BrzActiveEagerFalseVariable" (2 1 "") (23 12 22 (17))) ; 61
+    (component "$BrzActiveEagerFalseVariable" (1 1 "") (21 11 20 (18))) ; 62
+    (component "$BrzFetch" (7 "false") (33 19 6)) ; 63
+    (component "$BrzCombine" (7 3 4) (19 125 124)) ; 64
+    (component "$BrzCombine" (3 1 2) (125 18 17)) ; 65
+    (component "$BrzCombineEqual" (4 1 4) (124 (16 15 14 13))) ; 66
+  )
+  (call-contexts
+    (call-context 7 "PathMetricUnit" (at 212 1 "PMU.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+
+;;; EOF

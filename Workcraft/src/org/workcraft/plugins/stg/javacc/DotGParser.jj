@@ -1,0 +1,330 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  LOOKAHEAD = 1;
+  STATIC = false;
+  OUTPUT_DIRECTORY = "generated";
+}
+
+PARSER_BEGIN(DotGParser)
+package org.workcraft.plugins.stg.javacc.generated;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.*;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Triple;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.NotFoundException;
+
+public class DotGParser {
+	private Map<String, Type> signals;
+	private Map<Pair<Node, Node>, STGPlace> implicitPlaces;
+	private STG stg;
+
+	private void init() {
+		signals = new HashMap<String, Type>();
+		stg = new STG();
+		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
+	}
+	
+	private Node getOrCreate (String name) {
+
+		Type t = signals.get (name);
+		
+		Node existing = stg.getNodeByReference(name);
+		
+		if (existing == null)
+			existing = stg.getNodeByReference(name+"/0");
+			
+		if (existing == null)
+		{
+			if (t==null)
+				existing = stg.createPlace(name);
+			else if (t.equals(Type.DUMMY))
+				existing = stg.createDummyTransition(name);
+			else
+				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+		}
+		
+		return existing;
+	}
+	
+	private Node getOrCreate (Pair<String, Integer> ref)
+	{
+		String reference = stg.makeReference(ref);
+		String name = ref.getFirst();
+		Node existing = stg.getNodeByReference(reference);
+		
+		if (existing == null)
+		{
+			Type t = signals.get (name);
+			if (t == null || !t.equals(Type.DUMMY))
+				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
+			else
+			{
+				DummyTransition dt = stg.createDummyTransition(null);
+				stg.setName(dt, reference);
+				dt.setName(name);
+				existing = dt;
+			}
+		}
+		
+		return existing;
+	}
+	
+	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
+		String reference = stg.makeReference(ref);
+		String name = ref.getFirst(); 
+		Node existing = stg.getNodeByReference (reference);
+		
+		if (existing == null)
+		{
+		
+			SignalTransition st = stg.createSignalTransition();
+			stg.setName (st, reference);
+			Type t = signals.get(name);
+			if (t==null)
+				throw new FormatException ("Undeclared signal encountered: " + name + 
+				" ("+reference+"). Possibly malformed header.");
+			st.setSignalType(t);
+			existing = st;
+		}
+		
+		return existing;
+	}
+	
+	private void createArc (Node first, Node second) {
+
+		try {
+			ConnectionResult result = stg.connect(first, second);
+			STGPlace implicitPlace = result.getImplicitPlace();
+			
+			if (implicitPlace != null)
+				implicitPlaces.put (Pair.of (first, second), implicitPlace);
+			 
+		} catch (InvalidConnectionException e)
+		{
+			throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
+			 " to " + stg.getNodeReference(second) + ".", e);
+		}
+	}
+	
+	private void setSignalsType (List<String> list, Type type) {
+		for (String signal : list) {
+			if (signals.containsKey(signal))
+			{
+				Type prevType = signals.get(signal);
+				if (prevType != null && prevType.equals(type))
+					throw new FormatException (type + " signal \"" + signal + "\" was already listed as " + prevType);
+			}
+			else
+				signals.put(signal, type);
+		}
+	}
+}
+PARSER_END(DotGParser)
+
+SKIP :
+{
+ 	" "
+|	"\t"
+|	<"#" (~["\r","\n"])* (["\r", "\n"])*>
+}
+
+TOKEN :
+{
+	<LINEBREAK: (["\r", "\n"])+>
+  	| <INPUT_HEADER: ".inputs">
+  	| <OUTPUT_HEADER: ".outputs">
+  	| <INTERNAL_HEADER: ".internal">
+  	| <DUMMY_HEADER: ".dummy">
+  	| <GRAPH: ".graph">
+  	| <MARKING: ".marking">
+  	| <CAPACITY: ".capacity">
+	| <UNSUPPORTED_HEADER: "." <NAME>>  	
+  	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
+  	| <DIRECTION: ["+","-","~"]>
+  	| <INTEGER: (["0"-"9"])+>
+  	| "{" | "}" | "<" | ">" | "," | "/" | "="
+	| <ANY : ~[]>
+}
+
+STG parse() : { }
+{
+	{ init(); }
+	 ( header() <LINEBREAK> )*
+	 graph()
+	 ( footer() <LINEBREAK> )*
+	 <EOF>
+	 {return stg;}
+}
+
+void header() : { List<String> list; }
+{
+  	(<LINEBREAK>)?
+	(	  	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
+		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
+		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
+		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
+		|<UNSUPPORTED_HEADER> (<ANY>)*
+	)
+}
+
+List<String> signalList() : { Token t; List<String> list = new LinkedList<String>(); }
+{
+	( t = <NAME> { list.add (t.image); } ) * 
+	{return list;}
+}
+
+void footer() : { }
+{
+	<MARKING> marking()
+	|<CAPACITY> capacity()
+	|<UNSUPPORTED_HEADER> (<ANY>)*
+}
+
+void capacity() : { }
+{
+	(capacityEntry()) *
+}
+
+void capacityEntry() : { STGPlace p; int value; }
+{
+	 ( 
+	 	(p = implicitPlaceReference() | p =  explicitPlaceReference())
+	        value = assignment()
+	 )
+	 {
+	 	p.setCapacity(value);
+	 }
+}
+
+void marking() : { }
+{
+	"{" (markingEntry()) * "}"
+}
+
+int assignment() : { Token t; }
+{
+	"=" t = <INTEGER> { return Integer.parseInt(t.image); }
+}
+
+void markingEntry() : { STGPlace p; int value = 1; }
+{
+	 ( 
+	 	(p = implicitPlaceReference() | p =  explicitPlaceReference())
+	        ( value = assignment() ) ?
+	 )
+	 {
+	 	p.setTokens(value);
+	 }
+}
+
+STGPlace implicitPlaceReference() : 
+{
+  	Node t1, t2;
+	Token t;
+	Integer tokens = null;
+}
+{
+	("<" t1 = anyTransition() "," t2 = anyTransition() ">")
+	{
+		return implicitPlaces.get(Pair.of(t1,t2));
+	}
+}
+
+STGPlace explicitPlaceReference() : 
+{
+	Token t;
+	String name;
+	Integer tokens = null;
+}
+{
+	( t = <NAME> { name = t.image; } )
+	{
+		return (STGPlace) stg.getNodeByReference (name);
+	}
+}
+
+void graph() : { }
+{
+	<GRAPH> <LINEBREAK>
+	( graphLine() <LINEBREAK> )+
+}
+
+Triple<String, Direction, Integer> signalTransition() : 
+{
+	Token t;
+	String name;
+	Direction direction;
+	Integer instance = null;
+}
+{
+	t = <NAME> { name = t.image; }
+	t = <DIRECTION> { direction = Direction.fromString(t.image);}
+	(
+		( "/" t = <INTEGER> ) { instance = Integer.parseInt(t.image); } 
+	)? 
+	
+	{ return Triple.of (name, direction, instance); }	
+	
+}
+
+Pair<String, Integer> dummyTransition() :
+{
+	Token t;
+	String name;
+	Integer instance = null;
+}
+{
+	t = <NAME> { name = t.image; }
+	( "/" t = <INTEGER>  { instance = Integer.parseInt(t.image); } )?
+	
+	{ return Pair.of (name, instance); }	
+	
+}
+
+Node anyTransition() :
+{	Triple<String, Direction, Integer> r;
+	Pair<String, Integer> r2;
+	Node t;
+}
+{	(
+	  LOOKAHEAD(signalTransition())	  r = signalTransition() { t = getOrCreate(r); }
+	| r2 = dummyTransition() { t = getOrCreate(r2); }
+)
+	{		return t;
+	}
+}
+
+void graphLine() : 
+{
+	Token t;
+	Node from, to;
+}
+{
+	(
+	  LOOKAHEAD(<NAME>(<DIRECTION>|"/"))
+	  from = anyTransition()
+	| t = <NAME> { from = getOrCreate(t.image); }
+	)
+
+	(
+		(
+	  LOOKAHEAD(<NAME>(<DIRECTION>|"/"))
+		to = anyTransition()
+		| t = <NAME> { to = getOrCreate(t.image); }
+		) { createArc(from, to); } 
+	)* 	
+}

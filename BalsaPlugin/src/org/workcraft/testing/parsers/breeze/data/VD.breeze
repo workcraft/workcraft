@@ -1,0 +1,70 @@
+;;; Breeze intermediate file (list format)
+;;; Created: Thu May 13 17:25:56 2010
+;;; By: dell@dell-laptop (Linux)
+;;; With balsa-c version: 3.5.1
+;;; Command: balsa-c VD.balsa 
+
+;;; Imports
+(import "balsa.types.builtin")
+(import "balsa.types.synthesis")
+(import "balsa.types.basic")
+(import "BMU")
+(import "PMU")
+(import "HU")
+;;; Types
+
+;;; Constants
+
+;;; Parts
+
+(breeze-part "ViterbiDecoder_k2"
+  (ports
+    (sync-port "activate" passive (at 17 1 "VD.balsa" 0))
+    (port "in_a" active input (numeric-type #f 3) (at 18 14 "VD.balsa" 0))
+    (port "in_c" active input (numeric-type #f 3) (at 19 14 "VD.balsa" 0))
+    (port "Out_state" active output (named-type "State") (at 20 20 "VD.balsa" 0))
+    (port "out_o" active output (numeric-type #f 1) (at 21 16 "VD.balsa" 0))
+  )
+  (attributes
+    (is-procedure)
+    (is-permanent)
+    (at 17 1 "VD.balsa" 0)
+  )
+  (channels
+    (sync (at 33 24 "VD.balsa" 11)) ; 1
+    (pull 3 (at 30 9 "VD.balsa" 11) (name "in_a")) ; 2
+    (pull 3 (at 31 9 "VD.balsa" 11) (name "in_c")) ; 3
+    (push 2 (at 43 9 "VD.balsa" 11) (name "Out_state") (type (named-type "State"))) ; 4
+    (push 1 (at 44 9 "VD.balsa" 11) (name "out_o")) ; 5
+    (pull 7 (at 41 9 "VD.balsa" 11) (name "data_PMU_HU") (type (named-type "Bundle_PMU_HU"))) ; 6
+    (sync (at 39 18 "VD.balsa" 11)) ; 7
+    (push 7 (at 38 9 "VD.balsa" 11) (name "data_PMU_HU") (type (named-type "Bundle_PMU_HU"))) ; 8
+    (pull 4 (at 36 9 "VD.balsa" 11) (name "data_BMU_PMU[3]")) ; 9
+    (pull 4 (at 36 9 "VD.balsa" 11) (name "data_BMU_PMU[2]")) ; 10
+    (pull 4 (at 36 9 "VD.balsa" 11) (name "data_BMU_PMU[1]")) ; 11
+    (pull 4 (at 36 9 "VD.balsa" 11) (name "data_BMU_PMU[0]")) ; 12
+    (sync (at 34 20 "VD.balsa" 11)) ; 13
+    (push 4 (at 33 9 "VD.balsa" 11) (name "data_BMU_PMU[3]")) ; 14
+    (push 4 (at 33 9 "VD.balsa" 11) (name "data_BMU_PMU[2]")) ; 15
+    (push 4 (at 33 9 "VD.balsa" 11) (name "data_BMU_PMU[1]")) ; 16
+    (push 4 (at 33 9 "VD.balsa" 11) (name "data_BMU_PMU[0]")) ; 17
+    (sync (at 28 9 "VD.balsa" 11)) ; 18
+  )
+  (components
+    (component "$BrzPassivatorPush" (7 1) ((6) 8)) ; 0
+    (component "$BrzWireFork" (3) (1 (18 13 7))) ; 1
+    (component "$BrzPassivatorPush" (4 1) ((9) 14)) ; 2
+    (component "$BrzPassivatorPush" (4 1) ((10) 15)) ; 3
+    (component "$BrzPassivatorPush" (4 1) ((11) 16)) ; 4
+    (component "$BrzPassivatorPush" (4 1) ((12) 17)) ; 5
+    (component "BMU" () (18 2 3 (17 16 15 14))) ; 6
+    (component "PathMetricUnit" () (13 (12 11 10 9) 8)) ; 7
+    (component "HistoryHunit" () (7 6 4 5)) ; 8
+  )
+  (call-contexts
+    (call-context 11 "ViterbiDecoder_k2" (at 17 1 "VD.balsa" 0) (at 0 0 "" 0) 0)
+  )
+)
+
+
+;;; EOF

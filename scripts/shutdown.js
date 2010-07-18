@@ -1,3 +1,0 @@
-// shutdown actions
-
-saveconfig();
