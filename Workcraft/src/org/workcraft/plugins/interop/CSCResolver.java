@@ -66,7 +66,7 @@ public class CSCResolver implements Exporter, FrameworkConsumer {
 	{
 		MpsatSettings settings = new MpsatSettings(MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
 
-		Result<ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), unfolding.getAbsolutePath()), "CSC conflict resolution");
+		Result<? extends ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), unfolding.getAbsolutePath()), "CSC conflict resolution");
 
 		System.out.println("MPSAT CSC resolution output: ");
 		System.out.write(result.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");

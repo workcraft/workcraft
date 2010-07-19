@@ -70,8 +70,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	 *
 	 */
 	@Override
-	public Result<DesiJResult> run(
-		ProgressMonitor<DesiJResult> monitor) {
+	public Result<? extends DesiJResult> run(ProgressMonitor<? super DesiJResult> monitor) {
 
 		// create desiJ thread
 		DesiJThread desiJThread = new DesiJThread(desiJArgs);
