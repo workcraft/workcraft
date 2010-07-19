@@ -32,7 +32,7 @@ public class DesiJCustomFunction implements Tool {
 	public void run(Model model, Framework framework) {
 		DesiJPresetManager pmgr = new DesiJPresetManager();
 		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
-		GUI.centerFrameToParent(dialog, framework.getMainWindow());
+		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1)
 		{

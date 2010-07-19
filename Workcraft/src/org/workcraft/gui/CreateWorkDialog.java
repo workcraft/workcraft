@@ -79,7 +79,7 @@ public class CreateWorkDialog extends JDialog {
 		setModal(true);
 		setTitle("New work");
 
-		GUI.centerFrameToParent(this, owner);
+		GUI.centerAndSizeToParent(this, owner);
 
 		initComponents();
 	}

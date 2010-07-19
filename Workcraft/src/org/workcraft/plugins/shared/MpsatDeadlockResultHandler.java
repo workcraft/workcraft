@@ -36,7 +36,7 @@ final class MpsatDeadlockResultHandler implements Runnable {
 
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(message, solutions);
 
-			GUI.centerFrameToParent(solutionsDialog, framework.getMainWindow());
+			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
 
 			solutionsDialog.setVisible(true);
 		} else

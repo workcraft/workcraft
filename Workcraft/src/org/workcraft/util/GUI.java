@@ -56,13 +56,17 @@ public class GUI {
 		return result;
 	}
 
-	public static void centerFrameToParent(Window frame, Window parent) {
+	public static void centerToParent(Window frame, Window parent) {
 		Dimension parentSize = parent.getSize();
-		frame.setSize(parentSize.width / 2, parentSize.height / 2);
 		Dimension mySize = frame.getSize();
 		Point q = parent.getLocationOnScreen();
-
 		frame.setLocation (((parentSize.width - mySize.width)/2) + q.x, ((parentSize.height - mySize.height)/2) + q.y);
+	}
+
+	public static void centerAndSizeToParent(Window frame, Window parent) {
+		Dimension parentSize = parent.getSize();
+		frame.setSize(parentSize.width / 2, parentSize.height / 2);
+		centerToParent(frame, parent);
 	}
 
 	public static BufferedImage loadImageFromResource(String path) throws IOException {
