@@ -394,8 +394,12 @@ public class Framework {
 		}
 	}
 
+	public void execJSResource (String resourceName) throws IOException {
+		execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
+	}
 
-	public void execFile (String filePath) throws IOException {
+	public void execJSFile (String filePath) throws IOException {
+
 		execJavaScript (FileUtils.readAllText(new File(filePath)), globalScope);
 	}
 

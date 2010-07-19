@@ -68,7 +68,7 @@ import org.workcraft.parsers.breeze.ParameterScope;
 import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
-import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
+import org.workcraft.parsers.breeze.dom.FullDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.DataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortDeclaration;
 import org.workcraft.parsers.breeze.dom.PortVisitor;
@@ -123,12 +123,11 @@ public class CodeGenerator {
 		ArrayList<PrimitivePart> list = new ArrayList<PrimitivePart>();
 		for(PrimitivePart primitive : new BreezeLibrary(balsa).getPrimitives())
 		{
-			list.add(DataPathSplitters.getControl(primitive));
+			list.add(primitive);
 		}
 		return list;
 	}
 
-	//String[] BASE_CLASSES_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "generated"};
 	String[] STUBS_PATH = new String[]{"org", "workcraft", "plugins", "balsa", "stg", "implementations_stubs"};
 
 	public void generateStubs(File path, BalsaSystem balsa) throws IOException
@@ -399,7 +398,7 @@ public class CodeGenerator {
 					}
 
 					@Override
-					public Class<?> visit(BooleanPortDeclaration port) {
+					public Class<?> visit(FullDataPortDeclaration port) {
 						return fullDataClass(port.isActive(), port.isInput());
 					}
 

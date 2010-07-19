@@ -26,7 +26,7 @@ import java.util.Stack;
 
 import org.workcraft.parsers.breeze.dom.ArrayedDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.ArrayedSyncPortDeclaration;
-import org.workcraft.parsers.breeze.dom.BooleanPortDeclaration;
+import org.workcraft.parsers.breeze.dom.FullDataPortDeclaration;
 import org.workcraft.parsers.breeze.dom.BreezeDocument;
 import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.parsers.breeze.dom.ChannelDeclaration;
@@ -248,7 +248,7 @@ public class Writer
 					}
 
 					@Override
-					public Object visit(BooleanPortDeclaration port) {
+					public Object visit(FullDataPortDeclaration port) {
 						throw new org.workcraft.exceptions.NotImplementedException();
 					}
 				}

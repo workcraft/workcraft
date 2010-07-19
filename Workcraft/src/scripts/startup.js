@@ -1,5 +1,5 @@
 // startup actions
 
-loadconfig();
+loadConfig();
 
-exec("scripts/editor.js");
+execResource("scripts/editor.js");

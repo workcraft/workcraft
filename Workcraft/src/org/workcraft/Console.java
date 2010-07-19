@@ -91,16 +91,26 @@ public class Console {
 			System.err.println ("! Warning: Error reading system script file: "+e.getMessage());
 		} catch (WrappedException e) {
 			System.err.println ("! Startup script failed: " + e.getMessage());
+		} catch (org.mozilla.javascript.EcmaError e) {
+			System.err.println ("! Startup script failed: " + e.getMessage());
 		}
 
 		if (!silent)
 			System.out.println("Startup complete.\n\n");
 
+		boolean startGUI = true;
+
 		for (String arg: args) {
 			if (arg.equals("-gui")) {
-				framework.startGUI();
+				startGUI = true;
 				arglist.remove(arg);
 			}
+
+			if (arg.equals("-nogui")) {
+				startGUI = false;
+				arglist.remove(arg);
+			}
+
 			if (arg.startsWith("-exec:")) {
 				arglist.remove(arg);
 
@@ -121,6 +131,9 @@ public class Console {
 				}
 			}
 		}
+
+		if (startGUI)
+			framework.startGUI();
 
 		while (true) {
 			if (framework.shutdownRequested()) {
@@ -146,12 +159,17 @@ public class Console {
 				try {
 					if (!silent)
 						System.out.println ("Shutting down...");
-					framework.execJavaScript(new File ("scripts/shutdown.js"));
+					framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));
 
 				} catch (FileNotFoundException e) {
 					System.err.println ("System script file not found: "+e.getMessage());
+				} catch (IOException e)	{
+					System.err.println ("IO Exception: "+e.getMessage());
+				} catch (org.mozilla.javascript.EcmaError e) {
+					System.err.println ("! Shutdown script failed: " + e.getMessage());
+				} catch (WrappedException e) {
+					System.err.println ("! Shutdown script failed: " + e.getMessage());
 				}
-
 
 
 				System.exit(0);

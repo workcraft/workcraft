@@ -20,8 +20,12 @@ function load(x) {
 	return framework.load(x);
 }
 
-function exec(x) {
-	framework.execFile(x);
+function execResource(x) {
+	framework.execJSResource(x);
+}
+
+function execFile(x) {
+	framework.execJSFile(x);
 }
 
 function save(x) {
@@ -45,26 +49,26 @@ function printlnerr(x) {
 	java.lang.System.err.println(x);
 }
 
-function setcvar(k,v) {
+function setConfigVar(k,v) {
 	framework.setConfigVar(k,v);
 }
 
-function getcvar(k) {
+function getConfigVar(k) {
 	return framework.getConfigVar(k);
 }
 
-function saveconfig() {
+function saveConfig() {
 	framework.saveConfig("config/config.xml");
 }
 
-function loadconfig() {
+function loadConfig() {
 	framework.loadConfig("config/config.xml");
 }
 
-function startgui() {
+function startGUI() {
 	framework.startGUI();
 }
 
-function shutdowngui() {
+function shutdownGUI() {
 	framework.shutdownGUI();
 }
