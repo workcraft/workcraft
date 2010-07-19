@@ -35,13 +35,16 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import org.flexdock.docking.Dockable;
-import org.workcraft.gui.actions.ScriptedAction;
-import org.workcraft.gui.actions.ScriptedActionButton;
+import org.workcraft.Framework;
+import org.workcraft.exceptions.NotSupportedException;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableWindowContentPanel extends JPanel {
-	static public class ViewAction extends ScriptedAction {
+	static public class ViewAction extends Action {
 		public static final int CLOSE_ACTION = 1;
 		public static final int MINIMIZE_ACTION = 2;
 		public static final int MAXIMIZE_ACTION = 3;
@@ -54,30 +57,32 @@ public class DockableWindowContentPanel extends JPanel {
 			this.windowID = windowID;
 		}
 
-		public String getScript() {
-			switch (actionType) {
-			case CLOSE_ACTION:
-				return tryOperation("mainWindow.closeDockableWindow("+windowID+");");
-			case MINIMIZE_ACTION:
-				return "mainWindow.minimizeDockableWindow("+windowID+");";
-			case MAXIMIZE_ACTION:
-				return "mainWindow.toggleDockableWindowMaximized("+windowID+");";
-			}
+		public String getText() {
 			return null;
 		}
 
-		public String getText() {
-			return null;
+		@Override
+		public void run(Framework framework) {
+			switch (actionType) {
+			case CLOSE_ACTION:
+				try { framework.getMainWindow().closeDockableWindow(windowID); } catch (OperationCancelledException e) {}
+				break;
+			case MAXIMIZE_ACTION:
+				framework.getMainWindow().toggleDockableWindowMaximized(windowID);
+				break;
+			case MINIMIZE_ACTION:
+				throw new NotSupportedException();
+			}
 		}
 	}
 
 	class DockableViewHeader extends JPanel {
-		private ScriptedActionButton btnMin, btnMax, btnClose;
+		private ActionButton btnMin, btnMax, btnClose;
 		private JPanel buttonPanel = null;
 		private boolean maximized = false;
 
-		private ScriptedActionButton createHeaderButton(Icon icon, ScriptedAction action, ScriptedActionListener actionListener) {
-			ScriptedActionButton button = new ScriptedActionButton(action);
+		private ActionButton createHeaderButton(Icon icon, Action action, ScriptedActionListener actionListener) {
+			ActionButton button = new ActionButton(action);
 			button.addScriptedActionListener(actionListener);
 			button.setPreferredSize(new Dimension(icon.getIconWidth(),icon.getIconHeight()));
 			button.setFocusable(false);
