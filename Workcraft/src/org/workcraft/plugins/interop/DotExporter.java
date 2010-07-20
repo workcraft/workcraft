@@ -14,7 +14,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.layout.DotLayoutSettings;
 import org.workcraft.serialisation.Format;
 
 public class DotExporter implements Exporter {
@@ -25,7 +24,7 @@ public class DotExporter implements Exporter {
 		PrintStream out = new PrintStream(outStream);
 
 		out.println("digraph work {");
-		out.println("graph [nodesep=\"2.0\", overlap=false];");
+		out.println("graph [nodesep=\"0.25\", overlap=\"false\", splines=\"true\"];");
 		out.println("node [shape=box];");
 
 
