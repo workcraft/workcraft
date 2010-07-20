@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
@@ -54,15 +57,18 @@ import org.workcraft.plugins.shared.PcompUtilitySettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Export;
 
-public abstract class BalsaToStgExporter {
+public abstract class BalsaToStgExporter implements Exporter {
 
-	public static class Settings
+	public static class CompositionSettings
 	{
+		public CompositionSettings(boolean eventBasedInternal, boolean improvedPcomp)
+		{
+			this.eventBasedInternal = eventBasedInternal;
+			this.improvedPcomp = improvedPcomp;
+		}
 		public boolean eventBasedInternal;
 		public boolean improvedPcomp;
 	}
-
-	private Settings settings = new Settings();
 
 	private final HandshakeProtocol protocol;
 	private final String protocolName;
@@ -85,7 +91,24 @@ public abstract class BalsaToStgExporter {
 		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
 	}
 
+	public void export(Model model, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), settings, out);
+	}
+
 	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		String opt1 = "Improved Pcomp";
+		String opt2 = "Standard Pcomp";
+		String opt3 = "Event-based composition";
+		Object result = JOptionPane.showOptionDialog(null, "Select the type of STG composition", "STG composition type", 0, JOptionPane.QUESTION_MESSAGE, null, new Object[]{opt1, opt2, opt3}, opt1);
+
+		boolean improved = (result != opt2);
+		boolean event = (result == opt3);
+		export(circuit, new CompositionSettings(event, improved), out);
+	}
+
+	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit balsa = new BalsaCircuit(circuit);
 
@@ -320,11 +343,37 @@ public abstract class BalsaToStgExporter {
 			return Exporter.NOT_COMPATIBLE;
 	}
 
-	public void setSettings(Settings settings) {
-		this.settings = settings;
-	}
+	public Exporter withCompositionSettings(final CompositionSettings settings)
+	{
+		final BalsaToStgExporter me = this;
+		return new Exporter()
+		{
+			@Override
+			public String getDescription() {
+				return me.getDescription();
+			}
 
-	public Settings getSettings() {
-		return settings;
+			@Override
+			public String getExtenstion() {
+				return me.getExtenstion();
+			}
+
+			@Override
+			public UUID getTargetFormat() {
+				return me.getTargetFormat();
+			}
+
+			@Override
+			public int getCompatibility(Model model) {
+				return me.getCompatibility(model);
+			}
+
+			@Override
+			public void export(Model model, OutputStream out)
+					throws IOException, ModelValidationException,
+					SerialisationException {
+				me.export(model, settings, out);
+			}
+		};
 	}
 }
