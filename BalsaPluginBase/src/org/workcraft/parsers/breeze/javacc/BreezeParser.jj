@@ -770,7 +770,8 @@ BreezeFile breezeFile() :
 {
 	(
 		(		  	LOOKAHEAD(<OBR><IMPORT>) imp = importDef() { imports.add(imp); }			| LOOKAHEAD(<OBR><BREEZE_PART>) part = breezePart() { partDefs.add(part); }
-			| type = breezeType() { typeDefs.add(type); }
+			| LOOKAHEAD(<OBR><TYPE>) type = breezeType() { typeDefs.add(type); }
+			| listElement()
 		)
 	)*
 	{return new BreezeFile(imports, typeDefs, partDefs);}
