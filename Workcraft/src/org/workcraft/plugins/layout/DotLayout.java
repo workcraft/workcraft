@@ -75,47 +75,54 @@ public class DotLayout implements Tool, PluginConsumer {
 		out.close();
 	}
 
-	List<Point2D> parseConnectionSpline(String pos)
+	List<Point2D> parseConnectionSpline(String pos) throws ParseException
 	{
-		ArrayList<Point2D> result = new ArrayList<Point2D>();
-		Point2D end = null;
-		String [] split = pos.split(" ");
-
-		for(String s : split)
+		try
 		{
-			String [] ss = s.split(",");
-			if(ss.length <2 || ss.length>3)
-				throw new RuntimeException("bad connection position format");
-			double pointsToInches = 1.0/72;
-			if(ss.length == 3)
-			{
-				double x = Double.parseDouble(ss[1])*pointsToInches ;
-				double y = Double.parseDouble(ss[2])*pointsToInches;
-				Point2D p = new Point2D.Double(x,y);
-				if(ss[0].equals("s"))
-					result.add(0,p);
-				else
-					if(ss[0].equals("e"))
-						end = p;
-					else
-						throw new RuntimeException("bad connection position format");
-			}
-			else
-			{
-				double x = Double.parseDouble(ss[0])*pointsToInches;
-				double y = Double.parseDouble(ss[1])*pointsToInches;
-				result.add(0,new Point2D.Double(x,y));
-			}
-		}
+			ArrayList<Point2D> result = new ArrayList<Point2D>();
+			Point2D end = null;
+			String [] split = pos.split(" ");
 
-		if(end!=null)
-			result.add(0,end);
-		return result;
+			for(String s : split)
+			{
+				String [] ss = s.split(",");
+				if(ss.length <2 || ss.length>3)
+					throw new ParseException("bad connection position format");
+				double pointsToInches = 1.0/72;
+				if(ss.length == 3)
+				{
+					double x = Double.parseDouble(ss[1])*pointsToInches ;
+					double y = Double.parseDouble(ss[2])*pointsToInches;
+					Point2D p = new Point2D.Double(x,y);
+					if(ss[0].equals("s"))
+						result.add(0,p);
+					else
+						if(ss[0].equals("e"))
+							end = p;
+						else
+							throw new ParseException("bad connection position format");
+				}
+				else
+				{
+					double x = Double.parseDouble(ss[0])*pointsToInches;
+					double y = Double.parseDouble(ss[1])*pointsToInches;
+					result.add(0,new Point2D.Double(x,y));
+				}
+			}
+
+			if(end!=null)
+				result.add(0,end);
+			return result;
+		}
+		catch(NumberFormatException ex)
+		{
+			throw new ParseException(ex.getMessage());
+		}
 	}
 
 	private void applyLayout(String in, final VisualModel model) {
 
-		DotParser parser = new DotParser(new StringReader(in));
+		DotParser parser = new DotParser(new StringReader(in.replace("\\\n", "")));
 
 		try {
 			parser.graph(new DotListener()
@@ -168,16 +175,26 @@ public class DotLayout implements Tool, PluginConsumer {
 
 							Polyline poly = (Polyline)vc.getGraphic();
 							poly.remove(poly.getChildren());
-							List<Point2D> points = parseConnectionSpline(properties.get("pos"));
+							List<Point2D> points;
+							try {
+								points = parseConnectionSpline(properties.get("pos"));
 
-							for(int i=points.size()-1;i>=0;i--)
-							{
-								Point2D p = points.get(i);
-								ControlPoint cp = new ControlPoint();
-								cp.setPosition(p);
-								cp.setHidden(true);
-								poly.add(cp);
+								for(int i=points.size()-1;i>=0;i--)
+								{
+									Point2D p = points.get(i);
+									ControlPoint cp = new ControlPoint();
+									cp.setPosition(p);
+									cp.setHidden(true);
+									poly.add(cp);
+								}
+
+							} catch (ParseException e) {
+								e.printStackTrace();
 							}
+						}
+						else
+						{
+							System.err.println(String.format("Unable to find a connection from %s to %s", from, to));
 						}
 					}
 				}
