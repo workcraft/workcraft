@@ -21,9 +21,6 @@
 
 package org.workcraft.plugins.balsa.stgmodelstgbuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
@@ -37,7 +34,6 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.StgTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
@@ -93,26 +89,19 @@ public class StgModelStgBuilder implements StgBuilder {
 
 	public StgModelStgTransition buildTransition()
 	{
-		return buildTransition(Type.DUMMY);
+		DummyTransition transition = new DummyTransition();
+		model.add(transition);
+		return new StgModelStgTransition(transition);
 	}
 
-	public StgModelStgTransition buildTransition(Type type) {
-		StgTransition t;
-		if(type == Type.DUMMY)
-		{
-			DummyTransition transition = new DummyTransition();
-			model.add(transition);
-			t = transition;
-		}
-		else
-		{
-			SignalTransition transition = new SignalTransition();
-			model.add(transition);
-			transition.setSignalType(type);
-			t = transition;
-		}
-
-		return new StgModelStgTransition(t);
+	public StgModelStgTransition buildSignalTransition(Type type, String name, Direction direction)
+	{
+		SignalTransition transition = new SignalTransition();
+		transition.setSignalType(type);
+		transition.setDirection(direction);
+		model.add(transition);
+		model.setName(transition, name);
+		return new StgModelStgTransition(transition);
 	}
 
 	private StgModelStgPlace buildStgPlace(int tokenCount) {
@@ -123,15 +112,10 @@ public class StgModelStgBuilder implements StgBuilder {
 	}
 
 	public StgSignal buildSignal(SignalId id, boolean isOutput) {
-		Type type = isOutput ? Type.OUTPUT : Type.INPUT;
-		final StgModelStgTransition transitionP = buildTransition(type);
-		final StgModelStgTransition transitionM = buildTransition(type);
+		final Type type = isOutput ? Type.OUTPUT : Type.INPUT;
 		final String sname = nameProvider.getName(id.getOwner()) + "_" + id.getName();
-		transitionP.getModelTransition().asSignal().setSignalName(sname);
-		transitionM.getModelTransition().asSignal().setSignalName(sname);
-
-		transitionP.getModelTransition().asSignal().setDirection(Direction.PLUS);
-		transitionM.getModelTransition().asSignal().setDirection(Direction.MINUS);
+		final StgModelStgTransition transitionP = buildSignalTransition(type, sname, Direction.PLUS);
+		final StgModelStgTransition transitionM = buildSignalTransition(type, sname, Direction.MINUS);
 
 
 		final StgSignal result = new StgSignal()
@@ -144,18 +128,8 @@ public class StgModelStgBuilder implements StgBuilder {
 			}
 		};
 
-		if(exports.containsKey(id))
-			throw new RuntimeException("Transitions with duplicate ids are not allowed!");
-		exports.put(id, result);
 		return result;
 	}
-
-	public Map<SignalId, StgSignal> getExports()
-	{
-		return exports;
-	}
-
-	HashMap<SignalId, StgSignal> exports = new HashMap<SignalId, StgSignal>();
 
 	public void connect(Event t1, Event t2) {
 		StgPlace place = this.buildPlace();
