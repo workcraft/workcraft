@@ -67,6 +67,7 @@ public class SeqMixTest {
 		//BreezeInstance<BreezeHandshake> mix2 = call.instantiate(factory,  new ParameterValueList.StringList("2"));
 		//BreezeInstance<BreezeHandshake> passivate1 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
 		//BreezeInstance<BreezeHandshake> passivate2 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
+		BreezeInstance<BreezeHandshake> callInstance = call.instantiate(factory,  new ParameterValueList.StringList("2"));
 
 		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "/home/dell/export_unconnected_mixer.g");
 
@@ -108,70 +109,87 @@ public class SeqMixTest {
 		Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
 	}
 
-	static class Generator
+	static class Generator implements DiamondGenerator
 	{
-		BalsaCircuit circuit = new BalsaCircuit();
-		DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
+		private final boolean haveConcurs;
 
-		BreezeLibrary lib;
-		PrimitivePart seq;
-		PrimitivePart loop;
-		PrimitivePart concur;
-		PrimitivePart call;
-		PrimitivePart sync;
-		PrimitivePart passivate;
-
-		Generator() throws IOException
+		Generator(boolean haveConcurs)
 		{
-			circuit = new BalsaCircuit();
-			factory = new DefaultBreezeFactory(circuit);
-
-			lib = new BreezeLibrary(BalsaSystem.DEFAULT());
-			seq = lib.getPrimitive("SequenceOptimised");
-			loop = lib.getPrimitive("Loop");
-			concur = lib.getPrimitive("Concur");
-			call = lib.getPrimitive("Call");
-			passivate = lib.getPrimitive("Passivator");
-			sync = lib.getPrimitive("Synch");
+			this.haveConcurs = haveConcurs;
 		}
 
-		void build(int depth, BreezeHandshake top, BreezeHandshake bottom) throws InvalidConnectionException
+		class GeneratorState
 		{
-			if(depth == 0)
-			{
-				if(top != null && bottom != null)
-					circuit.connect(top, bottom);
-			}
-			else
-			{
+			BalsaCircuit circuit = new BalsaCircuit();
+			DefaultBreezeFactory factory = new DefaultBreezeFactory(circuit);
 
-				BreezeInstance<BreezeHandshake> topPart;
-				BreezeInstance<BreezeHandshake> bottomPart;
-				if((depth & 1) == 1)
+			BreezeLibrary lib;
+			PrimitivePart seq;
+			PrimitivePart loop;
+			PrimitivePart concur;
+			PrimitivePart call;
+			PrimitivePart sync;
+			PrimitivePart passivate;
+
+			GeneratorState() throws IOException
+			{
+				circuit = new BalsaCircuit();
+				factory = new DefaultBreezeFactory(circuit);
+
+				lib = new BreezeLibrary(BalsaSystem.DEFAULT());
+				seq = lib.getPrimitive("SequenceOptimised");
+				loop = lib.getPrimitive("Loop");
+				concur = lib.getPrimitive("Concur");
+				call = lib.getPrimitive("Call");
+				passivate = lib.getPrimitive("Passivator");
+				sync = lib.getPrimitive("Synch");
+			}
+
+			void build(int depth, BreezeHandshake top, BreezeHandshake bottom) throws InvalidConnectionException
+			{
+				if(depth == 0)
 				{
-					topPart = concur.instantiate(factory,  new ParameterValueList.StringList("2"));
-					bottomPart = sync.instantiate(factory,  new ParameterValueList.StringList("2"));
+					if(top != null && bottom != null)
+						circuit.connect(top, bottom);
 				}
 				else
 				{
-					topPart = seq.instantiate(factory,  new ParameterValueList.StringList("2", "2"));
-					bottomPart = call.instantiate(factory,  new ParameterValueList.StringList("2"));
+
+					BreezeInstance<BreezeHandshake> topPart;
+					BreezeInstance<BreezeHandshake> bottomPart;
+					if(haveConcurs && ((depth & 1) == 1))
+					{
+						topPart = concur.instantiate(factory,  new ParameterValueList.StringList("2"));
+						bottomPart = sync.instantiate(factory,  new ParameterValueList.StringList("2"));
+					}
+					else
+					{
+						topPart = seq.instantiate(factory,  new ParameterValueList.StringList("2", "2"));
+						bottomPart = call.instantiate(factory,  new ParameterValueList.StringList("2"));
+					}
+
+					if(top != null)
+						circuit.connect(top, topPart.ports().get(0));
+
+					build(depth-1, topPart.ports().get(1), bottomPart.ports().get(0));
+					build(depth-1, topPart.ports().get(2), bottomPart.ports().get(1));
+
+					if(bottom != null)
+						circuit.connect(bottom, bottomPart.ports().get(2));
 				}
-
-				if(top != null)
-					circuit.connect(top, topPart.ports().get(0));
-
-				build(depth-1, topPart.ports().get(1), bottomPart.ports().get(0));
-				build(depth-1, topPart.ports().get(2), bottomPart.ports().get(1));
-
-				if(bottom != null)
-					circuit.connect(bottom, bottomPart.ports().get(2));
 			}
 		}
 
-		public BalsaCircuit build(int depth) throws InvalidConnectionException {
-			build(depth, null, null);
-			return circuit;
+		@Override
+		public String name() {
+			return haveConcurs?"SeqMixParSync":"SeqMix";
+		}
+
+		@Override
+		public BalsaCircuit build(int depth) throws Exception {
+			GeneratorState state = new GeneratorState();
+			state.build(depth, null, null);
+			return state.circuit;
 		}
 	}
 
@@ -182,27 +200,48 @@ public class SeqMixTest {
 		recTest();
 	}
 
+	interface DiamondGenerator
+	{
+		BalsaCircuit build(int depth) throws Exception;
+		String name();
+	}
+
 	private void recTest() throws Exception {
+
+		DiamondGenerator[] generators = new DiamondGenerator[]
+             {
+				new ParArbMixDiamondGenerator(),
+				new Generator(true),
+				new Generator(false)
+             };
+
+		for(DiamondGenerator generator : generators)
+		for(int inj = 0;inj < 2;inj++)
 		for(int depth = 1;depth < 10;depth++)
 		//int depth = 2;
 			for(int o = 0;o < 2;o++)
 				for(int s = 0;s < 2;s++)
 				{
 					boolean safenessPreserv = s==1;
+					String runName = (inj==1?"inj":"ninj") + "\t" + generator.name() +"\t"+(o==0?"std":"opt") + "\t" + depth + "\t" + (safenessPreserv?"safe":"all");
+					String linePattern =  runName+"\t%s\n";
+					try
+					{
+					BalsaToStgExporter.injectiveLabelling = inj == 1;
 					DesiJSettings desiJSettings = new DesiJSettings(DesiJOperation.REMOVE_DUMMIES, null, 0, null, null, true, true, false,
 							safenessPreserv, false, false,
 							false, 0, false, false);
 
-					BalsaCircuit circuit = new ParArbMixDiamondTest.Generator().build(depth);
+					BalsaCircuit circuit = generator.build(depth);
 
 					BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
-					String fileName = "/home/dell/SeqMixParSync_"+(o==0?"std":"opt")+"_"+depth;
+					String fileName = "/home/dell/stgs/"+ runName;
 					File gFile = new File(fileName+".g");
 					File contractedGFile = new File(fileName+".contracted.g");
 					Export.exportToFile(exporter.withCompositionSettings(new BalsaToStgExporter.CompositionSettings(false, 1==(o&1))), circuit, gFile);
 
 					PrintStream defaultOut = System.out;
-					File desiJOutFile = new File("/home/dell/desij" + (o==0?"std":"opt") + "_" + depth + "_" + (safenessPreserv?"safe":"all") + ".out");
+					File desiJOutFile = new File("/home/dell/desij_" + runName.replace('\t', '_') + ".out");
 					PrintStream desiJOut = new PrintStream(desiJOutFile);
 					Model model = Import.importFromFile(Import.chooseBestImporter(f.getPluginManager(), gFile),gFile);
 
@@ -226,10 +265,15 @@ public class SeqMixTest {
 					}
 					else
 					{
-						FileUtils.appendAllText(new File("/home/dell/beautiful_table.txt"), (o==0?"std":"opt") + "\t" + depth + "\t" + (safenessPreserv?"safe":"all") + "\t" + matcher.group(1) + "\t" + dt + "\n");
+						FileUtils.appendAllText(new File("/home/dell/beautiful_table.txt"), String.format(linePattern, matcher.group(1)));
 						System.out.println();
 					}
-
+					}
+					catch(Throwable th)
+					{
+						th.printStackTrace();
+						FileUtils.appendAllText(new File("/home/dell/beautiful_table.txt"), String.format(linePattern, "fail:"+th.getMessage()));
+					}
 				}
 	}
 }
