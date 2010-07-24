@@ -31,8 +31,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.workcraft.gui.propertyeditor.cpog.EncodingProperty;
-import org.workcraft.plugins.cpog.Encoding;
+import org.workcraft.Framework;
+import org.workcraft.PluginInfo;
+import org.workcraft.exceptions.PluginInstantiationException;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
@@ -42,8 +43,9 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 	PropertyEditorTableModel model;
 
-	public PropertyEditorTable() {
+	public PropertyEditorTable(Framework framework) {
 		super();
+
 
 		model = new PropertyEditorTableModel();
 		setModel(model);
@@ -60,7 +62,16 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(boolean.class, new BooleanProperty());
 		propertyClasses.put(Boolean.class, new BooleanProperty());
 		propertyClasses.put(Color.class, new ColorProperty());
-		propertyClasses.put(Encoding.class, new EncodingProperty());
+
+		for(PluginInfo plugin : framework.getPluginManager().getPluginsImplementing(PropertyClassProvider.class.getCanonicalName())) {
+			PropertyClassProvider instance;
+			try {
+				instance = (PropertyClassProvider)framework.getPluginManager().getInstance(plugin);
+				propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
+			} catch (PluginInstantiationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override

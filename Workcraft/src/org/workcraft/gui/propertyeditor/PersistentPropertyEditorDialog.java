@@ -56,15 +56,14 @@ public class PersistentPropertyEditorDialog extends JDialog {
 
 		private JTree sectionTree;
 
-	private PropertyEditorTable propertiesTable = new PropertyEditorTable();
-
-	private Framework framework;
-
+	private final Framework framework;
+	private final PropertyEditorTable propertiesTable;
 
 	public PersistentPropertyEditorDialog(MainWindow owner) {
 		super(owner);
 
 		framework = owner.getFramework();
+		propertiesTable = new PropertyEditorTable(framework);
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setModal(true);
