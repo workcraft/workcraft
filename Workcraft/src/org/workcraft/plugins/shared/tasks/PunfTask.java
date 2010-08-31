@@ -20,7 +20,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 	}
 
 	@Override
-	public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor)
+	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PunfUtilitySettings.getPunfCommand());
@@ -32,7 +32,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		command.add("-m="+outputPath);
 		command.add(inputPath);
 
-		Result<ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
 
 		if (res.getOutcome() != Outcome.FINISHED)
 			return res;

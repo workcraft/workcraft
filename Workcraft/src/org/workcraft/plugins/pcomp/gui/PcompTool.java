@@ -30,7 +30,7 @@ public class PcompTool implements Tool {
 
 	public final void run(Model model, Framework framework) {
 		PcompDialog dialog = new PcompDialog(framework.getMainWindow(), framework);
-		GUI.centerFrameToParent(dialog, framework.getMainWindow());
+		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 
 		if (dialog.run()) {
 

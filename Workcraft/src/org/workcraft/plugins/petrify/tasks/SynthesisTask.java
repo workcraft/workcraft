@@ -42,7 +42,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 	}
 
 	@Override
-	public Result<SynthesisResult> run(ProgressMonitor<SynthesisResult> monitor) {
+	public Result<? extends SynthesisResult> run(ProgressMonitor<? super SynthesisResult> monitor) {
 
 		// build the command line call for petrify
 		ArrayList<String> command = new ArrayList<String>();

@@ -1,12 +1,13 @@
 package org.workcraft.testing.plugins.petri;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.stg.InstanceManager;
 import org.workcraft.util.Func;
@@ -44,12 +45,12 @@ public class InstanceManagerTests
 		});
 	}
 
-	@Test(expected=NotFoundException.class)
+	@Test
 	public void testGetReferenceUnknown()
 	{
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
 		final InstanceManager<Object> mgr = make(expectedRequests);
-		mgr.getInstance(new Object());
+		assertNull(mgr.getInstance(new Object()));
 	}
 
 	@Test
@@ -98,7 +99,7 @@ public class InstanceManagerTests
 		assertEquals(Pair.of("abc",1), mgr.getInstance(o4));
 	}
 
-	@Test(expected=NotFoundException.class)
+	@Test
 	public void testRemove()
 	{
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
@@ -111,7 +112,7 @@ public class InstanceManagerTests
 		mgr.remove(o1);
 		mgr.assign(o2);
 		assertEquals(Pair.of("abc",0), mgr.getInstance(o2));
-		mgr.getInstance(o1);
+		assertNull(mgr.getInstance(o1));
 	}
 
 
@@ -137,7 +138,7 @@ public class InstanceManagerTests
 		assertEquals(Pair.of("abc",8), mgr.getInstance(o1));
 	}
 
-	@Test(expected=ArgumentException.class)
+	@Test(expected=DuplicateIDException.class)
 	public void testAssignForcedExistingId()
 	{
 		Map<Object, String> expectedRequests = new HashMap<Object, String>();
@@ -150,8 +151,8 @@ public class InstanceManagerTests
 		mgr.assign(o2, 8);
 	}
 
-	@Test(expected=NotFoundException.class)
-	public void testNotFoundException()
+	@Test
+	public void testNotFound()
 	{
 		InstanceManager<Object> mgr = new InstanceManager<Object>(new Func<Object, String>() {
 			@Override
@@ -159,7 +160,7 @@ public class InstanceManagerTests
 				return "O_O";
 			} });
 
-		mgr.getObject(Pair.of("o_O", 8));
+		assertNull(mgr.getObject(Pair.of("o_O", 8)));
 	}
 
 }

@@ -33,8 +33,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName ("Dot")
 public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
-	protected static double dotPositionScaleFactor = 0.02;
-	protected static String tmpGraphFilePath = "tmp.dot";
+	protected static boolean importConnectionsShape = false;
 	protected static String dotCommand = "dot";
 
 	private static LinkedList<PropertyDescriptor> properties;
@@ -42,8 +41,7 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 	public DotLayoutSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 		properties.add(new PropertyDeclaration(this, "Dot command", "getDotCommand", "setDotCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Temporary dot file path", "getTmpGraphFilePath", "setTmpGraphFilePath", String.class));
-		properties.add(new PropertyDeclaration(this, "Dot position scale factor", "getDotPositionScaleFactor", "setDotPositionScaleFactor", double.class));
+		properties.add(new PropertyDeclaration(this, "Import connections shape from Dot graph (experimental)", "getImportConnectionsShape", "setImportConnectionsShape", Boolean.class));
 	}
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
@@ -51,22 +49,20 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 
 	public void loadPersistentProperties(Config config) {
 		dotCommand = config.getString("DotLayout.dotCommand", "dot");
-		tmpGraphFilePath = config.getString("DotLayout.tmpGraphFilePath", "tmp.dot");
-		dotPositionScaleFactor = config.getDouble("DotLayout.dotPositionScaleFactor", 0.02);
+		importConnectionsShape = config.getBoolean("DotLayout.importConnectionsShape", false);
 	}
 
 	public void storePersistentProperties(Config config) {
 		config.set("DotLayout.dotCommand", dotCommand)	;
-		config.set("DotLayout.tmpGraphFilePath", tmpGraphFilePath);
-		config.set("DotLayout.dotPositionScaleFactor", Double.toString(dotPositionScaleFactor));
+		config.setBoolean("DotLayout.importConnectionsShape", importConnectionsShape);
 	}
 
-	public static String getTmpGraphFilePath() {
-		return DotLayoutSettings.tmpGraphFilePath;
+	public static Boolean getImportConnectionsShape() {
+		return importConnectionsShape;
 	}
 
-	public static void setTmpGraphFilePath(String tmpGraphFilePath) {
-		DotLayoutSettings.tmpGraphFilePath = tmpGraphFilePath;
+	public static void setImportConnectionsShape(Boolean value) {
+		importConnectionsShape = value;
 	}
 
 	public static String getDotCommand() {
@@ -75,14 +71,6 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 
 	public static void setDotCommand(String dotCommand) {
 		DotLayoutSettings.dotCommand = dotCommand;
-	}
-
-	public static double getDotPositionScaleFactor() {
-		return DotLayoutSettings.dotPositionScaleFactor;
-	}
-
-	public static void setDotPositionScaleFactor(double dotPositionScaleFactor) {
-		DotLayoutSettings.dotPositionScaleFactor = dotPositionScaleFactor;
 	}
 
 	public String getSection() {

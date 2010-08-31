@@ -19,7 +19,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 	private volatile boolean finished;
 	private volatile int returnCode;
 	private boolean userCancelled = false;
-	private ProgressMonitor<ExternalProcessResult> monitor;
+	private ProgressMonitor<? super ExternalProcessResult> monitor;
 
 	private DataAccumulator stdoutAccum = new DataAccumulator();
 	private DataAccumulator stderrAccum = new DataAccumulator();
@@ -32,7 +32,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 	}
 
 	@Override
-	public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor) {
+	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		this.monitor = monitor;
 
 		ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), workingDir);

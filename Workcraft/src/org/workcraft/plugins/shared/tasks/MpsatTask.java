@@ -24,7 +24,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	}
 
 	@Override
-	public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor) {
+	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(MpsatUtilitySettings.getMpsatCommand());
@@ -42,7 +42,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
 		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDir);
 
-		Result<ExternalProcessResult> res = externalProcessTask.run(monitor);
+		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
 
 		if(res.getOutcome() == Outcome.CANCELLED)
 			return res;

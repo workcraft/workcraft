@@ -19,7 +19,7 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 		private volatile boolean finished;
 		private volatile int returnCode;
 		private boolean userCancelled = false;
-		private ProgressMonitor<ExternalProcessResult> monitor;
+		private ProgressMonitor<? super ExternalProcessResult> monitor;
 
 		private DataAccumulator stdoutAccum = new DataAccumulator();
 		private DataAccumulator stderrAccum = new DataAccumulator();
@@ -30,7 +30,7 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 		}
 
 		@Override
-		public Result<ExternalProcessResult> run(ProgressMonitor<ExternalProcessResult> monitor) {
+		public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 			this.monitor = monitor;
 
 			ArrayList<String> command = new ArrayList<String>();

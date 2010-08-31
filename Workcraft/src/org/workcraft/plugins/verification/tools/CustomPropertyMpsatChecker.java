@@ -31,7 +31,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 	public void run(Model model, Framework framework) {
 		MpsatPresetManager pmgr = new MpsatPresetManager();
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
-		GUI.centerFrameToParent(dialog, framework.getMainWindow());
+		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1)
 		{

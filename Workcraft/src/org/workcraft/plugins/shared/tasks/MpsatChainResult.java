@@ -4,14 +4,14 @@ import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.tasks.Result;
 
 public class MpsatChainResult {
-	private Result<ExternalProcessResult> punfResult;
-	private Result<ExternalProcessResult> mpsatResult;
-	private Result<Object> exportResult;
+	private Result<? extends ExternalProcessResult> punfResult;
+	private Result<? extends ExternalProcessResult> mpsatResult;
+	private Result<? extends Object> exportResult;
 	private MpsatSettings mpsatSettings;
 
-	public MpsatChainResult(Result<Object> exportResult,
-				Result<ExternalProcessResult> punfResult,
-			Result<ExternalProcessResult> mpsatResult,
+	public MpsatChainResult(Result<? extends Object> exportResult,
+				Result<? extends ExternalProcessResult> punfResult,
+			Result<? extends ExternalProcessResult> mpsatResult,
 			MpsatSettings mpsatSettings) {
 		this.punfResult = punfResult;
 		this.mpsatResult = mpsatResult;
@@ -23,15 +23,15 @@ public class MpsatChainResult {
 		return mpsatSettings;
 	}
 
-	public Result<ExternalProcessResult> getPunfResult() {
+	public Result<? extends ExternalProcessResult> getPunfResult() {
 		return punfResult;
 	}
 
-	public Result<ExternalProcessResult> getMpsatResult() {
+	public Result<? extends ExternalProcessResult> getMpsatResult() {
 		return mpsatResult;
 	}
 
-	public Result<Object> getExportResult() {
+	public Result<? extends Object> getExportResult() {
 		return exportResult;
 	}
 }

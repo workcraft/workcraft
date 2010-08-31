@@ -125,7 +125,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		MpsatPresetManagerDialog dlg = new MpsatPresetManagerDialog(this, presetManager);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
-		GUI.centerFrameToParent(dlg, this);
+		GUI.centerAndSizeToParent(dlg, this);
 		dlg.setVisible(true);
 
 		presetCombo.removeAllItems();

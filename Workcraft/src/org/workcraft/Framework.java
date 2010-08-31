@@ -67,12 +67,17 @@ import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.tasks.DefaultTaskManager;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.ProgressMonitorArray;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
+
 
 public class Framework {
 	public static final String FRAMEWORK_VERSION_MAJOR = "2";
@@ -174,40 +179,32 @@ public class Framework {
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
-		taskManager = new DefaultTaskManager();
+		taskManager = new DefaultTaskManager()
+		{
+			public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+				if(SwingUtilities.isEventDispatchThread())
+				{
+					OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<T>(mainWindow, description);
+
+					ProgressMonitorArray<T> observers = new ProgressMonitorArray<T>();
+					if(observer != null)
+						observers.add(observer);
+					observers.add(cancelDialog);
+
+					this.queue(task, description, observers);
+
+					cancelDialog.setVisible(true);
+
+					return cancelDialog.result;
+				}
+				else
+					return super.execute(task, description, observer);
+			};
+		};
 		modelManager = new ModelManager();
 		config = new Config();
 		workspace = new Workspace(this);
 	}
-
-
-	/*	public void loadPlugins(String directory) {
-		System.out.println("Loading plugin class manifest from \""+directory+"\"\t ...");
-
-		pluginManager.loadManifest(directory);
-
-		System.out.println("Verifying plugin classes\t ...");
-		System.out.println("Models:");
-
-		LinkedList<Class> models = pluginManager.getClassesBySuperclass(Document.class);
-		for (Class cls : models) {
-			modelManager.addModel(cls);
-		}
-
-		System.out.println("Components:");
-
-		LinkedList<Class> components = pluginManager.getClassesBySuperclass(Component.class);
-		for (Class cls : components) {
-			modelManager.addComponent(cls);
-		}
-
-		LinkedList<Class> tools = pluginManager.getClassesByInterface(Tool.class);
-		System.out.println("Tools:");
-		for (Class cls : tools) {
-			modelManager.addTool(cls, this);
-		}
-		System.out.println ("Load complete.\n");
-	}*/
 
 	public void loadConfig(String fileName) {
 		config.load(fileName);

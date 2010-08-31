@@ -182,7 +182,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 						original.getAbsolutePath()
 				}), new File("."));
 
-		Result<ExternalProcessResult> result = taskManager.execute(task, "PETRIFY synthesis");
+		Result<? extends ExternalProcessResult> result = taskManager.execute(task, "PETRIFY synthesis");
 
 		switch(result.getOutcome())
 		{
@@ -214,7 +214,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 	private static void contractDummies(TaskManager taskManager, File original, File contracted) throws IOException
 	{
 
-		Result<ExternalProcessResult> result = taskManager.execute(
+		Result<? extends ExternalProcessResult> result = taskManager.execute(
 		new ExternalProcessTask(
 				Arrays.asList(
 				new String[]{
@@ -246,7 +246,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 	{
 		MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
 
-		Result<ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), cscResolvedMci.getAbsolutePath()), "MPSat Complex gate synthesis");
+		Result<? extends ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), cscResolvedMci.getAbsolutePath()), "MPSat Complex gate synthesis");
 
 		System.out.println("MPSat complex gate synthesis output: ");
 		System.out.write(result.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");
