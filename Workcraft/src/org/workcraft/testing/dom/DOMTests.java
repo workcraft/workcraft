@@ -21,6 +21,8 @@
 
 package org.workcraft.testing.dom;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -57,7 +59,14 @@ public class DOMTests {
 		assertTrue (pn.getConnections(t1).contains(con2));
 		assertFalse (pn.getConnections(t1).contains(con1));
 
-		assertEquals(pn.getNodeReference(p1), -1);
+		boolean thrown = true;
+		try
+		{
+			pn.getNodeReference(p1);
+			thrown = false;
+		}catch(Throwable th) {}
+
+		assertTrue(thrown);
 	}
 
 }

@@ -175,10 +175,18 @@ public class PluginManager implements PluginProvider {
 
  			if (!Modifier.isAbstract(cls.getModifiers()))
 			if(Plugin.class.isAssignableFrom(cls)) {
-				PluginInfo info = new PluginInfo(cls);
-				plugins.add(info);
-				nameToInfoMap.put(className, info);
-				System.out.println("plugin " + cls.getName());
+				try
+				{
+					cls.getConstructor();
+					PluginInfo info = new PluginInfo(cls);
+					plugins.add(info);
+					nameToInfoMap.put(className, info);
+					System.out.println("plugin " + cls.getName());
+				}
+				catch(NoSuchMethodException ex)
+				{
+					System.err.println("plugin " + cls.getName() + " does not have a default constructor. skipping.");
+				}
 			}
 
 		} catch (ClassFormatError e) {

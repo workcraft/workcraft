@@ -1,0 +1,108 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  LOOKAHEAD = 1;
+  STATIC = false;
+  OUTPUT_DIRECTORY = "generated";
+}
+
+PARSER_BEGIN(DotParser)
+package org.workcraft.plugins.layout.generated;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.ArrayList;
+
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.*;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Triple;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.NotFoundException;
+import org.workcraft.plugins.layout.*;
+
+public class DotParser {
+}
+PARSER_END(DotParser)
+
+SKIP :
+{
+ 	" "
+|	"\t"
+|	"\r"
+|	"\n"
+|	<"#" (~["\r","\n"])* (["\r", "\n"])*>
+|	<"//" (~["\r","\n"])* (["\r", "\n"])*>
+}
+
+TOKEN :
+{
+	"strict" | "graph" | "digraph" | "node" | "edge"
+  	| <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
+  	| <INTEGER: (["0"-"9"])+>
+  	| <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
+}
+
+String id() :{  Token t;}{
+  t=< QUOTED >  {
+    return t.image.substring(1, t.image.length()-1);  }
+|   (    t = "strict"
+  | t = "graph"
+  | t = "digraph"
+  | t = "node"
+  | t = "edge"
+  | t = < NAME >  )  {    return t.image;  }}
+
+void graph(DotListener listener) :
+{}
+{	["strict"] ("graph" | "digraph") id() "{"
+	( statement(listener) )* "}"
+}
+
+int integer() :
+{	Token token;
+}
+{	token = < INTEGER >
+	{
+	  return Integer.parseInt(token.image);	}
+}
+
+void attr(Map<String, String> attrs):
+{
+  String name;
+  String value = null;
+}
+{	name=id()
+	["="
+	(value=id())
+	]
+	[","]
+	
+	{		attrs.put(name, value);
+	}
+}
+
+Map<String, String> attr_list() :
+{
+  Map<String, String> result = new HashMap<String, String>();}
+{
+  "["	(	  attr(result)
+	)*
+	"]"
+	{	  return result;	}
+}
+
+void attr_statement() :
+{}
+{	("graph"|"node"|"edge") attr_list()
+}
+
+void statement(DotListener listener) :{  Token name;  Map < String, String > prop;  String i, j;}{  (    attr_statement()  | i = id()    (      prop = attr_list()      {        listener.node(i, prop);      }    | "->" j = id() prop = attr_list()      {        listener.arc(i, j, prop);      }    )  )  ";"}

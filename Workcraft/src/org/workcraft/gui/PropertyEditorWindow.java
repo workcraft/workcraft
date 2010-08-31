@@ -36,7 +36,7 @@ public class PropertyEditorWindow extends JPanel {
 	private JScrollPane scrollProperties;
 
 	public PropertyEditorWindow (Framework framework) {
-		propertyTable = new PropertyEditorTable();
+		propertyTable = new PropertyEditorTable(framework);
 
 		scrollProperties = new JScrollPane();
 		scrollProperties.setViewportView(propertyTable);

@@ -65,6 +65,7 @@ import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
+import org.workcraft.plugins.balsa.io.BalsaToStgExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
 import org.workcraft.tasks.DefaultTaskManager;
@@ -297,9 +298,7 @@ public class TestGCD {
 		init();
 
 		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
-		exporter.getSettings().eventBasedInternal = false;
-		exporter.getSettings().improvedPcomp = false;
-		Export.exportToFile(exporter, circuit, "/home/dell/export_gcd.g");
+		Export.exportToFile(exporter.withCompositionSettings(new BalsaToStgExporter.CompositionSettings(false, false)), circuit, "/home/dell/export_gcd.g");
 
 		//Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));

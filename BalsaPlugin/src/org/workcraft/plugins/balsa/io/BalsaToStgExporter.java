@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
@@ -39,6 +42,7 @@ import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.BreezeHandshake;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakeevents.TwoWayStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivenessSelector;
@@ -46,7 +50,12 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.InternalHandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.ActiveSignal;
+import org.workcraft.plugins.balsa.stgbuilder.PassiveSignal;
+import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
+import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
+import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
@@ -54,15 +63,18 @@ import org.workcraft.plugins.shared.PcompUtilitySettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.Export;
 
-public abstract class BalsaToStgExporter {
+public abstract class BalsaToStgExporter implements Exporter {
 
-	public static class Settings
+	public static class CompositionSettings
 	{
+		public CompositionSettings(boolean eventBasedInternal, boolean improvedPcomp)
+		{
+			this.eventBasedInternal = eventBasedInternal;
+			this.improvedPcomp = improvedPcomp;
+		}
 		public boolean eventBasedInternal;
 		public boolean improvedPcomp;
 	}
-
-	private Settings settings = new Settings();
 
 	private final HandshakeProtocol protocol;
 	private final String protocolName;
@@ -85,7 +97,24 @@ public abstract class BalsaToStgExporter {
 		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
 	}
 
+	public void export(Model model, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), settings, out);
+	}
+
 	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		String opt1 = "Improved Pcomp";
+		String opt2 = "Standard Pcomp";
+		String opt3 = "Event-based composition";
+		Object result = JOptionPane.showOptionDialog(null, "Select the type of STG composition", "STG composition type", 0, JOptionPane.QUESTION_MESSAGE, null, new Object[]{opt1, opt2, opt3}, opt1);
+
+		boolean improved = (result != opt2);
+		boolean event = (result == opt3);
+		export(circuit, new CompositionSettings(event, improved), out);
+	}
+
+	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit balsa = new BalsaCircuit(circuit);
 
@@ -100,12 +129,13 @@ public abstract class BalsaToStgExporter {
 		}
 		else
 		{
+			int cc=1;
 			ArrayList<File> tempFiles = new ArrayList<File>();
 			for(BreezeComponent component : getComponentsToSave(balsa))
 			{
 				STG stg = buildStg(balsa, component, names);
 
-				File tempFile = File.createTempFile("brz_", ".g");
+				File tempFile = new File(String.format("/tmp/%d.g",cc++)); //File.createTempFile("brz_", ".g");
 				tempFiles.add(tempFile);
 
 				Export.exportToFile(new DotGExporter(), stg, tempFile);
@@ -232,6 +262,7 @@ public abstract class BalsaToStgExporter {
 		out.write(outputData);
 	}
 
+	public static boolean injectiveLabelling = false;
 
 	private STG buildStg(final BalsaCircuit circuit, final BreezeComponent breezeComponent, NameProvider<Handshake> names) {
 		STG stg = new STG();
@@ -242,9 +273,50 @@ public abstract class BalsaToStgExporter {
 
 		StgModelStgBuilder stgBuilder = new StgModelStgBuilder(stg, names);
 
-		Map<String, TwoSideStg> handshakeStgs = MainStgBuilder.buildHandshakes(fullHandshakes, protocol, stgBuilder);
 
-		MainStgBuilder.buildStg(breezeComponent.getUnderlyingComponent(), handshakeStgs, stgBuilder);
+
+		DynamicComponent component = breezeComponent.getUnderlyingComponent();
+
+		if(!injectiveLabelling && component.declaration().getName().equals("Call"))
+		{
+			Handshake inp0 = fullHandshakes.get("inp0");
+			Handshake inp1 = fullHandshakes.get("inp1");
+			Handshake out = fullHandshakes.get("out");
+			StgPlace place = stgBuilder.buildPlace(1);
+			StgSignal r1 = stgBuilder.buildSignal(new SignalId(inp0, "rq"), false);
+			StgSignal r2 = stgBuilder.buildSignal(new SignalId(inp1, "rq"), false);
+			StgSignal a1 = stgBuilder.buildSignal(new SignalId(inp0, "ac"), true);
+			StgSignal a2 = stgBuilder.buildSignal(new SignalId(inp1, "ac"), true);
+			StgSignal r_1 = stgBuilder.buildSignal(new SignalId(out, "rq"), true);
+			StgSignal a_1 = stgBuilder.buildSignal(new SignalId(out, "ac"), false);
+			StgSignal r_2 = stgBuilder.buildSignal(new SignalId(out, "rq"), true);
+			StgSignal a_2 = stgBuilder.buildSignal(new SignalId(out, "ac"), false);
+
+			stgBuilder.connect(place, r1.getPlus());
+			stgBuilder.connect(r1.getPlus(), r_1.getPlus());
+			stgBuilder.connect(r_1.getPlus(), a_1.getPlus());
+			stgBuilder.connect(a_1.getPlus(), a1.getPlus());
+			stgBuilder.connect(a1.getPlus(), r1.getMinus());
+			stgBuilder.connect(r1.getMinus(), r_1.getMinus());
+			stgBuilder.connect(r_1.getMinus(), a_1.getMinus());
+			stgBuilder.connect(a_1.getMinus(), a1.getMinus());
+			stgBuilder.connect(a1.getMinus(), place);
+
+			stgBuilder.connect(place, r2.getPlus());
+			stgBuilder.connect(r2.getPlus(), r_2.getPlus());
+			stgBuilder.connect(r_2.getPlus(), a_2.getPlus());
+			stgBuilder.connect(a_2.getPlus(), a2.getPlus());
+			stgBuilder.connect(a2.getPlus(), r2.getMinus());
+			stgBuilder.connect(r2.getMinus(), r_2.getMinus());
+			stgBuilder.connect(r_2.getMinus(), a_2.getMinus());
+			stgBuilder.connect(a_2.getMinus(), a2.getMinus());
+			stgBuilder.connect(a2.getMinus(), place);
+		}
+		else
+		{
+			Map<String, TwoSideStg> handshakeStgs = MainStgBuilder.buildHandshakes(fullHandshakes, protocol, stgBuilder);
+			MainStgBuilder.buildStg(component, handshakeStgs, stgBuilder);
+		}
 		return stg;
 	}
 
@@ -320,11 +392,37 @@ public abstract class BalsaToStgExporter {
 			return Exporter.NOT_COMPATIBLE;
 	}
 
-	public void setSettings(Settings settings) {
-		this.settings = settings;
-	}
+	public Exporter withCompositionSettings(final CompositionSettings settings)
+	{
+		final BalsaToStgExporter me = this;
+		return new Exporter()
+		{
+			@Override
+			public String getDescription() {
+				return me.getDescription();
+			}
 
-	public Settings getSettings() {
-		return settings;
+			@Override
+			public String getExtenstion() {
+				return me.getExtenstion();
+			}
+
+			@Override
+			public UUID getTargetFormat() {
+				return me.getTargetFormat();
+			}
+
+			@Override
+			public int getCompatibility(Model model) {
+				return me.getCompatibility(model);
+			}
+
+			@Override
+			public void export(Model model, OutputStream out)
+					throws IOException, ModelValidationException,
+					SerialisationException {
+				me.export(model, settings, out);
+			}
+		};
 	}
 }
