@@ -33,7 +33,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName ("Dot")
 public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
-	protected static double dotPositionScaleFactor = 0.02;
+	public static double dotPositionScaleFactor = 0.02;
 	protected static String tmpGraphFilePath = "tmp.dot";
 	protected static String dotCommand = "dot";
 

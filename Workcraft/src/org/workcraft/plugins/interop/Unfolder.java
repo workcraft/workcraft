@@ -15,7 +15,7 @@ public class Unfolder {
 	{
 		PunfTask task = new PunfTask(original.getAbsolutePath(), unfolding.getAbsolutePath());
 
-		Result<ExternalProcessResult> res = taskManager.execute(task, "Unfolding the Balsa circuit STG");
+		Result<? extends ExternalProcessResult> res = taskManager.execute(task, "Unfolding the Balsa circuit STG");
 
 		System.out.println("Unfolding output: ");
 		System.out.write(res.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");

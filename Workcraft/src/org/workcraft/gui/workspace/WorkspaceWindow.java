@@ -36,6 +36,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.WorkspaceTreeDecorator;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
@@ -234,7 +235,7 @@ public class WorkspaceWindow extends JPanel {
 
 		final ScriptedActionListener listener = framework.getMainWindow().getDefaultActionListener();
 
-		ActionMenuItem miNewModel = new ActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
+		ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
 		miNewModel.addScriptedActionListener(listener);
 
 		ActionMenuItem miAdd = new ActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);

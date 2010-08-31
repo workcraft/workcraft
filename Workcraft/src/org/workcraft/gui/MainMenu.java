@@ -41,9 +41,8 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.actions.ScriptedAction;
-import org.workcraft.gui.actions.ScriptedActionCheckBoxMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.util.ListMap;
@@ -70,19 +69,21 @@ public class MainMenu extends JMenuBar {
 			framework.getMainWindow().runTool(toolClass);
 		}
 	}
-	class ToggleWindowAction extends ScriptedAction {
-		private int windowID;
+	class ToggleWindowAction extends Action {
+		private DockableWindow window;
 		private String windowTitle;
 
 		public ToggleWindowAction(DockableWindow window) {
-			windowID = window.getID();
+			this.window = window;
 			windowTitle = window.getTitle();
 		}
-		public String getScript() {
-			return "mainWindow.toggleDockableWindow("+windowID+");";
-		}
+		@Override
 		public String getText() {
 			return windowTitle;
+		}
+		@Override
+		public void run(Framework framework) {
+			framework.getMainWindow().toggleDockableWindow(window);
 		}
 	}
 	class ExportAction extends Action {
@@ -108,7 +109,7 @@ public class MainMenu extends JMenuBar {
 	private JMenu mnExport;
 
 	private MainWindow mainWindow;
-	private HashMap <Integer, ScriptedActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ScriptedActionCheckBoxMenuItem>();
+	private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
 
 	private LinkedList<JMenu> toolMenus = new LinkedList<JMenu>();
 
@@ -137,29 +138,29 @@ public class MainMenu extends JMenuBar {
 		mnFile = new JMenu();
 		mnFile.setText("File");
 
-		ActionMenuItem miNewModel = new ActionMenuItem(MainWindow.Actions.CREATE_WORK_ACTION);
+		ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
 		miNewModel.setMnemonic(KeyEvent.VK_N);
 		miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		miNewModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miExit = new ActionMenuItem(MainWindow.Actions.EXIT_ACTION);
+		ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
 		miExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindow.Actions.SHUTDOWN_GUI_ACTION);
+		ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
 		miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miOpenModel = new ActionMenuItem(MainWindow.Actions.OPEN_WORK_ACTION);
+		ActionMenuItem miOpenModel = new ActionMenuItem(MainWindowActions.OPEN_WORK_ACTION);
 		miOpenModel.setMnemonic(KeyEvent.VK_O);
 		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miSaveWork = new ActionMenuItem(MainWindow.Actions.SAVE_WORK_ACTION);
+		ActionMenuItem miSaveWork = new ActionMenuItem(MainWindowActions.SAVE_WORK_ACTION);
 		miSaveWork.setMnemonic(KeyEvent.VK_S);
 		miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		miSaveWork.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindow.Actions.SAVE_WORK_AS_ACTION);
+		ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindowActions.SAVE_WORK_AS_ACTION);
 		miSaveWorkAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		ActionMenuItem miNewWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.NEW_WORKSPACE_AS_ACTION);
@@ -178,13 +179,13 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
 		miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miImport = new ActionMenuItem(MainWindow.Actions.IMPORT_ACTION);
+		ActionMenuItem miImport = new ActionMenuItem(MainWindowActions.IMPORT_ACTION);
 		miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miCloseAll = new ActionMenuItem(MainWindow.Actions.CLOSE_ALL_EDITORS_ACTION);
+		ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
 		miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miCloseActive = new ActionMenuItem(MainWindow.Actions.CLOSE_ACTIVE_EDITOR_ACTION);
+		ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
 		miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		mnExport = new JMenu("Export");
@@ -256,17 +257,13 @@ public class MainMenu extends JMenuBar {
 		mnSettings = new JMenu();
 		mnSettings.setText("Utility");
 
-		ActionMenuItem miCustomButtons = new ActionMenuItem(MainWindow.Actions.EDIT_CUSTOM_BUTTONS_ACTION);
-		miCustomButtons.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindow.Actions.RECONFIGURE_PLUGINS_ACTION);
+		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miProperties = new ActionMenuItem(MainWindow.Actions.EDIT_SETTINGS_ACTION);
+		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
 		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		mnSettings.add(miProperties);
-		mnSettings.add(miCustomButtons);
 		mnSettings.add(miReconfigure);
 
 		// Help
@@ -365,7 +362,7 @@ public class MainMenu extends JMenuBar {
 	}
 
 	final public void registerUtilityWindow(DockableWindow window) {
-		ScriptedActionCheckBoxMenuItem miWindowItem = new ScriptedActionCheckBoxMenuItem(new ToggleWindowAction(window));
+		ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
 		miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		miWindowItem.setSelected(!window.isClosed());
 		windowItems.put (window.getID(), miWindowItem);
@@ -373,13 +370,13 @@ public class MainMenu extends JMenuBar {
 	}
 
 	final public void utilityWindowClosed (int ID) {
-		ScriptedActionCheckBoxMenuItem mi = windowItems.get(ID);
+		ActionCheckBoxMenuItem mi = windowItems.get(ID);
 		if (mi!=null)
 			mi.setSelected(false);
 	}
 
 	final public void utilityWindowDisplayed (int ID) {
-		ScriptedActionCheckBoxMenuItem mi = windowItems.get(ID);
+		ActionCheckBoxMenuItem mi = windowItems.get(ID);
 		if (mi!=null)
 			mi.setSelected(true);
 	}

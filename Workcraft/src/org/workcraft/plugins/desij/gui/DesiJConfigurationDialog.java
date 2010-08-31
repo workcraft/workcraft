@@ -135,7 +135,7 @@ public class DesiJConfigurationDialog extends JDialog {
 
 		DesiJPresetManagerDialog dlg = new DesiJPresetManagerDialog(this, presetManager);
 		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
-		GUI.centerFrameToParent(dlg, this);
+		GUI.centerAndSizeToParent(dlg, this);
 		dlg.setVisible(true);
 
 		presetCombo.removeAllItems();

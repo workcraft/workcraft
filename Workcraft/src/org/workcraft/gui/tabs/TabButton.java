@@ -30,17 +30,17 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
 
-import org.workcraft.gui.actions.ScriptedAction;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class TabButton extends JLabel implements MouseListener {
 	private static final long serialVersionUID = 1L;
 	private ScriptedActionListener actionListener;
-	private ScriptedAction action;
+	private Action action;
 
 	Border mouseOutBorder, mouseOverBorder;
 
-	public TabButton(String label, String toolTipText, ScriptedAction action, ScriptedActionListener actionListener) {
+	public TabButton(String label, String toolTipText, Action action, ScriptedActionListener actionListener) {
 		super(label);
 		setVerticalAlignment(JLabel.CENTER);
 		setFont(getFont().deriveFont(Font.PLAIN));//.deriveFont(AffineTransform.getScaleInstance(0.8, 0.8)));

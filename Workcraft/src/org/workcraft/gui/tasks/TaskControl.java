@@ -35,8 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 
-import org.workcraft.Framework;
-
 @SuppressWarnings("serial")
 public class TaskControl extends JPanel {
 	JLabel label;
@@ -46,7 +44,7 @@ public class TaskControl extends JPanel {
 
 	volatile boolean cancelRequested;
 
-	public TaskControl (Framework framework, String taskDescription) {
+	public TaskControl (String taskDescription) {
 		double size[][] = {
 				{TableLayout.FILL, 80, 100},
 				{20, 20, 20}
@@ -78,9 +76,7 @@ public class TaskControl extends JPanel {
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cancelRequested = true;
-				btnCancel.setEnabled(false);
-				btnCancel.setText("Cancelling...");
+				cancel();
 			}
 		});
 
@@ -97,5 +93,11 @@ public class TaskControl extends JPanel {
 
 	public boolean isCancelRequested() {
 		return cancelRequested;
+	}
+
+	public void cancel() {
+		cancelRequested = true;
+		btnCancel.setEnabled(false);
+		btnCancel.setText("Cancelling...");
 	}
 }

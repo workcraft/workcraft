@@ -76,7 +76,6 @@ import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
@@ -98,134 +97,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-	public static class Actions {
-		public static final Action CREATE_WORK_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().createWork(); } catch (OperationCancelledException e) { }
-			}
-			@Override public String getText() {
-				return "Create work...";
-			};
-		};
-		public static final Action OPEN_WORK_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().openWork(); } catch (OperationCancelledException e) { }
-			}
-			@Override public String getText() {
-				return "Open work...";
-			};
-		};
-		public static final Action SAVE_WORK_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().saveWork(); } catch (OperationCancelledException e) { }
-			}
-			@Override public String getText() {
-				return "Save work";
-			};
-		};
-		public static final Action SAVE_WORK_AS_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().saveWorkAs(); } catch (OperationCancelledException e) { }
-			}
-			public String getText() {
-				return "Save work as...";
-			};
-		};
-		public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().closeActiveEditor(); } catch (OperationCancelledException e) { }
-			}
-			public String getText() {
-				return "Close active work";
-			};
-		};
-
-		public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.getMainWindow().closeEditorWindows(); } catch (OperationCancelledException e) { }
-			}
-			public String getText() {
-				return "Close all works";
-			};
-		};
-		public static final Action EXIT_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				f.shutdown();
-			}
-			public String getText() {
-				return "Exit";
-			};
-		};
-		public static final Action SHUTDOWN_GUI_ACTION = new Action() {
-			@Override public void run(Framework f) {
-				try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
-			}
-			public String getText() {
-				return "Switch to console mode";
-			};
-		};
-		public static final ScriptedAction RECONFIGURE_PLUGINS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "framework.getPluginManager().reconfigure();";
-			}
-			public String getText() {
-				return "Reconfigure plugins";
-			};
-		};
-		public static final ScriptedAction RESET_LAYOUT_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return tryOperation ("mainWindow.resetDockingLayout();");
-			}
-			public String getText() {
-				return "Reset GUI layout";
-			};
-		};
-
-		public static final ScriptedAction IMPORT_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.importFrom()";
-			}
-			public String getText() {
-				return "Import...";
-			}
-		};
-
-		public static final ScriptedAction EDIT_CUSTOM_BUTTONS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.editCustomButtons()";
-			}
-			public String getText() {
-				return "Edit custom buttons...";
-			}
-		};
-
-		public static final ScriptedAction EDIT_SETTINGS_ACTION = new ScriptedAction() {
-			public String getScript() {
-				return "mainWindow.editSettings()";
-			}
-			public String getText() {
-				return "Settings...";
-			}
-		};
-	}
-
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
-			/*if (e.getScript() == null)
-				System.out.println ("Scripted action \"" + e.getText()+"\": null action");
-			else
-				System.out.println ("Scripted action \"" + e.getText()+"\":\n"+e.getScript());
-
-			if (e.getUndoScript() == null)
-				System.out.println ("Action cannot be undone.");
-			else {
-				System.out.println ("Undo script:\n" +e.getUndoScript());
-				if (e.getRedoScript() == null)
-					System.out.println ("Action cannot be redone.");
-				else
-					System.out.println ("Redo script:\n"+e.getRedoScript());
-			}*/
-
 			e.run(framework);
 		}
 	};
@@ -509,17 +382,17 @@ public class MainWindow extends JFrame {
 	}
 
 	private void disableWorkActions() {
-		Actions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(false);
-		Actions.CLOSE_ALL_EDITORS_ACTION.setEnabled(false);
-		Actions.SAVE_WORK_ACTION.setEnabled(false);
-		Actions.SAVE_WORK_AS_ACTION.setEnabled(false);
+		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(false);
+		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(false);
+		MainWindowActions.SAVE_WORK_ACTION.setEnabled(false);
+		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(false);
 	}
 
 	private void enableWorkActions() {
-		Actions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(true);
-		Actions.CLOSE_ALL_EDITORS_ACTION.setEnabled(true);
-		Actions.SAVE_WORK_ACTION.setEnabled(true);
-		Actions.SAVE_WORK_AS_ACTION.setEnabled(true);
+		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(true);
+		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(true);
+		MainWindowActions.SAVE_WORK_ACTION.setEnabled(true);
+		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(true);
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
@@ -568,10 +441,14 @@ public class MainWindow extends JFrame {
 					throw new OperationCancelledException("Operation cancelled by user.");
 			}
 
-
-
 			if (DockingManager.isMaximized(dockableWindow)) {
 				toggleDockableWindowMaximized(dockableWindow.getID());
+			}
+
+			if(editorInFocus == editor)
+			{
+				toolboxWindow.clearTools();
+				editorInFocus = null;
 			}
 
 			editorWindows.remove(we, dockableWindow);
@@ -598,28 +475,38 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void displayDockableWindow(int ID) {
-		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
-		if (dockableWindow != null) {
-			DockingManager.display(dockableWindow);
-			dockableWindow.setClosed(false);
-			mainMenu.utilityWindowDisplayed(ID);
 
-		} else {
-			System.err.println ("displayDockableWindow: window with ID="+ID+" was not found.");
-		}
+	/** For use from Javascript **/
+	public void toggleDockableWindow(int id) {
+		DockableWindow window = IDToDockableWindowMap.get(id);
+		if (window != null)
+			toggleDockableWindow(window);
+		else
+			System.err.println ("displayDockableWindow: window with ID="+id+" was not found.");
 	}
 
-	public void toggleDockableWindow(int ID) {
-		DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+	/** For use from Javascript **/
+	public void displayDockableWindow(int id) {
+		DockableWindow window = IDToDockableWindowMap.get(id);
+		if (window != null)
+			displayDockableWindow(window);
+		else
+			System.err.println ("displayDockableWindow: window with ID="+id+" was not found.");
+	}
 
-		if (dockableWindow.isClosed())
-			displayDockableWindow(ID);
+	public void displayDockableWindow(DockableWindow window) {
+		DockingManager.display(window);
+		window.setClosed(false);
+		mainMenu.utilityWindowDisplayed(window.getID());
+	}
+
+	public void toggleDockableWindow(DockableWindow window) {
+		if (window.isClosed())
+			displayDockableWindow(window);
 		else
 			try {
-				closeDockableWindow(ID);
+				closeDockableWindow(window);
 			} catch (OperationCancelledException e) {
-				e.printStackTrace();
 			}
 	}
 
@@ -1085,7 +972,7 @@ public class MainWindow extends JFrame {
 		}
 
 		for (DockableWindow w : windowsToClose)
-			closeDockableWindow(w.getID());
+			closeDockableWindow(w);
 	}
 
 	public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException

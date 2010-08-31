@@ -123,13 +123,10 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
 	static class TaskControlGenerator implements Runnable {
 		private TaskControl taskControl;
-		private Framework framework;
 		private JPanel container;
 		private String description;
 
-		public TaskControlGenerator(Framework framework, JPanel container,
-				String description) {
-			this.framework = framework;
+		public TaskControlGenerator(JPanel container, String description) {
 			this.container = container;
 			this.description = description;
 		}
@@ -140,21 +137,19 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
 		@Override
 		public void run() {
-			taskControl = new TaskControl(framework, description);
+			taskControl = new TaskControl(description);
 			container.add(taskControl);
 			container.revalidate();
 		}
 
 	};
 
-	private Framework framework;
 	private int counter = 0;
 
 	private JScrollPane scroll;
 	private JPanel content;
 
 	public TaskManagerWindow (final Framework framework) {
-		this.framework = framework;
 
 		setLayout(new BorderLayout());
 		scroll = new JScrollPane();
@@ -221,7 +216,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
 	@Override
 	public ProgressMonitor<Object> taskStarting(final String description) {
-		TaskControlGenerator tcg = new TaskControlGenerator(framework, content, description);
+		TaskControlGenerator tcg = new TaskControlGenerator(content, description);
 		if (SwingUtilities.isEventDispatchThread())
 			tcg.run();
 		else

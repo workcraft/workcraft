@@ -27,16 +27,20 @@ public class DefaultTaskManager implements TaskManager {
 
 
 	@Override
-	public <T> Result<T> execute(Task<T> task, String description) {
+	public <T> Result<? extends T> execute(Task<T> task, String description) {
 		return execute (task, description, null);
 	}
 
 	@Override
-	public <T> Result<T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+	public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+		return rawExecute(task, description, observer);
+	}
+
+	protected <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
 		ProgressMonitorArray<T> progressMon = taskObserverList.taskStarting(description);
 		if (observer != null)
 			progressMon.add(observer);
-		Result<T> result = task.run(progressMon);
+		Result<? extends T> result = task.run(progressMon);
 		progressMon.finished(result, description);
 		return result;
 	}
@@ -59,7 +63,7 @@ public class DefaultTaskManager implements TaskManager {
 		{
 			@Override
 			public void run() {
-				execute(task, description, observer);
+				rawExecute(task, description, observer);
 			}
 		}
 		).start();

@@ -25,20 +25,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
-import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 
 @SuppressWarnings("serial")
-public class ScriptedActionButton extends JButton implements Actor {
+public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
 	class ActionForwarder implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			ScriptedActionButton.this.fireActionPerformed();
+			ActionCheckBoxMenuItem.this.fireActionPerformed();
 		}
 	}
 
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
 	private Action scriptedAction = null;
 
-	public ScriptedActionButton(Action action, String text) {
+	public ActionCheckBoxMenuItem(Action action, String text) {
 		super(text);
 		scriptedAction = action;
 		scriptedAction.addActor(this);
@@ -47,7 +47,7 @@ public class ScriptedActionButton extends JButton implements Actor {
 		addActionListener(new ActionForwarder());
 	}
 
-	public ScriptedActionButton(ScriptedAction action) {
+	public ActionCheckBoxMenuItem(Action action) {
 		this(action, action.getText());
 
 	}

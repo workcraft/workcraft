@@ -50,7 +50,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the \"Problems\" tab for more details.";
 			} else
 			{
-				Result<Object> exportResult = mpsatChainResult.getReturnValue().getExportResult();
+				Result<? extends Object> exportResult = mpsatChainResult.getReturnValue().getExportResult();
 				if (exportResult.getOutcome() == Outcome.FAILED) {
 					errorMessage += "\n\nFailed to export the model as a .g file.";
 					Throwable cause = exportResult.getCause();
@@ -59,7 +59,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 					else
 						errorMessage += "\n\nThe exporter class did not offer further explanation.";
 				} else {
-					Result<ExternalProcessResult> punfResult = mpsatChainResult.getReturnValue().getPunfResult();
+					Result<? extends ExternalProcessResult> punfResult = mpsatChainResult.getReturnValue().getPunfResult();
 
 					if (punfResult.getOutcome() == Outcome.FAILED) {
 						errorMessage += "\n\nPunf could not build the unfolding prefix.";
@@ -69,7 +69,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 						else
 							errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
 					} else {
-						Result<ExternalProcessResult> mpsatResult = mpsatChainResult.getReturnValue().getMpsatResult();
+						Result<? extends ExternalProcessResult> mpsatResult = mpsatChainResult.getReturnValue().getMpsatResult();
 
 						if (mpsatResult.getOutcome() == Outcome.FAILED) {
 							errorMessage += "\n\nMPSat failed to execute as expected.";

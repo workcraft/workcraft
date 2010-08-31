@@ -27,9 +27,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -57,52 +56,46 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 
 	class ToolTracker {
-		LinkedList<GraphEditorTool> tools = new LinkedList<GraphEditorTool>();
-		ListIterator<GraphEditorTool> iter = tools.listIterator();
+		ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
+		int nextIndex = 0;
 
 		public void addTool(GraphEditorTool tool) {
 			tools.add(tool);
-			iter = tools.listIterator();
+			nextIndex = 0;
 		}
 
 		public void reset() {
-			iter = tools.listIterator();
+			nextIndex = 0;
 		}
 
 		public GraphEditorTool getNextTool() {
-			GraphEditorTool ret = iter.next();
-			if (iter.nextIndex() == tools.size())
-				iter = tools.listIterator();
+			GraphEditorTool ret = tools.get(nextIndex);
+			setNext(nextIndex+1);
 			return ret;
 		}
 
+		private void setNext(int next) {
+			if(next >= tools.size())
+				next %= tools.size();
+			nextIndex = next;
+		}
+
 		public void track(GraphEditorTool tool) {
-			int index = tools.indexOf(tool);
-			if (index == -1)
-				iter = tools.listIterator(0);
-			else {
-				if (( tools.size()-1) == index )
-					iter = tools.listIterator(0);
-				else
-					iter = tools.listIterator(index + 1);
-			}
+			setNext(tools.indexOf(tool)+1);
 		}
 	}
 
-	Framework framework;
+	private Framework framework;
 
-	SelectionTool selectionTool;
-	ConnectionTool connectionTool;
+	private SelectionTool selectionTool;
+	private ConnectionTool connectionTool;
 
-	GraphEditorTool selectedTool;
-	ToolTracker currentTracker = null;
+	private GraphEditorTool selectedTool;
 
-	HashMap<JToggleButton, GraphEditorTool> map = new HashMap<JToggleButton, GraphEditorTool>();
-	HashMap<GraphEditorTool, JToggleButton> reverseMap = new HashMap<GraphEditorTool, JToggleButton>();
-	HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<Integer, ToolTracker>();
-	HashMap<GraphEditorTool, ToolTracker> trackerMap = new HashMap<GraphEditorTool, ToolTracker>();
+	private HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<GraphEditorTool, JToggleButton>();
+	private HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<Integer, ToolTracker>();
 
-	public void addTool (GraphEditorTool tool, boolean selected) {
+	public void addTool (final GraphEditorTool tool, boolean selected) {
 		JToggleButton button = new JToggleButton();
 
 		button.setFocusable(false);
@@ -136,15 +129,11 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JToggleButton button = (JToggleButton)e.getSource();
-				GraphEditorTool tool = map.get(button);
 				selectTool(tool);
-
 			}
 		});
 
-		map.put(button, tool);
-		reverseMap.put(tool, button);
+		buttons.put(tool, button);
 
 		if (hotKeyCode != -1) {
 			ToolTracker tracker = hotkeyMap.get(hotKeyCode);
@@ -153,8 +142,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 				hotkeyMap.put(hotKeyCode, tracker);
 			}
 			tracker.addTool(tool);
-
-			trackerMap.put(tool, tracker);
 		}
 
 		this.add(button);
@@ -165,30 +152,28 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 	private void clearTrackers() {
 		hotkeyMap.clear();
-		trackerMap.clear();
 	}
 
 	public void selectTool(GraphEditorTool tool) {
-		ToolTracker tracker = null;
 		MainWindow mainWindow = framework.getMainWindow();
 
 		if (selectedTool != null) {
-			tracker = trackerMap.get(selectedTool);
+			ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
+			if(oldTracker!=null)
+				oldTracker.reset();
 
 			selectedTool.deactivated(mainWindow.getCurrentEditor());
 			((Colorisable)mainWindow.getCurrentEditor().getModel().getRoot()).clearColorisation();
-			reverseMap.get(selectedTool).setSelected(false);
+			buttons.get(selectedTool).setSelected(false);
 		}
 
-		if (tracker == null)
-			tracker = trackerMap.get(tool);
-
+		ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
 		if (tracker != null)
 			tracker.track(tool);
 
 		tool.activated(mainWindow.getCurrentEditor());
 		mainWindow.getToolInterfaceWindow().setTool(tool);
-		reverseMap.get(tool).setSelected(true);
+		buttons.get(tool).setSelected(true);
 		selectedTool = tool;
 		mainWindow.repaintCurrentEditor();
 	}
@@ -199,8 +184,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void setToolsForModel (VisualModel model) {
-		map.clear();
-		reverseMap.clear();
+		buttons.clear();
 		clearTrackers();
 		removeAll();
 		selectedTool = null;
@@ -236,7 +220,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 		for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass()))
 			try {
-				addTool( tool.newInstance() , false);
+				addTool(tool.newInstance() , false);
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
