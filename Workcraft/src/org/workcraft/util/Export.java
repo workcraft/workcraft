@@ -34,6 +34,7 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -120,7 +121,16 @@ public class Export {
 
 	static public void exportToFile (Model model, File file, UUID targetFormat, PluginProvider provider) throws IOException, ModelValidationException, SerialisationException {
 		Exporter exporter = chooseBestExporter(provider, model, targetFormat);
+		if (exporter == null)
+			throw new SerialisationException("No exporter available for model type " + model.getDisplayName() + " to produce format " + Format.getDescription(targetFormat));
 		exportToFile(exporter, model, file);
+	}
+
+	static public ExportTask createExportTask (Model model, File file, UUID targetFormat, PluginProvider provider) throws SerialisationException {
+		Exporter exporter = chooseBestExporter(provider, model, targetFormat);
+		if (exporter == null)
+			throw new SerialisationException("No exporter available for model type " + model.getDisplayName() + " to produce format " + Format.getDescription(targetFormat));
+		return new ExportTask(exporter, model, file.getAbsolutePath());
 	}
 
 	static public void exportToFile (Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {

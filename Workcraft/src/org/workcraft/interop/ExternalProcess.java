@@ -24,6 +24,7 @@ package org.workcraft.interop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -62,7 +63,8 @@ public class ExternalProcess {
 
 					handleData(data);
 				} catch (IOException e) {
-					e.printStackTrace();
+//					e.printStackTrace(); -- This exception is mostly caused by the process termination and spams the user with information about exceptions that should
+					//                        just be ignored, so removed printing. mech.
 					return;
 				}
 		}

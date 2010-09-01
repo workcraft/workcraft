@@ -253,6 +253,11 @@ public class MainMenu extends JMenuBar {
 		mnEdit = new JMenu();
 		mnEdit.setText("Edit");
 
+		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
+		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		mnEdit.add(miProperties);
+
 		// Settings
 		mnSettings = new JMenu();
 		mnSettings.setText("Utility");
@@ -260,10 +265,6 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
-		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		mnSettings.add(miProperties);
 		mnSettings.add(miReconfigure);
 
 		// Help

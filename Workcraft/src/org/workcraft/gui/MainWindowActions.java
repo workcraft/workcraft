@@ -98,7 +98,7 @@ public class MainWindowActions {
 
 	public static final Action EDIT_SETTINGS_ACTION = new Action() {
 		public String getText() {
-			return "Settings...";
+			return "Preferences...";
 		}
 		@Override
 		public void run(Framework framework) {

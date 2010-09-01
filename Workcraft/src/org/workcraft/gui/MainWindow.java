@@ -1005,7 +1005,7 @@ class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
 	}
 
 	public boolean accept(File f) {
-		return importer.accept(f);
+		return ( f.isDirectory() || importer.accept(f));
 	}
 
 	public String getDescription() {

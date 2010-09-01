@@ -42,6 +42,11 @@ public class SystemOpen implements FileHandler {
 
 
 	public void execute(File f, Framework framework) {
+		open(f);
+	}
+
+
+	public static void open(File f) {
 		try {
 			if (System.getProperty ("os.name").contains("Windows"))
 				Runtime.getRuntime().exec (new String[] {"cmd", "/c", f.getAbsolutePath() });
