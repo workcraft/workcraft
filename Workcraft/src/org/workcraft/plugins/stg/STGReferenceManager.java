@@ -237,7 +237,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 			instancedNameManager.assign(dt);
 		  } else if (node instanceof STGPlace) {
-			   if (!((STGPlace) node).isImplicit())
+			   //if (!((STGPlace) node).isImplicit())
 			    defaultNameManager.setDefaultNameIfUnnamed(node);
 			  }
 		  else
