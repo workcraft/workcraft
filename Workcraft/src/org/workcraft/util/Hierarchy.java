@@ -32,11 +32,10 @@ import org.workcraft.dom.visual.NodeHelper;
 import net.sf.jga.fn.UnaryFunctor;
 
 public class Hierarchy {
-	@SuppressWarnings("serial")
-	public static <T> UnaryFunctor<Node, Boolean> getTypeFilter(
+	public static <T> Func<Node, Boolean> getTypeFilter(
 			final Class<T> type) {
-		return new UnaryFunctor<Node, Boolean> (){
-			public Boolean fn(Node node) {
+		return new Func<Node, Boolean> (){
+			public Boolean eval(Node node) {
 				if (type.isInstance(node))
 					return true;
 				else

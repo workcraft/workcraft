@@ -35,6 +35,7 @@ import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
@@ -66,7 +67,7 @@ public class HitMan
 		return reverse(filterByBB(node.getChildren(), point));
 	}
 
-	public static Node hitDeepest(Point2D point, Node node, UnaryFunctor<Node, Boolean> filter) {
+	public static Node hitDeepest(Point2D point, Node node, Func<Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
 		for (Node n : getFilteredChildren(transformedPoint, node)) {
@@ -75,7 +76,7 @@ public class HitMan
 				return result;
 		}
 
-		if (filter.fn(node))
+		if (filter.eval(node))
 			return hitBranch(point, node);
 		return null;
 	}
@@ -99,17 +100,16 @@ public class HitMan
 		return false;
 	}
 
-	@SuppressWarnings("serial")
 	public static Node hitFirst(Point2D point, Node node) {
-		return hitFirst(point, node, new UnaryFunctor<Node, Boolean>(){
-			public Boolean fn(Node arg0) {
+		return hitFirst(point, node, new Func<Node, Boolean>(){
+			public Boolean eval(Node arg0) {
 				return true;
 			}
 		});
 	}
 
-	public static Node hitFirst(Point2D point, Node node, UnaryFunctor<Node, Boolean> filter) {
-		if (filter.fn(node)) {
+	public static Node hitFirst(Point2D point, Node node, Func<Node, Boolean> filter) {
+		if (filter.eval(node)) {
 			return hitBranch(point, node);
 		} else {
 			return hitFirstChild(point, node, filter);
@@ -132,7 +132,7 @@ public class HitMan
 	}
 
 	public static Node hitFirstChild(Point2D point,
-			Node node, UnaryFunctor<Node, Boolean> filter) {
+			Node node, Func<Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
 		for (Node n : getFilteredChildren(transformedPoint, node)) {
 			Node hit = hitFirst(transformedPoint, n, filter);
@@ -193,10 +193,9 @@ public class HitMan
 	}
 
 
-	@SuppressWarnings("serial")
 	public static Node hitTestForSelection(Point2D point, Node node) {
-		Node nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
-			public Boolean fn(Node n) {
+		Node nd = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
+			public Boolean eval(Node n) {
 				if (!(n instanceof Movable))
 					return false;
 
@@ -208,8 +207,8 @@ public class HitMan
 		});
 
 		if (nd == null)
-			nd = HitMan.hitFirstChild(point, node, new UnaryFunctor<Node, Boolean>() {
-				public Boolean fn(Node n) {
+			nd = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
+				public Boolean eval(Node n) {
 					if (n instanceof VisualConnection) {
 						if (n instanceof Hidable)
 							return !((Hidable)n).isHidden();
@@ -224,10 +223,9 @@ public class HitMan
 		return nd;
 	}
 
-	@SuppressWarnings("serial")
 	public static Node hitTestForConnection(Point2D point, Node node) {
-		Node nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
-			public Boolean fn(Node n) {
+		Node nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+			public Boolean eval(Node n) {
 				if (n instanceof Movable && ! (n instanceof Container)) {
 					if (n instanceof Hidable)
 						return !((Hidable)n).isHidden();
@@ -240,8 +238,8 @@ public class HitMan
 		});
 
 		if (nd == null)
-			nd = HitMan.hitDeepest(point, node, new UnaryFunctor<Node, Boolean>() {
-				public Boolean fn(Node n) {
+			nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+				public Boolean eval(Node n) {
 					if (n instanceof VisualConnection) {
 						if (n instanceof Hidable)
 							return !((Hidable)n).isHidden();
