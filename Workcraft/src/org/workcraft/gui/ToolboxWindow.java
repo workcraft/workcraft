@@ -154,6 +154,15 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		hotkeyMap.clear();
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends GraphEditorTool> T getToolInstance (Class<T> cls)
+	{
+		for (GraphEditorTool tool : buttons.keySet())
+			if (cls.isInstance(tool))
+				return (T)tool;
+		return null;
+	}
+
 	public void selectTool(GraphEditorTool tool) {
 		MainWindow mainWindow = framework.getMainWindow();
 
