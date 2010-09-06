@@ -244,8 +244,9 @@ public class Grid implements ViewportListener {
 		minorLinesPath = new Path2D.Double();
 		majorLinesPath = new Path2D.Double();
 
-		minorLinePositions[0] = new double[minorRight-minorLeft+1];
-		minorLinePositionsScreen[0] = new int[minorRight-minorLeft+1];
+		final int countMinH = Math.max(0, minorRight-minorLeft+1);
+		minorLinePositions[0] = new double[countMinH];
+		minorLinePositionsScreen[0] = new int[countMinH];
 
 		Point2D p1 = new Point2D.Double(), p2 = new Point();
 
@@ -259,8 +260,9 @@ public class Grid implements ViewportListener {
 			minorLinesPath.lineTo(p2.getX(), viewUR.getY());
 		}
 
-		minorLinePositions[1] = new double[minorTop-minorBottom+1];
-		minorLinePositionsScreen[1] = new int[minorTop-minorBottom+1];
+		final int countMinV = Math.max(0, minorTop-minorBottom+1);
+		minorLinePositions[1] = new double[countMinV];
+		minorLinePositionsScreen[1] = new int[countMinV];
 
 
 		for (int y=minorBottom; y<=minorTop; y++) {
@@ -273,8 +275,9 @@ public class Grid implements ViewportListener {
 			minorLinesPath.lineTo(viewUR.getX(), p2.getY());
 		}
 
-		majorLinePositions[0] = new double[majorRight-majorLeft+1];
-		majorLinePositionsScreen[0] = new int[majorRight-majorLeft+1];
+		final int countMajH = Math.max(0, majorRight-majorLeft+1);
+		majorLinePositions[0] = new double[countMajH];
+		majorLinePositionsScreen[0] = new int[countMajH];
 
 		for (int x=majorLeft; x<=majorRight; x++) {
 			majorLinePositions[0][x-majorLeft] = x*majorInterval;
@@ -289,8 +292,9 @@ public class Grid implements ViewportListener {
 			majorLinesPath.lineTo((int)p2.getX(), viewUR.getY());
 		}
 
-		majorLinePositions[1] = new double[majorTop-majorBottom+1];
-		majorLinePositionsScreen[1] = new int[majorTop-majorBottom+1];
+		final int countMajV = Math.max(0, majorTop-majorBottom+1);
+		majorLinePositions[1] = new double[countMajV];
+		majorLinePositionsScreen[1] = new int[countMajV];
 
 		for (int y=majorBottom; y<=majorTop; y++) {
 			majorLinePositions[1][y-majorBottom] = y*majorInterval;
