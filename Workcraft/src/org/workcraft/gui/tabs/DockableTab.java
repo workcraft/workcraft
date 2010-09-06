@@ -24,6 +24,7 @@ package org.workcraft.gui.tabs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -62,6 +63,7 @@ public class DockableTab extends JPanel {
 			trimmedTitle = title;
 
 		label = new JLabel(trimmedTitle);
+		label.setFocusable(false);
 
 		TabButton close = null;
 
@@ -100,5 +102,11 @@ public class DockableTab extends JPanel {
 	@Override
 	public Color getForeground() {
 		return getLabel().getForeground();
+	}
+	public void setSelected(boolean selected) {
+		if (selected)
+			label.setFont(label.getFont().deriveFont(Font.BOLD));
+		else
+			label.setFont(label.getFont().deriveFont(Font.PLAIN));
 	}
 }
