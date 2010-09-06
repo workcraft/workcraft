@@ -50,13 +50,12 @@ public class STGSerialisationTests {
 			VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 
 			RandomLayout layout = new RandomLayout();
-			layout.run(stg, null);
+			layout.run(stg);
 
 			// serialise
 			PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
 
-			XMLSerialiser serialiser = new XMLSerialiser();
-			serialiser.processPlugins(mockPluginManager);
+			XMLSerialiser serialiser = new XMLSerialiser(mockPluginManager);
 
 			DataAccumulator mathData = new DataAccumulator();
 			ReferenceProducer mathModelReferences = serialiser.serialise(stg.getMathModel(), mathData, null);
@@ -71,8 +70,7 @@ public class STGSerialisationTests {
 			System.out.println (new String (visualData.getData()));
 
 			// deserialise
-			XMLDeserialiser deserialiser = new XMLDeserialiser();
-			deserialiser.processPlugins(mockPluginManager);
+			XMLDeserialiser deserialiser = new XMLDeserialiser(mockPluginManager);
 
 			DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null);
 			DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.referenceResolver);

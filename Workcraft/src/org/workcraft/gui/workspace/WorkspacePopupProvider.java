@@ -156,7 +156,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 							mi.addActionListener(new ActionListener() {
 
 								public void actionPerformed(ActionEvent e) {
-									handlers.get(e.getSource()).execute(file, framework);
+									handlers.get(e.getSource()).execute(file);
 								}
 							});
 							popup.add(mi);
@@ -218,7 +218,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 						mi.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								Tools.run(model, tools.get(e.getSource()), framework);
+								Tools.run(model, tools.get(e.getSource()));
 							}
 						});
 

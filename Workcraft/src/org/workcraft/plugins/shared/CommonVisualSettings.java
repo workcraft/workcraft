@@ -25,14 +25,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName("Common")
-public class CommonVisualSettings implements PersistentPropertyEditable, Plugin {
+public class CommonVisualSettings implements PersistentPropertyEditable, LegacyPlugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	protected static double size = 1.0;

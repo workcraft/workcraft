@@ -695,7 +695,6 @@ public class Framework {
 		} catch (PluginInstantiationException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public void restartGUI() throws OperationCancelledException {

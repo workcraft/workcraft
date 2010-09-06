@@ -23,7 +23,6 @@ package org.workcraft.plugins.layout;
 
 import java.util.Random;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
@@ -48,7 +47,7 @@ public class RandomLayout implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualTransformableNode) {
 				((VisualTransformableNode)n).setX(RandomLayoutSettings.startX + r.nextDouble()*RandomLayoutSettings.rangeX);

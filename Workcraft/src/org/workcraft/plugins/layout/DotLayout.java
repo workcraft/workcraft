@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginConsumer;
-import org.workcraft.PluginProvider;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
@@ -57,17 +55,22 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 
 @DisplayName ("Layout using dot")
-public class DotLayout implements Tool, PluginConsumer {
-	PluginProvider pluginProvider;
+public class DotLayout implements Tool {
+
+	private final Framework framework;
+
+	public DotLayout(Framework framework) {
+		this.framework = framework;
+	}
 
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
-		Exporter exporter = Export.chooseBestExporter(pluginProvider, model, Format.DOT);
+		Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
 		if (exporter == null)
 			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
 		FileOutputStream out = new FileOutputStream(file);
@@ -204,7 +207,7 @@ public class DotLayout implements Tool, PluginConsumer {
 		}
 	}
 
-	public void run (Model model, Framework framework) {
+	public void run (Model model) {
 		File original = null, layout = null;
 		try {
 			original = File.createTempFile("work", ".dot");
@@ -250,11 +253,6 @@ public class DotLayout implements Tool, PluginConsumer {
 		if (model instanceof VisualModel)
 			return true;
 		return false;
-	}
-
-	@Override
-	public void processPlugins(PluginProvider pluginManager) {
-		this.pluginProvider = pluginManager;
 	}
 
 	@Override

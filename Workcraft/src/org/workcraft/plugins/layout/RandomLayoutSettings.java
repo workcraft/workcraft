@@ -25,14 +25,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName ("Random")
-public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin {
+public class RandomLayoutSettings implements PersistentPropertyEditable, LegacyPlugin {
 	protected static double startX = 0;
 	protected static double startY = 0;
 	protected static double rangeX = 30;

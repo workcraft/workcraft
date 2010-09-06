@@ -17,6 +17,11 @@ import org.workcraft.workspace.FileHandler;
 @DisplayName("Unfold using punf")
 public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
 	private String lastUnfoldingPath = null;
+	private final Framework framework;
+
+	public PunfUnfolding(Framework framework) {
+		this.framework = framework;
+	}
 
 	public boolean accept(File f) {
 		if (f.getName().endsWith(".g"))
@@ -25,7 +30,7 @@ public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
 			return false;
 	}
 
-	public void execute(File f, Framework framework) {
+	public void execute(File f) {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 

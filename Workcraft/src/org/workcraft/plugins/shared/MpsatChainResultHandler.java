@@ -6,7 +6,6 @@ package org.workcraft.plugins.shared;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.Framework;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.MpsatChainResult;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;

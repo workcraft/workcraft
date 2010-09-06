@@ -25,13 +25,11 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import org.workcraft.Framework;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.workspace.FileHandler;
 
 @DisplayName("Open using system default program")
 public class SystemOpen implements FileHandler {
-
 
 	public boolean accept(File f) {
 		if (!f.getName().endsWith(".work"))
@@ -41,7 +39,7 @@ public class SystemOpen implements FileHandler {
 	}
 
 
-	public void execute(File f, Framework framework) {
+	public void execute(File f) {
 		open(f);
 	}
 

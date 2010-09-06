@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import org.workcraft.Framework;
-import org.workcraft.FrameworkConsumer;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -40,14 +38,19 @@ import org.workcraft.plugins.shared.tasks.MpsatTask;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 
-public class CSCResolver implements Exporter, FrameworkConsumer {
+public class CSCResolver implements Exporter {
 
-	private TaskManager taskManager;
+	private final TaskManager taskManager;
+
+	public CSCResolver(TaskManager taskManager)
+	{
+		this.taskManager = taskManager;
+	}
 
 	@Override
 	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
@@ -120,10 +123,5 @@ public class CSCResolver implements Exporter, FrameworkConsumer {
 	@Override
 	public UUID getTargetFormat() {
 		return Format.STG;
-	}
-
-	@Override
-	public void acceptFramework(Framework framework) {
-		this.taskManager = framework.getTaskManager();
 	}
 }

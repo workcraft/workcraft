@@ -29,7 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.PluginConsumer;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -41,8 +40,12 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
-public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
+public class XMLSerialiser implements ModelSerialiser {
 	XMLSerialisationManager serialisation = new XMLSerialisationManager();
+
+	public XMLSerialiser(PluginProvider mock) {
+		serialisation.processPlugins(mock);
+	}
 
 	public String getDescription() {
 		return "Workcraft XML serialiser";
@@ -99,9 +102,5 @@ public class XMLSerialiser implements ModelSerialiser, PluginConsumer {
 		} catch (IOException e) {
 			throw new SerialisationException(e);
 		}
-	}
-
-	public void processPlugins(PluginProvider pluginManager) {
-		serialisation.processPlugins(pluginManager);
 	}
 }

@@ -235,7 +235,7 @@ public class MainWindow extends JFrame {
 				we.setObject(visualModel);
 
 				DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
-				layout.run(visualModel, framework);
+				layout.run(visualModel);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
@@ -894,7 +894,7 @@ public class MainWindow extends JFrame {
 
 			VisualModel model = editorInFocus.getModel();
 
-			Tools.run(model, tool, framework);
+			Tools.run(model, tool);
 		} catch (PluginInstantiationException e) {
 			throw new RuntimeException (e);
 		}

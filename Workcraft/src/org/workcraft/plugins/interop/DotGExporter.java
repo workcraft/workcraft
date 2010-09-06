@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import org.workcraft.Plugin;
+import org.workcraft.LegacyPlugin;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -33,7 +33,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.serialisation.dotg.DotGSerialiser;
 import org.workcraft.serialisation.Format;
 
-public class DotGExporter implements Exporter, Plugin {
+public class DotGExporter implements Exporter, LegacyPlugin {
 	DotGSerialiser serialiser = new DotGSerialiser();
 
 	public void export(Model model, OutputStream out)

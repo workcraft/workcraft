@@ -21,11 +21,11 @@
 
 package org.workcraft.plugins.modelchecking;
 
-import org.workcraft.Plugin;
+import org.workcraft.LegacyPlugin;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelCheckingFailedException;
 
-public interface ModelChecker extends Plugin {
+public interface ModelChecker extends LegacyPlugin {
 	public String getDisplayName();
 	public boolean isApplicableTo(Model model);
 	public void run(Model model) throws ModelCheckingFailedException;

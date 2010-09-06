@@ -28,6 +28,12 @@ import org.workcraft.util.Export.ExportTask;
 @DisplayName("Complex Gate Synthesis")
 public class ComplexGateSynthesis implements Tool {
 
+	private final Framework framework;
+
+	public ComplexGateSynthesis(Framework framework) {
+		this.framework = framework;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.workcraft.Tool#getSection()
 	 */
@@ -51,7 +57,7 @@ public class ComplexGateSynthesis implements Tool {
 	 * @see org.workcraft.Tool#run(org.workcraft.dom.Model, org.workcraft.Framework)
 	 */
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 
 		//Custom button text
 		Object[] options = {"Yes, please",

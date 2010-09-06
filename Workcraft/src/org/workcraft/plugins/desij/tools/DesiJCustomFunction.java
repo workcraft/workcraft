@@ -15,6 +15,12 @@ import org.workcraft.plugins.desij.tasks.DesiJTask;
 @DisplayName("DesiJ - customise function")
 public class DesiJCustomFunction implements Tool {
 
+	private final Framework framework;
+
+	public DesiJCustomFunction(Framework framework){
+		this.framework = framework;
+	}
+
 	@Override
 	public String getSection() {
 		return "Decomposition";
@@ -29,7 +35,7 @@ public class DesiJCustomFunction implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 		DesiJPresetManager pmgr = new DesiJPresetManager();
 		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());

@@ -17,6 +17,13 @@ import org.workcraft.tasks.Result.Outcome;
 
 @DisplayName ("Show state graph (write_sg/draw_stg)")
 public class ShowSg implements Tool {
+
+	private final Framework framework;
+
+	public ShowSg(Framework framework){
+		this.framework = framework;
+	}
+
 	@Override
 	public boolean isApplicableTo(Model model) {
 		return model instanceof STGModel;
@@ -28,7 +35,7 @@ public class ShowSg implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 		DrawSgTask task = new DrawSgTask(model, framework);
 		framework.getTaskManager().queue(task, "Show state graph", new ProgressMonitor<DrawSgResult>() {
 			@Override

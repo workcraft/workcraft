@@ -13,15 +13,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import org.workcraft.gui.WorkspaceTreeDecorator;
-import org.workcraft.gui.trees.FilteredTreeSource;
-import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.util.Func;
-import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 

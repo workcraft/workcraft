@@ -22,11 +22,10 @@
 package org.workcraft.serialisation;
 import java.io.OutputStream;
 
-import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.SerialisationException;
 
-public interface ModelSerialiser extends Plugin, SerialFormat {
+public interface ModelSerialiser extends SerialFormat {
 	public String getDescription();
 	public String getExtension();
 	public boolean isApplicableTo (Model model);

@@ -50,8 +50,7 @@ public class MathModelSerialisation {
 			PluginProvider mock = XMLSerialisationTestingUtils.createMockPluginManager();
 
 			// serialise
-			XMLSerialiser serialiser = new XMLSerialiser();
-			serialiser.processPlugins(mock);
+			XMLSerialiser serialiser = new XMLSerialiser(mock);
 
 			DataAccumulator accum = new DataAccumulator();
 			serialiser.serialise(stg, accum, null);
@@ -59,8 +58,7 @@ public class MathModelSerialisation {
 			System.out.println (new String(accum.getData()));
 
 			// deserialise
-			XMLDeserialiser deserisaliser = new XMLDeserialiser();
-			deserisaliser.processPlugins(mock);
+			XMLDeserialiser deserisaliser = new XMLDeserialiser(mock);
 
 			STG stg2 = (STG)deserisaliser.deserialise(accum.getInputStream(), null).model;
 

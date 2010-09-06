@@ -17,6 +17,12 @@ import org.workcraft.util.GUI;
 @DisplayName("PComp: Parallel composition")
 public class PcompTool implements Tool {
 
+	private final Framework framework;
+
+	public PcompTool(Framework framework) {
+		this.framework = framework;
+	}
+
 	public final String getSection() {
 		return "Tools";
 	}
@@ -28,7 +34,7 @@ public class PcompTool implements Tool {
 			return false;
 	}
 
-	public final void run(Model model, Framework framework) {
+	public final void run(Model model) {
 		PcompDialog dialog = new PcompDialog(framework.getMainWindow(), framework);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 

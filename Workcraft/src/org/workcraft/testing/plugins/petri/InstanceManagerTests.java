@@ -1,6 +1,7 @@
 package org.workcraft.testing.plugins.petri;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
-import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.stg.InstanceManager;
 import org.workcraft.util.Func;
 import org.workcraft.util.Pair;

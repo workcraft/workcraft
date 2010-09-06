@@ -21,8 +21,6 @@
 
 package org.workcraft.testing.dom;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;

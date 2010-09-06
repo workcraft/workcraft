@@ -9,6 +9,13 @@ import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STGModel;
 
 public abstract class AbstractMpsatChecker {
+
+	private final Framework framework;
+
+	public AbstractMpsatChecker(Framework framework){
+		this.framework = framework;
+	}
+
 	public final String getSection() {
 		return "Verification";
 	}
@@ -22,7 +29,7 @@ public abstract class AbstractMpsatChecker {
 			return false;
 	}
 
-	public final void run(Model model, Framework framework) {
+	public final void run(Model model) {
 		String title = model.getTitle();
 		String description = "MPSat tool chain";
 		if (!title.isEmpty())

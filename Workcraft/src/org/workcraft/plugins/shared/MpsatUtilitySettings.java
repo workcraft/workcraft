@@ -24,14 +24,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName("MPSat")
-public class MpsatUtilitySettings implements PersistentPropertyEditable, Plugin {
+public class MpsatUtilitySettings implements PersistentPropertyEditable, LegacyPlugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	private static String mpsatCommand = "mpsat";

@@ -23,8 +23,8 @@ package org.workcraft;
 
 import org.workcraft.dom.Model;
 
-public interface Tool extends Plugin {
+public interface Tool {
 	public boolean isApplicableTo (Model model);
 	public String getSection();
-	public void run(Model model, Framework framework);
+	public void run(Model model);
 }

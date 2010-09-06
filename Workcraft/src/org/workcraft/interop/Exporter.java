@@ -24,12 +24,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 
-public interface Exporter extends Plugin {
+public interface Exporter {
 	public static final int NOT_COMPATIBLE = 0;
 	public static final int GENERAL_COMPATIBILITY = 1;
 	public static final int BEST_COMPATIBILITY = 10;

@@ -52,13 +52,12 @@ public class VisualModelSerialisation {
 		VisualSTG visualstg = new VisualSTG(stg);
 
 		RandomLayout layout = new RandomLayout();
-		layout.run(visualstg, null);
+		layout.run(visualstg);
 
 		// serialise
 		PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
 
-		XMLSerialiser serialiser = new XMLSerialiser();
-		serialiser.processPlugins(mockPluginManager);
+		XMLSerialiser serialiser = new XMLSerialiser(mockPluginManager);
 
 		DataAccumulator mathData = new DataAccumulator();
 		ReferenceProducer mathModelReferences = serialiser.serialise(stg, mathData, null);
@@ -71,8 +70,7 @@ public class VisualModelSerialisation {
 		System.out.println (new String (visualData.getData())); */
 
 		// deserialise
-		XMLDeserialiser deserialiser = new XMLDeserialiser();
-		deserialiser.processPlugins(mockPluginManager);
+		XMLDeserialiser deserialiser = new XMLDeserialiser(mockPluginManager);
 
 		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null);
 		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.referenceResolver);

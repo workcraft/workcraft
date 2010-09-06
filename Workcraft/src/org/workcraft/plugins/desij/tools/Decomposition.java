@@ -12,6 +12,12 @@ import org.workcraft.plugins.desij.DecompositionResultHandler;
 @DisplayName("DesiJ - default decomposition")
 public class Decomposition implements Tool {
 
+	private final Framework framework;
+
+	public Decomposition(Framework framework) {
+		this.framework = framework;
+	}
+
 	@Override
 	public String getSection() {
 		return "Decomposition";
@@ -26,7 +32,7 @@ public class Decomposition implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 
 		// call desiJ asynchronous (w/o blocking the GUI)
 		framework.getTaskManager().queue(new DesiJTask(model, framework, new String[0]),

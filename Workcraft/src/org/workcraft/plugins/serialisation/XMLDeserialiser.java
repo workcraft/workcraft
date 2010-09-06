@@ -29,7 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.PluginConsumer;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -42,8 +41,12 @@ import org.workcraft.serialisation.xml.XMLDeserialisationManager;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
-public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
+public class XMLDeserialiser implements ModelDeserialiser {
 	XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
+
+	public XMLDeserialiser(PluginProvider mock) {
+		deserialisation.processPlugins(mock);
+	}
 
 	public DeserialisationResult deserialise(InputStream inputStream,
 			ReferenceResolver externalReferenceResolver)
@@ -84,9 +87,5 @@ public class XMLDeserialiser implements ModelDeserialiser, PluginConsumer {
 
 	public UUID getFormatUUID() {
 		return Format.workcraftXML;
-	}
-
-	public void processPlugins(PluginProvider pluginManager) {
-		deserialisation.processPlugins(pluginManager);
 	}
 }

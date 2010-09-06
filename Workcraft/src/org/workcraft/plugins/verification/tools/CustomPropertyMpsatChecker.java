@@ -14,6 +14,12 @@ import org.workcraft.util.GUI;
 @DisplayName("Check custom property (punf, MPSat)")
 public class CustomPropertyMpsatChecker implements Tool {
 
+	public CustomPropertyMpsatChecker(Framework framework) {
+		this.framework = framework;
+	}
+
+	private final Framework framework;
+
 	@Override
 	public String getSection() {
 		return "Verification";
@@ -28,7 +34,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 		MpsatPresetManager pmgr = new MpsatPresetManager();
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());

@@ -5,8 +5,6 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginConsumer;
-import org.workcraft.PluginProvider;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.util.Import;
@@ -15,22 +13,21 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName("Open in Workcraft")
-public class WorkcraftOpen implements FileHandler, PluginConsumer {
-	private PluginProvider pluginProvider;
+public class WorkcraftOpen implements FileHandler {
+	private final Framework framework;
 
-	@Override
-	public void processPlugins(PluginProvider pluginManager) {
-		this.pluginProvider = pluginManager;
+	public WorkcraftOpen(Framework framework) {
+		this.framework = framework;
 	}
 
 	public boolean accept(File f) {
-		if (Import.chooseBestImporter(pluginProvider, f) != null)
+		if (Import.chooseBestImporter(framework.getPluginManager(), f) != null)
 			return true;
 		else
 			return false;
 	}
 
-	public void execute(File f, Framework framework) {
+	public void execute(File f) {
 
 		try {
 			final Workspace workspace = framework.getWorkspace();

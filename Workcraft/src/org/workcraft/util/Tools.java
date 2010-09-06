@@ -45,12 +45,12 @@ public class Tools {
 		return false;
 	}
 
-	public static void run(Model model, Tool tool, Framework framework) {
+	public static void run(Model model, Tool tool) {
 		if (tool.isApplicableTo(model))
-			tool.run(model, framework);
+			tool.run(model);
 		else if (model instanceof VisualModel)
 			if (tool.isApplicableTo(((VisualModel)model).getMathModel()))
-				tool.run(((VisualModel)model).getMathModel(), framework);
+				tool.run(((VisualModel)model).getMathModel());
 		else {
 			String errorMessage = "Attempt to apply incompatible tool " +
 				tool.getClass().getName() + " to a model of class " + model.getClass().getName();

@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
@@ -46,7 +45,7 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DotGSerialiser implements ModelSerialiser, Plugin {
+public class DotGSerialiser implements ModelSerialiser {
 	class ReferenceResolver implements ReferenceProducer {
 		HashMap<Object, String> refMap = new HashMap<Object, String>();
 

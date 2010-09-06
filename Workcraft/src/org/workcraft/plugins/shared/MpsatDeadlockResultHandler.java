@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.plugins.shared.tasks.MpsatChainResult;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;

@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.layout;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
@@ -31,9 +30,6 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 
 @DisplayName ("Reset layout")
 public class NullLayout implements Tool {
-	public void doLayout(VisualModel model) {
-	}
-
 
 	@Override
 	public String getSection() {
@@ -48,7 +44,7 @@ public class NullLayout implements Tool {
 	}
 
 	@Override
-	public void run(Model model, Framework framework) {
+	public void run(Model model) {
 		for (Node n : model.getRoot().getChildren()) {
 			if (n instanceof VisualTransformableNode) {
 				((VisualTransformableNode)n).setX(0);

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.workcraft.Framework;
-import org.workcraft.FrameworkConsumer;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -42,7 +41,11 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 
-public class PSExporter implements Exporter, FrameworkConsumer {
+public class PSExporter implements Exporter {
+
+	public PSExporter(Framework framework){
+		this.framework = framework;
+	}
 
 	private Framework framework;
 
@@ -110,10 +113,5 @@ public class PSExporter implements Exporter, FrameworkConsumer {
 	@Override
 	public UUID getTargetFormat() {
 		return Format.PS;
-	}
-
-	@Override
-	public void acceptFramework(Framework framework) {
-		this.framework = framework;
 	}
 }
