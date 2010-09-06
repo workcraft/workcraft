@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.workcraft.Trace;
+import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 
 
 @SuppressWarnings("serial")
@@ -22,8 +23,8 @@ public class SolutionsDialog extends JDialog {
 	private JPanel solutionsPanel;
 	private JPanel buttonsPanel;
 
+	public SolutionsDialog(MpsatChainTask task, String text, List<Trace> solutions) {
 
-	public SolutionsDialog(String text, List<Trace> solutions) {
 		double sizes[][] = {
 				{ TableLayout.FILL },
 				{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
@@ -37,7 +38,7 @@ public class SolutionsDialog extends JDialog {
 		solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
 
 		for (Trace t : solutions)
-			solutionsPanel.add(new SolutionPanel(t));
+			solutionsPanel.add(new SolutionPanel(task, t));
 
 		contents.add(solutionsPanel, "0 1");
 

@@ -83,4 +83,16 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			return new Result<MpsatChainResult>(e);
 		}
 	}
+
+	public Model getModel() {
+		return model;
+	}
+
+	public MpsatSettings getSettings() {
+		return settings;
+	}
+
+	public Framework getFramework() {
+		return framework;
+	}
 }

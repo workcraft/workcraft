@@ -2,10 +2,11 @@ package org.workcraft.plugins.verification.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.MpsatChainResultHandler;
 import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModel;
 
 public abstract class AbstractMpsatChecker {
 	public final String getSection() {
@@ -15,7 +16,7 @@ public abstract class AbstractMpsatChecker {
 	protected abstract MpsatSettings getSettings();
 
 	public final boolean isApplicableTo(Model model) {
-		if (model instanceof STG)
+		if (model instanceof STGModel || model instanceof PetriNetModel)
 			return true;
 		else
 			return false;
@@ -27,6 +28,8 @@ public abstract class AbstractMpsatChecker {
 		if (!title.isEmpty())
 			description += "(" + title +")";
 
-		framework.getTaskManager().queue(new MpsatChainTask(model, getSettings(), framework), description, new MpsatChainResultHandler(framework));
+		final MpsatChainTask mpsatTask = new MpsatChainTask(model, getSettings(), framework);
+
+		framework.getTaskManager().queue(mpsatTask, description, new MpsatChainResultHandler(mpsatTask));
 	}
 }
