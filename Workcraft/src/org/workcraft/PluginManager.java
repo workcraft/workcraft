@@ -39,15 +39,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.util.XmlUtil;
-import org.xml.sax.SAXException;
 
 public class PluginManager implements PluginProvider {
-	public static final String DEFAULT_MANIFEST = "config"+File.separator+"plugins.xml";
+	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
+	public static final String VERSION_STAMP = "b0219d5fd0d34dc28f618138300a39ef";
 
 	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
 	private Framework framework;
@@ -85,13 +84,13 @@ public class PluginManager implements PluginProvider {
 		loadManifest(DEFAULT_MANIFEST);
 	}
 
-	public void loadManifest(String path) throws IOException, FormatException, PluginInstantiationException {
-		File f = new File(path);
-		if(!f.exists()) {
-			System.out.println("Plugin manifest \"" + f.getPath() + "\" does not exist.");
-			reconfigure();
-			return;
+	public boolean tryLoadManifest(File file)
+	{
+		if(!file.exists()) {
+			System.out.println("Plugin manifest \"" + file.getPath() + "\" does not exist.");
+			return false;
 		}
+
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc;
@@ -99,28 +98,43 @@ public class PluginManager implements PluginProvider {
 
 		try {
 			db = dbf.newDocumentBuilder();
-			doc = db.parse(f);
-		} catch(ParserConfigurationException e) {
-			throw new FormatException();
-		} catch(IOException e) {
-			throw new IOException(e.getMessage());
-		} catch(SAXException e) {
-			throw new IOException(e.getMessage());
+			doc = db.parse(file);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 
 		Element xmlroot = doc.getDocumentElement();
 		if (!xmlroot.getNodeName().equals("workcraft-plugins"))
-			throw(new FormatException());
+		{
+			System.out.println("Bad plugin manifest: root tag should be 'workcraft-plugins'.");
+			return false;
+		}
 
-		NodeList nl = xmlroot.getElementsByTagName("plugin");
+		final Element versionElement = XmlUtil.getChildElement("version", xmlroot);
+
+		if(versionElement == null || !XmlUtil.readStringAttr(versionElement, "value").equals(VERSION_STAMP))
+		{
+			System.out.println("Old plugin manifest version detected. Will reconfigure.");
+			return false;
+		}
+
 		plugins.clear();
-		for(int i = 0; i < nl.getLength(); i++) {
-			PluginInfo info = new PluginInfo((Element) nl.item(i));
+		for(Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
+			PluginInfo info = new PluginInfo(pluginElement);
 			plugins.add(info);
 			nameToInfoMap.put(info.getClassName(), info);
 		}
 
-		initPlugins();
+		return true;
+	}
+
+	public void loadManifest(File file) throws IOException, FormatException, PluginInstantiationException {
+
+		if(!tryLoadManifest(file))
+			reconfigure();
+		else
+			initPlugins();
 	}
 
 	private void initPlugins() {
@@ -133,7 +147,7 @@ public class PluginManager implements PluginProvider {
 		saveManifest(DEFAULT_MANIFEST);
 	}
 
-	public void saveManifest(String path) throws IOException {
+	public void saveManifest(File file) throws IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
@@ -155,7 +169,11 @@ public class PluginManager implements PluginProvider {
 			root.appendChild(e);
 		}
 
-		XmlUtil.saveDocument(doc, new File(path));
+		final Element versionElement = doc.createElement("version");
+		versionElement.setAttribute("value", VERSION_STAMP);
+		root.appendChild(versionElement);
+
+		XmlUtil.saveDocument(doc, file);
 	}
 
 	private void addPluginClass(Class<?> cls)
@@ -281,11 +299,7 @@ public class PluginManager implements PluginProvider {
 			search(new File(s), new File(s));
 		}
 
-		System.out.println("" + plugins.size() + " plugin(s) found. Initialising them...");
-
-		initPlugins();
-
-		System.out.println("Plugin initialisation done.");
+		System.out.println("" + plugins.size() + " plugin(s) found.");
 
 		try {
 			saveManifest();
@@ -293,6 +307,11 @@ public class PluginManager implements PluginProvider {
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
 		}
+
+		initPlugins();
+
+		System.out.println("Plugin initialisation done.");
+
 	}
 
 	public PluginInfo[] getModels() {
