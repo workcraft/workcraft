@@ -42,7 +42,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		try {
 			process.start();
 		} catch (IOException e) {
-			return Result.failed(e);
+			return Result.exception(e);
 		}
 
 		while (true) {

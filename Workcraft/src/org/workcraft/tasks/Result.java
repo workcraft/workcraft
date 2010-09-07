@@ -49,7 +49,7 @@ public class Result<T> {
 		return result;
 	}
 
-	public static <R> Result<R> failed(Throwable e) {
+	public static <R> Result<R> exception(Throwable e) {
 		return new Result<R>(e);
 	}
 

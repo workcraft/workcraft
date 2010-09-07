@@ -38,14 +38,14 @@ public class DrawSgTask implements Task<DrawSgResult> {
 			File dotG = File.createTempFile("workcraft", ".g");
 			dotG.deleteOnExit();
 
-			final Result<? extends Boolean> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
+			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
 
 			if (dotGResult.getOutcome() != Outcome.FINISHED)
 			{
 				if (dotGResult.getOutcome() != Outcome.CANCELLED)
 				{
 					if (dotGResult.getCause() != null)
-						return Result.failed(dotGResult.getCause());
+						return Result.exception(dotGResult.getCause());
 					else
 						return Result.failed(new DrawSgResult(null, "Export to .g failed for unknown reason"));
 				}
@@ -69,7 +69,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 					if (writeSgResult.getOutcome() != Outcome.CANCELLED)
 					{
 						if (writeSgResult.getCause() != null)
-							return Result.failed(writeSgResult.getCause());
+							return Result.exception(writeSgResult.getCause());
 						else
 						{
 							final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
@@ -79,7 +79,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 							if (m.find())
 							{
 								SwingUtilities.invokeAndWait(new Runnable(){
-									@Override
+								//	@Override
 									public void run() {
 										writeHuge = (JOptionPane
 												.showConfirmDialog(
@@ -121,7 +121,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 				if (drawAstgResult.getOutcome() != Outcome.CANCELLED)
 				{
 					if (drawAstgResult.getCause() != null)
-						return Result.failed(drawAstgResult.getCause());
+						return Result.exception(drawAstgResult.getCause());
 					else
 						return Result.failed(new DrawSgResult(null, "Errors running draw_astg: \n" + new String(drawAstgResult.getReturnValue().getErrors())));
 				}
@@ -136,7 +136,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 		catch (Throwable e)
 		{
 			e.printStackTrace();
-			return Result.failed(e);
+			return Result.exception(e);
 		}
 	}
 }

@@ -41,7 +41,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
 public class Export {
-	public static class ExportTask implements Task<Boolean> {
+	public static class ExportTask implements Task<Object> {
 		Exporter exporter;
 		Model model;
 		File file;
@@ -53,7 +53,7 @@ public class Export {
 		}
 
 		@Override
-		public Result<? extends Boolean> run(ProgressMonitor<? super Boolean> monitor) {
+		public Result<? extends Object> run(ProgressMonitor<? super Object> monitor) {
 			FileOutputStream fos;
 
 			try {
