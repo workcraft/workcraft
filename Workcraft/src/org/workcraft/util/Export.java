@@ -41,7 +41,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
 public class Export {
-	public static class ExportTask implements Task<Object> {
+	public static class ExportTask implements Task<Boolean> {
 		Exporter exporter;
 		Model model;
 		File file;
@@ -53,14 +53,14 @@ public class Export {
 		}
 
 		@Override
-		public Result<Object> run(ProgressMonitor<Object> monitor) {
+		public Result<? extends Boolean> run(ProgressMonitor<? super Boolean> monitor) {
 			FileOutputStream fos;
 
 			try {
 				file.createNewFile();
 				fos = new FileOutputStream(file);
 			} catch (IOException e) {
-				return new Result<Object>(e);
+				return new Result<Boolean>(e);
 			}
 
 			boolean ok = false;
@@ -70,26 +70,26 @@ public class Export {
 				if (model instanceof VisualModel)
 					if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
 						if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
-								return new Result<Object>(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
+								return new Result<Boolean>(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
 						else
 							model = ((VisualModel)model).getMathModel();
 				exporter.export(model, fos);
 				ok = true;
 			} catch (Throwable e) {
-				return new Result<Object>(e);
+				return new Result<Boolean>(e);
 			}
 			finally
 			{
 				try {
 					fos.close();
 				} catch (IOException e) {
-					return new Result<Object>(e);
+					return new Result<Boolean>(e);
 				}
 				if(!ok)
 					file.delete();
 			}
 
-			return new Result<Object>(Outcome.FINISHED);
+			return new Result<Boolean>(Outcome.FINISHED);
 		}
 	}
 

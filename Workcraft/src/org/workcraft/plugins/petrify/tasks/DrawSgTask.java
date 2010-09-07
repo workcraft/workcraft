@@ -38,7 +38,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 			File dotG = File.createTempFile("workcraft", ".g");
 			dotG.deleteOnExit();
 
-			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
+			final Result<? extends Boolean> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
 
 			if (dotGResult.getOutcome() != Outcome.FINISHED)
 			{
