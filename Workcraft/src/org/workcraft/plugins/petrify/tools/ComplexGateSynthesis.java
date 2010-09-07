@@ -16,10 +16,12 @@ import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 /**
  * @author Dominic Wist
@@ -46,18 +48,15 @@ public class ComplexGateSynthesis implements Tool {
 	 * @see org.workcraft.Tool#isApplicableTo(org.workcraft.dom.Model)
 	 */
 	@Override
-	public boolean isApplicableTo(Model model) {
-		if (model instanceof STG)
-			return true;
-		else
-			return false;
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.workcraft.Tool#run(org.workcraft.dom.Model, org.workcraft.Framework)
 	 */
 	@Override
-	public void run(Model model) {
+	public void run(WorkspaceEntry we) {
 
 		//Custom button text
 		Object[] options = {"Yes, please",
@@ -88,7 +87,7 @@ public class ComplexGateSynthesis implements Tool {
 		// call petrify asynchronous (w/o blocking the GUI)
 		try {
 			framework.getTaskManager().queue(
-					new SynthesisTask(getComplexGateSynParamter(), getInputSTG(framework, model),
+					new SynthesisTask(getComplexGateSynParamter(), getInputSTG(framework, WorkspaceUtils.getAs(we, STGModel.class)),
 					File.createTempFile("petrifyEquations", ".eqn"), libraryFile, null),
 					"Petrify Logic Synthesis", new SynthesisResultHandler(framework));
 		} catch (IOException e) {

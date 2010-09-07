@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Model;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
 import org.workcraft.plugins.stg.STGModel;
@@ -14,6 +13,8 @@ import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName ("Show state graph (write_sg/draw_stg)")
 public class ShowSg implements Tool {
@@ -25,8 +26,8 @@ public class ShowSg implements Tool {
 	}
 
 	@Override
-	public boolean isApplicableTo(Model model) {
-		return model instanceof STGModel;
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
 	@Override
@@ -35,8 +36,8 @@ public class ShowSg implements Tool {
 	}
 
 	@Override
-	public void run(Model model) {
-		DrawSgTask task = new DrawSgTask(model, framework);
+	public void run(WorkspaceEntry we) {
+		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, STGModel.class), framework);
 		framework.getTaskManager().queue(task, "Show state graph", new ProgressMonitor<DrawSgResult>() {
 			@Override
 			public void progressUpdate(double completion) {

@@ -14,6 +14,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.desij.DesiJOperation;
 import org.workcraft.plugins.desij.DesiJSettings;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -31,7 +32,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	private boolean userCancelled = false; // user cancelled the execution of desiJ
 	private int returnCode = 0;
 
-	private Model specModel;
+	private STGModel specModel;
 	private File specificationFile; // specified in the last argument of desiJArgs
 
 	private DesiJSettings desiJSettings = null; // is not always set
@@ -41,7 +42,7 @@ public class DesiJTask implements Task<DesiJResult> {
 	/*
 	 * Constructors
 	 */
-	public DesiJTask(Model model, Framework framework, String[] desiJParameters) {
+	public DesiJTask(STGModel model, Framework framework, String[] desiJParameters) {
 
 		this.specModel = model;
 		desiJArgs = new String[desiJParameters.length+1];
@@ -59,7 +60,7 @@ public class DesiJTask implements Task<DesiJResult> {
 		}
 	}
 
-	public DesiJTask(Model model, Framework framework, DesiJSettings settings) {
+	public DesiJTask(STGModel model, Framework framework, DesiJSettings settings) {
 		this(model, framework, generateCommandLineParameters(settings));
 		this.desiJSettings = settings;
 	}

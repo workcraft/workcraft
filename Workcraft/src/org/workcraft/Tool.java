@@ -21,10 +21,10 @@
 
 package org.workcraft;
 
-import org.workcraft.dom.Model;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public interface Tool {
-	public boolean isApplicableTo (Model model);
+	public boolean isApplicableTo (WorkspaceEntry we);
 	public String getSection();
-	public void run(Model model);
+	public void run(WorkspaceEntry we);
 }

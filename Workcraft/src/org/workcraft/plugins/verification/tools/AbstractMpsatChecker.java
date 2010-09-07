@@ -1,12 +1,12 @@
 package org.workcraft.plugins.verification.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.MpsatChainResultHandler;
 import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractMpsatChecker {
 
@@ -22,20 +22,18 @@ public abstract class AbstractMpsatChecker {
 
 	protected abstract MpsatSettings getSettings();
 
-	public final boolean isApplicableTo(Model model) {
-		if (model instanceof STGModel || model instanceof PetriNetModel)
-			return true;
-		else
-			return false;
+	public final boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
-	public final void run(Model model) {
+	public final void run(WorkspaceEntry we) {
+		STGModel model = WorkspaceUtils.getAs(we, STGModel.class);
 		String title = model.getTitle();
 		String description = "MPSat tool chain";
 		if (!title.isEmpty())
 			description += "(" + title +")";
 
-		final MpsatChainTask mpsatTask = new MpsatChainTask(model, getSettings(), framework);
+		final MpsatChainTask mpsatTask = new MpsatChainTask(we, getSettings(), framework);
 
 		framework.getTaskManager().queue(mpsatTask, description, new MpsatChainResultHandler(mpsatTask));
 	}

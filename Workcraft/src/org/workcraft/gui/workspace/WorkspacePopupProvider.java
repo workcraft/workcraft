@@ -203,7 +203,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 				popup.add(miSaveAs);
 				popup.add(miOpenView);
 
-				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(model, framework);
+				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(openFile, framework);
 				List<String> sections = Tools.getSections(applicableTools);
 
 				if (!sections.isEmpty())
@@ -218,7 +218,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 						mi.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								Tools.run(model, tools.get(e.getSource()));
+								Tools.run(openFile, tools.get(e.getSource()));
 							}
 						});
 

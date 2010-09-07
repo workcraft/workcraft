@@ -12,6 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.Trace;
+import org.workcraft.gui.ToolboxWindow;
+import org.workcraft.plugins.petri.SimulationTool;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 
 
@@ -20,7 +22,7 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(MpsatChainTask task, Trace t) {
+	public SolutionPanel(final MpsatChainTask task, final Trace t) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
@@ -37,13 +39,16 @@ public class SolutionPanel extends JPanel {
 
 		JButton saveButton = new JButton("Save");
 
-
 		JButton playButton = new JButton("Play trace");
 		playButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//task.getFramework().getWorkspace().get
+				task.getFramework().getMainWindow().createEditorWindow(task.getWorkspaceEntry());
+				final ToolboxWindow toolbox = task.getFramework().getMainWindow().getToolboxWindow();
+				final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
+				tool.setTrace(t);
+				toolbox.selectTool(tool);
 			}
 		});
 

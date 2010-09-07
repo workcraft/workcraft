@@ -9,12 +9,11 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
-	public static ListMap<String, Pair<String, Tool>> getTools(Model model, Framework framework) {
+	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we, Framework framework) {
 		PluginInfo[] toolsInfo = framework.getPluginManager().getPluginsImplementing(Tool.class.getName());
 		ListMap<String, Pair<String, Tool>> toolSections = new ListMap<String, Pair<String, Tool>>();
 
@@ -22,7 +21,7 @@ public class Tools {
 			try {
 				Tool tool = (Tool) framework.getPluginManager().getSingleton(info);
 
-				if (!isApplicable(model, tool))
+				if (!isApplicable(we, tool))
 					continue;
 
 				toolSections.put(tool.getSection(), new Pair <String,Tool> (info.getDisplayName(), tool));
@@ -35,27 +34,18 @@ public class Tools {
 		return toolSections;
 	}
 
-	private static boolean isApplicable(Model model, Tool tool) {
-		if (tool.isApplicableTo(model))
+	private static boolean isApplicable(WorkspaceEntry we, Tool tool) {
+		if (tool.isApplicableTo(we))
 			return true;
-		if (model instanceof VisualModel) {
-				if (tool.isApplicableTo(((VisualModel)model).getMathModel()))
-					return true;
-		}
 		return false;
 	}
 
-	public static void run(Model model, Tool tool) {
-		if (tool.isApplicableTo(model))
-			tool.run(model);
-		else if (model instanceof VisualModel)
-			if (tool.isApplicableTo(((VisualModel)model).getMathModel()))
-				tool.run(((VisualModel)model).getMathModel());
+	public static void run(WorkspaceEntry we, Tool tool) {
+		if (tool.isApplicableTo(we))
+			tool.run(we);
 		else {
 			String errorMessage = "Attempt to apply incompatible tool " +
-				tool.getClass().getName() + " to a model of class " + model.getClass().getName();
-			if (model instanceof VisualModel)
-				errorMessage += " (math model class " + ((VisualModel)model).getMathModel().getClass() + ")";
+				tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
 
 			throw new RuntimeException (errorMessage);
 		}

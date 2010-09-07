@@ -3,26 +3,27 @@ package org.workcraft.plugins.shared.tasks;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.shared.MpsatSettings;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainTask implements Task<MpsatChainResult> {
-	private Model model;
-	private MpsatSettings settings;
-	private Framework framework;
+	private final WorkspaceEntry we;
+	private final MpsatSettings settings;
+	private final Framework framework;
 
-
-	public MpsatChainTask(Model model, MpsatSettings settings, Framework framework) {
-		this.model = model;
+	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings, Framework framework) {
+		this.we = we;
 		this.settings = settings;
 		this.framework = framework;
 	}
@@ -30,6 +31,8 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		try {
+			STGModel model = WorkspaceUtils.getAs(getWorkspaceEntry(), STGModel.class);
+
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 
 			if (exporter == null)
@@ -84,15 +87,15 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		}
 	}
 
-	public Model getModel() {
-		return model;
-	}
-
 	public MpsatSettings getSettings() {
 		return settings;
 	}
 
 	public Framework getFramework() {
 		return framework;
+	}
+
+	public WorkspaceEntry getWorkspaceEntry() {
+		return we;
 	}
 }

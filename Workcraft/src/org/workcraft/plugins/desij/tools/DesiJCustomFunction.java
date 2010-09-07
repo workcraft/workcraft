@@ -3,14 +3,14 @@ package org.workcraft.plugins.desij.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Model;
-import org.workcraft.plugins.stg.STG;
-import org.workcraft.util.GUI;
-
 import org.workcraft.plugins.desij.DecompositionResultHandler;
 import org.workcraft.plugins.desij.DesiJPresetManager;
 import org.workcraft.plugins.desij.gui.DesiJConfigurationDialog;
 import org.workcraft.plugins.desij.tasks.DesiJTask;
+import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.util.GUI;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName("DesiJ - customise function")
 public class DesiJCustomFunction implements Tool {
@@ -27,22 +27,19 @@ public class DesiJCustomFunction implements Tool {
 	}
 
 	@Override
-	public boolean isApplicableTo(Model model) {
-		if (model instanceof STG)
-			return true;
-		else
-			return false;
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
 	@Override
-	public void run(Model model) {
+	public void run(WorkspaceEntry we) {
 		DesiJPresetManager pmgr = new DesiJPresetManager();
 		DesiJConfigurationDialog dialog = new DesiJConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1)
 		{
-			framework.getTaskManager().queue(new DesiJTask(model, framework, dialog.getSettings()),
+			framework.getTaskManager().queue(new DesiJTask(WorkspaceUtils.getAs(we, STGModel.class), framework, dialog.getSettings()),
 					"DesiJ Execution", new DecompositionResultHandler(framework, false));
 		}
 	}

@@ -23,13 +23,21 @@ package org.workcraft.plugins.petri;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -38,6 +46,7 @@ import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
 
@@ -46,9 +55,15 @@ public class SimulationTool extends AbstractTool {
 	private PetriNetModel net;
 	private JPanel interfacePanel;
 
-	private JButton autoPlayButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
+	private JButton resetButton, autoPlayButton, stopButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
+	private JSlider speedSlider;
 
-	HashMap<Place, Integer> tokens = new HashMap<Place, Integer>();
+	final double DEFAULT_SIMULATION_DELAY = 0.3;
+	final double EDGE_SPEED_MULTIPLIER = 10;
+
+	Map<Place, Integer> initialMarking;
+	Map<Place, Integer> savedMarking = null;
+	int savedStep = 0;
 
 	public SimulationTool() {
 		super();
@@ -57,21 +72,157 @@ public class SimulationTool extends AbstractTool {
 
 	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
 
+	private Trace trace;
+	private int currentStep = 0;
+	private Timer timer = null;
+
+	private void applyMarking(Map<Place, Integer> marking)
+	{
+		for (Place p : net.getPlaces()) {
+			p.setTokens(marking.get(p));
+		}
+	}
+
+	private void update()
+	{
+		if(timer != null && (trace == null || currentStep == trace.size()))
+		{
+			timer.stop();
+			timer = null;
+		}
+
+		if(timer != null)
+			timer.setDelay(getAnimationDelay());
+
+		resetButton.setEnabled(trace != null && currentStep > 0);
+		autoPlayButton.setEnabled(trace != null && currentStep < trace.size());
+		stopButton.setEnabled(timer!=null);
+		stepButton.setEnabled(trace != null && currentStep < trace.size());
+		loadTraceButton.setEnabled(true);
+		saveMarkingButton.setEnabled(true);
+		loadMarkingButton.setEnabled(savedMarking != null);
+
+		highlightEnabledTransitions(visualNet.getRoot());
+	}
+
+	private void step() {
+		String transitionId = trace.get(currentStep);
+
+		final Node transition = net.getNodeByReference(transitionId);
+
+		net.fire((Transition)transition);
+
+		currentStep++;
+		update();
+	}
+
+	private void reset() {
+		applyMarking(initialMarking);
+		currentStep = 0;
+		if(timer!=null)
+		{
+			timer.stop();
+			timer = null;
+		}
+		update();
+	}
+
+	private int getAnimationDelay()
+	{
+		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
+	}
+
 	private void createInterface() {
 		interfacePanel = new JPanel(new SimpleFlowLayout(5,5));
 
+		resetButton = new JButton ("Reset");
+		speedSlider = new JSlider(-1000, 1000, 0);
 		autoPlayButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/start.svg"), "Automatic simulation");
+		stopButton = new JButton ("Stop");
 		stepButton = new JButton ("Step");
 		loadTraceButton = new JButton ("Load trace");
 		saveMarkingButton = new JButton ("Save marking");
 		loadMarkingButton = new JButton ("Load marking");
 
-		stepButton.setEnabled(false);
-		loadTraceButton.setEnabled(false);
-		saveMarkingButton.setEnabled(false);
-		loadMarkingButton.setEnabled(false);
+		speedSlider.addChangeListener(new ChangeListener() {
 
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(timer != null)
+				{
+					timer.stop();
+					timer.setInitialDelay(getAnimationDelay());
+					timer.setDelay(getAnimationDelay());
+					timer.start();
+				}
+				update();
+			}
+		});
+
+		resetButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				reset();
+			}
+		});
+
+		autoPlayButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer = new Timer(getAnimationDelay(), new ActionListener()
+				{
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						step();
+					}
+				});
+				timer.start();
+				update();
+			}
+		});
+
+		stopButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer.stop();
+				timer = null;
+				update();
+			}
+		});
+
+		stepButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				step();
+			}
+		});
+
+		saveMarkingButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				savedMarking = readMarking();
+				savedStep = currentStep;
+
+				update();
+			}
+		});
+
+		loadMarkingButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				applyMarking(savedMarking);
+				currentStep = savedStep;
+
+				update();
+			}
+		});
+
+		interfacePanel.add(resetButton);
+		interfacePanel.add(speedSlider);
 		interfacePanel.add(autoPlayButton);
+		interfacePanel.add(stopButton);
 		interfacePanel.add(stepButton);
 		interfacePanel.add(loadTraceButton);
 		interfacePanel.add(saveMarkingButton);
@@ -98,9 +249,7 @@ public class SimulationTool extends AbstractTool {
 	@Override
 	public void deactivated(GraphEditor editor)
 	{
-		for (Place p : net.getPlaces()) {
-			p.setTokens(tokens.get(p));
-		}
+		reset();
 	}
 
 	@Override
@@ -109,22 +258,38 @@ public class SimulationTool extends AbstractTool {
 		visualNet = editor.getModel();
 		net = (PetriNetModel)visualNet.getMathModel();
 
-		for (Place p : net.getPlaces()) {
-			tokens.put(p, p.getTokens());
-		}
+		initialMarking = readMarking();
 
-		highlightEnabledTransitions(visualNet.getRoot());
+		update();
+	}
+
+	private Map<Place, Integer> readMarking() {
+		HashMap<Place, Integer> result = new HashMap<Place, Integer>();
+		for (Place p : net.getPlaces()) {
+			result.put(p, p.getTokens());
+		}
+		return result;
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = HitMan.hitTestForSelection(e.getPosition(), e.getModel());
+		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>()
+				{
+					@Override
+					public Boolean eval(Node node) {
+						return
+							   node instanceof VisualTransition
+							&& net.isEnabled(((VisualTransition)node).getReferencedTransition());
+					}
+				});
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;
 			net.fire(vt.getReferencedTransition());
-			highlightEnabledTransitions(visualNet.getRoot());
+
 		}
+
+		update();
 
 		e.getEditor().repaint();
 	}
@@ -150,5 +315,9 @@ public class SimulationTool extends AbstractTool {
 	@Override
 	public JPanel getInterfacePanel() {
 		return interfacePanel;
+	}
+
+	public void setTrace(Trace t) {
+		this.trace = t;
 	}
 }

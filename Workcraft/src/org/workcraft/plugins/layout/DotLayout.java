@@ -59,6 +59,8 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName ("Layout using dot")
 public class DotLayout implements Tool {
@@ -207,7 +209,8 @@ public class DotLayout implements Tool {
 		}
 	}
 
-	public void run (Model model) {
+	public void run (WorkspaceEntry entry) {
+		VisualModel model = WorkspaceUtils.getAs(entry, VisualModel.class);
 		File original = null, layout = null;
 		try {
 			original = File.createTempFile("work", ".dot");
@@ -249,10 +252,8 @@ public class DotLayout implements Tool {
 		}
 	}
 
-	public boolean isApplicableTo(Model model) {
-		if (model instanceof VisualModel)
-			return true;
-		return false;
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, VisualModel.class);
 	}
 
 	@Override

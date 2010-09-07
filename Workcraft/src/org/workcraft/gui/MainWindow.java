@@ -235,7 +235,7 @@ public class MainWindow extends JFrame {
 				we.setObject(visualModel);
 
 				DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
-				layout.run(visualModel);
+				layout.run(we);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
@@ -678,13 +678,13 @@ public class MainWindow extends JFrame {
 		System.out.println ("HFUKLEHw:fwdwfd£!!!!");
 		sender.requestFocusInWindow();
 
-		//if (editorInFocus == sender)
-		//	return;
+		if (editorInFocus == sender)
+			return;
 
 		editorInFocus = sender;
 
 		toolboxWindow.setToolsForModel(editorInFocus.getModel());
-		mainMenu.setMenuForModel(editorInFocus.getModel());
+		mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 
 		mainMenu.revalidate();
 		mainMenu.repaint();
@@ -891,10 +891,7 @@ public class MainWindow extends JFrame {
 	public void runTool (Class<? extends Tool> toolClass) {
 		try {
 			Tool tool = (Tool)framework.getPluginManager().getSingleton(toolClass);
-
-			VisualModel model = editorInFocus.getModel();
-
-			Tools.run(model, tool);
+			Tools.run(editorInFocus.getWorkspaceEntry(), tool);
 		} catch (PluginInstantiationException e) {
 			throw new RuntimeException (e);
 		}

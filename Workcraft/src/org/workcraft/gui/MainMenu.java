@@ -48,6 +48,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
@@ -299,7 +300,7 @@ public class MainMenu extends JMenuBar {
 		mnExport.setEnabled(true);
 	}
 
-	final public void setMenuForModel(VisualModel model) {
+	final public void setMenuForWorkspaceEntry(WorkspaceEntry we) {
 		for (JMenu toolMenu : toolMenus)
 			remove(toolMenu);
 
@@ -307,7 +308,7 @@ public class MainMenu extends JMenuBar {
 
 		Framework framework = mainWindow.getFramework();
 
-		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(model, framework);
+		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we, framework);
 		List<String> sections = Tools.getSections(tools);
 
 		for (String section : sections) {
@@ -326,6 +327,8 @@ public class MainMenu extends JMenuBar {
 		mnExport.setEnabled(false);
 
 		PluginInfo[] exportPluginInfo = framework.getPluginManager().getPluginsImplementing(Exporter.class.getName());
+
+		VisualModel model = (VisualModel) we.getObject();
 
 		boolean haveVisual = false;
 

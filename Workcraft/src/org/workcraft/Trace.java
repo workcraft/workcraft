@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Trace extends LinkedList<String>{
+public class Trace extends ArrayList<String>{
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
 

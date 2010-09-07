@@ -1,17 +1,18 @@
 package org.workcraft.plugins.desij.tasks;
 
 import java.io.File;
-import org.workcraft.dom.Model;
+
+import org.workcraft.plugins.stg.STGModel;
 
 public class DesiJResult {
-	private Model specModel;
+	private STGModel specModel;
 	private File specificationFile;
 	private File[] componentFiles;
 	private File logFile;
 	private File modifiedSpecificationResult;
 	private File equationsFile;
 
-	public DesiJResult(Model specModel, File specFile, File[] compFiles,
+	public DesiJResult(STGModel specModel, File specFile, File[] compFiles,
 			File logFile, File modifiedSpecification, File equationsFile) {
 		this.specModel = specModel;
 		this.specificationFile = specFile;
@@ -33,7 +34,7 @@ public class DesiJResult {
 		return this.componentFiles;
 	}
 
-	public Model getSpecificationModel() {
+	public STGModel getSpecificationModel() {
 		return this.specModel;
 	}
 

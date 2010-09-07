@@ -23,10 +23,11 @@ package org.workcraft.plugins.layout;
 
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName ("Reset layout")
 public class NullLayout implements Tool {
@@ -37,15 +38,13 @@ public class NullLayout implements Tool {
 	}
 
 	@Override
-	public boolean isApplicableTo(Model model) {
-		if (model instanceof VisualModel)
-			return true;
-		return false;
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, VisualModel.class);
 	}
 
 	@Override
-	public void run(Model model) {
-		for (Node n : model.getRoot().getChildren()) {
+	public void run(WorkspaceEntry we) {
+		for (Node n : WorkspaceUtils.getAs(we, VisualModel.class).getRoot().getChildren()) {
 			if (n instanceof VisualTransformableNode) {
 				((VisualTransformableNode)n).setX(0);
 				((VisualTransformableNode)n).setY(0);
