@@ -43,7 +43,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
-import org.workcraft.gui.ToolboxWindow;
+import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.Properties.Mix;
@@ -114,8 +114,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	protected VisualModel visualModel;
 	protected WorkspaceEntry workspaceEntry;
 
-	protected MainWindow mainWindow;
-	protected ToolboxWindow toolboxWindow;
+	protected final MainWindow mainWindow;
+	protected final ToolboxPanel toolboxPanel;
 
 	protected Viewport view;
 	protected Grid grid;
@@ -132,7 +132,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
 		visualModel = (VisualModel) workspaceEntry.getObject();
-		toolboxWindow = mainWindow.getToolboxWindow();
 
 		new Repainter().attach(visualModel.getRoot()); //FIXME detach
 		visualModel.addObserver(this);
@@ -144,8 +143,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		view.addListener(grid);
 		grid.addListener(ruler);
 
-		GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxWindow);
-		GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxWindow);
+		toolboxPanel = new ToolboxPanel(this);
+
+		GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxPanel);
+		GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxPanel);
 
 		addMouseMotionListener(mouseListener);
 		addMouseListener(mouseListener);
@@ -193,14 +194,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		visualModel.draw(g2d);
 
 		if (hasFocus())
-			toolboxWindow.getTool().drawInUserSpace(this, g2d);
+			toolboxPanel.getTool().drawInUserSpace(this, g2d);
 
 		g2d.setTransform(screenTransform);
 
 		ruler.draw(g2d);
 
 		if (hasFocus()) {
-			toolboxWindow.getTool().drawInScreenSpace(this, g2d);
+			toolboxPanel.getTool().drawInScreenSpace(this, g2d);
 			g2d.setTransform(screenTransform);
 
 			g2d.setStroke(borderStroke);
@@ -279,5 +280,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	@Override
 	public EditorOverlay getOverlay() {
 		return overlay;
+	}
+
+	public ToolboxPanel getToolBox() {
+		return toolboxPanel;
 	}
 }

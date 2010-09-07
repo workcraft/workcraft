@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -116,8 +117,8 @@ public class MainWindow extends JFrame {
 	private ErrorWindow errorWindow;
 	private JavaScriptWindow jsWindow;
 	private PropertyEditorWindow propertyEditorWindow;
-	private ToolboxWindow toolboxWindow;
-	private ToolInterfaceWindow toolInterfaceWindow;
+	private SimpleContainer toolboxWindow;
+	private SimpleContainer toolInterfaceWindow;
 
 	private JPanel content;
 
@@ -147,9 +148,9 @@ public class MainWindow extends JFrame {
 		errorWindow = new ErrorWindow(framework);
 		jsWindow = new JavaScriptWindow(framework);
 
-		toolboxWindow = new ToolboxWindow(framework);
+		toolboxWindow = new SimpleContainer();
 
-		toolInterfaceWindow = new ToolInterfaceWindow();
+		toolInterfaceWindow = new SimpleContainer();
 
 		outputDockable = null;
 		editorInFocus = null;
@@ -221,7 +222,7 @@ public class MainWindow extends JFrame {
 		return dockable;
 	}
 
-	public void createEditorWindow(final WorkspaceEntry we) {
+	public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
 		Object object = we.getObject();
 
 		if (!(object instanceof Model))
@@ -241,64 +242,65 @@ public class MainWindow extends JFrame {
 			} catch (VisualModelInstantiationException e) {
 				JOptionPane.showMessageDialog(MainWindow.this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
-				return;
+				return null;
 			} catch (PluginInstantiationException e) {
 				// no Dot layout plugin found, ignore
 			}
 
-			final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
-			String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
+		final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+		String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
 
-			final DockableWindow editorWindow;
+		final DockableWindow editorWindow;
 
-			if (editorWindows.isEmpty()) {
-				editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+		if (editorWindows.isEmpty()) {
+			editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
+					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 
-				DockingManager.close(documentPlaceholder);
-				DockingManager.unregisterDockable(documentPlaceholder);
-				utilityWindows.remove(documentPlaceholder);
+			DockingManager.close(documentPlaceholder);
+			DockingManager.unregisterDockable(documentPlaceholder);
+			utilityWindows.remove(documentPlaceholder);
+		}
+		else {
+			DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
+			editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
+					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+		}
+
+		editorWindow.addTabListener(new DockableWindowTabListener() {
+
+			@Override
+			public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
+				System.out.println ("Sel " + editorWindow.getTitle() + " " + tabIndex);
+				((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(true);
+				System.out.println (tabbedPane.getTabComponentAt(tabIndex).getParent());
+				requestFocus(editor);
+
 			}
-			else {
-				DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-				editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
-						DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
+
+			@Override
+			public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
+				((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(false);
+				System.out.println ("Desel " + editorWindow.getTitle());
 			}
 
-			editorWindow.addTabListener(new DockableWindowTabListener() {
+			@Override
+			public void dockedStandalone() {
+				System.out.println ("Standalone");
+			}
 
-				@Override
-				public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
-					System.out.println ("Sel " + editorWindow.getTitle() + " " + tabIndex);
-					((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(true);
-					System.out.println (tabbedPane.getTabComponentAt(tabIndex).getParent());
-					requestFocus(editor);
+			@Override
+			public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
+				System.out.println ("Intab");
+			}
+		});
 
-				}
+		editorWindow.setTabEventsEnabled(true);
 
-				@Override
-				public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
-					((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(false);
-					System.out.println ("Desel " + editorWindow.getTitle());
-				}
+		editorWindows.put(we, editorWindow);
+		requestFocus(editor);
 
-				@Override
-				public void dockedStandalone() {
-					System.out.println ("Standalone");
-				}
-
-				@Override
-				public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
-					System.out.println ("Intab");
-				}
-			});
-
-			editorWindow.setTabEventsEnabled(true);
-
-			editorWindows.put(we, editorWindow);
-			requestFocus(editor);
-
-			enableWorkActions();
+		enableWorkActions();
+		return editor;
 	}
 
 	private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -452,10 +454,9 @@ public class MainWindow extends JFrame {
 
 		int ID = dockableWindow.getID();
 
-		if (dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel) {
-			GraphEditorPanel editor = (GraphEditorPanel)dockableWindow.getContentPanel().getContent();
+		GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
+		if (editor != null) {
 			// handle editor window close
-
 			WorkspaceEntry we = editor.getWorkspaceEntry();
 
 			if (we.isChanged()) {
@@ -475,7 +476,7 @@ public class MainWindow extends JFrame {
 
 			if(editorInFocus == editor)
 			{
-				toolboxWindow.clearTools();
+				toolboxWindow.setContent(null);
 				editorInFocus = null;
 			}
 
@@ -501,6 +502,13 @@ public class MainWindow extends JFrame {
 			DockingManager.close(dockableWindow);
 			dockableWindow.setClosed(true);
 		}
+	}
+
+	private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
+		return
+			dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel
+				? (GraphEditorPanel)dockableWindow.getContentPanel().getContent()
+				: null;
 	}
 
 
@@ -683,7 +691,8 @@ public class MainWindow extends JFrame {
 
 		editorInFocus = sender;
 
-		toolboxWindow.setToolsForModel(editorInFocus.getModel());
+		toolboxWindow.setContent(sender.getToolBox());
+		toolInterfaceWindow.setContent(sender.getToolBox().getControlPanel());
 		mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 
 		mainMenu.revalidate();
@@ -696,7 +705,7 @@ public class MainWindow extends JFrame {
 		framework.setJavaScriptProperty("model", sender.getModel().getMathModel(), framework.getJavaScriptGlobalScope(), true);
 	}
 
-	public ToolboxWindow getToolboxWindow() {
+	public SimpleContainer getToolboxWindow() {
 		return toolboxWindow;
 	}
 
@@ -954,6 +963,13 @@ public class MainWindow extends JFrame {
 	}
 
 
+	public List<GraphEditorPanel> getEditors(WorkspaceEntry we)
+	{
+		ArrayList<GraphEditorPanel> result = new ArrayList<GraphEditorPanel>();
+		for(DockableWindow window : editorWindows.get(we))
+			result.add(getGraphEditorPanel(window));
+		return result;
+	}
 
 	public GraphEditorPanel getCurrentEditor() {
 		return editorInFocus;
@@ -1012,10 +1028,6 @@ public class MainWindow extends JFrame {
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
-	}
-
-	public ToolInterfaceWindow getToolInterfaceWindow() {
-		return toolInterfaceWindow;
 	}
 
 	public WorkspaceWindow getWorkspaceView() {
