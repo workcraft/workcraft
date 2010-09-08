@@ -4,15 +4,13 @@
  
 options {
   JDK_VERSION = "1.5";
-  LOOKAHEAD = 3;
+  LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = true;
-  DEBUG_TOKEN_MANAGER=true;
-
+  OUTPUT_DIRECTORY = "generated";
 }
 
 PARSER_BEGIN(DotGParser)
-package org.workcraft.plugins.stg.javacc;
+package org.workcraft.plugins.stg.javacc.generated;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,29 +41,33 @@ public class DotGParser {
 	private Node getOrCreate (String name) {
 
 		Type t = signals.get (name);
-		try {
-			return stg.getNodeByReference(name);
-		} catch (NotFoundException e) {
-		try {
-			return stg.getNodeByReference(name+"/0");
-		} catch (NotFoundException ee) {
+		
+		Node existing = stg.getNodeByReference(name);
+		
+		if (existing == null)
+			existing = stg.getNodeByReference(name+"/0");
+			
+		if (existing == null)
+		{
 			if (t==null)
-				return stg.createPlace(name);
+				existing = stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
-				return stg.createDummyTransition(name);
+				existing = stg.createDummyTransition(name);
 			else
 				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
-		}
+		
+		return existing;
 	}
 	
 	private Node getOrCreate (Pair<String, Integer> ref)
 	{
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
-		try {
-			return stg.getNodeByReference (reference);
-		} catch (NotFoundException e) {
+		Node existing = stg.getNodeByReference(reference);
+		
+		if (existing == null)
+		{
 			Type t = signals.get (name);
 			if (t == null || !t.equals(Type.DUMMY))
 				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
@@ -74,17 +76,20 @@ public class DotGParser {
 				DummyTransition dt = stg.createDummyTransition(null);
 				stg.setName(dt, reference);
 				dt.setName(name);
-				return dt;
+				existing = dt;
 			}
 		}
+		
+		return existing;
 	}
 	
 	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst(); 
-		try {
-			return stg.getNodeByReference (reference);
-		} catch (NotFoundException e) {
+		Node existing = stg.getNodeByReference (reference);
+		
+		if (existing == null)
+		{
 		
 			SignalTransition st = stg.createSignalTransition();
 			stg.setName (st, reference);
@@ -93,9 +98,10 @@ public class DotGParser {
 				throw new FormatException ("Undeclared signal encountered: " + name + 
 				" ("+reference+"). Possibly malformed header.");
 			st.setSignalType(t);
-			return st;
-		
+			existing = st;
 		}
+		
+		return existing;
 	}
 	
 	private void createArc (Node first, Node second) {
@@ -137,30 +143,30 @@ PARSER_END(DotGParser)
 }
 
 < IGNORE_REST > TOKEN:
-{	<REST : (~["\r", "\n", "#"])*> : DEFAULT
+{
+	<REST : (~["\r", "\n", "#"])*> : DEFAULT
 }
 
 TOKEN :
 {
-  	  <LINEBREAK: (["\r", "\n"])+> 
- 	| <INPUT_HEADER: ".inputs">
+	<LINEBREAK: (["\r", "\n"])+>
+  	| <INPUT_HEADER: ".inputs">
   	| <OUTPUT_HEADER: ".outputs">
   	| <INTERNAL_HEADER: ".internal">
   	| <DUMMY_HEADER: ".dummy">
   	| <GRAPH: ".graph">
   	| <MARKING: ".marking">
   	| <CAPACITY: ".capacity">
-	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_REST  	
+	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_REST
   	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
   	| <DIRECTION: ["+","-","~"]>
   	| <INTEGER: (["0"-"9"])+>
   	| "{" | "}" | "<" | ">" | "," | "/" | "="
-  	| <ANY : ~[]>
+	| <ANY : ~[]>
 }
 
 STG parse() : { }
 {
-	(<LINEBREAK>)?
 	{ init(); }
 	 ( header() <LINEBREAK> )*
 	 graph()
@@ -299,7 +305,8 @@ Node anyTransition() :
 	Pair<String, Integer> r2;
 	Node t;
 }
-{	(	  r = signalTransition() { t = getOrCreate(r); }
+{	(
+	  LOOKAHEAD(signalTransition())	  r = signalTransition() { t = getOrCreate(r); }
 	| r2 = dummyTransition() { t = getOrCreate(r2); }
 )
 	{		return t;
