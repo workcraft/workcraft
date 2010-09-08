@@ -4,13 +4,15 @@
  
 options {
   JDK_VERSION = "1.5";
-  LOOKAHEAD = 1;
+  LOOKAHEAD = 3;
   STATIC = false;
-  OUTPUT_DIRECTORY = "generated";
+  DEBUG_PARSER = true;
+  DEBUG_TOKEN_MANAGER=true;
+
 }
 
 PARSER_BEGIN(DotGParser)
-package org.workcraft.plugins.stg.javacc.generated;
+package org.workcraft.plugins.stg.javacc;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,33 +43,29 @@ public class DotGParser {
 	private Node getOrCreate (String name) {
 
 		Type t = signals.get (name);
-		
-		Node existing = stg.getNodeByReference(name);
-		
-		if (existing == null)
-			existing = stg.getNodeByReference(name+"/0");
-			
-		if (existing == null)
-		{
+		try {
+			return stg.getNodeByReference(name);
+		} catch (NotFoundException e) {
+		try {
+			return stg.getNodeByReference(name+"/0");
+		} catch (NotFoundException ee) {
 			if (t==null)
-				existing = stg.createPlace(name);
+				return stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
-				existing = stg.createDummyTransition(name);
+				return stg.createDummyTransition(name);
 			else
 				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
-		
-		return existing;
+		}
 	}
 	
 	private Node getOrCreate (Pair<String, Integer> ref)
 	{
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
-		Node existing = stg.getNodeByReference(reference);
-		
-		if (existing == null)
-		{
+		try {
+			return stg.getNodeByReference (reference);
+		} catch (NotFoundException e) {
 			Type t = signals.get (name);
 			if (t == null || !t.equals(Type.DUMMY))
 				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
@@ -76,20 +74,17 @@ public class DotGParser {
 				DummyTransition dt = stg.createDummyTransition(null);
 				stg.setName(dt, reference);
 				dt.setName(name);
-				existing = dt;
+				return dt;
 			}
 		}
-		
-		return existing;
 	}
 	
 	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst(); 
-		Node existing = stg.getNodeByReference (reference);
-		
-		if (existing == null)
-		{
+		try {
+			return stg.getNodeByReference (reference);
+		} catch (NotFoundException e) {
 		
 			SignalTransition st = stg.createSignalTransition();
 			stg.setName (st, reference);
@@ -98,10 +93,9 @@ public class DotGParser {
 				throw new FormatException ("Undeclared signal encountered: " + name + 
 				" ("+reference+"). Possibly malformed header.");
 			st.setSignalType(t);
-			existing = st;
-		}
+			return st;
 		
-		return existing;
+		}
 	}
 	
 	private void createArc (Node first, Node second) {
@@ -135,33 +129,38 @@ public class DotGParser {
 }
 PARSER_END(DotGParser)
 
-SKIP :
+< * > SKIP :
 {
  	" "
 |	"\t"
 |	<"#" (~["\r","\n"])* (["\r", "\n"])*>
 }
 
+< IGNORE_REST > TOKEN:
+{	<REST : (~["\r", "\n", "#"])*> : DEFAULT
+}
+
 TOKEN :
 {
-	<LINEBREAK: (["\r", "\n"])+>
-  	| <INPUT_HEADER: ".inputs">
+  	  <LINEBREAK: (["\r", "\n"])+> 
+ 	| <INPUT_HEADER: ".inputs">
   	| <OUTPUT_HEADER: ".outputs">
   	| <INTERNAL_HEADER: ".internal">
   	| <DUMMY_HEADER: ".dummy">
   	| <GRAPH: ".graph">
   	| <MARKING: ".marking">
   	| <CAPACITY: ".capacity">
-	| <UNSUPPORTED_HEADER: "." <NAME>>  	
+	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_REST  	
   	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
   	| <DIRECTION: ["+","-","~"]>
   	| <INTEGER: (["0"-"9"])+>
   	| "{" | "}" | "<" | ">" | "," | "/" | "="
-	| <ANY : ~[]>
+  	| <ANY : ~[]>
 }
 
 STG parse() : { }
 {
+	(<LINEBREAK>)?
 	{ init(); }
 	 ( header() <LINEBREAK> )*
 	 graph()
@@ -177,7 +176,7 @@ void header() : { List<String> list; }
 		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
 		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
 		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
-		|<UNSUPPORTED_HEADER> (<ANY>)*
+		|<UNSUPPORTED_HEADER> <REST>
 	)
 }
 
@@ -191,7 +190,7 @@ void footer() : { }
 {
 	<MARKING> marking()
 	|<CAPACITY> capacity()
-	|<UNSUPPORTED_HEADER> (<ANY>)*
+	|<UNSUPPORTED_HEADER> <REST>
 }
 
 void capacity() : { }
@@ -300,8 +299,7 @@ Node anyTransition() :
 	Pair<String, Integer> r2;
 	Node t;
 }
-{	(
-	  LOOKAHEAD(signalTransition())	  r = signalTransition() { t = getOrCreate(r); }
+{	(	  r = signalTransition() { t = getOrCreate(r); }
 	| r2 = dummyTransition() { t = getOrCreate(r2); }
 )
 	{		return t;
