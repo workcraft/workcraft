@@ -265,7 +265,7 @@ STGPlace explicitPlaceReference() :
 void graph() : { }
 {
 	<GRAPH> <LINEBREAK>
-	( graphLine() <LINEBREAK> )+
+	( graphLine() <LINEBREAK> )*
 }
 
 Triple<String, Direction, Integer> signalTransition() : 
