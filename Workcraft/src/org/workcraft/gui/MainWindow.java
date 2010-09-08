@@ -161,7 +161,6 @@ public class MainWindow extends JFrame {
 
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-
 			@Override
 			public void windowClosing(WindowEvent e) {
 				framework.shutdown();
@@ -311,7 +310,8 @@ public class MainWindow extends JFrame {
 	}
 
 	public void startup() {
-		setIconImage(GUI.createIconFromSVG("images/icons/svg/place.svg", 32, 32, Color.WHITE).getImage());
+		MainWindowIconManager.apply(this);
+
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 		//SwingUtilities.updateComponentTreeUI(MainWindow.this);
