@@ -3,6 +3,7 @@ package org.workcraft.plugins;
 import org.workcraft.*;
 import org.workcraft.plugins.desij.tools.Decomposition;
 import org.workcraft.plugins.desij.tools.DesiJCustomFunction;
+import org.workcraft.plugins.interop.CscResolutionTool;
 import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.plugins.layout.NullLayout;
 import org.workcraft.plugins.layout.RandomLayout;
@@ -33,6 +34,7 @@ public class Tools implements Plugin {
 		p.registerClass(PcompTool.class, new Initialiser() { public Object create(){ return new PcompTool(framework); } });
 		p.registerClass(RandomLayout.class, new Initialiser() { public Object create(){ return new RandomLayout(); } });
 		p.registerClass(ShowSg.class, new Initialiser() { public Object create(){ return new ShowSg(framework); } });
+		p.registerClass(CscResolutionTool.class, new Initialiser() { public Object create(){ return new CscResolutionTool(framework); } });
 	}
 
 }

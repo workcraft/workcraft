@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Plugin;
 import org.workcraft.PluginManager;
-import org.workcraft.plugins.interop.CSCResolver;
 import org.workcraft.plugins.interop.DotExporter;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.SVGExporter;
@@ -24,7 +23,6 @@ public class Exporters implements Plugin {
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();
-		p.registerClass(CSCResolver.class, new Initialiser(){public Object create(){return new CSCResolver(framework.getTaskManager());}});
 		p.registerClass(PSExporter.class, new Initialiser(){public Object create(){return new PSExporter(framework);}});
 	}
 
