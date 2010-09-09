@@ -135,11 +135,16 @@ public class DotGParser {
 }
 PARSER_END(DotGParser)
 
-SKIP :
+< * > SKIP :
 {
  	" "
 |	"\t"
 |	<"#" (~["\r","\n"])* (["\r", "\n"])*>
+}
+
+< IGNORE_REST > TOKEN:
+{
+	<REST : (~["\r", "\n", "#"])*> : DEFAULT
 }
 
 TOKEN :
@@ -152,7 +157,7 @@ TOKEN :
   	| <GRAPH: ".graph">
   	| <MARKING: ".marking">
   	| <CAPACITY: ".capacity">
-	| <UNSUPPORTED_HEADER: "." <NAME>>  	
+	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_REST
   	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
   	| <DIRECTION: ["+","-","~"]>
   	| <INTEGER: (["0"-"9"])+>
@@ -177,7 +182,7 @@ void header() : { List<String> list; }
 		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
 		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
 		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
-		|<UNSUPPORTED_HEADER> (<ANY>)*
+		|<UNSUPPORTED_HEADER> <REST>
 	)
 }
 
@@ -191,7 +196,7 @@ void footer() : { }
 {
 	<MARKING> marking()
 	|<CAPACITY> capacity()
-	|<UNSUPPORTED_HEADER> (<ANY>)*
+	|<UNSUPPORTED_HEADER> <REST>
 }
 
 void capacity() : { }
@@ -260,7 +265,7 @@ STGPlace explicitPlaceReference() :
 void graph() : { }
 {
 	<GRAPH> <LINEBREAK>
-	( graphLine() <LINEBREAK> )+
+	( graphLine() <LINEBREAK> )*
 }
 
 Triple<String, Direction, Integer> signalTransition() : 
