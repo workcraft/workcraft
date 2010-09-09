@@ -6,7 +6,11 @@ public class BalsaSystem
 {
 	private static final String balsaHomeStatic = System.getenv("BALSAHOME");
 
-	private static final String[] ABSPATH = new String[]{"share", "tech", "common", "components"};
+	// there are 2 possible paths to account for balsa versions 3.5 and 4.0
+	private static final String[][] ABSPATHS = new String[][]{
+		new String[]{"share", "tech", "common", "components"},
+		new String[]{"share", "style", "four_b_rb"}
+	};
 
 	public static BalsaSystem DEFAULT() { return new BalsaSystem(); }
 
@@ -31,9 +35,16 @@ public class BalsaSystem
 
 	public File getDefinitionsDir()
 	{
-		File result = balsaHome;
-		for(String s : ABSPATH)
-			result = new File(result, s);
-		return result;
+
+		for(String[] path : ABSPATHS)
+		{
+			File file = balsaHome;
+			for(String s : path)
+				file = new File(file, s);
+			if(file.exists())
+				return file;
+			System.out.println(file.getAbsolutePath() + " does not exist");
+		}
+		throw new RuntimeException("Balsa definitions directory does not exist!");
 	}
 }

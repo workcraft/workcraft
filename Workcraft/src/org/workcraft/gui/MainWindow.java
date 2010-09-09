@@ -100,6 +100,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
+	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
+
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
 			e.run(framework);
@@ -351,7 +353,7 @@ public class MainWindow extends JFrame {
 		mainMenu = new MainMenu(this);
 		setJMenuBar(mainMenu);
 
-		setTitle("Workcraft " + Framework.FRAMEWORK_VERSION_MAJOR+"."+Framework.FRAMEWORK_VERSION_MINOR);
+		setTitle("Workcraft");
 
 		createWindows();
 
@@ -366,8 +368,9 @@ public class MainWindow extends JFrame {
 
 		DockableWindow wsvd = createDockableWindow (workspaceWindow, "Workspace", DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION, 0.8f);
 		DockableWindow propertyEditor = createDockableWindow (propertyEditorWindow, "Property editor", wsvd,  DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.NORTH_REGION, 0.5f);
-		DockableWindow tiw = createDockableWindow(toolInterfaceWindow, "Tool controls", propertyEditor, DockableWindowContentPanel.CLOSE_BUTTON);
-		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", wsvd, 0, DockingManager.NORTH_REGION, 0.5f);
+		DockableWindow toolbox = createDockableWindow (toolboxWindow, "Editor tools", propertyEditor, DockableWindowContentPanel.HEADER|DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.SOUTH_REGION, 0.5f);
+		DockableWindow tiw = createDockableWindow(toolInterfaceWindow, "Tool controls", toolbox, DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.SOUTH_REGION, 0.5f);
+
 
 		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), "", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f, "DocumentPlaceholder");
 
@@ -553,7 +556,7 @@ public class MainWindow extends JFrame {
 		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(), pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
-			File file = new File("config/uilayout.xml");
+			File file = new File(UILAYOUT_PATH);
 			File parentDir = file.getParentFile();
 			if (parentDir != null)
 				if (!parentDir.exists())
@@ -575,7 +578,7 @@ public class MainWindow extends JFrame {
 		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		XMLPersister pers = new XMLPersister();
 		try {
-			File f = new File ("./config/uilayout.xml");
+			File f = new File (UILAYOUT_PATH);
 			if (!f.exists())
 				return;
 
@@ -788,6 +791,25 @@ public class MainWindow extends JFrame {
 		.replace('<', '_')
 		.replace('>', '_')
 		.replace('|', '_');
+	}
+
+	public void resetLayout() {
+		if (JOptionPane.showConfirmDialog(this, "This will reset the GUI to the default layout.\n\n" +
+				"Are you sure you want to do this?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+			return;
+
+		if (JOptionPane.showConfirmDialog(this, "This action requires GUI restart.\n\n" +
+				"This will cause the visual editor windows to be closed.\n\nProceed?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+			return;
+
+
+
+		try {
+			framework.shutdownGUI();
+			new File(UILAYOUT_PATH).delete();
+			framework.startGUI();
+		} catch (OperationCancelledException e) {
+		}
 	}
 
 	public void saveAs(WorkspaceEntry we) throws OperationCancelledException {

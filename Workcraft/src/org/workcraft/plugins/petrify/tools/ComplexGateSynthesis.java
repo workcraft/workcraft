@@ -27,7 +27,7 @@ import org.workcraft.workspace.WorkspaceEntry;
  * @author Dominic Wist
  * Petrify's Complex Gate Synthesis without Technology Mapping
  */
-@DisplayName("Complex Gate Synthesis")
+@DisplayName("Complex gate synthesis (petrify)")
 public class ComplexGateSynthesis implements Tool {
 
 	private final Framework framework;
@@ -41,7 +41,7 @@ public class ComplexGateSynthesis implements Tool {
 	 */
 	@Override
 	public String getSection() {
-		return "Petrify";
+		return "Synthesis";
 	}
 
 	/* (non-Javadoc)

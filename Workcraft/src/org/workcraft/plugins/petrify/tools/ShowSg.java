@@ -32,7 +32,7 @@ public class ShowSg implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Petrify";
+		return "Misc.";
 	}
 
 	@Override

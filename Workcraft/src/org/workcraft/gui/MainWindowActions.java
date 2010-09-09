@@ -105,4 +105,17 @@ public class MainWindowActions {
 			framework.getMainWindow().editSettings();
 		}
 	};
+
+	public static final Action RESET_GUI_ACTION = new Action() {
+		@Override
+		public String getText() {
+			return "Reset UI layout";
+		}
+
+		@Override
+		public void run(Framework framework) {
+			framework.getMainWindow().resetLayout();
+		}
+
+	};
 }

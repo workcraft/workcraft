@@ -15,7 +15,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("PComp: Parallel composition")
+@DisplayName("Parallel composition (PComp)")
 public class PcompTool implements Tool {
 
 	private final Framework framework;
@@ -25,7 +25,7 @@ public class PcompTool implements Tool {
 	}
 
 	public final String getSection() {
-		return "Tools";
+		return "Composition";
 	}
 
 	public final boolean isApplicableTo(WorkspaceEntry we) {
