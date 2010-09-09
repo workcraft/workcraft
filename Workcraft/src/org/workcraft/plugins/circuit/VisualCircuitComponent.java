@@ -87,25 +87,23 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 */
 	public VisualCircuitComponent(CircuitComponent component) {
-//		super(component);
+		super(component);
 		// testing...
 
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST,"Req_in"));
-
+		//addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST,"Req_in"));
+		addInput("Req_in");
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.WEST, "Ack_out"));
 		addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST, "Data_in"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, "Req_out"));
 		addContact(new VisualContact(component.addInput(), VisualContact.Direction.EAST, "Ack_in"));
+
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data_out"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data out 2"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.SOUTH, "Reset"));
 
-		for (VisualContact c: contacts) {
-			c.addObserver(this);
-		}
 	}
 
-	// updates sequential position of the
+	// updates sequential position of the contacts
 	private void updateStepPosition(LinkedList<VisualContact> side) {
 		double step_pos=-contactStep*(side.size()-1)/2;
 
@@ -192,6 +190,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				case EAST: east.add(vc); updateStepPosition(east); break;
 				case WEST: west.add(vc); updateStepPosition(west); break;
 			}
+
+			vc.addObserver(this);
+			contactLabelBB = null;
 		}
 	}
 
@@ -453,6 +454,34 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		}
 
+	}
+
+	public String getNewName(String start) {
+		// iterate through all contacts, check that the name doesn't exist
+		int num=0;
+		boolean found = true;
+		while (found) {
+			num++;
+			found=false;
+			for (VisualContact c : contacts) {
+				if (c.getName().equals(start+num)) {
+					found=true;
+				}
+			}
+		}
+		return start+num;
+	}
+
+	public void addInput(String name) {
+		if (name.equals("")) name = getNewName("input");
+		CircuitComponent component = (CircuitComponent)getReferencedComponent();
+		addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST, name));
+	}
+
+	public void addOutput(String name) {
+		if (name.equals("")) name = getNewName("output");
+		CircuitComponent component = (CircuitComponent)getReferencedComponent();
+		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, name));
 	}
 
 }
