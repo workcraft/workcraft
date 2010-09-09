@@ -7,6 +7,7 @@ import org.workcraft.plugins.interop.CscResolutionTool;
 import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.plugins.layout.NullLayout;
 import org.workcraft.plugins.layout.RandomLayout;
+import org.workcraft.plugins.mpsat.MpsatSynthesis;
 import org.workcraft.plugins.pcomp.gui.PcompTool;
 import org.workcraft.plugins.petrify.tools.ComplexGateSynthesis;
 import org.workcraft.plugins.petrify.tools.ShowSg;
@@ -35,6 +36,7 @@ public class Tools implements Plugin {
 		p.registerClass(RandomLayout.class, new Initialiser() { public Object create(){ return new RandomLayout(); } });
 		p.registerClass(ShowSg.class, new Initialiser() { public Object create(){ return new ShowSg(framework); } });
 		p.registerClass(CscResolutionTool.class, new Initialiser() { public Object create(){ return new CscResolutionTool(framework); } });
+		p.registerClass(MpsatSynthesis.class, new Initialiser() { public Object create(){ return new MpsatSynthesis(framework); } });
 	}
 
 }

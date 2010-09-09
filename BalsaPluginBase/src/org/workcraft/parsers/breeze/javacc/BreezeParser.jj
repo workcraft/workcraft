@@ -31,10 +31,10 @@ public class BreezeParser {
 		return parser.listElement();
 	}
 
-	public static PrimitivePart parsePrimitivePart(InputStream is) throws ParseException
+	public static PrimitivePart [] parsePrimitiveParts(InputStream is) throws ParseException
 	{
 	  BreezeParser parser = new BreezeParser(new BufferedReader(new InputStreamReader(is)));
-	  return parser.primitivePart();
+	  return parser.primitivePartsFile();
 	}
  	
 	public static BreezeFile parseBreezeFile(InputStream is) throws ParseException
@@ -586,6 +586,21 @@ Expression<String> symbol() : { Expression<String> str; }
 		<CBR>
 	<CBR>
 	{ return str; }
+}
+
+PrimitivePart[] primitivePartsFile() :
+{
+	List<PrimitivePart> result = new ArrayList<PrimitivePart>();
+	PrimitivePart part; 
+}
+{
+	(
+		(
+			  LOOKAHEAD(<OBR><PRIMITIVE_PART>) part = primitivePart() { result.add(part); }
+			| listElement()
+		)
+	)*
+	{ return result.toArray(new PrimitivePart[0]); }
 }
 
 PrimitivePart primitivePart() :

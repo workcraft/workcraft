@@ -30,6 +30,7 @@ import org.workcraft.plugins.desij.DesiJOperation;
 import org.workcraft.plugins.desij.DesiJSettings;
 import org.workcraft.plugins.desij.tasks.DesiJResult;
 import org.workcraft.plugins.desij.tasks.DesiJTask;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -243,7 +244,7 @@ public class SeqMixTest {
 					PrintStream defaultOut = System.out;
 					File desiJOutFile = new File("/home/dell/desij_" + runName.replace('\t', '_') + ".out");
 					PrintStream desiJOut = new PrintStream(desiJOutFile);
-					Model model = Import.importFromFile(Import.chooseBestImporter(f.getPluginManager(), gFile),gFile);
+					STGModel model = (STGModel)Import.importFromFile(Import.chooseBestImporter(f.getPluginManager(), gFile),gFile);
 
 					long ts = System.currentTimeMillis();
 

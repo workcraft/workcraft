@@ -1,8 +1,13 @@
 package org.workcraft.plugins.balsa.io;
 
+import org.workcraft.Framework;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig.SynthesisTool;
 
 public class SynthesisWithPetrify extends BalsaToGatesExporter{
+
+	public SynthesisWithPetrify(Framework framework) {
+		super(framework);
+	}
 
 	@Override
 	protected BalsaExportConfig getConfig()

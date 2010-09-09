@@ -79,6 +79,7 @@ public class ComplexGateSynthesis implements Tool {
 		if (option == JOptionPane.YES_OPTION) {
 			// choose library File
 			JFileChooser fc = new JFileChooser();
+			fc.setDialogTitle("Choose a library file");
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY); // default
 			if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				libraryFile = fc.getSelectedFile();

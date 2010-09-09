@@ -69,9 +69,6 @@ public final class StgBuilderSelector {
                                                                                             if (componentName.equals("UnaryFunc"))
                                                                                                 return new UnaryFuncStgBuilder();
                                                                                              else
-                                                                                                if (componentName.equals("Mask"))
-                                                                                                    return new MaskStgBuilder();
-                                                                                                 else
                                                                                                     if (componentName.equals("CallDemux"))
                                                                                                         return new CallDemuxStgBuilder();
                                                                                                      else
@@ -123,9 +120,6 @@ public final class StgBuilderSelector {
                                                                                                                                                                     if (componentName.equals("FalseVariable"))
                                                                                                                                                                         return new FalseVariableStgBuilder();
                                                                                                                                                                      else
-                                                                                                                                                                        if (componentName.equals("InitVariable"))
-                                                                                                                                                                            return new InitVariableStgBuilder();
-                                                                                                                                                                         else
                                                                                                                                                                             if (componentName.equals("DecisionWait"))
                                                                                                                                                                                 return new DecisionWaitStgBuilder();
                                                                                                                                                                              else

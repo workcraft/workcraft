@@ -9,7 +9,8 @@ public class BalsaSystem
 	// there are 2 possible paths to account for balsa versions 3.5 and 4.0
 	private static final String[][] ABSPATHS = new String[][]{
 		new String[]{"share", "tech", "common", "components"},
-		new String[]{"share", "style", "four_b_rb"}
+		new String[]{"share", "tech", "common"}
+		//new String[]{"share", "style", "four_b_rb"}
 	};
 
 	public static BalsaSystem DEFAULT() { return new BalsaSystem(); }

@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.balsa.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Model;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
@@ -50,8 +52,6 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.InternalHandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
-import org.workcraft.plugins.balsa.stgbuilder.ActiveSignal;
-import org.workcraft.plugins.balsa.stgbuilder.PassiveSignal;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
@@ -59,8 +59,10 @@ import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.shared.PcompUtilitySettings;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.Export;
 
 public abstract class BalsaToStgExporter implements Exporter {
@@ -97,6 +99,11 @@ public abstract class BalsaToStgExporter implements Exporter {
 		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
 	}
 
+	public STGModel getSTG(org.workcraft.plugins.balsa.BalsaCircuit circuit) throws IOException, ModelValidationException, SerialisationException
+	{
+		return getSTG(circuit.asNetlist());
+	}
+
 	public void export(Model model, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
 		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), settings, out);
@@ -104,6 +111,15 @@ public abstract class BalsaToStgExporter implements Exporter {
 
 	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
 	{
+		export(circuit, askForSettings(), out);
+	}
+
+	public STGModel getSTG(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit) throws IOException, ModelValidationException, SerialisationException
+	{
+		return getSTG(circuit, askForSettings());
+	}
+
+	private CompositionSettings askForSettings() {
 		String opt1 = "Improved Pcomp";
 		String opt2 = "Standard Pcomp";
 		String opt3 = "Event-based composition";
@@ -111,10 +127,16 @@ public abstract class BalsaToStgExporter implements Exporter {
 
 		boolean improved = (result != opt2);
 		boolean event = (result == opt3);
-		export(circuit, new CompositionSettings(event, improved), out);
+		final CompositionSettings settings = new CompositionSettings(event, improved);
+		return settings;
 	}
 
 	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
+	{
+		new DotGExporter().export(getSTG(circuit, settings), out);
+	}
+
+	public STGModel getSTG(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings) throws IOException, ModelValidationException, SerialisationException
 	{
 		BalsaCircuit balsa = new BalsaCircuit(circuit);
 
@@ -125,7 +147,7 @@ public abstract class BalsaToStgExporter implements Exporter {
 		if(useSimpleInternalHandshakes)
 		{
 			STG stgf = buildStgFull(balsa, names);
-			new DotGExporter().export(stgf, out);
+			return stgf;
 		}
 		else
 		{
@@ -151,34 +173,41 @@ public abstract class BalsaToStgExporter implements Exporter {
 				for(int i=0;i<tempFiles.size();i++)
 					args.add(tempFiles.get(i).getPath());
 
-				SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args.toArray(new String[0]), ".");
-
-				pcomp.start(10000);
-
-				byte [] outputData = pcomp.getOutputData();
-				System.out.println("----- Pcomp errors: -----");
-				System.out.print(new String(pcomp.getErrorData()));
-				System.out.println("----- End of errors -----");
-
-				if(pcomp.getReturnCode() != 0)
+				try
 				{
-					System.out.println("");
-					System.out.println("----- Pcomp output: -----");
-					System.out.print(new String(outputData));
-					System.out.println("----- End of output -----");
+					SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args.toArray(new String[0]), ".");
 
-					throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
+					pcomp.start(10000);
+
+					byte [] outputData = pcomp.getOutputData();
+					System.out.println("----- Pcomp errors: -----");
+					System.out.print(new String(pcomp.getErrorData()));
+					System.out.println("----- End of errors -----");
+
+					if(pcomp.getReturnCode() != 0)
+					{
+						System.out.println("");
+						System.out.println("----- Pcomp output: -----");
+						System.out.print(new String(outputData));
+						System.out.println("----- End of output -----");
+
+						throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
+					}
+
+					try {
+						return new DotGImporter().importSTG(new ByteArrayInputStream(outputData));
+					} catch (DeserialisationException e) {
+						throw new RuntimeException(e);
+					}
 				}
-
-				saveData(outputData, out);
-
-				for(File f : tempFiles)
-					f.delete();
+				finally
+				{
+					for(File f : tempFiles)
+						f.delete();
+				}
 			}
 			else
-			{
-				new DotGExporter().export(new STG(), out);
-			}
+				return new STG();
 		}
 	}
 
@@ -255,11 +284,6 @@ public abstract class BalsaToStgExporter implements Exporter {
 
 	protected Iterable<? extends BreezeComponent> getComponentsToSave(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> balsa) {
 		return balsa.getBlocks();
-	}
-
-	private static void saveData(byte [] outputData, OutputStream out) throws IOException
-	{
-		out.write(outputData);
 	}
 
 	public static boolean injectiveLabelling = false;

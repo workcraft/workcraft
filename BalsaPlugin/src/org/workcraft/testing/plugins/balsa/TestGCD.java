@@ -68,6 +68,10 @@ import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter;
 import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
+import org.workcraft.plugins.gates.GateLevelModel;
+import org.workcraft.plugins.interop.DotGExporter;
+import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
@@ -288,12 +292,9 @@ public class TestGCD {
 	@Test
 	public void synthesiseSample() throws IOException, FormatException, PluginInstantiationException, ModelValidationException, SerialisationException
 	{
-		Framework f;
-		Exporter synthesiser;
-
-			f = new Framework();
-			f.initPlugins();
-			synthesiser = f.getPluginManager().getSingleton(SynthesisWithMpsat.class);
+		Framework f = new Framework();
+		f.initPlugins();
+		Exporter synthesiser = new SynthesisWithMpsat(f);
 
 		init();
 
@@ -683,11 +684,16 @@ public class TestGCD {
 
 		try
 		{
-			Export.exportToFile(exporter, circuit, stgFile);
+			Framework framework = new Framework();
+			framework.initPlugins();
+
+			final STGModel stg = exporter.getSTG(circuit);
+			Export.exportToFile(new DotGExporter(), stg, stgFile);
 
 			try
 			{
-				BalsaToGatesExporter.synthesiseStg(new DefaultTaskManager(), stgFile, eqnFile, BalsaExportConfig.DEFAULT);
+				final GateLevelModel gates = BalsaToGatesExporter.synthesise(framework, stg, BalsaExportConfig.DEFAULT);
+				Export.exportToFile(gates, eqnFile, Format.EQN, framework.getPluginManager());
 			}
 			catch(RuntimeException e)
 			{

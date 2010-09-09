@@ -30,41 +30,44 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import org.workcraft.Framework;
-import org.workcraft.FrameworkConsumer;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
-import org.workcraft.plugins.balsa.io.BalsaExportConfig.DummyContractionMode;
-import org.workcraft.plugins.interop.CSCResolver;
+import org.workcraft.plugins.gates.GateLevelModel;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.interop.Unfolder;
+import org.workcraft.plugins.shared.MpsatCscResolutionResultHandler;
+import org.workcraft.plugins.shared.MpsatEqnParser;
 import org.workcraft.plugins.shared.MpsatMode;
 import org.workcraft.plugins.shared.MpsatSettings;
-import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.MpsatChainResult;
+import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.tasks.MpsatTask;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
-public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsumer {
+public abstract class BalsaToGatesExporter implements Exporter {
 
-	private TaskManager taskManager;
+	private final Framework framework;
 
-	@Override
-	public void acceptFramework(Framework framework) {
-		this.taskManager = framework.getTaskManager();
+	public BalsaToGatesExporter(Framework framework)
+	{
+		this.framework = framework;
 	}
+
 
 	@Override
 	public void export(Model model, OutputStream out) throws IOException,
@@ -73,59 +76,19 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 			exportFromStg((STG)model, out);
 		else
 		{
-			File original = File.createTempFile("composition", ".g");
-			exportOriginal(model, original);
+			BalsaCircuit circuit = (BalsaCircuit)model;
+			STGModel stg = exportOriginal(circuit);
 
-			File synthesised = File.createTempFile("result", ".eqn");
-
-			synthesiseStg(taskManager, original, synthesised, getConfig());
-
-			FileUtils.copyFileToStream(synthesised, out);
+			exportFromStg(stg, out);
 		}
 	}
 
 	abstract protected BalsaExportConfig getConfig();
 
-	private void exportFromStg(STG model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
-		File dotG = File.createTempFile("original", ".g");
-		File eqn = File.createTempFile("result", ".eqn");
-		Export.exportToFile(new DotGExporter(), model, dotG);
-
-		synthesiseStg(taskManager, dotG, eqn, getConfig());
-
-		FileUtils.copyFileToStream(eqn, out);
-	}
-
-	public static void synthesiseStg(TaskManager taskManager, File original, File synthesised, BalsaExportConfig config)
-			throws IOException {
-
-		File implicitRemoved = File.createTempFile("remImplicit", ".g");
-
-		removeImplicitPlaces(original, implicitRemoved);
-
-		FileUtils.copyFile(implicitRemoved, new File(original.getAbsolutePath()+".explicit.g"));//DEBUG
-
-		File afterContraction;
-		File contracted = null;
-
-		if(config.dummyContractionMode() == DummyContractionMode.NONE)
-			afterContraction = implicitRemoved;
-		else
-		{
-			afterContraction = contracted = File.createTempFile("contracted", ".g");
-			switch(config.dummyContractionMode())
-			{
-			case PETRIFY:
-				contractDummies(taskManager, implicitRemoved, contracted);
-			case DESIJ:
-				contractDummiesDesiJ(implicitRemoved, contracted);
-			default:
-				throw new RuntimeException("Unsupported contraction");
-
-			}
-		}
-
-		synthesise(taskManager, afterContraction, synthesised, config);
+	private void exportFromStg(STGModel model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
+		GateLevelModel gates = synthesise(framework, model, getConfig());
+		Export.chooseBestExporter(framework.getPluginManager(), gates, Format.EQN);
+		export(gates, out);
 	}
 
 	private static void removeImplicitPlaces(File original, File renamed2)
@@ -142,44 +105,57 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 		}
 	}
 
-	private static void synthesise(TaskManager taskManager, File original, File synthesised, BalsaExportConfig config) throws IOException {
+	public static GateLevelModel synthesise(Framework framework, STGModel stg, BalsaExportConfig config) throws IOException {
+
+		switch(config.dummyContractionMode())
+		{
+		case PETRIFY:
+			stg = contractDummies(framework.getTaskManager(), stg);
+			break;
+		case DESIJ:
+			stg = contractDummiesDesiJ(stg);
+			break;
+		case NONE:
+			break;
+		default:
+			throw new RuntimeException("Unsupported contraction");
+		}
+
 		switch(config.synthesisTool())
 		{
 		case MPSAT:
 		{
-			File tempDir = FileUtils.createTempDirectory("stgSynthesis");
+			STGModel cscResolved = resolveCscWithMpsat(framework, stg);
 
-			File unfolding = new File(tempDir, "composition.mci");
-
-			Unfolder.makeUnfolding(taskManager, original, unfolding);
-
-			File csc_resolved_mci = new File(tempDir, "resolved.mci");
-
-			CSCResolver.resolveConflicts(taskManager, unfolding, csc_resolved_mci, null);
-
-			mpsatMakeEqn(taskManager, csc_resolved_mci, synthesised);
-			break;
+			return mpsatMakeEqn(framework, cscResolved);
 		}
 		case PETRIFY:
-			petrifyMakeEqn(taskManager, original, synthesised);
-			break;
-			default:
+			return petrifyMakeEqn(framework.getTaskManager(), stg);
+		default:
+			throw new RuntimeException("Unsupported synthesis tool");
 		}
+
 	}
 
-	private static void petrifyMakeEqn(TaskManager taskManager, File original, File synthesised) throws IOException {
+	private static STGModel resolveCscWithMpsat(Framework framework, STGModel original) {
+		MpsatSettings settings = new MpsatSettings(MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
+		MpsatChainTask mpsatTask = new MpsatChainTask(original, settings, framework);
+		final Result<? extends MpsatChainResult> result = framework.getTaskManager().execute(mpsatTask, "CSC conflict resolution");
+		return new MpsatCscResolutionResultHandler(mpsatTask, result).getResolvedStg();
+	}
 
-
-
+	private static GateLevelModel petrifyMakeEqn(TaskManager taskManager, STGModel stg) throws IOException {
+		if(true)throw new NotImplementedException();
+		//TODO: re-implement this using asynchronous tasks
 		ExternalProcessTask task = new ExternalProcessTask(Arrays.asList(
 				new String[]{
 						PetrifyUtilitySettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
 						"-eqn",
-						synthesised.getAbsolutePath(),
+						//synthesised.getAbsolutePath(),
 						"-cg",
-						original.getAbsolutePath()
+						//original.getAbsolutePath()
 				}), new File("."));
 
 		Result<? extends ExternalProcessResult> result = taskManager.execute(task, "PETRIFY synthesis");
@@ -203,17 +179,19 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 
 		if(retVal.getReturnCode() != 0)
 			throw new RuntimeException("PETRIFY failed: " + new String(retVal.getErrors()));
+		return null;
 	}
 
 
-	private static void contractDummiesDesiJ(File original, File contracted) throws IOException
+	private static STGModel contractDummiesDesiJ(STGModel stg) throws IOException
 	{
 		throw new RuntimeException("Not implemented");
 	}
 
-	private static void contractDummies(TaskManager taskManager, File original, File contracted) throws IOException
+	private static STGModel contractDummies(TaskManager taskManager, STGModel stg) throws IOException
 	{
-
+		if(true)throw new NotImplementedException();
+		// TODO: re-implement this using asynchronous tasks
 		Result<? extends ExternalProcessResult> result = taskManager.execute(
 		new ExternalProcessTask(
 				Arrays.asList(
@@ -221,7 +199,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 						PetrifyUtilitySettings.getPetrifyCommand(),
 						"-hide",
 						".dummy",
-						original.getAbsolutePath()
+						//original.getAbsolutePath()
 				}), new File(".")),
 				"PETRIFY dummy contraction");
 
@@ -231,7 +209,7 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 		if(result.getOutcome() == Outcome.FAILED)
 			throw new RuntimeException(result.getCause());
 
-		FileOutputStream outStream = new FileOutputStream(contracted);
+		FileOutputStream outStream = null;//new FileOutputStream(contracted);
 		ExternalProcessResult retVal = result.getReturnValue();
 		outStream.write(retVal.getOutput());
 		outStream.close();
@@ -240,13 +218,17 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 		System.out.write(retVal.getErrors());System.out.println();System.out.println("----------------------------------------");
 		if(retVal.getReturnCode() != 0)
 			throw new RuntimeException("Dummy contraction failed! " + retVal.getErrors().toString());
+		return null;
 	}
 
-	private static void mpsatMakeEqn(TaskManager taskManager, File cscResolvedMci, File synthesised) throws IOException
+	private static GateLevelModel mpsatMakeEqn(Framework framework, STGModel stg) throws IOException
 	{
+		if(true)throw new NotImplementedException();
+		//TODO: re-implement using MpsatChainTask
 		MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
 
-		Result<? extends ExternalProcessResult> result = taskManager.execute(new MpsatTask(settings.getMpsatArguments(), cscResolvedMci.getAbsolutePath()), "MPSat Complex gate synthesis");
+		new MpsatChainTask(stg, settings, framework);
+		Result<? extends ExternalProcessResult> result = framework.getTaskManager().execute(new MpsatTask(settings.getMpsatArguments(), null), "MPSat Complex gate synthesis");
 
 		System.out.println("MPSat complex gate synthesis output: ");
 		System.out.write(result.getReturnValue().getOutput());System.out.println();System.out.println("----------------------------------------");
@@ -265,22 +247,16 @@ public abstract class BalsaToGatesExporter implements Exporter, FrameworkConsume
 		case FAILED:
 			throw new RuntimeException("Complex gate synthesis by MPSat failed: " + new String(errors), result.getCause());
 		case FINISHED:
-			FileUtils.writeAllBytes(result.getReturnValue().getOutput(), synthesised);
+			return new MpsatEqnParser().parse(new String(result.getReturnValue().getOutput()));
+		default:
+			throw new RuntimeException("Unsupported outcome");
 		}
 	}
 
-	private void exportOriginal(Model model, File original)
+	private STGModel exportOriginal(BalsaCircuit balsaModel)
 			throws FileNotFoundException, IOException,
 			ModelValidationException, SerialisationException {
-		FileOutputStream tempFileStream = new FileOutputStream(original);
-		try
-		{
-			new BalsaToStgExporter_FourPhase().export(model, tempFileStream);
-		}
-		finally
-		{
-			tempFileStream.close();
-		}
+		return new BalsaToStgExporter_FourPhase().getSTG(balsaModel);
 	}
 
 	public String getExtenstion() {
