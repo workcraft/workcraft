@@ -27,7 +27,7 @@ import org.workcraft.workspace.WorkspaceEntry;
  * @author Dominic Wist
  * Petrify's Complex Gate Synthesis without Technology Mapping
  */
-@DisplayName("Complex Gate Synthesis")
+@DisplayName("Complex gate synthesis (petrify)")
 public class ComplexGateSynthesis implements Tool {
 
 	private final Framework framework;
@@ -41,7 +41,7 @@ public class ComplexGateSynthesis implements Tool {
 	 */
 	@Override
 	public String getSection() {
-		return "Petrify";
+		return "Synthesis";
 	}
 
 	/* (non-Javadoc)
@@ -79,6 +79,7 @@ public class ComplexGateSynthesis implements Tool {
 		if (option == JOptionPane.YES_OPTION) {
 			// choose library File
 			JFileChooser fc = new JFileChooser();
+			fc.setDialogTitle("Choose a library file");
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY); // default
 			if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 				libraryFile = fc.getSelectedFile();

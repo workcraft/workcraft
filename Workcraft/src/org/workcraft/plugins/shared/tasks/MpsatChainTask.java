@@ -21,9 +21,18 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	private final WorkspaceEntry we;
 	private final MpsatSettings settings;
 	private final Framework framework;
+	private STGModel model;
 
 	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings, Framework framework) {
 		this.we = we;
+		this.settings = settings;
+		this.framework = framework;
+		this.model = null;
+	}
+
+	public MpsatChainTask(STGModel model, MpsatSettings settings, Framework framework) {
+		this.we = null;
+		this.model = model;
 		this.settings = settings;
 		this.framework = framework;
 	}
@@ -31,7 +40,8 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		try {
-			STGModel model = WorkspaceUtils.getAs(getWorkspaceEntry(), STGModel.class);
+			if(model == null)
+				model = WorkspaceUtils.getAs(getWorkspaceEntry(), STGModel.class);
 
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 
@@ -43,7 +53,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 
-			Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Verification: exporting net", mon);
+			Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g", mon);
 
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				netFile.delete();
@@ -57,7 +67,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			File mciFile = File.createTempFile("unfolding", ".mci");
 
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Verification: unfolding net", mon);
+			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
 			netFile.delete();
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
@@ -70,7 +80,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			monitor.progressUpdate(0.66);
 
 			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Verification: model-checking", mon);
+			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running mpsat model-checking", mon);
 			mciFile.delete();
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {

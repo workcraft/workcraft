@@ -21,7 +21,6 @@
 
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -36,11 +35,11 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import org.workcraft.Framework;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
@@ -52,7 +51,7 @@ import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @SuppressWarnings("serial")
-public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKeyListener {
+public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
 
 
 	class ToolTracker {
@@ -85,8 +84,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		}
 	}
 
-	private Framework framework;
-
 	private SelectionTool selectionTool;
 	private ConnectionTool connectionTool;
 
@@ -94,6 +91,8 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 	private HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<GraphEditorTool, JToggleButton>();
 	private HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<Integer, ToolTracker>();
+
+	private final GraphEditorPanel editor;
 
 	public void addTool (final GraphEditorTool tool, boolean selected) {
 		JToggleButton button = new JToggleButton();
@@ -150,10 +149,6 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 			selectTool(tool);
 	}
 
-	private void clearTrackers() {
-		hotkeyMap.clear();
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T extends GraphEditorTool> T getToolInstance (Class<T> cls)
 	{
@@ -164,15 +159,13 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 	}
 
 	public void selectTool(GraphEditorTool tool) {
-		MainWindow mainWindow = framework.getMainWindow();
-
 		if (selectedTool != null) {
 			ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
 			if(oldTracker!=null)
 				oldTracker.reset();
 
-			selectedTool.deactivated(mainWindow.getCurrentEditor());
-			((Colorisable)mainWindow.getCurrentEditor().getModel().getRoot()).clearColorisation();
+			selectedTool.deactivated(editor);
+			((Colorisable)editor.getModel().getRoot()).clearColorisation();
 			buttons.get(selectedTool).setSelected(false);
 		}
 
@@ -180,11 +173,11 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		if (tracker != null)
 			tracker.track(tool);
 
-		tool.activated(mainWindow.getCurrentEditor());
-		mainWindow.getToolInterfaceWindow().setTool(tool);
+		tool.activated(editor);
+		controlPanel.setTool(tool);
 		buttons.get(tool).setSelected(true);
 		selectedTool = tool;
-		mainWindow.repaintCurrentEditor();
+		editor.repaint();
 	}
 
 	public void addCommonTools() {
@@ -192,12 +185,7 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		addTool(connectionTool, false);
 	}
 
-	public void setToolsForModel (VisualModel model) {
-		buttons.clear();
-		clearTrackers();
-		removeAll();
-		selectedTool = null;
-
+	private void setToolsForModel (VisualModel model) {
 		setLayout(new SimpleFlowLayout (5, 5));
 
 		Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
@@ -240,24 +228,15 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 		this.repaint();
 	}
 
-	public void clearTools() {
-		removeAll();
-		clearTrackers();
-		setLayout(new BorderLayout());
-		this.add(new DisabledPanel(), BorderLayout.CENTER);
-		this.repaint();
-	}
-
-	public ToolboxWindow(Framework framework) {
-		super();
-		this.framework = framework;
+	public ToolboxPanel(GraphEditorPanel editor) {
+		this.editor = editor;
 		this.setFocusable(false);
 
 		selectionTool = new SelectionTool();
 		connectionTool = new ConnectionTool();
 		selectedTool = null;
 
-		clearTools();
+		setToolsForModel(editor.getModel());
 	}
 
 	public GraphEditorTool getTool() {
@@ -283,5 +262,11 @@ public class ToolboxWindow extends JPanel implements ToolProvider, GraphEditorKe
 
 	public void keyTyped(GraphEditorKeyEvent event) {
 		selectedTool.keyTyped(event);
+	}
+
+	ToolInterfaceWindow controlPanel = new ToolInterfaceWindow();
+
+	public ToolInterfaceWindow getControlPanel() {
+		return controlPanel;
 	}
 }

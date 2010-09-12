@@ -24,6 +24,7 @@ package org.workcraft.testing.plugins.interop;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.workcraft.Framework;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.parsers.breeze.BreezeLibrary;
@@ -43,6 +44,8 @@ public class BalsaToGatesExporterTests {
 		BreezeComponent component = new BreezeComponent();
 		component.setUnderlyingComponent(new DynamicComponent(new BreezeLibrary(BalsaSystem.DEFAULT()).getPrimitive("While"), EmptyParameterScope.instance()));
 		circuit.add(component);
-		Export.exportToFile(new SynthesisWithMpsat(), circuit, "while.eqn");
+		Framework f = new Framework();
+		f.initPlugins();
+		Export.exportToFile(new SynthesisWithMpsat(f), circuit, "while.eqn");
 	}
 }

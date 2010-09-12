@@ -106,7 +106,7 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnSettings, mnHelp, mnWindows;
+	private JMenu mnFile, mnEdit, mnView, mnUtility, mnHelp, mnWindows;
 	private JMenu mnExport;
 
 	private MainWindow mainWindow;
@@ -259,14 +259,20 @@ public class MainMenu extends JMenuBar {
 
 		mnEdit.add(miProperties);
 
-		// Settings
-		mnSettings = new JMenu();
-		mnSettings.setText("Utility");
+		// Utility
+		mnUtility = new JMenu();
+		mnUtility.setText("Utility");
 
 		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		mnSettings.add(miReconfigure);
+		mnUtility.add(miReconfigure);
+
+		ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
+		miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+
+		mnUtility.add(miResetLayout);
 
 		// Help
 		mnHelp = new JMenu();
@@ -275,8 +281,11 @@ public class MainMenu extends JMenuBar {
 		add(mnFile);
 		add(mnEdit);
 		add(mnView);
-		add(mnSettings);
+		add(mnUtility);
 		add(mnHelp);
+
+		add(new JLabel("    "));
+
 	}
 
 	private void addExporter (Exporter exporter) {

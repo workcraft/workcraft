@@ -32,6 +32,9 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			case RESOLVE_ENCODING_CONFLICTS:
 				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(task, mpsatChainResult));
 				break;
+			case COMPLEX_GATE_IMPLEMENTATION:
+				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, mpsatChainResult));
+				break;
 			default:
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override

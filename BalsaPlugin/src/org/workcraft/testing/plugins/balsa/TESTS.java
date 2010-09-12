@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.workcraft.Framework;
 import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.ChannelType;
@@ -86,6 +87,9 @@ public class TESTS {
 	@Test
 	public void viterbiToGates() throws Exception
 	{
+		Framework framework = new Framework();
+		framework.initPlugins();
+
 		File bzrFileName = new File("C:\\deleteMe\\viterbi\\BMU.breeze");
 
 		BreezeLibrary lib = new BreezeLibrary(BalsaSystem.DEFAULT());
@@ -102,7 +106,7 @@ public class TESTS {
 
 		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "c:\\viterbi.g");
 
-		new SynthesisWithMpsat().export(circuit, stream);
+		new SynthesisWithMpsat(framework).export(circuit, stream);
 	}
 
 	static abstract class ClassicHandshakeVisitor<T> implements HandshakeVisitor<T>

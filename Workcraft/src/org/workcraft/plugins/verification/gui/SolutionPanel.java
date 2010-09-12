@@ -2,6 +2,7 @@ package org.workcraft.plugins.verification.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import info.clearthought.layout.TableLayout;
 
@@ -12,9 +13,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.Trace;
-import org.workcraft.gui.ToolboxWindow;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.petri.SimulationTool;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
+import org.workcraft.workspace.WorkspaceEntry;
 
 
 @SuppressWarnings("serial")
@@ -22,7 +26,7 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(final MpsatChainTask task, final Trace t) {
+	public SolutionPanel(final MpsatChainTask task, final Trace t, final ActionListener closeAction) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
@@ -44,11 +48,25 @@ public class SolutionPanel extends JPanel {
 		{
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				task.getFramework().getMainWindow().createEditorWindow(task.getWorkspaceEntry());
-				final ToolboxWindow toolbox = task.getFramework().getMainWindow().getToolboxWindow();
+				final WorkspaceEntry we = task.getWorkspaceEntry();
+				final MainWindow mainWindow = task.getFramework().getMainWindow();
+				GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
+				if(currentEditor == null || currentEditor.getWorkspaceEntry() != we)
+				{
+					final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
+					if(editors.size()>0) {
+						currentEditor = editors.get(0);
+						mainWindow.requestFocus(currentEditor);
+					}
+					else {
+						currentEditor = mainWindow.createEditorWindow(we);
+					}
+				}
+				final ToolboxPanel toolbox = currentEditor.getToolBox();
 				final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
 				tool.setTrace(t);
 				toolbox.selectTool(tool);
+				closeAction.actionPerformed(null);
 			}
 		});
 

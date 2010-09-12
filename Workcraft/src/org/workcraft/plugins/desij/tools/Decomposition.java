@@ -9,7 +9,7 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("DesiJ - default decomposition")
+@DisplayName("Standard decomposition (DesiJ)")
 public class Decomposition implements Tool {
 
 	private final Framework framework;

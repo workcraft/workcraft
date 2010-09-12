@@ -12,7 +12,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("DesiJ - customise function")
+@DisplayName("Custom decomposition (DesiJ)")
 public class DesiJCustomFunction implements Tool {
 
 	private final Framework framework;

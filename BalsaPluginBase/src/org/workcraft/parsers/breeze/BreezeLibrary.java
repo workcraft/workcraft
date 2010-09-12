@@ -49,7 +49,7 @@ public class BreezeLibrary
 		new FilenameFilter()
 		{
 			@Override public boolean accept(File dir, String name) {
-				return name.endsWith(".abs") && Character.isUpperCase(name.charAt(0));
+				return name.endsWith(".abs") && (Character.isUpperCase(name.charAt(0)) || name.equals("components.abs"));
 			}
 		};
 
@@ -74,10 +74,14 @@ public class BreezeLibrary
 		for(File file : files)
 		{
 			InputStream is = new FileInputStream(file);
+
 			try
 			{
-				PrimitivePart primitivePart = DataPathSplitters.getControl(BreezeParser.parsePrimitivePart(is));
-				primitiveParts.put(primitivePart.getName(), primitivePart);
+				for(PrimitivePart part : BreezeParser.parsePrimitiveParts(is))
+				{
+					PrimitivePart primitivePart = DataPathSplitters.getControl(part);
+					primitiveParts.put(primitivePart.getName(), primitivePart);
+				}
 			} catch (ParseException e) {
 				System.err.println ("Error parsing " + file.getName() + " (" + e.getMessage() +")");
 			}
