@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.circuit;
 
+import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
@@ -34,7 +35,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Visual Circuit")
-//@CustomTools ( STGToolsProvider.class )
+@CustomTools ( CircuitToolsProvider.class )
 @DefaultCreateButtons ( { CircuitComponent.class } )
 //@CustomToolButtons ( { SimulationTool.class } )
 
