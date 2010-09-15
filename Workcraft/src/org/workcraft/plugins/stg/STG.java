@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -54,7 +55,7 @@ import org.workcraft.util.Triple;
 
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
 @DisplayName("Signal Transition Graph")
-public class STG extends AbstractMathModel implements STGModel {
+public class STG extends AbstractMathModel implements STGModel, LegacyPlugin {
 	private STGReferenceManager referenceManager;
 
 	public STG() {

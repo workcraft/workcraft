@@ -686,7 +686,6 @@ public class MainWindow extends JFrame {
 	}
 
 	public void requestFocus (GraphEditorPanel sender) {
-		System.out.println ("HFUKLEHw:fwdwfd£!!!!");
 		sender.requestFocusInWindow();
 
 		if (editorInFocus == sender)

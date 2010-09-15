@@ -23,6 +23,7 @@ package org.workcraft.plugins.cpog;
 
 import java.util.Collection;
 
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -34,7 +35,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
 @VisualClass("org.workcraft.plugins.cpog.VisualCPOG")
-public class CPOG extends AbstractMathModel
+public class CPOG extends AbstractMathModel implements LegacyPlugin
 {
 
 	private STGReferenceManager referenceManager;

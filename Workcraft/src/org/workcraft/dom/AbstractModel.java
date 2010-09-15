@@ -36,7 +36,7 @@ import org.workcraft.gui.propertyeditor.Properties;
  * @author Ivan Poliakov
  *
  */
-public abstract class AbstractModel implements LegacyPlugin, Model {
+public abstract class AbstractModel implements Model {
 	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private ReferenceManager referenceManager = new DefaultReferenceManager();
 

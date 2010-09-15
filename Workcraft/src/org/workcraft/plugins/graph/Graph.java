@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.graph;
 
+import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -28,7 +29,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 
 @DisplayName("Directed Graph")
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
-public class Graph extends AbstractMathModel {
+public class Graph extends AbstractMathModel implements LegacyPlugin {
 
 	public Graph() {
 		super(null);

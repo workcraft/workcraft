@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -292,12 +293,25 @@ public class PluginManager implements PluginProvider {
 		System.out.println("Reconfiguring plugins...");
 		plugins.clear();
 
-		String[] classPathLocations = System.getProperty("java.class.path").split(File.pathSeparator);
+		ArrayList<String> searchPaths = new ArrayList<String>();
+
+		String[] classPathLocations = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 
 		for (String s: classPathLocations) {
+			searchPaths.add(s);
+		}
+
+		for (String s: new File(".").list()) {
+			if (s.endsWith(".jar") && !s.equals("workcraft.jar"))
+				searchPaths.add(s);
+		}
+
+		for (String s : searchPaths)
+		{
 			System.out.println (s);
 			search(new File(s), new File(s));
 		}
+
 
 		System.out.println("" + plugins.size() + " plugin(s) found.");
 
