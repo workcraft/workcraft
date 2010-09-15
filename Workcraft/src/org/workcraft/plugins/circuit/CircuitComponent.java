@@ -52,4 +52,13 @@ public class CircuitComponent extends MathNode {
 		return c;
 	}
 
+	public void removeContact(Contact c) {
+		if (inputs.contains(c)) {
+			inputs.remove(c);
+		}
+		if (outputs.contains(c)) {
+			outputs.remove(c);
+		}
+	}
+
 }

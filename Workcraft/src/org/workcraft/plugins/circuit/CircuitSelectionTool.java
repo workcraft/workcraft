@@ -70,8 +70,8 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 			if (e.getActionCommand().equals("Add output")) {
 				comp.addOutput("");
 			}
-
 		}
+
 	}
 
 }

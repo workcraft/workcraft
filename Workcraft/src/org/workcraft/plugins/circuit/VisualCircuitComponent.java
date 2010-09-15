@@ -43,6 +43,11 @@ import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.ObservableHierarchyImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
@@ -56,7 +61,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 //@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
 @DisplayName("Abstract Component")
 
-public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver {
+public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private LinkedList<VisualContact> east = new LinkedList<VisualContact>();
 	private LinkedList<VisualContact> west = new LinkedList<VisualContact>();
@@ -71,8 +77,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	double contactStep = 1;
 
-//	private HashSet<VisualContact> inputs = new HashSet<VisualContact>();
-//	private HashSet<VisualContact> outputs = new HashSet<VisualContact>();
 	private HashSet<VisualContact> contacts = new HashSet<VisualContact> ();
 
 	private Rectangle2D contactLabelBB = null;
@@ -93,14 +97,13 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		//addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST,"Req_in"));
 		addInput("Req_in");
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.WEST, "Ack_out"));
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST, "Data_in"));
+		addContact(new VisualContact(component.addInput(), VisualContact.Direction. WEST, "Data_in"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, "Req_out"));
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction.EAST, "Ack_in"));
+		addContact(new VisualContact(component.addInput(), VisualContact.Direction. EAST, "Ack_in"));
 
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data_out"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data out 2"));
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.SOUTH, "Reset"));
-
 	}
 
 	// updates sequential position of the contacts
@@ -183,6 +186,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		if (!contacts.contains(vc)) {
 			contacts.add(vc);
 			vc.setParent(this);
+			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, vc));
 
 			switch (vc.getDirection()) {
 				case NORTH: north.add(vc); updateStepPosition(north); break;
@@ -384,12 +388,32 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	@Override
 	public void remove(Node node) {
-		throw new NotImplementedException();
+		//throw new NotImplementedException();
+//		Contact c = (Contact)((VisualContact)node).getReferencedComponent();
+		//c.getParent().
+
+
+//		drem.
+		VisualContact vc = (VisualContact)node;
+
+		contacts.remove(vc);
+		west.remove(vc);
+		east.remove(vc);
+		south.remove(vc);
+		north.remove(vc);
+		contactLabelBB = null;
+
+
+		((CircuitComponent)getReferencedComponent()).removeContact((Contact)vc.getReferencedComponent());
+
+		observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, node));
 	}
 
 	@Override
 	public void remove(Collection<Node> node) {
-		throw new NotImplementedException();
+		for (Node n : node) {
+			remove(n);
+		}
 	}
 
 	@Override
@@ -423,7 +447,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof TransformChangedEvent) {
-
 
 			TransformChangedEvent t = (TransformChangedEvent)e;
 
@@ -484,4 +507,13 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, name));
 	}
 
+	@Override
+	public void addObserver(HierarchyObserver obs) {
+		observableHierarchyImpl.addObserver(obs);
+	}
+
+	@Override
+	public void removeObserver(HierarchyObserver obs) {
+		observableHierarchyImpl.removeObserver(obs);
+	}
 }
