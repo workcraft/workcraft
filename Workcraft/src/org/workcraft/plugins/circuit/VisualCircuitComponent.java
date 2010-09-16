@@ -24,30 +24,30 @@ package org.workcraft.plugins.circuit;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.ObservableHierarchyImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
@@ -56,13 +56,15 @@ import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 //@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
+/**
+ * @author  a6910194
+ */
 @DisplayName("Abstract Component")
+@Hotkey(KeyEvent.VK_A)
+@SVGIcon("images/icons/svg/circuit-component.svg")
 
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
-	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private LinkedList<VisualContact> east = new LinkedList<VisualContact>();
 	private LinkedList<VisualContact> west = new LinkedList<VisualContact>();
@@ -74,22 +76,18 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	double marginSize = 0.2;
 	double contactLength = 1;
-
 	double contactStep = 1;
 
-	private HashSet<VisualContact> contacts = new HashSet<VisualContact> ();
+	/**
+	 * @uml.property  name="groupImpl"
+	 * @uml.associationEnd
+	 */
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+
 
 	private Rectangle2D contactLabelBB = null;
 	private Rectangle2D totalBB = null;
 
-/*	public HashSet<VisualContact> getContacts2() {
-		HashSet<VisualContact> ret = new HashSet<VisualContact>();
-		for (VisualComponent c: getContacts()) {
-			if (c instanceof VisualContact) ret.add((VisualContact)c);
-		}
-		return ret;
-	}
-*/
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component);
 		// testing...
@@ -122,15 +120,17 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
-	private void updateSidePosition(Rectangle2D labelBB) {
+	private void updateSidePosition(Rectangle2D labelBB, VisualContact contact) {
 
 		double side_pos_w = (double)(Math.round((labelBB.getMinX()-contactLength)*2))/2;
 		double side_pos_e = (double)(Math.round((labelBB.getMaxX()+contactLength)*2))/2;
 		double side_pos_s = (double)(Math.round((labelBB.getMaxY()+contactLength)*2))/2;
 		double side_pos_n = (double)(Math.round((labelBB.getMinY()-contactLength)*2))/2;
 
-		for (VisualContact vc: contacts) {
-			switch (vc.getDirection()) {
+		for (Node vn: groupImpl.getChildren()) {
+			if (vn instanceof VisualContact) {
+				VisualContact vc = (VisualContact)vn;
+				switch (vc.getDirection()) {
 				case EAST:
 					vc.setX(side_pos_e);
 					break;
@@ -143,6 +143,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				case SOUTH:
 					vc.setY(side_pos_s);
 					break;
+				}
 			}
 		}
 	}
@@ -153,7 +154,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		if (dir==Direction.EAST&&east.contains(vc)) return false;
 		if (dir==Direction.WEST&&west.contains(vc)) return false;
 
-		if (contacts.contains(vc)) {
+		if (getChildren().contains(vc)) {
 			east.remove(vc);
 			west.remove(vc);
 			north.remove(vc);
@@ -173,20 +174,23 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		contactLabelBB = null;
 
 		if (reassignDirection(vc, dir)) {
+			/*
 			switch (dir) {
 				case NORTH: updateStepPosition(north); break;
 				case SOUTH: updateStepPosition(south); break;
 				case EAST: updateStepPosition(east); break;
 				case WEST: updateStepPosition(west); break;
 			}
+			*/
 		}
 	}
 
 	public void addContact(VisualContact vc) {
-		if (!contacts.contains(vc)) {
-			contacts.add(vc);
+		if (!getChildren().contains(vc)) {
+			add(vc);
 			vc.setParent(this);
-			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, vc));
+
+//			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, vc));
 
 			switch (vc.getDirection()) {
 				case NORTH: north.add(vc); updateStepPosition(north); break;
@@ -200,12 +204,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
-
 	protected void updateTotalBB() {
 
 		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
 
-		if (contactLabelBB!=null)
+		if (contactLabelBB!=null&&totalBB!=null)
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 	}
 
@@ -218,7 +221,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			double width_n=0;
 			double width_s=0;
 
-			for (VisualContact c: contacts) {
+			for (Node vn: getChildren()) {
+				if (!(vn instanceof VisualContact)) continue;
+				VisualContact c = (VisualContact)vn;
 				GlyphVector gv = c.getNameGlyphs(g);
 				cur = gv.getVisualBounds();
 				xx = cur.getWidth();
@@ -245,7 +250,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			double width = Math.max(north.size(), south.size())*contactStep+width_e+width_w+marginSize*4;
 
 			contactLabelBB = new Rectangle2D.Double(-width/2, -height/2, width, height);
-			updateSidePosition(contactLabelBB);
+			updateSidePosition(contactLabelBB, null);
 			updateTotalBB();
 		}
 		return contactLabelBB;
@@ -371,59 +376,76 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		return false;
 	}
 
-	@Override
-	public Collection<Node> getChildren() {
-		return Collections.<Node>unmodifiableCollection(contacts);
-	}
 
 	@Override
 	public void add(Node node) {
-		throw new NotImplementedException();
+		groupImpl.add(node);
+
+/*		// adding new connection between local contacts
+		if (node instanceof VisualConnection) {
+			VisualConnection vc = (VisualConnection)node;
+//			System.out.println(""+node.toString());
+//			VisualConnection vc =
+			children.add((VisualNode)node);
+			node.setParent(this);
+//			vc.addObserver(this);
+		} else {
+			throw new NotImplementedException();
+		}*/
 	}
 
-	@Override
-	public void add(Collection<Node> nodes) {
-		throw new NotImplementedException();
+	public Collection<Node> getChildren() {
+		return groupImpl.getChildren();
 	}
 
-	@Override
+
+	public Node getParent() {
+		return groupImpl.getParent();
+	}
+
+
 	public void remove(Node node) {
-		//throw new NotImplementedException();
-//		Contact c = (Contact)((VisualContact)node).getReferencedComponent();
-		//c.getParent().
+		groupImpl.remove(node);
+		if (node instanceof VisualContact) {
+			VisualContact vc = (VisualContact)node;
 
+			west.remove(vc);
+			east.remove(vc);
+			south.remove(vc);
+			north.remove(vc);
+			contactLabelBB = null;
 
-//		drem.
-		VisualContact vc = (VisualContact)node;
+			((CircuitComponent)getReferencedComponent()).removeContact((Contact)vc.getReferencedComponent());
 
-		contacts.remove(vc);
-		west.remove(vc);
-		east.remove(vc);
-		south.remove(vc);
-		north.remove(vc);
-		contactLabelBB = null;
+//			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, node));
 
-
-		((CircuitComponent)getReferencedComponent()).removeContact((Contact)vc.getReferencedComponent());
-
-		observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, node));
+		}
 	}
 
-	@Override
-	public void remove(Collection<Node> node) {
-		for (Node n : node) {
+	public void setParent(Node parent) {
+		groupImpl.setParent(parent);
+	}
+
+
+	public void add(Collection<Node> nodes) {
+		groupImpl.add(nodes);
+	}
+
+
+	public void remove(Collection<Node> nodes) {
+		for (Node n: nodes) {
 			remove(n);
 		}
 	}
 
-	@Override
-	public void reparent(Collection<Node> nodes) {
-		throw new NotImplementedException();
+
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		groupImpl.reparent(nodes, newParent);
 	}
 
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
-		throw new NotImplementedException();
+
+	public void reparent(Collection<Node> nodes) {
+		groupImpl.reparent(nodes);
 	}
 
 	public void setColorisation(Color color) {
@@ -435,9 +457,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public Node customHitTest(Point2D point) {
 		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
-		for(VisualContact contact : contacts)
-			if(contact.hitTest(pointInLocalSpace))
-				return contact;
+		for(Node vn : getChildren())
+			if (vn instanceof VisualNode)
+				if(((VisualNode)vn).hitTest(pointInLocalSpace))
+					return vn;
+
 		if(hitTest(point))
 			return this;
 		else
@@ -470,14 +494,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
  			vc.setDirection(dir);
 
-/*			this.direction=dir;
-			if (getParent()!=null) {
-				((VisualCircuitComponent)getParent()).reassignDirection(this, dir);
-			}*/
-
 		}
-
 	}
+
 
 	public String getNewName(String start) {
 		// iterate through all contacts, check that the name doesn't exist
@@ -486,9 +505,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		while (found) {
 			num++;
 			found=false;
-			for (VisualContact c : contacts) {
-				if (c.getName().equals(start+num)) {
-					found=true;
+			for (Node vn : getChildren()) {
+				if (vn instanceof VisualContact) {
+					if (((VisualContact)vn).getName().equals(start+num)) {
+						found=true;
+					}
 				}
 			}
 		}
@@ -509,11 +530,13 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	@Override
 	public void addObserver(HierarchyObserver obs) {
-		observableHierarchyImpl.addObserver(obs);
+		groupImpl.addObserver(obs);
+//		observableHierarchyImpl.addObserver(obs);
 	}
 
 	@Override
 	public void removeObserver(HierarchyObserver obs) {
-		observableHierarchyImpl.removeObserver(obs);
+		groupImpl.removeObserver(obs);
+//		observableHierarchyImpl.removeObserver(obs);
 	}
 }

@@ -25,24 +25,58 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 
+/**
+ * @author  a6910194
+ */
+@DisplayName("Input/output port")
+@Hotkey(KeyEvent.VK_P)
+@SVGIcon("images/icons/svg/circuit-port.svg")
+
 public class VisualContact extends VisualComponent {
-	public enum Direction {NORTH, SOUTH, EAST, WEST};
+	/**
+	 * @author  a6910194
+	 */
+	public enum Direction {/**
+	 * @uml.property  name="nORTH"
+	 * @uml.associationEnd
+	 */
+	NORTH, /**
+	 * @uml.property  name="sOUTH"
+	 * @uml.associationEnd
+	 */
+	SOUTH, /**
+	 * @uml.property  name="eAST"
+	 * @uml.associationEnd
+	 */
+	EAST, /**
+	 * @uml.property  name="wEST"
+	 * @uml.associationEnd
+	 */
+	WEST};
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private String name = "";
 	private GlyphVector nameGlyphs = null;
+	/**
+	 * @uml.property  name="direction"
+	 * @uml.associationEnd
+	 */
 	private Direction direction = Direction.WEST;
 
 //	VisualCircuitComponent parentComponent;
@@ -52,6 +86,10 @@ public class VisualContact extends VisualComponent {
 		return null;
 	}
 */
+	public VisualContact(Contact contact) {
+		super(contact);
+
+	}
 
 	private void addPropertyDeclarations() {
 		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
@@ -128,7 +166,12 @@ public class VisualContact extends VisualComponent {
 		return getNameGlyphs(g).getVisualBounds();
 	}
 
+	/**
+	 * @param dir
+	 * @uml.property  name="direction"
+	 */
 	public void setDirection(VisualContact.Direction dir) {
+
 		if (dir==direction) return;
 
 		if (getParent()!=null) {
@@ -141,6 +184,10 @@ public class VisualContact extends VisualComponent {
 		sendNotification(new PropertyChangedEvent(this, "direction"));
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="direction"
+	 */
 	public VisualContact.Direction getDirection() {
 		return direction;
 	}
@@ -154,10 +201,18 @@ public class VisualContact extends VisualComponent {
 	}
 
 
+	/**
+	 * @return
+	 * @uml.property  name="name"
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @param label
+	 * @uml.property  name="name"
+	 */
 	public void setName(String label) {
 		this.name = label;
 		nameGlyphs = null;

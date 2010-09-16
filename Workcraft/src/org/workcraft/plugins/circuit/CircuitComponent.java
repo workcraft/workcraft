@@ -21,44 +21,78 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.circuit.Contact.IOType;
 
+/**
+ * @author  a6910194
+ */
 @DisplayName("Component")
 @VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
 
-public class CircuitComponent extends MathNode {
+public class CircuitComponent extends MathNode implements Container {
 
-	private HashSet<Contact> inputs = new HashSet<Contact>();
-	private HashSet<Contact> outputs = new HashSet<Contact>();
-
+	/**
+	 * @uml.property  name="groupImpl"
+	 * @uml.associationEnd
+	 */
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	public Contact addInput() {
 		Contact c = new Contact(IOType.INPUT);
 
-		inputs.add(c);
+		add(c);
 		c.setParent(this);
 		return c;
 	}
 
 	public Contact addOutput() {
 		Contact c = new Contact(IOType.OUTPUT);
-		outputs.add(c);
+		add(c);
 		c.setParent(this);
 		return c;
 	}
 
 	public void removeContact(Contact c) {
-		if (inputs.contains(c)) {
-			inputs.remove(c);
-		}
-		if (outputs.contains(c)) {
-			outputs.remove(c);
-		}
+		remove(c);
+	}
+
+	@Override
+	public void add(Node node) {
+		groupImpl.add(node);
+	}
+
+	@Override
+	public void add(Collection<Node> nodes) {
+		groupImpl.add(nodes);
+	}
+
+	@Override
+	public void remove(Node node) {
+		groupImpl.remove(node);
+	}
+
+	@Override
+	public void remove(Collection<Node> node) {
+		groupImpl.remove(node);
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes) {
+		groupImpl.reparent(nodes);
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		groupImpl.reparent(nodes, newParent);
 	}
 
 }

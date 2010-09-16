@@ -24,16 +24,27 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 
+/**
+ * @author  a6910194
+ */
 @DisplayName("Formula")
 @VisualClass("org.workcraft.plugins.circuit.VisualFormula")
 
 public class Formula extends CircuitComponent {
 	private String formula="";
 
+	/**
+	 * @param f
+	 * @uml.property  name="formula"
+	 */
 	public void setFormula(String f) {
 		formula = f;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="formula"
+	 */
 	public String getFormula() {
 		return formula;
 	}

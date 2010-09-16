@@ -25,6 +25,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -34,22 +35,36 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
+/**
+ * @author  a6910194
+ */
 @DisplayName("Visual Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { CircuitComponent.class } )
+@DefaultCreateButtons ( { Contact.class, CircuitComponent.class } )
 //@CustomToolButtons ( { SimulationTool.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
 
+	/**
+	 * @uml.property  name="circuit"
+	 * @uml.associationEnd
+	 */
 	private Circuit circuit;
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
 		if (first instanceof VisualContact && second instanceof VisualContact) {
+
+
+			for (Connection c: this.getConnections(second)) {
+				if (c.getSecond()==second)
+					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
+			}
+
 			if (!(((Contact)((VisualContact)first).getReferencedComponent()).getIOType()==Contact.IOType.OUTPUT&&
 				((Contact)((VisualContact)second).getReferencedComponent()).getIOType()==Contact.IOType.INPUT)
 				)
-				throw new InvalidConnectionException ("Connection is only valid for contacts of opposite IO types");
+				throw new InvalidConnectionException ("Connection is only valid from component output/environment input to component input/environment output");
 		}
 	}
 
