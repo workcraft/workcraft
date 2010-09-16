@@ -35,7 +35,6 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
@@ -55,8 +54,8 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
@@ -73,6 +72,7 @@ public class DotLayout implements Tool {
 
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
 		Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
+		System.out.println("dot using exporter " + exporter.getClass());
 		if (exporter == null)
 			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
 		FileOutputStream out = new FileOutputStream(file);
@@ -96,8 +96,8 @@ public class DotLayout implements Tool {
 				double pointsToInches = 1.0/72;
 				if(ss.length == 3)
 				{
-					double x = Double.parseDouble(ss[1])*pointsToInches ;
-					double y = Double.parseDouble(ss[2])*pointsToInches;
+					double x = Double.parseDouble(ss[1])*pointsToInches;
+					double y = -Double.parseDouble(ss[2])*pointsToInches;
 					Point2D p = new Point2D.Double(x,y);
 					if(ss[0].equals("s"))
 						result.add(0,p);
@@ -110,7 +110,7 @@ public class DotLayout implements Tool {
 				else
 				{
 					double x = Double.parseDouble(ss[0])*pointsToInches;
-					double y = Double.parseDouble(ss[1])*pointsToInches;
+					double y = -Double.parseDouble(ss[1])*pointsToInches;
 					result.add(0,new Point2D.Double(x,y));
 				}
 			}
@@ -148,7 +148,7 @@ public class DotLayout implements Tool {
 								MovableHelper.resetTransform(m);
 								MovableHelper.translate(m,
 									Double.parseDouble(posParts[0])*1.0/72,
-									Double.parseDouble(posParts[1])*1.0/72);
+									-Double.parseDouble(posParts[1])*1.0/72);
 							}
 							else
 							{
