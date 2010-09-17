@@ -59,6 +59,11 @@ public class ToJavaAstConverter implements Visitor<Expression> {
 	@Override
 	public <T> Expression visit(ParameterReference<T> e) {
 		return new FieldAccessExpr(scope, e.getParameterName());
+		//return new MethodCallExpr(scope, getGetterName(e.getParameterName()));
+	}
+
+	public <T> String getGetterName(String parameterName) {
+		return "get"+Character.toUpperCase(parameterName.charAt(0)) + parameterName.substring(1);
 	}
 
 	@Override

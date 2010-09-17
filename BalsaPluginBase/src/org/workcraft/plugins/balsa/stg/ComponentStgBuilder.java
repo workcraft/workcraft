@@ -23,7 +23,9 @@ package org.workcraft.plugins.balsa.stg;
 
 import java.util.Map;
 
+import org.workcraft.plugins.balsa.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.components.Component;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
@@ -41,5 +43,7 @@ public abstract class ComponentStgBuilder <T> {
 	}
 
 	public abstract void buildStg(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder);
+	public abstract HandshakeComponentLayout getLayout(T component, Map<String, Handshake> handshakes);
+
 	public void buildEnvironment(T component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {}
 }

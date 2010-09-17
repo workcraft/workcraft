@@ -21,25 +21,37 @@
 
 package org.workcraft.plugins.balsa.layouts;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.workcraft.plugins.balsa.HandshakeComponentLayout;
-import org.workcraft.plugins.balsa.components.Component;
+import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
+import org.workcraft.plugins.balsa.stg.ComponentStgBuilder;
+import org.workcraft.plugins.balsa.stg.implementations.StgBuilderSelector;
 
 public class MainLayouter {
 
-	static Map<Class<? extends Component>, Layouter<?>> map = getMap();
-
-	public static HandshakeComponentLayout getLayout(Component component, Map<String, Handshake> handshakes)
+	public static HandshakeComponentLayout getLayout(DynamicComponent component, Map<String, Handshake> handshakes)
 	{
-		if(handshakes == null)
-			throw new NullPointerException("handshakes argument is null");
-		Layouter<?> layouter = map.get(component.getClass());
-		if(layouter == null)
+		ComponentStgBuilder<DynamicComponent> stgBuilder = StgBuilderSelector.create(component.declaration().getName());
+
+		HandshakeComponentLayout layout = stgBuilder.getLayout(component, handshakes);
+
+		int totalSize = 0;
+		totalSize += layout.getTop() != null ? 1 : 0;
+		totalSize += layout.getBottom() != null ? 1 : 0;
+		for(Handshake[] block : layout.getLeft())
+			totalSize += block.length;
+		for(Handshake[] block : layout.getRight())
+			totalSize += block.length;
+
+		if(totalSize != handshakes.size())
+		{
+			System.err.println("Bad layout! Only " + totalSize + " handshakes were laid out instead of " + handshakes.size());
 			return getDefaultLayout(handshakes);
-		return layouter.getComponentLayout(component, handshakes);
+		}
+
+		return layout;
 	}
 
 	private static HandshakeComponentLayout getDefaultLayout(
@@ -64,11 +76,5 @@ public class MainLayouter {
 				return null;
 			}
 		};
-	}
-
-	private static Map<Class<? extends Component>, Layouter<?>> getMap() {
-		HashMap<Class<? extends Component>, Layouter<?>> map = new HashMap<Class<? extends Component>, Layouter<?>>();
-
-		return map;
 	}
 }
