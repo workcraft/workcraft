@@ -24,14 +24,12 @@ package org.workcraft.plugins.layout;
 import java.util.Random;
 
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Randomize layout")
 public class RandomLayout implements Tool {
 	Random r = new Random();
 
@@ -53,5 +51,10 @@ public class RandomLayout implements Tool {
 				((VisualTransformableNode)n).setY(RandomLayoutSettings.startY + r.nextDouble()*RandomLayoutSettings.rangeY);
 			}
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Randomize layout";
 	}
 }

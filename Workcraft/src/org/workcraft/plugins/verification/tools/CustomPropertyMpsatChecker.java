@@ -2,7 +2,6 @@ package org.workcraft.plugins.verification.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.shared.MpsatChainResultHandler;
 import org.workcraft.plugins.shared.MpsatPresetManager;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
@@ -12,7 +11,6 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Check custom property (punf, MPSat)")
 public class CustomPropertyMpsatChecker implements Tool {
 
 	public CustomPropertyMpsatChecker(Framework framework) {
@@ -43,5 +41,10 @@ public class CustomPropertyMpsatChecker implements Tool {
 			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
 					new MpsatChainResultHandler(mpsatTask));
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Check custom property (punf, MPSat)";
 	}
 }

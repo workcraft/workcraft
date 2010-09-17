@@ -5,7 +5,6 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
 import org.workcraft.plugins.stg.STGModel;
@@ -16,7 +15,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName ("Show state graph (write_sg/draw_stg)")
 public class ShowSg implements Tool {
 
 	private final Framework framework;
@@ -84,5 +82,10 @@ public class ShowSg implements Tool {
 
 			}
 		});
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Show state graph (write_sg/draw_stg)";
 	}
 }

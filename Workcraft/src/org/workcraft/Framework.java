@@ -60,6 +60,7 @@ import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.serialisation.XMLDeserialiser;
 import org.workcraft.plugins.serialisation.XMLSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
@@ -209,28 +210,14 @@ public class Framework {
 	public void loadConfig(String fileName) {
 		config.load(fileName);
 
-		PluginInfo[] infos = pluginManager.getPluginsImplementing(PersistentPropertyEditable.class.getName());
-
-		for (PluginInfo info : infos) {
-			try {
-				PersistentPropertyEditable e = (PersistentPropertyEditable)pluginManager.getSingleton(info);
-				e.loadPersistentProperties(config);
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-			}
+		for (PluginInfo<? extends PersistentPropertyEditable> info : pluginManager.getPlugins(PersistentPropertyEditable.class)) {
+			info.getSingleton().loadPersistentProperties(config);
 		}
 	}
 
 	public void saveConfig(String fileName) {
-		PluginInfo[] infos = pluginManager.getPluginsImplementing(PersistentPropertyEditable.class.getName());
-
-		for (PluginInfo info : infos) {
-			try {
-				PersistentPropertyEditable e = (PersistentPropertyEditable)pluginManager.getSingleton(info);
-				e.storePersistentProperties(config);
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-			}
+		for (PluginInfo<? extends PersistentPropertyEditable> info : pluginManager.getPlugins(PersistentPropertyEditable.class)) {
+			info.getSingleton().storePersistentProperties(config);
 		}
 
 		config.save(fileName);
@@ -567,7 +554,7 @@ public class Framework {
 			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 			// TODO: get proper deserialiser for format
 
-			ModelDeserialiser mathDeserialiser = pluginManager.getSingleton(XMLDeserialiser.class);
+			ModelDeserialiser mathDeserialiser = new XMLDeserialiser(getPluginManager()); //pluginManager.getSingleton(XMLDeserialiser.class);
 
 			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
 
@@ -584,7 +571,7 @@ public class Framework {
 			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 
 			//TODO:get proper deserialiser
-			ModelDeserialiser visualDeserialiser = (ModelDeserialiser) pluginManager.getSingletonByName(XMLDeserialiser.class.getName());
+			XMLDeserialiser visualDeserialiser = new XMLDeserialiser(getPluginManager());//pluginManager.getSingleton(XMLDeserialiser.class);
 
 			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
 			//visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
@@ -595,8 +582,6 @@ public class Framework {
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {
-			throw new DeserialisationException(e);
-		} catch (PluginInstantiationException e) {
 			throw new DeserialisationException(e);
 		}
 	}
@@ -624,7 +609,7 @@ public class Framework {
 		ModelSerialiser mathSerialiser = null;
 
 		try {
-			mathSerialiser = pluginManager.getSingleton(XMLSerialiser.class);
+			mathSerialiser = new XMLSerialiser(getPluginManager());
 
 
 			String mathEntryName = "model" + mathSerialiser.getExtension();
@@ -637,9 +622,7 @@ public class Framework {
 			ModelSerialiser visualSerialiser = null;
 
 			if (visualModel != null) {
-				// TODO: get appropiate serialiser from config
-
-				visualSerialiser = (ModelSerialiser) pluginManager.getSingletonByName(XMLSerialiser.class.getName());
+				visualSerialiser = new XMLSerialiser(getPluginManager());
 
 				visualEntryName = "visualModel" + visualSerialiser.getExtension();
 				ze = new ZipEntry(visualEntryName);
@@ -676,8 +659,6 @@ public class Framework {
 		} catch (ParserConfigurationException e) {
 			throw new SerialisationException(e);
 		} catch (IOException e) {
-			throw new SerialisationException(e);
-		} catch (PluginInstantiationException e) {
 			throw new SerialisationException(e);
 		}
 	}

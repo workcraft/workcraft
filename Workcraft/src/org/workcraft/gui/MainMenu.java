@@ -35,16 +35,15 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
@@ -53,11 +52,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
 	class ToolAction extends Action {
-		Class<? extends Tool> toolClass;
+		Tool tool;
 		String text;
 
 		public ToolAction(Pair<String, Tool> tool) {
-			this.toolClass = tool.getSecond().getClass();
+			this.tool = tool.getSecond();
 			this.text = tool.getFirst();
 		}
 
@@ -67,7 +66,7 @@ public class MainMenu extends JMenuBar {
 
 		@Override
 		public void run(Framework framework) {
-			framework.getMainWindow().runTool(toolClass);
+			framework.getMainWindow().runTool(tool);
 		}
 	}
 	class ToggleWindowAction extends Action {
@@ -88,21 +87,19 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 	class ExportAction extends Action {
-		private Class<? extends Exporter> exporterClass;
-		private String displayName;
+		private final Exporter exporter;
 
 		public ExportAction(Exporter exporter) {
-			exporterClass = exporter.getClass();
-			displayName = exporter.getDescription();
+			this.exporter = exporter;
 		}
 
 		@Override
 		public void run(Framework framework) {
-			try {framework.getMainWindow().exportTo(exporterClass);} catch (OperationCancelledException e) {}
+			try {framework.getMainWindow().export(exporter);} catch (OperationCancelledException e) {}
 		}
 
 		public String getText() {
-			return displayName;
+			return exporter.getDescription();
 		}
 	}
 
@@ -335,42 +332,32 @@ public class MainMenu extends JMenuBar {
 		mnExport.removeAll();
 		mnExport.setEnabled(false);
 
-		PluginInfo[] exportPluginInfo = framework.getPluginManager().getPluginsImplementing(Exporter.class.getName());
-
 		VisualModel model = (VisualModel) we.getObject();
 
 		boolean haveVisual = false;
 
-		try {
-			for (PluginInfo info : exportPluginInfo) {
-				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
+		for (PluginInfo<? extends Exporter> info : framework.getPluginManager().getPlugins(Exporter.class)) {
+			Exporter exporter = info.getSingleton();
 
-				if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
-					if (!haveVisual)
-						addExportSeparator("Visual");
-					addExporter(exporter);
-					haveVisual = true;
-				}
+			if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
+				if (!haveVisual)
+					addExportSeparator("Visual");
+				addExporter(exporter);
+				haveVisual = true;
 			}
-		}  catch (PluginInstantiationException e) {
-			System.err.println ("Could not instantiate export plugin class: " + e.getMessage() + " (skipped)");
 		}
 
 		boolean haveNonVisual = false;
 
-		try {
-			for (PluginInfo info : exportPluginInfo) {
-				Exporter exporter = (Exporter)framework.getPluginManager().getSingleton(info);
+		for (PluginInfo<? extends Exporter> info : framework.getPluginManager().getPlugins(Exporter.class)) {
+			Exporter exporter = info.getSingleton();
 
-				if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
-					if (!haveNonVisual)
-						addExportSeparator("Non-visual");
-					addExporter(exporter);
-					haveNonVisual = true;
-				}
+			if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
+				if (!haveNonVisual)
+					addExportSeparator("Non-visual");
+				addExporter(exporter);
+				haveNonVisual = true;
 			}
-		}  catch (PluginInstantiationException e) {
-			System.err.println ("Could not instantiate export plugin class: " + e.getMessage() + " (skipped)");
 		}
 	}
 

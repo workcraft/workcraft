@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.petri;
 
-import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
@@ -39,7 +38,7 @@ import org.workcraft.util.Hierarchy;
 @DisplayName ("Petri Net")
 @DefaultCreateButtons ( { Place.class, Transition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
-public class VisualPetriNet extends AbstractVisualModel implements LegacyPlugin {
+public class VisualPetriNet extends AbstractVisualModel {
 	private PetriNet net;
 
 	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
@@ -15,7 +14,6 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Parallel composition (PComp)")
 public class PcompTool implements Tool {
 
 	private final Framework framework;
@@ -48,5 +46,10 @@ public class PcompTool implements Tool {
 
 			framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0]), dialog.getMode()), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Parallel composition (PComp)";
 	}
 }

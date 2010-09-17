@@ -27,7 +27,9 @@ import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -44,8 +46,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
-import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.GUI;
 
 public class CreateWorkDialog extends JDialog {
@@ -82,6 +84,26 @@ public class CreateWorkDialog extends JDialog {
 		GUI.centerAndSizeToParent(this, owner);
 
 		initComponents();
+	}
+
+	static class ListElement implements Comparable<ListElement>
+	{
+		public ListElement(ModelDescriptor descriptor)
+		{
+			this.descriptor = descriptor;
+		}
+
+		public ModelDescriptor descriptor;
+
+		@Override
+		public String toString() {
+			return descriptor.getDisplayName();
+		}
+
+		@Override
+		public int compareTo(ListElement o) {
+			return toString().compareTo(o.toString());
+		}
 	}
 
 	private void initComponents() {
@@ -122,10 +144,16 @@ public class CreateWorkDialog extends JDialog {
 			}
 		});
 
-		PluginInfo[] modelsInfo = framework.getPluginManager().getPluginsImplementing(MathModel.class.getName());
-		Arrays.sort(modelsInfo);
-		for (PluginInfo info : modelsInfo)
-			listModel.addElement(info);
+		final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
+		ArrayList<ListElement> elements = new ArrayList<ListElement>();
+
+		for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors)
+			elements.add(new ListElement(plugin.newInstance()));
+
+		Collections.sort(elements);
+
+		for (ListElement element : elements)
+			listModel.addElement(element);
 
 		modelScroll.setViewportView(modelList);
 		modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
@@ -154,9 +182,7 @@ public class CreateWorkDialog extends JDialog {
 
 		optionsPane.add(dummy);
 
-
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
 
 		okButton = new JButton();
 		okButton.setPreferredSize(new Dimension(100, 20));
@@ -208,8 +234,8 @@ public class CreateWorkDialog extends JDialog {
 		setVisible(false);
 	}
 
-	public PluginInfo getSelectedModel() {
-		return (PluginInfo)modelList.getSelectedValue();
+	public ModelDescriptor getSelectedModel() {
+		return ((ListElement)modelList.getSelectedValue()).descriptor;
 	}
 
 	public int getModalResult() {

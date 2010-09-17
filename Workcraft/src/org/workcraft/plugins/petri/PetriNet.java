@@ -23,8 +23,7 @@ package org.workcraft.plugins.petri;
 
 import java.util.Collection;
 
-import org.workcraft.LegacyPlugin;
-import org.workcraft.annotations.DisplayName;
+import org.workcraft.Plugin;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -41,8 +40,7 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
-@DisplayName("Petri Net")
-public class PetriNet extends AbstractMathModel implements PetriNetModel, LegacyPlugin {
+public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	final UniqueNameReferenceManager names;
 
 	public PetriNet() {

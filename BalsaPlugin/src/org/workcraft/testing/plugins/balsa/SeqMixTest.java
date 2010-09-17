@@ -45,7 +45,7 @@ public class SeqMixTest {
 	{
 		f = new Framework();
 		f.initPlugins();
-		synthesiser = f.getPluginManager().getSingleton(SynthesisWithMpsat.class);
+		synthesiser = new SynthesisWithMpsat(f);
 	}
 
 	@Test

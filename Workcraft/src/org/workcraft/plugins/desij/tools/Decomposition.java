@@ -2,14 +2,12 @@ package org.workcraft.plugins.desij.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.desij.DecompositionResultHandler;
 import org.workcraft.plugins.desij.tasks.DesiJTask;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Standard decomposition (DesiJ)")
 public class Decomposition implements Tool {
 
 	private final Framework framework;
@@ -36,4 +34,8 @@ public class Decomposition implements Tool {
 
 	}
 
+	@Override
+	public String getDisplayName() {
+		return "Standard decomposition (DesiJ)";
+	}
 }

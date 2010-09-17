@@ -2,7 +2,6 @@ package org.workcraft.plugins.desij.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.desij.DecompositionResultHandler;
 import org.workcraft.plugins.desij.DesiJPresetManager;
 import org.workcraft.plugins.desij.gui.DesiJConfigurationDialog;
@@ -12,7 +11,6 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Custom decomposition (DesiJ)")
 public class DesiJCustomFunction implements Tool {
 
 	private final Framework framework;
@@ -44,4 +42,8 @@ public class DesiJCustomFunction implements Tool {
 		}
 	}
 
+	@Override
+	public String getDisplayName() {
+		return "Custom decomposition (DesiJ)";
+	}
 }

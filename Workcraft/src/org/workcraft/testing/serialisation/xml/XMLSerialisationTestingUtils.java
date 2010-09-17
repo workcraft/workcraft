@@ -21,10 +21,16 @@
 
 package org.workcraft.testing.serialisation.xml;
 
-import org.workcraft.PluginInfo;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.workcraft.Initialiser;
+import org.workcraft.LegacyPluginInfo;
+import org.workcraft.PluginManager;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
 import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
@@ -46,56 +52,55 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
+import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 
 public class XMLSerialisationTestingUtils {
 	static class MockPluginManager implements PluginProvider {
-		public PluginInfo[] getPluginsImplementing(String interfaceName) {
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType) {
+			Initialiser<Object> [] legacy = getLegacyPlugins(interfaceType);
+			ArrayList<PluginInfo<? extends T>> result = new ArrayList<PluginInfo<? extends T>>();
+			for(Initialiser<Object> l : legacy)
+				result.add(new PluginManager.PluginInstanceHolder<T>((Initialiser<? extends T>) l));
+			return result;
+		}
 
-			if (interfaceName.equals(org.workcraft.serialisation.xml.XMLSerialiser.class.getName()))
+		public LegacyPluginInfo[] getLegacyPlugins(Class<?> interfaceType) {
+
+			if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class))
 			{
-				return new PluginInfo[] {
-						new PluginInfo (IntSerialiser.class),
-						new PluginInfo (BooleanSerialiser.class),
-						new PluginInfo (StringSerialiser.class),
-						new PluginInfo (DoubleSerialiser.class),
-						new PluginInfo (ConnectionSerialiser.class),
-						new PluginInfo (IntSerialiser.class),
-						new PluginInfo (EnumSerialiser.class),
-						new PluginInfo (AffineTransformSerialiser.class),
-						new PluginInfo (VisualConnectionSerialiser.class),
-						new PluginInfo (ImplicitPlaceArcSerialiser.class)
+				return new LegacyPluginInfo[] {
+						new LegacyPluginInfo (IntSerialiser.class),
+						new LegacyPluginInfo (BooleanSerialiser.class),
+						new LegacyPluginInfo (StringSerialiser.class),
+						new LegacyPluginInfo (DoubleSerialiser.class),
+						new LegacyPluginInfo (ConnectionSerialiser.class),
+						new LegacyPluginInfo (IntSerialiser.class),
+						new LegacyPluginInfo (EnumSerialiser.class),
+						new LegacyPluginInfo (AffineTransformSerialiser.class),
+						new LegacyPluginInfo (VisualConnectionSerialiser.class),
+						new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class)
 				};
-			} else if (interfaceName.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class.getName()))
+			} else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class))
 			{
-				return new PluginInfo[] {
-						new PluginInfo (IntDeserialiser.class),
-						new PluginInfo (BooleanDeserialiser.class),
-						new PluginInfo (StringDeserialiser.class),
-						new PluginInfo (DoubleDeserialiser.class),
-						new PluginInfo (ConnectionDeserialiser.class),
-						new PluginInfo (IntDeserialiser.class),
-						new PluginInfo (EnumDeserialiser.class),
-						new PluginInfo (AffineTransformDeserialiser.class),
-						new PluginInfo (VisualConnectionDeserialiser.class),
-						new PluginInfo (ImplicitPlaceArcDeserialiser.class),
+				return new LegacyPluginInfo[] {
+						new LegacyPluginInfo (IntDeserialiser.class),
+						new LegacyPluginInfo (BooleanDeserialiser.class),
+						new LegacyPluginInfo (StringDeserialiser.class),
+						new LegacyPluginInfo (DoubleDeserialiser.class),
+						new LegacyPluginInfo (ConnectionDeserialiser.class),
+						new LegacyPluginInfo (IntDeserialiser.class),
+						new LegacyPluginInfo (EnumDeserialiser.class),
+						new LegacyPluginInfo (AffineTransformDeserialiser.class),
+						new LegacyPluginInfo (VisualConnectionDeserialiser.class),
+						new LegacyPluginInfo (ImplicitPlaceArcDeserialiser.class),
 				};
 			} else
-				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceName);
+				throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
 		}
 
-		@Override
-		public Object getInstance(PluginInfo plugin) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Object getSingleton(PluginInfo plugin) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 
 	public static PluginProvider createMockPluginManager() {

@@ -4,13 +4,12 @@ import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.workcraft.LegacyPlugin;
+import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ModelValidationException;
@@ -24,7 +23,7 @@ import org.workcraft.plugins.interop.DotExportNode;
 import org.workcraft.plugins.interop.DotExportable;
 import org.workcraft.serialisation.Format;
 
-public class DotExporter implements Exporter, LegacyPlugin {
+public class DotExporter implements Exporter {
 
 	@Override
 	public void export(final Model model, OutputStream outStream) throws IOException,

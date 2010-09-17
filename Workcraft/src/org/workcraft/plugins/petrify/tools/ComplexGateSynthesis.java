@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Model;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.SynthesisResultHandler;
@@ -27,7 +26,6 @@ import org.workcraft.workspace.WorkspaceEntry;
  * @author Dominic Wist
  * Petrify's Complex Gate Synthesis without Technology Mapping
  */
-@DisplayName("Complex gate synthesis (petrify)")
 public class ComplexGateSynthesis implements Tool {
 
 	private final Framework framework;
@@ -123,6 +121,11 @@ public class ComplexGateSynthesis implements Tool {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Complex gate synthesis (Petrify)";
 	}
 
 }

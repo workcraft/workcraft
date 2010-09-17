@@ -33,7 +33,6 @@ import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
@@ -54,14 +53,13 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName ("Layout using dot")
 public class DotLayout implements Tool {
 
 	private final Framework framework;
@@ -72,7 +70,6 @@ public class DotLayout implements Tool {
 
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
 		Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
-		System.out.println("dot using exporter " + exporter.getClass());
 		if (exporter == null)
 			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
 		FileOutputStream out = new FileOutputStream(file);
@@ -259,5 +256,10 @@ public class DotLayout implements Tool {
 	@Override
 	public String getSection() {
 		return "Layout";
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Layout using dot";
 	}
 }

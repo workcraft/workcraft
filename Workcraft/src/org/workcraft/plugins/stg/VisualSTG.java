@@ -25,7 +25,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
@@ -49,7 +48,7 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( STGToolsProvider.class )
 @DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, DummyTransition.class } )
 @CustomToolButtons ( { SimulationTool.class } )
-public class VisualSTG extends AbstractVisualModel implements LegacyPlugin {
+public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 
 	@Override

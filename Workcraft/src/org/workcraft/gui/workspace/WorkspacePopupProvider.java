@@ -35,12 +35,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.trees.TreePopupProvider;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
@@ -141,28 +140,21 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 						popup.add(miOpen);
 					}
 
-					// add WorkspaceEntry menu items
-					PluginInfo[] handlersInfo = framework.getPluginManager()
-					.getPluginsImplementing(FileHandler.class.getName());
+					for (PluginInfo<? extends FileHandler> info : framework.getPluginManager().getPlugins(FileHandler.class)) {
+						FileHandler handler = info.getSingleton();
 
-					for (PluginInfo info : handlersInfo)
-						try {
-							FileHandler handler = (FileHandler) framework.getPluginManager().getSingleton(info);
+						if (!handler.accept(file))
+							continue;
+						JMenuItem mi = new JMenuItem(handler.getDisplayName());
+						handlers.put(mi, handler);
+						mi.addActionListener(new ActionListener() {
 
-							if (!handler.accept(file))
-								continue;
-							JMenuItem mi = new JMenuItem(info.getDisplayName());
-							handlers.put(mi, handler);
-							mi.addActionListener(new ActionListener() {
-
-								public void actionPerformed(ActionEvent e) {
-									handlers.get(e.getSource()).execute(file);
-								}
-							});
-							popup.add(mi);
-						} catch (PluginInstantiationException e1) {
-							throw new RuntimeException (e1);
-						}
+							public void actionPerformed(ActionEvent e) {
+								handlers.get(e.getSource()).execute(file);
+							}
+						});
+						popup.add(mi);
+					}
 				}
 			}
 

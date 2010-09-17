@@ -25,10 +25,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.workspace.FileHandler;
 
-@DisplayName("Open using system default program")
 public class SystemOpen implements FileHandler {
 
 	public boolean accept(File f) {
@@ -53,5 +51,11 @@ public class SystemOpen implements FileHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public String getDisplayName() {
+		return "Open using system default program";
 	}
 }
