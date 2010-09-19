@@ -287,4 +287,9 @@ public class STG extends AbstractMathModel implements STGModel {
 			return referenceManager.getNodeByReference(reference);
 	}
 
+	public void makeExplicit(STGPlace implicitPlace) {
+		implicitPlace.setImplicit(false);
+		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
+	}
+
 }
