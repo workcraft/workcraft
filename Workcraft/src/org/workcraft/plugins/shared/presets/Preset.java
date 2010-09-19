@@ -1,26 +1,26 @@
-package org.workcraft.plugins.shared;
+package org.workcraft.plugins.shared.presets;
 
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
-public class MpsatPreset {
+public class Preset <T> {
 	private String description;
-	private MpsatSettings settings;
+	private T settings;
 	private boolean builtIn;
 
-	public MpsatPreset(String description, MpsatSettings settings, boolean builtIn) {
+	public Preset(String description, T settings, boolean builtIn) {
 		this.description = description;
 		this.settings = settings;
 		this.builtIn = builtIn;
 	}
 
-	public MpsatPreset(String description, MpsatSettings settings) {
+	public Preset(String description, T settings) {
 		this (description, settings, false);
 	}
 
-	public MpsatPreset(Element e) {
+	public Preset(Element e, SettingsSerialiser<T> serialiser) {
 		this.description = XmlUtil.readStringAttr(e, "description");
-		this.settings = new MpsatSettings(XmlUtil.getChildElement("settings", e));
+		this.settings = serialiser.fromXML(XmlUtil.getChildElement("settings", e));
 		this.builtIn = false;
 	}
 
@@ -28,7 +28,7 @@ public class MpsatPreset {
 		return description;
 	}
 
-	public MpsatSettings getSettings() {
+	public T getSettings() {
 		return settings;
 	}
 
@@ -36,7 +36,7 @@ public class MpsatPreset {
 		this.description = description;
 	}
 
-	void setSettings(MpsatSettings settings) {
+	void setSettings(T settings) {
 		this.settings = settings;
 	}
 

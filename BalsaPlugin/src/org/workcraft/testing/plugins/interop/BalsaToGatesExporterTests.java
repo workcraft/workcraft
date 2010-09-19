@@ -23,6 +23,8 @@ package org.workcraft.testing.plugins.interop;
 
 import java.io.IOException;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.ModelValidationException;
@@ -33,8 +35,6 @@ import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
-import org.workcraft.util.Export;
 
 public class BalsaToGatesExporterTests {
 	@Test
@@ -46,6 +46,7 @@ public class BalsaToGatesExporterTests {
 		circuit.add(component);
 		Framework f = new Framework();
 		f.initPlugins();
-		Export.exportToFile(new SynthesisWithMpsat(f), circuit, "while.eqn");
+		Assert.fail();//TODO
+		//Export.exportToFile(new SynthesisWithMpsat(f), circuit, "while.eqn");
 	}
 }

@@ -10,6 +10,7 @@ import org.workcraft.plugins.layout.RandomLayout;
 import org.workcraft.plugins.mpsat.MpsatSynthesis;
 import org.workcraft.plugins.pcomp.gui.PcompTool;
 import org.workcraft.plugins.petrify.tools.ComplexGateSynthesis;
+import org.workcraft.plugins.petrify.tools.DummyContraction;
 import org.workcraft.plugins.petrify.tools.ShowSg;
 import org.workcraft.plugins.verification.tools.CustomPropertyMpsatChecker;
 import org.workcraft.plugins.verification.tools.MpsatDeadlockChecker;
@@ -37,6 +38,7 @@ public class Tools implements Module {
 		p.registerClass(Tool.class, new Initialiser<Tool>() { public Tool create(){ return new ShowSg(framework); } });
 		p.registerClass(Tool.class, new Initialiser<Tool>() { public Tool create(){ return new CscResolutionTool(framework); } });
 		p.registerClass(Tool.class, new Initialiser<Tool>() { public Tool create(){ return new MpsatSynthesis(framework); } });
+		p.registerClass(Tool.class, new Initialiser<Tool>() { public Tool create(){ return new DummyContraction(framework); } });
 	}
 
 }

@@ -3,6 +3,7 @@ package org.workcraft.plugins.verification.gui;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,18 +17,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import org.workcraft.plugins.shared.MpsatPreset;
-import org.workcraft.plugins.shared.MpsatPresetManager;
+import org.workcraft.plugins.shared.presets.Preset;
+import org.workcraft.plugins.shared.presets.PresetManager;
 
 @SuppressWarnings("serial")
-public class MpsatPresetManagerDialog extends JDialog {
+public class PresetManagerDialog<T> extends JDialog {
 	private JPanel content;
 	private JList list;
 	private JButton okButton, deleteButton, renameButton;
 	private JScrollPane listScroll;
 	private DefaultListModel listDataModel;
 
-	public MpsatPresetManagerDialog(JDialog owner, final MpsatPresetManager presetManager) {
+	public PresetManagerDialog(Window owner, final PresetManager<T> presetManager) {
 		super(owner, "Manage presets");
 
 		double [][] size = {
@@ -60,9 +61,10 @@ public class MpsatPresetManagerDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				Object o = list.getSelectedValue();
 				if (o != null) {
-					MpsatPreset p = (MpsatPreset)o;
+					@SuppressWarnings("unchecked")
+					Preset<T> p = (Preset<T>)o;
 					if (JOptionPane.showConfirmDialog(
-							MpsatPresetManagerDialog.this,
+							PresetManagerDialog.this,
 							"Are you sure you want to delete the preset \""
 									+ p.getDescription() + "\" ?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						presetManager.delete(p);
@@ -76,20 +78,21 @@ public class MpsatPresetManagerDialog extends JDialog {
 
 		renameButton = new JButton ("Rename");
 		renameButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Object o = list.getSelectedValue();
 				if (o != null) {
-					String desc = JOptionPane.showInputDialog(MpsatPresetManagerDialog.this, "Please enter the new preset description:", ((MpsatPreset)o).getDescription());
+					String desc = JOptionPane.showInputDialog(PresetManagerDialog.this, "Please enter the new preset description:", ((Preset<T>)o).getDescription());
 					if (desc!=null)
-						presetManager.rename((MpsatPreset)o, desc);
+						presetManager.rename((Preset<T>)o, desc);
 				}
 			}
 		});
 
 		listDataModel = new DefaultListModel();
 
-		for (MpsatPreset p : presetManager.list())
+		for (Preset<T> p : presetManager.list())
 			if (!p.isBuiltIn())
 				listDataModel.addElement(p);
 

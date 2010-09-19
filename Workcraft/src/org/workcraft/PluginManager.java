@@ -262,6 +262,23 @@ public class PluginManager implements PluginProvider {
 		return (Collection<PluginInfo<? extends T>>)(Collection<?>)Collections.unmodifiableCollection(plugins.get(interf));
 	}
 
+	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls)
+	{
+		registerClass(interf, new Initialiser<T>(){
+			@Override
+			public T create() {
+				try {
+					return cls.newInstance();
+				} catch (InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		});
+	}
+
 	public <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
 		if(!interf.isInterface())
 			throw new RuntimeException("'interf' argument must be an interface");

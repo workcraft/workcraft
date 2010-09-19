@@ -22,15 +22,18 @@ import org.workcraft.parsers.breeze.ParameterValueList;
 import org.workcraft.parsers.breeze.PrimitivePart;
 import org.workcraft.plugins.balsa.BalsaCircuit;
 import org.workcraft.plugins.balsa.BreezeHandshake;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
-import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
+import org.workcraft.plugins.balsa.io.ExtractControlSTGTask;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
 import org.workcraft.plugins.desij.DesiJOperation;
 import org.workcraft.plugins.desij.DesiJSettings;
 import org.workcraft.plugins.desij.tasks.DesiJResult;
 import org.workcraft.plugins.desij.tasks.DesiJTask;
+import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -39,13 +42,13 @@ import org.workcraft.util.Import;
 public class SeqMixTest {
 
 	Framework f;
-	Exporter synthesiser;
+	//Exporter synthesiser;
 
 	public SeqMixTest() throws PluginInstantiationException
 	{
 		f = new Framework();
 		f.initPlugins();
-		synthesiser = new SynthesisWithMpsat(f);
+//		synthesiser = new SynthesisWithMpsat(f);
 	}
 
 	@Test
@@ -70,9 +73,8 @@ public class SeqMixTest {
 		//BreezeInstance<BreezeHandshake> passivate2 = passivate.instantiate(factory,  new ParameterValueList.StringList("1"));
 		BreezeInstance<BreezeHandshake> callInstance = call.instantiate(factory,  new ParameterValueList.StringList("2"));
 
-		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "/home/dell/export_unconnected_mixer.g");
-
-		Export.exportToFile(synthesiser, circuit, "/home/dell/export_unconnected.eqn");
+		final BalsaExportConfig config = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+		new DefaultTaskManager().execute(new ExtractControlSTGTask(f, circuit, config), "extraction"); // "export_unconnected_mixer.g"
 	}
 
 	@Test
@@ -105,9 +107,10 @@ public class SeqMixTest {
 		circuit.connect(mix1.ports().get(2), passivate1.ports().get(0));
 		circuit.connect(mix2.ports().get(2), passivate2.ports().get(0));
 
-		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
-		Export.exportToFile(exporter.withCompositionSettings(new BalsaToStgExporter.CompositionSettings(false, false)), circuit, "/home/dell/export_standard.g");
-		Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
+
+		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(f, circuit, new BalsaExportConfig(null, CompositionMode.PCOMP, Protocol.FOUR_PHASE));
+		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), "/home/dell/export_standard.g");
+//		Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
 	}
 
 	static class Generator implements DiamondGenerator
@@ -228,18 +231,20 @@ public class SeqMixTest {
 					String linePattern =  runName+"\t%s\n";
 					try
 					{
-					BalsaToStgExporter.injectiveLabelling = inj == 1;
+					ExtractControlSTGTask.injectiveLabelling = inj == 1;
 					DesiJSettings desiJSettings = new DesiJSettings(DesiJOperation.REMOVE_DUMMIES, null, 0, null, null, true, true, false,
 							safenessPreserv, false, false,
 							false, 0, false, false);
 
 					BalsaCircuit circuit = generator.build(depth);
 
-					BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
 					String fileName = "/home/dell/stgs/"+ runName;
 					File gFile = new File(fileName+".g");
 					File contractedGFile = new File(fileName+".contracted.g");
-					Export.exportToFile(exporter.withCompositionSettings(new BalsaToStgExporter.CompositionSettings(false, 1==(o&1))), circuit, gFile);
+
+					final BalsaExportConfig balsaConfig = new BalsaExportConfig(null, 1==(o&1) ? CompositionMode.IMPROVED_PCOMP : CompositionMode.PCOMP, Protocol.FOUR_PHASE);
+					final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(f, circuit, balsaConfig);
+					Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), gFile);
 
 					PrintStream defaultOut = System.out;
 					File desiJOutFile = new File("/home/dell/desij_" + runName.replace('\t', '_') + ".out");

@@ -22,6 +22,7 @@
 package org.workcraft.plugins.balsa.io;
 
 import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,6 +38,8 @@ import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.gates.GateLevelModel;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
@@ -54,22 +57,22 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.Import;
-public abstract class BalsaToGatesExporter implements Exporter {
 
+public class STGSynthesisTask implements Task<SynthesisResult> {
 	private final Framework framework;
 
-	public BalsaToGatesExporter(Framework framework)
+	public STGSynthesisTask(Framework framework)
 	{
 		this.framework = framework;
 	}
 
-
-	@Override
 	public void export(Model model, OutputStream out) throws IOException,
 			ModelValidationException, SerialisationException {
 		if(model instanceof STG)
@@ -83,31 +86,19 @@ public abstract class BalsaToGatesExporter implements Exporter {
 		}
 	}
 
-	abstract protected BalsaExportConfig getConfig();
-
 	private void exportFromStg(STGModel model, OutputStream out) throws IOException, ModelValidationException, SerialisationException {
 		GateLevelModel gates = synthesise(framework, model, getConfig());
 		Export.chooseBestExporter(framework.getPluginManager(), gates, Format.EQN);
 		export(gates, out);
 	}
 
-	private static void removeImplicitPlaces(File original, File renamed2)
-			throws IOException {
-		try {
-			Model stg = Import.importFromFile(new DotGImporter(), original);
-			Export.exportToFile(new DotGExporter(), stg, renamed2);
-		} catch (ModelValidationException e) {
-			throw new RuntimeException(e);
-		} catch (SerialisationException e) {
-			throw new RuntimeException(e);
-		} catch (DeserialisationException e) {
-			throw new RuntimeException(e);
-		}
+	private BalsaExportConfig getConfig() {
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 
 	public static GateLevelModel synthesise(Framework framework, STGModel stg, BalsaExportConfig config) throws IOException {
 
-		switch(config.dummyContractionMode())
+		switch(config.getSynthesisSettings().getDummyContractionMode())
 		{
 		case PETRIFY:
 			stg = contractDummies(framework.getTaskManager(), stg);
@@ -121,7 +112,7 @@ public abstract class BalsaToGatesExporter implements Exporter {
 			throw new RuntimeException("Unsupported contraction");
 		}
 
-		switch(config.synthesisTool())
+		switch(config.getSynthesisSettings().getSynthesisTool())
 		{
 		case MPSAT:
 		{
@@ -256,7 +247,10 @@ public abstract class BalsaToGatesExporter implements Exporter {
 	private STGModel exportOriginal(BalsaCircuit balsaModel)
 			throws FileNotFoundException, IOException,
 			ModelValidationException, SerialisationException {
-		return new BalsaToStgExporter_FourPhase().getSTG(balsaModel);
+
+		final BalsaExportConfig balsaConfig = getConfig();
+		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, balsaModel, balsaConfig);
+		return stgExtractionTask.getSTG();
 	}
 
 	public String getExtenstion() {
@@ -271,7 +265,7 @@ public abstract class BalsaToGatesExporter implements Exporter {
 	}
 
 	@Override
-	public UUID getTargetFormat() {
-		return Format.EQN;
+	public Result<? extends SynthesisResult> run(ProgressMonitor<? super SynthesisResult> monitor) {
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 }

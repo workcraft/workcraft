@@ -22,13 +22,13 @@
 package org.workcraft.testing.plugins.balsa;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.LayoutFailedException;
@@ -46,16 +46,21 @@ import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakes.MainHandshakeMaker;
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
+import org.workcraft.plugins.balsa.io.ExtractControlSTGTask;
 import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
+import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.modelchecking.DeadlockChecker;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.util.Export;
 import org.workcraft.util.Import;
 
 
@@ -115,13 +120,19 @@ public class WhileTests {
 		balsa.connect(wh1Out, wh2In);
 
 		File stgFile = new File("while_while.g");
-		new BalsaToStgExporter_FourPhase().export(balsa, new FileOutputStream(stgFile));
+
+		Framework framework = new Framework();
+		framework.initPlugins();
+
+		final BalsaExportConfig balsaConfig = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, balsa, balsaConfig);
+		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), stgFile);
 
 		final STG stg = (STG) Import.importFromFile(new DotGImporter(), stgFile);
 
 		VisualSTG visualStg = new VisualSTG(stg);
 
-		new org.workcraft.Framework().save(visualStg, "while_while.stg.work");
+		framework.save(visualStg, "while_while.stg.work");
 	}
 
 	private DynamicComponent createWhile() {

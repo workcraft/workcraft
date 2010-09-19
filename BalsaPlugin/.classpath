@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="/ThirdParty/junit-4.5.jar"/>
 	<classpathentry kind="src" path="/BalsaPluginBase"/>
 	<classpathentry kind="lib" path="/ThirdParty/desij.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
