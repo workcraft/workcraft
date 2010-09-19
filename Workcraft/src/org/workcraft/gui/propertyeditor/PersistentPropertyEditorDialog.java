@@ -24,6 +24,8 @@ package org.workcraft.gui.propertyeditor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -68,6 +70,12 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setModal(true);
 		setTitle("Settings");
+		addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e) {
+				ok();
+			}
+		});
 
 		Dimension parentSize = owner.getSize();
 		this.setSize(parentSize.width / 2, parentSize.height / 2);
@@ -202,6 +210,8 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		contentPane.add(sectionScroll, BorderLayout.WEST);
 		contentPane.add(propertiesPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
+
+		getRootPane().setDefaultButton(okButton);
 	}
 
 
