@@ -42,7 +42,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 	}
 
 	public XMLSerialiser getSerialiserFor(Class<?> cls) throws InstantiationException, IllegalAccessException {
-		return serialisers.get(cls);
+		return serialisers.get(cls.getName());
 	}
 
 	public void begin(ReferenceProducer internalReferenceResolver, ReferenceProducer externalReferenceResolver) {
