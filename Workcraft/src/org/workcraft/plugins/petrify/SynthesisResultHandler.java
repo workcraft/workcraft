@@ -61,14 +61,14 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 				}
 
 
-			// pop up MessageBox
+/*			// pop up MessageBox
 			final String successMessage = "Petrify synthesis succeeded.";
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
 					JOptionPane.showMessageDialog(null, successMessage);
 				}
-			});
+			});*/
 		}
 	}
 

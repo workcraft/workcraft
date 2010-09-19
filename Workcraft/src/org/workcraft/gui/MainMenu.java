@@ -129,6 +129,7 @@ public class MainMenu extends JMenuBar {
 			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
 	};
+	private JMenu mnTools;
 
 	MainMenu(final MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
@@ -283,6 +284,11 @@ public class MainMenu extends JMenuBar {
 
 		add(new JLabel("    "));
 
+		mnTools = new JMenu();
+		mnTools.setText("Tools");
+		mnTools.setVisible(false);
+
+		add(mnTools);
 	}
 
 	private void addExporter (Exporter exporter) {
@@ -307,10 +313,9 @@ public class MainMenu extends JMenuBar {
 	}
 
 	final public void setMenuForWorkspaceEntry(WorkspaceEntry we) {
-		for (JMenu toolMenu : toolMenus)
-			remove(toolMenu);
+		mnTools.setVisible(true);
 
-		toolMenus.clear();
+		mnTools.removeAll();
 
 		Framework framework = mainWindow.getFramework();
 
@@ -318,14 +323,20 @@ public class MainMenu extends JMenuBar {
 		List<String> sections = Tools.getSections(tools);
 
 		for (String section : sections) {
-			JMenu sectionMenu = new JMenu (section);
-			toolMenus.add(sectionMenu);
-			add(sectionMenu);
+
+			JMenu target = mnTools;
+
+			if (!section.isEmpty())
+			{
+				JMenu sectionMenu = new JMenu (section);
+				mnTools.add(sectionMenu);
+				target = sectionMenu;
+			}
 
 			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
 				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
 				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-				sectionMenu.add(miTool);
+				target.add(miTool);
 			}
 		}
 

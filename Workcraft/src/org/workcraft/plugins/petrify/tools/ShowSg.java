@@ -30,7 +30,7 @@ public class ShowSg implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Misc.";
+		return "State graph";
 	}
 
 	@Override

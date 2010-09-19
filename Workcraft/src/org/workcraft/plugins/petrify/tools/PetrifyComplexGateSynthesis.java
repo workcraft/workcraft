@@ -26,11 +26,11 @@ import org.workcraft.workspace.WorkspaceEntry;
  * @author Dominic Wist
  * Petrify's Complex Gate Synthesis without Technology Mapping
  */
-public class ComplexGateSynthesis implements Tool {
+public class PetrifyComplexGateSynthesis implements Tool {
 
 	private final Framework framework;
 
-	public ComplexGateSynthesis(Framework framework) {
+	public PetrifyComplexGateSynthesis(Framework framework) {
 		this.framework = framework;
 	}
 

@@ -44,6 +44,6 @@ public class DesiJCustomFunction implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Custom decomposition (DesiJ)";
+		return "Customised function (DesiJ)";
 	}
 }

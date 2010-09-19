@@ -3,13 +3,13 @@ package org.workcraft.plugins.pcomp.gui;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -86,8 +86,16 @@ public class PcompDialog extends JDialog {
 
 		content.add(chooser, "0 0 0 1");
 
-		JPanel options = new JPanel(new GridLayout(5, 1));
+		JPanel options = new JPanel();
+		options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+
 		options.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Options"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
+		JPanel outputOptions = new JPanel();
+		outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
+
+		outputOptions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Outputs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
 
 		showInEditor = new JCheckBox();
 		showInEditor.setText("Show result in editor");
@@ -105,11 +113,12 @@ public class PcompDialog extends JDialog {
 		dummifyGroup.add(internalize);
 
 		options.add(showInEditor, 0);
-		options.add(leaveOutputs, 1);
-		options.add(internalize, 2);
-		options.add(dummify, 3);
+		outputOptions.add(leaveOutputs);
+		outputOptions.add(internalize);
+		outputOptions.add(dummify);
 
-		options.add(improvedPcomp, 4);
+		options.add(outputOptions, 1);
+		options.add(improvedPcomp, 2);
 
 		content.add(options, "1 0");
 

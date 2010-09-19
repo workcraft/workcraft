@@ -8,10 +8,10 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DummyContraction implements Tool {
+public class PetrifyDummyContraction implements Tool {
 	private Framework framework;
 
-	public DummyContraction(Framework framework) {
+	public PetrifyDummyContraction(Framework framework) {
 		this.framework = framework;
 	}
 
@@ -22,7 +22,7 @@ public class DummyContraction implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Misc.";
+		return "Dummy contraction";
 	}
 
 	@Override
