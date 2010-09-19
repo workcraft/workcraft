@@ -1,6 +1,7 @@
 package org.workcraft.plugins.pcomp.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.workcraft.plugins.pcomp.gui.PCompOutputMode;
@@ -11,15 +12,18 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.FileUtils;
 
 public class PcompTask implements Task<ExternalProcessResult> {
 	private File[] inputs;
 	private final PCompOutputMode mode;
+	private final boolean improved;
 
-	public PcompTask(File[] inputs, PCompOutputMode mode)
+	public PcompTask(File[] inputs, PCompOutputMode mode, boolean improved)
 	{
 		this.inputs = inputs;
 		this.mode = mode;
+		this.improved = improved;
 	}
 
 	@Override
@@ -41,18 +45,47 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		if(mode == PCompOutputMode.INTERNAL)
 			command.add("-i");
 
-		for (File f : inputs)
-			command.add(f.getAbsolutePath());
+		if(improved)
+			command.add("-p");
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
 
-		if (res.getOutcome() != Outcome.FINISHED)
-			return res;
+		File listFile;
 
-		ExternalProcessResult retVal = res.getReturnValue();
-		if (retVal.getReturnCode() < 2)
-			return Result.finished(retVal);
-		else
-			return Result.failed(retVal);
+		try {
+			listFile = File.createTempFile("pcomp_", ".list");
+		} catch (IOException e) {
+			return Result.exception(e);
+		}
+
+		try
+		{
+			StringBuilder fileList = new StringBuilder();
+			for (File f : inputs)
+			{
+				fileList.append(f.getAbsolutePath());
+				fileList.append('\n');
+			}
+
+			try {
+				FileUtils.writeAllText(listFile, fileList.toString());
+			} catch (IOException e) {
+				return Result.exception(e);
+			}
+
+			command.add("@"+listFile.getAbsolutePath());
+
+			Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+			if (res.getOutcome() != Outcome.FINISHED)
+				return res;
+
+			ExternalProcessResult retVal = res.getReturnValue();
+			if (retVal.getReturnCode() < 2)
+				return Result.finished(retVal);
+			else
+				return Result.failed(retVal);
+		}
+		finally {
+			listFile.delete();
+		}
 	}
 }

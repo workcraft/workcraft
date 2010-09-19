@@ -34,6 +34,7 @@ public class PcompDialog extends JDialog {
 	JRadioButton leaveOutputs;
 	JRadioButton internalize;
 	JRadioButton dummify;
+	private JCheckBox improvedPcomp;
 
 	public PcompDialog(Window owner, Framework framework) {
 		super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
@@ -49,6 +50,10 @@ public class PcompDialog extends JDialog {
 
 	public boolean showInEditor() {
 		return showInEditor.isSelected();
+	}
+
+	public boolean isImprovedPcompChecked() {
+		return improvedPcomp.isSelected();
 	}
 
 	public PCompOutputMode getMode()
@@ -79,10 +84,9 @@ public class PcompDialog extends JDialog {
 		chooser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Source STGs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
-
 		content.add(chooser, "0 0 0 1");
 
-		JPanel options = new JPanel(new GridLayout(4, 1));
+		JPanel options = new JPanel(new GridLayout(5, 1));
 		options.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Options"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 
 		showInEditor = new JCheckBox();
@@ -94,6 +98,8 @@ public class PcompDialog extends JDialog {
 		dummify = new JRadioButton("Make dummy");
 		leaveOutputs.setSelected(true);
 
+		improvedPcomp = new JCheckBox("Improved parallel composition");
+
 		dummifyGroup.add(leaveOutputs);
 		dummifyGroup.add(dummify);
 		dummifyGroup.add(internalize);
@@ -103,8 +109,9 @@ public class PcompDialog extends JDialog {
 		options.add(internalize, 2);
 		options.add(dummify, 3);
 
-		content.add(options, "1 0");
+		options.add(improvedPcomp, 4);
 
+		content.add(options, "1 0");
 
 		JPanel buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
