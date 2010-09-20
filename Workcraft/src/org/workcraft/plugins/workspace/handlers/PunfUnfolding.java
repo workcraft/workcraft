@@ -5,18 +5,13 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.workcraft.Config;
-import org.workcraft.ConfigurablePlugin;
 import org.workcraft.Framework;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.plugins.shared.tasks.PunfTask;
 import org.workcraft.workspace.FileHandler;
 
-@DisplayName("Unfold using punf")
-public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
-	private String lastUnfoldingPath = null;
+public class PunfUnfolding implements FileHandler {
 	private final Framework framework;
 
 	public PunfUnfolding(Framework framework) {
@@ -34,8 +29,8 @@ public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 
-		if (lastUnfoldingPath != null)
-			fc.setCurrentDirectory(new File(lastUnfoldingPath));
+		if (getLastUnfoldingPath() != null)
+			fc.setCurrentDirectory(new File(getLastUnfoldingPath()));
 
 		fc.setFileFilter(new FileFilters.GenericFileFilter(".mci", "Petri Net Unfolding Prefix (.mci)"));
 		fc.setMultiSelectionEnabled(false);
@@ -62,7 +57,7 @@ public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
 				return;
 		}
 
-		framework.getConfig().set("Verification.punf.lastUnfoldingPath", path);
+		setLastUnfoldingPath(path);
 
 		PunfTask task = new PunfTask(f.getPath(), path);
 
@@ -70,7 +65,15 @@ public class PunfUnfolding implements FileHandler, ConfigurablePlugin {
 	}
 
 	@Override
-	public void readConfig(Config config) {
-		lastUnfoldingPath = config.getString("Verification.punf.lastUnfoldingPath", null);
+	public String getDisplayName() {
+		return "Unfold using punf";
+	}
+
+	public void setLastUnfoldingPath(String path) {
+		framework.getConfig().set("Verification.punf.lastUnfoldingPath", path);
+	}
+
+	public String getLastUnfoldingPath() {
+		return framework.getConfig().getString("Verification.punf.lastUnfoldingPath", null);
 	}
 }

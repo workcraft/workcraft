@@ -193,6 +193,16 @@ public class XmlUtil {
 		return doc;
 	}
 
+	public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document doc; DocumentBuilder db;
+
+		db = dbf.newDocumentBuilder();
+		doc = db.parse(file);
+
+		return doc;
+	}
+
 	public static Document loadDocument(String path) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc; DocumentBuilder db;

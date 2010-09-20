@@ -1,10 +1,13 @@
 package org.workcraft.plugins.verification.tools;
 
+import java.io.File;
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.shared.MpsatChainResultHandler;
-import org.workcraft.plugins.shared.MpsatPresetManager;
+import org.workcraft.plugins.shared.MpsatSettings;
+import org.workcraft.plugins.shared.MpsatSettingsSerialiser;
+import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.verification.gui.MpsatConfigurationDialog;
@@ -12,7 +15,6 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Check custom property (punf, MPSat)")
 public class CustomPropertyMpsatChecker implements Tool {
 
 	public CustomPropertyMpsatChecker(Framework framework) {
@@ -33,7 +35,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		MpsatPresetManager pmgr = new MpsatPresetManager();
+		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(new File("config/mpsat_presets.xml"), new MpsatSettingsSerialiser());
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
@@ -43,5 +45,10 @@ public class CustomPropertyMpsatChecker implements Tool {
 			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
 					new MpsatChainResultHandler(mpsatTask));
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Check custom property (punf, MPSat)";
 	}
 }

@@ -14,7 +14,7 @@ public final class ForkStgBuilder extends ForkStgBuilderBase {
 
 	@Override
 	public void buildStg(Fork component, ForkStgInterface h, StrictPetriBuilder b) {
-		if(true)throw new RuntimeException("not sure if it is correct");
+		//if(true)throw new RuntimeException("not sure if it is correct");
 		fork(b, h.inp.go(), go(h.out));
 		join(b, done(h.out), h.inp.done());
 	}

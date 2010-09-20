@@ -24,46 +24,25 @@ package org.workcraft.serialisation.xml;
 import java.util.HashMap;
 
 import org.w3c.dom.Element;
-import org.workcraft.PluginInfo;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
-	private HashMap<String, Class<? extends XMLSerialiser>> serialisers = new HashMap<String, Class<? extends XMLSerialiser>>();
-	private HashMap<Class<?>, XMLSerialiser> serialiserCache = new HashMap<Class<?>, XMLSerialiser>();
+	private HashMap<String, XMLSerialiser> serialisers = new HashMap<String, XMLSerialiser>();
 	private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this,this);
 	private XMLSerialiserState state = null;
 
-	private void registerSerialiser (Class<? extends XMLSerialiser> cls) {
-		XMLSerialiser inst;
-		try {
-			inst = cls.newInstance();
-			serialisers.put(inst.getClassName(), cls);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+	private void registerSerialiser (XMLSerialiser serialiser) {
+		serialisers.put(serialiser.getClassName(), serialiser);
 	}
 
 	public XMLSerialiser getSerialiserFor(Class<?> cls) throws InstantiationException, IllegalAccessException {
-		XMLSerialiser serialiser = serialiserCache.get(cls);
-
-		if (serialiser == null) {
-			Class<? extends XMLSerialiser> serialiserClass = serialisers.get(cls.getName());
-			if (serialiserClass != null)
-			{
-				serialiser = serialiserClass.newInstance();
-
-				serialiserCache.put(cls, serialiser);
-			}
-		}
-
-		return serialiser;
+		return serialisers.get(cls.getName());
 	}
 
 	public void begin(ReferenceProducer internalReferenceResolver, ReferenceProducer externalReferenceResolver) {
@@ -74,16 +53,9 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 		state = null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void processPlugins(PluginProvider manager) {
-		PluginInfo[] serialiserInfos = manager.getPluginsImplementing(XMLSerialiser.class.getName());
-
-		for (PluginInfo info : serialiserInfos) {
-			try {
-				registerSerialiser( (Class<? extends XMLSerialiser>) info.loadClass());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+		for (PluginInfo<? extends XMLSerialiser> info : manager.getPlugins(XMLSerialiser.class)) {
+			registerSerialiser(info.newInstance());
 		}
 	}
 

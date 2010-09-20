@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -66,15 +67,14 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
 import org.workcraft.ModelFactory;
-import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
@@ -88,6 +88,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
@@ -236,7 +237,7 @@ public class MainWindow extends JFrame {
 				visualModel = ModelFactory.createVisualModel((MathModel)object);
 				we.setObject(visualModel);
 
-				DotLayout layout = framework.getPluginManager().getSingleton(org.workcraft.plugins.layout.DotLayout.class);
+				DotLayout layout = new DotLayout(framework);
 				layout.run(we);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
@@ -244,8 +245,6 @@ public class MainWindow extends JFrame {
 				JOptionPane.showMessageDialog(MainWindow.this, "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 				return null;
-			} catch (PluginInstantiationException e) {
-				// no Dot layout plugin found, ignore
 			}
 
 		final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
@@ -657,9 +656,9 @@ public class MainWindow extends JFrame {
 		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
-			PluginInfo info = dialog.getSelectedModel();
+			ModelDescriptor info = dialog.getSelectedModel();
 			try {
-				Model mathModel = (Model)framework.getPluginManager().getInstance(info);
+				Model mathModel = info.createMathModel();
 
 				String name = dialog.getModelTitle();
 
@@ -675,9 +674,6 @@ public class MainWindow extends JFrame {
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
 					framework.getWorkspace().add(path, name, mathModel, false);
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-				//throw new RuntimeException(e);
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace(); //throw new RuntimeException(e);
 			}
@@ -868,19 +864,13 @@ public class MainWindow extends JFrame {
 			fc.setCurrentDirectory(new File(lastOpenPath));
 
 
-		PluginInfo[] importerInfo = framework.getPluginManager().getPluginsImplementing(Importer.class.getName());
-		Importer[] importers = new Importer[importerInfo.length];
+		Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager().getPlugins(Importer.class);
+		Importer[] importers = new Importer[importerInfo.size()];
 
 		int cnt = 0;
 
-		for (PluginInfo info : importerInfo) {
-			try {
-				Importer importer =  (Importer)framework.getPluginManager().getSingleton(info);
-				importers[cnt++] = importer;
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-				importers[cnt++] = null;
-			}
+		for (PluginInfo<? extends Importer> info : importerInfo) {
+			importers[cnt++] = info.getSingleton();
 		}
 
 		fc.setAcceptAllFileFilterUsed(false);
@@ -918,26 +908,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void runTool (Class<? extends Tool> toolClass) {
-		try {
-			Tool tool = (Tool)framework.getPluginManager().getSingleton(toolClass);
-			Tools.run(editorInFocus.getWorkspaceEntry(), tool);
-		} catch (PluginInstantiationException e) {
-			throw new RuntimeException (e);
-		}
+	public void runTool (Tool tool) {
+		Tools.run(editorInFocus.getWorkspaceEntry(), tool);
 	}
 
-	public void exportTo(Class<? extends Exporter> exporterClass) throws OperationCancelledException {
-		Exporter exporter;
-
-		try {
-			exporter = framework.getPluginManager().getSingleton(exporterClass);
-		} catch (PluginInstantiationException e1) {
-			JOptionPane.showMessageDialog(this, e1.getMessage(), "Export failed", JOptionPane.ERROR_MESSAGE);
-			e1.printStackTrace();
-			return;
-		}
-
+	void export(Exporter exporter) throws OperationCancelledException {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 		fc.setDialogTitle("Export as " + exporter.getDescription());

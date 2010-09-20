@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;

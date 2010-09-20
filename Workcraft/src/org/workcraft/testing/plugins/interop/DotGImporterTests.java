@@ -24,6 +24,7 @@ package org.workcraft.testing.plugins.interop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
 import junit.framework.Assert;
@@ -35,6 +36,8 @@ import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.STGPlace;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 
@@ -75,5 +78,30 @@ public class DotGImporterTests {
 		Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
 		Assert.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
 		Assert.assertEquals(12, Hierarchy.getChildrenOfType(imported.getRoot(), Connection.class).size());
+	}
+
+	@Test
+	public void Test2() throws Throwable
+	{
+		final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/interop/test2.g");
+		STGModel imported = new DotGImporter().importSTG(test);//DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
+		Assert.assertEquals(17, imported.getTransitions().size());
+		Assert.assertEquals(0, imported.getDummies().size());
+
+		int explicitPlaces = 0;
+		for(Place p : imported.getPlaces())
+		{
+			if(!((STGPlace)p).isImplicit()) explicitPlaces ++;
+		}
+
+		Assert.assertEquals(2, explicitPlaces);
+
+		Assert.assertEquals(18, imported.getPlaces().size());
+
+		for(Transition t : imported.getTransitions())
+		{
+			Assert.assertTrue(imported.getPreset(t).size()>0);
+			Assert.assertTrue(imported.getPostset(t).size()>0);
+		}
 	}
 }

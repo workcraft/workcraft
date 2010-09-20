@@ -22,14 +22,12 @@
 package org.workcraft.plugins.layout;
 
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName ("Reset layout")
 public class NullLayout implements Tool {
 
 	@Override
@@ -50,5 +48,10 @@ public class NullLayout implements Tool {
 				((VisualTransformableNode)n).setY(0);
 			}
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Reset layout";
 	}
 }

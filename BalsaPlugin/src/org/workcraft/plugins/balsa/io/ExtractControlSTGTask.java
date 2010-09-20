@@ -24,22 +24,15 @@ package org.workcraft.plugins.balsa.io;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.dom.Model;
+import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.interop.Exporter;
-import org.workcraft.interop.SynchronousExternalProcess;
 import org.workcraft.parsers.breeze.Netlist;
 import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
@@ -51,6 +44,9 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.ActivenessSelector;
 import org.workcraft.plugins.balsa.handshakestgbuilder.HandshakeProtocol;
 import org.workcraft.plugins.balsa.handshakestgbuilder.InternalHandshakeStgBuilder;
 import org.workcraft.plugins.balsa.handshakestgbuilder.TwoSideStg;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
+import org.workcraft.plugins.balsa.protocols.FourPhaseProtocol_NoDataPath;
+import org.workcraft.plugins.balsa.protocols.TwoPhaseProtocol;
 import org.workcraft.plugins.balsa.stg.MainStgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
@@ -58,156 +54,46 @@ import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
-import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.shared.PcompUtilitySettings;
+import org.workcraft.plugins.pcomp.gui.PCompOutputMode;
+import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
+import org.workcraft.util.Export.ExportTask;
 
-public abstract class BalsaToStgExporter implements Exporter {
+public class ExtractControlSTGTask implements Task<StgExtractionResult> {
+	private final HandshakeProtocol protocol;
+	private final BalsaCircuit balsa;
+	private final BalsaExportConfig settings;
+	private final Framework framework;
 
-	public static class CompositionSettings
+	public ExtractControlSTGTask(Framework framework, org.workcraft.plugins.balsa.BalsaCircuit balsa, BalsaExportConfig settings)
 	{
-		public CompositionSettings(boolean eventBasedInternal, boolean improvedPcomp)
-		{
-			this.eventBasedInternal = eventBasedInternal;
-			this.improvedPcomp = improvedPcomp;
-		}
-		public boolean eventBasedInternal;
-		public boolean improvedPcomp;
+		this(framework, balsa.asNetlist(), settings);
 	}
 
-	private final HandshakeProtocol protocol;
-	private final String protocolName;
+	public ExtractControlSTGTask(Framework framework, Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, BalsaExportConfig settings) {
+		this.balsa = new BalsaCircuit(circuit);
+		this.settings = settings;
+		this.framework = framework;
 
-	public BalsaToStgExporter(HandshakeProtocol protocol, String protocolName)
-	{
-		this.protocol = protocol;
-		this.protocolName = protocolName;
+		if (settings.getProtocol() == BalsaExportConfig.Protocol.TWO_PHASE)
+			protocol = new TwoPhaseProtocol();
+		else
+			protocol = new FourPhaseProtocol_NoDataPath();
 	}
 
 	private static class BalsaCircuit extends CachedCircuit<BreezeHandshake, BreezeComponent, BreezeConnection>
 	{
 		public BalsaCircuit(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> c) {
 			super(c);
-		}
-	}
-
-	public void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException
-	{
-		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), out);
-	}
-
-	public STGModel getSTG(org.workcraft.plugins.balsa.BalsaCircuit circuit) throws IOException, ModelValidationException, SerialisationException
-	{
-		return getSTG(circuit.asNetlist());
-	}
-
-	public void export(Model model, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
-	{
-		export(((org.workcraft.plugins.balsa.BalsaCircuit)model).asNetlist(), settings, out);
-	}
-
-	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, OutputStream out) throws IOException, ModelValidationException, SerialisationException
-	{
-		export(circuit, askForSettings(), out);
-	}
-
-	public STGModel getSTG(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit) throws IOException, ModelValidationException, SerialisationException
-	{
-		return getSTG(circuit, askForSettings());
-	}
-
-	private CompositionSettings askForSettings() {
-		String opt1 = "Improved Pcomp";
-		String opt2 = "Standard Pcomp";
-		String opt3 = "Event-based composition";
-		Object result = JOptionPane.showOptionDialog(null, "Select the type of STG composition", "STG composition type", 0, JOptionPane.QUESTION_MESSAGE, null, new Object[]{opt1, opt2, opt3}, opt1);
-
-		boolean improved = (result != opt2);
-		boolean event = (result == opt3);
-		final CompositionSettings settings = new CompositionSettings(event, improved);
-		return settings;
-	}
-
-	public void export(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings, OutputStream out) throws IOException, ModelValidationException, SerialisationException
-	{
-		new DotGExporter().export(getSTG(circuit, settings), out);
-	}
-
-	public STGModel getSTG(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit, CompositionSettings settings) throws IOException, ModelValidationException, SerialisationException
-	{
-		BalsaCircuit balsa = new BalsaCircuit(circuit);
-
-		boolean useSimpleInternalHandshakes = false;
-
-		NameProvider<Handshake> names = getNamesProvider(balsa);
-
-		if(useSimpleInternalHandshakes)
-		{
-			STG stgf = buildStgFull(balsa, names);
-			return stgf;
-		}
-		else
-		{
-			int cc=1;
-			ArrayList<File> tempFiles = new ArrayList<File>();
-			for(BreezeComponent component : getComponentsToSave(balsa))
-			{
-				STG stg = buildStg(balsa, component, names);
-
-				File tempFile = new File(String.format("/tmp/%d.g",cc++)); //File.createTempFile("brz_", ".g");
-				tempFiles.add(tempFile);
-
-				Export.exportToFile(new DotGExporter(), stg, tempFile);
-			}
-
-			if(tempFiles.size() > 0)
-			{
-				List<String>  args = new ArrayList<String> ();
-				args.add(PcompUtilitySettings.getPcompCommand());
-				args.add("-d");
-				args.add("-r");
-				if(settings.improvedPcomp) args.add("-p");
-				for(int i=0;i<tempFiles.size();i++)
-					args.add(tempFiles.get(i).getPath());
-
-				try
-				{
-					SynchronousExternalProcess pcomp = new SynchronousExternalProcess(args.toArray(new String[0]), ".");
-
-					pcomp.start(10000);
-
-					byte [] outputData = pcomp.getOutputData();
-					System.out.println("----- Pcomp errors: -----");
-					System.out.print(new String(pcomp.getErrorData()));
-					System.out.println("----- End of errors -----");
-
-					if(pcomp.getReturnCode() != 0)
-					{
-						System.out.println("");
-						System.out.println("----- Pcomp output: -----");
-						System.out.print(new String(outputData));
-						System.out.println("----- End of output -----");
-
-						throw new RuntimeException("Pcomp failed! Return code: " + pcomp.getReturnCode());
-					}
-
-					try {
-						return new DotGImporter().importSTG(new ByteArrayInputStream(outputData));
-					} catch (DeserialisationException e) {
-						throw new RuntimeException(e);
-					}
-				}
-				finally
-				{
-					for(File f : tempFiles)
-						f.delete();
-				}
-			}
-			else
-				return new STG();
 		}
 	}
 
@@ -401,52 +287,92 @@ public abstract class BalsaToStgExporter implements Exporter {
 		};
 	}
 
-	public String getDescription() {
-		return "STG using "+protocolName+" protocol (.g)";
-	}
+	@Override
+	public Result<? extends StgExtractionResult> run(ProgressMonitor<? super StgExtractionResult> monitor) {
 
-	public String getExtenstion() {
-		return ".g";
-	}
+		boolean useSimpleInternalHandshakes = settings.getCompositionMode() == CompositionMode.INTERNAL;
 
-	public int getCompatibility(Model model) {
-		if (model instanceof org.workcraft.plugins.balsa.BalsaCircuit)
-			return Exporter.BEST_COMPATIBILITY;
-		else
-			return Exporter.NOT_COMPATIBLE;
-	}
+		NameProvider<Handshake> names = getNamesProvider(balsa);
 
-	public Exporter withCompositionSettings(final CompositionSettings settings)
-	{
-		final BalsaToStgExporter me = this;
-		return new Exporter()
+		if(useSimpleInternalHandshakes)
 		{
-			@Override
-			public String getDescription() {
-				return me.getDescription();
+			STG stgf = buildStgFull(balsa, names);
+			return Result.finished(new StgExtractionResult(stgf, null));
+		}
+		else
+		{
+			ArrayList<File> tempFiles = new ArrayList<File>();
+			for(BreezeComponent component : getComponentsToSave(balsa))
+			{
+				STG stg = buildStg(balsa, component, names);
+
+				File tempFile;
+				try {
+					tempFile = File.createTempFile("brz_", ".g");
+				} catch (IOException e) {
+					return Result.exception(e);
+				}
+
+				ExportTask exportTask;
+				try {
+					exportTask = Export.createExportTask(stg, tempFile, Format.STG, framework.getPluginManager());
+				} catch (SerialisationException e) {
+					return Result.exception(e);
+				}
+
+				Result <? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Writing .g");
+
+				if (exportResult.getOutcome() != Outcome.FINISHED)
+				{
+					if (exportResult.getOutcome() == Outcome.CANCELLED)
+						return Result.cancelled();
+					else
+						return Result.exception(exportResult.getCause());
+				}
+
+				tempFiles.add(tempFile);
 			}
 
-			@Override
-			public String getExtenstion() {
-				return me.getExtenstion();
-			}
+			if(tempFiles.size() > 0)
+			{
 
-			@Override
-			public UUID getTargetFormat() {
-				return me.getTargetFormat();
-			}
+				final PcompTask task = new PcompTask(tempFiles.toArray(new File[0]), PCompOutputMode.DUMMY, settings.getCompositionMode() == CompositionMode.IMPROVED_PCOMP);
 
-			@Override
-			public int getCompatibility(Model model) {
-				return me.getCompatibility(model);
-			}
+				try
+				{
+					final Result<? extends ExternalProcessResult> result = framework.getTaskManager().execute(task, "Parallel composition");
 
-			@Override
-			public void export(Model model, OutputStream out)
-					throws IOException, ModelValidationException,
-					SerialisationException {
-				me.export(model, settings, out);
+					if (result.getOutcome() != Outcome.FINISHED)
+					{
+						if (result.getOutcome() == Outcome.CANCELLED)
+							return Result.cancelled();
+						else
+							if (result.getCause() != null)
+								return Result.exception(result.getCause());
+							else
+								return Result.failed(new StgExtractionResult(null, result.getReturnValue()));
+					}
+
+					try {
+						final STGModel stg = new DotGImporter().importSTG(new ByteArrayInputStream(result.getReturnValue().getOutput()));
+						return Result.finished(new StgExtractionResult(stg, null));
+					} catch (DeserialisationException e) {
+						return Result.exception(e);
+					}
+				}
+				finally
+				{
+					for(File f : tempFiles)
+						f.delete();
+				}
 			}
-		};
+			else
+				return Result.finished(new StgExtractionResult(new STG(), null));
+		}
+
+	}
+
+	public STGModel getSTG() {
+		return framework.getTaskManager().execute(this, "extraction").getReturnValue().getResult();
 	}
 }

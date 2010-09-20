@@ -30,9 +30,9 @@ import org.workcraft.plugins.balsa.stgbuilder.SignalId;
 import org.workcraft.plugins.balsa.stgbuilder.StgBuilder;
 import org.workcraft.plugins.balsa.stgbuilder.StgPlace;
 import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -105,7 +105,7 @@ public class StgModelStgBuilder implements StgBuilder {
 	}
 
 	private StgModelStgPlace buildStgPlace(int tokenCount) {
-		Place place = new Place();
+		STGPlace place = new STGPlace();
 		place.setTokens(tokenCount);
 		model.add(place);
 		return new StgModelStgPlace(place);

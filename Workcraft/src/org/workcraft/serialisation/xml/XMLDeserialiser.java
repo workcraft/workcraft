@@ -21,8 +21,8 @@
 
 package org.workcraft.serialisation.xml;
 
-import org.workcraft.LegacyPlugin;
+import org.workcraft.Plugin;
 
-public interface XMLDeserialiser extends LegacyPlugin {
+public interface XMLDeserialiser extends Plugin {
 	public String getClassName();
 }

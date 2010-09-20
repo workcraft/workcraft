@@ -25,12 +25,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.workcraft.PluginInfo;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.PluginInfo;
 
 public class Import {
 
@@ -49,15 +48,8 @@ public class Import {
 	}
 
 	static public Importer chooseBestImporter (PluginProvider provider, File file) {
-		PluginInfo[] plugins = provider.getPluginsImplementing(Importer.class.getName());
-
-		for (PluginInfo info : plugins) {
-			Importer importer;
-			try {
-				importer = (Importer)provider.getSingleton(info);
-			} catch (PluginInstantiationException e) {
-				throw new RuntimeException (e);
-			}
+		for (PluginInfo<? extends Importer> info : provider.getPlugins(Importer.class)) {
+			Importer importer = info.getSingleton();
 
 			if (importer.accept(file)) {
 				return importer;

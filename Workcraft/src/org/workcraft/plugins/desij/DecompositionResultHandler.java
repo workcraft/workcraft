@@ -88,14 +88,14 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 
 					workspace.fireWorkspaceChanged();
 
-					// pop up MessageBox
+					/*// pop up MessageBox
 					final String successMessage = "Decomposition succeeded.";
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
 							JOptionPane.showMessageDialog(null, successMessage);
 						}
-					});
+					});*/
 				}
 			if (desijResult.getModifiedSpecResult() != null) {
 				String resultPath = desijResult.getSpecificationModel().getTitle() + "_modifiedResult.g";
@@ -111,23 +111,28 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 
 				workspace.fireWorkspaceChanged(); // update of workspace window
 
-				// pop up MessageBox
+			/*	// pop up MessageBox
 				final String successMessage = "DesiJ operation succeeded.";
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						JOptionPane.showMessageDialog(null, successMessage);
 					}
-				});
+				});*/
 			}
 		}
 		else if (result.getOutcome() != Outcome.CANCELLED) {
-			final String errorMessage = "DesiJ execution failed :-(";
+			String errorMessage = "DesiJ execution failed :-(";
+
+			if (result.getCause() != null)
+				errorMessage += "\n\n" + result.getCause().getMessage();
+
+			final String err = errorMessage;
 
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			});
 		}

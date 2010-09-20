@@ -19,25 +19,29 @@ import org.xml.sax.SAXException;
 public class DesiJPresetManager {
 	private ArrayList<DesiJPreset> presets = new ArrayList<DesiJPreset>();
 
+	public static final DesiJPreset DECOMPOSITION = new DesiJPreset("Decomposition (basic)",
+			new DesiJSettings(DesiJOperation.DECOMPOSITION,
+					DecompositionStrategy.BASIC, -1, // decomposition strategy
+					PartitionMode.FINEST, "", // partitioning
+					true, true, false, // implicit place handling
+					false, false, false, // contraction mode
+					false, 0, false, false),  // component synthesis
+				true) ; // built-in preset
+
+	public static final DesiJPreset DUMMY_REMOVAL = new DesiJPreset("Dummy removal",
+			new DesiJSettings(DesiJOperation.REMOVE_DUMMIES,
+					DecompositionStrategy.BASIC, -1, // decomposition strategy
+					null, "", // partitioning
+					true, true, false, // implicit place handling
+					false, false, false, // contraction mode
+					false, 0, false, false),  // component synthesis
+				true);
+
 	// **************** private helper methods *********************
 
 	private void addBuiltInPresets() {
-		presets.add(new DesiJPreset("Decomposition (basic)",
-				new DesiJSettings(DesiJOperation.DECOMPOSITION,
-						DecompositionStrategy.BASIC, -1, // decomposition strategy
-						PartitionMode.FINEST, "", // partitioning
-						true, true, false, // implicit place handling
-						false, false, false, // contraction mode
-						false, 0, false, false),  // component synthesis
-					true) ); // built-in preset
-		presets.add(new DesiJPreset("Dummy removal",
-				new DesiJSettings(DesiJOperation.REMOVE_DUMMIES,
-						DecompositionStrategy.BASIC, -1, // decomposition strategy
-						null, "", // partitioning
-						true, true, false, // implicit place handling
-						false, false, false, // contraction mode
-						false, 0, false, false),  // component synthesis
-					true) ); // built-in preset
+		presets.add(DECOMPOSITION);
+		presets.add(DUMMY_REMOVAL);
 	}
 
 	private void savePresets() {

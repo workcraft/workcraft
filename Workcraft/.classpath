@@ -32,6 +32,6 @@
 	<classpathentry kind="lib" path="/ThirdParty/pcollections-1.0.0.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/substance.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
-	<classpathentry kind="lib" path="/ThirdParty/desij.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DesiJ"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

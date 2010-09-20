@@ -5,14 +5,12 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Open in Workcraft")
 public class WorkcraftOpen implements FileHandler {
 	private final Framework framework;
 
@@ -37,5 +35,10 @@ public class WorkcraftOpen implements FileHandler {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Open in Workcraft";
 	}
 }

@@ -5,7 +5,6 @@ build
 config
 *.log
 *.dot
-*.g
 *.stackdump
 desij.logfile*
 generated

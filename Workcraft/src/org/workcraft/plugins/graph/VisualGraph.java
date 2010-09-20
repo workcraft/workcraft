@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.graph;
 
-import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -31,7 +30,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 
 @DefaultCreateButtons ( { Vertex.class } )
-public class VisualGraph extends AbstractVisualModel implements LegacyPlugin {
+public class VisualGraph extends AbstractVisualModel {
 
 	public VisualGraph(Graph model) throws VisualModelInstantiationException {
 		super(model);
