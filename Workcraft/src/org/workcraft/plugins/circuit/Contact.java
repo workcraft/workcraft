@@ -26,30 +26,12 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-/**
- * @author  a6910194
- */
 @DisplayName("Contact")
 @VisualClass("org.workcraft.plugins.circuit.VisualContact")
 
 public class Contact extends MathNode {
 
-	/**
-	 * @author  a6910194
-	 */
-	public enum IOType {/**
-	 * @uml.property  name="iNPUT"
-	 * @uml.associationEnd
-	 */
-	INPUT, /**
-	 * @uml.property  name="oUTPUT"
-	 * @uml.associationEnd
-	 */
-	OUTPUT};
-	/**
-	 * @uml.property  name="ioType"
-	 * @uml.associationEnd
-	 */
+	public enum IOType { INPUT, OUTPUT};
 	private IOType ioType;
 
 	//private boolean invertSignal = false;

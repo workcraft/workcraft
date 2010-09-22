@@ -22,7 +22,6 @@
 package org.workcraft.plugins.circuit;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
@@ -30,39 +29,31 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 
-/**
- * @author  a6910194
- */
 @DisplayName("Component")
 @VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
 
-public class CircuitComponent extends MathNode implements Container {
+public class CircuitComponent extends MathNode implements Container, ObservableHierarchy {
 
-	/**
-	 * @uml.property  name="groupImpl"
-	 * @uml.associationEnd
-	 */
+
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-	public Contact addInput() {
-		Contact c = new Contact(IOType.INPUT);
-
-		add(c);
-		c.setParent(this);
-		return c;
+	public Node getParent() {
+		return groupImpl.getParent();
 	}
 
-	public Contact addOutput() {
-		Contact c = new Contact(IOType.OUTPUT);
-		add(c);
-		c.setParent(this);
-		return c;
+	public void setParent(Node parent) {
+		groupImpl.setParent(parent);
 	}
 
-	public void removeContact(Contact c) {
-		remove(c);
+	public void addObserver(HierarchyObserver obs) {
+		groupImpl.addObserver(obs);
+	}
+
+	public void removeObserver(HierarchyObserver obs) {
+		groupImpl.removeObserver(obs);
 	}
 
 	@Override
@@ -93,6 +84,11 @@ public class CircuitComponent extends MathNode implements Container {
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
+	}
+
+	@Override
+	public Collection<Node> getChildren() {
+		return groupImpl.getChildren();
 	}
 
 }

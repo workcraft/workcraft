@@ -57,9 +57,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 //@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
-/**
- * @author  a6910194
- */
+
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/icons/svg/circuit-component.svg")
@@ -78,10 +76,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	double contactLength = 1;
 	double contactStep = 1;
 
-	/**
-	 * @uml.property  name="groupImpl"
-	 * @uml.associationEnd
-	 */
+
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 
@@ -92,16 +87,15 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		super(component);
 		// testing...
 
-		//addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST,"Req_in"));
-		addInput("Req_in");
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.WEST, "Ack_out"));
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction. WEST, "Data_in"));
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, "Req_out"));
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction. EAST, "Ack_in"));
+		addInput("Req_in", VisualContact.Direction.WEST);
+		addOutput("Ack_out", VisualContact.Direction.WEST);
+		addInput("Data_in",  VisualContact.Direction. WEST);
+		addOutput("Req_out", VisualContact.Direction.EAST);
+		addInput("Ack_in",   VisualContact.Direction. EAST);
 
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data_out"));
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.NORTH, "Data out 2"));
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.SOUTH, "Reset"));
+		addOutput("Data_out", VisualContact.Direction.NORTH);
+		addOutput("Data out 2", VisualContact.Direction.NORTH);
+		addOutput("Reset",    VisualContact.Direction.SOUTH);
 	}
 
 	// updates sequential position of the contacts
@@ -187,10 +181,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public void addContact(VisualContact vc) {
 		if (!getChildren().contains(vc)) {
+			((CircuitComponent)this.getReferencedComponent()).add(vc.getReferencedComponent());
 			add(vc);
-			vc.setParent(this);
-
-//			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, vc));
 
 			switch (vc.getDirection()) {
 				case NORTH: north.add(vc); updateStepPosition(north); break;
@@ -199,7 +191,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				case WEST: west.add(vc); updateStepPosition(west); break;
 			}
 
-			vc.addObserver(this);
+//			vc.addObserver(this);
 			contactLabelBB = null;
 		}
 	}
@@ -403,9 +395,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		return groupImpl.getParent();
 	}
 
+	public void setParent(Node parent) {
+		groupImpl.setParent(parent);
+	}
 
 	public void remove(Node node) {
-		groupImpl.remove(node);
 		if (node instanceof VisualContact) {
 			VisualContact vc = (VisualContact)node;
 
@@ -415,17 +409,14 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			north.remove(vc);
 			contactLabelBB = null;
 
-			((CircuitComponent)getReferencedComponent()).removeContact((Contact)vc.getReferencedComponent());
+//			((CircuitComponent)getReferencedComponent()).removeContact((Contact)vc.getReferencedComponent());
 
-//			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, node));
+//			groupImpl.sendNotification(new NodesDeletedEvent(this, node));
 
 		}
-	}
 
-	public void setParent(Node parent) {
-		groupImpl.setParent(parent);
+		groupImpl.remove(node);
 	}
-
 
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
@@ -516,16 +507,26 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		return start+num;
 	}
 
-	public void addInput(String name) {
+	public VisualContact addInput(String name, VisualContact.Direction dir) {
+
+		if (dir==null) dir=VisualContact.Direction.WEST;
+
 		if (name.equals("")) name = getNewName("input");
-		CircuitComponent component = (CircuitComponent)getReferencedComponent();
-		addContact(new VisualContact(component.addInput(), VisualContact.Direction.WEST, name));
+		Contact c = new Contact(IOType.INPUT);
+		VisualContact vc = new VisualContact(c, dir, name);
+		addContact(vc);
+
+		return vc;
 	}
 
-	public void addOutput(String name) {
+	public VisualContact addOutput(String name, VisualContact.Direction dir) {
+		if (dir==null) dir=VisualContact.Direction.EAST;
+
 		if (name.equals("")) name = getNewName("output");
-		CircuitComponent component = (CircuitComponent)getReferencedComponent();
-		addContact(new VisualContact(component.addOutput(), VisualContact.Direction.EAST, name));
+		Contact c = new Contact(IOType.OUTPUT);
+		VisualContact vc = new VisualContact(c, dir, name);
+		addContact(vc);
+		return vc;
 	}
 
 	@Override

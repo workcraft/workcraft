@@ -29,6 +29,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -78,6 +79,11 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 */
+
+	public VisualCircuit(Circuit model, VisualGroup root)
+	{
+		super(model, root);
+	}
 
 	public VisualCircuit(Circuit model)
 	throws VisualModelInstantiationException {

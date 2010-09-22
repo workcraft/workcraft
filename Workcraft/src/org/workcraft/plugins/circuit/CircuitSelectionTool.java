@@ -14,15 +14,8 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.SelectionTool;
 
-/**
- * @author  a6910194
- */
 public class CircuitSelectionTool extends SelectionTool implements ActionListener {
 
-	/**
-	 * @uml.property  name="selectedNode"
-	 * @uml.associationEnd
-	 */
 	VisualNode selectedNode = null;
 
 	@Override
@@ -71,11 +64,11 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 			VisualCircuitComponent comp = (VisualCircuitComponent)selectedNode;
 
 			if (e.getActionCommand().equals("Add input")) {
-				comp.addInput("");
+				comp.addInput("", null);
 			}
 
 			if (e.getActionCommand().equals("Add output")) {
-				comp.addOutput("");
+				comp.addOutput("", null);
 			}
 		}
 

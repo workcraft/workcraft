@@ -40,55 +40,21 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 
-/**
- * @author  a6910194
- */
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/circuit-port.svg")
 
 public class VisualContact extends VisualComponent {
-	/**
-	 * @author  a6910194
-	 */
-	public enum Direction {/**
-	 * @uml.property  name="nORTH"
-	 * @uml.associationEnd
-	 */
-	NORTH, /**
-	 * @uml.property  name="sOUTH"
-	 * @uml.associationEnd
-	 */
-	SOUTH, /**
-	 * @uml.property  name="eAST"
-	 * @uml.associationEnd
-	 */
-	EAST, /**
-	 * @uml.property  name="wEST"
-	 * @uml.associationEnd
-	 */
-	WEST};
+	public enum Direction {	NORTH, SOUTH, EAST, WEST};
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private String name = "";
 	private GlyphVector nameGlyphs = null;
-	/**
-	 * @uml.property  name="direction"
-	 * @uml.associationEnd
-	 */
 	private Direction direction = Direction.WEST;
 
-//	VisualCircuitComponent parentComponent;
-
-/*	public VisualCircuitComponent getParentConnection() {
-//		return parentConnection;
-		return null;
-	}
-*/
 	public VisualContact(Contact contact) {
 		super(contact);
-
 	}
 
 	private void addPropertyDeclarations() {
@@ -166,10 +132,6 @@ public class VisualContact extends VisualComponent {
 		return getNameGlyphs(g).getVisualBounds();
 	}
 
-	/**
-	 * @param dir
-	 * @uml.property  name="direction"
-	 */
 	public void setDirection(VisualContact.Direction dir) {
 
 		if (dir==direction) return;
@@ -184,10 +146,6 @@ public class VisualContact extends VisualComponent {
 		sendNotification(new PropertyChangedEvent(this, "direction"));
 	}
 
-	/**
-	 * @return
-	 * @uml.property  name="direction"
-	 */
 	public VisualContact.Direction getDirection() {
 		return direction;
 	}
@@ -201,18 +159,10 @@ public class VisualContact extends VisualComponent {
 	}
 
 
-	/**
-	 * @return
-	 * @uml.property  name="name"
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param label
-	 * @uml.property  name="name"
-	 */
 	public void setName(String label) {
 		this.name = label;
 		nameGlyphs = null;
