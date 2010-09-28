@@ -36,25 +36,22 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
-/**
- * @author  a6910194
- */
+
 @DisplayName("Visual Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { Contact.class, CircuitComponent.class } )
+@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, Formula.class } )
 //@CustomToolButtons ( { SimulationTool.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
 
-	/**
-	 * @uml.property  name="circuit"
-	 * @uml.associationEnd
-	 */
 	private Circuit circuit;
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first instanceof VisualContact && second instanceof VisualContact) {
+		if (first instanceof VisualConnection || second instanceof VisualConnection) {
+			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
+		}
+		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 
 
 			for (Connection c: this.getConnections(second)) {
@@ -62,13 +59,18 @@ public class VisualCircuit extends AbstractVisualModel {
 					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
 			}
 
-			if (!(((Contact)((VisualContact)first).getReferencedComponent()).getIOType()==Contact.IOType.OUTPUT&&
-				((Contact)((VisualContact)second).getReferencedComponent()).getIOType()==Contact.IOType.INPUT)
-				)
-				throw new InvalidConnectionException ("Connection is only valid from component output/environment input to component input/environment output");
+			if (second instanceof VisualContact) {
+				Node toParent = ((VisualComponent)second).getParent();
+				Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
+
+				if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
+					throw new InvalidConnectionException ("Outputs of the components cannot be driven");
+
+				if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
+					throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
+			}
 		}
 	}
-
 
 /*
 	private final class StateSupervisorExtension extends StateSupervisor {
@@ -83,6 +85,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	public VisualCircuit(Circuit model, VisualGroup root)
 	{
 		super(model, root);
+		circuit=model;
 	}
 
 	public VisualCircuit(Circuit model)
@@ -101,17 +104,16 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public void connect(Node first, Node second)
 			throws InvalidConnectionException {
-
 		validateConnection(first, second);
+		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 
-		VisualComponent c1 = (VisualContact) first;
-		VisualComponent c2 = (VisualContact) second;
-		MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, c1, c2);
-		Hierarchy.getNearestContainer(c1, c2).add(ret);
+			VisualComponent c1 = (VisualComponent) first;
+			VisualComponent c2 = (VisualComponent) second;
+			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+			VisualConnection ret = new VisualConnection(con, c1, c2);
+			Hierarchy.getNearestContainer(c1, c2).add(ret);
+		}
 
 	}
-
-
 
 }

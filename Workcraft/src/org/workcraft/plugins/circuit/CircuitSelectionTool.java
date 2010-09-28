@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -17,6 +18,33 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 public class CircuitSelectionTool extends SelectionTool implements ActionListener {
 
 	VisualNode selectedNode = null;
+
+
+	/*
+	@Override
+	public void mouseMoved(GraphEditorMouseEvent e) {
+		boolean allowDrag = true;
+
+		if(drag==DRAG_MOVE) {
+			for (Node n: e.getModel().getSelection()) {
+				if (n instanceof VisualContact) {
+					Node a = ((VisualContact)n).getParent();
+					Node b = e.getModel().getCurrentLevel();
+					if	(a!=b) {
+						allowDrag=false;
+						break;
+					}
+				}
+			}
+
+			if (!allowDrag) return;
+		}
+
+		super.mouseMoved(e);
+
+
+	}
+	*/
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
@@ -36,7 +64,8 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 	private JPopupMenu createPopupMenu(VisualNode node) {
 		JPopupMenu popup = new JPopupMenu();
 		this.selectedNode = node;
-		if (node instanceof VisualCircuitComponent) {
+		if (node instanceof VisualCircuitComponent&&
+				!(selectedNode instanceof VisualFormula)) {
 
 
 			popup.setFocusable(false);

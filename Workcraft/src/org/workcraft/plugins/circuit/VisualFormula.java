@@ -21,11 +21,22 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.event.KeyEvent;
+
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
+
+@DisplayName("Formula")
+@Hotkey(KeyEvent.VK_F)
+@SVGIcon("images/icons/svg/circuit-formula.svg")
+
 public class VisualFormula extends VisualCircuitComponent {
 
 	public VisualFormula(CircuitComponent component) {
 		super(component);
-		// TODO Auto-generated constructor stub
 	}
+
+
 
 }

@@ -15,6 +15,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
 
 		result.add(new CircuitSelectionTool());
 		result.add(new ConnectionTool());
+		result.add(new ContactGeneratorTool());
 
 		return result;
 	}

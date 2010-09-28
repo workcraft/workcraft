@@ -23,15 +23,28 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class VisualJoint extends VisualCircuitComponent {
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.plugins.circuit.Joint;
+
+@DisplayName("Joint")
+@Hotkey(KeyEvent.VK_J)
+@SVGIcon("images/icons/svg/circuit-joint.svg")
+
+public class VisualJoint extends VisualComponent {
 	static double jointSize = 0.25;
 
 	public VisualJoint(Joint joint) {
 		super(joint);
+
 	}
 
 	@Override
@@ -45,9 +58,11 @@ public class VisualJoint extends VisualCircuitComponent {
 				jointSize,
 				jointSize);
 
-//		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
 		g.fill(shape);
 	}
+
+
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {

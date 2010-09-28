@@ -31,6 +31,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Component")
 @VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
@@ -39,6 +40,7 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private String name = "";
 
 	public Node getParent() {
 		return groupImpl.getParent();
@@ -46,6 +48,7 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
+		checkName(parent);
 	}
 
 	public void addObserver(HierarchyObserver obs) {
@@ -84,11 +87,54 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
+		checkName(newParent);
 	}
 
 	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
+
+
+	public String getNewName(Node n, String start) {
+		// iterate through all contacts, check that the name doesn't exist
+		int num=0;
+		boolean found = true;
+
+		while (found) {
+			num++;
+			found=false;
+
+			for (Node vn : n.getChildren()) {
+				if (vn instanceof CircuitComponent && vn!=this) {
+					if (((CircuitComponent)vn).getName().equals(start+num)) {
+						found=true;
+						break;
+					}
+				}
+			}
+		}
+		return start+num;
+	}
+
+	public void checkName(Node parent) {
+		if (parent==null) return;
+		String start=getName();
+		if (start==null||start=="") {
+			start="c";
+			setName(getNewName(parent, start));
+		}
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		sendNotification(new PropertyChangedEvent(this, "name"));
+	}
+
+	public String getName() {
+		return name;
+	}
+
+
 
 }

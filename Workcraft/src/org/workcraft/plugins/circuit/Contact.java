@@ -23,6 +23,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
@@ -32,7 +33,10 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class Contact extends MathNode {
 
 	public enum IOType { INPUT, OUTPUT};
-	private IOType ioType;
+	private IOType ioType = IOType.OUTPUT;
+
+	private String name = "";
+
 
 	//private boolean invertSignal = false;
 
@@ -47,13 +51,71 @@ public class Contact extends MathNode {
 	}
 
 
+	public String getNewName(Node n, String start) {
+		// iterate through all contacts, check that the name doesn't exist
+		int num=0;
+		boolean found = true;
+
+		while (found) {
+			num++;
+			found=false;
+
+			for (Node vn : n.getChildren()) {
+				if (vn instanceof Contact&& vn!=this) {
+					if (((Contact)vn).getName().equals(start+num)) {
+						found=true;
+						break;
+					}
+				}
+			}
+		}
+		return start+num;
+	}
+
+	public void checkName(Node parent) {
+		if (parent==null) return;
+		String start=getName();
+		if (start==null||start=="") {
+			if (getIOType()==IOType.INPUT) {
+				start="input";
+			} else {
+				start="output";
+			}
+			setName(getNewName(parent, start));
+		}
+	}
+
+	@Override
+	public void setParent(Node parent) {
+		super.setParent(parent);
+		checkName(parent);
+	}
+
+
 	public void setIOType(IOType t) {
 		this.ioType = t;
+		if (getName().startsWith("input")&&getIOType()==IOType.OUTPUT) {
+			setName(getNewName(getParent(), "output"));
+		} else if (getName().startsWith("output")&&getIOType()==IOType.INPUT) {
+			setName(getNewName(getParent(), "input"));
+		}
+
 		sendNotification(new PropertyChangedEvent(this, "ioType"));
 	}
 
 	public IOType getIOType() {
 		return ioType;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+		sendNotification(new PropertyChangedEvent(this, "name"));
+	}
+
+
+	public String getName() {
+		return name;
 	}
 
 
