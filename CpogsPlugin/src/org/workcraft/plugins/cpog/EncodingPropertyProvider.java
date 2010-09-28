@@ -1,10 +1,11 @@
 package org.workcraft.plugins.cpog;
 
+import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyClass;
 import org.workcraft.gui.propertyeditor.PropertyClassProvider;
 import org.workcraft.gui.propertyeditor.cpog.EncodingProperty;
 
-public class EncodingPropertyProvider implements PropertyClassProvider {
+public class EncodingPropertyProvider implements PropertyClassProvider, Plugin {
 
 	@Override
 	public Class<?> getPropertyType() {

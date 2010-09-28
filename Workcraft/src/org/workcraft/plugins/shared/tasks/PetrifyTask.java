@@ -76,7 +76,7 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 
 			ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData());
 
-			if (returnCode < 2)
+			if (returnCode == 0)
 				return new Result<ExternalProcessResult>(Outcome.FINISHED, result);
 
 			return new Result<ExternalProcessResult>(Outcome.FAILED, result);

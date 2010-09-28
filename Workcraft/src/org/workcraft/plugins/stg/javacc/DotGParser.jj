@@ -54,7 +54,8 @@ public class DotGParser {
 			else if (t.equals(Type.DUMMY))
 				existing = stg.createDummyTransition(name);
 			else
-				throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+				return getOrCreate(Triple.of(name, Direction.TOGGLE, 0));
+				//throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
 		
 		return existing;
@@ -70,7 +71,8 @@ public class DotGParser {
 		{
 			Type t = signals.get (name);
 			if (t == null || !t.equals(Type.DUMMY))
-				throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
+				return getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
+				//throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
 			else
 			{
 				DummyTransition dt = stg.createDummyTransition(null);
@@ -112,7 +114,7 @@ public class DotGParser {
 			
 			if (implicitPlace != null)
 				implicitPlaces.put (Pair.of (first, second), implicitPlace);
-			 
+				
 		} catch (InvalidConnectionException e)
 		{
 			throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +

@@ -69,4 +69,9 @@ public class ListMap <K,V> {
 	public Collection<LinkedList<V>> values() {
 		return map.values();
 	}
+
+	public void clear()
+	{
+		map.clear();
+	}
 }

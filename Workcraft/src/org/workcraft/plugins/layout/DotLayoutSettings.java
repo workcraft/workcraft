@@ -25,14 +25,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.LegacyPlugin;
+import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 @DisplayName ("Dot")
-public class DotLayoutSettings implements PersistentPropertyEditable, LegacyPlugin {
+public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 	protected static boolean importConnectionsShape = false;
 	protected static String dotCommand = "dot";
 

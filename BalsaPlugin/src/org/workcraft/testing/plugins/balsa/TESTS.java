@@ -68,10 +68,13 @@ import org.workcraft.plugins.balsa.handshakebuilder.HandshakeVisitor;
 import org.workcraft.plugins.balsa.handshakebuilder.PullHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.PushHandshake;
 import org.workcraft.plugins.balsa.handshakebuilder.Sync;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
 import org.workcraft.plugins.balsa.io.BreezeImporter;
-import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
+import org.workcraft.plugins.balsa.io.ExtractControlSTGTask;
+import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.util.Export;
 
 
@@ -104,9 +107,12 @@ public class TESTS {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		Export.exportToFile(new BalsaToStgExporter_FourPhase(), circuit, "c:\\viterbi.g");
 
-		new SynthesisWithMpsat(framework).export(circuit, stream);
+		final BalsaExportConfig balsaConfig = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, circuit, balsaConfig);
+		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), "viterbi.g");
+
+		//new SynthesisWithMpsat(framework).export(circuit, stream);
 	}
 
 	static abstract class ClassicHandshakeVisitor<T> implements HandshakeVisitor<T>
@@ -404,7 +410,11 @@ public class TESTS {
 	{
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			new BalsaToStgExporter_FourPhase().export(control, out);
+			Framework f = new Framework();
+			f.initPlugins();
+			final BalsaExportConfig balsaConfig = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+			final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(f, control, balsaConfig);
+			new DotGExporter().export(stgExtractionTask.getSTG(), out);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

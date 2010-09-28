@@ -23,19 +23,32 @@ package org.workcraft.plugins.balsa.stg;
 import java.util.Map;
 
 import org.workcraft.parsers.breeze.ParameterScope;
+import org.workcraft.plugins.balsa.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
-public abstract class GeneratedComponentStgBuilder<Properties, Handshakes> extends ComponentStgBuilder<DynamicComponent> {
-	abstract public void buildStg(Properties component, Handshakes h, StrictPetriBuilder b);
+public abstract class GeneratedComponentStgBuilder<Properties, HandshakesStg, Handshakes> extends ComponentStgBuilder<DynamicComponent> {
+	abstract public void buildStg(Properties component, HandshakesStg h, StrictPetriBuilder b);
 
 	abstract public Properties makeProperties(ParameterScope parameters);
-	abstract public Handshakes makeHandshakes(Properties component, Map<String, StgInterface> handshakes);
+	abstract public HandshakesStg makeHandshakesStg(Properties component, Map<String, StgInterface> handshakes);
+	abstract public Handshakes makeHandshakes(Properties component, Map<String, Handshake> handshakes);
 
+	abstract public HandshakeComponentLayout getLayout(Properties properties, Handshakes hs);
+
+	@Override
 	public void buildStg(DynamicComponent component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
 		Properties properties = makeProperties(component.parameters());
-		Handshakes hs = makeHandshakes(properties, handshakes);
+		HandshakesStg hs = makeHandshakesStg(properties, handshakes);
 		buildStg(properties, hs, builder);
+	}
+
+	@Override
+	public HandshakeComponentLayout getLayout(DynamicComponent component, Map<String, Handshake> handshakes) {
+		Properties properties = makeProperties(component.parameters());
+		Handshakes hs = makeHandshakes(properties, handshakes);
+		return getLayout(properties,  hs);
 	}
 }

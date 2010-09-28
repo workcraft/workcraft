@@ -31,12 +31,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.util.XmlUtil;
 
-
-public class PluginInfo implements Comparable<PluginInfo> {
+public class LegacyPluginInfo implements Initialiser<Object> {
 	private String displayName;
 	private String className;
 	private String[] interfaceNames;
-	private final Initialiser initialiser;
 
 	private void addInterfaces (Class<?> cls, Set<String> set) {
 		if (cls == null || cls.equals(Object.class))
@@ -51,10 +49,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
 		addInterfaces(cls.getSuperclass(), set);
 	}
 
-	public PluginInfo(final Class<?> cls, Initialiser initialiser) {
-		if(initialiser == null)
-			initialiser = defaultInitialiser();
-
+	public LegacyPluginInfo(final Class<?> cls) {
 		className = cls.getName();
 
 		DisplayName name = cls.getAnnotation(DisplayName.class);
@@ -67,41 +62,30 @@ public class PluginInfo implements Comparable<PluginInfo> {
 		HashSet<String> interfaces = new HashSet<String>();
 		addInterfaces (cls, interfaces);
 		interfaceNames = interfaces.toArray(new String[0]);
-		this.initialiser = initialiser;
 	}
 
-	public PluginInfo(final Class<?> cls) {
-		this(cls, null);
-	}
-
-	private Initialiser defaultInitialiser() {
-		return new Initialiser(){
-			@Override
-			public Object create() {
-				try {
-					return loadClass().getConstructor().newInstance();
-				} catch (IllegalArgumentException e) {
-					throw new RuntimeException(e);
-				} catch (SecurityException e) {
-					throw new RuntimeException(e);
-				} catch (InstantiationException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(e);
-				} catch (NoSuchMethodException e) {
-					throw new RuntimeException(e);
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
-				}
+	@Override
+	public Object create() {
+			try {
+				return loadClass().getConstructor().newInstance();
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (SecurityException e) {
+				throw new RuntimeException(e);
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
 			}
-		};
 	}
 
-
-
-	public PluginInfo(Element element) throws FormatException {
+	public LegacyPluginInfo(Element element) throws FormatException {
 		className = XmlUtil.readStringAttr(element, "class");
 		if(className==null || className.isEmpty())
 			throw new FormatException();
@@ -115,7 +99,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
 		for (int i=0; i<nl.getLength(); i++)
 			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
-		initialiser = defaultInitialiser();
 	}
 
 	public void toXml(Element element) {
@@ -155,15 +138,5 @@ public class PluginInfo implements Comparable<PluginInfo> {
 	@Override
 	public String toString() {
 		return displayName;
-	}
-
-
-	public int compareTo(PluginInfo o) {
-		return toString().compareTo(o.toString());
-	}
-
-	public Object createInstance()
-	{
-		return initialiser.create();
 	}
 }

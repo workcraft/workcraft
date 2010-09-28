@@ -3,13 +3,13 @@ package org.workcraft.plugins.pcomp.gui;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,6 +34,7 @@ public class PcompDialog extends JDialog {
 	JRadioButton leaveOutputs;
 	JRadioButton internalize;
 	JRadioButton dummify;
+	private JCheckBox improvedPcomp;
 
 	public PcompDialog(Window owner, Framework framework) {
 		super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
@@ -49,6 +50,10 @@ public class PcompDialog extends JDialog {
 
 	public boolean showInEditor() {
 		return showInEditor.isSelected();
+	}
+
+	public boolean isImprovedPcompChecked() {
+		return improvedPcomp.isSelected();
 	}
 
 	public PCompOutputMode getMode()
@@ -79,11 +84,18 @@ public class PcompDialog extends JDialog {
 		chooser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Source STGs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
-
 		content.add(chooser, "0 0 0 1");
 
-		JPanel options = new JPanel(new GridLayout(4, 1));
+		JPanel options = new JPanel();
+		options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+
 		options.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Options"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
+		JPanel outputOptions = new JPanel();
+		outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
+
+		outputOptions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Outputs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
 
 		showInEditor = new JCheckBox();
 		showInEditor.setText("Show result in editor");
@@ -94,17 +106,21 @@ public class PcompDialog extends JDialog {
 		dummify = new JRadioButton("Make dummy");
 		leaveOutputs.setSelected(true);
 
+		improvedPcomp = new JCheckBox("Improved parallel composition");
+
 		dummifyGroup.add(leaveOutputs);
 		dummifyGroup.add(dummify);
 		dummifyGroup.add(internalize);
 
 		options.add(showInEditor, 0);
-		options.add(leaveOutputs, 1);
-		options.add(internalize, 2);
-		options.add(dummify, 3);
+		outputOptions.add(leaveOutputs);
+		outputOptions.add(internalize);
+		outputOptions.add(dummify);
+
+		options.add(outputOptions, 1);
+		options.add(improvedPcomp, 2);
 
 		content.add(options, "1 0");
-
 
 		JPanel buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 

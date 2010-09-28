@@ -22,16 +22,13 @@
 package org.workcraft;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,45 +36,47 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.plugins.PluginInfo;
+import org.workcraft.util.ListMap;
 import org.workcraft.util.XmlUtil;
 
 public class PluginManager implements PluginProvider {
 	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
-	public static final String VERSION_STAMP = "b0219d5fd0d34dc28f618138300a39ef";
+	public static final String VERSION_STAMP = "d971444cbd86448695f3427118632aca";
 
-	public static final String EXTERNAL_PLUGINS_PATH = "plugins";
 	private Framework framework;
-	private HashMap <String, Object> singletons;
 
-	private class ClassFileFilter implements FilenameFilter {
+	private ListMap <Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
 
-		public boolean accept(File dir, String name) {
-			File f = new File(dir.getPath() + File.separator + name);
-			if(f.isDirectory())
-				return true;
-			if(f.getPath().endsWith(".class"))
-				return true;
-			return false;
+	public static class PluginInstanceHolder<T> implements PluginInfo<T>
+	{
+		private final Initialiser<? extends T> initialiser;
+
+		public PluginInstanceHolder(Initialiser<? extends T> initialiser)
+		{
+			this.initialiser = initialiser;
+		}
+
+		T instance;
+
+		@Override
+		public T newInstance() {
+			return initialiser.create();
+		}
+
+		@Override
+		public T getSingleton() {
+			if(instance == null)
+				instance = newInstance();
+			return instance;
 		}
 	}
 
-	private ClassFileFilter classFilter = new ClassFileFilter();
-	private LinkedList<PluginInfo> plugins = new LinkedList<PluginInfo>();
-	private HashMap<String, PluginInfo> nameToInfoMap = new HashMap<String, PluginInfo>();
 
 	public PluginManager(Framework framework) {
 		this.framework = framework;
-		singletons = new HashMap<String, Object>();
-	}
-
-	public void printPluginList() {
-		System.out.println("Registered plugins:");
-		for(PluginInfo info : plugins)
-			System.out.println(" "+info.getClassName());
-		System.out.println(""+plugins.size()+" plugin(s) total");
 	}
 
 	public void loadManifest() throws IOException, FormatException, PluginInstantiationException {
@@ -90,7 +89,6 @@ public class PluginManager implements PluginProvider {
 			System.out.println("Plugin manifest \"" + file.getPath() + "\" does not exist.");
 			return false;
 		}
-
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc;
@@ -120,10 +118,10 @@ public class PluginManager implements PluginProvider {
 		}
 
 		plugins.clear();
+
 		for(Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
-			PluginInfo info = new PluginInfo(pluginElement);
-			plugins.add(info);
-			nameToInfoMap.put(info.getClassName(), info);
+			LegacyPluginInfo info = new LegacyPluginInfo(pluginElement);
+			addLegacyPluginClass(info);
 		}
 
 		return true;
@@ -134,20 +132,27 @@ public class PluginManager implements PluginProvider {
 		if(!tryLoadManifest(file))
 			reconfigure();
 		else
-			initPlugins();
+			initModules();
 	}
 
-	private void initPlugins() {
-		final PluginInfo[] plugins = getPluginsImplementing(Plugin.class.getCanonicalName());
-		for(PluginInfo info : plugins)
-			((Plugin)info.createInstance()).init(framework);
+	private void initModules() {
+		for(PluginInfo<? extends Module> info : getPlugins(Module.class))
+		{
+			final Module module = info.newInstance();
+			try {
+				module.init(framework);
+			}
+			catch(Throwable th) {
+				System.err.println("Error during initialisation of module " + module.toString());
+			}
+		}
 	}
 
-	public void saveManifest() throws IOException {
-		saveManifest(DEFAULT_MANIFEST);
+	public static void saveManifest(List<LegacyPluginInfo> plugins) throws IOException {
+		saveManifest(DEFAULT_MANIFEST, plugins);
 	}
 
-	public void saveManifest(File file) throws IOException {
+	public static void saveManifest(File file, List<LegacyPluginInfo> plugins) throws IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		org.w3c.dom.Document doc;
 		DocumentBuilder db;
@@ -163,7 +168,7 @@ public class PluginManager implements PluginProvider {
 		doc.appendChild(root);
 		root = doc.getDocumentElement();
 
-		for(PluginInfo info : plugins) {
+		for(LegacyPluginInfo info : plugins) {
 			Element e = doc.createElement("plugin");
 			info.toXml(e);
 			root.appendChild(e);
@@ -176,115 +181,43 @@ public class PluginManager implements PluginProvider {
 		XmlUtil.saveDocument(doc, file);
 	}
 
-	private void addPluginClass(Class<?> cls)
+	private void addLegacyPluginClass(LegacyPluginInfo info)
 	{
-		PluginInfo info = new PluginInfo(cls);
-		plugins.add(info);
-		nameToInfoMap.put(cls.getCanonicalName(), info);
-	}
-
-	private void processPathEntry (String path) throws PluginInstantiationException {
-		if (!path.endsWith(".class"))
-			return;
-
-		String className;
-
-		if (path.startsWith(File.separator))
-			className = path.substring(File.separator.length());
-		else
-			className = path;
-
-		className = className.replace(File.separatorChar, '.').replace('/', '.');
-
-		if (!className.startsWith("org.workcraft.plugins"))
-			return;
-
-		//		System.out.print(".class file found: " + path + ", ");
-
-		className = className.substring(0, className.length() - ".class".length());
-
-		try {
-			Class<?> cls = Class.forName(className);
-
-			if (!Modifier.isAbstract(cls.getModifiers()))
-			{
-				if(LegacyPlugin.class.isAssignableFrom(cls)) {
-					try
-					{
-						cls.getConstructor();
-						addPluginClass(cls);
-						System.out.println("legacy plugin " + cls.getName());
-					}
-					catch(NoSuchMethodException ex)
-					{
-						System.err.println("legacy plugin " + cls.getName() + " does not have a default constructor. skipping.");
-					}
-				}
-				if (Plugin.class.isAssignableFrom(cls))
-				{
-
-					try {
-						final Constructor<?> constructor = cls.getConstructor();
-						final Plugin instance = (Plugin)constructor.newInstance();
-						Class<?> [] classes = instance.getPluginClasses();
-						System.out.println("plugin " + cls.getName() + ":");
-						addPluginClass(cls);
-						for(Class<?> pluginClass : classes)
-						{
-							addPluginClass(pluginClass);
-							System.out.println("\tclass " + pluginClass.getName());
-						}
-					} catch (SecurityException e) {
-						throw new RuntimeException(e);
-					} catch (NoSuchMethodException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalArgumentException e) {
-						throw new RuntimeException(e);
-					} catch (InstantiationException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
-						throw new RuntimeException(e);
-					} catch (InvocationTargetException e) {
-						throw new RuntimeException(e);
-					}
-				}
+		for (String interfaceName : info.getInterfaces())
+			try {
+				plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
+			} catch (ClassNotFoundException e) {
+				System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
 			}
-
-		} catch (ClassFormatError e) {
-			System.out.println ("bad class: " + e.getMessage());
-		} catch (LinkageError e) {
-			System.out.println ("bad class: " + e.getMessage());
-		} catch(ClassNotFoundException e) {
-			throw new PluginInstantiationException(e);
-		}
 	}
 
-	private void search(File starting, File current) throws PluginInstantiationException {
-		if(!current.exists())
-			return;
-
-		if(current.isDirectory()) {
-			File[] list = current.listFiles(classFilter);
-
-			for(File f : list)
-				if(f.isDirectory())
-					search(starting, f);
-				else
-					processPathEntry(f.getPath().substring(starting.getPath().length()));
-		} else if (current.isFile()) {
-			if (current.getPath().endsWith(".jar"))
-				try {
-					JarFile jf = new JarFile(current);
-					Enumeration<JarEntry> entries = jf.entries();
-
-					while (entries.hasMoreElements()) {
-						JarEntry entry = entries.nextElement();
-						processPathEntry (entry.getName());
-					}
-
-				} catch (IOException e) {
-					throw new PluginInstantiationException(e);
+	private void processLegacyPlugin (Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
+		addLegacyPluginClass(info);
+		if (Module.class.isAssignableFrom(cls))
+		{
+			try {
+				final Constructor<?> constructor = cls.getConstructor();
+				final Module instance = (Module)constructor.newInstance();
+				Class<?> [] classes = instance.getPluginClasses();
+				System.out.println("plugin " + cls.getName() + ":");
+				for(Class<?> pluginClass : classes)
+				{
+					addLegacyPluginClass(new LegacyPluginInfo(pluginClass));
+					System.out.println("\tclass " + pluginClass.getName());
 				}
+			} catch (SecurityException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -292,99 +225,64 @@ public class PluginManager implements PluginProvider {
 		System.out.println("Reconfiguring plugins...");
 		plugins.clear();
 
-		String[] classPathLocations = System.getProperty("java.class.path").split(File.pathSeparator);
+		String[] classPathLocations = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+
+		List<Class<?>> classes = new ArrayList<Class<?>>();
+		ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<LegacyPluginInfo>();
 
 		for (String s: classPathLocations) {
-			System.out.println (s);
-			search(new File(s), new File(s));
+			System.out.println ("Processing class path entry: " + s);
+			classes.addAll(PluginFinder.search(new File(s)));
 		}
 
-		System.out.println("" + plugins.size() + " plugin(s) found.");
+		System.out.println("" + classes.size() + " plugin(s) found.");
+
+		for(Class<?> cls : classes)
+		{
+			final LegacyPluginInfo info = new LegacyPluginInfo(cls);
+			pluginInfos.add(info);
+			processLegacyPlugin(cls, info);
+		}
 
 		try {
-			saveManifest();
+			saveManifest(pluginInfos);
 			System.out.println("Reconfiguration complete.");
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
 		}
 
-		initPlugins();
+		initModules();
 
 		System.out.println("Plugin initialisation done.");
 
 	}
 
-	public PluginInfo[] getModels() {
-		return getPluginsImplementing (Model.class.getName());
-	}
-
-	public PluginInfo[] getPlugins(Class<?> interf) {
-		return getPluginsImplementing(interf.getName());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.workcraft.framework.plugins.PluginProvider#getPlugins(java.lang.String)
-	 */
-	public PluginInfo[] getPluginsImplementing(String interfaceName) {
-		LinkedList<PluginInfo> list = new LinkedList<PluginInfo>();
-		for(PluginInfo info : plugins)
-			for (String s: info.getInterfaces())
-				if (s.equals(interfaceName))
-					list.add(info);
-		return list.toArray(new PluginInfo[0]);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.workcraft.framework.plugins.PluginProvider#getInstance(org.workcraft.framework.plugins.PluginInfo)
-	 */
-	public Object getInstance(PluginInfo info) throws PluginInstantiationException {
-		try {
-			Object instance = info.createInstance();
-
-			if (instance instanceof ConfigurablePlugin)
-				((ConfigurablePlugin)instance).readConfig(framework.getConfig());
-
-			return instance;
-
-		} catch (SecurityException e) {
-			throw new PluginInstantiationException(e);
-		} catch (IllegalArgumentException e) {
-			throw new PluginInstantiationException(e);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.workcraft.framework.plugins.PluginProvider#getSingleton(org.workcraft.framework.plugins.PluginInfo)
-	 */
-	public Object getSingleton(PluginInfo info) throws PluginInstantiationException {
-		Object ret = singletons.get(info.getClassName());
-		if (ret == null) {
-			ret = getInstance(info);
-			singletons.put(info.getClassName(), ret);
-		}
-		return ret;
-
-	}
-
 	@SuppressWarnings("unchecked")
-	public <T> T getSingleton(Class<? extends T> type) throws PluginInstantiationException
+	public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interf) {
+		return (Collection<PluginInfo<? extends T>>)(Collection<?>)Collections.unmodifiableCollection(plugins.get(interf));
+	}
+
+	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls)
 	{
-		return (T)getSingletonByName(type.getCanonicalName());
+		registerClass(interf, new Initialiser<T>(){
+			@Override
+			public T create() {
+				try {
+					return cls.newInstance();
+				} catch (InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.framework.plugins.PluginProvider#getSingletonByName(java.lang.String)
-	 */
-	public Object getSingletonByName(String className) throws PluginInstantiationException {
-		PluginInfo info = nameToInfoMap.get(className);
-		if (info == null)
-			throw new PluginInstantiationException("Cannot create singleton, plugin " + className + " not found!");
-		return getSingleton(info);
-	}
-
-	public void registerClass(Class<?> cls, Initialiser initialiser) {
-		final PluginInfo pluginInfo = new PluginInfo(cls, initialiser);
-		nameToInfoMap.put(cls.getCanonicalName(), pluginInfo);
-		plugins.add(pluginInfo);
+	public <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
+		if(!interf.isInterface())
+			throw new RuntimeException("'interf' argument must be an interface");
+		final PluginInfo<T> pluginInfo = new PluginInstanceHolder<T>(initialiser);
+		plugins.put(interf, pluginInfo);
 	}
 }

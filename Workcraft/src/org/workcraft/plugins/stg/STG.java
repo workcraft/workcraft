@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -53,7 +52,6 @@ import org.workcraft.util.SetUtils;
 import org.workcraft.util.Triple;
 
 @VisualClass("org.workcraft.plugins.stg.VisualSTG")
-@DisplayName("Signal Transition Graph")
 public class STG extends AbstractMathModel implements STGModel {
 	private STGReferenceManager referenceManager;
 
@@ -287,6 +285,11 @@ public class STG extends AbstractMathModel implements STGModel {
 					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
 		}	else
 			return referenceManager.getNodeByReference(reference);
+	}
+
+	public void makeExplicit(STGPlace implicitPlace) {
+		implicitPlace.setImplicit(false);
+		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
 	}
 
 }

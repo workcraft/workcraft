@@ -33,9 +33,7 @@ import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
@@ -62,7 +60,6 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName ("Layout using dot")
 public class DotLayout implements Tool {
 
 	private final Framework framework;
@@ -96,8 +93,8 @@ public class DotLayout implements Tool {
 				double pointsToInches = 1.0/72;
 				if(ss.length == 3)
 				{
-					double x = Double.parseDouble(ss[1])*pointsToInches ;
-					double y = Double.parseDouble(ss[2])*pointsToInches;
+					double x = Double.parseDouble(ss[1])*pointsToInches;
+					double y = -Double.parseDouble(ss[2])*pointsToInches;
 					Point2D p = new Point2D.Double(x,y);
 					if(ss[0].equals("s"))
 						result.add(0,p);
@@ -110,7 +107,7 @@ public class DotLayout implements Tool {
 				else
 				{
 					double x = Double.parseDouble(ss[0])*pointsToInches;
-					double y = Double.parseDouble(ss[1])*pointsToInches;
+					double y = -Double.parseDouble(ss[1])*pointsToInches;
 					result.add(0,new Point2D.Double(x,y));
 				}
 			}
@@ -148,7 +145,7 @@ public class DotLayout implements Tool {
 								MovableHelper.resetTransform(m);
 								MovableHelper.translate(m,
 									Double.parseDouble(posParts[0])*1.0/72,
-									Double.parseDouble(posParts[1])*1.0/72);
+									-Double.parseDouble(posParts[1])*1.0/72);
 							}
 							else
 							{
@@ -259,5 +256,10 @@ public class DotLayout implements Tool {
 	@Override
 	public String getSection() {
 		return "Layout";
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Layout using dot";
 	}
 }

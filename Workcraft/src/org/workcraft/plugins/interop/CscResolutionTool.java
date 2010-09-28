@@ -2,7 +2,6 @@ package org.workcraft.plugins.interop;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.plugins.shared.MpsatChainResultHandler;
 import org.workcraft.plugins.shared.MpsatMode;
 import org.workcraft.plugins.shared.MpsatSettings;
@@ -12,7 +11,6 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-@DisplayName("Resolve CSC conflicts")
 public class CscResolutionTool implements Tool {
 
 	private final Framework framework;
@@ -39,5 +37,10 @@ public class CscResolutionTool implements Tool {
 		MpsatChainTask mpsatTask = new MpsatChainTask(we, settings, framework);
 
 		framework.getTaskManager().queue(mpsatTask, "CSC conflicts resolution", new MpsatChainResultHandler(mpsatTask));
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Resolve CSC conflicts";
 	}
 }

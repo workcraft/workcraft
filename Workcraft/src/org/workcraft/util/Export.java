@@ -26,19 +26,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.workcraft.PluginInfo;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 
 public class Export {
 	public static class ExportTask implements Task<Object> {
@@ -94,18 +93,13 @@ public class Export {
 	}
 
 	static public Exporter chooseBestExporter (PluginProvider provider, Model model, UUID targetFormat) {
-		PluginInfo[] plugins = provider.getPluginsImplementing(Exporter.class.getName());
+		Iterable<PluginInfo<? extends Exporter>> plugins = provider.getPlugins(Exporter.class);
 
 		Exporter best = null;
 		int bestCompatibility = Exporter.NOT_COMPATIBLE;
 
-		for (PluginInfo info : plugins) {
-			Exporter exporter;
-			try {
-				exporter = (Exporter)provider.getSingleton(info);
-			} catch (PluginInstantiationException e) {
-				throw new RuntimeException (e);
-			}
+		for (PluginInfo<? extends Exporter> info : plugins) {
+			Exporter exporter = info.getSingleton();
 
 			if (exporter.getTargetFormat().equals(targetFormat)) {
 				int compatibility = exporter.getCompatibility(model);

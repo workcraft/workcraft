@@ -2,7 +2,7 @@ package org.workcraft.plugins;
 
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
-import org.workcraft.Plugin;
+import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.plugins.serialisation.XMLDeserialiser;
 import org.workcraft.plugins.serialisation.XMLSerialiser;
@@ -17,8 +17,10 @@ import org.workcraft.plugins.serialisation.xml.IntSerialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
 import org.workcraft.plugins.serialisation.xml.VisualConnectionSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
+import org.workcraft.serialisation.ModelDeserialiser;
+import org.workcraft.serialisation.ModelSerialiser;
 
-public class Serialisers implements Plugin {
+public class Serialisers implements Module {
 
 	@Override
 	public Class<?>[] getPluginClasses() {
@@ -41,8 +43,8 @@ public class Serialisers implements Plugin {
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();
-		p.registerClass(XMLDeserialiser.class, new Initialiser(){public Object create(){return new XMLDeserialiser(framework.getPluginManager());}});
-		p.registerClass(XMLSerialiser.class, new Initialiser(){public Object create(){return new XMLSerialiser(framework.getPluginManager());}});
+		p.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){public ModelDeserialiser create(){return new XMLDeserialiser(framework.getPluginManager());}});
+		p.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){public ModelSerialiser create(){return new XMLSerialiser(framework.getPluginManager());}});
 	}
 
 }

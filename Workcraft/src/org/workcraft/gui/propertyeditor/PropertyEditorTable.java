@@ -32,8 +32,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
-import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.plugins.PluginInfo;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
@@ -63,14 +62,9 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(Boolean.class, new BooleanProperty());
 		propertyClasses.put(Color.class, new ColorProperty());
 
-		for(PluginInfo plugin : framework.getPluginManager().getPluginsImplementing(PropertyClassProvider.class.getCanonicalName())) {
-			PropertyClassProvider instance;
-			try {
-				instance = (PropertyClassProvider)framework.getPluginManager().getInstance(plugin);
-				propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-			}
+		for(PluginInfo<? extends PropertyClassProvider> plugin : framework.getPluginManager().getPlugins(PropertyClassProvider.class)) {
+			PropertyClassProvider instance = plugin.newInstance();
+			propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
 		}
 	}
 

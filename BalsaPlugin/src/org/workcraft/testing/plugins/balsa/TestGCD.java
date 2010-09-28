@@ -38,9 +38,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.junit.Test;
@@ -50,7 +50,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.interop.Exporter;
 import org.workcraft.parsers.breeze.BreezeInstance;
 import org.workcraft.parsers.breeze.BreezeLibrary;
 import org.workcraft.parsers.breeze.DefaultBreezeFactory;
@@ -63,16 +62,15 @@ import org.workcraft.plugins.balsa.BreezeComponent;
 import org.workcraft.plugins.balsa.BreezeConnection;
 import org.workcraft.plugins.balsa.BreezeHandshake;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
+import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
-import org.workcraft.plugins.balsa.io.BalsaToGatesExporter;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter;
-import org.workcraft.plugins.balsa.io.BalsaToStgExporter_FourPhase;
-import org.workcraft.plugins.balsa.io.SynthesisWithMpsat;
+import org.workcraft.plugins.balsa.io.ExtractControlSTGTask;
+import org.workcraft.plugins.balsa.io.STGSynthesisTask;
 import org.workcraft.plugins.gates.GateLevelModel;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
-import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.testing.plugins.balsa.TestGCD.ChunkSplitter.Result;
 import org.workcraft.util.Export;
 import org.workcraft.util.Hierarchy;
@@ -294,12 +292,14 @@ public class TestGCD {
 	{
 		Framework f = new Framework();
 		f.initPlugins();
-		Exporter synthesiser = new SynthesisWithMpsat(f);
+		//Exporter synthesiser = new SynthesisWithMpsat(f);
 
 		init();
 
-		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase();
-		Export.exportToFile(exporter.withCompositionSettings(new BalsaToStgExporter.CompositionSettings(false, false)), circuit, "/home/dell/export_gcd.g");
+		final BalsaExportConfig config = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(f, circuit, config);
+		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(),"export_gcd.g");
+
 
 		//Export.exportToFile((Exporter)synthesiser, circuit, "/home/dell/export.eqn");
 		//synthesize(new Chunk(Arrays.asList(new BreezeComponent[]{fetchA, muxA})));
@@ -675,24 +675,27 @@ public class TestGCD {
 
 	private void exportPartial(final BreezeComponent[] components, File stgFile, File eqnFile)
 	{
-		BalsaToStgExporter_FourPhase exporter = new BalsaToStgExporter_FourPhase()
-			{
-				@Override protected Iterable<BreezeComponent> getComponentsToSave(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> balsa) {
-					return Arrays.asList(components);
-				}
-			};
 
 		try
 		{
 			Framework framework = new Framework();
 			framework.initPlugins();
 
-			final STGModel stg = exporter.getSTG(circuit);
+
+			final BalsaExportConfig config = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
+			final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, circuit, config)
+			{
+				@Override protected Iterable<BreezeComponent> getComponentsToSave(Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> balsa) {
+					return Arrays.asList(components);
+				}
+			};
+
+			final STGModel stg = stgExtractionTask.getSTG();
 			Export.exportToFile(new DotGExporter(), stg, stgFile);
 
 			try
 			{
-				final GateLevelModel gates = BalsaToGatesExporter.synthesise(framework, stg, BalsaExportConfig.DEFAULT);
+				final GateLevelModel gates = STGSynthesisTask.synthesise(framework, stg, BalsaExportConfig.DEFAULT);
 				Export.exportToFile(gates, eqnFile, Format.EQN, framework.getPluginManager());
 			}
 			catch(RuntimeException e)

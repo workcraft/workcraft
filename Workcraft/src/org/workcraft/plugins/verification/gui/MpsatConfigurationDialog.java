@@ -9,7 +9,7 @@ import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -17,7 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -26,24 +25,25 @@ import javax.swing.JTextField;
 
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.shared.MpsatMode;
-import org.workcraft.plugins.shared.MpsatPreset;
-import org.workcraft.plugins.shared.MpsatPresetManager;
 import org.workcraft.plugins.shared.MpsatSettings;
 import org.workcraft.plugins.shared.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.shared.presets.Preset;
+import org.workcraft.plugins.shared.presets.PresetManager;
+import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
-
-	private JPanel content, presetPanel, reachPanel, buttonsPanel;
+	private JPanel content, reachPanel, buttonsPanel;
+	private PresetManagerPanel<MpsatSettings> presetPanel;
 	private JLabel numberOfSolutionsLabel;
 	private JScrollPane optionsPanel;
-	private JComboBox presetCombo, modeCombo, satCombo, verbosityCombo;
-	private JButton manageButton, saveAsNewButton, runButton, updatePresetButton, cancelButton;
+	private JComboBox modeCombo, satCombo, verbosityCombo;
+	private JButton runButton, cancelButton;
 	private JTextField solutionLimitText;
 	private JTextArea reachText;
 	private JRadioButton allSolutionsButton, firstSolutionButton, cheapestSolutionButton;
-	private MpsatPresetManager presetManager;
+	private PresetManager<MpsatSettings> presetManager;
 
 	private TableLayout layout;
 	private int modalResult = 0;
@@ -63,87 +63,23 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createPresetPanel() {
-		presetPanel = new JPanel(new SimpleFlowLayout(15, 3));
+		ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<Preset<MpsatSettings>>();
 
-		presetCombo = new JComboBox();
-		for (MpsatPreset p : presetManager.list())
-			presetCombo.addItem(p);
+		builtInPresets.add(new Preset<MpsatSettings>("Deadlock", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.FIRST, 0, ""), true));
+		builtInPresets.add(new Preset<MpsatSettings>("Deadlock (shortest trace)", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.MINIMUM_COST, 0, ""), true));
+		builtInPresets.add(new Preset<MpsatSettings>("Deadlock (all traces)", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.ALL, 0, ""), true));
 
-		presetCombo.addActionListener( new ActionListener() {
+		presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, new SettingsToControlsMapper<MpsatSettings>() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				applySettingsToControls();
+			public void applySettingsToControls(MpsatSettings settings) {
+				MpsatConfigurationDialog.this.applySettingsToControls(settings);
 			}
-		});
 
-
-		manageButton = new JButton ("Manage presets...");
-		manageButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean haveCustomPresets = false;
-				for (MpsatPreset p : presetManager.list())
-					if (!p.isBuiltIn()) {
-						haveCustomPresets = true;
-						break;
-					}
-				if (haveCustomPresets)
-					managePresets();
-				else
-					JOptionPane.showMessageDialog(MpsatConfigurationDialog.this, "There are no custom presets to manage.");
-
+			public MpsatSettings getSettingsFromControls() {
+				return MpsatConfigurationDialog.this.getSettingsFromControls();
 			}
-		});
-
-		updatePresetButton = new JButton ("Update preset");
-		updatePresetButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				MpsatPreset selected = (MpsatPreset)presetCombo.getSelectedItem();
-				presetManager.update(selected, getSettingsFromControls());
-			}
-		});
-
-		saveAsNewButton = new JButton ("Save settings as new preset...");
-		saveAsNewButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createPreset();
-			}
-		});
-
-		presetPanel.add(GUI.createLabeledComponent(presetCombo, "Preset:"));
-		presetPanel.add(new SimpleFlowLayout.LineBreak(3));
-		presetPanel.add(updatePresetButton);
-		presetPanel.add(saveAsNewButton);
-		presetPanel.add(manageButton);
-
-	}
-
-	private void managePresets() {
-		MpsatPreset selected = (MpsatPreset)presetCombo.getSelectedItem();
-
-		MpsatPresetManagerDialog dlg = new MpsatPresetManagerDialog(this, presetManager);
-		dlg.setModalityType(ModalityType.APPLICATION_MODAL);
-		GUI.centerAndSizeToParent(dlg, this);
-		dlg.setVisible(true);
-
-		presetCombo.removeAllItems();
-		List<MpsatPreset> presets = presetManager.list();
-
-		boolean haveOldSelection = false;
-
-		for (MpsatPreset p : presets) {
-			presetCombo.addItem(p);
-			if (p == selected)
-				haveOldSelection = true;
-		}
-
-		if (haveOldSelection)
-			presetCombo.setSelectedItem(selected);
-		else
-			presetCombo.setSelectedIndex(0);
-
+		}, this);
 	}
 
 	private void createOptionsPanel() {
@@ -271,22 +207,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		reachPanel.add(reachText);
 	}
 
-	private void applySettingsToControls() {
-		MpsatPreset p = (MpsatPreset)presetCombo.getSelectedItem();
-
-		if (p == null)
-			return;
-
-		if (p.isBuiltIn()) {
-			updatePresetButton.setEnabled(false);
-			updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
-		}
-		else {
-			updatePresetButton.setEnabled(true);
-			updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
-		}
-
-		MpsatSettings settings = p.getSettings();
+	private void applySettingsToControls(MpsatSettings settings) {
 
 		modeCombo.setSelectedItem(settings.getMode());
 		satCombo.setSelectedIndex(settings.getSatSolver());
@@ -315,14 +236,15 @@ public class MpsatConfigurationDialog extends JDialog {
 		reachText.setText(settings.getReach());
 	}
 
-	public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
+	public MpsatConfigurationDialog(Window owner, PresetManager<MpsatSettings> presetManager) {
 		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
 
-		createPresetPanel();
+
 		createOptionsPanel();
 		createReachPanel();
 		createButtonsPanel();
+		createPresetPanel();
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
@@ -343,7 +265,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		setContentPane(content);
 
-		presetCombo.setSelectedIndex(0);
+		presetPanel.selectFirst();
 	}
 
 	public MpsatSettings getSettings() {
@@ -373,17 +295,6 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		buttonsPanel.add(cancelButton);
 		buttonsPanel.add(runButton);
-	}
-
-	private void createPreset() {
-		String desc = JOptionPane.showInputDialog(this, "Please enter the description of the new preset:");
-
-		if (! (desc == null || desc.isEmpty())) {
-			MpsatSettings settings = getSettingsFromControls();
-			MpsatPreset preset = presetManager.save(settings, desc);
-			presetCombo.addItem(preset);
-			presetCombo.setSelectedItem(preset);
-		}
 	}
 
 	private MpsatSettings getSettingsFromControls() {

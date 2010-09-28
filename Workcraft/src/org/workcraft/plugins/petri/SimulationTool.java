@@ -296,7 +296,7 @@ public class SimulationTool extends AbstractTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation O_O;;");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation: click on the highlighted transitions to fire them");
 	}
 
 	public String getLabel() {

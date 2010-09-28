@@ -7,9 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.w3c.dom.Element;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.XmlUtil;
 
 public class MpsatSettings {
 	public static final int SOLVER_ZCHAFF = 0;
@@ -21,12 +19,12 @@ public class MpsatSettings {
 		MINIMUM_COST
 	}
 
-	private MpsatMode mode;
-	private int verbosity;
-	private int satSolver;
-	private SolutionMode solutionMode;
-	private int solutionNumberLimit;
-	private String reach;
+	private MpsatMode mode = MpsatMode.DEADLOCK;
+	private int verbosity = 0;
+	private int satSolver = 0;
+	private SolutionMode solutionMode = SolutionMode.FIRST;
+	private int solutionNumberLimit = 0;
+	private String reach = "";
 
 	public MpsatSettings(MpsatMode mode, int verbosity, int satSolver,
 			SolutionMode solutionMode, int solutionNumberLimit, String reach) {
@@ -37,32 +35,6 @@ public class MpsatSettings {
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
-	}
-
-	public MpsatSettings(Element element) {
-		mode = MpsatMode.getMode(element.getAttribute("mode"));
-		verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
-		solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
-		satSolver = XmlUtil.readIntAttr(element, "satSolver", 0);
-		solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));
-
-		Element re = XmlUtil.getChildElement("reach", element);
-		reach = re.getTextContent();
-	}
-
-	public void toXML(Element parent) {
-		Element e = parent.getOwnerDocument().createElement("settings");
-		e.setAttribute("mode", mode.getArgument());
-		e.setAttribute("verbosity", Integer.toString(verbosity));
-		e.setAttribute("satSolver", Integer.toString(satSolver));
-		e.setAttribute("solutionMode", solutionMode.name());
-		e.setAttribute("solutionNumberLimit", Integer.toString(solutionNumberLimit));
-
-		Element re = parent.getOwnerDocument().createElement("reach");
-		re.setTextContent(reach);
-
-		e.appendChild(re);
-		parent.appendChild(e);
 	}
 
 	public MpsatMode getMode() {

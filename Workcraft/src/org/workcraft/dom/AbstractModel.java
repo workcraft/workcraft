@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.workcraft.LegacyPlugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
@@ -36,7 +35,7 @@ import org.workcraft.gui.propertyeditor.Properties;
  * @author Ivan Poliakov
  *
  */
-public abstract class AbstractModel implements LegacyPlugin, Model {
+public abstract class AbstractModel implements Model {
 	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private ReferenceManager referenceManager = new DefaultReferenceManager();
 

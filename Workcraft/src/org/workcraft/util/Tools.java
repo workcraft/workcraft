@@ -7,28 +7,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
 import org.workcraft.Tool;
-import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
 	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we, Framework framework) {
-		PluginInfo[] toolsInfo = framework.getPluginManager().getPluginsImplementing(Tool.class.getName());
 		ListMap<String, Pair<String, Tool>> toolSections = new ListMap<String, Pair<String, Tool>>();
 
-		for (PluginInfo info : toolsInfo) {
-			try {
-				Tool tool = (Tool) framework.getPluginManager().getSingleton(info);
+		for (PluginInfo<? extends Tool> info : framework.getPluginManager().getPlugins(Tool.class)) {
+			Tool tool = info.getSingleton();
 
-				if (!isApplicable(we, tool))
-					continue;
+			if (!isApplicable(we, tool))
+				continue;
 
-				toolSections.put(tool.getSection(), new Pair <String,Tool> (info.getDisplayName(), tool));
-
-			} catch (PluginInstantiationException e1) {
-				throw new RuntimeException (e1);
-			}
+			toolSections.put(tool.getSection(), new Pair <String,Tool> (tool.getDisplayName(), tool));
 		}
 
 		return toolSections;

@@ -24,6 +24,8 @@ package org.workcraft.gui.propertyeditor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,9 +41,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginInfo;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.PluginInfo;
 
 public class PersistentPropertyEditorDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
@@ -68,6 +69,12 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setModal(true);
 		setTitle("Settings");
+		addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e) {
+				ok();
+			}
+		});
 
 		Dimension parentSize = owner.getSize();
 		this.setSize(parentSize.width / 2, parentSize.height / 2);
@@ -119,36 +126,25 @@ public class PersistentPropertyEditorDialog extends JDialog {
 			return getSectionNode(thisLevelNode, nextLevel);
 	}
 
-	private void addItem (String section, PluginInfo info) {
+	private void addItem (String section, PluginInfo<? extends PersistentPropertyEditable> info) {
 		DefaultMutableTreeNode sectionNode = getSectionNode(sectionRoot, section);
 		sectionNode.add(new DefaultMutableTreeNode(info));
 	}
 
 	private void loadSections() {
-		PluginInfo[] infos = framework.getPluginManager().getPluginsImplementing(PersistentPropertyEditable.class.getName());
-		for (PluginInfo info : infos) {
-			try {
-				PersistentPropertyEditable e = (PersistentPropertyEditable)framework.getPluginManager().getSingleton(info);
-				addItem (e.getSection(), info);
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-			}
-
+		for (PluginInfo<? extends PersistentPropertyEditable> info : framework.getPluginManager().getPlugins(PersistentPropertyEditable.class)) {
+			PersistentPropertyEditable e = info.getSingleton();
+			addItem (e.getSection(), info);
 		}
 
 		sectionTree.setModel(new DefaultTreeModel(sectionRoot));
 	}
 
-	private void setObject(PluginInfo info) {
+	private void setObject(PluginInfo<? extends PersistentPropertyEditable> info) {
 		if (info == null)
 			propertiesTable.setObject(null);
 		else {
-			try {
-				PersistentPropertyEditable e = (PersistentPropertyEditable) framework.getPluginManager().getSingleton(info);
-				propertiesTable.setObject(e);
-			} catch (PluginInstantiationException e) {
-				e.printStackTrace();
-			}
+			propertiesTable.setObject(info.getSingleton());
 		}
 	}
 
@@ -166,12 +162,13 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		sectionTree.setShowsRootHandles(true);
 
 		sectionTree.addTreeSelectionListener(new TreeSelectionListener() {
+			@SuppressWarnings("unchecked")
 			public void valueChanged(TreeSelectionEvent e) {
 				Object userObject = ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
 				if (userObject instanceof PluginInfo) {
-					setObject( (PluginInfo) userObject );
+					setObject((PluginInfo<? extends PersistentPropertyEditable>) userObject );
 				} else {
-					setObject (null);
+					setObject(null);
 				}
 			}
 		});
@@ -202,6 +199,8 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		contentPane.add(sectionScroll, BorderLayout.WEST);
 		contentPane.add(propertiesPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
+
+		getRootPane().setDefaultButton(okButton);
 	}
 
 

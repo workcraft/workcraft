@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,7 @@ import org.workcraft.parsers.breeze.dom.PortVisitor;
 import org.workcraft.parsers.breeze.dom.SyncPortDeclaration;
 import org.workcraft.parsers.breeze.expressions.visitors.ToJavaAstConverter;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPullStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActiveFullDataPushStg;
 import org.workcraft.plugins.balsa.handshakestgbuilder.ActivePullStg;
@@ -89,13 +91,17 @@ import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.io.BalsaSystem;
 import org.workcraft.plugins.balsa.stg.ComponentStgBuilder;
 import org.workcraft.plugins.balsa.stg.GeneratedComponentStgBuilder;
+import org.workcraft.plugins.balsa.stg.HandshakeExtractor;
 import org.workcraft.plugins.balsa.stg.MyAstHelper;
 import org.workcraft.plugins.balsa.stg.MyDumpVisitor;
 import org.workcraft.plugins.balsa.stg.StgHandshakeInterpreter;
+import org.workcraft.plugins.balsa.stg.codegenerator.VisitableDataClassesGenerator.VisitorPatternDeclarations;
 import org.workcraft.util.FileUtils;
 
+import pcollections.PVector;
+
 public class CodeGenerator {
-	public void generateBaseClasses(File projectPath, String[] packageName, BalsaSystem balsa) throws IOException
+	public static void generateBaseClasses(File projectPath, String[] packageName, BalsaSystem balsa) throws IOException
 	{
 		Collection<? extends PrimitivePart> definitions = getBreezeDefinitions(balsa);
 
@@ -106,16 +112,50 @@ public class CodeGenerator {
 		pckgBuilder.deleteCharAt(pckgBuilder.length()-1);
 		String pckg = pckgBuilder.toString();
 
+		Map<String, Map<String, Type>> componentParameterTypes = new HashMap<String, Map<String,Type>>();
+		Map<String, Map<String, Type>> componentHandshakesTypes = new HashMap<String, Map<String,Type>>();
+
 		for(PrimitivePart def : definitions)
+		{
+			PVector<ParameterDeclaration> parameters = def.getParameters();
+			Map<String, Type> paramTypes = new HashMap<String, Type>();
+			Map<String, Type> hsTypes = new HashMap<String, Type>();
+			for(ParameterDeclaration parameter : parameters)
+				paramTypes.put(parameter.getName(), getParameterType(parameter));
+			componentParameterTypes.put(def.getName(), paramTypes);
+
+			for(PortDeclaration port : def.getPorts())
+				hsTypes.put(port.getName(), getPortType(port, false));
+
+			componentHandshakesTypes.put(def.getName()+"Handshakes", hsTypes);
+		}
+
+		VisitorPatternDeclarations visitableParametersClasses = VisitableDataClassesGenerator.generate(componentParameterTypes, "BreezeComponent");
+		VisitorPatternDeclarations visitableHandshakesClasses = VisitableDataClassesGenerator.generate(componentHandshakesTypes, "BreezeComponentHandshakes");
+
+		for(PrimitivePart def : definitions)
+		{
+			generatePropertiesConstructor(def, visitableParametersClasses.dataClasses.get(def.getName()));
+			generateStgInterfaceConstructor(def, false, visitableHandshakesClasses.dataClasses.get(def.getName()+"Handshakes"));
+		}
+
+		List<TypeDeclaration> declarations = new ArrayList<TypeDeclaration>();
+
+		//declarations.addAll(visitableParametersClasses.getAllTypeDeclarations());
+		//declarations.addAll(visitableHandshakesClasses.getAllTypeDeclarations());
+
+		for(PrimitivePart def : definitions)
+			declarations.add(generateStgBuilder(def));
+
+
+		for(TypeDeclaration decl : declarations)
 		{
 			CompilationUnit cu = new CompilationUnit();
 			cu.setPackage(new PackageDeclaration(new NameExpr(pckg)));
-			PrimitivePart p = (PrimitivePart)def;
-			TypeDeclaration stgBuilder = generateStgBuilder(p);
-			ASTHelper.addTypeDeclaration(cu, stgBuilder);
+			ASTHelper.addTypeDeclaration(cu, decl);
 
 			String source = cu.toString();
-			FileUtils.writeAllText(new File(destinationFolder, stgBuilder.getName()+".java"), source);
+			FileUtils.writeAllText(new File(destinationFolder, decl.getName()+".java"), source);
 		}
 	}
 
@@ -167,7 +207,7 @@ public class CodeGenerator {
 		}
 	}
 
-	private File appendPath(File path, String[] toAppend) {
+	private static File appendPath(File path, String[] toAppend) {
 		File result = path;
 		for(String s : toAppend)
 			result = new File(result, s);
@@ -218,13 +258,11 @@ public class CodeGenerator {
 		return p.getName() + "StgBuilder";
 	}
 
-	private TypeDeclaration generatePropertiesClass(PrimitivePart p) {
-		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getPropertiesClassName(p));
-
+	private static void generatePropertiesConstructor(PrimitivePart p, ClassOrInterfaceDeclaration c)
+	{
 		ConstructorDeclaration ctor = MyAstHelper.addNewConstructor(c);
 		String parametersArg = "parameters";
 		MyAstHelper.addParameter(ctor, ParameterScope.class.getCanonicalName(), parametersArg);
-
 		NameExpr parametersRef = new NameExpr(parametersArg);
 
 		for(ParameterDeclaration param : p.getParameters())
@@ -232,19 +270,31 @@ public class CodeGenerator {
 			String paramName = param.getName();
 			Type paramType = getParameterType(param);
 
-			ASTHelper.addMember(c, ASTHelper.createFieldDeclaration(ModifierSet.PUBLIC | ModifierSet.FINAL, paramType, paramName));
-
-			List<Expression> getArgs = new ArrayList<Expression>(1);
-			getArgs.add(new StringLiteralExpr(paramName));
-			Expression cast = new CastExpr(getBoxingType(paramType), new MethodCallExpr(parametersRef, "get", getArgs));
+			MethodCallExpr call = new MethodCallExpr(parametersRef, "get");
+			ASTHelper.addArgument(call, new StringLiteralExpr(paramName));
+			Expression cast = new CastExpr(getBoxingType(paramType), call);
 			AssignExpr assign = new AssignExpr(new NameExpr(paramName), cast , Operator.assign);
 			MyAstHelper.addStatement(ctor, new ExpressionStmt(assign));
 		}
+	}
+
+	private static TypeDeclaration generatePropertiesClass(PrimitivePart p) {
+		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getPropertiesClassName(p));
+
+		for(ParameterDeclaration param : p.getParameters())
+		{
+			String paramName = param.getName();
+			Type paramType = getParameterType(param);
+
+			ASTHelper.addMember(c, ASTHelper.createFieldDeclaration(ModifierSet.PUBLIC | ModifierSet.FINAL, paramType, paramName));
+		}
+
+		generatePropertiesConstructor(p, c);
 
 		return c;
 	}
 
-	class BoxingVisitor extends GenericVisitorAdapter<ClassOrInterfaceType, Object>
+	static class BoxingVisitor extends GenericVisitorAdapter<ClassOrInterfaceType, Object>
 	{
 		@Override
 		public ClassOrInterfaceType visit(PrimitiveType n, Object arg) {
@@ -266,14 +316,14 @@ public class CodeGenerator {
 		}
 	}
 
-	private ClassOrInterfaceType getBoxingType(Type paramType) {
+	private static ClassOrInterfaceType getBoxingType(Type paramType) {
 		ClassOrInterfaceType result = paramType.accept(new BoxingVisitor(), null);
 		if(result == null)
 			throw new NotSupportedException("The given type is not supported");
 		return result;
 	}
 
-	private Type getParameterType(ParameterDeclaration param) {
+	private static Type getParameterType(ParameterDeclaration param) {
 		Class<?> type = param.getType().getJavaType();
 
 		if(type.isPrimitive())
@@ -282,7 +332,7 @@ public class CodeGenerator {
 			return new ClassOrInterfaceType(type.getCanonicalName());
 	}
 
-	private Primitive classToPrimitive(Class<?> type)
+	private static Primitive classToPrimitive(Class<?> type)
 	{
 		if(type == java.lang.Boolean.TYPE)
 			return Primitive.Boolean;
@@ -305,8 +355,77 @@ public class CodeGenerator {
 		throw new NotSupportedException(type.getCanonicalName() + " is not a primitive type");
 	}
 
-	private TypeDeclaration generateStgInterfaceClass(PrimitivePart p, boolean environment) {
-		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getHandshakesClassName(p, environment));
+	private static TypeDeclaration generateHandshakesClass(PrimitivePart p)
+	{
+		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getHandshakesClassName(p));
+
+		generateHandshakesClassConstructor(p, c);
+
+		for(PortDeclaration port : p.getPorts())
+		{
+			ClassOrInterfaceType portType = new ClassOrInterfaceType(Handshake.class.getCanonicalName());
+			if(port.isArrayed())
+				portType = new ClassOrInterfaceType(java.util.List.class.getCanonicalName()+"<"+portType.getName()+">");
+			ASTHelper.addMember(c, ASTHelper.createFieldDeclaration(ModifierSet.PUBLIC | ModifierSet.FINAL, portType, port.getName()));
+		}
+
+		return c;
+	}
+
+	private static void generateHandshakesClassConstructor(PrimitivePart p, ClassOrInterfaceDeclaration c) {
+		ConstructorDeclaration ctor = MyAstHelper.addNewConstructor(c);
+		String propertiesParamName = "component";
+		MyAstHelper.addParameter(ctor, getPropertiesClassName(p), propertiesParamName);
+		String handshakesParamName = "handshakes";
+		MyAstHelper.addParameter(ctor, getHandshakeMapClassName(), handshakesParamName);
+
+		NameExpr handshakesRef = new NameExpr(handshakesParamName);
+		NameExpr propertiesRef = new NameExpr(propertiesParamName);
+
+
+		for(PortDeclaration port : p.getPorts())
+		{
+			String portName = port.getName();
+
+			NameExpr extractor = new NameExpr(HandshakeExtractor.class.getCanonicalName());
+
+			String interpretMethodName = "extract";
+
+			MethodCallExpr extract = new MethodCallExpr(extractor, interpretMethodName);
+
+			ASTHelper.addArgument(extract, handshakesRef);
+			ASTHelper.addArgument(extract, new StringLiteralExpr(portName));
+			if(port.isArrayed())
+				ASTHelper.addArgument(extract, translateExpression(propertiesRef, port.count()));
+
+			AssignExpr assign = new AssignExpr(new NameExpr(portName), extract, Operator.assign);
+			MyAstHelper.addStatement(ctor, new ExpressionStmt(assign));
+		}
+	}
+
+	private static TypeDeclaration generateStgInterfaceClass(PrimitivePart p, boolean environment) {
+		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC | ModifierSet.STATIC, false, getStgInterfaceClassName(p, environment));
+
+		generateStgInterfaceConstructor(p, environment, c);
+
+		for(PortDeclaration port : p.getPorts())
+		{
+			ClassOrInterfaceType portType = getPortType(port, environment);
+			ASTHelper.addMember(c, ASTHelper.createFieldDeclaration(ModifierSet.PUBLIC | ModifierSet.FINAL, portType, port.getName()));
+		}
+
+		return c;
+	}
+
+	private static ClassOrInterfaceType getPortType(PortDeclaration port, boolean environment) {
+		ClassOrInterfaceType singlePortType = getSinglePortType(port, environment);
+		if(port.isArrayed())
+			return new ClassOrInterfaceType("java.util.List<"+singlePortType.getName()+">");
+		else
+			return singlePortType;
+	}
+
+	private static void generateStgInterfaceConstructor(PrimitivePart p, boolean environment, ClassOrInterfaceDeclaration c) {
 
 		ConstructorDeclaration ctor = MyAstHelper.addNewConstructor(c);
 		String componentArg = "component";
@@ -320,13 +439,7 @@ public class CodeGenerator {
 		for(PortDeclaration port : p.getPorts())
 		{
 			String portName = port.getName();
-			ClassOrInterfaceType singlePortType = getPortType(port, environment);
-			ClassOrInterfaceType portType = singlePortType;
-			if(port.isArrayed())
-				portType = new ClassOrInterfaceType("java.util.List<"+portType.getName()+">");
-
-			ASTHelper.addMember(c, ASTHelper.createFieldDeclaration(ModifierSet.PUBLIC | ModifierSet.FINAL, portType, portName));
-
+			ClassOrInterfaceType singlePortType = getSinglePortType(port, environment);
 
 			NameExpr interpreter = new NameExpr(StgHandshakeInterpreter.class.getCanonicalName());
 
@@ -348,14 +461,13 @@ public class CodeGenerator {
 			MyAstHelper.addStatement(ctor, new ExpressionStmt(assign));
 		}
 
-		return c;
 	}
 
-	private Expression translateExpression(NameExpr scope, org.workcraft.parsers.breeze.expressions.Expression<Integer> count) {
+	private static Expression translateExpression(NameExpr scope, org.workcraft.parsers.breeze.expressions.Expression<Integer> count) {
 		return count.accept(new ToJavaAstConverter(scope));
 	}
 
-	private ClassOrInterfaceType getPortType(PortDeclaration port, final boolean environment) {
+	private static ClassOrInterfaceType getSinglePortType(PortDeclaration port, final boolean environment) {
 		String type;
 		Class<?> c;
 
@@ -422,7 +534,7 @@ public class CodeGenerator {
 		return new ClassOrInterfaceType(type);
 	}
 
-	private TypeDeclaration generateStgBuilder(PrimitivePart p) {
+	private static TypeDeclaration generateStgBuilder(PrimitivePart p) {
 		ClassOrInterfaceDeclaration c = new ClassOrInterfaceDeclaration(ModifierSet.PUBLIC | ModifierSet.ABSTRACT, false, getStgBuilderClassName(p));
 
 		List<ClassOrInterfaceType> extendsList = new ArrayList<ClassOrInterfaceType>(1);
@@ -432,21 +544,25 @@ public class CodeGenerator {
 		ASTHelper.addMember(c, generatePropertiesClass(p));
 		ASTHelper.addMember(c, generateStgInterfaceClass(p, true));
 		ASTHelper.addMember(c, generateStgInterfaceClass(p, false));
+		ASTHelper.addMember(c, generateHandshakesClass(p));
 
 		ASTHelper.addMember(c, generatePropertiesMethod(p));
+		ASTHelper.addMember(c, generateStgHandshakesMethod(p));
 		ASTHelper.addMember(c, generateHandshakesMethod(p));
 
 		return c;
 	}
-	private String getBaseClassName(PrimitivePart p) {
+	private static String getBaseClassName(PrimitivePart p) {
 		return GeneratedComponentStgBuilder.class.getCanonicalName() +
 		"<"
 		+ getStgBuilderClassName(p) + "." + getPropertiesClassName(p) +
 		", "
-		+ getStgBuilderClassName(p) + "." + getHandshakesClassName(p, false) + ">";
+		+ getStgBuilderClassName(p) + "." + getStgInterfaceClassName(p, false) +
+		", "
+		+ getStgBuilderClassName(p) + "." + getHandshakesClassName(p) + ">";
 	}
 
-	private BodyDeclaration generatePropertiesMethod(PrimitivePart p) {
+	private static BodyDeclaration generatePropertiesMethod(PrimitivePart p) {
 		MethodDeclaration m = new MethodDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, new VoidType(), "makeProperties");
 		MyAstHelper.addMarkerAnnotation(m, "Override");
 		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getPropertiesClassName(p));
@@ -463,10 +579,10 @@ public class CodeGenerator {
 		return m;
 	}
 
-	private BodyDeclaration generateHandshakesMethod(PrimitivePart p) {
-		MethodDeclaration m = new MethodDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, new VoidType(), "makeHandshakes");
+	private static BodyDeclaration generateStgHandshakesMethod(PrimitivePart p) {
+		MethodDeclaration m = new MethodDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, new VoidType(), "makeHandshakesStg");
 		MyAstHelper.addMarkerAnnotation(m, "Override");
-		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getHandshakesClassName(p, false));
+		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getStgInterfaceClassName(p, false));
 		m.setType(returnClass);
 
 		String componentParameterName = "component";
@@ -480,19 +596,44 @@ public class CodeGenerator {
 		MyAstHelper.addStatement(m, new ReturnStmt(construct));
 		return m;
 	}
-	private String getStgMapClassName() {
+	private static BodyDeclaration generateHandshakesMethod(PrimitivePart p) {
+		MethodDeclaration m = new MethodDeclaration(ModifierSet.FINAL | ModifierSet.PUBLIC, new VoidType(), "makeHandshakes");
+		MyAstHelper.addMarkerAnnotation(m, "Override");
+		ClassOrInterfaceType returnClass = new ClassOrInterfaceType(getHandshakesClassName(p));
+		m.setType(returnClass);
+
+		String componentParameterName = "component";
+		String handshakesParameterName = "handshakes";
+		ASTHelper.addParameter(m, new Parameter(new ClassOrInterfaceType(getPropertiesClassName(p)), new VariableDeclaratorId("component")));
+		ASTHelper.addParameter(m, new Parameter(new ClassOrInterfaceType(getHandshakeMapClassName()), new VariableDeclaratorId("handshakes")));
+		ArrayList<Expression> arguments = new ArrayList<Expression>(2);
+		arguments.add(new NameExpr(componentParameterName));
+		arguments.add(new NameExpr(handshakesParameterName));
+		ObjectCreationExpr construct = new ObjectCreationExpr(null, returnClass, arguments);
+		MyAstHelper.addStatement(m, new ReturnStmt(construct));
+		return m;
+	}
+	private static String getHandshakeMapClassName() {
+		return Map.class.getCanonicalName()+"<"+String.class.getCanonicalName()+","+Handshake.class.getCanonicalName()+">";
+	}
+
+	private static String getStgMapClassName() {
 		return Map.class.getCanonicalName() + "<" + String.class.getCanonicalName() + ", " + StgInterface.class.getCanonicalName() +">";
 	}
 
-	private String getHandshakesClassName(PrimitivePart p, boolean environment) {
-		return p.getName() + "Handshakes" + (environment?"Env":"");
+	private static String getStgInterfaceClassName(PrimitivePart p, boolean environment) {
+		return p.getName() + "StgInterface" + (environment?"Env":"");
 	}
 
-	private String getPropertiesClassName(PrimitivePart p) {
+	private static String getHandshakesClassName(PrimitivePart p) {
+		return p.getName() + "Handshakes";
+	}
+
+	private static String getPropertiesClassName(PrimitivePart p) {
 		return p.getName();
 	}
 
-	private String getStgBuilderClassName(PrimitivePart p) {
+	private static String getStgBuilderClassName(PrimitivePart p) {
 		return p.getName() + "StgBuilderBase";
 	}
 }

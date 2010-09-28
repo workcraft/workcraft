@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.LegacyPlugin;
+import org.workcraft.Plugin;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -33,7 +33,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @DisplayName("SDFS")
-public class SDFSVisualSettings implements PersistentPropertyEditable, LegacyPlugin {
+public class SDFSVisualSettings implements PersistentPropertyEditable, Plugin {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	private static boolean useGlobal = true;
