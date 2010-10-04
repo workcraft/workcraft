@@ -2,6 +2,8 @@ package org.workcraft.plugins.balsa.stg.implementations;
 
 import java.util.Map;
 
+import org.workcraft.plugins.balsa.HandshakeComponentLayout;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stg.generated.*;
@@ -11,7 +13,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 public final class FalseVariableStgBuilder extends FalseVariableStgBuilderBase {
 
 	@Override
-	public void buildStg(FalseVariable component, FalseVariableHandshakes h,
+	public void buildStg(FalseVariable component, FalseVariableStgInterface h,
 			StrictPetriBuilder b) {
 		b.connect(h.write.go(), h.signal.go());
 		b.connect(h.signal.done(), h.write.done());
@@ -24,7 +26,7 @@ public final class FalseVariableStgBuilder extends FalseVariableStgBuilderBase {
 
 		StgPlace dataValid = b.buildPlace(0);
 		FalseVariable c = new FalseVariable(component.parameters());
-		FalseVariableHandshakesEnv h = new FalseVariableHandshakesEnv(c, handshakes);
+		FalseVariableStgInterfaceEnv h = new FalseVariableStgInterfaceEnv(c, handshakes);
 		b.connect(h.signal.go(), dataValid);
 		for(int i=0;i<c.readPortCount;i++)
 		{
@@ -32,5 +34,35 @@ public final class FalseVariableStgBuilder extends FalseVariableStgBuilderBase {
 			b.connect(h.read.get(i).done(), dataValid);
 		}
 		b.connect(dataValid, h.signal.done());
+	}
+
+	@Override
+	public HandshakeComponentLayout getLayout(FalseVariable properties, final FalseVariableHandshakes hs) {
+		return new HandshakeComponentLayout() {
+
+			@Override
+			public Handshake getTop() {
+				return null;
+			}
+
+			@Override
+			public Handshake getBottom() {
+				return hs.signal;
+			}
+
+			@Override
+			public Handshake[][] getLeft() {
+				return new Handshake[][]{
+						{hs.write}
+				};
+			}
+
+			@Override
+			public Handshake[][] getRight() {
+				return new Handshake[][]{
+						hs.read.toArray(new Handshake[0])
+				};
+			}
+		};
 	}
 }

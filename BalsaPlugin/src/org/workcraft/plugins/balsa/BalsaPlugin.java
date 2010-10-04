@@ -16,12 +16,6 @@ import org.workcraft.plugins.balsa.io.DotExporter;
 import tools.ExtractControlSTG;
 
 public class BalsaPlugin implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[0];
-	}
-
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager pluginManager = framework.getPluginManager();

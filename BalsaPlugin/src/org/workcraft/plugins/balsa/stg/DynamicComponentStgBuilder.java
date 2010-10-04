@@ -22,13 +22,16 @@ package org.workcraft.plugins.balsa.stg;
 
 import java.util.Map;
 
+import org.workcraft.plugins.balsa.HandshakeComponentLayout;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.plugins.balsa.handshakebuilder.Handshake;
 import org.workcraft.plugins.balsa.handshakestgbuilder.StgInterface;
 import org.workcraft.plugins.balsa.stg.implementations.StgBuilderSelector;
 import org.workcraft.plugins.balsa.stgbuilder.StrictPetriBuilder;
 
 public class DynamicComponentStgBuilder extends ComponentStgBuilder<DynamicComponent> {
 
+	@Override
 	public void buildStg(DynamicComponent component,
 			Map<String, StgInterface> handshakes, StrictPetriBuilder builder) {
 		getBuilder(component).buildStg(component, handshakes, builder);
@@ -36,8 +39,13 @@ public class DynamicComponentStgBuilder extends ComponentStgBuilder<DynamicCompo
 	private ComponentStgBuilder<DynamicComponent> getBuilder(DynamicComponent component) {
 		return StgBuilderSelector.create(component.declaration().getName());
 	}
+	@Override
 	public void buildEnvironment(DynamicComponent component, Map<String, StgInterface> handshakes, StrictPetriBuilder builder)
 	{
 		getBuilder(component).buildEnvironmentConstraint(component, handshakes, builder);
+	}
+	@Override
+	public HandshakeComponentLayout getLayout(DynamicComponent component, Map<String, Handshake> handshakes) {
+		return getBuilder(component).getLayout(component, handshakes);
 	}
 }

@@ -63,7 +63,7 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 	Map<Handshake,BreezeHandshake> handshakeComponents;
 	Map<String,Handshake> handshakes;
 	HandshakeVisualLayout visualLayout;
-	Component balsaComponent;
+	DynamicComponent balsaComponent;
 
 	private static final double sideDoubleHandshakeAngle = 3.141592/4; // 45 degrees in radians
 	private static final double componentRadius = 0.5;

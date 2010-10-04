@@ -8,12 +8,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 
 public class CpogModule implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[0];
-	}
-
 	@Override
 	public void init(Framework framework) {
 		final PluginManager p = framework.getPluginManager();

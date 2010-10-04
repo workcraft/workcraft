@@ -44,7 +44,7 @@ public class GenerateMainClasses
 			return 2;
 		}
 
-		new CodeGenerator().generateBaseClasses(outPath, packagePath, balsa);
+		CodeGenerator.generateBaseClasses(outPath, packagePath, balsa);
 
 		System.out.println("Classes generated successfully.");
 		return 0;
