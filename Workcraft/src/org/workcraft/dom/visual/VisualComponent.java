@@ -148,9 +148,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		this.fillColor = fillColor;
 	}
 
-	public void draw(java.awt.Graphics2D g) {
-	}
-
 	public MathNode getReferencedComponent() {
 		return refNode;
 	}

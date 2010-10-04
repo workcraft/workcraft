@@ -6,6 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
@@ -15,12 +16,6 @@ import org.workcraft.plugins.balsa.io.DotExporter;
 import tools.ExtractControlSTG;
 
 public class BalsaPlugin implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[0];
-	}
-
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager pluginManager = framework.getPluginManager();
@@ -37,6 +32,11 @@ public class BalsaPlugin implements Module {
 					@Override
 					public MathModel createMathModel() {
 						return new BalsaCircuit();
+					}
+
+					@Override
+					public VisualModelDescriptor getVisualModelDescriptor() {
+						return null;
 					}
 				};
 			}

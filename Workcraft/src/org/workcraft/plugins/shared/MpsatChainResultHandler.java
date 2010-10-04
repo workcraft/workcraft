@@ -35,6 +35,10 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			case COMPLEX_GATE_IMPLEMENTATION:
 				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, mpsatChainResult));
 				break;
+			case STG_REACHABILITY:
+				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, mpsatChainResult));
+				break;
+
 			default:
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override

@@ -21,30 +21,22 @@ import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 
 public class Serialisers implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[]{
-				AffineTransformSerialiser.class,
-				BooleanSerialiser.class,
-				DoubleSerialiser.class,
-				EnumSerialiser.class,
-				IntSerialiser.class,
-				StringSerialiser.class,
-				BezierSerialiser.class,
-				ConnectionSerialiser.class,
-				ImplicitPlaceArcSerialiser.class,
-				VisualConnectionSerialiser.class,
-
-				DotGSerialiser.class,
-		};
-	}
-
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();
 		p.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){public ModelDeserialiser create(){return new XMLDeserialiser(framework.getPluginManager());}});
 		p.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){public ModelSerialiser create(){return new XMLSerialiser(framework.getPluginManager());}});
-	}
 
+		p.registerClass(ModelSerialiser.class, DotGSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, AffineTransformSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BooleanSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, DoubleSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, EnumSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, IntSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, StringSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BezierSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ConnectionSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualConnectionSerialiser.class);
+	}
 }

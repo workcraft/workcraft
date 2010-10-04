@@ -26,14 +26,14 @@ import java.util.ArrayList;
 
 public class ConstructorParametersMatcher
 {
-	private static class ConstructorInfo implements MethodParametersMatcher.MethodInfo
+	private static class ConstructorInfo<T> implements MethodParametersMatcher.MethodInfo
 	{
-		public ConstructorInfo (Constructor<?> constructor)
+		public ConstructorInfo (Constructor<? extends T> constructor)
 		{
 			this.constructor = constructor;
 			this.parameterTypes = constructor.getParameterTypes();
 		}
-		public final Constructor<?> constructor;
+		public final Constructor<? extends T> constructor;
 		private final Class<?>[] parameterTypes;
 
 		public Class<?>[] getParameterTypes() {
@@ -41,11 +41,12 @@ public class ConstructorParametersMatcher
 		}
 	}
 
-	public Constructor<?> match(Class<?> c, Class<?>... parameters) throws NoSuchMethodException
+	@SuppressWarnings("unchecked") // java sucks
+	public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException
 	{
-		ArrayList<ConstructorInfo> constructors = new ArrayList<ConstructorInfo>();
+		ArrayList<ConstructorInfo<T>> constructors = new ArrayList<ConstructorInfo<T>>();
 		for(Constructor<?> constructor : c.getConstructors())
-			constructors.add(new ConstructorInfo(constructor));
+			constructors.add(new ConstructorInfo<T>((Constructor<? extends T>)constructor));
 
 		try
 		{
