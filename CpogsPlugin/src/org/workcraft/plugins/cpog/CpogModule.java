@@ -5,6 +5,7 @@ import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.VisualModelDescriptor;
 
 public class CpogModule implements Module {
 
@@ -28,6 +29,11 @@ public class CpogModule implements Module {
 					@Override
 					public String getDisplayName() {
 						return "Conditional Partial Order Graph";
+					}
+
+					@Override
+					public VisualModelDescriptor getVisualModelDescriptor() {
+						return null;
 					}
 				};
 			}

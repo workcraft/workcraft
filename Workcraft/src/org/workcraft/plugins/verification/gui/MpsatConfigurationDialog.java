@@ -65,9 +65,9 @@ public class MpsatConfigurationDialog extends JDialog {
 	private void createPresetPanel() {
 		ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<Preset<MpsatSettings>>();
 
-		builtInPresets.add(new Preset<MpsatSettings>("Deadlock", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.FIRST, 0, ""), true));
-		builtInPresets.add(new Preset<MpsatSettings>("Deadlock (shortest trace)", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.MINIMUM_COST, 0, ""), true));
-		builtInPresets.add(new Preset<MpsatSettings>("Deadlock (all traces)", new MpsatSettings(MpsatMode.DEADLOCK, 0, 0, SolutionMode.ALL, 0, ""), true));
+		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK);
+		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_ALL_TRACES);
+		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_SHORTEST_TRACE);
 
 		presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, new SettingsToControlsMapper<MpsatSettings>() {
 			@Override

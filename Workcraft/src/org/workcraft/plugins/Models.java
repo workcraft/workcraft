@@ -5,6 +5,7 @@ import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.petri.PetriNet;
@@ -23,6 +24,11 @@ public class Models implements Module {
 		public MathModel createMathModel() {
 			return new STG();
 		}
+
+		@Override
+		public VisualModelDescriptor getVisualModelDescriptor() {
+			return null;
+		}
 	}
 
 	public static class PetriModelDescriptor implements ModelDescriptor
@@ -35,6 +41,11 @@ public class Models implements Module {
 		@Override
 		public MathModel createMathModel() {
 			return new PetriNet();
+		}
+
+		@Override
+		public VisualModelDescriptor getVisualModelDescriptor() {
+			return null;
 		}
 	}
 
@@ -49,12 +60,11 @@ public class Models implements Module {
 		public MathModel createMathModel() {
 			return new Graph();
 		}
-	}
 
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[]{
-		};
+		@Override
+		public VisualModelDescriptor getVisualModelDescriptor() {
+			return null;
+		}
 	}
 
 	@Override
