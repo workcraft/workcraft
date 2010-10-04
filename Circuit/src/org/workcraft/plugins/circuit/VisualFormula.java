@@ -22,10 +22,13 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.event.KeyEvent;
+import java.awt.font.GlyphVector;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import java.awt.Graphics2D;
 
 @DisplayName("Formula")
 @Hotkey(KeyEvent.VK_F)
@@ -33,8 +36,29 @@ import org.workcraft.annotations.SVGIcon;
 
 public class VisualFormula extends VisualCircuitComponent {
 
-	public VisualFormula(CircuitComponent component) {
+	GlyphVector formulaGlyph=null;
+
+	public VisualFormula(Formula component) {
 		super(component);
+		addPropertyDeclarations();
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration(this, "Formula", "getFormula", "setFormula", String.class));
+	}
+
+	public String getFormula() {
+		return ((Formula)getReferencedComponent()).getFormula();
+	}
+
+	public void setFormula(String formula) {
+		((Formula)getReferencedComponent()).setFormula(formula);
+	}
+
+	@Override
+	public void draw(Graphics2D g) {
+		super.draw(g);
+
 	}
 
 

@@ -77,7 +77,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 
 	private Rectangle2D contactLabelBB = null;
-	private Rectangle2D totalBB = null;
+	protected Rectangle2D totalBB = null;
 
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component);
@@ -551,4 +551,5 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	public void setName(String name) {
 		((CircuitComponent)getReferencedComponent()).setName(name);
 	}
+
 }
