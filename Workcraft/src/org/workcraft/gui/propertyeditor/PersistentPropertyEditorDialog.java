@@ -126,21 +126,21 @@ public class PersistentPropertyEditorDialog extends JDialog {
 			return getSectionNode(thisLevelNode, nextLevel);
 	}
 
-	private void addItem (String section, PluginInfo<? extends PersistentPropertyEditable> info) {
+	private void addItem (String section, PluginInfo<? extends SettingsPage> info) {
 		DefaultMutableTreeNode sectionNode = getSectionNode(sectionRoot, section);
 		sectionNode.add(new DefaultMutableTreeNode(info));
 	}
 
 	private void loadSections() {
-		for (PluginInfo<? extends PersistentPropertyEditable> info : framework.getPluginManager().getPlugins(PersistentPropertyEditable.class)) {
-			PersistentPropertyEditable e = info.getSingleton();
+		for (PluginInfo<? extends SettingsPage> info : framework.getPluginManager().getPlugins(SettingsPage.class)) {
+			SettingsPage e = info.getSingleton();
 			addItem (e.getSection(), info);
 		}
 
 		sectionTree.setModel(new DefaultTreeModel(sectionRoot));
 	}
 
-	private void setObject(PluginInfo<? extends PersistentPropertyEditable> info) {
+	private void setObject(PluginInfo<? extends SettingsPage> info) {
 		if (info == null)
 			propertiesTable.setObject(null);
 		else {
@@ -166,7 +166,7 @@ public class PersistentPropertyEditorDialog extends JDialog {
 			public void valueChanged(TreeSelectionEvent e) {
 				Object userObject = ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
 				if (userObject instanceof PluginInfo) {
-					setObject((PluginInfo<? extends PersistentPropertyEditable>) userObject );
+					setObject((PluginInfo<? extends SettingsPage>) userObject );
 				} else {
 					setObject(null);
 				}

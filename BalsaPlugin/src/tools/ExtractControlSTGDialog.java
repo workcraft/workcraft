@@ -18,10 +18,10 @@ import javax.swing.JScrollPane;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.balsa.io.BalsaExportConfig;
 import org.workcraft.plugins.balsa.io.SynthesisSettings;
+import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
-import org.workcraft.plugins.verification.gui.PresetManagerPanel;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")

@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.BalsaModelDescriptor;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Importer;
@@ -37,6 +38,7 @@ import org.workcraft.parsers.breeze.DefaultBreezeFactory;
 import org.workcraft.parsers.breeze.EmptyValueList;
 import org.workcraft.parsers.breeze.dom.BreezePart;
 import org.workcraft.plugins.balsa.BalsaCircuit;
+import org.workcraft.workspace.ModelEntry;
 
 public class BreezeImporter implements Importer
 {
@@ -102,10 +104,10 @@ public class BreezeImporter implements Importer
 	}
 
 	@Override
-	public BalsaCircuit importFrom(InputStream in) throws DeserialisationException, IOException
+	public ModelEntry importFrom(InputStream in) throws DeserialisationException, IOException
 	{
 		try {
-			return importFromBreeze(in, null);
+			return new ModelEntry (new BalsaModelDescriptor(), importFromBreeze(in, null));
 		} catch (OperationCancelledException e) {
 			throw new java.lang.RuntimeException(e);
 		}

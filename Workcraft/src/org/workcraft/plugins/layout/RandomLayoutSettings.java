@@ -26,13 +26,11 @@ import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 
-@DisplayName ("Random")
-public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin {
+public class RandomLayoutSettings implements SettingsPage {
 	protected static double startX = 0;
 	protected static double startY = 0;
 	protected static double rangeX = 30;
@@ -53,14 +51,14 @@ public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin 
 		return properties;
 	}
 
-	public void loadPersistentProperties(Config config) {
+	public void load(Config config) {
 		startX = config.getDouble("RandomLayout.startX", 0);
 		startY = config.getDouble("RandomLayout.startY", 0);
 		rangeX = config.getDouble("RandomLayout.rangeX", 30);
 		rangeY = config.getDouble("RandomLayout.rangeY", 30);
 	}
 
-	public void storePersistentProperties(Config config) {
+	public void save(Config config) {
 		config.setDouble("RandomLayout.startX", startX);
 		config.setDouble("RandomLayout.startY", startY);
 		config.setDouble("RandomLayout.rangeX", rangeX);
@@ -93,5 +91,9 @@ public class RandomLayoutSettings implements PersistentPropertyEditable, Plugin 
 	}
 	public static void setRangeY(double rangeY) {
 		RandomLayoutSettings.rangeY = rangeY;
+	}
+	@Override
+	public String getName() {
+		return "Random";
 	}
 }

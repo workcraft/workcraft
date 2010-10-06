@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNets"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
+	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

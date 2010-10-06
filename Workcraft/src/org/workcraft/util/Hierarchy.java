@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import net.sf.jga.fn.UnaryFunctor;
+
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.NodeHelper;
-
-import net.sf.jga.fn.UnaryFunctor;
 
 public class Hierarchy {
 	public static <T> Func<Node, Boolean> getTypeFilter(
@@ -135,22 +135,23 @@ public class Hierarchy {
 		return getNearestAncestor (parent, Container.class);
 	}
 
-	@SuppressWarnings({ "unchecked", "serial" })
+	@SuppressWarnings({ "unchecked" })
 	public static <T> T getNearestAncestor(Node node, final Class<T> type)
 	{
-		return (T)getNearestAncestor(node, new UnaryFunctor<Node, Boolean>()
+		return (T)getNearestAncestor(node, new Func<Node, Boolean>()
 				{
-					public Boolean fn(Node node) {
+					@Override
+					public Boolean eval(Node node) {
 						return type.isInstance(node);
 					}
 				});
 	}
 
-	public static Node getNearestAncestor(Node node, UnaryFunctor<Node, Boolean> filter) {
+	public static Node getNearestAncestor(Node node, Func<Node, Boolean> filter) {
 		Node parent = node;
 		while(parent != null)
 		{
-			if(filter.fn(parent))
+			if(filter.eval(parent))
 				return parent;
 			parent = parent.getParent();
 		}

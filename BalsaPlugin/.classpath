@@ -9,5 +9,10 @@
 	<classpathentry kind="src" path="/BalsaPluginBase"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DesiJ"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNets"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MpsatSupport"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetrifySupport"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DesiJSupport"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

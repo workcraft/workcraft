@@ -9,4 +9,9 @@ public class WorkflowModule implements Module {
 	public void init(Framework framework) {
 		framework.getPluginManager().registerClass(ModelDescriptor.class, WorkflowModelDescriptor.class);
 	}
+
+	@Override
+	public String getDescription() {
+		return "Workflow";
+	}
 }
