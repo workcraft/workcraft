@@ -79,7 +79,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
+import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tabs.DockableTab;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -1036,7 +1036,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void editSettings() {
-		PersistentPropertyEditorDialog dlg = new PersistentPropertyEditorDialog(this);
+		SettingsEditorDialog dlg = new SettingsEditorDialog(this);
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.setVisible(true);

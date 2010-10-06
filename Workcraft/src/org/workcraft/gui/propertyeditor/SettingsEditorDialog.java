@@ -44,7 +44,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 
-public class PersistentPropertyEditorDialog extends JDialog {
+public class SettingsEditorDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel propertiesPane;
@@ -60,7 +60,27 @@ public class PersistentPropertyEditorDialog extends JDialog {
 	private final Framework framework;
 	private final PropertyEditorTable propertiesTable;
 
-	public PersistentPropertyEditorDialog(MainWindow owner) {
+	static class SettingsPageNode
+	{
+		private SettingsPage page;
+
+		public SettingsPageNode(SettingsPage page) {
+			this.page = page;
+		}
+
+		@Override
+		public String toString()
+		{
+			return page.getName();
+		}
+
+		public SettingsPage getPage()
+		{
+			return page;
+		}
+	}
+
+	public SettingsEditorDialog(MainWindow owner) {
 		super(owner);
 
 		framework = owner.getFramework();
@@ -126,25 +146,25 @@ public class PersistentPropertyEditorDialog extends JDialog {
 			return getSectionNode(thisLevelNode, nextLevel);
 	}
 
-	private void addItem (String section, PluginInfo<? extends SettingsPage> info) {
+	private void addItem (String section, SettingsPage item) {
 		DefaultMutableTreeNode sectionNode = getSectionNode(sectionRoot, section);
-		sectionNode.add(new DefaultMutableTreeNode(info));
+		sectionNode.add(new DefaultMutableTreeNode(new SettingsPageNode(item)));
 	}
 
 	private void loadSections() {
 		for (PluginInfo<? extends SettingsPage> info : framework.getPluginManager().getPlugins(SettingsPage.class)) {
 			SettingsPage e = info.getSingleton();
-			addItem (e.getSection(), info);
+			addItem (e.getSection(), e);
 		}
 
 		sectionTree.setModel(new DefaultTreeModel(sectionRoot));
 	}
 
-	private void setObject(PluginInfo<? extends SettingsPage> info) {
-		if (info == null)
+	private void setObject(SettingsPage p) {
+		if (p == null)
 			propertiesTable.setObject(null);
 		else {
-			propertiesTable.setObject(info.getSingleton());
+			propertiesTable.setObject(p);
 		}
 	}
 
@@ -162,11 +182,10 @@ public class PersistentPropertyEditorDialog extends JDialog {
 		sectionTree.setShowsRootHandles(true);
 
 		sectionTree.addTreeSelectionListener(new TreeSelectionListener() {
-			@SuppressWarnings("unchecked")
 			public void valueChanged(TreeSelectionEvent e) {
 				Object userObject = ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
-				if (userObject instanceof PluginInfo) {
-					setObject((PluginInfo<? extends SettingsPage>) userObject );
+				if (userObject instanceof SettingsPageNode) {
+					setObject( ((SettingsPageNode) userObject).getPage() );
 				} else {
 					setObject(null);
 				}
