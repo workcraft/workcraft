@@ -2,8 +2,10 @@ package org.workcraft.plugins.pcomp.tasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
@@ -25,35 +27,49 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
 
 
 	@Override
-	public void finished(Result<? extends ExternalProcessResult> result,
+	public void finished(final Result<? extends ExternalProcessResult> result,
 			String description) {
-		if (result.getOutcome() == Outcome.FAILED) {
-			String message;
-			if (result.getCause() != null) {
-				message = result.getCause().getMessage();
-				result.getCause().printStackTrace();
-			}
-			else
-				message = "Pcomp errors: \n" + new String(result.getReturnValue().getErrors());
-			JOptionPane.showMessageDialog(framework.getMainWindow(), message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-		} else if (result.getOutcome() == Outcome.FINISHED) {
-			try {
-				File pcompResult = File.createTempFile("pcompresult", ".g");
-				FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
+		try {
+			SwingUtilities.invokeAndWait(new Runnable()
+			{
+			@Override
+				public void run() {
 
-				if (showInEditor) {
-					WorkspaceEntry we = framework.getWorkspace().open(pcompResult, true);
-					framework.getMainWindow().createEditorWindow(we);
-				} else {
-					framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
+			if (result.getOutcome() == Outcome.FAILED) {
+				String message;
+				if (result.getCause() != null) {
+					message = result.getCause().getMessage();
+					result.getCause().printStackTrace();
 				}
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-			} catch (DeserialisationException e) {
-				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
+				else
+					message = "Pcomp errors: \n" + new String(result.getReturnValue().getErrors());
+				JOptionPane.showMessageDialog(framework.getMainWindow(), message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+			} else if (result.getOutcome() == Outcome.FINISHED) {
+				try {
+					File pcompResult = File.createTempFile("pcompresult", ".g");
+					FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
+
+					if (showInEditor) {
+						WorkspaceEntry we = framework.getWorkspace().open(pcompResult, true);
+						framework.getMainWindow().createEditorWindow(we);
+					} else {
+						framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
+					}
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				} catch (DeserialisationException e) {
+					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				}
 			}
+
+			}
+			});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 	}
 }
