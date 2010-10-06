@@ -14,5 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MpsatSupport"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifySupport"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DesiJSupport"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GatesPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

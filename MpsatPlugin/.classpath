@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GatesPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
