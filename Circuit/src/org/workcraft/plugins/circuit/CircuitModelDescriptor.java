@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.Plugin;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
 public class CircuitModelDescriptor implements Plugin, ModelDescriptor {
@@ -14,6 +15,11 @@ public class CircuitModelDescriptor implements Plugin, ModelDescriptor {
 	@Override
 	public String getDisplayName() {
 		return "Digital Circuit";
+	}
+
+	@Override
+	public VisualModelDescriptor getVisualModelDescriptor() {
+		return null;
 	}
 
 }

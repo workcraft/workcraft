@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
@@ -32,6 +33,8 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName("Component")
 @VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
@@ -95,6 +98,17 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 		return groupImpl.getChildren();
 	}
 
+	public Collection<Contact> getContacts() {
+		return Hierarchy.filterNodesByType(getChildren(), Contact.class);
+	}
+
+	public Collection<Contact> getInputs() {
+		ArrayList<Contact> result = new ArrayList<Contact>();
+		for(Contact c : getContacts())
+			if(c.getIOType() == IOType.INPUT)
+				result.add(c);
+		return result;
+	}
 
 	public String getNewName(Node n, String start) {
 		// iterate through all contacts, check that the name doesn't exist

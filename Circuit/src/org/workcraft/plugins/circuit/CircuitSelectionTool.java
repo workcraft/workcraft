@@ -65,7 +65,7 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 		JPopupMenu popup = new JPopupMenu();
 		this.selectedNode = node;
 		if (node instanceof VisualCircuitComponent&&
-				!(selectedNode instanceof VisualFormula)) {
+				!(selectedNode instanceof VisualFunction)) {
 
 
 			popup.setFocusable(false);

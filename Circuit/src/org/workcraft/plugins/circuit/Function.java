@@ -23,19 +23,29 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
-@DisplayName("Formula")
-@VisualClass("org.workcraft.plugins.circuit.VisualFormula")
+@DisplayName("Function")
+@VisualClass("org.workcraft.plugins.circuit.VisualFunction")
 
-public class Formula extends CircuitComponent {
-	private String formula="";
+public class Function extends CircuitComponent {
+	//private String formula="";
+	private BooleanFormula setFunction=Zero.instance();
+	private BooleanFormula resetFunction=One.instance();
 
-	public void setFormula(String f) {
-		formula = f;
+	public BooleanFormula getSetFunction() {
+		return setFunction;
 	}
-
-	public String getFormula() {
-		return formula;
+	public void setSetFunction(BooleanFormula setFunction) {
+		this.setFunction = setFunction;
+	}
+	public BooleanFormula getResetFunction() {
+		return resetFunction;
+	}
+	public void setResetFunction(BooleanFormula resetFunction) {
+		this.resetFunction = resetFunction;
 	}
 }

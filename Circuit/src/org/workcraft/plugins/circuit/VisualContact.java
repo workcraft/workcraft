@@ -263,17 +263,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public void setIOType(Contact.IOType type) {
-		((Contact)getReferencedComponent()).setIOType(type);
+		getReferencedContact().setIOType(type);
 		sendNotification(new PropertyChangedEvent(this, "IOtype"));
 	}
 
 	public Contact.IOType getIOType() {
-		return ((Contact)getReferencedComponent()).getIOType();
+		return getReferencedContact().getIOType();
 	}
 
 
 	public String getName() {
-		return ((Contact)getReferencedComponent()).getName();
+		return getReferencedContact().getName();
 	}
 
 	public void setName(String name) {
@@ -286,7 +286,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				((Contact)getReferencedComponent()).getParent(),
 					"output");*/
 
-		((Contact)getReferencedComponent()).setName(name);
+		getReferencedContact().setName(name);
 
 		sendNotification(new PropertyChangedEvent(this, "name"));
 	}
@@ -296,5 +296,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		nameGlyph = null;
 	}
 
+	public Contact getReferencedContact() {
+		return (Contact)getReferencedComponent();
+	}
 
 }

@@ -26,11 +26,13 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @DisplayName("Contact")
 @VisualClass("org.workcraft.plugins.circuit.VisualContact")
 
-public class Contact extends MathNode {
+public class Contact extends MathNode implements BooleanVariable {
 
 	public enum IOType { INPUT, OUTPUT};
 	private IOType ioType = IOType.OUTPUT;
@@ -118,5 +120,16 @@ public class Contact extends MathNode {
 		return name;
 	}
 
+
+	@Override
+	public <T> T accept(BooleanVisitor<T> visitor) {
+		return visitor.visit(this);
+	}
+
+
+	@Override
+	public String getLabel() {
+		return getName();
+	}
 
 }

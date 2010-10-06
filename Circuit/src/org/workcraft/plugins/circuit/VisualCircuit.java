@@ -39,7 +39,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Visual Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, Formula.class } )
+@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, Function.class } )
 //@CustomToolButtons ( { SimulationTool.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
