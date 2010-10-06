@@ -70,6 +70,7 @@ import org.workcraft.ModelFactory;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
@@ -666,6 +667,12 @@ public class MainWindow extends JFrame {
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
+					/*VisualModelDescriptor v = info.getVisualModelDescriptor();
+
+					if (v == null)
+						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");*/
+
+
 					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
 					WorkspaceEntry we = framework.getWorkspace().add(path, name, visualModel, false);
 					if (dialog.openInEditorSelected())
@@ -675,7 +682,8 @@ public class MainWindow extends JFrame {
 				} else
 					framework.getWorkspace().add(path, name, mathModel, false);
 			} catch (VisualModelInstantiationException e) {
-				e.printStackTrace(); //throw new RuntimeException(e);
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, "Visual model could not be created: " + e.getMessage() + "\n\nPlease see the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else
 			throw new OperationCancelledException("Create operation cancelled by user.");

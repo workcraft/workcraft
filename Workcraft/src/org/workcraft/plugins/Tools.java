@@ -17,13 +17,6 @@ import org.workcraft.plugins.verification.tools.CustomPropertyMpsatChecker;
 import org.workcraft.plugins.verification.tools.MpsatDeadlockChecker;
 
 public class Tools implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[]{
-		};
-	}
-
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();

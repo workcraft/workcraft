@@ -13,13 +13,6 @@ import org.workcraft.plugins.interop.SVGExporter;
 import org.workcraft.plugins.petrify.PSExporter;
 
 public class Exporters implements Module {
-
-	@Override
-	public Class<?>[] getPluginClasses() {
-		return new Class<?>[]{
-		};
-	}
-
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();

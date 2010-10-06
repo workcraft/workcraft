@@ -21,6 +21,7 @@
 
 package org.workcraft.testing.dom.visual;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
@@ -63,6 +64,10 @@ class SquareNode extends VisualComponent
 	@Override
 	public Collection<MathNode> getMathReferences() {
 		return Arrays.asList(new MathNode[]{});
+	}
+
+	@Override
+	public void draw(Graphics2D g) {
 	}
 }
 

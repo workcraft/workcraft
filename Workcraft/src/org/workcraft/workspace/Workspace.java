@@ -190,12 +190,12 @@ public class Workspace {
 		return null;
 	}
 
-	public WorkspaceEntry add(Path<String> directory, String desiredName, Model model, boolean temporary) {
+	public WorkspaceEntry add(Path<String> directory, String desiredName, Model modelObject, boolean temporary) {
 		final Path<String> path = newName(directory, desiredName);
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setTemporary(temporary);
 		we.setChanged(true);
-		we.setObject(model);
+		we.setObject(modelObject);
 		openFiles.put(path, we);
 		fireEntryAdded(we);
 		return we;
