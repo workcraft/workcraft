@@ -72,9 +72,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	double contactLength = 1;
 	double contactStep = 1;
 
-
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-
 
 	private Rectangle2D contactLabelBB = null;
 	protected Rectangle2D totalBB = null;
@@ -83,18 +81,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		super(component);
 		component.addObserver(this);
 		addPropertyDeclarations();
-
-		// testing...
-
-/*		addInput("Req_in", VisualContact.Direction.WEST);
-		addOutput("Ack_out", VisualContact.Direction.WEST);
-		addInput("Data_in",  VisualContact.Direction. WEST);
-		addOutput("Req_out", VisualContact.Direction.EAST);
-		addInput("Ack_in",   VisualContact.Direction. EAST);
-
-		addOutput("Data_out", VisualContact.Direction.NORTH);
-		addOutput("Data out 2", VisualContact.Direction.NORTH);
-		addOutput("Reset",    VisualContact.Direction.SOUTH);*/
 	}
 
 	private void addPropertyDeclarations() {
@@ -197,23 +183,25 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 	}
 
-	protected Rectangle2D getContactLabelBB(Graphics2D g) {
-		int north=0;
-		int south=0;
-		int east=0;
-		int west=0;
-		for (Node n: this.getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact)n;
-				if (vc.getDirection().equals(Direction.EAST)) east++;
-				if (vc.getDirection().equals(Direction.SOUTH)) south++;
-				if (vc.getDirection().equals(Direction.NORTH)) north++;
-				if (vc.getDirection().equals(Direction.WEST)) west++;
-			}
-		}
+	public Rectangle2D getContactLabelBB(Graphics2D g) {
 
 
 		if (contactLabelBB==null) {
+
+			int north=0;
+			int south=0;
+			int east=0;
+			int west=0;
+			for (Node n: this.getChildren()) {
+				if (n instanceof VisualContact) {
+					VisualContact vc = (VisualContact)n;
+					if (vc.getDirection().equals(Direction.EAST)) east++;
+					if (vc.getDirection().equals(Direction.SOUTH)) south++;
+					if (vc.getDirection().equals(Direction.NORTH)) north++;
+					if (vc.getDirection().equals(Direction.WEST)) west++;
+				}
+			}
+
 			Rectangle2D cur;
 			double xx;
 			double width_w=0;
@@ -503,12 +491,23 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		}
 		if (e instanceof PropertyChangedEvent) {
+
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("name")||
 				pc.getPropertyName().equals("IOtype")||
-				pc.getPropertyName().equals("direction")
+				pc.getPropertyName().equals("direction")||
+				pc.getPropertyName().equals("setFunction")||
+				pc.getPropertyName().equals("resetFunction")
 					) {
 				contactLabelBB = null;
+
+				for (Node n : getChildren()) {
+					if (n instanceof VisualFunctionContact) {
+						VisualFunctionContact vf = (VisualFunctionContact)n;
+						vf.resetRenderedFormula();
+						vf.resetNameGlyph();
+					}
+				}
 			}
 		}
 	}

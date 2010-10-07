@@ -24,7 +24,7 @@ package org.workcraft.plugins.circuit.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.Plugin;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.circuit.Function;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.cpog.serialisation.BooleanFormulaSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
@@ -38,7 +38,7 @@ public class FunctionSerialiser implements CustomXMLSerialiser, Plugin
 	@Override
 	public String getClassName()
 	{
-		return org.workcraft.plugins.circuit.Function.class.getName();
+		return org.workcraft.plugins.circuit.FunctionContact.class.getName();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class FunctionSerialiser implements CustomXMLSerialiser, Plugin
 			ReferenceProducer internalReferences,
 			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
 			throws SerialisationException {
-		Function function = (Function) object;
+		FunctionContact function = (FunctionContact) object;
 
 		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences, function.getSetFunction(), SET_FUNCTION_ATTRIBUTE_NAME);
 		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences, function.getResetFunction(), RESET_FUNCTION_ATTRIBUTE_NAME);

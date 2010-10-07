@@ -45,7 +45,6 @@ public class Contact extends MathNode implements BooleanVariable {
 	public Contact() {
 	}
 
-
 	public Contact(IOType iot) {
 		super();
 
@@ -53,7 +52,7 @@ public class Contact extends MathNode implements BooleanVariable {
 	}
 
 
-	public String getNewName(Node n, String start) {
+	static public String getNewName(Node n, String start, Node curNode, boolean allowShort) {
 		// iterate through all contacts, check that the name doesn't exist
 		int num=0;
 		boolean found = true;
@@ -62,8 +61,22 @@ public class Contact extends MathNode implements BooleanVariable {
 			num++;
 			found=false;
 
+			if (allowShort) {
+
+				for (Node vn : n.getChildren()) {
+					if (vn instanceof Contact&& vn!=curNode) {
+						if (((Contact)vn).getName().equals(start)) {
+							found=true;
+							break;
+						}
+					}
+				}
+				if (found==false) return start;
+				allowShort=false;
+			}
+
 			for (Node vn : n.getChildren()) {
-				if (vn instanceof Contact&& vn!=this) {
+				if (vn instanceof Contact&& vn!=curNode) {
 					if (((Contact)vn).getName().equals(start+num)) {
 						found=true;
 						break;
@@ -71,6 +84,8 @@ public class Contact extends MathNode implements BooleanVariable {
 				}
 			}
 		}
+
+
 		return start+num;
 	}
 
@@ -83,7 +98,7 @@ public class Contact extends MathNode implements BooleanVariable {
 			} else {
 				start="output";
 			}
-			setName(getNewName(parent, start));
+			setName(getNewName(parent, start, this, false));
 		}
 	}
 
@@ -97,9 +112,9 @@ public class Contact extends MathNode implements BooleanVariable {
 	public void setIOType(IOType t) {
 		this.ioType = t;
 		if (getName().startsWith("input")&&getIOType()==IOType.OUTPUT) {
-			setName(getNewName(getParent(), "output"));
+			setName(getNewName(getParent(), "output", this, false));
 		} else if (getName().startsWith("output")&&getIOType()==IOType.INPUT) {
-			setName(getNewName(getParent(), "input"));
+			setName(getNewName(getParent(), "input", this, false));
 		}
 
 		sendNotification(new PropertyChangedEvent(this, "ioType"));

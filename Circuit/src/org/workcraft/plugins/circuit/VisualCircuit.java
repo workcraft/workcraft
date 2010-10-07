@@ -24,8 +24,8 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -39,8 +39,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Visual Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, Function.class } )
-//@CustomToolButtons ( { SimulationTool.class } )
+@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, FunctionComponent.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
 
@@ -105,6 +104,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	public void connect(Node first, Node second)
 			throws InvalidConnectionException {
 		validateConnection(first, second);
+
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 
 			VisualComponent c1 = (VisualComponent) first;

@@ -64,9 +64,17 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 	private JPopupMenu createPopupMenu(VisualNode node) {
 		JPopupMenu popup = new JPopupMenu();
 		this.selectedNode = node;
-		if (node instanceof VisualCircuitComponent&&
-				!(selectedNode instanceof VisualFunction)) {
+		if (node instanceof VisualFunctionComponent) {
+			popup.setFocusable(false);
+			popup.add(new JLabel("Function Component"));
+			popup.addSeparator();
 
+			JMenuItem addFunction = new JMenuItem("Add function");
+			addFunction.addActionListener(this);
+
+			popup.add(addFunction);
+			return popup;
+		} else if (node instanceof VisualCircuitComponent) {
 
 			popup.setFocusable(false);
 			popup.add(new JLabel("Circuit Component"));
@@ -89,7 +97,14 @@ public class CircuitSelectionTool extends SelectionTool implements ActionListene
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if (selectedNode instanceof VisualCircuitComponent) {
+		if (selectedNode instanceof VisualFunctionComponent) {
+			VisualFunctionComponent comp = (VisualFunctionComponent)selectedNode;
+
+			if (e.getActionCommand().equals("Add function")) {
+				comp.addFunction("x", null, false);
+			}
+
+		} else if (selectedNode instanceof VisualCircuitComponent) {
 			VisualCircuitComponent comp = (VisualCircuitComponent)selectedNode;
 
 			if (e.getActionCommand().equals("Add input")) {

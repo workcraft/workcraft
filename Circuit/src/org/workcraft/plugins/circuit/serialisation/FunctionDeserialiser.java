@@ -23,7 +23,7 @@ package org.workcraft.plugins.circuit.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.Function;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.cpog.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
@@ -35,14 +35,14 @@ public class FunctionDeserialiser implements CustomXMLDeserialiser
 	@Override
 	public String getClassName()
 	{
-		return Function.class.getName();
+		return FunctionContact.class.getName();
 	}
 
 	@Override
 	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters)
 	{
-		return new Function();
+		return new FunctionContact();
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class FunctionDeserialiser implements CustomXMLDeserialiser
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver,
 			NodeFinaliser nodeFinaliser) throws DeserialisationException {
-		Function function = ((Function)instance);
+		FunctionContact function = ((FunctionContact)instance);
 		function.setSetFunction(
 				BooleanFunctionDeserialiser.readFormulaFromAttribute(element, internalReferenceResolver, FunctionSerialiser.SET_FUNCTION_ATTRIBUTE_NAME));
 		function.setResetFunction(

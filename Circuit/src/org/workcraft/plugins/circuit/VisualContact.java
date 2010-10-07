@@ -66,6 +66,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	double strokeWidth = 0.05;
 
 
+	public void resetNameGlyph() {
+		nameGlyph = null;
+	}
+
 	public VisualContact(Contact contact) {
 		super(contact);
 
@@ -179,7 +183,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			GlyphVector gv = getNameGlyphs(g);
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
-			g.drawGlyphVector(gv, (float)(-cur.getWidth()/2), -0.5f);
+
+			float xx = 0;
+
+			if (getIOType()==IOType.INPUT) {
+				xx = (float)(-cur.getWidth()-0.5);
+			} else {
+				xx = (float)0.5;
+			}
+			g.drawGlyphVector(gv, xx, -0.5f);
 
 		}
 	}

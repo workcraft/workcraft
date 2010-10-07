@@ -28,24 +28,43 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
-@DisplayName("Function")
-@VisualClass("org.workcraft.plugins.circuit.VisualFunction")
+@DisplayName("FunctionContact")
+@VisualClass("org.workcraft.plugins.circuit.VisualFunctionContact")
 
-public class Function extends CircuitComponent {
-	//private String formula="";
+public class FunctionContact extends Contact {
 	private BooleanFormula setFunction=Zero.instance();
 	private BooleanFormula resetFunction=One.instance();
+	private BooleanFormula combinedFunction=Zero.instance();
+
+	public FunctionContact(IOType ioType) {
+		super(ioType);
+	}
+
+	public FunctionContact() {
+		super();
+	}
 
 	public BooleanFormula getSetFunction() {
 		return setFunction;
 	}
+
 	public void setSetFunction(BooleanFormula setFunction) {
 		this.setFunction = setFunction;
 	}
+
 	public BooleanFormula getResetFunction() {
 		return resetFunction;
 	}
+
 	public void setResetFunction(BooleanFormula resetFunction) {
 		this.resetFunction = resetFunction;
+	}
+
+	public void setCombinedFunction(BooleanFormula combinedFunction) {
+		this.combinedFunction = combinedFunction;
+	}
+
+	public BooleanFormula getCombinedFunction() {
+		return combinedFunction;
 	}
 }
