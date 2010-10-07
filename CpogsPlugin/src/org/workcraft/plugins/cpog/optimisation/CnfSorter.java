@@ -26,19 +26,19 @@ import java.util.List;
 import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfSorter {
-	public static Cnf sortRound(List<CnfLiteral> result, List<CnfLiteral> x)
+	public static Cnf sortRound(List<Literal> result, List<Literal> x)
 	{
 		if(x.size() != result.size())
 			throw new RuntimeException("sizes do not match");
 
-		List<CnfLiteral> s = new ArrayList<CnfLiteral>();
-		for(CnfLiteral var : x)
-			s.add(new CnfLiteral(var.getVariable().getLabel()+"_th"));
+		List<Literal> s = new ArrayList<Literal>();
+		for(Literal var : x)
+			s.add(new Literal(var.getVariable().getLabel()+"_th"));
 
 		return sortRound(result, s, x);
 	}
 
-	private static Cnf makeThermometer(List<CnfLiteral> s, List<CnfLiteral> x) {
+	private static Cnf makeThermometer(List<Literal> s, List<Literal> x) {
 		// s[i] = s[i-1] + x[i]
 		// (!s[i] + s[i-1] + x[i]) (!s[i-1] + s[i]) (!x[i] + s[i])
 		Cnf result = new Cnf();
@@ -55,7 +55,7 @@ public class CnfSorter {
 		return result;
 	}
 
-	public static Cnf sortRound(List<CnfLiteral> result, List<CnfLiteral> s, List<CnfLiteral> x) {
+	public static Cnf sortRound(List<Literal> result, List<Literal> s, List<Literal> x) {
 
 		List<CnfClause> clauses = new ArrayList<CnfClause>();
 

@@ -24,14 +24,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CnfOperations {
-	public static CnfLiteral not(CnfLiteral x)
+	public static Literal not(Literal x)
 	{
-		return new CnfLiteral(x.getVariable(), !x.getNegation());
+		return new Literal(x.getVariable(), !x.getNegation());
 	}
 
-	public static CnfLiteral not(BooleanVariable x)
+	public static Literal not(BooleanVariable x)
 	{
-		return new CnfLiteral(x, true);
+		return new Literal(x, true);
 	}
 
 	public static CnfClause or(List<BooleanVariable> literals)
@@ -42,13 +42,13 @@ public class CnfOperations {
 		return result;
 	}
 
-	public static CnfClause or(CnfLiteral... literals)
+	public static CnfClause or(Literal... literals)
 	{
 		return new CnfClause(Arrays.asList(literals));
 	}
 
-	public static CnfLiteral literal(BooleanVariable var)
+	public static Literal literal(BooleanVariable var)
 	{
-		return new CnfLiteral(var);
+		return new Literal(var);
 	}
 }

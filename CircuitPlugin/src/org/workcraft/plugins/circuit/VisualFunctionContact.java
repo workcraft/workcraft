@@ -42,6 +42,8 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
+import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.CleverBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
@@ -145,7 +147,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	public void updateCombinedFunction() {
 		CleverBooleanWorker worker = new CleverBooleanWorker();
-		function.setCombinedFunction(worker.or(function.getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(function.getResetFunction()))));
+		BooleanOperations.worker = new DumbBooleanWorker();
+		function.setCombinedFunction(
+				DnfGenerator.generate(
+				worker.or(function.getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(function.getResetFunction())))
+				)
+
+		);
 	}
 
 	private void addPropertyDeclarations() {
