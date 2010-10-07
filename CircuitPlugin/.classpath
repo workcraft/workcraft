@@ -3,5 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CpogsPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNets"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
+	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

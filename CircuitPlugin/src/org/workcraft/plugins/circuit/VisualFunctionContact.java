@@ -36,9 +36,16 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.FreeVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
+
+import org.workcraft.plugins.cpog.optimisation.expressions.CleverBooleanWorker;
+import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
+import org.workcraft.plugins.cpog.optimisation.expressions.Not;
+import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -137,7 +144,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	public void updateCombinedFunction() {
-		function.setCombinedFunction(parseFormula(getSetFunction()+"+"+getName()+"*!("+getResetFunction()+")"));
+		CleverBooleanWorker worker = new CleverBooleanWorker();
+		function.setCombinedFunction(worker.or(function.getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(function.getResetFunction()))));
 	}
 
 	private void addPropertyDeclarations() {

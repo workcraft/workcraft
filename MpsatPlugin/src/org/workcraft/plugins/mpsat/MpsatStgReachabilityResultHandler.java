@@ -1,13 +1,13 @@
-package org.workcraft.plugins.shared;
+package org.workcraft.plugins.mpsat;
 
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.shared.tasks.MpsatChainResult;
-import org.workcraft.plugins.shared.tasks.MpsatChainTask;
-import org.workcraft.plugins.verification.gui.SolutionsDialog;
+import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 
