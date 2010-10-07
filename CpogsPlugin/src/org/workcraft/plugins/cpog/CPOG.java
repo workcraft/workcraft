@@ -23,9 +23,6 @@ package org.workcraft.plugins.cpog;
 
 import java.util.Collection;
 
-import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -33,8 +30,7 @@ import org.workcraft.plugins.stg.STGReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass("org.workcraft.plugins.cpog.VisualCPOG")
-public class CPOG extends AbstractMathModel implements Plugin
+public class CPOG extends AbstractMathModel
 {
 
 	private STGReferenceManager referenceManager;

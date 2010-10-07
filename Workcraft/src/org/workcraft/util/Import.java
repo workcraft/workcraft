@@ -30,19 +30,20 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.workspace.ModelEntry;
 
 public class Import {
 
-	static public Model importFromFile (Importer importer, File file) throws IOException, DeserialisationException {
+	static public ModelEntry importFromFile (Importer importer, File file) throws IOException, DeserialisationException {
 		FileInputStream fileInputStream = new FileInputStream(file);
-		Model model = importer.importFrom(fileInputStream);
+		ModelEntry model = importer.importFrom(fileInputStream);
 		fileInputStream.close();
 		return model;
 	}
 
-	static public Model importFromFile (Importer importer, String fileName) throws IOException, DeserialisationException {
+	static public ModelEntry importFromFile (Importer importer, String fileName) throws IOException, DeserialisationException {
 		FileInputStream fileInputStream = new FileInputStream(new File(fileName));
-		Model model = importer.importFrom(fileInputStream);
+		ModelEntry model = importer.importFrom(fileInputStream);
 		fileInputStream.close();
 		return model;
 	}

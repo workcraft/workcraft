@@ -19,9 +19,6 @@ import java.util.Map;
 import java.util.ArrayList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.plugins.stg.*;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;

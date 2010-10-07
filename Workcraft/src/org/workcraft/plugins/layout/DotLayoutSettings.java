@@ -26,13 +26,11 @@ import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 
-@DisplayName ("Dot")
-public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
+public class DotLayoutSettings implements SettingsPage {
 	protected static boolean importConnectionsShape = false;
 	protected static String dotCommand = "dot";
 
@@ -47,12 +45,12 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 		return properties;
 	}
 
-	public void loadPersistentProperties(Config config) {
+	public void load(Config config) {
 		dotCommand = config.getString("DotLayout.dotCommand", "dot");
 		importConnectionsShape = config.getBoolean("DotLayout.importConnectionsShape", false);
 	}
 
-	public void storePersistentProperties(Config config) {
+	public void save(Config config) {
 		config.set("DotLayout.dotCommand", dotCommand)	;
 		config.setBoolean("DotLayout.importConnectionsShape", importConnectionsShape);
 	}
@@ -75,5 +73,9 @@ public class DotLayoutSettings implements PersistentPropertyEditable, Plugin {
 
 	public String getSection() {
 		return "Layout";
+	}
+	@Override
+	public String getName() {
+		return "Dot";
 	}
 }

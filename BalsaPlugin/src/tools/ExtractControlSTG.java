@@ -17,11 +17,13 @@ import org.workcraft.plugins.balsa.io.StgExtractionResult;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ExtractControlSTG implements Tool {
@@ -68,7 +70,7 @@ public class ExtractControlSTG implements Tool {
 											String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 
 											STGModel model = result.getReturnValue().getResult();
-											final WorkspaceEntry resolved = framework.getWorkspace().add(path.getParent(), fileName + "_resolved", model, true);
+											final WorkspaceEntry resolved = framework.getWorkspace().add(path.getParent(), fileName + "_resolved", new ModelEntry (new STGModelDescriptor(), model), true);
 											framework.getMainWindow().createEditorWindow(resolved);
 										}
 										else

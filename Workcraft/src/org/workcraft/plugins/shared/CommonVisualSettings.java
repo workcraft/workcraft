@@ -26,13 +26,11 @@ import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 
-@DisplayName("Common")
-public class CommonVisualSettings implements PersistentPropertyEditable, Plugin {
+public class CommonVisualSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	protected static double size = 1.0;
@@ -58,7 +56,7 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 		return properties;
 	}
 
-	public void loadPersistentProperties(Config config) {
+	public void load(Config config) {
 		size = config.getDouble("CommonVisualSettings.size", 1.0);
 		iconSize = config.getInt("CommonVisualSettings.iconSize", 16);
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
@@ -67,7 +65,7 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
 	}
 
-	public void storePersistentProperties(Config config) {
+	public void save(Config config) {
 		config.setInt("CommonVisualSettings.iconSize", iconSize);
 		config.setDouble("CommonVisualSettings.size", size);
 		config.setDouble("CommonVisualSettings.strokeWidth", strokeWidth);
@@ -131,5 +129,10 @@ public class CommonVisualSettings implements PersistentPropertyEditable, Plugin 
 		if (iconSize>256)
 			iconSize = 256;
 		CommonVisualSettings.iconSize = iconSize;
+	}
+
+	@Override
+	public String getName() {
+		return "Common visual settings";
 	}
 }

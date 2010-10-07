@@ -66,9 +66,7 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
-import org.workcraft.ModelFactory;
 import org.workcraft.Tool;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -81,7 +79,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditorDialog;
+import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tabs.DockableTab;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -98,6 +96,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -226,17 +225,26 @@ public class MainWindow extends JFrame {
 	}
 
 	public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
-		Object object = we.getObject();
-
-		if (!(object instanceof Model))
+		if (we.getModelEntry() == null)
 			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
 
-		VisualModel visualModel = (object instanceof VisualModel) ? (VisualModel) object : null;
+		ModelEntry modelEntry = we.getModelEntry();
+
+		ModelDescriptor descriptor = modelEntry.getDescriptor();
+
+		VisualModel visualModel = (modelEntry.getModel() instanceof VisualModel) ? (VisualModel) modelEntry.getModel() : null;
 
 		if (visualModel == null)
 			try {
-				visualModel = ModelFactory.createVisualModel((MathModel)object);
-				we.setObject(visualModel);
+				VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
+
+				if (vmd == null)
+					JOptionPane.showMessageDialog(MainWindow.this, "A visual model could not be created for the selected model.\n" + "Model \""
+							+ descriptor.getDisplayName() +"\" does not have visual model support.", "Error", JOptionPane.ERROR_MESSAGE);
+
+				visualModel = vmd.create((MathModel)modelEntry.getModel());
+
+				modelEntry.setModel(visualModel);
 
 				DotLayout layout = new DotLayout(framework);
 				layout.run(we);
@@ -659,7 +667,7 @@ public class MainWindow extends JFrame {
 		if (dialog.getModalResult() == 1) {
 			ModelDescriptor info = dialog.getSelectedModel();
 			try {
-				Model mathModel = info.createMathModel();
+				MathModel mathModel = info.createMathModel();
 
 				String name = dialog.getModelTitle();
 
@@ -667,20 +675,20 @@ public class MainWindow extends JFrame {
 					mathModel.setTitle(dialog.getModelTitle());
 
 				if (dialog.createVisualSelected()) {
-					/*VisualModelDescriptor v = info.getVisualModelDescriptor();
+					VisualModelDescriptor v = info.getVisualModelDescriptor();
 
 					if (v == null)
-						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");*/
+						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");
 
 
-					VisualModel visualModel = ModelFactory.createVisualModel(mathModel);
-					WorkspaceEntry we = framework.getWorkspace().add(path, name, visualModel, false);
+					VisualModel visualModel = v.create(mathModel);
+					WorkspaceEntry we = framework.getWorkspace().add(path, name, new ModelEntry(info, visualModel), false);
 					if (dialog.openInEditorSelected())
 						createEditorWindow (we);
 					//rootDockingPort.dock(new GraphEditorPane(visualModel), CENTER_REGION);
 					//addView(new GraphEditorPane(visualModel), mathModel.getTitle() + " - " + mathModel.getDisplayName(), DockingManager.NORTH_REGION, 0.8f);
 				} else
-					framework.getWorkspace().add(path, name, mathModel, false);
+					framework.getWorkspace().add(path, name, new ModelEntry(info, mathModel), false);
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Visual model could not be created: " + e.getMessage() + "\n\nPlease see the Problems window for details.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -744,7 +752,7 @@ public class MainWindow extends JFrame {
 	public void openWork(File f) {
 		try {
 			WorkspaceEntry we = framework.getWorkspace().open(f, true);
-			if (we.getObject() instanceof VisualModel)
+			if (we.getModelEntry().isVisual())
 				createEditorWindow(we);
 		} catch (DeserialisationException e) {
 			JOptionPane.showMessageDialog(this, "A problem was encountered while trying to load \"" + f.getPath()
@@ -772,10 +780,10 @@ public class MainWindow extends JFrame {
 			saveAs(we);
 		}
 		try {
-			if (we.getObject() instanceof Model)
-				framework.save((Model)we.getObject(), we.getFile().getPath());
+			if (we.getModelEntry() != null)
+				framework.save(we.getModelEntry(), we.getFile().getPath());
 			else
-				throw new RuntimeException ("Workcraft does not know how to save " + we.getObject().getClass());
+				throw new RuntimeException ("Cannot save workspace entry - it does not have an associated Workcraft model.");
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
@@ -850,10 +858,10 @@ public class MainWindow extends JFrame {
 
 		try {
 			framework.getWorkspace().move(we.getFile(), new File(path));
-			if (we.getObject() instanceof Model)
-				framework.save((Model)we.getObject(), we.getFile().getPath());
+			if (we.getModelEntry() != null)
+				framework.save(we.getModelEntry(), we.getFile().getPath());
 			else
-				throw new RuntimeException ("Workcraft does not know how to save " + we.getObject().getClass());
+				throw new RuntimeException ("Cannot save workspace entry - it does not have an associated Workcraft model.");
 			we.setChanged(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
 		} catch (SerialisationException e) {
@@ -894,12 +902,12 @@ public class MainWindow extends JFrame {
 			for (File f : fc.getSelectedFiles()) {
 				for (Importer importer : importers) {
 					if (importer.accept(f)) {
-						Model model;
+						ModelEntry modelEntry;
 						try {
-							model = Import.importFromFile(importer, f);
-							model.setTitle(FileUtils.getFileNameWithoutExtension(f));
-							WorkspaceEntry we = framework.getWorkspace().add(Path.<String>empty(), f.getName(), model, false);
-							if (we.getObject() instanceof VisualModel)
+							modelEntry = Import.importFromFile(importer, f);
+							modelEntry.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
+							WorkspaceEntry we = framework.getWorkspace().add(Path.<String>empty(), f.getName(), modelEntry, false);
+							if (we.getModelEntry().isVisual())
 								createEditorWindow(we);
 							break;
 						} catch (IOException e) {
@@ -1028,7 +1036,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void editSettings() {
-		PersistentPropertyEditorDialog dlg = new PersistentPropertyEditorDialog(this);
+		SettingsEditorDialog dlg = new SettingsEditorDialog(this);
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.setVisible(true);

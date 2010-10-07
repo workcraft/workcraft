@@ -105,9 +105,6 @@ public class TESTS {
 
 		lib.get("BMU").instantiate(lib, factory, EmptyValueList.instance());
 
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-
 		final BalsaExportConfig balsaConfig = new BalsaExportConfig(null, CompositionMode.IMPROVED_PCOMP, Protocol.FOUR_PHASE);
 		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, circuit, balsaConfig);
 		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), "viterbi.g");
@@ -178,7 +175,7 @@ public class TESTS {
 	public void toVerilog() throws Exception
 	{
 		File inFile = new File(ClassLoader.getSystemResource("org/workcraft/testing/plugins/balsa/tests/buffer1a.breeze").getFile());
-		final BalsaCircuit balsa = new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile));
+		final BalsaCircuit balsa = (BalsaCircuit) new BreezeImporter(/*"C:\\balsa_Testing\\balsa"*/).importFrom(new FileInputStream(inFile)).getModel();
 		Netlist<BreezeHandshake, BreezeComponent, BreezeConnection> circuit = balsa.asNetlist();
 
 		System.out.println("Original circuit components: " + circuit.getBlocks().size());

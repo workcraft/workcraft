@@ -44,7 +44,7 @@ import org.workcraft.util.XmlUtil;
 
 public class PluginManager implements PluginProvider {
 	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
-	public static final String VERSION_STAMP = "d971444cbd86448695f3427118632aca";
+	public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
 	private Framework framework;
 
@@ -145,6 +145,7 @@ public class PluginManager implements PluginProvider {
 		{
 			final Module module = info.newInstance();
 			try {
+				System.out.println("Loading module: " + module.getDescription());
 				module.init(framework);
 			}
 			catch(Throwable th) {
@@ -244,12 +245,21 @@ public class PluginManager implements PluginProvider {
 				try {
 					return cls.newInstance();
 				} catch (InstantiationException e) {
+					Throwable q = e;
+
+					System.err.println (cls.getCanonicalName());
+					while (q != null)
+					{
+						q.printStackTrace();
+						q = q.getCause();
+					}
+
+
 					throw new RuntimeException(e);
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			}
-
 		});
 	}
 

@@ -22,40 +22,33 @@
 package org.workcraft.plugins.balsa.io;
 
 import java.io.File;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.UUID;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.balsa.BalsaCircuit;
-import org.workcraft.plugins.balsa.io.BalsaExportConfig.CompositionMode;
-import org.workcraft.plugins.balsa.io.BalsaExportConfig.Protocol;
 import org.workcraft.plugins.gates.GateLevelModel;
-import org.workcraft.plugins.interop.DotGExporter;
-import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.shared.MpsatCscResolutionResultHandler;
-import org.workcraft.plugins.shared.MpsatEqnParser;
-import org.workcraft.plugins.shared.MpsatMode;
-import org.workcraft.plugins.shared.MpsatSettings;
-import org.workcraft.plugins.shared.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatCscResolutionResultHandler;
+import org.workcraft.plugins.mpsat.MpsatEqnParser;
+import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.shared.tasks.MpsatChainResult;
-import org.workcraft.plugins.shared.tasks.MpsatChainTask;
-import org.workcraft.plugins.shared.tasks.MpsatTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModel;
-import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -63,7 +56,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
-import org.workcraft.util.Import;
 
 public class STGSynthesisTask implements Task<SynthesisResult> {
 	private final Framework framework;
