@@ -9,4 +9,5 @@ config
 desij.logfile*
 generated
 /.metadata
+*.jar
 
