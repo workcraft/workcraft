@@ -40,14 +40,10 @@ import org.workcraft.plugins.cpog.optimisation.FreeVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
-
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.CleverBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
-import org.workcraft.plugins.cpog.optimisation.expressions.Not;
-import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -85,17 +81,17 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		return renderedFormula;
 	}
 
-	FunctionContact function=null;
+	private FunctionContact function=null;
 
 	public VisualFunctionContact(FunctionContact component) {
 		super(component);
-		function=component;
+		function = component;
 		addPropertyDeclarations();
 	}
 
 	public VisualFunctionContact(FunctionContact component, VisualContact.Direction dir, String label) {
 		super(component);
-		function=component;
+		function = component;
 
 		component.addObserver(this);
 		setName(label);
@@ -122,25 +118,25 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	@NoAutoSerialisation
 	public String getResetFunction() {
-		return FormulaToString.toString(function.getResetFunction());
+		return FormulaToString.toString(getFunction().getResetFunction());
 	}
 
 	@NoAutoSerialisation
 	public String getSetFunction() {
-		return FormulaToString.toString(function.getSetFunction());
+		return FormulaToString.toString(getFunction().getSetFunction());
 	}
 
 	@NoAutoSerialisation
 	public void setResetFunction(String resetFunction) {
 		renderedFormula = null;
-		function.setResetFunction(parseFormula(resetFunction));
+		getFunction().setResetFunction(parseFormula(resetFunction));
 		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
 	}
 
 	@NoAutoSerialisation
 	public void setSetFunction(String setFunction) {
 		renderedFormula = null;
-		function.setSetFunction(parseFormula(setFunction));
+		getFunction().setSetFunction(parseFormula(setFunction));
 
 		sendNotification(new PropertyChangedEvent(this, "setFunction"));
 	}
@@ -148,9 +144,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void updateCombinedFunction() {
 		CleverBooleanWorker worker = new CleverBooleanWorker();
 		BooleanOperations.worker = new DumbBooleanWorker();
-		function.setCombinedFunction(
+		getFunction().setCombinedFunction(
 				DnfGenerator.generate(
-				worker.or(function.getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(function.getResetFunction())))
+				worker.or(getFunction().getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(getFunction().getResetFunction())))
 				)
 
 		);
@@ -222,6 +218,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	@Override
 	public void notify(StateEvent e) {
 //		renderedFormula = null;
+	}
+
+	public FunctionContact getFunction() {
+		return function;
 	}
 
 }

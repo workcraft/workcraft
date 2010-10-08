@@ -42,6 +42,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.petri.tools.SimulationTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
@@ -205,6 +206,25 @@ public class VisualSTG extends AbstractVisualModel {
 			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
 			for(VisualPlace place : places)
 				maybeMakeImplicit(place);
+	}
+
+	public VisualPlace createPlace() {
+		return createPlace(null);
+	}
+
+	public VisualPlace createPlace(String name) {
+		VisualPlace place = new VisualPlace(stg.createPlace(name));
+		add(place);
+		return place;
+	}
+
+	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction) {
+		SignalTransition transition = stg.createSignalTransition(signalName);
+		transition.setSignalType(type);
+		transition.setDirection(direction);
+		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
+		add(visualTransition);
+		return visualTransition;
 	}
 
 }
