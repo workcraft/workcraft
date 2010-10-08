@@ -1,5 +1,7 @@
 package org.workcraft.plugins.cpog.optimisation.dnf;
 
+import java.util.Arrays;
+
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.Literal;
@@ -57,14 +59,22 @@ public class DnfGenerator {
 						return or(and(a,nb), and(na, b));
 					}
 
+					private Dnf zero()
+					{
+						return negation ? new Dnf(new DnfClause()) : new Dnf();
+					}
+
 					@Override
 					public Dnf visit(Zero node) {
-						return new Dnf();
+						return zero();
 					}
 
 					@Override
 					public Dnf visit(One node) {
-						return new Dnf(new DnfClause());
+						negation=!negation;
+						Dnf result = zero();
+						negation=!negation;
+						return result;
 					}
 
 					@Override
@@ -98,22 +108,81 @@ public class DnfGenerator {
 				});
 	}
 
+
+	private static boolean compareClauses(DnfClause left, DnfClause right) {
+		// returns 0 if clauses contain same literals (with same negation)
+		/*for (Literal lleft: left.getLiterals()) {
+			boolean found=false;
+			for
+		}*/
+
+		return false;
+	}
+
 	private static Dnf addDnf(Dnf left, Dnf right) {
-		Dnf result = new Dnf(left.getClauses());
-		result.add(right);
+		Dnf result = new Dnf();
+
+		result.add(left);
+
+		for (DnfClause cright: right.getClauses()) {
+			boolean foundSame = false;
+
+			for (DnfClause cleft: left.getClauses()) {
+				foundSame = compareClauses(cleft, cright);
+				if (foundSame) break;
+			}
+
+			if (!foundSame) result.add(cright);
+
+		}
+
 		return result;
 	}
 
 	private static Dnf multiplyDnf(Dnf left, Dnf right) {
 		Dnf result = new Dnf();
-		for(DnfClause leftClause : left.getClauses())
+		for(DnfClause leftClause : left.getClauses()) {
+
 			for(DnfClause rightClause : right.getClauses())
 			{
+				boolean foundSameLiteral;
+				boolean clauseDiscarded = false;
+				boolean sameNegation=false;
+
 				DnfClause newClause = new DnfClause();
+
 				newClause.add(leftClause.getLiterals());
-				newClause.add(rightClause.getLiterals());
-				result.add(newClause);
+
+
+				for(Literal rlit : rightClause.getLiterals()) {
+					foundSameLiteral = false;
+
+					for(Literal llit : leftClause.getLiterals()) {
+
+						// TODO: work with 0 and 1 literals
+
+						if (rlit.getVariable().getLabel().equals(
+								llit.getVariable().getLabel())) {
+
+							foundSameLiteral=true;
+							sameNegation=llit.getNegation()==rlit.getNegation();
+							break;
+						}
+					}
+
+					if (!foundSameLiteral) newClause.add(rlit);
+					else if (!sameNegation) {
+						clauseDiscarded = true;
+						break;
+					}
+				}
+
+//				newClause.add(rightClause.getLiterals());
+				if (!clauseDiscarded) result.add(newClause);
 			}
+
+		}
 		return result;
 	}
+
 }
