@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
@@ -31,7 +30,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass ("org.workcraft.plugins.circuit.VisualCircuit")
 public class Circuit extends AbstractMathModel {
 
 	public Circuit() {

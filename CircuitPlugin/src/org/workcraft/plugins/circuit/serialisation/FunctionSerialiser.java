@@ -30,7 +30,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class FunctionSerialiser implements CustomXMLSerialiser, Plugin
+public class FunctionSerialiser implements CustomXMLSerialiser
 {
 	public static final String RESET_FUNCTION_ATTRIBUTE_NAME = "resetFunction";
 	public static final String SET_FUNCTION_ATTRIBUTE_NAME = "setFunction";

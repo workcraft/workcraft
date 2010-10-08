@@ -63,7 +63,7 @@ public class BooleanOperations
 	private static BooleanFormula createOr(List<? extends BooleanFormula> conditions, int start, int end) {
 		int size = end-start;
 		if(size == 0)
-			return ONE;
+			return ZERO;
 		else
 			if(size == 1)
 				return conditions.get(start);
