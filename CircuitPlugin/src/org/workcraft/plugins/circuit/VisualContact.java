@@ -37,6 +37,7 @@ import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -45,7 +46,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
-
 
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
@@ -310,6 +310,20 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public Contact getReferencedContact() {
 		return (Contact)getReferencedComponent();
+	}
+
+	public static boolean isDriver(Node contact) {
+		if (!(contact instanceof VisualContact)) return false;
+
+		return (((VisualContact)contact).getIOType() == IOType.OUTPUT) == (((VisualContact)contact).getParent() instanceof VisualComponent);
+	}
+
+	public static Direction flipDirection(Direction direction) {
+		if (direction==Direction.EAST) return Direction.WEST;
+		if (direction==Direction.WEST) return Direction.EAST;
+		if (direction==Direction.SOUTH) return Direction.NORTH;
+		if (direction==Direction.NORTH) return Direction.SOUTH;
+		return null;
 	}
 
 }

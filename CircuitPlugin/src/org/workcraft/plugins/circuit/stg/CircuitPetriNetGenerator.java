@@ -1,8 +1,6 @@
 package org.workcraft.plugins.circuit.stg;
 
 import static org.workcraft.util.Geometry.add;
-import static org.workcraft.util.Geometry.multiply;
-import static org.workcraft.util.Geometry.rotate90CCW;
 import static org.workcraft.util.Geometry.subtract;
 
 import java.awt.geom.AffineTransform;
@@ -16,8 +14,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -32,7 +31,6 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitPetriNetGenerator {
@@ -48,135 +46,214 @@ public class CircuitPetriNetGenerator {
 		public final VisualPlace p1;
 	}
 
+	private static final double xScaling = 8;
+	private static final double yScaling = 4;
+
 	static void setPosition(Movable node, Point2D point) {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(point.getX(), point.getY()));
+	}
+
+	public static VisualContact findDriver(VisualCircuit circuit, VisualContact target) {
+
+		Set<Node> neighbours = new HashSet<Node>(circuit.getPreset(target));
+
+		while (neighbours.size()>=1) {
+
+			if(neighbours.size() != 1) throw new RuntimeException("Found more than one potential driver for target "+getContactName(circuit, target)+"!");
+
+			Node node = neighbours.iterator().next();
+
+			if (VisualContact.isDriver(node)) {
+				// if it is a driver, return it
+				return (VisualContact)node;
+			}
+
+			// continue searching otherwise
+			neighbours = new HashSet<Node>(circuit.getPreset(node));
+		}
+
+		return null;
+	}
+
+	private static ContactSTG generatePlaces(VisualCircuit circuit,
+			VisualSTG stg, VisualContact contact) {
+
+		String contactName = getContactName(circuit, contact);
+		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
+		zeroPlace.setLabel(contactName+"=0");
+		zeroPlace.setTokens(1);
+
+		VisualPlace onePlace = stg.createPlace(contactName+"_1");
+		onePlace.setLabel(contactName+"=1");
+
+		ContactSTG contactSTG = new ContactSTG(zeroPlace, onePlace);
+
+		return contactSTG;
 	}
 
 	public static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
-			Set<VisualFunctionContact> sources = new HashSet<VisualFunctionContact>();
-			Map<FunctionContact, ContactSTG> places = new HashMap<FunctionContact, ContactSTG>();
 
-			for(VisualFunctionContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionContact.class)) {
-//				System.out.println();
-				if((contact.getIOType() == IOType.OUTPUT)
-				 == (contact.getParent() instanceof VisualFunctionComponent))
-				{
-					places.put(contact.getFunction(), generatePlaces(circuit, stg, contact));
-					sources.add(contact);
+			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
+			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
+
+			// generate all possible drivers and fill out the targets
+			for(VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+
+				if(VisualContact.isDriver(contact)) {
+					// if it is a driver, add it to the list of drivers
+					drivers.put(contact, generatePlaces(circuit, stg, contact));
+				} else {
+					// if not a driver, find related driver, add to the map of targets
+					VisualContact driver = findDriver(circuit, contact);
+
+					if (driver==null) {
+						// if target driver was not found, create artificial one that looks like input
+						driver = new VisualContact(new Contact(IOType.INPUT), VisualContact.flipDirection(contact.getDirection()), contact.getName());
+						driver.setTransform(contact.getTransform());
+						driver.setParent(contact.getParent());
+
+						drivers.put(driver, generatePlaces(circuit, stg, contact));
+					}
+
+					targetDrivers.put(contact.getReferencedContact(), driver);
 				}
 			}
 
-			for(VisualFunctionContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionContact.class)) {
-				if(!places.containsKey(contact.getFunction()))
-				{
-					Set<Node> neighbours = new HashSet<Node>(circuit.getPreset(contact));
-					neighbours.addAll(circuit.getPostset(contact));
-					if(neighbours.size() == 0) {
-						places.put(contact.getFunction(), generatePlaces(circuit, stg, contact));
-						sources.add(contact);
-					}
-					else
-					{
-						if(neighbours.size() != 1)
-							throw new RuntimeException("Found more than one driver!");
-						VisualFunctionContact neighbour = (VisualFunctionContact)neighbours.iterator().next();
-						places.put(contact.getFunction(), places.get(neighbour.getFunction()));
-					}
-				}
-			}
-
-			for(VisualFunctionContact contact : sources)
+			// generate implementation for each of the drivers
+			for(VisualContact c : drivers.keySet())
 			{
-				AffineTransform transform = TransformHelper.getTransformToAncestor(contact, circuit.getRoot());
-				Point2D center = new Point2D.Double(4*(transform.getTranslateX()+contact.getX()), 4*(transform.getTranslateY()+contact.getY()));
+				if (c instanceof VisualFunctionContact) {
+					// function based driver
+					VisualFunctionContact contact = (VisualFunctionContact)c;
+					Dnf set = DnfGenerator.generate(contact.getFunction().getSetFunction());
+					Dnf reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
 
-				Point2D direction = new Point2D.Double(1, 0);
-				int rotations;
-				switch(contact.getDirection())
-				{
-				case WEST: rotations=0;break;
-				case NORTH: rotations=1;break;
-				case EAST: rotations=2;break;
-				case SOUTH: rotations=3;break;
-				default: throw new RuntimeException();
+					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, SignalTransition.Type.OUTPUT);
+
+				} else {
+					// some generic driver implementation otherwise
+					Dnf set = new Dnf(new DnfClause());
+					Dnf reset = new Dnf(new DnfClause());
+					implementDriver(circuit, stg, c, drivers, targetDrivers, set, reset, SignalTransition.Type.INPUT);
 				}
-
-				for(int i=0;i<rotations;i++)
-					direction = rotate90CCW(direction);
-
-				String signalName = getContactName(circuit, contact);
-
-				ContactSTG p = places.get(contact.getFunction());
-				if(p == null)
-					throw new RuntimeException("Places for contact " + signalName + " cannot be found.");
-
-				Point2D plusDirection = rotate90CCW(direction);
-				Point2D minusDirection = Geometry.multiply(plusDirection, -1);
-
-				setPosition(p.p1, add(center, plusDirection));
-				setPosition(p.p0, subtract(center, plusDirection));
-
-				Dnf set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-				Dnf reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-
-				buildTransitions(places, stg, circuit, set, center, direction, plusDirection, signalName, SignalTransition.Direction.PLUS, p.p0, p.p1);
-				buildTransitions(places, stg, circuit, reset, center, direction,  minusDirection, signalName, SignalTransition.Direction.MINUS, p.p1, p.p0);
 			}
 
 			return stg;
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
-	private static ContactSTG generatePlaces(VisualCircuit circuit,
-			VisualSTG stg, VisualFunctionContact contact) {
-		String contactName = getContactName(circuit, contact);
-		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
-		zeroPlace.setTokens(1);
-		ContactSTG contactSTG = new ContactSTG(zeroPlace, stg.createPlace(contactName+"_1"));
-		return contactSTG;
+
+	private static void implementDriver(VisualCircuit circuit, VisualSTG stg,
+			VisualContact contact,
+			Map<VisualContact, ContactSTG> drivers,
+			Map<Contact, VisualContact> targetDrivers, Dnf set, Dnf reset, SignalTransition.Type ttype) throws InvalidConnectionException {
+
+		AffineTransform transform = TransformHelper.getTransformToAncestor(contact, circuit.getRoot());
+		Point2D center = new Point2D.Double(xScaling*(transform.getTranslateX()+contact.getX()), yScaling*(transform.getTranslateY()+contact.getY()));
+
+		Point2D direction;
+		Point2D pOffset;
+		Point2D plusDirection;
+		Point2D minusDirection;
+
+		int maxC = Math.max(set.getClauses().size(), reset.getClauses().size());
+
+		switch(contact.getDirection()) {
+			case WEST:
+				direction		= new Point2D.Double( 2+maxC, 0);
+				pOffset			= new Point2D.Double( 0, -1);
+				plusDirection	= new Point2D.Double(-1, -2);
+				minusDirection	= new Point2D.Double(-1,  2);
+				break;
+			case EAST:
+				direction		= new Point2D.Double(-2-maxC, 0);
+				pOffset			= new Point2D.Double( 0, -1);
+				plusDirection	= new Point2D.Double( 1, -2);
+				minusDirection	= new Point2D.Double( 1,  2);
+				break;
+			case NORTH:
+				direction		= new Point2D.Double( 0, 2+maxC*2);
+				pOffset			= new Point2D.Double( 2, 0);
+				plusDirection	= new Point2D.Double( 2,-2);
+				minusDirection	= new Point2D.Double(-2,-2);
+				break;
+			case SOUTH:
+				direction		= new Point2D.Double( 0,-2-maxC*2);
+				pOffset			= new Point2D.Double( 2, 0);
+				plusDirection	= new Point2D.Double( 1, 2);
+				minusDirection	= new Point2D.Double(-2, 2);
+				break;
+			default: throw new RuntimeException();
+		}
+
+		String signalName = getContactName(circuit, contact);
+
+		ContactSTG p = drivers.get(contact);
+
+		if(p == null)
+			throw new RuntimeException("Places for driver " + signalName + " cannot be found.");
+
+
+		setPosition(p.p1, add(center, pOffset));
+		setPosition(p.p0, subtract(center, pOffset));
+
+		buildTransitions(stg, circuit, drivers, targetDrivers,
+				set,
+				add(add(center, direction), pOffset), plusDirection,
+				signalName, ttype, SignalTransition.Direction.PLUS, p.p0, p.p1);
+
+		buildTransitions(stg, circuit, drivers, targetDrivers,
+				reset,
+				subtract(add(center, direction), pOffset),  minusDirection,
+				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0);
 	}
 
 	private static void buildTransitions(
-			Map<FunctionContact, ContactSTG> places, VisualSTG stg, VisualCircuit circuit,
+			VisualSTG stg, VisualCircuit circuit, Map<VisualContact, ContactSTG> drivers, Map<Contact, VisualContact> targetDrivers,
 			Dnf function,
-			Point2D center, Point2D direction, Point2D signDirection,
-			String signalName, Direction transitionDirection,
+			Point2D baseOffset, Point2D transitionOffset,
+			String signalName, SignalTransition.Type type, Direction transitionDirection,
 			VisualPlace preset, VisualPlace postset) throws InvalidConnectionException {
-		int i=0;
+
 		for(DnfClause clause : function.getClauses())
 		{
-			VisualSignalTransition transition = stg.createSignalTransition(signalName, SignalTransition.Type.OUTPUT, transitionDirection);
-			setPosition(transition, subtract(add(center, multiply(signDirection, i+1)), direction));
+			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection);
+			setPosition(transition, baseOffset);
+
 			stg.connect(transition, postset);
 			stg.connect(preset, transition);
-
 			transition.setLabel(FormulaToString.toString(clause));
+
+			// no transition restrictions for empty clauses
+			if (clause.getLiterals().size()==0) break;
+
+			baseOffset = add(baseOffset, transitionOffset);
 
 			for(Literal literal : clause.getLiterals()) {
 				{
-					FunctionContact inputContact = (FunctionContact)literal.getVariable();
+					Contact targetContact = (Contact)literal.getVariable();
 
-					ContactSTG source = places.get(inputContact);
+					VisualContact driverContact = targetDrivers.get(targetContact);
+
+					ContactSTG source = drivers.get(driverContact);
 
 					if(source == null)
-						throw new RuntimeException("No source for " + inputContact.getName() + " while generating " + signalName);
+						throw new RuntimeException("No source for " + targetContact.getName() + " while generating " + signalName);
 
 					VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
 
-					stg.connect(p, transition);
-					stg.connect(transition, p);
+					stg.connectSingle(p, transition);
+					stg.connectSingle(transition, p);
 				}
 			}
-			i++;
 		}
 	}
 
-	private static String getContactName(VisualCircuit circuit, VisualFunctionContact contact) {
+	private static String getContactName(VisualCircuit circuit, VisualContact contact) {
 		String prefix = "";
 		Node parent = contact.getParent();
 		if(parent instanceof VisualFunctionComponent)
