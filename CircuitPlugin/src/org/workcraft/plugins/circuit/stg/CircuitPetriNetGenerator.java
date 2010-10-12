@@ -104,6 +104,9 @@ public class CircuitPetriNetGenerator {
 				if(VisualContact.isDriver(contact)) {
 					// if it is a driver, add it to the list of drivers
 					drivers.put(contact, generatePlaces(circuit, stg, contact));
+
+					// put itself on a target list as well, so it be addressed by other drivers
+					targetDrivers.put(contact.getReferencedContact(), contact);
 				} else {
 					// if not a driver, find related driver, add to the map of targets
 					VisualContact driver = findDriver(circuit, contact);
@@ -160,32 +163,32 @@ public class CircuitPetriNetGenerator {
 		Point2D plusDirection;
 		Point2D minusDirection;
 
-		int maxC = Math.max(set.getClauses().size(), reset.getClauses().size());
+//		int maxC = Math.max(set.getClauses().size(), reset.getClauses().size());
 
 		switch(contact.getDirection()) {
 			case WEST:
-				direction		= new Point2D.Double( 2+maxC, 0);
+				direction		= new Point2D.Double( 6, 0);
 				pOffset			= new Point2D.Double( 0, -1);
-				plusDirection	= new Point2D.Double(-1, -2);
-				minusDirection	= new Point2D.Double(-1,  2);
+				plusDirection	= new Point2D.Double( 0, -2);
+				minusDirection	= new Point2D.Double( 0,  2);
 				break;
 			case EAST:
-				direction		= new Point2D.Double(-2-maxC, 0);
+				direction		= new Point2D.Double(-6, 0);
 				pOffset			= new Point2D.Double( 0, -1);
-				plusDirection	= new Point2D.Double( 1, -2);
-				minusDirection	= new Point2D.Double( 1,  2);
+				plusDirection	= new Point2D.Double( 0, -2);
+				minusDirection	= new Point2D.Double( 0,  2);
 				break;
 			case NORTH:
-				direction		= new Point2D.Double( 0, 2+maxC*2);
-				pOffset			= new Point2D.Double( 2, 0);
-				plusDirection	= new Point2D.Double( 2,-2);
-				minusDirection	= new Point2D.Double(-2,-2);
+				direction		= new Point2D.Double( 6, 0);
+				pOffset			= new Point2D.Double( 0, -1);
+				plusDirection	= new Point2D.Double( 0, -2);
+				minusDirection	= new Point2D.Double( 0,  2);
 				break;
 			case SOUTH:
-				direction		= new Point2D.Double( 0,-2-maxC*2);
-				pOffset			= new Point2D.Double( 2, 0);
-				plusDirection	= new Point2D.Double( 1, 2);
-				minusDirection	= new Point2D.Double(-2, 2);
+				direction		= new Point2D.Double(-6, 0);
+				pOffset			= new Point2D.Double( 0, -1);
+				plusDirection	= new Point2D.Double( 0, -2);
+				minusDirection	= new Point2D.Double( 0,  2);
 				break;
 			default: throw new RuntimeException();
 		}
@@ -194,7 +197,7 @@ public class CircuitPetriNetGenerator {
 
 		ContactSTG p = drivers.get(contact);
 
-		if(p == null)
+		if (p == null)
 			throw new RuntimeException("Places for driver " + signalName + " cannot be found.");
 
 
@@ -233,9 +236,10 @@ public class CircuitPetriNetGenerator {
 
 			baseOffset = add(baseOffset, transitionOffset);
 
-			for(Literal literal : clause.getLiterals()) {
+			for (Literal literal : clause.getLiterals()) {
 				{
 					Contact targetContact = (Contact)literal.getVariable();
+
 
 					VisualContact driverContact = targetDrivers.get(targetContact);
 
@@ -256,7 +260,7 @@ public class CircuitPetriNetGenerator {
 	private static String getContactName(VisualCircuit circuit, VisualContact contact) {
 		String prefix = "";
 		Node parent = contact.getParent();
-		if(parent instanceof VisualFunctionComponent)
+		if (parent instanceof VisualFunctionComponent)
 			prefix = ((VisualFunctionComponent)parent).getName()+"_";
 		return prefix+contact.getName();
 	}

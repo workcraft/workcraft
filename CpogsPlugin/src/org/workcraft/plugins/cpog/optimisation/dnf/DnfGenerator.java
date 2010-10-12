@@ -1,6 +1,9 @@
 package org.workcraft.plugins.cpog.optimisation.dnf;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -108,35 +111,68 @@ public class DnfGenerator {
 				});
 	}
 
+	private static boolean isFirstSmaller(HashSet<String> set1,
+			HashSet<String> set2, boolean equalWins) {
 
-	private static boolean compareClauses(DnfClause left, DnfClause right) {
-		// returns 0 if clauses contain same literals (with same negation)
-		/*for (Literal lleft: left.getLiterals()) {
-			boolean found=false;
-			for
-		}*/
+		if (set2.containsAll(set1)) {
+			if (set2.size()>set1.size()) return true;
+			return equalWins;
+		}
 
 		return false;
 	}
+
+
+	// throws out all the repeated and absorbed clauses
+	private static Dnf simplifyDnf(Dnf clauses) {
+		Dnf result = new Dnf();
+
+		Map <DnfClause, HashSet <String> > testClauses = new HashMap<DnfClause, HashSet <String> >();
+
+		for (DnfClause clause: clauses.getClauses()) {
+
+			if (clause.getLiterals().size()==0) return  new Dnf(new DnfClause());
+
+			HashSet<String> lset = new HashSet<String>();
+
+			for (Literal lit: clause.getLiterals())
+				lset.add(lit.getVariable().getLabel()+(lit.getNegation()?"'":""));
+
+			testClauses.put(clause, lset);
+		}
+
+		for (DnfClause cleft: testClauses.keySet()) {
+			for (DnfClause cright: testClauses.keySet()) {
+				if (cleft==cright) continue;
+
+				if (testClauses.get(cleft)==null) break;
+				if (testClauses.get(cright)==null) continue;
+
+				// left to right comparison
+				if (isFirstSmaller(testClauses.get(cleft), testClauses.get(cright), true)) {
+					testClauses.put(cright, null);
+				} else if (isFirstSmaller(testClauses.get(cright), testClauses.get(cleft), false)) {
+					// right to left comparison
+					testClauses.put(cleft, null);
+				}
+			}
+		}
+
+		for (DnfClause cleft: testClauses.keySet())
+			if (testClauses.get(cleft)!=null)
+				result.add(cleft);
+
+		return result;
+	}
+
 
 	private static Dnf addDnf(Dnf left, Dnf right) {
 		Dnf result = new Dnf();
 
 		result.add(left);
+		result.add(right);
 
-		for (DnfClause cright: right.getClauses()) {
-			boolean foundSame = false;
-
-			for (DnfClause cleft: left.getClauses()) {
-				foundSame = compareClauses(cleft, cright);
-				if (foundSame) break;
-			}
-
-			if (!foundSame) result.add(cright);
-
-		}
-
-		return result;
+		return simplifyDnf(result);
 	}
 
 	private static Dnf multiplyDnf(Dnf left, Dnf right) {
@@ -182,7 +218,9 @@ public class DnfGenerator {
 			}
 
 		}
-		return result;
+
+
+		return simplifyDnf(result);
 	}
 
 }
