@@ -125,6 +125,10 @@ public class STG extends AbstractMathModel implements STGModel {
 		PetriNet.fire(this, t);
 	}
 
+	final public void unFire (Transition t) {
+		PetriNet.unFire(this, t);
+	}
+
 	final public Collection<SignalTransition> getSignalTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
 	}

@@ -132,6 +132,27 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		fire (this, t);
 	}
 
+	final public void unFire(Transition t) {
+		unFire(this, t);
+	}
+
+	final public static void unFire(PetriNetModel net, Transition t) {
+		// the opposite action to fire, no additional checks,
+		// the transition given must be correct
+		// for the transition to be enabled
+
+		for (Connection c : net.getConnections(t)) {
+			if (t==c.getFirst()) {
+				Place to = (Place)c.getSecond();
+				to.setTokens(((Place)to).getTokens()-1);
+			}
+			if (t==c.getSecond()) {
+				Place from = (Place)c.getFirst();
+				from.setTokens(((Place)from).getTokens()+1);
+			}
+		}
+	}
+
 	final public static void fire (PetriNetModel net, Transition t) {
 		if (net.isEnabled(t))
 		{
@@ -145,10 +166,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 					from.setTokens(((Place)from).getTokens()-1);
 				}
 			}
-/*			for (Node n : net.getPostset(t))
-				((Place)n).setTokens(((Place)n).getTokens()+1);
-			for (Node n : net.getPreset(t))
-				((Place)n).setTokens(((Place)n).getTokens()-1);*/
 		}
 	}
 
