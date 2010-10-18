@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.junit.Assert;
+import org.workcraft.BalsaModelDescriptor;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -51,6 +52,7 @@ import org.workcraft.plugins.balsa.VisualBalsaCircuit;
 import org.workcraft.plugins.balsa.VisualBreezeComponent;
 import org.workcraft.plugins.balsa.VisualHandshake;
 import org.workcraft.plugins.balsa.components.DynamicComponent;
+import org.workcraft.workspace.ModelEntry;
 
 
 public class SaveLoadTests {
@@ -66,7 +68,7 @@ public class SaveLoadTests {
 		Framework framework = new Framework();
 		framework.getPluginManager().loadManifest();
 
-		BalsaCircuit circuit = (BalsaCircuit)framework.load(input);
+		BalsaCircuit circuit = (BalsaCircuit)framework.load(input).getModel();
 
 		Assert.assertNotNull(circuit);
 
@@ -176,7 +178,7 @@ public class SaveLoadTests {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		new Framework().save(circuit, stream);
+		new Framework().save(new ModelEntry(new BalsaModelDescriptor(), circuit), stream);
 
 		//testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}
@@ -191,7 +193,7 @@ public class SaveLoadTests {
 		//FileOutputStream temp = new FileOutputStream("temp.work");
 		//new Framework().save(circuit, temp);
 		//temp.close();
-		new Framework().save(circuit, stream);
+		new Framework().save(new ModelEntry(new BalsaModelDescriptor(), circuit), stream);
 		testVisualModelLoopWhile(circuit);
 		/*testVisualModelLoopWhile(
 				Framework.load(
@@ -263,13 +265,13 @@ public class SaveLoadTests {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		f.save(circuit, stream);
+		f.save(new ModelEntry(new BalsaModelDescriptor(), circuit), stream);
 
-		Model loaded = f.load(new ByteArrayInputStream(stream.toByteArray()));
+		Model loaded = f.load(new ByteArrayInputStream(stream.toByteArray())).getModel();
 
 		stream = new ByteArrayOutputStream();
 
-		f.save(loaded, stream);
+		f.save(new ModelEntry(new BalsaModelDescriptor(), loaded), stream);
 
 		testMathModelLoadWhileWhile(new ByteArrayInputStream(stream.toByteArray()));
 	}

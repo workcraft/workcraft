@@ -57,11 +57,12 @@ import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.modelchecking.DeadlockChecker;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.Export;
 import org.workcraft.util.Import;
+import org.workcraft.workspace.ModelEntry;
 
 
 public class WhileTests {
@@ -96,9 +97,9 @@ public class WhileTests {
 		Map<String, TwoSideStg> hsStgs = MainStgBuilder.buildHandshakes(handshakes, handshakeBuilder, stgBuilder);
 		MainStgBuilder.buildStg(wh, hsStgs, stgBuilder);
 
-		new DeadlockChecker().run(stg);
+		//new DeadlockChecker().run(stg);
 
-		new org.workcraft.Framework().save(new VisualSTG(stg), "while.stg.work");
+		new org.workcraft.Framework().save(new ModelEntry(new STGModelDescriptor(),  new VisualSTG(stg)), "while.stg.work");
 	}
 
 	@Test
@@ -128,11 +129,11 @@ public class WhileTests {
 		final ExtractControlSTGTask stgExtractionTask = new ExtractControlSTGTask(framework, balsa, balsaConfig);
 		Export.exportToFile(new DotGExporter(), stgExtractionTask.getSTG(), stgFile);
 
-		final STG stg = (STG) Import.importFromFile(new DotGImporter(), stgFile);
+		final STG stg = (STG) Import.importFromFile(new DotGImporter(), stgFile).getModel();
 
 		VisualSTG visualStg = new VisualSTG(stg);
 
-		framework.save(visualStg, "while_while.stg.work");
+		framework.save(new ModelEntry(new STGModelDescriptor(), visualStg), "while_while.stg.work");
 	}
 
 	private DynamicComponent createWhile() {

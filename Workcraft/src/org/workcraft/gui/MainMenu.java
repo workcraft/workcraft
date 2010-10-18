@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -108,8 +107,6 @@ public class MainMenu extends JMenuBar {
 
 	private MainWindow mainWindow;
 	private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
-
-	private LinkedList<JMenu> toolMenus = new LinkedList<JMenu>();
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -343,7 +340,7 @@ public class MainMenu extends JMenuBar {
 		mnExport.removeAll();
 		mnExport.setEnabled(false);
 
-		VisualModel model = (VisualModel) we.getObject();
+		VisualModel model = we.getModelEntry().getVisualModel();
 
 		boolean haveVisual = false;
 

@@ -23,27 +23,17 @@ package org.workcraft.workspace;
 
 import java.io.File;
 
-import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.workspace.Path;
 
 public class WorkspaceEntry
 {
-	private Object object = null;
+	private ModelEntry modelEntry = null;
 	private boolean changed = true;
 	private boolean temporary = true;
 	private Workspace workspace;
 
 	public WorkspaceEntry(Workspace workspace) {
 		this.workspace = workspace;
-	}
-
-	public Object getObject() {
-		return object;
-	}
-
-	public void setObject(Object object) {
-		this.object = object;
 	}
 
 	public void setChanged(boolean changed) {
@@ -55,11 +45,18 @@ public class WorkspaceEntry
 		return changed;
 	}
 
+	public ModelEntry getModelEntry()
+	{
+		return modelEntry;
+	}
+
+	public void setModelEntry(ModelEntry modelEntry)
+	{
+		this.modelEntry = modelEntry;
+	}
+
 	public boolean isWork() {
-		if (object != null)
-			return (object instanceof Model);
-		else
-			return (getWorkspacePath().getNode().endsWith(".work"));
+		return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(".work"));
 	}
 
 	public String getTitle() {
@@ -81,8 +78,8 @@ public class WorkspaceEntry
 	public String toString() {
 		String res = getTitle();
 
-		if (object != null)
-			if (object instanceof VisualModel)
+		if (modelEntry != null)
+			if (modelEntry.isVisual())
 				res = res + " [V]";
 
 		if (changed)

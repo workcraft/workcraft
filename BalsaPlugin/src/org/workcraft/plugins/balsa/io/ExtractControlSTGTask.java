@@ -55,7 +55,7 @@ import org.workcraft.plugins.balsa.stgbuilder.StgSignal;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.NameProvider;
 import org.workcraft.plugins.balsa.stgmodelstgbuilder.StgModelStgBuilder;
 import org.workcraft.plugins.interop.DotGImporter;
-import org.workcraft.plugins.pcomp.gui.PCompOutputMode;
+import org.workcraft.plugins.pcomp.PCompOutputMode;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;

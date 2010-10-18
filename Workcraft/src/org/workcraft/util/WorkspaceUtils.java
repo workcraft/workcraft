@@ -1,7 +1,6 @@
 package org.workcraft.util;
 
-import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkspaceUtils {
@@ -10,12 +9,12 @@ public class WorkspaceUtils {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getAs(WorkspaceEntry entry, Class<T> cls) {
-		final Object obj = entry.getObject();
-		if(cls.isInstance(obj))
-			return (T)obj;
-		if(obj instanceof VisualModel)
+		if(cls.isInstance(entry.getModelEntry().getModel()))
+			return (T)entry.getModelEntry().getModel();
+
+		if(entry.getModelEntry().isVisual())
 		{
-			final Model mathModel = ((VisualModel) obj).getMathModel();
+			final MathModel mathModel = entry.getModelEntry().getMathModel();
 			if(cls.isInstance(mathModel))
 				return (T) mathModel;
 		}

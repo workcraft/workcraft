@@ -44,9 +44,9 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
@@ -63,7 +63,7 @@ import org.workcraft.util.XmlUtil;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
-	private Model mathModel;
+	private MathModel mathModel;
 	private Container currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
 	private ObservableStateImpl observableState = new ObservableStateImpl();
@@ -73,14 +73,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public AbstractVisualModel() {
-		this ((Model)null);
+		this ((MathModel)null);
 	}
 
-	public AbstractVisualModel(Model mathModel) {
+	public AbstractVisualModel(MathModel mathModel) {
 		this(mathModel, null);
 	}
 
-	public AbstractVisualModel(Model mathModel, VisualGroup root) {
+	public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
 		super(root == null? new VisualGroup() : root);
 		this.mathModel = mathModel;
 
@@ -256,7 +256,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			notifySelectionChanged(s);
 	}
 
-	public Model getMathModel() {
+	public MathModel getMathModel() {
 		return mathModel;
 	}
 

@@ -23,7 +23,6 @@ package org.workcraft;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,12 +38,13 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.XmlUtil;
 
 public class PluginManager implements PluginProvider {
 	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
-	public static final String VERSION_STAMP = "d971444cbd86448695f3427118632aca";
+	public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
 	private Framework framework;
 
@@ -121,7 +121,12 @@ public class PluginManager implements PluginProvider {
 
 		for(Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
 			LegacyPluginInfo info = new LegacyPluginInfo(pluginElement);
-			addLegacyPluginClass(info);
+			for (String interfaceName : info.getInterfaces())
+			try {
+				plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
+			} catch (ClassNotFoundException e) {
+				System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
+			}
 		}
 
 		return true;
@@ -140,6 +145,7 @@ public class PluginManager implements PluginProvider {
 		{
 			final Module module = info.newInstance();
 			try {
+				System.out.println("Loading module: " + module.getDescription());
 				module.init(framework);
 			}
 			catch(Throwable th) {
@@ -181,43 +187,12 @@ public class PluginManager implements PluginProvider {
 		XmlUtil.saveDocument(doc, file);
 	}
 
-	private void addLegacyPluginClass(LegacyPluginInfo info)
-	{
-		for (String interfaceName : info.getInterfaces())
-			try {
-				plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
-			} catch (ClassNotFoundException e) {
-				System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
-			}
-	}
-
 	private void processLegacyPlugin (Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
-		addLegacyPluginClass(info);
-		if (Module.class.isAssignableFrom(cls))
-		{
-			try {
-				final Constructor<?> constructor = cls.getConstructor();
-				final Module instance = (Module)constructor.newInstance();
-				Class<?> [] classes = instance.getPluginClasses();
-				System.out.println("plugin " + cls.getName() + ":");
-				for(Class<?> pluginClass : classes)
-				{
-					addLegacyPluginClass(new LegacyPluginInfo(pluginClass));
-					System.out.println("\tclass " + pluginClass.getName());
-				}
-			} catch (SecurityException e) {
-				throw new RuntimeException(e);
-			} catch (NoSuchMethodException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
+		for (String interfaceName : info.getInterfaces())
+		try {
+			plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
+		} catch (ClassNotFoundException e) {
+			System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
 		}
 	}
 
@@ -270,12 +245,50 @@ public class PluginManager implements PluginProvider {
 				try {
 					return cls.newInstance();
 				} catch (InstantiationException e) {
+					Throwable q = e;
+
+					System.err.println (cls.getCanonicalName());
+					while (q != null)
+					{
+						q.printStackTrace();
+						q = q.getCause();
+					}
+
+
 					throw new RuntimeException(e);
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			}
+		});
+	}
 
+	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object ... constructorArgs)
+	{
+		registerClass(interf, new Initialiser<T>(){
+			@Override
+			public T create() {
+				try {
+					Class<?> classes[] = new Class<?>[constructorArgs.length];
+
+					for (int i=0; i<constructorArgs.length; i++)
+						classes[i] = constructorArgs[i].getClass();
+
+					return new ConstructorParametersMatcher().match(cls, classes).newInstance(constructorArgs);
+				} catch (InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				} catch (SecurityException e) {
+					throw new RuntimeException(e);
+				} catch (NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		});
 	}
 
@@ -285,4 +298,5 @@ public class PluginManager implements PluginProvider {
 		final PluginInfo<T> pluginInfo = new PluginInstanceHolder<T>(initialiser);
 		plugins.put(interf, pluginInfo);
 	}
+
 }

@@ -37,7 +37,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
@@ -109,8 +108,8 @@ public class Workspace {
 				if (workspacePath == null)
 					workspacePath = tempMountExternalFile(file);
 
-				Model model = framework.load(file.getPath());
-				we.setObject(model);
+				ModelEntry modelEntry = framework.load(file.getPath());
+				we.setModelEntry(modelEntry);
 			} else {
 				try {
 					Path<String> parent;
@@ -120,8 +119,8 @@ public class Workspace {
 						parent = workspacePath.getParent();
 
 					final Importer importer = Import.chooseBestImporter(framework.getPluginManager(), file);
-					Model model = Import.importFromFile(importer, file);
-					we.setObject(model);
+					ModelEntry modelEntry = Import.importFromFile(importer, file);
+					we.setModelEntry(modelEntry);
 
 					workspacePath = newName(parent, FileUtils.getFileNameWithoutExtension(file));
 				} catch (IOException e) {
@@ -190,12 +189,12 @@ public class Workspace {
 		return null;
 	}
 
-	public WorkspaceEntry add(Path<String> directory, String desiredName, Model model, boolean temporary) {
+	public WorkspaceEntry add(Path<String> directory, String desiredName, ModelEntry modelEntry, boolean temporary) {
 		final Path<String> path = newName(directory, desiredName);
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setTemporary(temporary);
 		we.setChanged(true);
-		we.setObject(model);
+		we.setModelEntry(modelEntry);
 		openFiles.put(path, we);
 		fireEntryAdded(we);
 		return we;

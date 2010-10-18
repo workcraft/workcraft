@@ -24,14 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 
-@DisplayName("petrify")
-public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugin {
+public class PetrifyUtilitySettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	private static String petrifyCommand = "petrify";
@@ -68,7 +65,7 @@ public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugi
 		return properties;
 	}
 
-	public void loadPersistentProperties(Config config) {
+	public void load(Config config) {
 		petrifyCommand = config.getString(petrifyCommandKey, "petrify");
 		petrifyArgs = config.getString(petrifyArgsKey, "");
 		draw_astgCommand = config.getString(draw_astgCommandKey, "draw_astg");
@@ -78,7 +75,7 @@ public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugi
 
 	}
 
-	public void storePersistentProperties(Config config) {
+	public void save(Config config) {
 		config.set(petrifyCommandKey, petrifyCommand);
 		config.set(petrifyArgsKey, petrifyArgs);
 		config.set(draw_astgCommandKey, draw_astgCommand);
@@ -137,5 +134,10 @@ public class PetrifyUtilitySettings implements PersistentPropertyEditable, Plugi
 
 	public static void setWrite_sgArgs(String write_sgArgs) {
 		PetrifyUtilitySettings.write_sgArgs = write_sgArgs;
+	}
+
+	@Override
+	public String getName() {
+		return "Petrify";
 	}
 }

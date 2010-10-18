@@ -50,7 +50,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.layout.generated.DotParser;
 import org.workcraft.plugins.layout.generated.ParseException;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.verification.tasks.ExternalProcessTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

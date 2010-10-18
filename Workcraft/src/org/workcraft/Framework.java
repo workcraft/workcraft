@@ -52,6 +52,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -59,10 +60,10 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.propertyeditor.PersistentPropertyEditable;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.serialisation.XMLDeserialiser;
-import org.workcraft.plugins.serialisation.XMLSerialiser;
+import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
+import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -76,6 +77,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.XmlUtil;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
@@ -210,14 +212,14 @@ public class Framework {
 	public void loadConfig(String fileName) {
 		config.load(fileName);
 
-		for (PluginInfo<? extends PersistentPropertyEditable> info : pluginManager.getPlugins(PersistentPropertyEditable.class)) {
-			info.getSingleton().loadPersistentProperties(config);
+		for (PluginInfo<? extends SettingsPage> info : pluginManager.getPlugins(SettingsPage.class)) {
+			info.getSingleton().load(config);
 		}
 	}
 
 	public void saveConfig(String fileName) {
-		for (PluginInfo<? extends PersistentPropertyEditable> info : pluginManager.getPlugins(PersistentPropertyEditable.class)) {
-			info.getSingleton().storePersistentProperties(config);
+		for (PluginInfo<? extends SettingsPage> info : pluginManager.getPlugins(SettingsPage.class)) {
+			info.getSingleton().save(config);
 		}
 
 		config.save(fileName);
@@ -506,7 +508,7 @@ public class Framework {
 		contextFactory.call(setargs);
 	}
 
-	public Model load(String path) throws DeserialisationException {
+	public ModelEntry load(String path) throws DeserialisationException {
 		try {
 			FileInputStream fis = new FileInputStream(path);
 			return load(fis);
@@ -533,7 +535,7 @@ public class Framework {
 		return null;
 	}
 
-	public Model load(InputStream is) throws DeserialisationException   {
+	public ModelEntry load(InputStream is) throws DeserialisationException   {
 		try {
 			byte[] bufferedInput = DataAccumulator.loadStream(is);
 
@@ -546,6 +548,12 @@ public class Framework {
 
 			metadata.close();
 
+			Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
+
+			String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
+
+			ModelDescriptor descriptor = (ModelDescriptor) Class.forName(descriptorClass).newInstance();
+
 			// load math model
 
 			Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
@@ -554,7 +562,7 @@ public class Framework {
 			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 			// TODO: get proper deserialiser for format
 
-			ModelDeserialiser mathDeserialiser = new XMLDeserialiser(getPluginManager()); //pluginManager.getSingleton(XMLDeserialiser.class);
+			ModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager()); //pluginManager.getSingleton(XMLDeserialiser.class);
 
 			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
 
@@ -565,17 +573,17 @@ public class Framework {
 			Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
 
 			if (visualElement == null)
-				return mathResult.model;
+				return new ModelEntry(descriptor, mathResult.model);
 
 			//UUID visualFormatUUID = UUID.fromString(visualElement.getAttribute("format-uuid"));
 			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
 
 			//TODO:get proper deserialiser
-			XMLDeserialiser visualDeserialiser = new XMLDeserialiser(getPluginManager());//pluginManager.getSingleton(XMLDeserialiser.class);
+			XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());//pluginManager.getSingleton(XMLDeserialiser.class);
 
 			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
 			//visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
-			return visualResult.model;
+			return new ModelEntry(descriptor, visualResult.model);
 
 		} catch (IOException e) {
 			throw new DeserialisationException(e);
@@ -583,10 +591,16 @@ public class Framework {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {
 			throw new DeserialisationException(e);
+		} catch (InstantiationException e) {
+			throw new DeserialisationException(e);
+		} catch (IllegalAccessException e) {
+			throw new DeserialisationException(e);
+		} catch (ClassNotFoundException e) {
+			throw new DeserialisationException(e);
 		}
 	}
 
-	public void save(Model model, String path) throws SerialisationException {
+	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);
 		try {
 			FileOutputStream stream = new FileOutputStream(file);
@@ -599,7 +613,8 @@ public class Framework {
 		}
 	}
 
-	public void save(Model model, OutputStream out) throws SerialisationException {
+	public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
+		Model model = modelEntry.getModel();
 		VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
 		Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
 
@@ -609,7 +624,7 @@ public class Framework {
 		ModelSerialiser mathSerialiser = null;
 
 		try {
-			mathSerialiser = new XMLSerialiser(getPluginManager());
+			mathSerialiser = new XMLModelSerialiser(getPluginManager());
 
 
 			String mathEntryName = "model" + mathSerialiser.getExtension();
@@ -622,7 +637,7 @@ public class Framework {
 			ModelSerialiser visualSerialiser = null;
 
 			if (visualModel != null) {
-				visualSerialiser = new XMLSerialiser(getPluginManager());
+				visualSerialiser = new XMLModelSerialiser(getPluginManager());
 
 				visualEntryName = "visualModel" + visualSerialiser.getExtension();
 				ze = new ZipEntry(visualEntryName);
@@ -639,6 +654,10 @@ public class Framework {
 
 			Element root = doc.createElement("workcraft-meta");
 			doc.appendChild(root);
+
+			Element descriptor = doc.createElement("descriptor");
+			descriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
+			root.appendChild(descriptor);
 
 			Element math = doc.createElement("math");
 			math.setAttribute("entry-name", mathEntryName);
