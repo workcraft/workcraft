@@ -22,6 +22,8 @@
 package org.workcraft.plugins.petri;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.workcraft.Plugin;
 import org.workcraft.annotations.VisualClass;
@@ -108,8 +110,20 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	final public static boolean isEnabled (PetriNetModel net, Transition t) {
+		// gather number of connections for each pre-place
+		Map<Place, Integer> map = new HashMap<Place, Integer>();
+		for (Connection c: net.getConnections(t)) {
+			if (c.getSecond()==t) {
+				if (map.containsKey(c.getFirst())) {
+					map.put((Place)c.getFirst(), map.get(c.getFirst())+1);
+				} else {
+					map.put((Place)c.getFirst(), 1);
+				}
+			}
+		}
+
 		for (Node n : net.getPreset(t))
-			if (((Place)n).getTokens() <= 0)
+			if (((Place)n).getTokens() < map.get((Place)n))
 				return false;
 		return true;
 	}
@@ -118,13 +132,40 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		fire (this, t);
 	}
 
+	final public void unFire(Transition t) {
+		unFire(this, t);
+	}
+
+	final public static void unFire(PetriNetModel net, Transition t) {
+		// the opposite action to fire, no additional checks,
+		// the transition given must be correct
+		// for the transition to be enabled
+
+		for (Connection c : net.getConnections(t)) {
+			if (t==c.getFirst()) {
+				Place to = (Place)c.getSecond();
+				to.setTokens(((Place)to).getTokens()-1);
+			}
+			if (t==c.getSecond()) {
+				Place from = (Place)c.getFirst();
+				from.setTokens(((Place)from).getTokens()+1);
+			}
+		}
+	}
+
 	final public static void fire (PetriNetModel net, Transition t) {
 		if (net.isEnabled(t))
 		{
-			for (Node n : net.getPostset(t))
-				((Place)n).setTokens(((Place)n).getTokens()+1);
-			for (Node n : net.getPreset(t))
-				((Place)n).setTokens(((Place)n).getTokens()-1);
+			for (Connection c : net.getConnections(t)) {
+				if (t==c.getFirst()) {
+					Place to = (Place)c.getSecond();
+					to.setTokens(((Place)to).getTokens()+1);
+				}
+				if (t==c.getSecond()) {
+					Place from = (Place)c.getFirst();
+					from.setTokens(((Place)from).getTokens()-1);
+				}
+			}
 		}
 	}
 

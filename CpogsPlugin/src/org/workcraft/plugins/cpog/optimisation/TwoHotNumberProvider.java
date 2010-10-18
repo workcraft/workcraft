@@ -52,10 +52,10 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
 		if(range<2)
 			throw new RuntimeException("can't select 2 hot out of "+range);
 
-		List<CnfLiteral> literals = createLiterals(name+"_sel", range);
-		List<CnfLiteral> sort1 = createLiterals(name+"_sorta_", range);
-		List<CnfLiteral> thermo = createLiterals(name+"_t_", range);
-		List<CnfLiteral> sort2 = createLiterals(name+"_sortb_", range);
+		List<Literal> literals = createLiterals(name+"_sel", range);
+		List<Literal> sort1 = createLiterals(name+"_sorta_", range);
+		List<Literal> thermo = createLiterals(name+"_t_", range);
+		List<Literal> sort2 = createLiterals(name+"_sortb_", range);
 
 		constraints.add(CnfSorter.sortRound(sort1, thermo, literals));
 		constraints.add(CnfSorter.sortRound(sort2, sort1));
@@ -74,30 +74,30 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
 		return null;// new TwoHotNumber(literals, thermo);
 	}
 
-	private List<CnfLiteral> createLiterals(String name, int range) {
-		List<CnfLiteral> literals = new ArrayList<CnfLiteral>();
+	private List<Literal> createLiterals(String name, int range) {
+		List<Literal> literals = new ArrayList<Literal>();
 
 		for(int i=0;i<range;i++)
-			literals.add(new CnfLiteral(name+i));
+			literals.add(new Literal(name+i));
 		return literals;
 	}
 
 
-	public static List<CnfClause> selectAnd(CnfLiteral result, CnfLiteral[] vars, TwoHotRange code) {
+	public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
 		List<CnfClause> conditions = new ArrayList<CnfClause>();
 
 		if(code.size() != vars.length)
 			throw new RuntimeException("Lengths do not match: code="+code.size()+", vars="+vars.length);
 
-		List<CnfLiteral> preResult = new ArrayList<CnfLiteral>();
+		List<Literal> preResult = new ArrayList<Literal>();
 		for(int i=0;i<vars.length;i++)
-			preResult.add(new CnfLiteral(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
+			preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
 
 		for(int i=0;i<vars.length;i++)
 		{
-			CnfLiteral res = preResult.get(i);
-			CnfLiteral sel = code.get(i);
-			CnfLiteral var = vars[i];
+			Literal res = preResult.get(i);
+			Literal sel = code.get(i);
+			Literal var = vars[i];
 			conditions.add(or(not(res), not(sel), var));
 			conditions.add(or(res, sel));
 			conditions.add(or(res, not(var)));

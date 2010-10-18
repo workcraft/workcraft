@@ -21,23 +21,23 @@
 
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.util.Hierarchy;
 
-@DisplayName ("Digital Circuit")
-@VisualClass ("org.workcraft.plugins.circuit.VisualCircuit")
-
 public class Circuit extends AbstractMathModel {
 
 	public Circuit() {
-		super(null);
+		this(null);
+	}
+
+	public Circuit(MathGroup root) {
+		super(root);
 	}
 
 	public void validate() throws ModelValidationException {

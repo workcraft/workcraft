@@ -59,7 +59,7 @@ public class SimulationTool extends AbstractTool {
 	private PetriNetModel net;
 	private JPanel interfacePanel;
 
-	private JButton resetButton, autoPlayButton, stopButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
+	private JButton resetButton, autoPlayButton, stopButton, backButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
 	private JSlider speedSlider;
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
@@ -101,12 +101,26 @@ public class SimulationTool extends AbstractTool {
 		resetButton.setEnabled(trace != null && currentStep > 0);
 		autoPlayButton.setEnabled(trace != null && currentStep < trace.size());
 		stopButton.setEnabled(timer!=null);
+
+		backButton.setEnabled(currentStep > 0);
 		stepButton.setEnabled(trace != null && currentStep < trace.size());
 		loadTraceButton.setEnabled(true);
 		saveMarkingButton.setEnabled(true);
 		loadMarkingButton.setEnabled(savedMarking != null);
 
 		highlightEnabledTransitions(visualNet.getRoot());
+	}
+
+	private void stepBack() {
+
+		if (currentStep==0) return;
+
+		String transitionId = trace.get(--currentStep);
+
+		final Node transition = net.getNodeByReference(transitionId);
+
+		net.unFire((Transition)transition);
+		update();
 	}
 
 	private void step() {
@@ -143,7 +157,8 @@ public class SimulationTool extends AbstractTool {
 		speedSlider = new JSlider(-1000, 1000, 0);
 		autoPlayButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/start.svg"), "Automatic simulation");
 		stopButton = new JButton ("Stop");
-		stepButton = new JButton ("Step");
+		backButton = new JButton ("Step <");
+		stepButton = new JButton ("Step >");
 		loadTraceButton = new JButton ("Load trace");
 		saveMarkingButton = new JButton ("Save marking");
 		loadMarkingButton = new JButton ("Load marking");
@@ -194,6 +209,13 @@ public class SimulationTool extends AbstractTool {
 			}
 		});
 
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stepBack();
+			}
+		});
+
 		stepButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -227,6 +249,7 @@ public class SimulationTool extends AbstractTool {
 		interfacePanel.add(speedSlider);
 		interfacePanel.add(autoPlayButton);
 		interfacePanel.add(stopButton);
+		interfacePanel.add(backButton);
 		interfacePanel.add(stepButton);
 		interfacePanel.add(loadTraceButton);
 		interfacePanel.add(saveMarkingButton);

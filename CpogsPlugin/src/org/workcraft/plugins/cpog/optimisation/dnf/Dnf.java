@@ -18,23 +18,32 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.cpog.optimisation.dnf;
 
-package org.workcraft.plugins.circuit;
+import java.util.List;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.VisualClass;
+import org.workcraft.plugins.cpog.optimisation.Nf;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-@DisplayName("Formula")
-@VisualClass("org.workcraft.plugins.circuit.VisualFormula")
 
-public class Formula extends CircuitComponent {
-	private String formula="";
+public class Dnf extends Nf<DnfClause> {
 
-	public void setFormula(String f) {
-		formula = f;
+	public Dnf()
+	{
 	}
 
-	public String getFormula() {
-		return formula;
+	public Dnf(DnfClause... clauses)
+	{
+		super(clauses);
+	}
+
+	public Dnf(List<DnfClause> clauses) {
+		super(clauses);
+	}
+
+	@Override
+	public <T> T accept(BooleanVisitor<T> visitor) {
+		return BooleanOperations.or(getClauses()).accept(visitor);
 	}
 }

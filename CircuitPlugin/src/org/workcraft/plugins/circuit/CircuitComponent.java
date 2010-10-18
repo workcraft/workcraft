@@ -21,35 +21,134 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName("Component")
 @VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
 
-public class CircuitComponent extends MathNode {
-
-	private HashSet<Contact> inputs = new HashSet<Contact>();
-	private HashSet<Contact> outputs = new HashSet<Contact>();
+public class CircuitComponent extends MathNode implements Container, ObservableHierarchy {
 
 
-	public Contact addInput() {
-		Contact c = new Contact(IOType.INPUT);
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private String name = "";
 
-		inputs.add(c);
-		c.setParent(this);
-		return c;
+	public Node getParent() {
+		return groupImpl.getParent();
 	}
 
-	public Contact addOutput() {
-		Contact c = new Contact(IOType.OUTPUT);
-		outputs.add(c);
-		c.setParent(this);
-		return c;
+	public void setParent(Node parent) {
+		groupImpl.setParent(parent);
+		checkName(parent);
 	}
+
+	public void addObserver(HierarchyObserver obs) {
+		groupImpl.addObserver(obs);
+	}
+
+	public void removeObserver(HierarchyObserver obs) {
+		groupImpl.removeObserver(obs);
+	}
+
+	@Override
+	public void add(Node node) {
+		groupImpl.add(node);
+	}
+
+	@Override
+	public void add(Collection<Node> nodes) {
+		groupImpl.add(nodes);
+	}
+
+	@Override
+	public void remove(Node node) {
+		groupImpl.remove(node);
+	}
+
+	@Override
+	public void remove(Collection<Node> node) {
+		groupImpl.remove(node);
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes) {
+		groupImpl.reparent(nodes);
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		groupImpl.reparent(nodes, newParent);
+		checkName(newParent);
+	}
+
+	@Override
+	public Collection<Node> getChildren() {
+		return groupImpl.getChildren();
+	}
+
+	public Collection<Contact> getContacts() {
+		return Hierarchy.filterNodesByType(getChildren(), Contact.class);
+	}
+
+	public Collection<Contact> getInputs() {
+		ArrayList<Contact> result = new ArrayList<Contact>();
+		for(Contact c : getContacts())
+			if(c.getIOType() == IOType.INPUT)
+				result.add(c);
+		return result;
+	}
+
+	public String getNewName(Node n, String start) {
+		// iterate through all contacts, check that the name doesn't exist
+		int num=0;
+		boolean found = true;
+
+		while (found) {
+			num++;
+			found=false;
+
+			for (Node vn : n.getChildren()) {
+				if (vn instanceof CircuitComponent && vn!=this) {
+					if (((CircuitComponent)vn).getName().equals(start+num)) {
+						found=true;
+						break;
+					}
+				}
+			}
+		}
+		return start+num;
+	}
+
+	public void checkName(Node parent) {
+		if (parent==null) return;
+		String start=getName();
+		if (start==null||start=="") {
+			start="c";
+			setName(getNewName(parent, start));
+		}
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		sendNotification(new PropertyChangedEvent(this, "name"));
+	}
+
+	public String getName() {
+		return name;
+	}
+
+
 
 }

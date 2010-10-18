@@ -23,7 +23,6 @@ package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
@@ -40,12 +39,17 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException
 	{
 		BooleanFormula formula = getFormula(object);
+		String attributeName = "formula";
 
+		writeFormulaAttribute(element, internalReferences, formula, attributeName);
+	}
+
+	public static void writeFormulaAttribute(Element element, final ReferenceProducer internalReferences, BooleanFormula formula, String attributeName) {
 		PrinterSuite printers = new FormulaToString.PrinterSuite();
 		printers.vars = new FormulaToString.VariablePrinter(){
 			@Override
 			public Void visit(BooleanVariable node) {
-				append("var_"+internalReferences.getReference((Variable)node));
+				append("var_"+internalReferences.getReference(node));
 				return null;
 			}
 		};
@@ -55,7 +59,7 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 		formula.accept(printers.iff);
 		String string = printers.builder.toString();
 
-		element.setAttribute("formula", string);
+		element.setAttribute(attributeName, string);
 	}
 
 	protected abstract BooleanFormula getFormula(Object serialisee);

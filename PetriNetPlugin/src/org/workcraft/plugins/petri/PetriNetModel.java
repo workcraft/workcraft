@@ -16,4 +16,6 @@ public interface PetriNetModel extends Model {
 
 	public boolean isEnabled (Transition t);
 	public void fire (Transition t);
+
+	public void unFire(Transition t);
 }

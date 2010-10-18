@@ -56,13 +56,13 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		int nonDerivedVariables = freeVariables;
 
 		//Generate all possible encodings...
-		CnfLiteral [][] encodings = new CnfLiteral [scenarios.length][];
+		Literal [][] encodings = new Literal [scenarios.length][];
 		for(int i=0;i<scenarios.length;i++)
 		{
-			encodings[i] = new CnfLiteral[nonDerivedVariables];
+			encodings[i] = new Literal[nonDerivedVariables];
 			if(i == 0)
 				for(int j=0;j<freeVariables;j++)
-					encodings[i][j] = CnfLiteral.Zero;
+					encodings[i][j] = Literal.Zero;
 			else
 				for(int j=0;j<freeVariables;j++)
 					encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
@@ -76,11 +76,11 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		orderFunctions(derivedFunctions);
 
 		//Evaluate all functions for all scenarios.
-		CnfLiteral [][] functionSpace = new CnfLiteral [scenarios.length][];
+		Literal [][] functionSpace = new Literal [scenarios.length][];
 		int totalVariables = nonDerivedVariables*2 + derivedVariables*2;
 		for(int i=0;i<scenarios.length;i++)
 		{
-			functionSpace[i] = new CnfLiteral[totalVariables];
+			functionSpace[i] = new Literal[totalVariables];
 			for(int j=0;j<nonDerivedVariables;j++)
 			{
 				functionSpace[i][j*2] = encodings[i][j];
@@ -89,7 +89,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 			for(int j=0;j<derivedVariables;j++)
 			{
 				int jj = j+nonDerivedVariables;
-				List<CnfLiteral> availableFormulas = new ArrayList<CnfLiteral>();
+				List<Literal> availableFormulas = new ArrayList<Literal>();
 
 				for(int k=0;k</*j+*/nonDerivedVariables;k++)
 				{
@@ -97,8 +97,8 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 					availableFormulas.add(functionSpace[i][k*2+1]);
 				}
 
-				CnfLiteral value = new CnfLiteral("f"+j+"_s"+i);
-				selectAnd(value, derivedFunctions[j], availableFormulas.toArray(new CnfLiteral[0]));
+				Literal value = new Literal("f"+j+"_s"+i);
+				selectAnd(value, derivedFunctions[j], availableFormulas.toArray(new Literal[0]));
 				functionSpace[i][jj*2] = value;
 				functionSpace[i][jj*2+1] = not(value);
 			}
@@ -202,8 +202,8 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 				int bitsj = derivedFunctions[j].size();
 				if(bits != bitsj)
 					throw new RuntimeException("Functions have different widths: "+bits+" and " + bitsj);
-				List<CnfLiteral> si = derivedFunctions[i].getThermometer();
-				List<CnfLiteral> xj = derivedFunctions[j];
+				List<Literal> si = derivedFunctions[i].getThermometer();
+				List<Literal> xj = derivedFunctions[j];
 				for(int k=0;k<bits;k++)
 				{
 					rho.add(or(si.get(k), not(xj.get(k))));
@@ -212,21 +212,21 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		}
 	}
 
-	private CnfLiteral parseBoolean(char ch) {
+	private Literal parseBoolean(char ch) {
 		if(ch == '0')
-			return CnfLiteral.Zero;
+			return Literal.Zero;
 		else
 			if(ch=='1')
-				return CnfLiteral.One;
+				return Literal.One;
 			else
 				throw new RuntimeException("o_O");
 	}
 
 	@SuppressWarnings("unused")
-	private void evaluate(CnfLiteral result, AndFunction<OneHotIntBooleanFormula> function, CnfLiteral[] f)
+	private void evaluate(Literal result, AndFunction<OneHotIntBooleanFormula> function, Literal[] f)
 	{
-		CnfLiteral sel1 = new CnfLiteral(result.getVariable().getLabel() + "_sel1");
-		CnfLiteral sel2 = new CnfLiteral(result.getVariable().getLabel() + "_sel2");
+		Literal sel1 = new Literal(result.getVariable().getLabel() + "_sel1");
+		Literal sel2 = new Literal(result.getVariable().getLabel() + "_sel2");
 		OneHotIntBooleanFormula x = function.getVar1Number();
 		OneHotIntBooleanFormula y = function.getVar2Number();
 		List<CnfClause> sel1C = CnfGeneratingOneHotNumberProvider.select(sel1, f, x);
@@ -239,13 +239,13 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		rho.addAll(sel2C);
 	}
 
-	private void selectAnd(CnfLiteral result, TwoHotRange function, CnfLiteral[] f)
+	private void selectAnd(Literal result, TwoHotRange function, Literal[] f)
 	{
 		List<CnfClause> sel = TwoHotRangeProvider.selectAnd(result, f, function);
 		rho.addAll(sel);
 	}
 
-	private List<CnfClause> select(CnfLiteral[] vars, OneHotIntBooleanFormula number, boolean inverse) {
+	private List<CnfClause> select(Literal[] vars, OneHotIntBooleanFormula number, boolean inverse) {
 		return CnfGeneratingOneHotNumberProvider.select(vars, number, inverse);
 	}
 }

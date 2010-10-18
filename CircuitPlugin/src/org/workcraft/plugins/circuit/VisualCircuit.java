@@ -21,22 +21,25 @@
 
 package org.workcraft.plugins.circuit;
 
+import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
+
 @DisplayName("Visual Circuit")
-//@CustomTools ( STGToolsProvider.class )
-@DefaultCreateButtons ( { CircuitComponent.class } )
-//@CustomToolButtons ( { SimulationTool.class } )
+@CustomTools ( CircuitToolsProvider.class )
+@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, FunctionComponent.class } )
 
 public class VisualCircuit extends AbstractVisualModel {
 
@@ -44,14 +47,29 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first instanceof VisualContact && second instanceof VisualContact) {
-			if (!(((Contact)((VisualContact)first).getReferencedComponent()).getIOType()==Contact.IOType.OUTPUT&&
-				((Contact)((VisualContact)second).getReferencedComponent()).getIOType()==Contact.IOType.INPUT)
-				)
-				throw new InvalidConnectionException ("Connection is only valid for contacts of opposite IO types");
+		if (first instanceof VisualConnection || second instanceof VisualConnection) {
+			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
+		}
+		if (first instanceof VisualComponent && second instanceof VisualComponent) {
+
+
+			for (Connection c: this.getConnections(second)) {
+				if (c.getSecond()==second)
+					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
+			}
+
+			if (second instanceof VisualContact) {
+				Node toParent = ((VisualComponent)second).getParent();
+				Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
+
+				if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
+					throw new InvalidConnectionException ("Outputs of the components cannot be driven");
+
+				if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
+					throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
+			}
 		}
 	}
-
 
 /*
 	private final class StateSupervisorExtension extends StateSupervisor {
@@ -62,6 +80,12 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 */
+
+	public VisualCircuit(Circuit model, VisualGroup root)
+	{
+		super(model, root);
+		circuit=model;
+	}
 
 	public VisualCircuit(Circuit model)
 	throws VisualModelInstantiationException {
@@ -79,17 +103,17 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public void connect(Node first, Node second)
 			throws InvalidConnectionException {
-
 		validateConnection(first, second);
 
-		VisualComponent c1 = (VisualContact) first;
-		VisualComponent c2 = (VisualContact) second;
-		MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, c1, c2);
-		Hierarchy.getNearestContainer(c1, c2).add(ret);
+		if (first instanceof VisualComponent && second instanceof VisualComponent) {
+
+			VisualComponent c1 = (VisualComponent) first;
+			VisualComponent c2 = (VisualComponent) second;
+			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+			VisualConnection ret = new VisualConnection(con, c1, c2);
+			Hierarchy.getNearestContainer(c1, c2).add(ret);
+		}
 
 	}
-
-
 
 }

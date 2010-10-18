@@ -42,7 +42,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, BooleanVisitor<CnfLiteral>
+public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, BooleanVisitor<Literal>
 {
 	Cnf result = new Cnf();
 
@@ -52,10 +52,10 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	{
 		private static boolean cleverOptimiseAnd = true;
 
-		private BooleanVisitor<CnfLiteral> dumbGenerator;
+		private BooleanVisitor<Literal> dumbGenerator;
 		private Cnf result;
 
-		public ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<CnfLiteral> dumbGenerator)
+		public ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<Literal> dumbGenerator)
 		{
 			this.result = result;
 			this.dumbGenerator = dumbGenerator;
@@ -75,18 +75,18 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 			{
 				if(!cleverOptimiseAnd)
 				{
-					CnfLiteral x = and.getX().accept(dumbGenerator);
-					CnfLiteral y = and.getY().accept(dumbGenerator);
+					Literal x = and.getX().accept(dumbGenerator);
+					Literal y = and.getY().accept(dumbGenerator);
 					result.add(or(not(x), not(y)));
 				}
 				else
 				{
-					CnfLiteral[][] side1 = getBiClause(and.getX());
-					CnfLiteral[][] side2 = getBiClause(and.getY());
+					Literal[][] side1 = getBiClause(and.getX());
+					Literal[][] side2 = getBiClause(and.getY());
 					for(int i=0;i<side1.length;i++)
 						for(int j=0;j<side2.length;j++)
 						{
-							List<CnfLiteral> list = new ArrayList<CnfLiteral>();
+							List<Literal> list = new ArrayList<Literal>();
 							for(int k=0;k<side1[i].length;k++)
 								list.add(not(side1[i][k]));
 							for(int k=0;k<side2[j].length;k++)
@@ -99,68 +99,68 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 			return null;
 		}
 
-		static class BiClauseGenerator implements BooleanVisitor<CnfLiteral[][]>
+		static class BiClauseGenerator implements BooleanVisitor<Literal[][]>
 		{
-			BooleanVisitor<CnfLiteral> dumbGenerator;
-			public BiClauseGenerator(BooleanVisitor<CnfLiteral> dumbGenerator)
+			BooleanVisitor<Literal> dumbGenerator;
+			public BiClauseGenerator(BooleanVisitor<Literal> dumbGenerator)
 			{
 				this.dumbGenerator = dumbGenerator;
 			}
 			@Override
-			public CnfLiteral[][] visit(And node) {
-				CnfLiteral[][] result = new CnfLiteral[1][];
-				result[0] = new CnfLiteral[2];
+			public Literal[][] visit(And node) {
+				Literal[][] result = new Literal[1][];
+				result[0] = new Literal[2];
 				result[0][0] = node.getX().accept(dumbGenerator);
 				result[0][1] = node.getY().accept(dumbGenerator);
 				return result;
 			}
 			@Override
-			public CnfLiteral[][] visit(Iff node) {
+			public Literal[][] visit(Iff node) {
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(Zero node) {
+			public Literal[][] visit(Zero node) {
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(One node) {
+			public Literal[][] visit(One node) {
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(Not node) {
-				CnfLiteral[][] preres = node.getX().accept(this);
+			public Literal[][] visit(Not node) {
+				Literal[][] preres = node.getX().accept(this);
 				if(preres.length!=1)
 					throw new RuntimeException("something wrong...");
-				CnfLiteral[][]res = new CnfLiteral[preres[0].length][];
+				Literal[][]res = new Literal[preres[0].length][];
 				for(int i=0;i<res.length;i++)
 				{
-					res[i] = new CnfLiteral[1];
+					res[i] = new Literal[1];
 					res[i][0] = CnfOperations.not(preres[0][i]);
 				}
 				return res;
 			}
 			@Override
-			public CnfLiteral[][] visit(Imply node) {
+			public Literal[][] visit(Imply node) {
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(BooleanVariable variable) {
-				CnfLiteral[][]result = new CnfLiteral[1][];
-				result[0] = new CnfLiteral[1];
+			public Literal[][] visit(BooleanVariable variable) {
+				Literal[][]result = new Literal[1][];
+				result[0] = new Literal[1];
 				result[0][0] = CnfOperations.literal(variable);
 				return result;
 			}
 			@Override
-			public CnfLiteral[][] visit(Or node) {
+			public Literal[][] visit(Or node) {
 				throw new RuntimeException();
 			}
 			@Override
-			public CnfLiteral[][] visit(Xor node) {
+			public Literal[][] visit(Xor node) {
 				throw new RuntimeException();
 			}
 		}
 
-		CnfLiteral[][] getBiClause(BooleanFormula formula)
+		Literal[][] getBiClause(BooleanFormula formula)
 		{
 			return formula.accept(new BiClauseGenerator(dumbGenerator));
 		}
@@ -168,8 +168,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		@Override
 		public Void visit(Iff iff)
 		{
-			CnfLiteral x = iff.getX().accept(dumbGenerator);
-			CnfLiteral y = iff.getY().accept(dumbGenerator);
+			Literal x = iff.getX().accept(dumbGenerator);
+			Literal y = iff.getY().accept(dumbGenerator);
 			if(currentResult)
 			{
 				result.add(or(x, not(y)));
@@ -289,39 +289,39 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 		return result;
 	}
 
-	Map<BooleanFormula, CnfLiteral> cache = new HashMap<BooleanFormula, CnfLiteral>();
+	Map<BooleanFormula, Literal> cache = new HashMap<BooleanFormula, Literal>();
 	//int varCount = 0;
 
-	CnfLiteral newVar(BooleanFormula node)
+	Literal newVar(BooleanFormula node)
 	{
-		CnfLiteral res = new CnfLiteral("");//"tmp_"+varCount++
+		Literal res = new Literal("");//"tmp_"+varCount++
 		cache.put(node, res);
 		return res;
 	}
 
 	interface BinaryGateImplementer
 	{
-		void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y);
+		void implement(Literal res, Literal x, Literal y);
 	}
 
-	public CnfLiteral visit(BinaryBooleanFormula node, BinaryGateImplementer impl) {
-		CnfLiteral res = cache.get(node);
+	public Literal visit(BinaryBooleanFormula node, BinaryGateImplementer impl) {
+		Literal res = cache.get(node);
 		if(res == null)
 		{
 			res = newVar(node);
-			CnfLiteral x = node.getX().accept(this);
-			CnfLiteral y = node.getY().accept(this);
+			Literal x = node.getX().accept(this);
+			Literal y = node.getY().accept(this);
 			impl.implement(res, x, y);
 		}
 		return res;
 	}
 
 	@Override
-	public CnfLiteral visit(And node) {
+	public Literal visit(And node) {
 		return visit(node,
 			new BinaryGateImplementer()
 			{
-				@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+				@Override public void implement(Literal res, Literal x, Literal y) {
 					result.add(or(res, not(x), not(y)));
 					result.add(or(not(res), x));
 					result.add(or(not(res), y));
@@ -331,11 +331,11 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	}
 
 	@Override
-	public CnfLiteral visit(Iff node) {
+	public Literal visit(Iff node) {
 		return visit(node,
 				new BinaryGateImplementer()
 				{
-					@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+					@Override public void implement(Literal res, Literal x, Literal y) {
 						result.add(or(not(res), not(x), y));
 						result.add(or(not(res), x, not(y)));
 						result.add(or(res, not(x), not(y)));
@@ -346,26 +346,26 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	}
 
 	@Override
-	public CnfLiteral visit(Zero node) {
-		return CnfLiteral.Zero;
+	public Literal visit(Zero node) {
+		return Literal.Zero;
 	}
 
 	@Override
-	public CnfLiteral visit(One node) {
-		return CnfLiteral.One;
+	public Literal visit(One node) {
+		return Literal.One;
 	}
 
 	@Override
-	public CnfLiteral visit(Not node) {
+	public Literal visit(Not node) {
 		return not(node.getX().accept(this));
 	}
 
 	@Override
-	public CnfLiteral visit(Imply node) {
+	public Literal visit(Imply node) {
 		return visit(node,
 				new BinaryGateImplementer()
 				{
-					@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+					@Override public void implement(Literal res, Literal x, Literal y) {
 						result.add(or(not(res), not(x), y));
 						result.add(or(res, not(y)));
 						result.add(or(res, x));
@@ -375,16 +375,16 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	}
 
 	@Override
-	public CnfLiteral visit(BooleanVariable variable) {
+	public Literal visit(BooleanVariable variable) {
 		return literal(variable);
 	}
 
 	@Override
-	public CnfLiteral visit(Or node) {
+	public Literal visit(Or node) {
 		return visit(node,
 				new BinaryGateImplementer()
 				{
-					@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+					@Override public void implement(Literal res, Literal x, Literal y) {
 						result.add(or(not(res), x, y));
 						result.add(or(res, not(y)));
 						result.add(or(res, not(x)));
@@ -394,11 +394,11 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 	}
 
 	@Override
-	public CnfLiteral visit(Xor node) {
+	public Literal visit(Xor node) {
 		return visit(node,
 				new BinaryGateImplementer()
 				{
-					@Override public void implement(CnfLiteral res, CnfLiteral x, CnfLiteral y) {
+					@Override public void implement(Literal res, Literal x, Literal y) {
 						result.add(or(res, not(x), y));
 						result.add(or(res, x, not(y)));
 						result.add(or(not(res), not(x), not(y)));

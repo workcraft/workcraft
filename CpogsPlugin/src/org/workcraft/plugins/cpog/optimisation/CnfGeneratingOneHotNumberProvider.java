@@ -23,7 +23,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		for(int i=0;i<range;i++)
 			vars.add(new FreeVariable(varPrefix + "sel"+i));
 
-		List<CnfLiteral> literals = new ArrayList<CnfLiteral>();
+		List<Literal> literals = new ArrayList<Literal>();
 
 		boolean useSorting = true;
 
@@ -37,11 +37,11 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		}
 		else
 		{
-			List<CnfLiteral> sorted = new ArrayList<CnfLiteral>();
+			List<Literal> sorted = new ArrayList<Literal>();
 			for(int i=0;i<range;i++)
 			{
-				literals.add(new CnfLiteral(vars.get(i)));
-				sorted.add(new CnfLiteral(varPrefix + "sorted"+i));
+				literals.add(new Literal(vars.get(i)));
+				sorted.add(new Literal(varPrefix + "sorted"+i));
 			}
 
 			Cnf sorting = CnfSorter.sortRound(sorted, literals);
@@ -55,7 +55,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		return new OneHotIntBooleanFormula(vars);
 	}
 
-	public static List<CnfClause> select(CnfLiteral[] vars, OneHotIntBooleanFormula number, boolean inverse) {
+	public static List<CnfClause> select(Literal[] vars, OneHotIntBooleanFormula number, boolean inverse) {
 		List<CnfClause> conditions = new ArrayList<CnfClause>();
 
 		if(number.getRange() != vars.length)
@@ -67,13 +67,13 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		return conditions;
 	}
 
-	public static List<CnfClause> select(CnfLiteral result, CnfLiteral[] vars, OneHotIntBooleanFormula code) {
+	public static List<CnfClause> select(Literal result, Literal[] vars, OneHotIntBooleanFormula code) {
 		List<CnfClause> conditions = new ArrayList<CnfClause>();
 
 		if(code.getRange() != vars.length)
 			throw new RuntimeException("Lengths do not match");
 
-		CnfLiteral notResult = not(result);
+		Literal notResult = not(result);
 		for(int i=0;i<vars.length;i++)
 		{
 			conditions.add(or(notResult, not(code.get(i)), vars[i]));
@@ -95,13 +95,13 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 	@Override
 	public BooleanFormula select(BooleanFormula[] vars, OneHotIntBooleanFormula number) {
 		List<BooleanVariable> params = new ArrayList<BooleanVariable>();
-		CnfLiteral []literals = new CnfLiteral[vars.length];
+		Literal []literals = new Literal[vars.length];
 
 		for(int i=0;i<vars.length;i++)
 		{
 			BooleanVariable var = new FreeVariable("param"+i);
 			params.add(var);
-			literals[i] = new CnfLiteral(var);
+			literals[i] = new Literal(var);
 		}
 
 		List<CnfClause> result = select(literals, number, false);

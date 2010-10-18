@@ -36,7 +36,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-@Hotkey(KeyEvent.VK_T)
+@Hotkey(KeyEvent.VK_D)
 @DisplayName("Dummy Transition")
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualDummyTransition extends VisualTransition implements StateObserver {

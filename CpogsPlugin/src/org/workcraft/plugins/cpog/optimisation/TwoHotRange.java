@@ -23,16 +23,16 @@ package org.workcraft.plugins.cpog.optimisation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwoHotRange extends ArrayList<CnfLiteral> {
+public class TwoHotRange extends ArrayList<Literal> {
 
-	private final List<CnfLiteral> thermometer;
+	private final List<Literal> thermometer;
 
-	public TwoHotRange(List<CnfLiteral> literals, List<CnfLiteral> thermometer) {
+	public TwoHotRange(List<Literal> literals, List<Literal> thermometer) {
 		super(literals);
 		this.thermometer = thermometer;
 	}
 
-	public List<CnfLiteral> getThermometer() {
+	public List<Literal> getThermometer() {
 		return thermometer;
 	}
 

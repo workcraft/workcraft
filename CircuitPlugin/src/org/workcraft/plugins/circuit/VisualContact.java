@@ -22,36 +22,104 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
+import org.apache.batik.ext.awt.geom.Polygon2D;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.plugins.circuit.Contact.IOType;
 
-public class VisualContact extends VisualComponent {
-	public enum Direction {NORTH, SOUTH, EAST, WEST};
+@DisplayName("Input/output port")
+@Hotkey(KeyEvent.VK_P)
+@SVGIcon("images/icons/svg/circuit-port.svg")
+
+public class VisualContact extends VisualComponent implements StateObserver {
+	public enum Direction {	NORTH, SOUTH, EAST, WEST};
+	public static final Color inputColor = Color.RED;
+	public static final Color outputColor = Color.BLUE;
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
-	private String name = "";
-	private GlyphVector nameGlyphs = null;
+	private GlyphVector nameGlyph = null;
+
 	private Direction direction = Direction.WEST;
 
-//	VisualCircuitComponent parentComponent;
+	private Shape shape=null;
+	double strokeWidth = 0.05;
 
-/*	public VisualCircuitComponent getParentConnection() {
-//		return parentConnection;
-		return null;
+
+	public void resetNameGlyph() {
+		nameGlyph = null;
 	}
-*/
+
+	public VisualContact(Contact contact) {
+		super(contact);
+
+		contact.addObserver(this);
+		addPropertyDeclarations();
+	}
+
+	public VisualContact(Contact component, VisualContact.Direction dir, String label) {
+		super(component);
+
+		component.addObserver(this);
+		addPropertyDeclarations();
+
+		setName(label);
+		setDirection(dir);
+	}
+
+	private Shape getShape() {
+
+		if (shape!=null) {
+			return shape;
+		}
+
+		double size = getSize();
+		if (getParent() instanceof VisualCircuitComponent) {
+
+			shape = new Rectangle2D.Double(
+				-size / 2 + strokeWidth / 2,
+				-size / 2 + strokeWidth / 2,
+				size - strokeWidth,
+				size - strokeWidth
+				);
+
+		} else {
+			float xx[] = {	(float) -(size / 2),
+							(float) (size / 2),
+							(float) size,
+							(float) (size / 2),
+							(float) -(size / 2)};
+			float yy[] = {	(float) -(size / 2),
+							(float) -(size / 2), 0.0f,
+							(float) (size / 2),
+							(float) (size / 2)};
+
+			Polygon2D poly = new Polygon2D(xx, yy, 5);
+			shape = poly;
+		}
+
+		return shape;
+	}
 
 	private void addPropertyDeclarations() {
 		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
@@ -71,21 +139,61 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public void draw(Graphics2D g) {
-		double size = getSize();
-		double strokeWidth = 0.05;
 
+		if (!(getParent() instanceof VisualCircuitComponent)) {
+			AffineTransform at = new AffineTransform();
 
-		Shape shape = new Rectangle2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
+			switch (getDirection()) {
+			case NORTH:
+				at.quadrantRotate(-1);
+				break;
+			case SOUTH:
+				at.quadrantRotate(1);
+				break;
+			case EAST:
+				at.quadrantRotate(2);
+				break;
+			}
+
+			g.transform(at);
+
+		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
-		g.fill(shape);
+		g.fill(getShape());
 		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+
 		g.setStroke(new BasicStroke((float)strokeWidth));
-		g.draw(shape);
+		g.draw(getShape());
+
+		if (!(getParent() instanceof VisualCircuitComponent)) {
+			AffineTransform at = new AffineTransform();
+
+			switch (getDirection()) {
+			case SOUTH:
+				at.quadrantRotate(2);
+				break;
+			case EAST:
+				at.quadrantRotate(2);
+				break;
+			}
+
+			g.transform(at);
+
+			GlyphVector gv = getNameGlyphs(g);
+			Rectangle2D cur = gv.getVisualBounds();
+			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+
+			float xx = 0;
+
+			if (getIOType()==IOType.INPUT) {
+				xx = (float)(-cur.getWidth()-0.5);
+			} else {
+				xx = (float)0.5;
+			}
+			g.drawGlyphVector(gv, xx, -0.5f);
+
+		}
 	}
 
 	@Override
@@ -100,7 +208,29 @@ public class VisualContact extends VisualComponent {
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+
+		Point2D p2 = new Point2D.Double();
+		p2.setLocation(pointInLocalSpace);
+
+		if (!(getParent() instanceof VisualCircuitComponent)) {
+			AffineTransform at = new AffineTransform();
+
+			switch (getDirection()) {
+			case NORTH:
+				at.quadrantRotate(1);
+				break;
+			case SOUTH:
+				at.quadrantRotate(-1);
+				break;
+			case EAST:
+				at.quadrantRotate(2);
+				break;
+			}
+
+			at.transform(pointInLocalSpace, p2);
+		}
+
+		return getShape().contains(p2);
 	}
 
 
@@ -113,15 +243,15 @@ public class VisualContact extends VisualComponent {
 
 	/////////////////////////////////////////////////////////
 	public GlyphVector getNameGlyphs(Graphics2D g) {
-		if (nameGlyphs == null) {
+		if (nameGlyph == null) {
 			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
-			nameGlyphs = nameFont.createGlyphVector(g.getFontRenderContext(), getName());
+			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), getName());
 		}
 
-		return nameGlyphs;
+		return nameGlyph;
 	}
 
 	public Rectangle2D getNameBB(Graphics2D g) {
@@ -129,16 +259,15 @@ public class VisualContact extends VisualComponent {
 	}
 
 	public void setDirection(VisualContact.Direction dir) {
+
 		if (dir==direction) return;
 
-		if (getParent()!=null) {
-			((VisualCircuitComponent)getParent()).updateDirection(this, dir);
-		}
 		this.direction=dir;
 
-		nameGlyphs = null;
+		nameGlyph = null;
 
 		sendNotification(new PropertyChangedEvent(this, "direction"));
+		sendNotification(new TransformChangedEvent(this));
 	}
 
 	public VisualContact.Direction getDirection() {
@@ -146,47 +275,55 @@ public class VisualContact extends VisualComponent {
 	}
 
 	public void setIOType(Contact.IOType type) {
-		((Contact)getReferencedComponent()).setIOType(type);
+		getReferencedContact().setIOType(type);
+		sendNotification(new PropertyChangedEvent(this, "IOtype"));
 	}
 
 	public Contact.IOType getIOType() {
-		return ((Contact)getReferencedComponent()).getIOType();
+		return getReferencedContact().getIOType();
 	}
 
 
 	public String getName() {
-		return name;
+		return getReferencedContact().getName();
 	}
 
-	public void setName(String label) {
-		this.name = label;
-		nameGlyphs = null;
+	public void setName(String name) {
+/*		if (name==null||name.equals("")&&((Contact)getReferencedComponent()).getIOType()==IOType.INPUT)
+			name=getNewName(
+					((Contact)getReferencedComponent()).getParent(),
+					"input");
+		if (name==null||name.equals("")&&((Contact)getReferencedComponent()).getIOType()==IOType.OUTPUT)
+			name=getNewName(
+				((Contact)getReferencedComponent()).getParent(),
+					"output");*/
+
+		getReferencedContact().setName(name);
 
 		sendNotification(new PropertyChangedEvent(this, "name"));
 	}
 
-	public VisualContact(Contact component, VisualContact.Direction dir, String label) {
-		super(component);
-
-		addPropertyDeclarations();
-
-		setName(label);
-
-		/*if (dir==null) {
-			if (component!=null) {
-				if (component.getIOType()==IOType.OUTPUT) {
-					setDirection(VisualContact.Direction.EAST);
-				} else {
-					setDirection(VisualContact.Direction.WEST);
-				}
-			}
-		} else {
-			direction = dir;
-		}*/
-		direction = dir;
-//		parentComponent = null;
-
+	@Override
+	public void notify(StateEvent e) {
+		nameGlyph = null;
 	}
 
+	public Contact getReferencedContact() {
+		return (Contact)getReferencedComponent();
+	}
+
+	public static boolean isDriver(Node contact) {
+		if (!(contact instanceof VisualContact)) return false;
+
+		return (((VisualContact)contact).getIOType() == IOType.OUTPUT) == (((VisualContact)contact).getParent() instanceof VisualComponent);
+	}
+
+	public static Direction flipDirection(Direction direction) {
+		if (direction==Direction.EAST) return Direction.WEST;
+		if (direction==Direction.WEST) return Direction.EAST;
+		if (direction==Direction.SOUTH) return Direction.NORTH;
+		if (direction==Direction.NORTH) return Direction.SOUTH;
+		return null;
+	}
 
 }
