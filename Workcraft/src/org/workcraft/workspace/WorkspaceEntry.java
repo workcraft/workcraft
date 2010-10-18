@@ -37,8 +37,10 @@ public class WorkspaceEntry
 	}
 
 	public void setChanged(boolean changed) {
-		this.changed = changed;
-		workspace.fireEntryChanged(this);
+		if(this.changed != changed) {
+			this.changed = changed;
+			workspace.fireEntryChanged(this);
+		}
 	}
 
 	public boolean isChanged() {

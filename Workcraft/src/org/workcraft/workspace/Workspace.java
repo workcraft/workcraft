@@ -452,19 +452,7 @@ public class Workspace {
 	}
 
 
-	public void move(File from, File to) throws IOException {
-		final Path<String> wsFrom = getWorkspacePath(from);
-		Path<String> wsTo = getWorkspacePath(to);
-		if(wsTo != null)
-			move(wsFrom, wsTo);
-		else
-		{
-			wsTo = tempMountExternalFile(to);
-			moved(wsFrom, wsTo);
-		}
-	}
-
-	private Path<String> tempMountExternalFile(File file)
+	public Path<String> tempMountExternalFile(File file)
 	{
 		final Path<String> path = newName(Path.root("!External"), file.getName());
 		addMount(path, file, true);
@@ -494,13 +482,12 @@ public class Workspace {
 		}
 	}
 
-	private void moved(Path<String> from, Path<String> to) throws IOException {
+	public void moved(Path<String> from, Path<String> to) throws IOException {
 		final WorkspaceEntry openFileFrom = openFiles.getValue(from);
 		final WorkspaceEntry openFileTo = openFiles.getValue(to);
 		if(openFileTo != null)
 		{
 			final Path<String> newName = newName(to.getParent(), to.getNode());
-			openFileTo.setChanged(true);
 			final File toDelete = openFileTo.getFile();
 			if(toDelete.exists())
 				if(!toDelete.delete())

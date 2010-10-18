@@ -70,8 +70,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			if (e instanceof PropertyChangedEvent || e instanceof TransformChangedEvent) {
 				repaint();
 				mainWindow.getPropertyView().repaint();
-				if (!workspaceEntry.isChanged())
-					workspaceEntry.setChanged(true);
+				workspaceEntry.setChanged(true);
 			}
 		}
 	}
