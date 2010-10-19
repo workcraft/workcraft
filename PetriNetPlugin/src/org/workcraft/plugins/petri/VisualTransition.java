@@ -31,6 +31,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -49,21 +50,22 @@ public class VisualTransition extends VisualComponent {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+	public void draw(DrawRequest r) {
+		drawLabelInLocalSpace(r);
+
+		Graphics2D g = r.getGraphics();
 
 		double size = CommonVisualSettings.getSize();
 		double strokeWidth = CommonVisualSettings.getStrokeWidth();
-
 
 		Shape shape = new Rectangle2D.Double(
 				-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
 	}

@@ -30,10 +30,11 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
 
 public interface VisualModel extends Model, ObservableState {
-	public void draw (Graphics2D g);
+	public void draw (Graphics2D g, Decorator decorator);
 
 	public Container getCurrentLevel();
 	public MathModel getMathModel();

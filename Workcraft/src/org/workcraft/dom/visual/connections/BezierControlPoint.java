@@ -31,6 +31,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawRequest;
 
 public class BezierControlPoint extends ControlPoint {
 	private Point2D origin;
@@ -51,13 +52,15 @@ public class BezierControlPoint extends ControlPoint {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+
 		g.setColor(Color.LIGHT_GRAY);
 		g.setStroke(new BasicStroke(0.02f));
 
 		Line2D l = new Line2D.Double(0, 0, origin.getX(), origin.getY());
 		g.draw(l);
 
-		super.draw(g);
+		super.draw(r);
 	}
 }

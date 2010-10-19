@@ -18,6 +18,6 @@ public class PetriNetModelDescriptor implements ModelDescriptor
 
 	@Override
 	public VisualModelDescriptor getVisualModelDescriptor() {
-		return null;
+		return new PetriNetVisualModelDescriptor();
 	}
 }

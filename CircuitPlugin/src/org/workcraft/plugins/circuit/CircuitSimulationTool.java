@@ -4,7 +4,10 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.util.GUI;
@@ -30,6 +33,11 @@ public class CircuitSimulationTool extends AbstractTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		STG stg = new STG();
+	}
+
+	@Override
+	public Decorator getDecorator() {
+		return Decorator.Empty.INSTANCE;
 	}
 
 }

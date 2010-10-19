@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
@@ -78,12 +79,23 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 
 	@Override
-	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+	public void draw(DrawRequest r) {
+		drawLabelInLocalSpace(r);
+		Graphics2D g = r.getGraphics();
 
-		g.setColor(Coloriser.colorise(getColor(), getColorisation()));
+		Color background = r.getDecoration().getBackground();
+		if(background!=null)
+		{
+			g.setColor(background);
+			g.fill(getBoundingBoxInLocalSpace());
+		}
+
+		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
 
 		label.draw(g);
+
+
+
 	}
 
 	@Override

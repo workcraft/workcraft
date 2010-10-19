@@ -21,7 +21,6 @@
 
 package org.workcraft.dom.visual;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -32,8 +31,8 @@ import javax.swing.JPopupMenu;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.gui.actions.ScriptedActionListener;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertySupport;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
@@ -42,7 +41,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 
 
-public abstract class VisualNode implements Properties, Node, Touchable, Colorisable, ObservableState, Hidable {
+public abstract class VisualNode implements Properties, Node, Touchable, ObservableState, Hidable {
 	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
 	public Rectangle2D getBoundingBox() {
@@ -59,7 +58,6 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 		return Collections.emptyList();
 	}
 
-	private Color colorisation = null;
 	private Node parent = null;
 	private boolean hidden = false;
 
@@ -72,19 +70,6 @@ public abstract class VisualNode implements Properties, Node, Touchable, Coloris
 
 	public void setParent(Node parent) {
 		this.parent = parent;
-	}
-
-	public void setColorisation (Color color) {
-		colorisation = color;
-		sendNotification(new PropertyChangedEvent(this, "colorisation"));
-	}
-
-	public Color getColorisation () {
-		return colorisation;
-	}
-
-	public void clearColorisation() {
-		setColorisation(null);
 	}
 
 	protected final void addPopupMenuSegment (PopupMenuSegment segment) {

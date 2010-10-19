@@ -22,12 +22,12 @@
 package org.workcraft.dom.visual.connections;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -49,9 +49,9 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
-		g.setColor(Coloriser.colorise(fillColor, getColorisation()));
-		g.fill(shape);
+	public void draw(DrawRequest r) {
+		r.getGraphics().setColor(Coloriser.colorise(fillColor, r.getDecoration().getColorisation()));
+		r.getGraphics().fill(shape);
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {

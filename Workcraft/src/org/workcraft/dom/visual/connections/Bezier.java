@@ -21,6 +21,7 @@
 
 package org.workcraft.dom.visual.connections;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
@@ -30,6 +31,8 @@ import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -81,11 +84,14 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		return new BezierControlPoint[] { cp1, cp2 };
 	}
 
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
 		if (!valid)
 			update();
 
-		g.setColor(connectionInfo.getDrawColor());
+		Graphics2D g = r.getGraphics();
+
+		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+		g.setColor(color);
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
 
@@ -93,7 +99,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 		if(connectionInfo.hasArrow())
 			DrawHelper
-			.drawArrowHead(g, connectionInfo.getDrawColor(),
+			.drawArrowHead(g, color,
 						curveInfo.arrowHeadPosition,
 						curveInfo.arrowOrientation, connectionInfo
 								.getArrowLength(), connectionInfo

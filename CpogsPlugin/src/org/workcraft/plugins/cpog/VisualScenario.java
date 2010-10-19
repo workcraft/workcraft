@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -110,15 +111,18 @@ public class VisualScenario extends VisualGroup
 	}
 
 	@Override
-	public void draw(Graphics2D g)
+	public void draw(DrawRequest r)
 	{
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
 		Rectangle2D bb = getContentsBoundingBox();
 
 		if (bb != null && getParent() != null)
 		{
-			g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
+			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
 			g.fill(bb);
-			g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
+			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 			g.setStroke(new BasicStroke(strokeWidth));
 			g.draw(bb);
 
@@ -130,16 +134,16 @@ public class VisualScenario extends VisualGroup
 
 			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
 
-			g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
+			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
 			g.fill(getLabelBB());
 			g.setStroke(new BasicStroke(strokeWidth));
-			g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
+			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 			g.draw(getLabelBB());
 
 			AffineTransform transform = g.getTransform();
 			g.translate(labelPosition.getX(), labelPosition.getY());
 
-			result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+			result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
 
 			g.setTransform(transform);
 
@@ -180,16 +184,16 @@ public class VisualScenario extends VisualGroup
 
 				encodingBB = BoundingBoxHelper.union(encodingBB, tmpBB);
 
-				g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
+				g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
 				g.fill(tmpBB);
 				g.setStroke(new BasicStroke(strokeWidth));
-				g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
+				g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 				g.draw(tmpBB);
 
 				transform = g.getTransform();
 				g.translate(labelPosition.getX(), labelPosition.getY());
 
-				result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+				result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
 
 				g.setTransform(transform);
 
@@ -209,10 +213,10 @@ public class VisualScenario extends VisualGroup
 
 				encodingBB = BoundingBoxHelper.union(encodingBB, tmpBB);
 
-				g.setColor(Coloriser.colorise(Color.WHITE, getColorisation()));
+				g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
 				g.fill(tmpBB);
 				g.setStroke(new BasicStroke(strokeWidth));
-				g.setColor(Coloriser.colorise(Color.BLACK, getColorisation()));
+				g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 				g.draw(tmpBB);
 
 				transform = g.getTransform();
@@ -222,7 +226,7 @@ public class VisualScenario extends VisualGroup
 				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
 				if (perfectMatch) color = Color.GREEN;
 
-				result.draw(g, Coloriser.colorise(color, getColorisation()));
+				result.draw(g, Coloriser.colorise(color, colorisation));
 
 				g.setTransform(transform);
 

@@ -45,6 +45,7 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.Touchable;
@@ -208,28 +209,28 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
-		g.setStroke(new BasicStroke(0.02f));
-		g.setColor(Coloriser.colorise(Color.black, this.getColorisation()));
+	public void draw(DrawRequest r) {
+		r.setStroke(new BasicStroke(0.02f));
+		r.setColor(Coloriser.colorise(Color.black, this.getColorisation()));
 
-		drawSideLine(g, visualLayout.left, -1);
-		drawSideLine(g, visualLayout.right, +1);
+		drawSideLine(r, visualLayout.left, -1);
+		drawSideLine(r, visualLayout.right, +1);
 
-		drawCircle(g, 0, 0, componentRadius);
+		drawCircle(r, 0, 0, componentRadius);
 
 
 		/*AffineTransform t = g.getTransform();
 		t.concatenate(AffineTransform.getQuadrantRotateInstance(-1));
 		g.setTransform(t);*/
 
-		Font font = g.getFont();
+		Font font = r.getFont();
 		font = font.deriveFont(0.2f);
 		String symbol = balsaComponent.getClass().getSimpleName();
 		if (balsaComponent instanceof DynamicComponent)
 			symbol = ((DynamicComponent)balsaComponent).getSymbol();
-		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), symbol);
+		GlyphVector vec = font.createGlyphVector(r.getFontRenderContext(), symbol);
 		Rectangle2D bounds = vec.getVisualBounds();
-		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
+		r.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
 	}
 
 	private void drawSideLine(Graphics2D g, SideLine extent, int dir) {

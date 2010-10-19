@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -60,5 +61,10 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	public int getHotKeyCode() {
 		return generator.getHotKeyCode();
+	}
+
+	@Override
+	public Decorator getDecorator() {
+		return Decorator.Empty.INSTANCE;
 	}
 }

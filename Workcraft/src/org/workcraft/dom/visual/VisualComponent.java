@@ -1,23 +1,23 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft.dom.visual;
 
@@ -39,10 +39,12 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
+public abstract class VisualComponent extends VisualTransformableNode implements
+		Drawable, DependentNode {
 	private MathNode refNode = null;
 
-	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1)
+			.deriveFont(0.5f);
 
 	private GlyphVector labelGlyphs = null;
 	private String glyphsForLabel = null;
@@ -56,10 +58,15 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label color", "getLabelColor", "setLabelColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Fill color", "getFillColor", "setFillColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label",
+				"getLabel", "setLabel", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label color",
+				"getLabelColor", "setLabelColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this,
+				"Foreground color", "getForegroundColor", "setForegroundColor",
+				Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Fill color",
+				"getFillColor", "setFillColor", Color.class));
 	}
 
 	public VisualComponent(MathNode refNode) {
@@ -67,7 +74,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		this.refNode = refNode;
 
 		if (refNode instanceof ObservableState)
-			((ObservableState)refNode).addObserver( new StateObserver() {
+			((ObservableState) refNode).addObserver(new StateObserver() {
 				public void notify(StateEvent e) {
 					observableStateImpl.sendNotification(e);
 				}
@@ -75,7 +82,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 		addPropertyDeclarations();
 
-		setFillColor (CommonVisualSettings.getFillColor());
+		setFillColor(CommonVisualSettings.getFillColor());
 		setForegroundColor(CommonVisualSettings.getForegroundColor());
 		setLabelColor(CommonVisualSettings.getForegroundColor());
 	}
@@ -104,22 +111,27 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return getLabelGlyphs(g).getVisualBounds();
 	}
 
-	protected void drawLabelInLocalSpace(Graphics2D g) {
-		updateGlyph(g);
+	protected void drawLabelInLocalSpace(DrawRequest r) {
+		updateGlyph(r.getGraphics());
 
-		g.setColor(Coloriser.colorise(labelColor, getColorisation()));
-		//g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(), (float)labelPosition.getY());
-		g.setFont(labelFont);
-		g.drawString(label, (float)labelPosition.getX(), (float)labelPosition.getY());
+		r.getGraphics().setColor(Coloriser.colorise(labelColor, r.getDecoration().getColorisation()));
+		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
+		// (float)labelPosition.getY());
+		r.getGraphics().setFont(labelFont);
+		r.getGraphics().drawString(label, (float) labelPosition.getX(),
+				(float) labelPosition.getY());
 	}
 
 	private void updateGlyph(Graphics2D g) {
 		if (labelGlyphs == null || !getLabel().equals(glyphsForLabel)) {
-			final GlyphVector glyphs = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
+			final GlyphVector glyphs = labelFont.createGlyphVector(
+					g.getFontRenderContext(), getLabel());
 			glyphsForLabel = getLabel();
 			Rectangle2D textBB = glyphs.getLogicalBounds();
 			Rectangle2D bb = getBoundingBoxInLocalSpace();
-			labelPosition = new Point2D.Double( bb.getMinX() + ( bb.getWidth() - textBB.getWidth() ) *0.5, bb.getMaxY() + textBB.getHeight() + 0.1);
+			labelPosition = new Point2D.Double(bb.getMinX()
+					+ (bb.getWidth() - textBB.getWidth()) * 0.5, bb.getMaxY()
+					+ textBB.getHeight() + 0.1);
 			labelGlyphs = glyphs;
 		}
 	}
@@ -160,8 +172,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	@Override
-	public Point2D getCenterInLocalSpace()
-	{
+	public Point2D getCenterInLocalSpace() {
 		return new Point2D.Double(0, 0);
 	}
 }

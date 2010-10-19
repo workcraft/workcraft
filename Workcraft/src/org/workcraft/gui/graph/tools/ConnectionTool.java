@@ -34,6 +34,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -105,14 +106,6 @@ public class ConnectionTool extends AbstractTool {
 
 		VisualNode newMouseOverObject = (VisualNode) HitMan.hitTestForConnection(e.getPosition(), e.getModel());
 
-		if (mouseOverObject != newMouseOverObject) {
-			if (mouseOverObject != null) {
-				mouseOverObject.clearColorisation();
-			}
-			if (newMouseOverObject != null)
-				newMouseOverObject.setColorisation(highlightColor);
-		}
-
 		mouseOverObject = newMouseOverObject;
 
 		if (!leftFirst && mouseExitRequiredForSelfLoop) {
@@ -131,7 +124,6 @@ public class ConnectionTool extends AbstractTool {
 			if (first == null) {
 				if (mouseOverObject != null) {
 					first = mouseOverObject;
-					first.setColorisation(highlightColor);
 					leftFirst = false;
 					mouseMoved(e);
 				}
@@ -140,12 +132,9 @@ public class ConnectionTool extends AbstractTool {
 					e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-						first.clearColorisation();
 						first = mouseOverObject;
-						first.setColorisation(highlightColor);
 						mouseOverObject = null;
 					} else {
-						first.clearColorisation();
 						first = null;
 					}
 				} catch (InvalidConnectionException e1) {
@@ -154,10 +143,7 @@ public class ConnectionTool extends AbstractTool {
 
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			if (first != null) {
-				first.clearColorisation();
-				first = null;
-			}
+			first = null;
 			mouseOverObject = null;
 		}
 
@@ -194,5 +180,30 @@ public class ConnectionTool extends AbstractTool {
 		super.deactivated(editor);
 		first = null;
 		mouseOverObject = null;
+	}
+
+	@Override
+	public Decorator getDecorator() {
+		return new Decorator() {
+
+			@Override
+			public Decoration getDecoration(Node node) {
+				if(node == mouseOverObject)
+					return new Decoration(){
+
+						@Override
+						public Color getColorisation() {
+							return highlightColor;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+				};
+				return null;
+			}
+
+		};
 	}
 }

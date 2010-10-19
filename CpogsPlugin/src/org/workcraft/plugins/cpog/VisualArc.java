@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
@@ -139,11 +140,13 @@ public class VisualArc extends VisualConnection
 	}
 
 	@Override
-	public void draw(Graphics2D g)
+	public void draw(DrawRequest r)
 	{
 		labelBB = null;
 
 		if (getCondition() == One.instance()) return;
+
+		Graphics2D g = r.getGraphics();
 
 		FormulaRenderingResult result = FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont);
 
@@ -169,7 +172,7 @@ public class VisualArc extends VisualConnection
 		transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
 		g.transform(transform);
-		result.draw(g, Coloriser.colorise(Color.BLACK, getColorisation()));
+		result.draw(g, Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
 		g.setTransform(oldTransform);
 
 		labelBB = BoundingBoxHelper.transform(labelBB, transform);

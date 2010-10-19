@@ -53,6 +53,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.PasteException;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
@@ -123,8 +124,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 	}
 
-	public void draw (Graphics2D g) {
-		DrawMan.draw(g, getRoot());
+	public void draw (Graphics2D g, Decorator decorator) {
+		DrawMan.draw(g, decorator, getRoot());
 	}
 
 	/**
