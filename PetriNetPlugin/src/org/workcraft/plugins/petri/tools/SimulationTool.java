@@ -22,26 +22,37 @@
 package org.workcraft.plugins.petri.tools;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Trace;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -58,11 +69,14 @@ import org.workcraft.util.GUI;
 
 public class SimulationTool extends AbstractTool {
 	private VisualModel visualNet;
-	private PetriNetModel net;
-	private JPanel interfacePanel;
+
+	protected PetriNetModel net;
+	protected JPanel interfacePanel;
 
 	private JButton resetButton, autoPlayButton, stopButton, backButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
 	private JSlider speedSlider;
+
+	protected JTable traceTable;
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
@@ -70,14 +84,19 @@ public class SimulationTool extends AbstractTool {
 	Map<Place, Integer> initialMarking;
 	Map<Place, Integer> savedMarking = null;
 	int savedStep = 0;
+	private Trace savedBranchTrace;
+	private int savedBranchStep = 0;
 
 	public SimulationTool() {
 		super();
 		createInterface();
 	}
 
-	private Trace trace;
-	private int currentStep = 0;
+	protected Trace branchTrace;
+	protected int branchStep = 0;
+	protected Trace trace;
+	protected int traceStep = 0;
+
 	private Timer timer = null;
 
 	private void applyMarking(Map<Place, Integer> marking)
@@ -85,11 +104,15 @@ public class SimulationTool extends AbstractTool {
 		for (Place p : net.getPlaces()) {
 			p.setTokens(marking.get(p));
 		}
+		// after this function trace becomes inconsistent?
+		branchStep = 0;
+		branchTrace=null;
+
 	}
 
 	private void update()
 	{
-		if(timer != null && (trace == null || currentStep == trace.size()))
+		if(timer != null && (trace == null || traceStep == trace.size()))
 		{
 			timer.stop();
 			timer = null;
@@ -98,43 +121,87 @@ public class SimulationTool extends AbstractTool {
 		if(timer != null)
 			timer.setDelay(getAnimationDelay());
 
-		resetButton.setEnabled(trace != null && currentStep > 0);
-		autoPlayButton.setEnabled(trace != null && currentStep < trace.size());
+		resetButton.setEnabled(trace != null || branchTrace != null);
+		autoPlayButton.setEnabled(trace != null && traceStep < trace.size());
 		stopButton.setEnabled(timer!=null);
 
-		backButton.setEnabled(currentStep > 0);
-		stepButton.setEnabled(trace != null && currentStep < trace.size());
+		backButton.setEnabled(traceStep > 0 || branchStep > 0);
+
+
+		stepButton.setEnabled(branchTrace==null && trace != null && traceStep < trace.size() || branchTrace != null && branchStep < branchTrace.size());
+
 		loadTraceButton.setEnabled(true);
+
 		saveMarkingButton.setEnabled(true);
 		loadMarkingButton.setEnabled(savedMarking != null);
+
+		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
+
+		// debug
+/*		if (trace!=null)
+			System.out.println("Trace:" + traceToString(trace, traceStep));
+		if (branchTrace!=null)
+			System.out.println("Branch:" + traceToString(branchTrace, branchStep));*/
 	}
 
-	private void stepBack() {
+	private void quietStepBack() {
+		if (branchTrace!=null&&branchStep>0) {
+			String transitionId = branchTrace.get(--branchStep);
+			final Node transition = net.getNodeByReference(transitionId);
+			net.unFire((Transition)transition);
 
-		if (currentStep==0) return;
+			if (branchStep==0&&trace!=null) branchTrace=null;
+			update();
+			return;
+		}
 
-		String transitionId = trace.get(--currentStep);
+		if (trace==null) return;
+		if (traceStep==0) return;
+
+		String transitionId = trace.get(--traceStep);
 
 		final Node transition = net.getNodeByReference(transitionId);
 
 		net.unFire((Transition)transition);
+	}
+
+	private void stepBack() {
+		quietStepBack();
 		update();
 	}
 
-	private void step() {
-		String transitionId = trace.get(currentStep);
 
+	private void quietStep() {
+		if (branchTrace!=null&&branchStep<branchTrace.size()) {
+
+			String transitionId = branchTrace.get(branchStep++);
+			final Node transition = net.getNodeByReference(transitionId);
+			net.fire((Transition)transition);
+
+			return;
+		}
+
+		if (trace==null) return;
+		if (traceStep>=trace.size()) return;
+
+		String transitionId = trace.get(traceStep);
 		final Node transition = net.getNodeByReference(transitionId);
-
 		net.fire((Transition)transition);
 
-		currentStep++;
+		traceStep++;
+	}
+
+	private void step() {
+		quietStep();
 		update();
 	}
 
 	private void reset() {
 		applyMarking(initialMarking);
-		currentStep = 0;
+		traceStep = 0;
+		branchStep=0;
+		branchTrace=null;
+
 		if(timer!=null)
 		{
 			timer.stop();
@@ -148,8 +215,143 @@ public class SimulationTool extends AbstractTool {
 		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
 	}
 
+	@SuppressWarnings("serial")
 	private void createInterface() {
 		interfacePanel = new JPanel(new SimpleFlowLayout(5,5));
+
+		traceTable = new JTable(new AbstractTableModel() {
+
+			@Override
+			public int getColumnCount() {
+				return 2;
+			}
+
+			@Override
+			public String getColumnName(int column) {
+				if (column==0) return "Trace";
+				return "Branch";
+			}
+
+			@Override
+			public int getRowCount() {
+				int tnum = 0;
+				int bnum = 0;
+				if (trace!=null) tnum=trace.size();
+				if (branchTrace!=null) bnum=branchTrace.size();
+
+				return Math.max(tnum, bnum+traceStep);
+			}
+
+
+
+			@Override
+			public Object getValueAt(int row, int col) {
+				if (col==0) {
+					if (trace!=null&&row<trace.size())
+						return trace.get(row);
+				} else {
+					if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+						return branchTrace.get(row-traceStep);
+					}
+				}
+				return "";
+			}
+
+		});
+
+
+		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		traceTable.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int column = traceTable.getSelectedColumn();
+				int row = traceTable.getSelectedRow();
+
+				if (column==0) {
+					if (trace!=null&&row<trace.size()) {
+
+						while (branchStep>0) quietStepBack();
+						while (traceStep>row) quietStepBack();
+						while (traceStep<row) quietStep();
+
+						update();
+					}
+				} else {
+					if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+						while (traceStep+branchStep>row) quietStepBack();
+						while (traceStep+branchStep<row) quietStep();
+						update();
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+
+		});
+
+
+		traceTable.setDefaultRenderer(Object.class,
+			new TableCellRenderer() {
+				JLabel label = new JLabel() {
+					@Override
+					public void paint( Graphics g ) {
+						g.setColor( getBackground() );
+						g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
+						super.paint( g );
+					}
+				};
+
+				boolean isActive(int row, int column) {
+					if (column==0) {
+						if (trace!=null)
+							return row==traceStep;
+					} else {
+						if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+							return (row-traceStep)==branchStep;
+						}
+					}
+
+					return false;
+				}
+
+				@Override
+				public Component getTableCellRendererComponent(JTable table,
+						Object value, boolean isSelected, boolean hasFocus,
+						int row, int column) {
+
+					if (!(value instanceof String)) return null;
+
+					label.setText((String)value);
+
+
+					if (isActive(row, column)) {
+						label.setBackground(Color.YELLOW);
+					} else {
+						label.setBackground(Color.WHITE);
+					}
+
+					return label;
+				}
+
+		});
+
 
 		resetButton = new JButton ("Reset");
 		speedSlider = new JSlider(-1000, 1000, 0);
@@ -226,7 +428,15 @@ public class SimulationTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				savedMarking = readMarking();
-				savedStep = currentStep;
+				savedStep = traceStep;
+
+				savedBranchStep = 0;
+				savedBranchTrace = null;
+
+				if (branchTrace!=null) {
+					savedBranchTrace = (Trace)branchTrace.clone();
+					savedBranchStep = branchStep;
+				}
 
 				update();
 			}
@@ -237,8 +447,9 @@ public class SimulationTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				applyMarking(savedMarking);
-				currentStep = savedStep;
-
+				traceStep = savedStep;
+				branchStep = savedBranchStep;
+				branchTrace = (Trace)savedBranchTrace.clone();
 				update();
 			}
 		});
@@ -252,6 +463,7 @@ public class SimulationTool extends AbstractTool {
 		interfacePanel.add(loadTraceButton);
 		interfacePanel.add(saveMarkingButton);
 		interfacePanel.add(loadMarkingButton);
+		interfacePanel.add(traceTable);
 	}
 
 	@Override
@@ -267,6 +479,8 @@ public class SimulationTool extends AbstractTool {
 		net = (PetriNetModel)visualNet.getMathModel();
 
 		initialMarking = readMarking();
+		branchTrace = null;
+		branchStep = 0;
 
 		update();
 	}
@@ -277,6 +491,12 @@ public class SimulationTool extends AbstractTool {
 			result.put(p, p.getTokens());
 		}
 		return result;
+	}
+
+	@Override
+	public void keyPressed(GraphEditorKeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) stepBack();
+		if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) step();
 	}
 
 	@Override
@@ -293,13 +513,38 @@ public class SimulationTool extends AbstractTool {
 
 		if (node instanceof VisualTransition) {
 			VisualTransition vt = (VisualTransition)node;
-			net.fire(vt.getReferencedTransition());
 
+			// if clicked on the trace event, do the step forward
+			if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
+				String transitionId = trace.get(traceStep);
+				Node transition = net.getNodeByReference(transitionId);
+				if (transition!=null&&transition==vt.getReferencedTransition()) {
+					step();
+					return;
+				}
+			}
+
+			// otherwise form/use the branch trace
+			if (branchTrace!=null&&branchStep<branchTrace.size()) {
+				String transitionId = branchTrace.get(branchStep);
+				Node transition = net.getNodeByReference(transitionId);
+				if (transition!=null&&transition==vt.getReferencedTransition()) {
+					step();
+					return;
+				}
+
+			}
+
+			if (branchTrace==null) branchTrace = new Trace();
+
+			while (branchStep<branchTrace.size())
+				branchTrace.remove(branchStep);
+
+			branchTrace.add(net.getNodeReference(vt.getReferencedTransition()));
+			step();
+			update();
+			return;
 		}
-
-		update();
-
-		e.getEditor().repaint();
 	}
 
 	@Override
@@ -327,6 +572,10 @@ public class SimulationTool extends AbstractTool {
 
 	public void setTrace(Trace t) {
 		this.trace = t;
+		this.traceStep = 0;
+		this.branchTrace = null;
+		this.branchStep = 0;
+
 	}
 
 	@Override
@@ -336,7 +585,50 @@ public class SimulationTool extends AbstractTool {
 			@Override
 			public Decoration getDecoration(Node node) {
 				if(node instanceof VisualTransition) {
-					if (net.isEnabled(((VisualTransition)node).getReferencedTransition()))
+					Transition transition = ((VisualTransition)node).getReferencedTransition();
+
+					if (branchTrace!=null&&branchStep<branchTrace.size()) {
+						String transitionId = branchTrace.get(branchStep);
+						Node transition2 = net.getNodeByReference(transitionId);
+
+						if (transition==transition2) {
+							return new Decoration(){
+
+								@Override
+								public Color getColorisation() {
+									return PetriNetSettings.getEnabledBackgroundColor();
+								}
+
+								@Override
+								public Color getBackground() {
+									return PetriNetSettings.getEnabledForegroundColor();
+								}
+							};
+
+						}
+					}
+
+					if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
+						String transitionId = trace.get(traceStep);
+						Node transition2 = net.getNodeByReference(transitionId);
+
+						if (transition==transition2) {
+							return new Decoration(){
+
+								@Override
+								public Color getColorisation() {
+									return PetriNetSettings.getEnabledBackgroundColor();
+								}
+
+								@Override
+								public Color getBackground() {
+									return PetriNetSettings.getEnabledForegroundColor();
+								}
+							};
+						}
+					}
+
+					if (net.isEnabled(transition))
 						return new Decoration(){
 
 							@Override
