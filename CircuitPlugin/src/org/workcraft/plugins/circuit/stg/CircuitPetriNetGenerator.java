@@ -231,28 +231,31 @@ public class CircuitPetriNetGenerator {
 			stg.connect(preset, transition);
 			transition.setLabel(FormulaToString.toString(clause));
 
-			// no transition restrictions for empty clauses
-			if (clause.getLiterals().size()==0) break;
-
 			baseOffset = add(baseOffset, transitionOffset);
 
+			HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
+
 			for (Literal literal : clause.getLiterals()) {
-				{
-					Contact targetContact = (Contact)literal.getVariable();
+				Contact targetContact = (Contact)literal.getVariable();
 
+				VisualContact driverContact = targetDrivers.get(targetContact);
 
-					VisualContact driverContact = targetDrivers.get(targetContact);
+				ContactSTG source = drivers.get(driverContact);
 
-					ContactSTG source = drivers.get(driverContact);
+				if(source == null)
+					throw new RuntimeException("No source for " + targetContact.getName() + " while generating " + signalName);
 
-					if(source == null)
-						throw new RuntimeException("No source for " + targetContact.getName() + " while generating " + signalName);
+				VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
 
-					VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
+				placesToRead.add(p);
+			}
 
-					stg.connectSingle(p, transition);
-					stg.connectSingle(transition, p);
-				}
+			if(placesToRead.remove(preset))
+				System.out.println(String.format("warning: signal %s depends on itself", signalName));
+
+			for(VisualPlace p : placesToRead) {
+				stg.connect(p, transition);
+				stg.connect(transition, p);
 			}
 		}
 	}

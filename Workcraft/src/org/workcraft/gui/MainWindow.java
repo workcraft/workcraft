@@ -97,6 +97,7 @@ import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -857,7 +858,16 @@ public class MainWindow extends JFrame {
 		}
 
 		try {
-			framework.getWorkspace().move(we.getFile(), new File(path));
+
+			File destination = new File(path);
+			Workspace ws = framework.getWorkspace();
+
+			final Path<String> wsFrom = we.getWorkspacePath();
+			Path<String> wsTo = ws.getWorkspacePath(destination);
+			if(wsTo == null)
+				wsTo = ws.tempMountExternalFile(destination);
+			ws.moved(wsFrom, wsTo);
+
 			if (we.getModelEntry() != null)
 				framework.save(we.getModelEntry(), we.getFile().getPath());
 			else

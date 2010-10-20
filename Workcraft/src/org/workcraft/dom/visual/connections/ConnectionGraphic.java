@@ -21,14 +21,14 @@
 
 package org.workcraft.dom.visual.connections;
 
-import java.awt.Graphics2D;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 
 public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
-	public void draw (Graphics2D g);
+	public void draw (DrawRequest r);
 
 	public void componentsTransformChanging ();
 	public void componentsTransformChanged ();

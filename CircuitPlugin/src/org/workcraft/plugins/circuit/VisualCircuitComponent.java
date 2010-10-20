@@ -39,8 +39,8 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.CustomTouchable;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -244,7 +244,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		return contactLabelBB;
 	}
 
-	protected void drawContactConnections(Graphics2D g) {
+	protected void drawContactConnections(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 
 		Rectangle2D BB = getContactLabelBB(g);
@@ -255,26 +257,26 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				VisualContact vc=(VisualContact)n;
 				if (vc.getDirection().equals(Direction.EAST)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), BB.getMaxX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), getColorisation()));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
 				if (vc.getDirection().equals(Direction.WEST)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), BB.getMinX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), getColorisation()));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.NORTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), BB.getMinY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), getColorisation()));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.SOUTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), BB.getMaxY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), getColorisation()));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
@@ -284,7 +286,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 
-	protected void drawContacts(Graphics2D g) {
+	protected void drawContacts(DrawRequest r) {
+
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
 
 		Rectangle2D cur;
 
@@ -299,7 +304,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 				GlyphVector gv = c.getNameGlyphs(g);
 				cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 				step_pos = c.getY();
 
 				g.drawGlyphVector(gv, (float)(BB.getMinX()+marginSize), (float)(step_pos+(cur.getHeight())/2));
@@ -312,7 +317,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (!c.getDirection().equals(Direction.EAST)) continue;
 				GlyphVector gv = c.getNameGlyphs(g);
 				cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
 				step_pos = c.getY();
 				g.drawGlyphVector(gv, (float)(BB.getMaxX()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
@@ -331,7 +336,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 				GlyphVector gv = c.getNameGlyphs(g);
 				cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
 				step_pos = c.getX();
 				g.drawGlyphVector(gv, (float)(BB.getMaxY()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
@@ -345,7 +350,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 				GlyphVector gv = c.getNameGlyphs(g);
 				cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
 				step_pos = c.getX();
 				g.drawGlyphVector(gv, (float)(BB.getMinY()+marginSize), (float)(step_pos+(cur.getHeight())/2));
@@ -354,19 +359,22 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
 
-		drawContactConnections(g);
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
+		drawContactConnections(r);
 
 		Rectangle2D shape = getContactLabelBB(g);
 
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
 
-		drawContacts(g);
+		drawContacts(r);
 	}
 
 	@Override
@@ -438,12 +446,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
-	}
-
-	public void setColorisation(Color color) {
-		super.setColorisation(color);
-		for (Colorisable node : Hierarchy.getChildrenOfType(this, Colorisable.class))
-			node.setColorisation(color);
 	}
 
 	@Override

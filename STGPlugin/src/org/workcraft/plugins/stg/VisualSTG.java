@@ -81,15 +81,6 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	// doesn't create a new connection, if such connection exists
-	public void connectSingle(Node first, Node second) throws InvalidConnectionException {
-		for (Connection c : getConnections(first)) {
-			if (c.getFirst()==first&&c.getSecond()==second) return;
-		}
-
-		connect(first, second);
-	}
-
 	@Override
 	public void connect(Node first,	Node second) throws InvalidConnectionException {
 		validateConnection(first, second);

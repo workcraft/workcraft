@@ -23,7 +23,6 @@ package org.workcraft.dom.visual.connections;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -37,11 +36,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -279,7 +278,7 @@ public class VisualConnection extends VisualNode implements
 	};
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
 
 	}
 
@@ -321,7 +320,7 @@ public class VisualConnection extends VisualNode implements
 
 	@Override
 	public Color getDrawColor() {
-		return Coloriser.colorise(color, getColorisation());
+		return color;
 	}
 
 	public void addObserver(HierarchyObserver obs) {

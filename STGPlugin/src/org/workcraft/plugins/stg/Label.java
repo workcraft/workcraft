@@ -4,7 +4,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+
+import org.workcraft.dom.visual.BoundingBoxHelper;
 
 public class Label {
 	private GlyphVector glyphVector;
@@ -20,10 +23,11 @@ public class Label {
 
 	public void setText (String text)
 	{
-		glyphVector = font.createGlyphVector(new FontRenderContext(null, true, true), text);
+		glyphVector = font.createGlyphVector(new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true), text);
 		textBB = glyphVector.getVisualBounds();
 
-		textBB.setRect(textBB.getX() - 0.075, textBB.getY() - 0.075, textBB.getWidth() + 0.15, textBB.getHeight() + 0.15);
+		double margin = 0.15;
+		textBB = BoundingBoxHelper.expand(textBB, margin, margin);
 
 		textX = (float)-textBB.getCenterX();
 		textY = (float)-textBB.getCenterY();

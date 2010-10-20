@@ -36,7 +36,6 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import org.workcraft.annotations.Annotations;
-import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -165,7 +164,6 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 				oldTracker.reset();
 
 			selectedTool.deactivated(editor);
-			((Colorisable)editor.getModel().getRoot()).clearColorisation();
 			buttons.get(selectedTool).setSelected(false);
 		}
 

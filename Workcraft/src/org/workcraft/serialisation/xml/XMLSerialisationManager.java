@@ -38,7 +38,6 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 	private XMLSerialiserState state = null;
 
 	private void registerSerialiser (XMLSerialiser serialiser) {
-		System.out.println("registering serialiser " + serialiser);
 		serialisers.put(serialiser.getClassName(), serialiser);
 	}
 

@@ -38,6 +38,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -138,7 +139,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
+
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
 			AffineTransform at = new AffineTransform();
@@ -159,9 +163,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		}
 
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(getShape());
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(getShape());
@@ -182,7 +186,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 			GlyphVector gv = getNameGlyphs(g);
 			Rectangle2D cur = gv.getVisualBounds();
-			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, getColorisation()));
+			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
 			float xx = 0;
 

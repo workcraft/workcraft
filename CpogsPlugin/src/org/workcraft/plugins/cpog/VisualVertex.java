@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -90,17 +91,20 @@ public class VisualVertex extends VisualComponent
 		addPropertyDeclaration(declaration);
 	}
 
-	public void draw(Graphics2D g)
+	public void draw(DrawRequest r)
 	{
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
 		Shape shape = new Ellipse2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
 		BooleanFormula value = evaluate();
 
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(shape);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		if (value == Zero.instance())
 		{
 			g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT,
@@ -110,15 +114,18 @@ public class VisualVertex extends VisualComponent
 		{
 			g.setStroke(new BasicStroke(strokeWidth));
 			if (value != One.instance())
-				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, getColorisation()));
+				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
 		}
 
 		g.draw(shape);
-		drawLabelInLocalSpace(g);
+		drawLabelInLocalSpace(r);
 	}
 
-	protected void drawLabelInLocalSpace(Graphics2D g)
+	protected void drawLabelInLocalSpace(DrawRequest r)
 	{
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
 		String text = getLabel();
 		if (getCondition() != One.instance()) text += ": ";
 
@@ -141,7 +148,7 @@ public class VisualVertex extends VisualComponent
 		AffineTransform transform = AffineTransform.getTranslateInstance(labelPosition.getX(), labelPosition.getY());
 
 		g.translate(labelPosition.getX(), labelPosition.getY());
-		result.draw(g, Coloriser.colorise(getLabelColor(), getColorisation()));
+		result.draw(g, Coloriser.colorise(getLabelColor(), colorisation));
 		g.setTransform(oldTransform);
 
 		labelBB = BoundingBoxHelper.transform(labelBB, transform);

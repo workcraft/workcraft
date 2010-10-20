@@ -32,6 +32,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -46,13 +47,15 @@ public class VisualVertex extends VisualComponent {
 		super(vertex);
 	}
 
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
 
 		Shape shape = new Ellipse2D.Double(
 				-size/2+strokeWidth/2,
 				-size/2+strokeWidth/2,
 				size-strokeWidth,
 				size-strokeWidth);
+
+		Graphics2D g = r.getGraphics();
 
 		g.setStroke(new BasicStroke(strokeWidth));
 

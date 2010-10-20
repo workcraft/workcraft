@@ -21,7 +21,6 @@
 
 package org.workcraft.testing.dom.visual;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformEventPropagator;
@@ -275,7 +275,7 @@ public class VisualComponentGroupTests {
 		}
 
 		@Override
-		public void draw(Graphics2D g) {
+		public void draw(DrawRequest r) {
 		}
 	}
 }

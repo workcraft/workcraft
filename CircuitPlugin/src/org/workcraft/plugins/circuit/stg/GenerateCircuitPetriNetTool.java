@@ -29,7 +29,6 @@ public class GenerateCircuitPetriNetTool implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		System.out.println("testing applicability");
 		return we.getModelEntry().getMathModel() instanceof Circuit;
 	}
 

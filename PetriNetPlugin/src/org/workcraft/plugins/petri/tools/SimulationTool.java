@@ -38,15 +38,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.workcraft.Trace;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -73,8 +75,6 @@ public class SimulationTool extends AbstractTool {
 		super();
 		createInterface();
 	}
-
-	private static Color enabledColor = new Color(1.0f, 0.5f, 0.0f);
 
 	private Trace trace;
 	private int currentStep = 0;
@@ -107,8 +107,6 @@ public class SimulationTool extends AbstractTool {
 		loadTraceButton.setEnabled(true);
 		saveMarkingButton.setEnabled(true);
 		loadMarkingButton.setEnabled(savedMarking != null);
-
-		highlightEnabledTransitions(visualNet.getRoot());
 	}
 
 	private void stepBack() {
@@ -256,23 +254,6 @@ public class SimulationTool extends AbstractTool {
 		interfacePanel.add(loadMarkingButton);
 	}
 
-	private void highlightEnabledTransitions(Container root) {
-		for (Node n : root.getChildren())
-		{
-			if (n instanceof VisualTransition)
-			{
-				VisualTransition vt = (VisualTransition)n;
-				if (net.isEnabled(vt.getReferencedTransition()))
-						vt.setColorisation(enabledColor);
-				else
-					vt.clearColorisation();
-			}
-
-			if (n instanceof Container)
-				highlightEnabledTransitions((Container)n);
-		}
-	}
-
 	@Override
 	public void deactivated(GraphEditor editor)
 	{
@@ -346,5 +327,32 @@ public class SimulationTool extends AbstractTool {
 
 	public void setTrace(Trace t) {
 		this.trace = t;
+	}
+
+	@Override
+	public Decorator getDecorator() {
+		return new Decorator() {
+
+			@Override
+			public Decoration getDecoration(Node node) {
+				if(node instanceof VisualTransition) {
+					if (net.isEnabled(((VisualTransition)node).getReferencedTransition()))
+						return new Decoration(){
+
+							@Override
+							public Color getColorisation() {
+								return PetriNetSettings.getEnabledForegroundColor();
+							}
+
+							@Override
+							public Color getBackground() {
+								return PetriNetSettings.getEnabledBackgroundColor();
+							}
+						};
+				}
+				return null;
+			}
+
+		};
 	}
 }

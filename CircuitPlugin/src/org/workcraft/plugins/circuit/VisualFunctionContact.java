@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
@@ -29,6 +30,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -158,8 +160,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
-		super.draw(g);
+	public void draw(DrawRequest r) {
+		super.draw(r);
+
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
 
 		if (getIOType()==IOType.OUTPUT) {
 
@@ -194,7 +199,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 			g.translate(textX, textY);
 
-			result.draw(g, Coloriser.colorise(getColorisation(), getColorisation()));
+			result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
 
 			g.setTransform(transform);
 

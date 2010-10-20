@@ -22,6 +22,7 @@
 package org.workcraft.plugins.sdfs;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
@@ -34,6 +35,7 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
@@ -140,8 +142,11 @@ public class VisualRegister extends VisualComponent {
 
 
 	@Override
-	public void draw(Graphics2D g) {
-		drawLabelInLocalSpace(g);
+	public void draw(DrawRequest r) {
+		drawLabelInLocalSpace(r);
+
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
 
 		double size = SDFSVisualSettings.getSize();
 		double strokeWidth = SDFSVisualSettings.getStrokeWidth();
@@ -164,19 +169,19 @@ public class VisualRegister extends VisualComponent {
 
 
 
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(outerRect);
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(outerRect);
 
 		if (isEnabled())
-			g.setColor(Coloriser.colorise(SDFSVisualSettings.getEnabledRegisterColor(), getColorisation()));
+			g.setColor(Coloriser.colorise(SDFSVisualSettings.getEnabledRegisterColor(), colorisation));
 		else
-			g.setColor(Coloriser.colorise(SDFSVisualSettings.getDisabledRegisterColor(), getColorisation()));
+			g.setColor(Coloriser.colorise(SDFSVisualSettings.getDisabledRegisterColor(), colorisation));
 		g.fill(innerRect);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(innerRect);
 

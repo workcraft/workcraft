@@ -10,7 +10,14 @@ public final class ActiveEagerNullAdaptStgBuilder extends ActiveEagerNullAdaptSt
 	@Override
 	public void buildStg(ActiveEagerNullAdapt component,
 			ActiveEagerNullAdaptStgInterface h, StrictPetriBuilder b) {
-		throw new org.workcraft.exceptions.NotImplementedException();
+		b.connect(h.trigger.go(), h.inp.go());
+		b.connect(h.inp.done(), h.trigger.done());
+
+		b.connect(h.trigger.go(), h.inp.go());
+		b.connect(h.inp.done(), h.trigger.done());
+
+		//sub-optimal?
+		b.connect(h.inp.done(), h.inp.dataRelease());
 	}
 
 	@Override

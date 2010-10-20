@@ -35,6 +35,7 @@ import java.util.HashMap;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -72,8 +73,11 @@ public class VisualRhoClause extends VisualComponent
 		super(rhoClause);
 	}
 
-	public void draw(Graphics2D g)
+	public void draw(DrawRequest r)
 	{
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
 		FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
 
 		Rectangle2D textBB = result.boundingBox;
@@ -88,15 +92,15 @@ public class VisualRhoClause extends VisualComponent
 
 		g.setStroke(new BasicStroke(strokeWidth));
 
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(boudingBox);
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(boudingBox);
 
 		AffineTransform transform = g.getTransform();
 		g.translate(textX, textY);
 
-		result.draw(g, Coloriser.colorise(getColor(), getColorisation()));
+		result.draw(g, Coloriser.colorise(getColor(), colorisation));
 
 		g.setTransform(transform);
 	}

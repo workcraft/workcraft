@@ -9,7 +9,9 @@ public final class AdaptStgBuilder extends AdaptStgBuilderBase {
 
 	@Override
 	public void buildStg(Adapt component, AdaptStgInterface h, StrictPetriBuilder b) {
-		throw new org.workcraft.exceptions.NotImplementedException();
+		b.connect(h.out.go(), h.inp.go());
+		b.connect(h.inp.done(), h.out.done());
+		b.connect(h.out.dataRelease(), h.inp.dataRelease());
 	}
 
 	@Override

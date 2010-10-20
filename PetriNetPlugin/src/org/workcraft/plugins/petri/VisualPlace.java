@@ -34,6 +34,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -185,35 +186,11 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	@Override
-	public void draw(Graphics2D g)
+	public void draw(DrawRequest r)
 	{
+		Graphics2D g = r.getGraphics();
 
-		// some debug info
-		/*int postv = getPostset().size();
-		int postm = getReferencedPlace().getPostset().size();
-		int prev = getPreset().size();
-		int prem = getReferencedPlace().getPreset().size();
-
-		if (postv!=postm||prev!=prem) {
-
-			g.setColor(Color.red);
-		    Font font = new Font("Courier", Font.PLAIN, 1);
-		    g.setFont(font);
-
-			String str = (postv!=postm)?("POST("+postv+","+postm+")"):"";
-			str+=(prev!=prem)?("PRE("+prev+","+prem+")"):"";
-
-			g.drawString("ERROR:"+str, 1, 0);
-
-		}*/
-		/*
-		g.setColor(Color.red);
-	    Font font = new Font("Courier", Font.PLAIN, 1);
-	    g.setFont(font);
-		g.drawString("#"+getReferencedPlace().getID(), 1, 1);
-*/
-
-		drawLabelInLocalSpace(g);
+		drawLabelInLocalSpace(r);
 
 		double size = CommonVisualSettings.getSize();
 		double strokeWidth = CommonVisualSettings.getStrokeWidth();
@@ -224,15 +201,15 @@ public class VisualPlace extends VisualComponent {
 				size - strokeWidth,
 				size - strokeWidth);
 
-		g.setColor(Coloriser.colorise(getFillColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
 
-		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(getTokenColor(), getColorisation()), g);
+		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {

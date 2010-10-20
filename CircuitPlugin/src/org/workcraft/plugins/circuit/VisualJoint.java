@@ -31,9 +31,9 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.circuit.Joint;
 
 @DisplayName("Joint")
 @Hotkey(KeyEvent.VK_J)
@@ -48,9 +48,9 @@ public class VisualJoint extends VisualComponent {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
 //		drawLabelInLocalSpace(g);
-
+		Graphics2D g = r.getGraphics();
 
 		Shape shape = new Ellipse2D.Double(
 				-jointSize / 2,
@@ -58,7 +58,7 @@ public class VisualJoint extends VisualComponent {
 				jointSize,
 				jointSize);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
 	}
 

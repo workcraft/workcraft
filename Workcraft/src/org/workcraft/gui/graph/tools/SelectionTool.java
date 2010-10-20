@@ -29,13 +29,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 
 import javax.swing.Icon;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Colorisable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
@@ -43,7 +42,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.SelectionColoriser;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
@@ -62,28 +60,26 @@ public class SelectionTool extends AbstractTool {
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
 	protected Color grayOutColor = Color.LIGHT_GRAY;
 
-	private SelectionColoriser coloriser;
-
 	private int drag = DRAG_NONE;
 	private boolean notClick1 = false;
 	private boolean notClick3 = false;
 
 	private Point2D snapOffset;
 
-	private LinkedList<Node> selected = new LinkedList<Node>();
+	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
 	private int selectionMode;
 
 	private Rectangle2D selectionBox = null;
 
+	GraphEditor editor;
+
 	@Override
 	public void activated(GraphEditor editor) {
-		coloriser = new SelectionColoriser(editor.getModel());
-		coloriser.activate();
+		this.editor = editor;
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
-		coloriser.deactivate();
 	}
 
 	@Override
@@ -133,16 +129,8 @@ public class SelectionTool extends AbstractTool {
 			offsetSelection(e, p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		}
 		else if(drag==DRAG_SELECT) {
-			SelectionColoriser.uncolorise(selected);
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
-
-			SelectionColoriser.colorise(e.getModel().getSelection());
-			if (selectionMode == SELECTION_ADD || selectionMode == SELECTION_REPLACE) {
-				SelectionColoriser.colorise(selected);
-			} else {
-				SelectionColoriser.uncolorise(selected);
-			}
 
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
 
@@ -241,12 +229,13 @@ public class SelectionTool extends AbstractTool {
 		}
 		drag = DRAG_NONE;
 
+		selected.clear();
+
 		e.getEditor().repaint();
 	}
 
 
 	private void cancelDrag(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
 
 		if(drag==DRAG_MOVE) {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getStartPosition().getX()+snapOffset.getX(), e.getStartPosition().getY()+snapOffset.getY()));
@@ -254,8 +243,6 @@ public class SelectionTool extends AbstractTool {
 			offsetSelection(e, p1.getX()-p2.getX(), p1.getY()-p2.getY());
 		}
 		else if(drag == DRAG_SELECT) {
-			SelectionColoriser.uncolorise(selected);
-			SelectionColoriser.colorise(model.getSelection());
 			selected.clear();
 			selectionBox = null;
 		}
@@ -267,15 +254,6 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
 		// do nothing
-	}
-
-	private void grayOutNotActive(VisualModel model)
-	{
-		Node root = model.getRoot();
-		if (root instanceof Colorisable)
-			((Colorisable)root).setColorisation(grayOutColor);
-
-		coloriser.update();
 	}
 
 	@Override
@@ -360,7 +338,7 @@ public class SelectionTool extends AbstractTool {
 			if(selectedNode instanceof Container)
 				model.setCurrentLevel((Container)selectedNode);
 		}
-		grayOutNotActive(model);
+		editor.repaint();
 	}
 
 	protected void currentLevelUp(VisualModel model) {
@@ -370,8 +348,8 @@ public class SelectionTool extends AbstractTool {
 		{
 			model.setCurrentLevel(parent);
 			model.addToSelection(level);
-			grayOutNotActive(model);
 		}
+		editor.repaint();
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
@@ -417,6 +395,61 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public Icon getIcon() {
 		return GUI.createIconFromSVG("images/icons/svg/select.svg");
+	}
+
+	protected static Color selectionColor = new Color(99, 130, 191).brighter();
+
+	@Override
+	public Decorator getDecorator() {
+		return new Decorator(){
+
+			@Override
+			public Decoration getDecoration(Node node) {
+
+				if(node == editor.getModel().getCurrentLevel())
+					return Decoration.Empty.INSTANCE;
+
+				if(node == editor.getModel().getRoot())
+					return new Decoration(){
+
+						@Override
+						public Color getColorisation() {
+							return grayOutColor;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+					};
+
+
+				Decoration selectedDecoration = new Decoration() {
+
+					@Override
+					public Color getColorisation() {
+						return selectionColor;
+					}
+
+					@Override
+					public Color getBackground() {
+						return null;
+					}
+				};
+
+				if(selected.contains(node)) {
+					if (selectionMode == SELECTION_REMOVE)
+						return null;
+					return selectedDecoration;
+				}
+
+				if(editor.getModel().getSelection().contains(node)) {
+					return selectedDecoration;
+				} else
+					return null;
+			}
+
+		};
 	}
 
 }

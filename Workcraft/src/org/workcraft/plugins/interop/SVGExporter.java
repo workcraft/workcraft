@@ -37,6 +37,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.interop.Exporter;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.XmlUtil;
@@ -62,7 +63,7 @@ public class SVGExporter implements Exporter {
 				g2d.translate(-bounds.getMinX(), -bounds.getMinY());
 				g2d.setSVGCanvasSize(new Dimension((int)(bounds.getWidth()*50), (int)(bounds.getHeight()*50)));
 
-				((VisualModel)model).draw(g2d);
+				((VisualModel)model).draw(g2d, Decorator.Empty.INSTANCE);
 
 				g2d.stream(new OutputStreamWriter(out));
 

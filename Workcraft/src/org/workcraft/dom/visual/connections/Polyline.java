@@ -32,6 +32,8 @@ import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -61,7 +63,10 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		connectionInfo = parent;
 	}
 
-	public void draw(Graphics2D g) {
+	public void draw(DrawRequest r) {
+
+		Graphics2D g = r.getGraphics();
+
 		if (!valid)
 			update();
 
@@ -82,7 +87,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-		g.setColor(connectionInfo.getDrawColor());
+		g.setColor(Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation()));
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);

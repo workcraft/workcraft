@@ -70,8 +70,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			if (e instanceof PropertyChangedEvent || e instanceof TransformChangedEvent) {
 				repaint();
 				mainWindow.getPropertyView().repaint();
-				if (!workspaceEntry.isChanged())
-					workspaceEntry.setChanged(true);
+				workspaceEntry.setChanged(true);
 			}
 		}
 	}
@@ -192,7 +191,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-		visualModel.draw(g2d);
+		visualModel.draw(g2d, toolboxPanel.getTool().getDecorator());
 
 		if (hasFocus())
 			toolboxPanel.getTool().drawInUserSpace(this, g2d);

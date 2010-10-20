@@ -25,39 +25,62 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import org.workcraft.dom.Node;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.graph.tools.Decorator;
 
 
 class DrawMan
 {
-	private DrawMan(){}
+	private final Graphics2D graphics;
+	private final Decorator decorator;
 
-	private static void transformAndDraw(Graphics2D graphics, Movable node)
-	{
-		graphics.transform(node.getTransform());
-		simpleDraw(graphics, node);
+	private DrawMan(Graphics2D graphics, Decorator decorator) {
+		this.graphics = graphics;
+		this.decorator = decorator;
 	}
 
-	public static void draw(Graphics2D graphics, Node node)
+	private void transformAndDraw(Decoration decoration, Movable node)
 	{
+		graphics.transform(node.getTransform());
+		simpleDraw(decoration, node);
+	}
+
+	public static void draw(Graphics2D graphics, Decorator decorator, Node node) {
+		new DrawMan(graphics, decorator).draw(Decoration.Empty.INSTANCE, node);
+	}
+
+	public void draw(Decoration currentDecoration, Node node) {
+		Decoration decoration = decorator.getDecoration(node);
+		if (decoration == null) decoration = currentDecoration;
+
 		if (node instanceof Hidable && ((Hidable)node).isHidden())
 			return;
 
 		AffineTransform oldTransform = graphics.getTransform();
-		if(node instanceof Movable)
-			transformAndDraw(graphics, (Movable)node);
+		if (node instanceof Movable)
+			transformAndDraw(decoration, (Movable)node);
 		else
-			simpleDraw(graphics, node);
+			simpleDraw(decoration, node);
 		graphics.setTransform(oldTransform);
 	}
 
-	private static void simpleDraw(Graphics2D graphics, Node node)
+	private void simpleDraw(final Decoration decoration, Node node)
 	{
 		AffineTransform oldTransform = graphics.getTransform();
-		if(node instanceof Drawable)
-			((Drawable)node).draw(graphics);
+		if (node instanceof Drawable)
+			((Drawable)node).draw(new DrawRequest(){
+				@Override
+				public Decoration getDecoration() {
+					return decoration;
+				}
+				@Override
+				public Graphics2D getGraphics() {
+					return graphics;
+				}
+			});
 		graphics.setTransform(oldTransform);
 
-		for(Node n : node.getChildren())
-			draw(graphics, n);
+		for (Node n : node.getChildren())
+			draw(decoration, n);
 	}
 }
