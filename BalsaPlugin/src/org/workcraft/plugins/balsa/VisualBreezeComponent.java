@@ -210,27 +210,30 @@ public class VisualBreezeComponent extends VisualComponent implements Drawable
 
 	@Override
 	public void draw(DrawRequest r) {
-		r.setStroke(new BasicStroke(0.02f));
-		r.setColor(Coloriser.colorise(Color.black, this.getColorisation()));
 
-		drawSideLine(r, visualLayout.left, -1);
-		drawSideLine(r, visualLayout.right, +1);
+		Graphics2D g = r.getGraphics();
 
-		drawCircle(r, 0, 0, componentRadius);
+		g.setStroke(new BasicStroke(0.02f));
+		g.setColor(Coloriser.colorise(Color.black, r.getDecoration().getColorisation()));
+
+		drawSideLine(g, visualLayout.left, -1);
+		drawSideLine(g, visualLayout.right, +1);
+
+		drawCircle(g, 0, 0, componentRadius);
 
 
 		/*AffineTransform t = g.getTransform();
 		t.concatenate(AffineTransform.getQuadrantRotateInstance(-1));
 		g.setTransform(t);*/
 
-		Font font = r.getFont();
+		Font font = g.getFont();
 		font = font.deriveFont(0.2f);
 		String symbol = balsaComponent.getClass().getSimpleName();
 		if (balsaComponent instanceof DynamicComponent)
 			symbol = ((DynamicComponent)balsaComponent).getSymbol();
-		GlyphVector vec = font.createGlyphVector(r.getFontRenderContext(), symbol);
+		GlyphVector vec = font.createGlyphVector(g.getFontRenderContext(), symbol);
 		Rectangle2D bounds = vec.getVisualBounds();
-		r.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
+		g.drawGlyphVector(vec, (float)-bounds.getCenterX(), (float)-bounds.getCenterY());
 	}
 
 	private void drawSideLine(Graphics2D g, SideLine extent, int dir) {
