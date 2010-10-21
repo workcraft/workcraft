@@ -51,6 +51,7 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -101,13 +102,13 @@ public class SimulationTool extends AbstractTool {
 
 	private void applyMarking(Map<Place, Integer> marking)
 	{
-		for (Place p : net.getPlaces()) {
-			p.setTokens(marking.get(p));
+		for(Place p: marking.keySet()) {
+			if (net.getPlaces().contains(p)) {
+				p.setTokens(marking.get(p));
+			} else {
+				//ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
+			}
 		}
-		// after this function trace becomes inconsistent?
-		branchStep = 0;
-		branchTrace=null;
-
 	}
 
 	private void update()
@@ -144,56 +145,72 @@ public class SimulationTool extends AbstractTool {
 			System.out.println("Branch:" + traceToString(branchTrace, branchStep));*/
 	}
 
-	private void quietStepBack() {
+	private boolean quietStepBack() {
 		if (branchTrace!=null&&branchStep>0) {
-			String transitionId = branchTrace.get(--branchStep);
-			final Node transition = net.getNodeByReference(transitionId);
-			net.unFire((Transition)transition);
+			String transitionId = branchTrace.get(branchStep-1);
 
+			final Node transition = net.getNodeByReference(transitionId);
+			if (transition==null||!(transition instanceof Transition)) return false;
+			if (!net.isUnfireEnabled((Transition)transition)) return false;
+			branchStep--;
+
+			net.unFire((Transition)transition);
 			if (branchStep==0&&trace!=null) branchTrace=null;
-			update();
-			return;
+			return true;
 		}
 
-		if (trace==null) return;
-		if (traceStep==0) return;
+		if (trace==null) return false;
+		if (traceStep==0) return false;
 
-		String transitionId = trace.get(--traceStep);
+		String transitionId = trace.get(traceStep-1);
 
 		final Node transition = net.getNodeByReference(transitionId);
+		if (transition==null||!(transition instanceof Transition)) return false;
+		if (!net.isUnfireEnabled((Transition)transition)) return false;
+		traceStep--;
 
 		net.unFire((Transition)transition);
+		return true;
 	}
 
-	private void stepBack() {
-		quietStepBack();
+	private boolean stepBack() {
+		boolean ret = quietStepBack();
 		update();
+		return ret;
 	}
 
 
-	private void quietStep() {
+	private boolean quietStep() {
 		if (branchTrace!=null&&branchStep<branchTrace.size()) {
-
-			String transitionId = branchTrace.get(branchStep++);
+			String transitionId = branchTrace.get(branchStep);
 			final Node transition = net.getNodeByReference(transitionId);
-			net.fire((Transition)transition);
 
-			return;
+			if (transition==null||!(transition instanceof Transition)) return false;
+			if (!net.isEnabled((Transition)transition)) return false;
+
+			net.fire((Transition)transition);
+			branchStep++;
+
+			return true;
 		}
 
-		if (trace==null) return;
-		if (traceStep>=trace.size()) return;
+		if (trace==null) return false;
+		if (traceStep>=trace.size()) return false;
 
 		String transitionId = trace.get(traceStep);
 		final Node transition = net.getNodeByReference(transitionId);
-		net.fire((Transition)transition);
+		if (transition==null||!(transition instanceof Transition)) return false;
+		if (!net.isEnabled((Transition)transition)) return false;
 
+		net.fire((Transition)transition);
 		traceStep++;
+		return true;
 	}
 
-	private void step() {
-		quietStep();
+	private boolean step() {
+		boolean ret = quietStep();
 		update();
+		return ret;
 	}
 
 	private void reset() {
@@ -272,16 +289,20 @@ public class SimulationTool extends AbstractTool {
 				if (column==0) {
 					if (trace!=null&&row<trace.size()) {
 
-						while (branchStep>0) quietStepBack();
-						while (traceStep>row) quietStepBack();
-						while (traceStep<row) quietStep();
+						boolean work=true;
+
+						while (branchStep>0&&work) work=quietStepBack();
+						while (traceStep>row&&work) work=quietStepBack();
+						while (traceStep<row&&work) work=quietStep();
 
 						update();
 					}
 				} else {
 					if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
-						while (traceStep+branchStep>row) quietStepBack();
-						while (traceStep+branchStep<row) quietStep();
+
+						boolean work=true;
+						while (traceStep+branchStep>row&&work) work=quietStepBack();
+						while (traceStep+branchStep<row&&work) work=quietStep();
 						update();
 					}
 				}
@@ -320,7 +341,7 @@ public class SimulationTool extends AbstractTool {
 
 				boolean isActive(int row, int column) {
 					if (column==0) {
-						if (trace!=null)
+						if (trace!=null&&branchTrace==null)
 							return row==traceStep;
 					} else {
 						if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {

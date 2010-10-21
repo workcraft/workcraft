@@ -116,9 +116,12 @@ public class STG extends AbstractMathModel implements STGModel {
 		return ret;
 	}
 
-	@Override
 	public boolean isEnabled(Transition t) {
 		return PetriNet.isEnabled(this, t);
+	}
+
+	public boolean isUnfireEnabled(Transition t) {
+		return PetriNet.isUnfireEnabled(this, t);
 	}
 
 	final public void fire (Transition t) {

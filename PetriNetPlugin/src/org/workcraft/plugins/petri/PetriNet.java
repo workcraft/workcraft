@@ -105,8 +105,33 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
 	}
 
+
+	public boolean isUnfireEnabled(Transition t) {
+		return isUnfireEnabled (this, t);
+	}
+
 	final public boolean isEnabled (Transition t) {
 		return isEnabled (this, t);
+	}
+
+	final public static boolean isUnfireEnabled (PetriNetModel net, Transition t) {
+		// gather number of connections for each post-place
+		Map<Place, Integer> map = new HashMap<Place, Integer>();
+
+		for (Connection c: net.getConnections(t)) {
+			if (c.getFirst()==t) {
+				if (map.containsKey(c.getSecond())) {
+					map.put((Place)c.getSecond(), map.get(c.getSecond())+1);
+				} else {
+					map.put((Place)c.getSecond(), 1);
+				}
+			}
+		}
+
+		for (Node n : net.getPostset(t))
+			if (((Place)n).getTokens() < map.get((Place)n))
+				return false;
+		return true;
 	}
 
 	final public static boolean isEnabled (PetriNetModel net, Transition t) {
@@ -195,4 +220,5 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	public Properties getProperties(Node node) {
 		return Properties.Mix.from(new NamePropertyDescriptor(this, node));
 	}
+
 }

@@ -9,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.tools.SimulationTool;
 import org.workcraft.plugins.stg.SignalTransition;
 
@@ -38,7 +39,7 @@ public class STGSimulationTool extends SimulationTool {
 
 				boolean isActive(int row, int column) {
 					if (column==0) {
-						if (trace!=null)
+						if (trace!=null&&branchTrace==null)
 							return row==traceStep;
 					} else {
 						if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
@@ -59,11 +60,8 @@ public class STGSimulationTool extends SimulationTool {
 					label.setText((String)value);
 					label.setForeground(Color.BLACK);
 
-					if (isActive(row, column)) {
-						label.setBackground(Color.YELLOW);
-					} else {
-						label.setBackground(Color.WHITE);
-					}
+					Color fore = PetriNetSettings.getEnabledForegroundColor();
+					Color back = PetriNetSettings.getEnabledBackgroundColor();
 
 					Node n = net.getNodeByReference((String)value);
 					if (n instanceof SignalTransition) {
@@ -73,6 +71,17 @@ public class STGSimulationTool extends SimulationTool {
 							case OUTPUT:   label.setForeground(outputsColor); break;
 							case INTERNAL: label.setForeground(internalsColor); break;
 						}
+					}
+
+					if (isActive(row, column)) {
+						if (fore!=null&&back!=null) {
+							label.setBackground(fore);
+							label.setForeground(back);
+						} else {
+							label.setBackground(Color.YELLOW);
+						}
+					} else {
+						label.setBackground(Color.WHITE);
 					}
 
 					return label;
