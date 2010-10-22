@@ -51,7 +51,6 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -469,8 +468,13 @@ public class SimulationTool extends AbstractTool {
 			public void actionPerformed(ActionEvent e) {
 				applyMarking(savedMarking);
 				traceStep = savedStep;
-				branchStep = savedBranchStep;
-				branchTrace = (Trace)savedBranchTrace.clone();
+				if (savedBranchTrace!=null) {
+					branchStep = savedBranchStep;
+					branchTrace = (Trace)savedBranchTrace.clone();
+				} else {
+					branchStep = 0;
+					branchTrace = null;
+				}
 				update();
 			}
 		});
