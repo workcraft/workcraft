@@ -33,8 +33,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FunctionContact extends Contact {
 	private BooleanFormula setFunction=Zero.instance();
-	private BooleanFormula resetFunction=One.instance();
-	private BooleanFormula combinedFunction=Zero.instance();
+	private BooleanFormula resetFunction=null;
+	private BooleanFormula combinedFunction=null;
 
 	public FunctionContact(IOType ioType) {
 		super(ioType);

@@ -178,7 +178,6 @@ public class SimulationTool extends AbstractTool {
 		return ret;
 	}
 
-
 	private boolean quietStep() {
 		if (branchTrace!=null&&branchStep<branchTrace.size()) {
 			String transitionId = branchTrace.get(branchStep);

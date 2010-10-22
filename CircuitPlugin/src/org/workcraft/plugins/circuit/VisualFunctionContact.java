@@ -131,14 +131,23 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	@NoAutoSerialisation
 	public void setResetFunction(String resetFunction) {
 		renderedFormula = null;
-		getFunction().setResetFunction(parseFormula(resetFunction));
+		if (!resetFunction.equals("")) {
+			getFunction().setResetFunction(parseFormula(resetFunction));
+		} else {
+			getFunction().setResetFunction(null);
+		}
+
 		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
 	}
 
 	@NoAutoSerialisation
 	public void setSetFunction(String setFunction) {
 		renderedFormula = null;
-		getFunction().setSetFunction(parseFormula(setFunction));
+		if (!setFunction.equals("")) {
+			getFunction().setSetFunction(parseFormula(setFunction));
+		} else {
+			getFunction().setSetFunction(null);
+		}
 
 		sendNotification(new PropertyChangedEvent(this, "setFunction"));
 	}
@@ -146,12 +155,19 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void updateCombinedFunction() {
 		CleverBooleanWorker worker = new CleverBooleanWorker();
 		BooleanOperations.worker = new DumbBooleanWorker();
-		getFunction().setCombinedFunction(
-				DnfGenerator.generate(
-				worker.or(getFunction().getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(getFunction().getResetFunction())))
-				)
+		if (getFunction().getSetFunction()!=null&&
+			getFunction().getResetFunction()!=null)
 
-		);
+			getFunction().setCombinedFunction(
+					DnfGenerator.generate(
+					worker.or(getFunction().getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(getFunction().getResetFunction())))
+					));
+
+		if (getFunction().getSetFunction()!=null&&
+			getFunction().getResetFunction()==null)
+
+			getFunction().setCombinedFunction(
+					DnfGenerator.generate(getFunction().getSetFunction()));
 	}
 
 	private void addPropertyDeclarations() {

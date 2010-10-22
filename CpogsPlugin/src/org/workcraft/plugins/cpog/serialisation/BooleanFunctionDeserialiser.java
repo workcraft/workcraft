@@ -61,9 +61,10 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 			String attributeName) throws DeserialisationException {
 		String string = element.getAttribute(attributeName);
 
-		BooleanFormula formula;
+		BooleanFormula formula=null;
 		try {
-			formula = BooleanParser.parse(string, new VariableResolver(internalReferenceResolver));
+			if (!string.equals(""))
+				formula = BooleanParser.parse(string, new VariableResolver(internalReferenceResolver));
 		} catch (ParseException e) {
 			throw new DeserialisationException(e);
 		}

@@ -25,6 +25,8 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
+import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -131,7 +133,14 @@ public class CircuitPetriNetGenerator {
 					// function based driver
 					VisualFunctionContact contact = (VisualFunctionContact)c;
 					Dnf set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-					Dnf reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
+
+					Dnf reset = null;
+					BooleanOperations.worker = new DumbBooleanWorker();
+
+					if (reset!=null)
+						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
+					else
+						reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
 
 					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, SignalTransition.Type.OUTPUT);
 
