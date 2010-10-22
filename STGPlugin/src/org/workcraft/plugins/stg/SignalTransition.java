@@ -81,9 +81,11 @@ public class SignalTransition extends Transition implements StgTransition
 	}
 
 	public void setSignalType(Type type) {
-		this.type = type;
-
-		sendNotification(new PropertyChangedEvent(this, "signalType"));
+		if (this.type != type)
+		{
+			this.type = type;
+			sendNotification(new PropertyChangedEvent(this, "signalType"));
+		}
 	}
 
 	public Direction getDirection() {
@@ -91,9 +93,11 @@ public class SignalTransition extends Transition implements StgTransition
 	}
 
 	public void setDirection(Direction direction) {
-		this.direction = direction;
-
-		sendNotification(new PropertyChangedEvent(this, "direction"));
+		if (this.direction != direction)
+		{
+			this.direction = direction;
+			sendNotification(new PropertyChangedEvent(this, "direction"));
+		}
 	}
 
 	@NoAutoSerialisation
@@ -103,9 +107,11 @@ public class SignalTransition extends Transition implements StgTransition
 
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
-		this.signalName = signalName;
-
-		sendNotification(new PropertyChangedEvent(this, "signalName"));
+		if (this.signalName != signalName)
+		{
+			this.signalName = signalName;
+			sendNotification(new PropertyChangedEvent(this, "signalName"));
+		}
 	}
 
 	@Override
