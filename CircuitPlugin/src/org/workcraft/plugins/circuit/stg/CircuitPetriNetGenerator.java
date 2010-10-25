@@ -5,17 +5,21 @@ import static org.workcraft.util.Geometry.subtract;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
@@ -107,7 +111,7 @@ public class CircuitPetriNetGenerator {
 					// if it is a driver, add it to the list of drivers
 					drivers.put(contact, generatePlaces(circuit, stg, contact));
 
-					// put itself on a target list as well, so it be addressed by other drivers
+					// put itself on a target list as well, so that it cab be addressed by other drivers
 					targetDrivers.put(contact.getReferencedContact(), contact);
 				} else {
 					// if not a driver, find related driver, add to the map of targets
@@ -142,7 +146,13 @@ public class CircuitPetriNetGenerator {
 					else
 						reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
 
-					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, SignalTransition.Type.OUTPUT);
+					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
+
+					if (contact.getParent()!=null&&
+						contact.getParent() instanceof VisualCircuitComponent&&
+						((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) ttype = SignalTransition.Type.INPUT;
+
+					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, ttype);
 
 				} else {
 					// some generic driver implementation otherwise
@@ -209,31 +219,42 @@ public class CircuitPetriNetGenerator {
 		if (p == null)
 			throw new RuntimeException("Places for driver " + signalName + " cannot be found.");
 
+		Collection<Node> nodes = new LinkedList<Node>();
 
 		setPosition(p.p1, add(center, pOffset));
 		setPosition(p.p0, subtract(center, pOffset));
 
-		buildTransitions(stg, circuit, drivers, targetDrivers,
+		nodes.add(p.p1);
+		nodes.add(p.p0);
+
+		nodes.addAll(buildTransitions(stg, circuit, drivers, targetDrivers,
 				set,
 				add(add(center, direction), pOffset), plusDirection,
-				signalName, ttype, SignalTransition.Direction.PLUS, p.p0, p.p1);
+				signalName, ttype, SignalTransition.Direction.PLUS, p.p0, p.p1));
 
-		buildTransitions(stg, circuit, drivers, targetDrivers,
+		nodes.addAll(buildTransitions(stg, circuit, drivers, targetDrivers,
 				reset,
 				subtract(add(center, direction), pOffset),  minusDirection,
-				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0);
+				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
+
+		stg.groupCollection(nodes);
+
+
 	}
 
-	private static void buildTransitions(
+	private static LinkedList<VisualNode> buildTransitions(
 			VisualSTG stg, VisualCircuit circuit, Map<VisualContact, ContactSTG> drivers, Map<Contact, VisualContact> targetDrivers,
-			Dnf function,
-			Point2D baseOffset, Point2D transitionOffset,
+			Dnf function, Point2D baseOffset, Point2D transitionOffset,
 			String signalName, SignalTransition.Type type, Direction transitionDirection,
 			VisualPlace preset, VisualPlace postset) throws InvalidConnectionException {
+
+		LinkedList<VisualNode> nodes = new LinkedList<VisualNode>();
 
 		for(DnfClause clause : function.getClauses())
 		{
 			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection);
+			nodes.add(transition);
+
 			setPosition(transition, baseOffset);
 
 			stg.connect(transition, postset);
@@ -267,6 +288,8 @@ public class CircuitPetriNetGenerator {
 				stg.connect(transition, p);
 			}
 		}
+
+		return nodes;
 	}
 
 	private static String getContactName(VisualCircuit circuit, VisualContact contact) {

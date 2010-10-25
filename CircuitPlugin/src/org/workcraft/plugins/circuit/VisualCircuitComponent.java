@@ -85,6 +85,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Treat as environment", "getIsEnvironment", "setIsEnvironment", boolean.class));
+	}
+
+	public boolean getIsEnvironment() {
+
+		if (getReferencedComponent()!=null)
+			return ((CircuitComponent)getReferencedComponent()).getIsEnvironment();
+		return false;
+	}
+
+	public void setIsEnvironment(boolean isEnvironment) {
+		if (getReferencedComponent()!=null)
+			((CircuitComponent)getReferencedComponent()).setIsEnvironment(isEnvironment);
 	}
 
 	// updates sequential position of the contacts
@@ -370,8 +383,21 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation));
 		g.fill(shape);
+
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+
+		if (!getIsEnvironment()) {
+			g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		} else {
+			float dash[] = {0.25f, 0.25f};
+
+			g.setStroke(
+					new BasicStroke(
+						(float)CommonVisualSettings.getStrokeWidth(),
+						BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,
+						dash, 0.0f)
+						);
+		}
 		g.draw(shape);
 
 		drawContacts(r);

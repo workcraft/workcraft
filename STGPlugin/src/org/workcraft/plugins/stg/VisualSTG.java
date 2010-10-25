@@ -220,6 +220,7 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction) {
 		SignalTransition transition = stg.createSignalTransition(signalName);
+
 		transition.setSignalType(type);
 		transition.setDirection(direction);
 		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);

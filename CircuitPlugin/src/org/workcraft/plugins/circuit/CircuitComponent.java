@@ -44,6 +44,15 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
+	private boolean isEnvironment;
+
+	public boolean getIsEnvironment() {
+		return isEnvironment;
+	}
+
+	public void setIsEnvironment(boolean isEnvironment) {
+		this.isEnvironment = isEnvironment;
+	}
 
 	public Node getParent() {
 		return groupImpl.getParent();

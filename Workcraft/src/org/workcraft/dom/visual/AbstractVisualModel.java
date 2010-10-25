@@ -300,14 +300,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return result;
 	}
 
+
 	/**
 	 * Groups the selection, and selects the newly created group.
 	 * @author Arseniy Alekseyev
 	 */
 	public void groupSelection() {
 		Collection<Node> selected = getGroupableSelection();
+		VisualGroup vg = groupCollection(selected);
+		if (vg!=null) select(vg);
+	}
+
+	public VisualGroup groupCollection(Collection<Node> selected) {
+
 		if(selected.size() <= 1)
-			return;
+			return null;
 
 		VisualGroup group = new VisualGroup();
 
@@ -327,7 +334,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		currentLevel.reparent(connectionsToGroup, group);
 
-		select(group);
+		return group;
+
 	}
 
 	/**
