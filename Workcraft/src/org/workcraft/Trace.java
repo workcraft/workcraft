@@ -25,6 +25,14 @@ public class Trace extends ArrayList<String>{
 		return result.toString();
 	}
 
+	public void fromString(String str) {
+		clear();
+		for (String st : str.split("\n")) {
+			for (String st2 : st.trim().split(","))
+				add(st2.trim());
+		}
+	}
+
 	public static void save (OutputStream os, Trace trace) throws IOException {
 		os.write(trace.toString().getBytes());
 	}

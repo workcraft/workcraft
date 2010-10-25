@@ -25,11 +25,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,13 +75,14 @@ import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
 
-public class SimulationTool extends AbstractTool {
+public class SimulationTool extends AbstractTool implements ClipboardOwner {
 	private VisualModel visualNet;
 
 	protected PetriNetModel net;
 	protected JPanel interfacePanel;
 
 	private JButton resetButton, autoPlayButton, stopButton, backButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
+	private JButton saveToClipboardButton, loadFromClipboardButton;
 	private JSlider speedSlider;
 
 	protected JTable traceTable;
@@ -212,10 +221,16 @@ public class SimulationTool extends AbstractTool {
 	}
 
 	private void reset() {
-		applyMarking(initialMarking);
-		traceStep = 0;
-		branchStep=0;
-		branchTrace=null;
+		if (traceStep==0&&branchTrace==null) {
+			trace = null;
+			traceStep = 0;
+		} else {
+			applyMarking(initialMarking);
+
+			traceStep = 0;
+			branchStep=0;
+			branchTrace=null;
+		}
 
 		if(timer!=null)
 		{
@@ -223,6 +238,61 @@ public class SimulationTool extends AbstractTool {
 			timer = null;
 		}
 		update();
+	}
+
+	private void loadFromClipboard() {
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable contents = clip.getContents(null);
+		boolean hasTransferableText =
+		      (contents != null) &&
+		      contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		String str="";
+
+		if ( hasTransferableText ) {
+		      try {
+		        str = (String)contents.getTransferData(DataFlavor.stringFlavor);
+		      }
+		      catch (UnsupportedFlavorException ex){
+		        System.out.println(ex);
+		        ex.printStackTrace();
+		      }
+		      catch (IOException ex) {
+		        System.out.println(ex);
+		        ex.printStackTrace();
+		      }
+		    }
+
+		// see if there are two lines, first goes to the main trace and second to the branch
+		int i=0;
+
+		trace = new Trace();
+		branchTrace = null;
+		traceStep = 0;
+		branchStep = 0;
+
+		for (String s: str.split("\n")) {
+			if (i==0) {
+				trace.fromString(s);
+			} else if (i==1) {
+				traceStep = Integer.valueOf(s);
+			} else if (i==2) {
+				branchTrace = new Trace();
+				branchTrace.fromString(s);
+			} else if (i==3) {
+				branchStep = Integer.valueOf(s);
+			}
+			i++;
+			if (i>3) break;
+		}
+		update();
+	}
+
+	private void saveToClipboard() {
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		String st = ((trace!=null)?trace.toString():"")+"\n"+traceStep+"\n";
+		String st2 = (branchTrace!=null)?branchTrace.toString()+"\n"+branchStep:"";
+		StringSelection stringSelection = new StringSelection(st+st2);
+		clip.setContents(stringSelection, this);
 	}
 
 	private int getAnimationDelay()
@@ -373,6 +443,9 @@ public class SimulationTool extends AbstractTool {
 
 
 		resetButton = new JButton ("Reset");
+		loadFromClipboardButton = new JButton("from Clipb");
+		saveToClipboardButton = new JButton("to Clipb");
+
 		speedSlider = new JSlider(-1000, 1000, 0);
 		autoPlayButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/start.svg"), "Automatic simulation");
 		stopButton = new JButton ("Stop");
@@ -401,6 +474,21 @@ public class SimulationTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				reset();
+			}
+		});
+
+		saveToClipboardButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveToClipboard();
+			}
+
+		});
+
+		loadFromClipboardButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadFromClipboard();
 			}
 		});
 
@@ -487,6 +575,8 @@ public class SimulationTool extends AbstractTool {
 		interfacePanel.add(loadTraceButton);
 		interfacePanel.add(saveMarkingButton);
 		interfacePanel.add(loadMarkingButton);
+		interfacePanel.add(saveToClipboardButton);
+		interfacePanel.add(loadFromClipboardButton);
 		interfacePanel.add(traceTable);
 	}
 
@@ -671,4 +761,11 @@ public class SimulationTool extends AbstractTool {
 
 		};
 	}
+
+	@Override
+	public void lostOwnership(Clipboard clip, Transferable arg) {
+	}
+
+
+
 }
