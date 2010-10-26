@@ -31,6 +31,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import org.apache.batik.ext.awt.geom.Polygon2D;
@@ -47,6 +48,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.stg.SignalTransition;
 
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
@@ -65,6 +67,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private Shape shape=null;
 	double strokeWidth = 0.05;
+
+	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
 
 
 	public void resetNameGlyph() {
@@ -143,6 +147,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color fillColor = r.getDecoration().getBackground();
+
+		if (fillColor==null) fillColor=getFillColor();
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
 			AffineTransform at = new AffineTransform();
@@ -163,7 +170,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		}
 
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(fillColor);
 		g.fill(getShape());
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 
@@ -328,6 +335,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (direction==Direction.SOUTH) return Direction.NORTH;
 		if (direction==Direction.NORTH) return Direction.SOUTH;
 		return null;
+	}
+
+	public HashSet<SignalTransition> getReferencedTransitions() {
+		return referencedTransitions;
 	}
 
 }

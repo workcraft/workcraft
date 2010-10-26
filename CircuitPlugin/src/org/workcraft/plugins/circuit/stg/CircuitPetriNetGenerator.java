@@ -6,23 +6,30 @@ import static org.workcraft.util.Geometry.subtract;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
+import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
@@ -52,7 +59,7 @@ public class CircuitPetriNetGenerator {
 		public final VisualPlace p1;
 	}
 
-	private static final double xScaling = 8;
+	private static final double xScaling = 4;
 	private static final double yScaling = 4;
 
 	static void setPosition(Movable node, Point2D point) {
@@ -97,7 +104,31 @@ public class CircuitPetriNetGenerator {
 		return contactSTG;
 	}
 
-	public static VisualSTG generate(VisualCircuit circuit) {
+
+	public static void attachConnections(VisualCircuit circuit, VisualComponent component, ContactSTG cstg) {
+		// TODO: do it recursively for all wires, contacts and joints
+		for (Connection c: circuit.getConnections(component)) {
+			if (c.getFirst()==component&&c instanceof VisualCircuitConnection) {
+
+				((VisualCircuitConnection)c).setReferencedOnePlace(cstg.p1.getReferencedPlace());
+				((VisualCircuitConnection)c).setReferencedZeroPlace(cstg.p0.getReferencedPlace());
+
+				if (c.getSecond() instanceof VisualJoint) {
+					VisualJoint vj = (VisualJoint)c.getSecond();
+					vj.setReferencedOnePlace(cstg.p1.getReferencedPlace());
+					vj.setReferencedZeroPlace(cstg.p0.getReferencedPlace());
+
+					attachConnections(circuit, (VisualJoint)c.getSecond(), cstg);
+				}
+
+				if (c.getSecond() instanceof VisualContact) {
+					attachConnections(circuit, (VisualContact)c.getSecond(), cstg);
+				}
+			}
+		}
+	}
+
+	public static VisualSTG generate(VisualCircuit circuit, boolean attachToModel) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
 
@@ -106,10 +137,15 @@ public class CircuitPetriNetGenerator {
 
 			// generate all possible drivers and fill out the targets
 			for(VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+				ContactSTG cstg;
 
 				if(VisualContact.isDriver(contact)) {
 					// if it is a driver, add it to the list of drivers
-					drivers.put(contact, generatePlaces(circuit, stg, contact));
+					cstg = generatePlaces(circuit, stg, contact);
+					drivers.put(contact, cstg);
+
+					// attach driven wires to the place
+					attachConnections(circuit, contact, cstg);
 
 					// put itself on a target list as well, so that it cab be addressed by other drivers
 					targetDrivers.put(contact.getReferencedContact(), contact);
@@ -122,8 +158,11 @@ public class CircuitPetriNetGenerator {
 						driver = new VisualContact(new Contact(IOType.INPUT), VisualContact.flipDirection(contact.getDirection()), contact.getName());
 						driver.setTransform(contact.getTransform());
 						driver.setParent(contact.getParent());
+						cstg = generatePlaces(circuit, stg, contact);
 
-						drivers.put(driver, generatePlaces(circuit, stg, contact));
+						drivers.put(driver, cstg);
+						// attach driven wires to the place
+						attachConnections(circuit, contact, cstg);
 					}
 
 					targetDrivers.put(contact.getReferencedContact(), driver);
@@ -137,14 +176,14 @@ public class CircuitPetriNetGenerator {
 					// function based driver
 					VisualFunctionContact contact = (VisualFunctionContact)c;
 					Dnf set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-
 					Dnf reset = null;
-					BooleanOperations.worker = new DumbBooleanWorker();
 
-					if (reset!=null)
+					if (contact.getFunction().getResetFunction()!=null)
 						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-					else
+					else {
+						BooleanOperations.worker = new DumbBooleanWorker();
 						reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
+					}
 
 					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
 
@@ -227,12 +266,14 @@ public class CircuitPetriNetGenerator {
 		nodes.add(p.p1);
 		nodes.add(p.p0);
 
-		nodes.addAll(buildTransitions(stg, circuit, drivers, targetDrivers,
+		contact.getReferencedTransitions().clear();
+
+		nodes.addAll(buildTransitions(contact, stg, circuit, drivers, targetDrivers,
 				set,
 				add(add(center, direction), pOffset), plusDirection,
 				signalName, ttype, SignalTransition.Direction.PLUS, p.p0, p.p1));
 
-		nodes.addAll(buildTransitions(stg, circuit, drivers, targetDrivers,
+		nodes.addAll(buildTransitions(contact, stg, circuit, drivers, targetDrivers,
 				reset,
 				subtract(add(center, direction), pOffset),  minusDirection,
 				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
@@ -242,7 +283,7 @@ public class CircuitPetriNetGenerator {
 
 	}
 
-	private static LinkedList<VisualNode> buildTransitions(
+	private static LinkedList<VisualNode> buildTransitions(VisualContact parentContact,
 			VisualSTG stg, VisualCircuit circuit, Map<VisualContact, ContactSTG> drivers, Map<Contact, VisualContact> targetDrivers,
 			Dnf function, Point2D baseOffset, Point2D transitionOffset,
 			String signalName, SignalTransition.Type type, Direction transitionDirection,
@@ -250,10 +291,24 @@ public class CircuitPetriNetGenerator {
 
 		LinkedList<VisualNode> nodes = new LinkedList<VisualNode>();
 
-		for(DnfClause clause : function.getClauses())
+		TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
+				new Comparator<DnfClause>() {
+					@Override
+					public int compare(DnfClause arg0, DnfClause arg1) {
+						String st1 = FormulaToString.toString(arg0);
+						String st2 = FormulaToString.toString(arg1);
+						return st1.compareTo(st2);
+					}
+				});
+
+		clauses.addAll(function.getClauses());
+
+
+		for(DnfClause clause : clauses)
 		{
 			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection);
 			nodes.add(transition);
+			parentContact.getReferencedTransitions().add(transition.getReferencedTransition());
 
 			setPosition(transition, baseOffset);
 

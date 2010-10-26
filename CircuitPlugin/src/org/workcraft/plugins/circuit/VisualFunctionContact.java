@@ -69,18 +69,28 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		}
 	}
 
-	private FormulaRenderingResult renderedFormula = null;
+	private FormulaRenderingResult renderedSetFormula = null;
+	private FormulaRenderingResult renderedResetFormula = null;
+
 	public void resetRenderedFormula() {
-		renderedFormula = null;
+		renderedSetFormula = null;
+		renderedResetFormula = null;
 	}
 
-
-	FormulaRenderingResult getRenderedFormula(FontRenderContext fcon) {
-		if (renderedFormula == null) {
-			updateCombinedFunction();
-			renderedFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getCombinedFunction(), fcon, font);
+	FormulaRenderingResult getRenderedSetFormula(FontRenderContext fcon) {
+		if (renderedSetFormula == null) {
+			renderedSetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getSetFunction(), fcon, font);
 		}
-		return renderedFormula;
+		return renderedSetFormula;
+	}
+
+	FormulaRenderingResult getRenderedResetFormula(FontRenderContext fcon) {
+		if (((FunctionContact)getReferencedContact()).getResetFunction()==null) return null;
+
+		if (renderedResetFormula == null) {
+			renderedResetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getResetFunction(), fcon, font);
+		}
+		return renderedResetFormula;
 	}
 
 	private FunctionContact function=null;
@@ -130,7 +140,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	@NoAutoSerialisation
 	public void setResetFunction(String resetFunction) {
-		renderedFormula = null;
+		renderedResetFormula = null;
 		if (!resetFunction.equals("")) {
 			getFunction().setResetFunction(parseFormula(resetFunction));
 		} else {
@@ -142,7 +152,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	@NoAutoSerialisation
 	public void setSetFunction(String setFunction) {
-		renderedFormula = null;
+		renderedSetFormula = null;
 		if (!setFunction.equals("")) {
 			getFunction().setSetFunction(parseFormula(setFunction));
 		} else {
@@ -175,6 +185,43 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		addPropertyDeclaration(new PropertyDeclaration(this, "Reset function", "getResetFunction", "setResetFunction", String.class));
 	}
 
+
+	private void drawFormula(Graphics2D g, float yOffset, Color color, FormulaRenderingResult result) {
+
+		Rectangle2D textBB = result.boundingBox;
+
+		float textX = 0;
+		float textY = (float)-textBB.getCenterY()-(float)0.5-yOffset;
+
+		AffineTransform transform = g.getTransform();
+		AffineTransform at = new AffineTransform();
+
+		switch (getDirection()) {
+		case EAST:
+			textX = (float)+0.5;
+			break;
+		case NORTH:
+			at.quadrantRotate(-1);
+			g.transform(at);
+			textX = (float)+0.5;
+			break;
+		case WEST:
+			textX = (float)-textBB.getWidth()-(float)0.5;
+			break;
+		case SOUTH:
+			at.quadrantRotate(-1);
+			g.transform(at);
+			textX = (float)-textBB.getWidth()-(float)0.5;
+			break;
+		}
+
+		g.translate(textX, textY);
+		result.draw(g, color);
+
+		g.setTransform(transform);
+
+	}
+
 	@Override
 	public void draw(DrawRequest r) {
 		super.draw(r);
@@ -184,40 +231,12 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 		if (getIOType()==IOType.OUTPUT) {
 
-			FormulaRenderingResult result = getRenderedFormula(g.getFontRenderContext());
+			FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
+			FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
 
-			Rectangle2D textBB = result.boundingBox;
-
-			float textX = 0;
-			float textY = (float)-textBB.getCenterY()-(float)0.5;
-
-			AffineTransform transform = g.getTransform();
-			AffineTransform at = new AffineTransform();
-
-			switch (getDirection()) {
-			case EAST:
-				textX = (float)+0.5;
-				break;
-			case NORTH:
-				at.quadrantRotate(-1);
-				g.transform(at);
-				textX = (float)+0.5;
-				break;
-			case WEST:
-				textX = (float)-textBB.getWidth()-(float)0.5;
-				break;
-			case SOUTH:
-				at.quadrantRotate(-1);
-				g.transform(at);
-				textX = (float)-textBB.getWidth()-(float)0.5;
-				break;
-			}
-
-			g.translate(textX, textY);
-
-			result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
-
-			g.setTransform(transform);
+			drawFormula(g, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), setResult);
+			if (resetResult!=null)
+				drawFormula(g, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), resetResult);
 
 		}
 

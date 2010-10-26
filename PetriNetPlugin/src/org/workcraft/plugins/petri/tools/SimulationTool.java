@@ -76,7 +76,7 @@ import org.workcraft.util.GUI;
 
 
 public class SimulationTool extends AbstractTool implements ClipboardOwner {
-	private VisualModel visualNet;
+	protected VisualModel visualNet;
 
 	protected PetriNetModel net;
 	protected JPanel interfacePanel;
@@ -90,7 +90,7 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
 
-	Map<Place, Integer> initialMarking;
+	protected Map<Place, Integer> initialMarking;
 	Map<Place, Integer> savedMarking = null;
 	int savedStep = 0;
 	private Trace savedBranchTrace;
@@ -110,7 +110,7 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private void applyMarking(Map<Place, Integer> marking)
 	{
-		for(Place p: marking.keySet()) {
+		for (Place p: marking.keySet()) {
 			if (net.getPlaces().contains(p)) {
 				p.setTokens(marking.get(p));
 			} else {
@@ -119,15 +119,14 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 	}
 
-	private void update()
+	protected void update()
 	{
-		if(timer != null && (trace == null || traceStep == trace.size()))
-		{
+		if (timer != null && (trace == null || traceStep == trace.size())) {
 			timer.stop();
 			timer = null;
 		}
 
-		if(timer != null)
+		if (timer != null)
 			timer.setDelay(getAnimationDelay());
 
 		resetButton.setEnabled(trace != null || branchTrace != null);
@@ -262,7 +261,6 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 		      }
 		    }
 
-		// see if there are two lines, first goes to the main trace and second to the branch
 		int i=0;
 
 		trace = new Trace();
@@ -326,8 +324,6 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 
 				return Math.max(tnum, bnum+traceStep);
 			}
-
-
 
 			@Override
 			public Object getValueAt(int row, int col) {
@@ -593,13 +589,14 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 		net = (PetriNetModel)visualNet.getMathModel();
 
 		initialMarking = readMarking();
+		traceStep = 0;
 		branchTrace = null;
 		branchStep = 0;
 
 		update();
 	}
 
-	private Map<Place, Integer> readMarking() {
+	protected Map<Place, Integer> readMarking() {
 		HashMap<Place, Integer> result = new HashMap<Place, Integer>();
 		for (Place p : net.getPlaces()) {
 			result.put(p, p.getTokens());
@@ -613,52 +610,49 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 		if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) step();
 	}
 
+	public void executeTransition(Transition t) {
+		// if clicked on the trace event, do the step forward
+		if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
+			String transitionId = trace.get(traceStep);
+			Node transition = net.getNodeByReference(transitionId);
+			if (transition!=null&&transition==t) {
+				step();
+				return;
+			}
+		}
+		// otherwise form/use the branch trace
+		if (branchTrace!=null&&branchStep<branchTrace.size()) {
+			String transitionId = branchTrace.get(branchStep);
+			Node transition = net.getNodeByReference(transitionId);
+			if (transition!=null&&transition==t) {
+				step();
+				return;
+			}
+		}
+
+		if (branchTrace==null) branchTrace = new Trace();
+
+		while (branchStep<branchTrace.size())
+			branchTrace.remove(branchStep);
+
+		branchTrace.add(net.getNodeReference(t));
+		step();
+		update();
+		return;
+	}
+
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>()
-				{
-					@Override
-					public Boolean eval(Node node) {
-						return
-							   node instanceof VisualTransition
-							&& net.isEnabled(((VisualTransition)node).getReferencedTransition());
-					}
-				});
-
-		if (node instanceof VisualTransition) {
-			VisualTransition vt = (VisualTransition)node;
-
-			// if clicked on the trace event, do the step forward
-			if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
-				String transitionId = trace.get(traceStep);
-				Node transition = net.getNodeByReference(transitionId);
-				if (transition!=null&&transition==vt.getReferencedTransition()) {
-					step();
-					return;
+		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
+				@Override
+				public Boolean eval(Node node) {
+					return node instanceof VisualTransition
+						&& net.isEnabled(((VisualTransition)node).getReferencedTransition());
 				}
-			}
+			});
 
-			// otherwise form/use the branch trace
-			if (branchTrace!=null&&branchStep<branchTrace.size()) {
-				String transitionId = branchTrace.get(branchStep);
-				Node transition = net.getNodeByReference(transitionId);
-				if (transition!=null&&transition==vt.getReferencedTransition()) {
-					step();
-					return;
-				}
-
-			}
-
-			if (branchTrace==null) branchTrace = new Trace();
-
-			while (branchStep<branchTrace.size())
-				branchTrace.remove(branchStep);
-
-			branchTrace.add(net.getNodeReference(vt.getReferencedTransition()));
-			step();
-			update();
-			return;
-		}
+		if (node instanceof VisualTransition)
+			executeTransition(((VisualTransition)node).getReferencedTransition());
 	}
 
 	@Override
@@ -689,7 +683,6 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 		this.traceStep = 0;
 		this.branchTrace = null;
 		this.branchStep = 0;
-
 	}
 
 	@Override
@@ -701,45 +694,32 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 				if(node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
 
+
+					String transitionId = null;
+					Node transition2 = null;
+
 					if (branchTrace!=null&&branchStep<branchTrace.size()) {
-						String transitionId = branchTrace.get(branchStep);
-						Node transition2 = net.getNodeByReference(transitionId);
-
-						if (transition==transition2) {
-							return new Decoration(){
-
-								@Override
-								public Color getColorisation() {
-									return PetriNetSettings.getEnabledBackgroundColor();
-								}
-
-								@Override
-								public Color getBackground() {
-									return PetriNetSettings.getEnabledForegroundColor();
-								}
-							};
-
-						}
+						transitionId = branchTrace.get(branchStep);
+						transition2 = net.getNodeByReference(transitionId);
+					} else if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
+						transitionId = trace.get(traceStep);
+						transition2 = net.getNodeByReference(transitionId);
 					}
 
-					if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
-						String transitionId = trace.get(traceStep);
-						Node transition2 = net.getNodeByReference(transitionId);
+					if (transition==transition2) {
+						return new Decoration(){
 
-						if (transition==transition2) {
-							return new Decoration(){
+							@Override
+							public Color getColorisation() {
+								return PetriNetSettings.getEnabledBackgroundColor();
+							}
 
-								@Override
-								public Color getColorisation() {
-									return PetriNetSettings.getEnabledBackgroundColor();
-								}
+							@Override
+							public Color getBackground() {
+								return PetriNetSettings.getEnabledForegroundColor();
+							}
+						};
 
-								@Override
-								public Color getBackground() {
-									return PetriNetSettings.getEnabledForegroundColor();
-								}
-							};
-						}
 					}
 
 					if (net.isEnabled(transition))

@@ -4,6 +4,7 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.stg.STGModelDescriptor;
+import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -35,9 +36,9 @@ public class GenerateCircuitPetriNetTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
+		VisualSTG vstg = CircuitPetriNetGenerator.generate(circuit, false);
 		ws.add(we.getWorkspacePath().getParent(), we.getWorkspacePath().getNode(),
-				new ModelEntry(new STGModelDescriptor(), CircuitPetriNetGenerator.generate(circuit)),
-				false);
+				new ModelEntry(new STGModelDescriptor(), vstg),	false);
 	}
 
 }

@@ -30,7 +30,6 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -47,7 +46,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first instanceof VisualConnection || second instanceof VisualConnection) {
+		if (first instanceof VisualCircuitConnection || second instanceof VisualCircuitConnection) {
 			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
 		}
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
@@ -110,7 +109,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualComponent c1 = (VisualComponent) first;
 			VisualComponent c2 = (VisualComponent) second;
 			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			VisualConnection ret = new VisualConnection(con, c1, c2);
+			VisualCircuitConnection ret = new VisualCircuitConnection(con, c1, c2);
 			Hierarchy.getNearestContainer(c1, c2).add(ret);
 		}
 
