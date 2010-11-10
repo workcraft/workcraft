@@ -54,6 +54,10 @@ public class VisualSTG extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+		if (first==second) {
+			throw new InvalidConnectionException ("Connections are only valid between different objects");
+		}
+
 		if (first instanceof VisualPlace) {
 			if (second instanceof VisualPlace)
 				throw new InvalidConnectionException ("Arcs between places are not allowed");

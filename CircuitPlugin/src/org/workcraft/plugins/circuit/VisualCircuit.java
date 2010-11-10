@@ -46,6 +46,10 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+		if (first==second) {
+			throw new InvalidConnectionException ("Connections are only valid between different objects");
+		}
+
 		if (first instanceof VisualCircuitConnection || second instanceof VisualCircuitConnection) {
 			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
 		}

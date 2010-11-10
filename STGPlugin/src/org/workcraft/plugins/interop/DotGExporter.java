@@ -37,6 +37,7 @@ public class DotGExporter implements Exporter {
 
 	public void export(Model model, OutputStream out)
 			throws IOException, ModelValidationException, SerialisationException {
+
 		serialiser.serialise(model, out, null);
 	}
 

@@ -27,6 +27,11 @@ public class VisualCircuitConnection extends VisualConnection {
 		this.referencedZeroPlace = referencedPlace;
 	}
 
+	@Override
+	public double getLineWidth() {
+		return CircuitSettings.getCircuitWireWidth();
+	}
+
 	public Place getReferencedZeroPlace() {
 		return referencedZeroPlace;
 	}
@@ -39,7 +44,7 @@ public class VisualCircuitConnection extends VisualConnection {
 		return referencedOnePlace;
 	}
 
-	@Override
+/*	@Override
 	public Color getDrawColor()
 	{
 		if (referencedOnePlace==null||
@@ -50,7 +55,7 @@ public class VisualCircuitConnection extends VisualConnection {
 		if (referencedOnePlace.getTokens()==0&&
 				referencedZeroPlace.getTokens()==1) return Color.BLUE;
 
-		return super.getDrawColor();/**/
-	}
+		return super.getDrawColor();
+	}*/
 
 }

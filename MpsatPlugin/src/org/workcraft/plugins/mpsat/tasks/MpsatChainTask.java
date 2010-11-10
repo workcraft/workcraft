@@ -5,17 +5,20 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.PunfUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.ReadArcsComplexityReduction;
+import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainTask implements Task<MpsatChainResult> {
@@ -50,7 +53,15 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
 
 			File netFile = File.createTempFile("net", exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
+
+			ExportTask exportTask;
+
+			if (PunfUtilitySettings.getDoRAComplexityReduction()&&model instanceof STG) {
+				exportTask = new ExportTask(exporter,
+						ReadArcsComplexityReduction.reduce((STG)model), netFile.getCanonicalPath());
+			} else {
+				exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
+			}
 
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 

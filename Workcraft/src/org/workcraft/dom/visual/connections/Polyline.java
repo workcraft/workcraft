@@ -21,6 +21,7 @@
 
 package org.workcraft.dom.visual.connections;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -87,13 +88,15 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-		g.setColor(Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation()));
+		Color connColor = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+		g.setColor(connColor);
+
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 
 		if (connectionInfo.hasArrow())
-			DrawHelper.drawArrowHead(g, connectionInfo.getDrawColor(), curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
+			DrawHelper.drawArrowHead(g, connColor, curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
 				connectionInfo.getArrowLength(), connectionInfo.getArrowWidth());
 	}
 

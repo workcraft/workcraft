@@ -23,6 +23,7 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
@@ -68,6 +69,12 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
 
+	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1)
+		.deriveFont(0.5f);
+	private GlyphVector nameGlyphs = null;
+	private String glyphsForName = null;
+	private Point2D namePosition = null;
+
 	double marginSize = 0.2;
 	double contactLength = 1;
 	double contactStep = 1;
@@ -76,6 +83,49 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	private Rectangle2D contactLabelBB = null;
 	protected Rectangle2D totalBB = null;
+
+
+	public GlyphVector getNameGlyphs(Graphics2D g) {
+		updateNameGlyph(g);
+		return nameGlyphs;
+	}
+
+	public Rectangle2D getNameBB(Graphics2D g) {
+		return getNameGlyphs(g).getVisualBounds();
+	}
+
+	protected void drawLabelInLocalSpace(DrawRequest r) {
+		updateNameGlyph(r.getGraphics());
+
+		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
+		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
+		// (float)labelPosition.getY());
+		r.getGraphics().setFont(nameFont);
+		r.getGraphics().drawString(getName(), (float) namePosition.getX(),
+				(float) namePosition.getY());
+	}
+
+	private void updateNameGlyph(Graphics2D g) {
+		if (nameGlyphs == null || !getName().equals(glyphsForName)) {
+			final GlyphVector glyphs = nameFont.createGlyphVector(
+					g.getFontRenderContext(), getName());
+			glyphsForName = getName();
+
+			nameGlyphs = glyphs;
+		}
+	}
+
+	protected void drawNameInLocalSpace(DrawRequest r) {
+		updateNameGlyph(r.getGraphics());
+
+		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
+		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
+		// (float)labelPosition.getY());
+		r.getGraphics().setFont(nameFont);
+		if (contactLabelBB!=null)
+			r.getGraphics().drawString(getName(), (float)(contactLabelBB.getMaxX()-0.2),
+				(float)(contactLabelBB.getMaxY()+0.5));
+	}
 
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component);
@@ -198,7 +248,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public Rectangle2D getContactLabelBB(Graphics2D g) {
 
-
 		if (contactLabelBB==null) {
 
 			int north=0;
@@ -260,7 +309,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	protected void drawContactConnections(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
 
 		Rectangle2D BB = getContactLabelBB(g);
 
@@ -271,7 +320,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (vc.getDirection().equals(Direction.EAST)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), BB.getMaxX(), vc.getY());
 					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
-					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
 				if (vc.getDirection().equals(Direction.WEST)) {
@@ -283,21 +331,18 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (vc.getDirection().equals(Direction.NORTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), BB.getMinY());
 					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
-					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.SOUTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), BB.getMaxY());
 					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
-					g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 					g.draw(line);
 				}
 			}
 		}
 
 	}
-
 
 	protected void drawContacts(DrawRequest r) {
 
@@ -374,6 +419,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void draw(DrawRequest r) {
 
+		drawNameInLocalSpace(r);
+
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 
@@ -387,13 +434,14 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 
 		if (!getIsEnvironment()) {
-			g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+//			g.setStroke(connectionInfo.getStroke());
+			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
 		} else {
 			float dash[] = {0.25f, 0.25f};
 
 			g.setStroke(
 					new BasicStroke(
-						(float)CommonVisualSettings.getStrokeWidth(),
+						(float)CircuitSettings.getComponentBorderWidth(),
 						BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,
 						dash, 0.0f)
 						);
@@ -401,6 +449,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		g.draw(shape);
 
 		drawContacts(r);
+
 	}
 
 	@Override

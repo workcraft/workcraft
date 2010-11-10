@@ -104,9 +104,8 @@ public class CircuitPetriNetGenerator {
 		return contactSTG;
 	}
 
-
 	public static void attachConnections(VisualCircuit circuit, VisualComponent component, ContactSTG cstg) {
-		// TODO: do it recursively for all wires, contacts and joints
+
 		for (Connection c: circuit.getConnections(component)) {
 			if (c.getFirst()==component&&c instanceof VisualCircuitConnection) {
 

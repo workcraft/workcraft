@@ -41,7 +41,6 @@ import org.workcraft.util.Hierarchy;
 
 public class CircuitComponent extends MathNode implements Container, ObservableHierarchy {
 
-
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
 	private boolean isEnvironment;

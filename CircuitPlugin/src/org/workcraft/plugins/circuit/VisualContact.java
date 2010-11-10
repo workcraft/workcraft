@@ -29,6 +29,7 @@ import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
@@ -61,15 +62,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
+	private double size = 0.5;
+
 	private GlyphVector nameGlyph = null;
 
 	private Direction direction = Direction.WEST;
 
 	private Shape shape=null;
-	double strokeWidth = 0.05;
 
 	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
-
 
 	public void resetNameGlyph() {
 		nameGlyph = null;
@@ -99,14 +100,19 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 
 		double size = getSize();
-		if (getParent() instanceof VisualCircuitComponent) {
 
-			shape = new Rectangle2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth
-				);
+		if (getParent() instanceof VisualCircuitComponent) {
+			if (CircuitSettings.getShowContacts()) {
+				shape = new Rectangle2D.Double(
+						-size / 2 + CircuitSettings.getCircuitWireWidth(),
+						-size / 2 + CircuitSettings.getCircuitWireWidth(),
+						size - CircuitSettings.getCircuitWireWidth()*2,
+						size - CircuitSettings.getCircuitWireWidth()*2
+						);
+			} else {
+				shape = new Line2D.Double(0,0,0,0);
+			}
+
 
 		} else {
 			float xx[] = {	(float) -(size / 2),
@@ -148,10 +154,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color fillColor = r.getDecoration().getBackground();
-
 		if (fillColor==null) fillColor=getFillColor();
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
+
 			AffineTransform at = new AffineTransform();
 
 			switch (getDirection()) {
@@ -174,7 +180,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		g.fill(getShape());
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 
-		g.setStroke(new BasicStroke((float)strokeWidth));
+		g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
 		g.draw(getShape());
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
@@ -205,6 +211,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			g.drawGlyphVector(gv, xx, -0.5f);
 
 		}
+
 	}
 
 	@Override
@@ -214,7 +221,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	private double getSize() {
-		return 0.5;
+		return size;
 	}
 
 	@Override

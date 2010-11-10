@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.interop.DotGExporter;
@@ -29,6 +30,7 @@ public class STGModule implements Module {
 		p.registerClass(Importer.class, DotGImporter.class);
 
 		p.registerClass(ModelSerialiser.class, DotGSerialiser.class);
+		p.registerClass(SettingsPage.class, STGSettings.class);
 
 	}
 

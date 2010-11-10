@@ -154,7 +154,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return Color.RED;
+								return CircuitSettings.getActiveWireColor();
 							}
 							@Override
 							public Color getBackground() {
@@ -165,16 +165,48 @@ public class CircuitSimulationTool extends STGSimulationTool {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return Color.BLUE;
+								return CircuitSettings.getInactiveWireColor();
 							}
 							@Override
 							public Color getBackground() {
 								return null;
 							}
 						};
+				} else if (node instanceof VisualCircuitConnection) {
+					VisualCircuitConnection vc = (VisualCircuitConnection)node;
+
+					if (vc.getReferencedOnePlace()==null||vc.getReferencedZeroPlace()==null) return null;
+
+					boolean isOne = vc.getReferencedOnePlace().getTokens()==1;
+					boolean isZero = vc.getReferencedZeroPlace().getTokens()==1;
+
+					if (isOne&&!isZero)
+						return new Decoration(){
+							@Override
+							public Color getColorisation() {
+								return CircuitSettings.getActiveWireColor();
+							}
+							@Override
+							public Color getBackground() {
+								return null;
+							}
+						};
+					if (!isOne&&isZero)
+						return new Decoration(){
+							@Override
+							public Color getColorisation() {
+								return CircuitSettings.getInactiveWireColor();
+							}
+							@Override
+							public Color getBackground() {
+								return null;
+							}
+						};
+
 				}
 				return null;
 			}
+
 
 		};
 	}

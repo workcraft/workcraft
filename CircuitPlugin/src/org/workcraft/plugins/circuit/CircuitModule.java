@@ -6,6 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.stg.GenerateCircuitPetriNetTool;
@@ -33,5 +34,6 @@ public class CircuitModule implements Module {
 		pm.registerClass(ModelDescriptor.class, CircuitModelDescriptor.class);
 		pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, FunctionDeserialiser.class);
+		pm.registerClass(SettingsPage.class, CircuitSettings.class);
 	}
 }
