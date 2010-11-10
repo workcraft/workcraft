@@ -68,8 +68,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private Direction direction = Direction.WEST;
 
-	private Shape shape=null;
-
 	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
 
 	public void resetNameGlyph() {
@@ -95,22 +93,18 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private Shape getShape() {
 
-		if (shape!=null) {
-			return shape;
-		}
-
 		double size = getSize();
 
 		if (getParent() instanceof VisualCircuitComponent) {
 			if (CircuitSettings.getShowContacts()) {
-				shape = new Rectangle2D.Double(
+				return new Rectangle2D.Double(
 						-size / 2 + CircuitSettings.getCircuitWireWidth(),
 						-size / 2 + CircuitSettings.getCircuitWireWidth(),
 						size - CircuitSettings.getCircuitWireWidth()*2,
 						size - CircuitSettings.getCircuitWireWidth()*2
 						);
 			} else {
-				shape = new Line2D.Double(0,0,0,0);
+				return new Line2D.Double(0,0,0,0);
 			}
 
 
@@ -125,11 +119,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 							(float) (size / 2),
 							(float) (size / 2)};
 
-			Polygon2D poly = new Polygon2D(xx, yy, 5);
-			shape = poly;
+			return new Polygon2D(xx, yy, 5);
 		}
-
-		return shape;
 	}
 
 	private void addPropertyDeclarations() {
