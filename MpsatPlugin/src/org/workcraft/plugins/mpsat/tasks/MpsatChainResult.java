@@ -9,6 +9,7 @@ public class MpsatChainResult {
 	private Result<? extends ExternalProcessResult> mpsatResult;
 	private Result<? extends Object> exportResult;
 	private MpsatSettings mpsatSettings;
+	private String message;
 
 	public MpsatChainResult(Result<? extends Object> exportResult,
 				Result<? extends ExternalProcessResult> punfResult,
@@ -18,6 +19,19 @@ public class MpsatChainResult {
 		this.mpsatResult = mpsatResult;
 		this.exportResult = exportResult;
 		this.mpsatSettings = mpsatSettings;
+	}
+
+	public MpsatChainResult(Result<? extends Object> exportResult,
+			Result<? extends ExternalProcessResult> punfResult,
+		Result<? extends ExternalProcessResult> mpsatResult,
+		MpsatSettings mpsatSettings, String message) {
+
+		this.punfResult = punfResult;
+		this.mpsatResult = mpsatResult;
+		this.exportResult = exportResult;
+		this.mpsatSettings = mpsatSettings;
+
+		this.message = message;
 	}
 
 	public MpsatSettings getMpsatSettings() {
@@ -30,6 +44,10 @@ public class MpsatChainResult {
 
 	public Result<? extends ExternalProcessResult> getMpsatResult() {
 		return mpsatResult;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 
 	public Result<? extends Object> getExportResult() {

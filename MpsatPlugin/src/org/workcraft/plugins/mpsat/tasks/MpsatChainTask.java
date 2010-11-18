@@ -5,10 +5,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.PunfUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.ReadArcsComplexityReduction;
-import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -56,12 +53,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			ExportTask exportTask;
 
-			if (PunfUtilitySettings.getDoRAComplexityReduction()&&model instanceof STG) {
-				exportTask = new ExportTask(exporter,
-						ReadArcsComplexityReduction.reduce((STG)model), netFile.getCanonicalPath());
-			} else {
-				exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
-			}
+			exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
 
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 

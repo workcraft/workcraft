@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
 
@@ -8,6 +8,11 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitConnection;
+import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitPetriNetGenerator;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetSettings;
@@ -32,7 +37,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 		this.editor = editor;
 		this.circuit = (VisualCircuit)editor.getModel();
 
-		visualNet = CircuitPetriNetGenerator.generate(circuit, true);
+		visualNet = CircuitPetriNetGenerator.generate(circuit);
 		net = (PetriNetModel)visualNet.getMathModel();
 
 		initialMarking = readMarking();

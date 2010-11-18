@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +13,8 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 
 public class CircuitSelectionTool extends SelectionTool implements ActionListener {
 

@@ -51,9 +51,6 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.SignalTransition;
 
-@DisplayName("Input/output port")
-@Hotkey(KeyEvent.VK_P)
-@SVGIcon("images/icons/svg/circuit-port.svg")
 
 public class VisualContact extends VisualComponent implements StateObserver {
 	public enum Direction {	NORTH, SOUTH, EAST, WEST};
@@ -286,6 +283,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public void setIOType(Contact.IOType type) {
 		getReferencedContact().setIOType(type);
 		sendNotification(new PropertyChangedEvent(this, "IOtype"));
+		nameGlyph = null;
 	}
 
 	public Contact.IOType getIOType() {
@@ -310,10 +308,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		getReferencedContact().setName(name);
 
 		sendNotification(new PropertyChangedEvent(this, "name"));
-	}
-
-	@Override
-	public void notify(StateEvent e) {
 		nameGlyph = null;
 	}
 
@@ -337,6 +331,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public HashSet<SignalTransition> getReferencedTransitions() {
 		return referencedTransitions;
+	}
+
+	@Override
+	public void notify(StateEvent e) {
+
+
 	}
 
 }

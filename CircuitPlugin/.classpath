@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNets"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
 	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
+	<classpathentry kind="src" path="/MpsatSupport"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

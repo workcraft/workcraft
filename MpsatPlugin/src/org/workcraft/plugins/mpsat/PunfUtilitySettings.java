@@ -45,7 +45,7 @@ public class PunfUtilitySettings implements SettingsPage {
 		properties = new LinkedList<PropertyDescriptor>();
 		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
 		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
-		properties.add(new PropertyDeclaration(this, "Do read-arc complexity reduction", "getDoRAComplexityReduction", "setDoRAComplexityReduction", boolean.class));
+//		properties.add(new PropertyDeclaration(this, "Do read-arc complexity reduction", "getDoRAComplexityReduction", "setDoRAComplexityReduction", boolean.class));
 	}
 
 	public static boolean getDoRAComplexityReduction() {

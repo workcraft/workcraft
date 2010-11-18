@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.tools;
 
 import java.awt.event.MouseEvent;
 
@@ -7,18 +7,21 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
 	static boolean shiftPressed;
 
 	public ContactGeneratorTool() {
-		super(new DefaultNodeGenerator(Contact.class)
+		super(new DefaultNodeGenerator(FunctionContact.class)
 		{
 			@Override
 			protected MathNode createMathNode()
 					throws NodeCreationException {
 				MathNode node = super.createMathNode();
-				((Contact)node).setIOType(shiftPressed ? Contact.IOType.INPUT : Contact.IOType.OUTPUT);
+				((FunctionContact)node).setIOType(shiftPressed ? FunctionContact.IOType.INPUT : FunctionContact.IOType.OUTPUT);
+
 				return node;
 			}
 		});

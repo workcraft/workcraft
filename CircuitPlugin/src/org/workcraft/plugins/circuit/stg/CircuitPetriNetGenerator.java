@@ -6,7 +6,6 @@ import static org.workcraft.util.Geometry.subtract;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -127,7 +126,7 @@ public class CircuitPetriNetGenerator {
 		}
 	}
 
-	public static VisualSTG generate(VisualCircuit circuit, boolean attachToModel) {
+	public static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
 
@@ -154,9 +153,10 @@ public class CircuitPetriNetGenerator {
 
 					if (driver==null) {
 						// if target driver was not found, create artificial one that looks like input
-						driver = new VisualContact(new Contact(IOType.INPUT), VisualContact.flipDirection(contact.getDirection()), contact.getName());
-						driver.setTransform(contact.getTransform());
-						driver.setParent(contact.getParent());
+						//driver = new VisualContact(new Contact(IOType.INPUT), VisualContact.flipDirection(contact.getDirection()), contact.getName());
+						//driver.setTransform(contact.getTransform());
+						//driver.setParent(contact.getParent());
+						driver = contact;
 						cstg = generatePlaces(circuit, stg, contact);
 
 						drivers.put(driver, cstg);
@@ -186,9 +186,16 @@ public class CircuitPetriNetGenerator {
 
 					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
 
-					if (contact.getParent()!=null&&
-						contact.getParent() instanceof VisualCircuitComponent&&
-						((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) ttype = SignalTransition.Type.INPUT;
+
+					if (contact.getParent() instanceof VisualCircuitComponent) {
+						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment())
+								ttype = SignalTransition.Type.INPUT;
+						else if (contact.getIOType()==IOType.INPUT)
+							ttype = SignalTransition.Type.INPUT;
+					} else {
+						if (contact.getIOType()==IOType.INPUT)
+							ttype = SignalTransition.Type.INPUT;
+					}
 
 					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, ttype);
 
@@ -222,7 +229,13 @@ public class CircuitPetriNetGenerator {
 
 //		int maxC = Math.max(set.getClauses().size(), reset.getClauses().size());
 
-		switch(contact.getDirection()) {
+		VisualContact.Direction dir = contact.getDirection();
+
+		if (contact.getIOType()==IOType.INPUT) {
+			dir = VisualContact.flipDirection(dir);
+		}
+
+		switch(dir) {
 			case WEST:
 				direction		= new Point2D.Double( 6, 0);
 				pOffset			= new Point2D.Double( 0, -1);

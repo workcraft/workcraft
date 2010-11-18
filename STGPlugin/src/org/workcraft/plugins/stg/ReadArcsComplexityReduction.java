@@ -14,7 +14,7 @@ public class ReadArcsComplexityReduction {
 		STG net = new STG();
 		try
 		{
-			// TODO: doesn't work with multiple instances of the same type
+			// TODO: doesn't work with multiple instances of the same type  -- unfinished!
 
 			HashMap<SignalTransition, SignalTransition> oldNewTran = new HashMap<SignalTransition, SignalTransition>();
 

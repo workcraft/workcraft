@@ -25,12 +25,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -52,6 +58,9 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 
 
+@DisplayName("Input/output port")
+@Hotkey(KeyEvent.VK_P)
+@SVGIcon("images/icons/svg/circuit-port.svg")
 
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
@@ -113,21 +122,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	}
 
-	private BooleanFormula parseFormula(String resetFunction) {
-		try {
-			return BooleanParser.parse(resetFunction,
-					new Func<String, BooleanFormula>() {
-						@Override
-						public BooleanFormula eval(String name) {
-							return ((VisualFunctionComponent)getParent()).getOrCreateInput(name)
-									.getReferencedContact();
-						}
-					});
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	@NoAutoSerialisation
 	public String getResetFunction() {
 		return FormulaToString.toString(getFunction().getResetFunction());
@@ -139,25 +133,17 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	@NoAutoSerialisation
-	public void setResetFunction(String resetFunction) {
+	public void setResetFunction(BooleanFormula resetFunction) {
 		renderedResetFormula = null;
-		if (!resetFunction.equals("")) {
-			getFunction().setResetFunction(parseFormula(resetFunction));
-		} else {
-			getFunction().setResetFunction(null);
-		}
+		getFunction().setResetFunction(resetFunction);
 
 		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
 	}
 
 	@NoAutoSerialisation
-	public void setSetFunction(String setFunction) {
+	public void setSetFunction(BooleanFormula setFunction) {
 		renderedSetFormula = null;
-		if (!setFunction.equals("")) {
-			getFunction().setSetFunction(parseFormula(setFunction));
-		} else {
-			getFunction().setSetFunction(null);
-		}
+		getFunction().setSetFunction(setFunction);
 
 		sendNotification(new PropertyChangedEvent(this, "setFunction"));
 	}
@@ -181,8 +167,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Set function", "getSetFunction", "setSetFunction", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Reset function", "getResetFunction", "setResetFunction", String.class));
+		//addPropertyDeclaration(new PropertyDeclaration(this, "Set function", "getSetFunction", "setSetFunction", String.class));
+		//addPropertyDeclaration(new PropertyDeclaration(this, "Reset function", "getResetFunction", "setResetFunction", String.class));
 	}
 
 
@@ -195,8 +181,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 		AffineTransform transform = g.getTransform();
 		AffineTransform at = new AffineTransform();
+		Direction dir = getDirection();
 
-		switch (getDirection()) {
+		if (!(getParent() instanceof VisualFunctionComponent)) {
+			dir = flipDirection(dir);
+		}
+
+		switch (dir) {
 		case EAST:
 			textX = (float)+0.5;
 			break;
@@ -229,14 +220,15 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 
-		if (getIOType()==IOType.OUTPUT) {
+		if (getParent()!=null) {
+			if ((getIOType()==IOType.INPUT)^(getParent() instanceof VisualComponent)) {
+				FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
+				FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
 
-			FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
-			FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
-
-			drawFormula(g, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), setResult);
-			if (resetResult!=null)
-				drawFormula(g, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), resetResult);
+				drawFormula(g, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), setResult);
+				if (resetResult!=null)
+					drawFormula(g, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), resetResult);
+			}
 
 		}
 

@@ -6,6 +6,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.util.Hierarchy;
 
 
@@ -32,6 +33,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		FunctionContact c = new FunctionContact(ioType);
 
 		VisualFunctionContact vc = new VisualFunctionContact(c, dir, name);
+
 		addContact(vc);
 
 		return vc;
@@ -39,11 +41,16 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	public VisualFunctionContact getOrCreateInput(String arg) {
 
-		for(VisualFunctionContact c : Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class)) {
+		for (VisualFunctionContact c : Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class)) {
 			if(c.getName().equals(arg)) return c;
 		}
 
-		return addFunction(arg, IOType.INPUT, true);
+		VisualFunctionContact vc = addFunction(arg, IOType.INPUT, true);
+
+		vc.setSetFunction(One.instance());
+		vc.setResetFunction(One.instance());
+
+		return vc;
 	}
 
 
