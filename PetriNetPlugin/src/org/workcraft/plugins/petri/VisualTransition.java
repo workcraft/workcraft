@@ -72,9 +72,11 @@ public class VisualTransition extends VisualComponent {
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
+		return mergeLabelBB(new Rectangle2D.Double(-size/2, -size/2, size, size));
+	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+		double size = CommonVisualSettings.getSize();
+		return new Rectangle2D.Double(-size/2, -size/2, size, size).contains(pointInLocalSpace);
 	}
 }

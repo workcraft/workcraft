@@ -214,8 +214,9 @@ public class VisualPlace extends VisualComponent {
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-		}
+		Rectangle2D rect1 = new Rectangle2D.Double(-size/2, -size/2, size, size);
+		return mergeLabelBB(rect1);
+	}
 
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {

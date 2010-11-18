@@ -26,7 +26,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
@@ -36,9 +35,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import org.apache.batik.ext.awt.geom.Polygon2D;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
-import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -49,6 +45,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 
 
@@ -66,6 +63,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	private Direction direction = Direction.WEST;
 
 	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
+	private Place referencedZeroPlace=null;
+	private Place referencedOnePlace=null;
 
 	public void resetNameGlyph() {
 		nameGlyph = null;
@@ -134,6 +133,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		addPropertyDeclaration(new PropertyDeclaration(this, "Direction", "getDirection", "setDirection", VisualContact.Direction.class, directions));
 		addPropertyDeclaration(new PropertyDeclaration(this, "I/O type", "getIOType", "setIOType", Contact.IOType.class, types));
 		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Init to one", "getInitOne", "setInitOne", boolean.class));
+	}
+
+	public boolean getInitOne() {
+		return getReferencedContact().getInitOne();
+	}
+
+	public void setInitOne(boolean value) {
+		getReferencedContact().setInitOne(value);
 	}
 
 	@Override
@@ -335,8 +343,22 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void notify(StateEvent e) {
+	}
 
+	public void setReferencedOnePlace(Place referencedOnePlace) {
+		this.referencedOnePlace = referencedOnePlace;
+	}
 
+	public Place getReferencedOnePlace() {
+		return referencedOnePlace;
+	}
+
+	public void setReferencedZeroPlace(Place referencedZeroPlace) {
+		this.referencedZeroPlace = referencedZeroPlace;
+	}
+
+	public Place getReferencedZeroPlace() {
+		return referencedZeroPlace;
 	}
 
 }

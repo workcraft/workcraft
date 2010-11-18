@@ -1,6 +1,10 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -9,6 +13,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
@@ -20,12 +25,15 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.tools.STGSimulationTool;
 import org.workcraft.util.Func;
+import org.workcraft.util.Hierarchy;
 
 
 public class CircuitSimulationTool extends STGSimulationTool {
 
 	VisualCircuit circuit;
 	GraphEditor editor;
+
+	JButton copyInitButton;
 
 	@Override
 	public String getLabel() {
@@ -76,6 +84,35 @@ public class CircuitSimulationTool extends STGSimulationTool {
 
 		if (up&&down) return null;
 		return st;
+	}
+
+	public CircuitSimulationTool() {
+		super();
+		createInterface();
+
+	}
+	private void createInterface() {
+
+		copyInitButton = new JButton ("Copy init");
+		copyInitButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				copyInit();
+			}
+		});
+
+		interfacePanel.add(copyInitButton);
+
+	}
+
+	private void copyInit() {
+
+		for (VisualContact vc: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+			Contact c = (Contact)vc.getReferencedComponent();
+			if (!vc.getReferencedTransitions().isEmpty()) {
+				c.setInitOne(vc.getReferencedOnePlace().getTokens()==1);
+			}
+		}
 	}
 
 	@Override
@@ -144,6 +181,39 @@ public class CircuitSimulationTool extends STGSimulationTool {
 							@Override
 							public Color getBackground() {
 								return PetriNetSettings.getEnabledBackgroundColor();
+							}
+						};
+
+					if (!contact.getReferencedTransitions().isEmpty()) return null;
+
+					if (contact.getReferencedOnePlace()==null||contact.getReferencedZeroPlace()==null) return null;
+
+					boolean isOne = contact.getReferencedOnePlace().getTokens()==1;
+					boolean isZero = contact.getReferencedZeroPlace().getTokens()==1;
+
+
+					if (isOne&&!isZero)
+						return new Decoration(){
+							@Override
+							public Color getColorisation() {
+								return null;
+							}
+
+							@Override
+							public Color getBackground() {
+								return CircuitSettings.getActiveWireColor();
+							}
+						};
+
+					if (!isOne&&isZero)
+						return new Decoration(){
+							@Override
+							public Color getColorisation() {
+								return null;
+							}
+							@Override
+							public Color getBackground() {
+								return CircuitSettings.getInactiveWireColor();
 							}
 						};
 

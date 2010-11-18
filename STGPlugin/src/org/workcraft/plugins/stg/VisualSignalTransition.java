@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 
@@ -38,6 +39,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -87,7 +89,7 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 		if(background!=null)
 		{
 			g.setColor(background);
-			g.fill(getBoundingBoxInLocalSpace());
+			g.fill(label.getBoundingBox());
 		}
 
 		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
@@ -100,7 +102,12 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return label.getBoundingBox();
+		return mergeLabelBB(label.getBoundingBox());
+	}
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return label.getBoundingBox().contains(pointInLocalSpace);
 	}
 
 	private String getText() {

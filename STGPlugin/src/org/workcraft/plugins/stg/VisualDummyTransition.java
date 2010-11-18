@@ -63,7 +63,7 @@ public class VisualDummyTransition extends VisualTransition implements StateObse
 		if(background!=null)
 		{
 			g.setColor(background);
-			g.fill(getBoundingBoxInLocalSpace());
+			g.fill(label.getBoundingBox());
 		}
 
 		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
@@ -73,7 +73,7 @@ public class VisualDummyTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return label.getBoundingBox();
+		return mergeLabelBB(label.getBoundingBox());
 	}
 
 	private Color getColor() {

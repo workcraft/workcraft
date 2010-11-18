@@ -36,9 +36,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -52,10 +50,7 @@ import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.CleverBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
-import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
-import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Func;
 
 
 @DisplayName("Input/output port")

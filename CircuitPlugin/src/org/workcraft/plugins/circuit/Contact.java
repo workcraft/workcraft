@@ -38,9 +38,18 @@ public class Contact extends MathNode implements BooleanVariable {
 	private IOType ioType = IOType.OUTPUT;
 
 	private String name = "";
+	private boolean initOne = false;
 
 
 	//private boolean invertSignal = false;
+
+	public boolean getInitOne() {
+		return initOne;
+	}
+
+	public void setInitOne(boolean initOne) {
+		this.initOne = initOne;
+	}
 
 	public Contact() {
 	}
@@ -84,8 +93,6 @@ public class Contact extends MathNode implements BooleanVariable {
 				}
 			}
 		}
-
-
 		return start+num;
 	}
 

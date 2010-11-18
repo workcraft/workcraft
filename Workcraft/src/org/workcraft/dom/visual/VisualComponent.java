@@ -111,6 +111,17 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return getLabelGlyphs(g).getVisualBounds();
 	}
 
+	public Rectangle2D mergeLabelBB(Rectangle2D rec) {
+		if (labelGlyphs!=null&&!label.equals("")) {
+			Rectangle2D rec2 = labelGlyphs.getVisualBounds();
+			Rectangle2D rec3  = new Rectangle2D.Double(
+				labelPosition.getX(), labelPosition.getY(),
+				rec2.getWidth(), rec2.getHeight());
+			return BoundingBoxHelper.union(rec, rec3);
+		}
+		return rec;
+	}
+
 	protected void drawLabelInLocalSpace(DrawRequest r) {
 		updateGlyph(r.getGraphics());
 

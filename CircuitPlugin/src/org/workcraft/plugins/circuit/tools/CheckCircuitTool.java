@@ -9,12 +9,10 @@ import org.workcraft.Tool;
 import org.workcraft.Trace;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitPetriNetGenerator;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
@@ -26,7 +24,6 @@ public class CheckCircuitTool implements Tool {
 	private final Framework framework;
 
 	VisualCircuit circuit;
-	private STGModel model;
 	private CheckCircuitTask checkTask;
 
 

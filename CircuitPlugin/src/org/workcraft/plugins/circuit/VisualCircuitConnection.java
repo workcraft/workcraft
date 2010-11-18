@@ -1,6 +1,4 @@
 package org.workcraft.plugins.circuit;
-import java.awt.Color;
-
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;

@@ -93,10 +93,12 @@ public class CircuitPetriNetGenerator {
 		String contactName = getContactName(circuit, contact);
 		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
 		zeroPlace.setLabel(contactName+"=0");
-		zeroPlace.setTokens(1);
+
+		if (!contact.getInitOne()) zeroPlace.setTokens(1);
 
 		VisualPlace onePlace = stg.createPlace(contactName+"_1");
 		onePlace.setLabel(contactName+"=1");
+		if (contact.getInitOne()) onePlace.setTokens(1);
 
 		ContactSTG contactSTG = new ContactSTG(zeroPlace, onePlace);
 
@@ -104,6 +106,11 @@ public class CircuitPetriNetGenerator {
 	}
 
 	public static void attachConnections(VisualCircuit circuit, VisualComponent component, ContactSTG cstg) {
+		if (component instanceof VisualContact) {
+			VisualContact vc = (VisualContact)component;
+			vc.setReferencedOnePlace(cstg.p1.getReferencedPlace());
+			vc.setReferencedZeroPlace(cstg.p0.getReferencedPlace());
+		}
 
 		for (Connection c: circuit.getConnections(component)) {
 			if (c.getFirst()==component&&c instanceof VisualCircuitConnection) {
@@ -123,6 +130,7 @@ public class CircuitPetriNetGenerator {
 					attachConnections(circuit, (VisualContact)c.getSecond(), cstg);
 				}
 			}
+
 		}
 	}
 

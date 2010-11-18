@@ -8,7 +8,6 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
 	static boolean shiftPressed;
