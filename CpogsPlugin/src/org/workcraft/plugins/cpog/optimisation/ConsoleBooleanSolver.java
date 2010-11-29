@@ -21,10 +21,10 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 
-public class MiniSatBooleanSolver {
+public class ConsoleBooleanSolver {
 
-	static final String minisatPath = "D:\\cheetah\\Programs\\cygwin\\bin\\MiniSat_v1.14_cygwin.exe";
-	static final String claspPath = "C:\\Work\\Tools\\clasp-1.3.1\\clasp-1.3.1.exe";
+	private static final String minisatPath = "minisat";
+	private static final String claspPath = "clasp";
 
 	static final boolean useClasp = true;
 
@@ -38,7 +38,7 @@ public class MiniSatBooleanSolver {
 
 	private String solve(String cnf) {
 		if(!useClasp)
-			return ProcessIO.minisat(cnf);
+			return ProcessIO.minisat(minisatPath, cnf);
 		else
 			return ProcessIO.runViaStreams(cnf, new String[]{claspPath});
 	}

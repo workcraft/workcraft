@@ -56,7 +56,7 @@ public class ProcessIO {
 		}
 	}
 
-	static String minisat(String input)
+	static String minisat(String minisatPath, String input)
 	{
 		String result;
 		try {
@@ -65,7 +65,7 @@ public class ProcessIO {
 
 			writeFile(input, inputFile);
 
-			Process minisat = Runtime.getRuntime().exec(new String[]{MiniSatBooleanSolver.minisatPath, inputFile.getCanonicalPath(), outputFile.getCanonicalPath()});
+			Process minisat = Runtime.getRuntime().exec(new String[]{minisatPath, inputFile.getCanonicalPath(), outputFile.getCanonicalPath()});
 			minisat.getOutputStream().close();
 			while(true) {
 				int r = minisat.getInputStream().read();

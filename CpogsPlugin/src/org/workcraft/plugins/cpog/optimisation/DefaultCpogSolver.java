@@ -35,7 +35,7 @@ public class DefaultCpogSolver<T> implements CpogSolver
 	public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars) {
 		CpogOptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, freeVars, derivedVars);
 
-		BooleanSolution solution = new MiniSatBooleanSolver().solve(cnfConverter.getCnf(task.getTask()));
+		BooleanSolution solution = new ConsoleBooleanSolver().solve(cnfConverter.getCnf(task.getTask()));
 		return SolutionPrettifier.prettifySolution(task, solution);
 	}
 }
