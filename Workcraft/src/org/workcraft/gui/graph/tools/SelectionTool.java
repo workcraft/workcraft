@@ -40,6 +40,7 @@ import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
+import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -87,6 +88,8 @@ public class SelectionTool extends AbstractTool {
 		return drag!=DRAG_NONE;
 	}
 
+	DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
+
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 
@@ -117,6 +120,8 @@ public class SelectionTool extends AbstractTool {
 					e.getModel().selectNone();
 			}
 		}
+
+		anchorGenerator.mouseClicked(e);
 	}
 
 	@Override
