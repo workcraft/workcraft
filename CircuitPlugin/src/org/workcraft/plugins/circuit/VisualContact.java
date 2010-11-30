@@ -29,12 +29,12 @@ import java.awt.Shape;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -70,6 +70,25 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		nameGlyph = null;
 	}
 
+	static public AffineTransform getDirectionTransform(Direction dir) {
+		AffineTransform at = new AffineTransform();
+		at.setToIdentity();
+		if (dir!=null) {
+			switch (dir) {
+			case NORTH:
+				at.quadrantRotate(3);
+				break;
+			case SOUTH:
+				at.quadrantRotate(1);
+				break;
+			case WEST:
+				at.quadrantRotate(2);
+				break;
+			}
+		}
+		return at;
+	}
+
 	public VisualContact(Contact contact) {
 		super(contact);
 
@@ -102,20 +121,18 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			} else {
 				return new Line2D.Double(0,0,0,0);
 			}
-
-
 		} else {
-			float xx[] = {	(float) -(size / 2),
-							(float) (size / 2),
-							(float) size,
-							(float) (size / 2),
-							(float) -(size / 2)};
-			float yy[] = {	(float) -(size / 2),
-							(float) -(size / 2), 0.0f,
-							(float) (size / 2),
-							(float) (size / 2)};
 
-			return new Polygon2D(xx, yy, 5);
+			Path2D path = new Path2D.Double();
+
+			path.moveTo(-(size / 2), -(size / 2));
+			path.lineTo((size / 2), -(size / 2));
+			path.lineTo(size, 0);
+			path.lineTo((size / 2), (size / 2));
+			path.lineTo(-(size / 2), (size / 2));
+			path.closePath();
+
+			return path;
 		}
 	}
 

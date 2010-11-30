@@ -31,7 +31,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -55,6 +57,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
@@ -69,8 +72,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
 
-	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1)
-		.deriveFont(0.5f);
+	protected static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private GlyphVector nameGlyphs = null;
 	private String glyphsForName = null;
 	private Point2D namePosition = null;
@@ -79,9 +81,44 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	double contactLength = 1;
 	double contactStep = 1;
 
+	RenderType renderType = RenderType.BOX;
+
+	private WeakReference<VisualContact> mainContact = null;
+
+	public void setMainContact(VisualContact contact) {
+		this.mainContact = new WeakReference<VisualContact>(contact);
+	}
+
+	public VisualContact getMainContact() {
+		VisualContact ret = null;
+		if (mainContact!=null) ret=mainContact.get();
+		if (ret==null) {
+			for (Node  n : getChildren()) {
+				if (n instanceof VisualContact) {
+					if (((VisualContact)n).getIOType()==IOType.OUTPUT) {
+						setMainContact((VisualContact)n);
+						ret = (VisualContact)n;
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	public RenderType getRenderType() {
+		return renderType;
+	}
+
+	public void setRenderType(RenderType renderType) {
+		this.renderType = renderType;
+		updateStepPosition();
+		updateTotalBB();
+	}
+
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-	private Rectangle2D contactLabelBB = null;
+	protected Rectangle2D contactLabelBB = null;
 	protected Rectangle2D totalBB = null;
 
 
@@ -105,7 +142,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				(float) namePosition.getY());
 	}
 
-	private void updateNameGlyph(Graphics2D g) {
+	protected void updateNameGlyph(Graphics2D g) {
 		if (nameGlyphs == null || !getName().equals(glyphsForName)) {
 			final GlyphVector glyphs = nameFont.createGlyphVector(
 					g.getFontRenderContext(), getName());
@@ -119,8 +156,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		updateNameGlyph(r.getGraphics());
 
 		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
-		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
-		// (float)labelPosition.getY());
+
 		r.getGraphics().setFont(nameFont);
 		if (contactLabelBB!=null)
 			r.getGraphics().drawString(getName(), (float)(contactLabelBB.getMaxX()-0.2),
@@ -129,6 +165,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component);
+
 		component.addObserver(this);
 		addPropertyDeclarations();
 	}
@@ -136,6 +173,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
 		addPropertyDeclaration(new PropertyDeclaration(this, "Treat as environment", "getIsEnvironment", "setIsEnvironment", boolean.class));
+
+		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
+
+		types.put("Box", RenderType.BOX);
+		types.put("Gate", RenderType.GATE);
+		types.put("Buffer", RenderType.BUFFER);
+		types.put("C-Element", RenderType.C_ELEMENT);
+
+		addPropertyDeclaration(new PropertyDeclaration(this, "Render type", "getRenderType", "setRenderType", RenderType.class, types));
+
 	}
 
 	public boolean getIsEnvironment() {
@@ -151,7 +198,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	// updates sequential position of the contacts
-	private void updateStepPosition() {
+	protected void updateStepPosition() {
 		int north=0;
 		int south=0;
 		int east=0;
@@ -195,12 +242,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
+	public static double snapP5(double x) {
+		return (double)(Math.round((x)*2))/2;
+	}
+
 	private void updateSidePosition(Rectangle2D labelBB, VisualContact contact) {
 
-		double side_pos_w = (double)(Math.round((labelBB.getMinX()-contactLength)*2))/2;
-		double side_pos_e = (double)(Math.round((labelBB.getMaxX()+contactLength)*2))/2;
-		double side_pos_s = (double)(Math.round((labelBB.getMaxY()+contactLength)*2))/2;
-		double side_pos_n = (double)(Math.round((labelBB.getMinY()-contactLength)*2))/2;
+		double side_pos_w = snapP5(labelBB.getMinX()-contactLength);
+		double side_pos_e = snapP5(labelBB.getMaxX()+contactLength);
+		double side_pos_s = snapP5(labelBB.getMaxY()+contactLength);
+		double side_pos_n = snapP5(labelBB.getMinY()-contactLength);
 
 		for (Node vn: groupImpl.getChildren()) {
 			if (vn instanceof VisualContact) {
@@ -430,7 +481,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation));
 		g.fill(shape);
-
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
 
 		if (!getIsEnvironment()) {
@@ -455,6 +505,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 //		if (contactLabelBB!=null) return contactLabelBB;
+		if (totalBB==null) {
+			updateTotalBB();
+		}
+
 		if (totalBB!=null) return totalBB;
 
 		double size = CommonVisualSettings.getSize();
@@ -549,10 +603,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			double x = at.getTranslateX();
 			double y = at.getTranslateY();
 
+			totalBB = null;
 			Rectangle2D r = contactLabelBB;
-			if (r==null) return;
 
-			updateTotalBB();
+			if (r==null) r = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
+
 
 			VisualContact.Direction dir = vc.getDirection();
 

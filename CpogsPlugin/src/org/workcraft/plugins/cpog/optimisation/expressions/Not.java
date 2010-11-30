@@ -26,7 +26,7 @@ public class Not implements BooleanFormula {
 
 	private final BooleanFormula x;
 
-	Not(BooleanFormula x) {
+	public Not(BooleanFormula x) {
 		this.x = x;
 	}
 

@@ -96,8 +96,6 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 		label.draw(g);
 
-
-
 	}
 
 	@Override

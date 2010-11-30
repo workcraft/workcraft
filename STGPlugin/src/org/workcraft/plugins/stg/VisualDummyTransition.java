@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -74,6 +75,11 @@ public class VisualDummyTransition extends VisualTransition implements StateObse
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return mergeLabelBB(label.getBoundingBox());
+	}
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return label.getBoundingBox().contains(pointInLocalSpace);
 	}
 
 	private Color getColor() {
