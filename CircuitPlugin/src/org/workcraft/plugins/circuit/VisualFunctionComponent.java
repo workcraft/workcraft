@@ -294,7 +294,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			AffineTransform at = new AffineTransform();
 			AffineTransform bt = new AffineTransform();
 
-			if (res instanceof ComponentRenderingResult) {
+			if (res instanceof CElementRenderingResult) {
 				CElementRenderingResult cr = (CElementRenderingResult)res;
 				lp = cr.getLabelPosition();
 				pp = cr.getPlusPosition();
