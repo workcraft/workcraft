@@ -106,6 +106,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		setDirection(dir);
 	}
 
+	private int connections = 0;
+
 	private Shape getShape() {
 
 		double size = getSize();
@@ -119,6 +121,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 						size - CircuitSettings.getCircuitWireWidth()*2
 						);
 			} else {
+				if (connections!=1) {
+					return VisualJoint.shape;
+				}
+
 				return new Line2D.Double(0,0,0,0);
 			}
 		} else {
@@ -164,6 +170,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	@Override
 	public void draw(DrawRequest r) {
 
+		connections = r.getModel().getConnections(this).size();
+
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color fillColor = r.getDecoration().getBackground();
@@ -172,7 +180,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (!(getParent() instanceof VisualCircuitComponent)) {
 
 			AffineTransform at = new AffineTransform();
-
 			switch (getDirection()) {
 			case NORTH:
 				at.quadrantRotate(-1);
@@ -186,15 +193,23 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 
 			g.transform(at);
-
 		}
 
-		g.setColor(fillColor);
-		g.fill(getShape());
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+		Shape shape = getShape();
+		if (connections>1&&(getParent() instanceof VisualCircuitComponent)&&!CircuitSettings.getShowContacts()) {
 
-		g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
-		g.draw(getShape());
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.fill(shape);
+
+		} else {
+			if (!(shape instanceof Line2D)) {
+				g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
+				g.setColor(fillColor);
+				g.fill(shape);
+				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+				g.draw(shape);
+			}
+		}
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
 			AffineTransform at = new AffineTransform();
@@ -229,6 +244,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+		if (getShape()!=null) {
+			return getShape().getBounds2D();
+		}
 		double size = getSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
@@ -261,7 +279,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			at.transform(pointInLocalSpace, p2);
 		}
 
-		return getShape().contains(p2);
+		Shape shape = getShape();
+		if (shape!=null) return shape.contains(p2);
+		return false;
 	}
 
 

@@ -173,7 +173,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 
-	private void drawFormula(Graphics2D g, int arrowType, float yOffset, Color foreground, Color background, FormulaRenderingResult result) {
+	private void drawFormula(Graphics2D g, int arrowType, float xOffset, float yOffset, Color foreground, Color background, FormulaRenderingResult result) {
 
 		Rectangle2D textBB = result.boundingBox;
 
@@ -194,24 +194,24 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 		switch (dir) {
 		case EAST:
-			textX = (float)+0.5;
-			arrX = (float)+0.35;
+			textX = (float)+xOffset;
+			arrX = (float)+(xOffset-0.15);
 			break;
 		case NORTH:
 			at.quadrantRotate(-1);
 			g.transform(at);
-			textX = (float)+0.5;
-			arrX = (float)+0.35;
+			textX = (float)+xOffset;
+			arrX = (float)+(xOffset-0.15);
 			break;
 		case WEST:
-			textX = (float)-textBB.getWidth()-(float)0.5;
-			arrX = (float)-0.35;
+			textX = (float)-textBB.getWidth()-xOffset;
+			arrX = (float)-(xOffset-0.15);
 			break;
 		case SOUTH:
 			at.quadrantRotate(-1);
 			g.transform(at);
-			textX = (float)-textBB.getWidth()-(float)0.5;
-			arrX = (float)-0.35;
+			textX = (float)-textBB.getWidth()-xOffset;
+			arrX = (float)-(xOffset-0.15);
 			break;
 		}
 
@@ -270,19 +270,20 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		if (p!=null) {
 			if ((getIOType()==IOType.INPUT)^(p instanceof VisualComponent)) {
 				if (!(p instanceof VisualCircuitComponent)||
-						((VisualCircuitComponent)p).getRenderType()==RenderType.BOX||
-					((p instanceof VisualCircuitComponent)&&(((VisualCircuitComponent)p).getRenderType()==null))
-					) {
+						((VisualCircuitComponent)p).getRenderType()==RenderType.BOX) {
 
 					FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
 					FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
+					float xOfs = (float)0.5;
+
+					if (!CircuitSettings.getShowContacts()&&(p instanceof VisualComponent)) xOfs = (float)-0.5;
 
 					if (resetResult!=null) {
-						drawFormula(g, 1, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), resetResult);
-						drawFormula(g, 2, (float)0.5, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
+						drawFormula(g, 1, xOfs, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), resetResult);
+						drawFormula(g, 2, xOfs, (float)0.5, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
 
 					} else {
-						drawFormula(g, 0, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
+						drawFormula(g, 0, xOfs, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
 					}
 				}
 			}

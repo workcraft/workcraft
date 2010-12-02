@@ -55,8 +55,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 		this.framework = framework;
 		this.model = null;
 
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
-		this.semimodSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1,
+		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
+		this.semimodSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1,
 				nonPersReach);
 	}
 

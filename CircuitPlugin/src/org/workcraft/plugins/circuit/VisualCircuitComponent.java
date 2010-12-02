@@ -178,7 +178,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		types.put("Box", RenderType.BOX);
 		types.put("Gate", RenderType.GATE);
-		types.put("Buffer", RenderType.BUFFER);
 		types.put("C-Element", RenderType.C_ELEMENT);
 
 		addPropertyDeclaration(new PropertyDeclaration(this, "Render type", "getRenderType", "setRenderType", RenderType.class, types));

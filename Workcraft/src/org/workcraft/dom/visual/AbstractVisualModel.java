@@ -125,7 +125,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void draw (Graphics2D g, Decorator decorator) {
-		DrawMan.draw(g, decorator, getRoot());
+		DrawMan.draw(this, g, decorator, getRoot());
 	}
 
 	/**

@@ -41,7 +41,14 @@ import org.workcraft.plugins.petri.Place;
 @SVGIcon("images/icons/svg/circuit-joint.svg")
 
 public class VisualJoint extends VisualComponent {
-	static double jointSize = 0.25;
+	static public double jointSize = 0.25;
+
+	final static public Shape shape = new Ellipse2D.Double(
+			-jointSize / 2,
+			-jointSize / 2,
+			jointSize,
+			jointSize);
+
 	private Place referencedOnePlace;
 	public Place getReferencedOnePlace() {
 		return referencedOnePlace;
@@ -71,11 +78,7 @@ public class VisualJoint extends VisualComponent {
 //		drawLabelInLocalSpace(g);
 		Graphics2D g = r.getGraphics();
 
-		Shape shape = new Ellipse2D.Double(
-				-jointSize / 2,
-				-jointSize / 2,
-				jointSize,
-				jointSize);
+
 
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);

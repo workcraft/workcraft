@@ -7,4 +7,5 @@ import org.workcraft.gui.graph.tools.Decoration;
 public interface DrawRequest {
 	public Graphics2D getGraphics();
 	public Decoration getDecoration();
+	public VisualModel getModel();
 }

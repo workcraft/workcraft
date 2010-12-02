@@ -16,8 +16,9 @@ import org.workcraft.plugins.circuit.naryformula.NaryFormulaBuilder;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
+// this renderer is outdated!
+// For buffers use gate renderer!
 public class BufferRenderer extends GateRenderer {
-
 
 	public static ComponentRenderingResult renderGate(BooleanFormula formula) {
 		NaryBooleanFormula f = NaryFormulaBuilder.make(formula);
@@ -49,7 +50,7 @@ public class BufferRenderer extends GateRenderer {
 						path.lineTo(0.5, 0);
 						path.closePath();
 
-						g.setColor(background);
+						g.setColor(foreground);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -79,7 +80,7 @@ public class BufferRenderer extends GateRenderer {
 						g.translate(-bubbleSize/2, 0);
 						result.draw(g);
 						g.translate(w/2, 0);
-						g.setColor(background);
+						g.setColor(foreground);
 						g.fill(bubbleShape);
 						g.setColor(foreground);
 						g.draw(bubbleShape);
@@ -196,7 +197,7 @@ public class BufferRenderer extends GateRenderer {
 						path.lineTo(x, y + h);
 						path.closePath();
 
-						g.setColor(background);
+						g.setColor(foreground);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -288,7 +289,7 @@ public class BufferRenderer extends GateRenderer {
 						path.quadTo(x + h / 3, y + h / 2, x, y);
 						path.closePath();
 
-						g.setColor(background);
+						g.setColor(foreground);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -395,7 +396,7 @@ public class BufferRenderer extends GateRenderer {
 						path.quadTo(x + h / 3, y + h / 2, x, y);
 						path.closePath();
 
-						g.setColor(background);
+						g.setColor(foreground);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);

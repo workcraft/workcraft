@@ -26,34 +26,60 @@ public class GateRenderer {
 	public static final double contactMargin = 0.8;
 	public static Color foreground = Color.BLACK;
 	public static Color background = Color.WHITE;
+	public static boolean isBuffer = false;
 
 	public static double getXFromY(double y, double pivot) {
 		return -2*y*y*pivot+2*y*pivot;
 	}
 
+
 	public static ComponentRenderingResult renderGate(BooleanFormula formula) {
+
+
 		NaryBooleanFormula f = NaryFormulaBuilder.make(formula);
+		isBuffer = true;
 
 		return f.accept(new NaryBooleanFormulaVisitor<ComponentRenderingResult>() {
 
-			@Override
+ 			@Override
 			public ComponentRenderingResult visit(final BooleanVariable var) {
+
+				final Rectangle2D bb =
+					(isBuffer)?new Rectangle2D.Double(-0.5,-0.5,1,1):new Rectangle2D.Double(0,-0.25,0,0.5);
+
 				return new ComponentRenderingResult() {
 					@Override
 					public Rectangle2D boundingBox() {
-						return new Rectangle2D.Double(0,-0.25,0,0.5);
+						return bb;
 					}
 
 					@Override
 					public Map<String, Point2D> contactPositions() {
 						Map<String, Point2D> result = new HashMap<String, Point2D>();
-						result.put(var.getLabel(), new Point2D.Double(0,0));
+						if (isBuffer)
+							result.put(var.getLabel(), new Point2D.Double(-0.5,0));
+						else
+							result.put(var.getLabel(), new Point2D.Double(0,0));
 						return result;
 					}
 
 					@Override
 					public void draw(Graphics2D g) {
+						if (isBuffer) {
+							Path2D path = new Path2D.Double();
+							path.moveTo(-0.5, -0.5);
+							path.lineTo(-0.5, 0.5);
+							path.lineTo(0.5, 0);
+							path.closePath();
+
+							g.setColor(background);
+							g.fill(path);
+							g.setColor(foreground);
+							g.draw(path);
+						}
 					}
+
+
 				};
 			}
 
@@ -109,7 +135,7 @@ public class GateRenderer {
 
 			@Override
 			public ComponentRenderingResult visitAnd(List<NaryBooleanFormula> args) {
-
+				isBuffer = false;
 				final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
 
 				for (NaryBooleanFormula formula : args) {
@@ -205,8 +231,9 @@ public class GateRenderer {
 
 			@Override
 			public ComponentRenderingResult visitOr(List<NaryBooleanFormula> args) {
-
+				isBuffer = false;
 				final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
+
 
 				for (NaryBooleanFormula formula : args) {
 					results.add(formula.accept(this));
@@ -312,7 +339,7 @@ public class GateRenderer {
 
 			@Override
 			public ComponentRenderingResult visitXor(List<NaryBooleanFormula> args) {
-
+				isBuffer = false;
 				final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
 
 				for (NaryBooleanFormula formula : args) {

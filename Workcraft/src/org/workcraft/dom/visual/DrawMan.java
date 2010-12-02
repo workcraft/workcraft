@@ -33,8 +33,10 @@ class DrawMan
 {
 	private final Graphics2D graphics;
 	private final Decorator decorator;
+	private final VisualModel model;
 
-	private DrawMan(Graphics2D graphics, Decorator decorator) {
+	private DrawMan(VisualModel model, Graphics2D graphics, Decorator decorator) {
+		this.model = model;
 		this.graphics = graphics;
 		this.decorator = decorator;
 	}
@@ -45,8 +47,8 @@ class DrawMan
 		simpleDraw(decoration, node);
 	}
 
-	public static void draw(Graphics2D graphics, Decorator decorator, Node node) {
-		new DrawMan(graphics, decorator).draw(Decoration.Empty.INSTANCE, node);
+	public static void draw(VisualModel model, Graphics2D graphics, Decorator decorator, Node node) {
+		new DrawMan(model, graphics, decorator).draw(Decoration.Empty.INSTANCE, node);
 	}
 
 	public void draw(Decoration currentDecoration, Node node) {
@@ -76,6 +78,10 @@ class DrawMan
 				@Override
 				public Graphics2D getGraphics() {
 					return graphics;
+				}
+				@Override
+				public VisualModel getModel() {
+					return model;
 				}
 			});
 		graphics.setTransform(oldTransform);
