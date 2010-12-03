@@ -130,7 +130,7 @@ public class Main {
 
 		System.out.println(freeVariables + " " + derivedVariables);
 
-		MiniSatBooleanSolver solver = new MiniSatBooleanSolver();
+		ConsoleBooleanSolver solver = new ConsoleBooleanSolver();
 
 		CnfGeneratingOptimiser cnfGenerator = new CnfGeneratingOptimiser();
 		//Optimiser<ThermometerBooleanFormula> optimiser = new Optimiser<ThermometerBooleanFormula>(new ThermometerNumberProvider());

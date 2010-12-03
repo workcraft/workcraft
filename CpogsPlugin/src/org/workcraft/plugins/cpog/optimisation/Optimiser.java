@@ -57,7 +57,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
 		//noNegate1 = ZERO;
 		//noNegate1 = ZERO;
-		if(funcId == 0)
+		/*if(funcId == 0)
 		{
 			var1 = arg1[0];
 			var2 = arg2[1];
@@ -83,7 +83,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 			var2 = arg2[0];
 			//noNegate1 = ZERO;
 		}
-		/*if(funcId == 4)
+		if(funcId == 4)
 		{
 			var1 = arg1[2];
 			var2 = arg2[0];
@@ -119,6 +119,10 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		this.numberProvider = numberProvider;
 	}
 
+	/**
+	 * @param levels
+	 * Specifies the number of gates to be found on each depth level. Null means no limit.
+	 */
 	public Optimiser(NumberProvider<BooleanNumber> numberProvider, int [] levels)
 	{
 		this(numberProvider);
@@ -203,6 +207,18 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		return BooleanReplacer.replace(where, Arrays.asList(new BooleanVariable[]{what}), Arrays.asList(new BooleanFormula[]{with}));
 	}
 
+	/**
+	 * Produces the SAT problem for finding the optimal CPOG encoding given the scenarios.
+	 * @param scenarios
+	 * @param forcedParams
+	 * List of forced input signals.
+	 * @param freeVarsCount
+	 * Number of input signals used to encode scenarios
+	 * @param derivedVariables
+	 * Number of gates in the decoder. Ignored if levels!=null. :(
+	 * @return
+	 * Boolean formula to satisfy along with the formulas for all output signals.
+	 */
 	public CpogOptimisationTask<BooleanFormula> getFormula(BooleanFormula [][] scenarios, List<? extends BooleanFormula> forcedParams, int freeVarsCount, int derivedVariables)
 	{
 		// Generate function parameters
@@ -275,6 +291,13 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		return new CpogOptimisationTask<BooleanFormula>(cpogFunctions, encodings, and(tableConditions));
 	}
 
+	/**
+	 *
+	 * @param parameters
+	 * @param functionCount
+	 * Specifies the number of gates to look for. Ignored if levels != null. Bad design, sure.
+	 * @return
+	 */
 	private List<BooleanFormula> generateFunctions(List<BooleanFormula> parameters, int functionCount)
 	{
 		List<BooleanFormula> allVariables = new ArrayList<BooleanFormula>(parameters);
