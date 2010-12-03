@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
