@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.tools;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
@@ -50,26 +51,57 @@ public class CheckCircuitTool implements Tool {
 		return we.getModelEntry().getMathModel() instanceof Circuit;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run(WorkspaceEntry we) {
 
 		checkTask = new CheckCircuitTask(we, framework);
 
-		Result<MpsatChainResult> result = (Result<MpsatChainResult>) framework.getTaskManager().execute(checkTask, "Checking circuit for deadlocks and hazards");
+		framework.getTaskManager().queue(checkTask, "Checking circuit for deadlocks and hazards",
+				new ProgressMonitor<MpsatChainResult>() {
 
-		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
+					@Override
+					public void finished(final Result<? extends MpsatChainResult> result, String description) {
+						SwingUtilities.invokeLater(new Runnable(){
 
-		List<Trace> solutions = mdp.getSolutions();
+							@Override
+							public void run() {
 
-		if (!solutions.isEmpty()) {
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(checkTask, result.getReturnValue().getMessage(), solutions);
+								MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 
-			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
+								List<Trace> solutions = mdp.getSolutions();
 
-			solutionsDialog.setVisible(true);
-		} else
-			JOptionPane.showMessageDialog(null, result.getReturnValue().getMessage());
+								if (!solutions.isEmpty()) {
+									final SolutionsDialog solutionsDialog = new SolutionsDialog(checkTask, result.getReturnValue().getMessage(), solutions);
+
+									GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
+
+									solutionsDialog.setVisible(true);
+
+								} else
+									JOptionPane.showMessageDialog(null, result.getReturnValue().getMessage());
+							}
+
+						});
+					}
+
+					@Override
+					public boolean isCancelRequested() {
+						return false;
+					}
+
+					@Override
+					public void progressUpdate(double completion) {
+					}
+
+					@Override
+					public void stderr(byte[] data) {
+					}
+
+					@Override
+					public void stdout(byte[] data) {
+					}
+		}
+		);
 
 	}
 
