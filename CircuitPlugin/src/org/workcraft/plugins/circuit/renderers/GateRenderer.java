@@ -26,7 +26,6 @@ public class GateRenderer {
 	public static final double contactMargin = 0.8;
 	public static Color foreground = Color.BLACK;
 	public static Color background = Color.WHITE;
-	public static boolean isBuffer = false;
 
 	public static double getXFromY(double y, double pivot) {
 		return -2*y*y*pivot+2*y*pivot;
@@ -37,9 +36,9 @@ public class GateRenderer {
 
 
 		NaryBooleanFormula f = NaryFormulaBuilder.make(formula);
-		isBuffer = true;
 
 		return f.accept(new NaryBooleanFormulaVisitor<ComponentRenderingResult>() {
+			boolean isBuffer = true;
 
  			@Override
 			public ComponentRenderingResult visit(final BooleanVariable var) {
