@@ -24,7 +24,7 @@ package org.workcraft.plugins.cpog.optimisation;
 public class ConsoleBooleanSolver {
 
 	private static final String minisatPath = "minisat";
-	private static final String claspPath = "clasp";
+	private static final String claspPath = "D:\\cheetah\\bin\\clasp-1.3.6-win32.exe";
 
 	static final boolean useClasp = true;
 

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.cpog;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,17 +11,19 @@ import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.CnfGeneratingOptimiser;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
 import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.MiniSatBooleanSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
+import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogEncoder implements Tool {
@@ -43,6 +46,36 @@ public class CpogEncoder implements Tool {
 		return false;
 	}
 
+
+	private String generateConstraint(char [][][] constraints, int numScenarios, int event1, int event2)
+	{
+		StringBuilder s = new StringBuilder();
+		for(int k = 0; k < numScenarios; k++) s.append(constraints[k][event1][event2]);
+		return s.toString();
+	}
+
+	private char trivialEncoding(char [][][] constraints, int numScenarios, int event1, int event2)
+	{
+		char trivial = '-';
+
+		for(int k = 0; k < numScenarios; k++)
+		{
+			if (constraints[k][event1][event2] == '0')
+			{
+				if (trivial == '1') return '?';
+				trivial = '0';
+			}
+
+			if (constraints[k][event1][event2] == '1')
+			{
+				if (trivial == '0') return '?';
+				trivial = '1';
+			}
+		}
+
+		return trivial;
+	}
+
 	@Override
 	public void run(WorkspaceEntry we)
 	{
@@ -50,12 +83,16 @@ public class CpogEncoder implements Tool {
 
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
 		int n = 0;
-		int m = cpog.getGroups().size();
+		ArrayList<Point2D> positions = new ArrayList<Point2D>();
+		ArrayList<Integer> count = new ArrayList<Integer>();
+
+		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
+		int m = scenarios.size();
 
 		// find all events
-		for(VisualScenario scenario : cpog.getGroups())
+		for(int k = 0; k < m; k++)
 		{
-			for(VisualComponent component : scenario.getComponents())
+			for(VisualComponent component : scenarios.get(k).getComponents())
 			if (component instanceof VisualVertex)
 			{
 				VisualVertex vertex = (VisualVertex)component;
@@ -63,8 +100,19 @@ public class CpogEncoder implements Tool {
 				if (!events.containsKey(vertex.getLabel()))
 				{
 					events.put(vertex.getLabel(), n);
-					System.out.println("Event added: " + vertex.getLabel());
+					count.add(1);
+					Point2D p = vertex.getCenter();
+					p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
+					positions.add(p);
 					n++;
+				}
+				else
+				{
+					int id = events.get(vertex.getLabel());
+					count.set(id, count.get(id) + 1);
+					Point2D p = vertex.getCenter();
+					p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
+					positions.set(id, Geometry.add(positions.get(id), p));
 				}
 			}
 		}
@@ -74,12 +122,11 @@ public class CpogEncoder implements Tool {
 		char [][][] constraints = new char[m][n][n];
 		int [][] graph = new int[n][n];
 
-		int k = 0;
-		for(VisualScenario scenario : cpog.getGroups())
+		for(int k = 0; k < m; k++)
 		{
 			for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) constraints[k][i][j] = '0';
 
-			for(VisualComponent component : scenario.getComponents())
+			for(VisualComponent component : scenarios.get(k).getComponents())
 			if (component instanceof VisualVertex)
 			{
 				VisualVertex vertex = (VisualVertex)component;
@@ -89,7 +136,7 @@ public class CpogEncoder implements Tool {
 
 			for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) graph[i][j] = 0;
 
-			for(VisualConnection c : scenario.getConnections())
+			for(VisualConnection c : scenarios.get(k).getConnections())
 			if (c instanceof VisualArc)
 			{
 				VisualArc arc = (VisualArc)c;
@@ -124,7 +171,7 @@ public class CpogEncoder implements Tool {
 				if (graph[i][i] > 0)
 				{
 					JOptionPane.showMessageDialog(null,
-												"Scenario " + scenario.getLabel() + " is cyclic.",
+												"Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.",
 												"Invalid scenario",
 												JOptionPane.ERROR_MESSAGE);
 					return;
@@ -142,86 +189,106 @@ public class CpogEncoder implements Tool {
 
 					constraints[k][i][j] = ch;
 				}
-
-			k++;
 		}
 
 		// group similar constraints
 
-		HashSet<String> task = new HashSet<String>();
+		HashMap<String, Integer> task = new HashMap<String, Integer>();
 
 		for(int i = 0; i < n; i++)
 			for(int j = 0; j < n; j++)
-			{
-				StringBuilder s = new StringBuilder();
-				char trivial = '-';
-				for(int sc = 0; sc < n; sc++)
+				if (trivialEncoding(constraints, m, i, j) == '?')
 				{
-					s.append(constraints[sc][i][j]);
-					if (trivial == '?') continue;
-
-					if (constraints[sc][i][j] == '0')
-					{
-						if (trivial == '1')
-							trivial = '?';
-						else
-							trivial = '0';
-					}
-
-					if (constraints[sc][i][j] == '1')
-					{
-						if (trivial == '0')
-							trivial = '?';
-						else
-							trivial = '1';
-					}
+					String constraint = generateConstraint(constraints, m, i, j);
+					if (!task.containsKey(constraint)) task.put(constraint, task.size());
 				}
-
-				if (trivial == '?') task.add(s.toString());
-			}
 
 		// call CPOG encoder
 
-		String [] instance = new String[task.size()];
+		char [][] matrix = new char[m][task.size()];
 
-		System.out.println("Set of non-trivial contraints:");
-		k = 0;
-		for(String s : task)
-		{
-			instance[k] = s;
-			System.out.println(s);
-			k++;
-		}
+		String [] instance = new String[m];
+		for(String s : task.keySet())
+			for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
-		int freeVariables = 1;
-		int derivedVariables = 3;
+		for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
+
+		int freeVariables = 2;
+		int derivedVariables = 1;
 
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 
-		CpogSolver solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
+		DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
 
-		CpogEncoding solution = solverCnf.solve(instance, freeVariables, derivedVariables);
+		Variable [] vars = new Variable[freeVariables];
+		for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+
+		CpogEncoding solution = solverCnf.solve(instance, vars, derivedVariables);
 
 		if(solution == null)
-			System.out.println("No solution.");
-		else
 		{
-			boolean[][] encoding = solution.getEncoding();
-			for(int i=0;i<encoding.length;i++)
-			{
-				for(int j=0;j<encoding[i].length;j++)
-					System.out.print(encoding[i][j]?1:0);
-				System.out.println();
-			}
-
-			System.out.println("Functions:");
-			BooleanFormula[] functions = solution.getFunctions();
-			for(int i=0;i<functions.length;i++)
-			{
-				System.out.println(FormulaToString.toString(functions[i]));
-			}
+			JOptionPane.showMessageDialog(null,
+					"No solution.",
+					"Encoding result",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
 		}
 
+		// create result
+
+		boolean[][] encoding = solution.getEncoding();
+
+		for(int k = 0; k < m; k++)
+		{
+			for(int i = 0; i < freeVariables; i++)
+				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+		}
+
+		VisualScenario result = cpog.createVisualScenario();
+		result.setLabel("Composition");
+		VisualVertex [] vertices = new VisualVertex[n];
+		for(String eventName : events.keySet())
+		{
+			int id = events.get(eventName);
+			vertices[id] = cpog.createVisualVertex(result);
+			vertices[id].setLabel(eventName);
+			vertices[id].setPosition(Geometry.multiply(positions.get(id), 1.0/count.get(id)));
+		}
+
+		BooleanFormula[] functions = solution.getFunctions();
+		for(int i = 0; i < n; i++)
+			for(int j = 0; j < n; j++)
+			{
+				BooleanFormula condition;
+
+				char trivial = trivialEncoding(constraints, m, i, j);
+				if (trivial != '?')
+				{
+					if (trivial == '1')
+					{
+						condition = One.instance();
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					String constraint = generateConstraint(constraints, m, i, j);
+					condition = functions[task.get(constraint)];
+				}
+
+				if (i == j)
+				{
+					vertices[i].setCondition(condition);
+				}
+				else
+				{
+					VisualArc arc = cpog.connect(vertices[i], vertices[j]);
+					arc.setCondition(condition);
+				}
+			}
 	}
 
 }

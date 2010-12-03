@@ -22,8 +22,8 @@ package org.workcraft.plugins.cpog.optimisation.tests;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CnfGeneratingOptimiser;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
 
 public class CnfSolver_LimBoole_Tests extends SolverTests {
@@ -31,8 +31,8 @@ public class CnfSolver_LimBoole_Tests extends SolverTests {
 	{
 	}
 
-	protected CpogSolver createSolver()
+	protected LegacyCpogSolver createSolver()
 	{
-		return new DefaultCpogSolver<BooleanFormula>(new CnfGeneratingOptimiser(), new LimBooleCnfGenerator());
+		return new LegacyDefaultCpogSolver<BooleanFormula>(new CnfGeneratingOptimiser(), new LimBooleCnfGenerator());
 	}
 }

@@ -137,9 +137,9 @@ public class Main {
 		//Optimiser<BinaryIntBooleanFormula> optimiser = new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider());
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 
-		CpogSolver solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
-		CpogSolver solverCnfLimboole = new DefaultCpogSolver<BooleanFormula>(cnfGenerator, new LimBooleCnfGenerator());
-		CpogSolver solverOneHot = new DefaultCpogSolver<BooleanFormula>(oneHot, new LimBooleCnfGenerator());
+		LegacyCpogSolver solverCnf = new LegacyDefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
+		LegacyCpogSolver solverCnfLimboole = new LegacyDefaultCpogSolver<BooleanFormula>(cnfGenerator, new LimBooleCnfGenerator());
+		LegacyCpogSolver solverOneHot = new LegacyDefaultCpogSolver<BooleanFormula>(oneHot, new LimBooleCnfGenerator());
 
 	/*	CpogOptimisationTask<BooleanFormula> formula = oneHot.getFormula(phase_encoder_3, 3, 0);
 		Cnf cnf = new CleverCnfGenerator().generateCnf(formula.getTask());

@@ -21,8 +21,8 @@
 package org.workcraft.plugins.cpog.optimisation.tests;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
@@ -33,8 +33,8 @@ public class OneHotSolverTests extends SolverTests {
 	{
 	}
 
-	protected CpogSolver createSolver()
+	protected LegacyCpogSolver createSolver()
 	{
-		return new DefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new LimBooleCnfGenerator());
+		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new LimBooleCnfGenerator());
 	}
 }

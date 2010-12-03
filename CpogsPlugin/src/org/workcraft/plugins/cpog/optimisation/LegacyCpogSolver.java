@@ -20,7 +20,7 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-public interface CpogSolver {
+public interface LegacyCpogSolver {
 	/**
 	 * Solve the CPOG
 	 * @param scenarios

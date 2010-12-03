@@ -64,4 +64,8 @@ public enum VariableState
 			default: return VariableState.TRUE;
 		}
 	}
+
+	public static VariableState fromBoolean(boolean b) {
+		return b ? TRUE : FALSE;
+	}
 }
