@@ -2,12 +2,14 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 
 
 public class CircuitSettings implements SettingsPage {
@@ -18,6 +20,7 @@ public class CircuitSettings implements SettingsPage {
 	private static Color activeWireColor = new Color(1.0f, 0.0f, 0.0f);
 	private static Double componentBorderWidth=1.0;
 	private static Double circuitWireWidth=1.0;
+	private static SolutionMode checkMode = SolutionMode.FIRST;
 
 	public static double getComponentBorderWidth() {
 		return componentBorderWidth;
@@ -85,6 +88,14 @@ public class CircuitSettings implements SettingsPage {
 
 		properties.add(new PropertyDeclaration(this, "Component width", "getComponentBorderWidth", "setComponentBorderWidth", double.class));
 		properties.add(new PropertyDeclaration(this, "Wire width", "getCircuitWireWidth", "setCircuitWireWidth", double.class));
+
+		LinkedHashMap<String, Object> modes = new LinkedHashMap<String, Object>();
+
+		modes.put("First", SolutionMode.FIRST);
+		modes.put("Minimal cost", SolutionMode.MINIMUM_COST);
+		modes.put("First 10 solutions", SolutionMode.ALL);
+
+		properties.add(new PropertyDeclaration(this, "Check mode", "getCheckMode", "setCheckMode", SolutionMode.class, modes));
 	}
 
 	@Override
@@ -107,6 +118,8 @@ public class CircuitSettings implements SettingsPage {
 
 		componentBorderWidth  = config.getDouble("CircuitSettings.componentBorderWidth", 0.06);
 		circuitWireWidth = config.getDouble("CircuitSettings.circuitWireWidth", 0.04);
+
+		checkMode = config.getEnum("CircuitSettings.circuitCheckMode", SolutionMode.class, SolutionMode.FIRST);
 	}
 
 	@Override
@@ -120,6 +133,15 @@ public class CircuitSettings implements SettingsPage {
 		config.setDouble("CircuitSettings.componentBorderWidth", componentBorderWidth);
 		config.setDouble("CircuitSettings.circuitWireWidth", circuitWireWidth);
 
+		config.setEnum("CircuitSettings.circuitCheckMode", SolutionMode.class, checkMode);
+	}
+
+	public static void setCheckMode(SolutionMode checkMode) {
+		CircuitSettings.checkMode = checkMode;
+	}
+
+	public static SolutionMode getCheckMode() {
+		return checkMode;
 	}
 
 }

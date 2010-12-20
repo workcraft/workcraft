@@ -267,9 +267,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		Color col1 = Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation);
 		Color col2 = Coloriser.colorise(CommonVisualSettings.getBackgroundColor(), colorisation);
 
-		g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
 
 		if (res!=null) {
+
+			if (!getIsEnvironment()) {
+				g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
+			} else {
+				float dash[] = {0.05f, 0.05f};
+
+				g.setStroke(
+						new BasicStroke(
+							(float)CircuitSettings.getComponentBorderWidth(),
+							BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,
+							dash, 0.0f)
+							);
+			}
+
 
 			Point2D mp=null, lp=null, pp=null;
 

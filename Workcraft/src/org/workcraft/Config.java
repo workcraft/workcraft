@@ -89,6 +89,25 @@ public class Config {
 		set (key, Integer.toString(value));
 	}
 
+	public <T extends Enum<T>> T getEnum (String key, Class<T> enumType, T defaultValue) {
+		String s = get (key);
+
+		if (s == null)
+			return defaultValue;
+
+		try {
+			return Enum.valueOf(enumType, s);
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+			return defaultValue;
+		}
+	}
+
+	public <T extends Enum<T>> void setEnum (String key, Class<T> enumType, T value) {
+		set (key, value.name());
+	}
+
 	public double getDouble (String key, double defaultValue) {
 		String s = get (key);
 

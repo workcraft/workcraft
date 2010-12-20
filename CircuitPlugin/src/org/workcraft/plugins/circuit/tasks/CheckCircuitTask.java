@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitPetriNetGenerator;
 import org.workcraft.plugins.mpsat.MpsatMode;
@@ -36,6 +37,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 	private String message="";
 
+
+	// setup for searching hazards in circuits
 	private final String nonPersReach =
 		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
 		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
@@ -55,9 +58,10 @@ public class CheckCircuitTask extends MpsatChainTask {
 		this.framework = framework;
 		this.model = null;
 
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
-		this.semimodSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1,
-				nonPersReach);
+		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
+				CircuitSettings.getCheckMode(), (CircuitSettings.getCheckMode()==SolutionMode.ALL)?10:1, null);
+		this.semimodSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
+				CircuitSettings.getCheckMode(),(CircuitSettings.getCheckMode()==SolutionMode.ALL)?10:1, nonPersReach);
 	}
 
 
