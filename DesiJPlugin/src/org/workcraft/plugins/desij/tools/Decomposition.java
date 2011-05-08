@@ -29,8 +29,9 @@ public class Decomposition implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		// call desiJ asynchronous (w/o blocking the GUI)
-		framework.getTaskManager().queue(new DesiJTask(WorkspaceUtils.getAs(we, STGModel.class), framework, new String[0]),
-				"Execution of DesiJ", new DecompositionResultHandler(framework, true));
+		DesiJTask task = new DesiJTask(WorkspaceUtils.getAs(we, STGModel.class), we, framework, new String[0]);
+		framework.getTaskManager().queue(task,
+				"Execution of DesiJ", new DecompositionResultHandler(framework, false, task));
 
 	}
 

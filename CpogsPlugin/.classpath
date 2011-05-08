@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/STG"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

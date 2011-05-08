@@ -39,7 +39,7 @@ public abstract class AbstractModel implements Model {
 	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private ReferenceManager referenceManager = new DefaultReferenceManager();
 
-	private String title = "";
+	private String title = "Untitled";
 
 	private Container root;
 
