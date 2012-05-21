@@ -24,8 +24,8 @@ import org.workcraft.plugins.cpog.optimisation.BinaryIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BinaryNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class BinarySolver_MyCnfGenerator_Tests extends SolverTests {
@@ -33,8 +33,8 @@ public class BinarySolver_MyCnfGenerator_Tests extends SolverTests {
 	{
 	}
 
-	protected CpogSolver createSolver()
+	protected LegacyCpogSolver createSolver()
 	{
-		return new DefaultCpogSolver<BooleanFormula>(new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()), new CleverCnfGenerator());
+		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()), new CleverCnfGenerator());
 	}
 }

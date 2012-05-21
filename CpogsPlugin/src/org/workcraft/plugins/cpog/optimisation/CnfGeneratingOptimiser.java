@@ -51,9 +51,10 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		this.numberProvider = new CnfGeneratingOneHotNumberProvider();
 	}
 
-	public CpogOptimisationTask<Cnf> getFormula(String [] scenarios, int freeVariables, int derivedVariables)
+	@Override
+	public CpogOptimisationTask<Cnf> getFormula(String [] scenarios, BooleanVariable[] variables, int derivedVariables)
 	{
-		int nonDerivedVariables = freeVariables;
+		int nonDerivedVariables = variables.length;
 
 		//Generate all possible encodings...
 		Literal [][] encodings = new Literal [scenarios.length][];
@@ -61,10 +62,10 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		{
 			encodings[i] = new Literal[nonDerivedVariables];
 			if(i == 0)
-				for(int j=0;j<freeVariables;j++)
+				for(int j=0;j<nonDerivedVariables;j++)
 					encodings[i][j] = Literal.Zero;
 			else
-				for(int j=0;j<freeVariables;j++)
+				for(int j=0;j<nonDerivedVariables;j++)
 					encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
 		}
 
@@ -137,19 +138,12 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 		tableConditions.addAll(rho);
 
 		// Forming solution output here
-		BooleanVariable [] parameters = new FreeVariable[freeVariables];
-		Character varName = 'a';
-		for(int i=0;i<nonDerivedVariables;i++)
-		{
-			parameters[i] = new FreeVariable(varName.toString());
-			varName++;
-		}
 
 		BooleanFormula[] funcs = new BooleanFormula[totalVariables];
 		for(int j=0;j<nonDerivedVariables;j++)
 		{
-			funcs[j*2] = parameters[j];
-			funcs[j*2+1] = BooleanOperations.not(parameters[j]);
+			funcs[j*2] = variables[j];
+			funcs[j*2+1] = BooleanOperations.not(variables[j]);
 		}
 		for(int j=0;j<derivedVariables;j++)
 		{

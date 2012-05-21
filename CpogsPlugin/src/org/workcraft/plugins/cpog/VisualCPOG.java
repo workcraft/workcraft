@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,8 +159,7 @@ public class VisualCPOG extends AbstractVisualModel
 			VisualVertex v = (VisualVertex) first;
 			VisualVertex u = (VisualVertex) second;
 
-			Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
-			Hierarchy.getNearestContainer(v, u).add(new VisualArc(con, v, u));
+			connect(v, u);
 		}
 		else
 		{
@@ -180,6 +180,14 @@ public class VisualCPOG extends AbstractVisualModel
 			DynamicVariableConnection con = mathModel.connect(v.getMathVertex(), u.getMathVariable());
 			Hierarchy.getNearestContainer(v, u).add(new VisualDynamicVariableConnection(con, v, u));
 		}
+	}
+
+	public VisualArc connect(VisualVertex v, VisualVertex u)
+	{
+		Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
+		VisualArc arc = new VisualArc(con, v, u);
+		Hierarchy.getNearestContainer(v, u).add(arc);
+		return arc;
 	}
 
 	private Collection<Node> getGroupableSelection()
@@ -242,4 +250,38 @@ public class VisualCPOG extends AbstractVisualModel
 
 		return properties;
 	}
+
+	public VisualVertex createVisualVertex(Container container)
+	{
+		Vertex mathVertex = new Vertex();
+		mathModel.add(mathVertex);
+
+		VisualVertex vertex = new VisualVertex(mathVertex);
+
+		container.add(vertex);
+
+		return vertex;
+	}
+
+	public VisualVariable createVisualVariable()
+	{
+		Variable mathVariable = new Variable();
+		mathModel.add(mathVariable);
+
+		VisualVariable variable = new VisualVariable(mathVariable);
+
+		getRoot().add(variable);
+
+		return variable;
+	}
+
+	public VisualScenario createVisualScenario()
+	{
+		VisualScenario scenario = new VisualScenario();
+
+		getRoot().add(scenario);
+
+		return scenario;
+	}
+
 }

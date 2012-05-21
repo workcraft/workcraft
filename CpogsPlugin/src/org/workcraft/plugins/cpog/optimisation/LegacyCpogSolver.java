@@ -20,6 +20,14 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-public interface CpogSolver {
+public interface LegacyCpogSolver {
+	/**
+	 * Solve the CPOG
+	 * @param scenarios
+	 * @param freeVars
+	 * @param derivedVars
+	 * @return
+	 * Null if unsat
+	 */
 	public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars);
 }
