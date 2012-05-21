@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.VisualComponent;
 
 @DisplayName("Node")
@@ -31,9 +32,9 @@ public class VisualWorkflowNode extends VisualComponent {
 
 	@Override
 	public void draw(DrawRequest r) {
-		r.setColor(Color.BLACK);
-		r.setStroke(new BasicStroke(0.01f));
-		r.draw(shape);
+		r.getGraphics().setColor(Color.BLACK);
+		r.getGraphics().setStroke(new BasicStroke(0.01f));
+		r.getGraphics().draw(shape);
 	}
 
 }
