@@ -28,6 +28,11 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class AffineTransformDeserialiser implements BasicXMLDeserialiser {
+
+	public String getClassName() {
+		return AffineTransform.class.getName();
+	}
+
 	public Object deserialise(Element element) throws DeserialisationException {
 		AffineTransform t = new AffineTransform();
 
@@ -39,9 +44,5 @@ public class AffineTransformDeserialiser implements BasicXMLDeserialiser {
 
 		t.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
 		return t;
-	}
-
-	public String getClassName() {
-		return AffineTransform.class.getName();
 	}
 }

@@ -12,6 +12,8 @@ import org.workcraft.plugins.serialisation.xml.BezierDeserialiser;
 import org.workcraft.plugins.serialisation.xml.BezierSerialiser;
 import org.workcraft.plugins.serialisation.xml.BooleanDeserialiser;
 import org.workcraft.plugins.serialisation.xml.BooleanSerialiser;
+import org.workcraft.plugins.serialisation.xml.ColorDeserialiser;
+import org.workcraft.plugins.serialisation.xml.ColorSerialiser;
 import org.workcraft.plugins.serialisation.xml.ConnectionDeserialiser;
 import org.workcraft.plugins.serialisation.xml.ConnectionSerialiser;
 import org.workcraft.plugins.serialisation.xml.DoubleDeserialiser;
@@ -39,6 +41,7 @@ public class BuiltinSerialisers implements Module {
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, DoubleSerialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, EnumSerialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, IntSerialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ColorSerialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, StringSerialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BezierSerialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ConnectionSerialiser.class);
@@ -49,6 +52,7 @@ public class BuiltinSerialisers implements Module {
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, DoubleDeserialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, EnumDeserialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, IntDeserialiser.class);
+		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ColorDeserialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, StringDeserialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BezierDeserialiser.class);
 		p.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ConnectionDeserialiser.class);

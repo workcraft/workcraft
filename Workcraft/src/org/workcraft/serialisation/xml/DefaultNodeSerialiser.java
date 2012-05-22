@@ -65,6 +65,7 @@ public class DefaultNodeSerialiser {
 					)
 				continue;
 
+
 			// the property is writable and is not of array type, try to get a serialiser
 			XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
 
