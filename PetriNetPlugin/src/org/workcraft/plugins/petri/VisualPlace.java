@@ -28,6 +28,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -44,48 +45,6 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
-	/*static public class AddTokenAction extends ScriptedAction {
-		private int placeID;
-		public AddTokenAction(Place place) {
-			super();
-			this.placeID = place.getID();
-		}
-		public String getScript() {
-			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
-		}
-		public String getUndoScript() {
-			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()-1);\n";
-		}
-		public String getRedoScript() {
-			return getScript();
-		}
-		public String getText() {
-			return "Add token";
-		}
-	}
-
-	static public class RemoveTokenAction extends ScriptedAction {
-		private int placeID;
-
-		public RemoveTokenAction(Place place) {
-			super();
-			this.placeID = place.getID();
-				if (place.getTokens() < 1)
-					setEnabled(false);
-		}
-		public String getScript() {
-				return "p=model.getComponentByID("+placeID+");p.setTokens(p.getTokens()-1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
-		}
-		public String getUndoScript() {
-				return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
-		}
-		public String getRedoScript() {
-			return getScript();
-		}
-		public String getText() {
-			return "Remove token";
-		}
-	}	*/
 
 	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
@@ -113,22 +72,6 @@ public class VisualPlace extends VisualComponent {
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
-
-	/*	addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
-			public void addItems(JPopupMenu menu,
-					ScriptedActionListener actionListener) {
-				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
-				addToken.addScriptedActionListener(actionListener);
-
-				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(getReferencedPlace()));
-				removeToken.addScriptedActionListener(actionListener);
-
-				menu.add(new JLabel ("Place"));
-				menu.addSeparator();
-				menu.add(addToken);
-				menu.add(removeToken);
-			}
-		});*/
 	}
 
 	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
@@ -205,6 +148,11 @@ public class VisualPlace extends VisualComponent {
 				Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 
 		drawLabelInLocalSpace(r);
+	}
+
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
+	{
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
 	public Place getReferencedPlace() {

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.stg.tools;
 
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
@@ -8,10 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import org.workcraft.dom.visual.HitMan;
@@ -24,6 +21,11 @@ import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGPlace;
+import org.workcraft.plugins.stg.VisualDummyTransition;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
+import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class STGSelectionTool extends SelectionTool
 {
@@ -130,27 +132,7 @@ public class STGSelectionTool extends SelectionTool
 				}
 
 			}
-
-		} else if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
-			JPopupMenu popup = createPopupMenu(node);
-			if (popup!=null)
-				popup.show(e.getSystemEvent().getComponent(), e.getSystemEvent().getX(), e.getSystemEvent().getY());
 		}
 	}
 
-	private JPopupMenu createPopupMenu(VisualNode node) {
-		JPopupMenu popup = new JPopupMenu();
-
-		if (node instanceof VisualPlace) {
-			popup.setFocusable(false);
-			popup.add(new JLabel("Place"));
-			popup.addSeparator();
-			popup.add(new JMenuItem("Add token"));
-			popup.add(new JMenuItem("Remove token"));
-			return popup;
-		}
-
-		return null;
-	}
 }

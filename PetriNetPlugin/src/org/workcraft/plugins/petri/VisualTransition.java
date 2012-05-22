@@ -25,6 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -62,6 +63,11 @@ public class VisualTransition extends VisualComponent {
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
+	}
+
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
+	{
+		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
 }

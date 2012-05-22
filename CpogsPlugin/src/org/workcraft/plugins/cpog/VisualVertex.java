@@ -136,8 +136,7 @@ public class VisualVertex extends VisualComponent
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
-		if (labelBoundingBox != null && labelBoundingBox.contains(pointInLocalSpace)) return true;
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
 	public Vertex getMathVertex()

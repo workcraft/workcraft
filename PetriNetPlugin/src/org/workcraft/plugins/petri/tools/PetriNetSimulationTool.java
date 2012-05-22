@@ -75,7 +75,7 @@ import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
 
-public class SimulationTool extends AbstractTool implements ClipboardOwner {
+public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected VisualModel visualNet;
 
 	protected PetriNetModel net;
@@ -96,7 +96,7 @@ public class SimulationTool extends AbstractTool implements ClipboardOwner {
 	private Trace savedBranchTrace;
 	private int savedBranchStep = 0;
 
-	public SimulationTool() {
+	public PetriNetSimulationTool() {
 		super();
 		createInterface();
 	}

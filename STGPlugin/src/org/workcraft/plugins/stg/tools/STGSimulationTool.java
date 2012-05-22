@@ -10,10 +10,10 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.PetriNetSettings;
-import org.workcraft.plugins.petri.tools.SimulationTool;
+import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.stg.SignalTransition;
 
-public class STGSimulationTool extends SimulationTool {
+public class STGSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
 	private static Color outputsColor = Color.BLUE.darker();
 	private static Color internalsColor = Color.GREEN.darker();

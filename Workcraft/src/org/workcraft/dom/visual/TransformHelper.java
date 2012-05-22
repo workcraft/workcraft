@@ -32,8 +32,6 @@ public class TransformHelper {
 	public static void applyTransform(Node node, AffineTransform transform) {
 		if(node instanceof Movable)
 			((Movable) node).applyTransform(transform);
-		else
-			applyTransformToChildNodes(node, transform);
 	}
 
 	public static void applyTransformToChildNodes(Node node, AffineTransform transform) {

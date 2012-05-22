@@ -52,22 +52,6 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
-
-		/*addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
-			public void addItems(JPopupMenu menu,
-					ScriptedActionListener actionListener) {
-				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new VisualPlace.AddTokenAction(implicitPlace));
-				addToken.addScriptedActionListener(actionListener);
-
-				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new VisualPlace.RemoveTokenAction(implicitPlace));
-				removeToken.addScriptedActionListener(actionListener);
-
-				menu.add(new JLabel ("Implicit place"));
-				menu.addSeparator();
-				menu.add(addToken);
-				menu.add(removeToken);
-			}
-		});*/
 	}
 
 	public VisualImplicitPlaceArc () {

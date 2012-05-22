@@ -204,7 +204,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
-		if (labelBoundingBox != null && labelBoundingBox.contains(pointInLocalSpace)) return true;
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 

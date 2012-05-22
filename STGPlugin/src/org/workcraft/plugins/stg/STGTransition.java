@@ -2,7 +2,7 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.plugins.petri.Transition;
 
-public interface StgTransition
+public interface STGTransition
 {
 	public DummyTransition asDummy();
 	public SignalTransition asSignal();

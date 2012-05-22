@@ -31,7 +31,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
 @VisualClass("org.workcraft.plugins.stg.VisualSignalTransition")
-public class SignalTransition extends Transition implements StgTransition
+public class SignalTransition extends Transition implements STGTransition
 {
 	public enum Type {
 		INPUT,
