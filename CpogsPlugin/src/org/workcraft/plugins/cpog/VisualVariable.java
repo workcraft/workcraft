@@ -41,7 +41,6 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
@@ -51,28 +50,24 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent
 {
-	private static double size = 1;
-	private static float strokeWidth = 0.08f;
-
+	private final static double size = 1.0;
+	private final static float strokeWidth = 0.08f;
 	private static Font valueFont;
-
 	private static Font labelFont;
+	private Point2D labelPosition = null;
+	private Rectangle2D labelBoundingBox = null;
 
 	static {
 		try {
-			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
-			valueFont = labelFont.deriveFont(0.75f);
+			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
+			labelFont = font.deriveFont(0.5f);
+			valueFont = font.deriveFont(0.75f);
 		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
-	private Rectangle2D labelBB = null;
-	public LabelPositioning labelPositioning = LabelPositioning.TOP;
 
 	public VisualVariable(Variable variable)
 	{
@@ -83,16 +78,8 @@ public class VisualVariable extends VisualComponent
 		states.put("[0] false", VariableState.FALSE);
 		states.put("[?] undefined", VariableState.UNDEFINED);
 
-		PropertyDescriptor declaration = new PropertyDeclaration(this, "State", "getState", "setState", VariableState.class, states);
-		addPropertyDeclaration(declaration);
-
-		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
-
-		for(LabelPositioning lp : LabelPositioning.values())
-			positions.put(lp.name, lp);
-
-		declaration = new PropertyDeclaration(this, "Label positioning", "getLabelPositioning", "setLabelPositioning", LabelPositioning.class, positions);
-		addPropertyDeclaration(declaration);
+		addPropertyDeclaration(new PropertyDeclaration(this, "State",
+				"getState", "setState", VariableState.class, states));
 	}
 
 	public void draw(DrawRequest r)
@@ -104,16 +91,13 @@ public class VisualVariable extends VisualComponent
 				size - strokeWidth, size - strokeWidth);
 
 		g.setStroke(new BasicStroke(strokeWidth));
-
 		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(shape);
 
 		String text = getState().toString();
-
 		FormulaRenderingResult result = FormulaToGraphics.print(text, valueFont, g.getFontRenderContext());
-
 		Rectangle2D textBB = result.boundingBox;
 
 		float textX = (float)-textBB.getCenterX();
@@ -121,11 +105,8 @@ public class VisualVariable extends VisualComponent
 
 		AffineTransform transform = g.getTransform();
 		g.translate(textX, textY);
-
 		result.draw(g, Coloriser.colorise(getForegroundColor(), colorisation));
-
 		g.setTransform(transform);
-
 		drawLabelInLocalSpace(r);
 	}
 
@@ -147,35 +128,33 @@ public class VisualVariable extends VisualComponent
 	protected void drawLabelInLocalSpace(DrawRequest r)
 	{
 		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
 
-		String text = getLabel();
+		FormulaRenderingResult result = FormulaToGraphics.print(getLabel(), labelFont, g.getFontRenderContext());
+		Rectangle2D gbb = result.boundingBox;
 
-		FormulaRenderingResult result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
-
-		labelBB = result.boundingBox;
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		Point2D labelPosition = new Point2D.Double(
-				bb.getCenterX() - labelBB.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + labelBB.getWidth() + 0.2),
-				bb.getCenterY() - labelBB.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + labelBB.getHeight() + 0.2));
+		labelPosition = new Point2D.Double(
+				bb.getCenterX() - gbb.getCenterX() + 0.5 * getLabelPositioning().dx * (bb.getWidth() + gbb.getWidth() + 0.2),
+				bb.getCenterY() - gbb.getCenterY() + 0.5 * getLabelPositioning().dy * (bb.getHeight() + gbb.getHeight() + 0.2));
+		labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
+				gbb.getWidth(), gbb.getHeight());
 
 		AffineTransform oldTransform = g.getTransform();
-		AffineTransform transform = AffineTransform.getTranslateInstance(labelPosition.getX(), labelPosition.getY());
-
 		g.translate(labelPosition.getX(), labelPosition.getY());
-		result.draw(g, Coloriser.colorise(getLabelColor(), r.getDecoration().getColorisation()));
+		result.draw(g, Coloriser.colorise(getLabelColor(), colorisation));
 		g.setTransform(oldTransform);
-
-		labelBB = BoundingBoxHelper.transform(labelBB, transform);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()
 	{
-		return BoundingBoxHelper.union(labelBB, new Rectangle2D.Double(-size / 2, -size / 2, size, size));
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+		return BoundingBoxHelper.union(bb, labelBoundingBox);
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
-		if (labelBB != null && labelBB.contains(pointInLocalSpace)) return true;
+		if (labelBoundingBox != null && labelBoundingBox.contains(pointInLocalSpace)) return true;
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
@@ -199,14 +178,4 @@ public class VisualVariable extends VisualComponent
 		setState(getState().toggle());
 	}
 
-	public LabelPositioning getLabelPositioning()
-	{
-		return labelPositioning;
-	}
-
-	public void setLabelPositioning(LabelPositioning labelPositioning)
-	{
-		this.labelPositioning = labelPositioning;
-		sendNotification(new PropertyChangedEvent(this, "label positioning"));
-	}
 }

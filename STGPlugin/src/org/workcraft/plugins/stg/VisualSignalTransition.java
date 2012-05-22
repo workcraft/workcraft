@@ -39,7 +39,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -100,7 +99,7 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return mergeLabelBB(label.getBoundingBox());
+		return label.getBoundingBox();
 	}
 
 	@Override

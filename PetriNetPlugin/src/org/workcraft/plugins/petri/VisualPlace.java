@@ -28,7 +28,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -90,7 +89,6 @@ public class VisualPlace extends VisualComponent {
 
 	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
-
 	private Color tokenColor = CommonVisualSettings.getForegroundColor();
 
 	public Place getPlace() {
@@ -146,8 +144,7 @@ public class VisualPlace extends VisualComponent {
 
 			g.setColor(tokenColor);
 			g.fill(shape);
-		}
-		else
+		} else {
 			if (tokens > 1 && tokens < 8)
 			{
 				double al = Math.PI / tokens;
@@ -183,17 +180,13 @@ public class VisualPlace extends VisualComponent {
 				g.setColor(tokenColor);
 				g.drawString(Integer.toString(tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
 			}
+		}
 	}
 
 	@Override
 	public void draw(DrawRequest r)
 	{
 		Graphics2D g = r.getGraphics();
-
-		drawLabelInLocalSpace(r);
-
-		double size = CommonVisualSettings.getSize();
-		double strokeWidth = CommonVisualSettings.getStrokeWidth();
 
 		Shape shape = new Ellipse2D.Double(
 				-size / 2 + strokeWidth / 2,
@@ -208,21 +201,10 @@ public class VisualPlace extends VisualComponent {
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
+		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth,
+				Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 
-		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
-	}
-
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		Rectangle2D rect1 = new Rectangle2D.Double(-size/2, -size/2, size, size);
-		return mergeLabelBB(rect1);
-	}
-
-
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		double size = CommonVisualSettings.getSize();
-
-		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
+		drawLabelInLocalSpace(r);
 	}
 
 	public Place getReferencedPlace() {

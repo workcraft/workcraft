@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.dom.visual.Positioning;
 import org.xml.sax.SAXException;
 
 public class Config {
@@ -157,6 +158,21 @@ public class Config {
 			return defaultValue;
 		else
 			return Boolean.parseBoolean(s);
+	}
+
+	public void setLabelPositioning(String key, Positioning value) {
+		set (key, value.name());
+	}
+
+	public Positioning getLabelPositioning(String key, Positioning defaultValue) {
+		String s = get(key);
+		try {
+			return Enum.valueOf(Positioning.class, s);
+		} catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			return defaultValue;
+		}
 	}
 
 	public void set(String key, String value) {

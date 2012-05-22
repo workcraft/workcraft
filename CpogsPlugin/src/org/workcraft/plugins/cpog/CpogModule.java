@@ -6,18 +6,14 @@ import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyClassProvider;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.cpog.serialisation.ArcDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.ArcSerialiser;
-import org.workcraft.plugins.cpog.serialisation.BooleanFormulaSerialiser;
-import org.workcraft.plugins.cpog.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.RhoClauseDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.RhoClauseSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
-import org.workcraft.plugins.interop.DotGExporter;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 

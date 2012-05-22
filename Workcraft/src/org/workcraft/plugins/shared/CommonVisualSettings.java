@@ -21,11 +21,12 @@
 
 package org.workcraft.plugins.shared;
 import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
@@ -39,17 +40,33 @@ public class CommonVisualSettings implements SettingsPage {
 	protected static Color backgroundColor = Color.WHITE;
 	protected static Color foregroundColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
+	private static Positioning labelPositioning = Positioning.TOP;
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Base icon width (pixels, 8-256)", "getIconSize", "setIconSize", int.class));
+		properties.add(new PropertyDeclaration(this, "Base icon width (pixels, 8-256)",
+				"getIconSize", "setIconSize", int.class));
 
-		properties.add(new PropertyDeclaration(this, "Base component size (cm)", "getSize", "setSize", double.class));
-		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
+		properties.add(new PropertyDeclaration(this, "Base component size (cm)",
+				"getSize", "setSize", double.class));
 
-		properties.add(new PropertyDeclaration(this, "Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Default fill color", "getFillColor", "setFillColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)",
+				"getStrokeWidth", "setStrokeWidth", double.class));
+
+		properties.add(new PropertyDeclaration(this, "Editor background color",
+				"getBackgroundColor", "setBackgroundColor", Color.class));
+
+		properties.add(new PropertyDeclaration(this, "Default foreground color",
+				"getForegroundColor", "setForegroundColor", Color.class));
+
+		properties.add(new PropertyDeclaration(this, "Default fill color",
+				"getFillColor", "setFillColor", Color.class));
+
+		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
+		for(Positioning lp : Positioning.values())
+			positions.put(lp.name, lp);
+		properties.add(new PropertyDeclaration(this, "Default label positioning",
+				"getLabelPositioning", "setLabelPositioning", Positioning.class, positions));
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -63,6 +80,7 @@ public class CommonVisualSettings implements SettingsPage {
 		backgroundColor = config.getColor("CommonVisualSettings.backgroundColor", Color.WHITE);
 		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
+		labelPositioning = config.getLabelPositioning("CommonVisualSettings.labelPositioning", Positioning.TOP);
 	}
 
 	public void save(Config config) {
@@ -72,6 +90,7 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setColor("CommonVisualSettings.backgroundColor", backgroundColor);
 		config.setColor("CommonVisualSettings.foregroundColor", foregroundColor);
 		config.setColor("CommonVisualSettings.fillColor", fillColor);
+		config.setLabelPositioning("CommonVisualSettings.labelPositioning", getLabelPositioning());
 	}
 
 	public static Color getBackgroundColor() {
@@ -96,6 +115,14 @@ public class CommonVisualSettings implements SettingsPage {
 
 	public static void setFillColor(Color fillColor) {
 		CommonVisualSettings.fillColor = fillColor;
+	}
+
+	public static Positioning getLabelPositioning() {
+		return labelPositioning;
+	}
+
+	public static void setLabelPositioning(Positioning labelPositioning) {
+		CommonVisualSettings.labelPositioning = labelPositioning;
 	}
 
 	public String getSection() {

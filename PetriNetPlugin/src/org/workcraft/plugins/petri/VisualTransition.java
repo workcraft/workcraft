@@ -25,7 +25,6 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -51,13 +50,7 @@ public class VisualTransition extends VisualComponent {
 
 	@Override
 	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
-
 		Graphics2D g = r.getGraphics();
-
-		double size = CommonVisualSettings.getSize();
-		double strokeWidth = CommonVisualSettings.getStrokeWidth();
-
 		Shape shape = new Rectangle2D.Double(
 				-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
@@ -68,15 +61,7 @@ public class VisualTransition extends VisualComponent {
 		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
+		drawLabelInLocalSpace(r);
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		return mergeLabelBB(new Rectangle2D.Double(-size/2, -size/2, size, size));
-	}
-
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size).contains(pointInLocalSpace);
-	}
 }

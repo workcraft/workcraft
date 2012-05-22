@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;

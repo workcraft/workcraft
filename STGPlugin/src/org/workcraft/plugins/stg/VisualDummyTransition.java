@@ -74,7 +74,7 @@ public class VisualDummyTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return mergeLabelBB(label.getBoundingBox());
+		return label.getBoundingBox();
 	}
 
 	@Override

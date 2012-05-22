@@ -3,26 +3,19 @@ package org.workcraft.plugins.cpog;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-
 import javax.swing.JOptionPane;
 
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
 import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
 
