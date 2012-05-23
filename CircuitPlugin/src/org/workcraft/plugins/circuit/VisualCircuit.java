@@ -116,8 +116,10 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualComponent c1 = (VisualComponent) first;
 			VisualComponent c2 = (VisualComponent) second;
 			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			VisualCircuitConnection ret = new VisualCircuitConnection(con, c1, c2);
-			Hierarchy.getNearestContainer(c1, c2).add(ret);
+			VisualCircuitConnection connection = new VisualCircuitConnection(con, c1, c2);
+			Node parent = Hierarchy.getCommonParent(c1, c2);
+			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
+			nearestAncestor.add(connection);
 		}
 	}
 
