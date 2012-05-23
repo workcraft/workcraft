@@ -368,21 +368,25 @@ public class CircuitPetriNetGenerator {
 	}
 
 	private static String getContactName(VisualCircuit circuit, VisualContact contact) {
-		String prefix = "";
+		String result = "";
 		Node parent = contact.getParent();
-
 		if (parent instanceof VisualFunctionComponent) {
+			int output_cnt=0;
 			VisualFunctionComponent vc = (VisualFunctionComponent)parent;
-			prefix = ((VisualFunctionComponent)parent).getName()+"_";
-			int cnt=0;
 			for (Node n: vc.getChildren()) {
 				if ((n instanceof VisualContact)&&
 						((VisualContact)n).getIOType()!=IOType.INPUT) {
-					cnt++;
+					output_cnt++;
 				}
 			}
-			if (cnt==1) return ((VisualFunctionComponent)parent).getName();
+
+			result = ((VisualFunctionComponent)parent).getName();
+			if (contact.getIOType() == IOType.INPUT || output_cnt > 1) {
+				result += "_" + contact.getName();
+			}
+		} else {
+			result = contact.getName();
 		}
-		return prefix+contact.getName();
+		return result;
 	}
 }

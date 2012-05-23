@@ -1,0 +1,5 @@
+In Windows start run.bat script, in Linux - run.sh. The script will set up the 
+required search path for external tools and class paths for Workcraft plugins.
+
+To familiarise yourself with the Workcraft framework please look through the 
+practical material in the tutorial directory.

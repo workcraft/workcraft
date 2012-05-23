@@ -40,7 +40,6 @@ import org.workcraft.util.Hierarchy;
 @DisplayName ("Petri Net")
 @DefaultCreateButtons ( { Place.class, Transition.class } )
 @CustomTools ( PetriNetToolProvider.class )
-@CustomToolButtons ( { PetriNetSimulationTool.class } )
 public class VisualPetriNet extends AbstractVisualModel {
 	private PetriNet net;
 
