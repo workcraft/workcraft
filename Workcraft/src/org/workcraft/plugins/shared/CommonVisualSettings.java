@@ -40,7 +40,7 @@ public class CommonVisualSettings implements SettingsPage {
 	protected static Color backgroundColor = Color.WHITE;
 	protected static Color foregroundColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
-	private static Positioning labelPositioning = Positioning.TOP;
+	private static Positioning textPositioning = Positioning.TOP;
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -65,8 +65,8 @@ public class CommonVisualSettings implements SettingsPage {
 		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
 		for(Positioning lp : Positioning.values())
 			positions.put(lp.name, lp);
-		properties.add(new PropertyDeclaration(this, "Default label positioning",
-				"getLabelPositioning", "setLabelPositioning", Positioning.class, positions));
+		properties.add(new PropertyDeclaration(this, "Default text positioning",
+				"getTextPositioning", "setTextPositioning", Positioning.class, positions));
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -75,12 +75,12 @@ public class CommonVisualSettings implements SettingsPage {
 
 	public void load(Config config) {
 		size = config.getDouble("CommonVisualSettings.size", 1.0);
-		iconSize = config.getInt("CommonVisualSettings.iconSize", 16);
+		iconSize = config.getInt("Commo`nVisualSettings.iconSize", 16);
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
 		backgroundColor = config.getColor("CommonVisualSettings.backgroundColor", Color.WHITE);
 		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
-		labelPositioning = config.getLabelPositioning("CommonVisualSettings.labelPositioning", Positioning.TOP);
+		textPositioning = config.getTextPositioning("CommonVisualSettings.textPositioning", Positioning.TOP);
 	}
 
 	public void save(Config config) {
@@ -90,7 +90,7 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setColor("CommonVisualSettings.backgroundColor", backgroundColor);
 		config.setColor("CommonVisualSettings.foregroundColor", foregroundColor);
 		config.setColor("CommonVisualSettings.fillColor", fillColor);
-		config.setLabelPositioning("CommonVisualSettings.labelPositioning", getLabelPositioning());
+		config.setTextPositioning("CommonVisualSettings.textPositioning", getTextPositioning());
 	}
 
 	public static Color getBackgroundColor() {
@@ -117,12 +117,12 @@ public class CommonVisualSettings implements SettingsPage {
 		CommonVisualSettings.fillColor = fillColor;
 	}
 
-	public static Positioning getLabelPositioning() {
-		return labelPositioning;
+	public static Positioning getTextPositioning() {
+		return textPositioning;
 	}
 
-	public static void setLabelPositioning(Positioning labelPositioning) {
-		CommonVisualSettings.labelPositioning = labelPositioning;
+	public static void setTextPositioning(Positioning textPositioning) {
+		CommonVisualSettings.textPositioning = textPositioning;
 	}
 
 	public String getSection() {

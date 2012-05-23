@@ -135,14 +135,13 @@ public class Config {
 	public Color getColor(String key, Color defaultValue) {
 		String s = get (key);
 
-		if (s == null || s.charAt(0) != '#')
+		if (s == null || s.charAt(0) != '#') {
 			return defaultValue;
-
+		}
 
 		try {
 			return new Color(Integer.parseInt(s.substring(1), 16), false);
-		} catch (NumberFormatException e)
-		{
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			return defaultValue;
 		}
@@ -160,16 +159,19 @@ public class Config {
 			return Boolean.parseBoolean(s);
 	}
 
-	public void setLabelPositioning(String key, Positioning value) {
+	public void setTextPositioning(String key, Positioning value) {
 		set (key, value.name());
 	}
 
-	public Positioning getLabelPositioning(String key, Positioning defaultValue) {
+	public Positioning getTextPositioning(String key, Positioning defaultValue) {
 		String s = get(key);
+		if (s == null) {
+			return defaultValue;
+		}
+
 		try {
 			return Enum.valueOf(Positioning.class, s);
-		} catch (NumberFormatException e)
-		{
+		} catch (EnumConstantNotPresentException e) {
 			e.printStackTrace();
 			return defaultValue;
 		}

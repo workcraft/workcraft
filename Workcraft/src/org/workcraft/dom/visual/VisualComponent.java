@@ -51,7 +51,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private GlyphVector labelGlyphs = null;
 
 	private String label = "";
-	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
+	private Positioning labelPositioning = CommonVisualSettings.getTextPositioning();
 	private Point2D labelPosition = null;
 	private Rectangle2D labelBoundingBox = null;
 	private Color labelColor = CommonVisualSettings.getForegroundColor();
@@ -95,7 +95,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		setFillColor(CommonVisualSettings.getFillColor());
 		setForegroundColor(CommonVisualSettings.getForegroundColor());
 		setLabelColor(CommonVisualSettings.getForegroundColor());
-		setLabelPositioning(CommonVisualSettings.getLabelPositioning());
+		setLabelPositioning(CommonVisualSettings.getTextPositioning());
 	}
 
 	public VisualComponent() {
