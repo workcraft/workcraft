@@ -23,7 +23,11 @@ package org.workcraft.plugins.graph;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.util.Hierarchy;
 
 @VisualClass("org.workcraft.plugins.graph.VisualGraph")
 public class Graph extends AbstractMathModel {
@@ -34,5 +38,11 @@ public class Graph extends AbstractMathModel {
 
 	public Graph(Container root) {
 		super(root);
+	}
+
+	public MathConnection connect(Node first, Node second) {
+		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+		Hierarchy.getNearestContainer(first, second).add(con);
+		return con;
 	}
 }
