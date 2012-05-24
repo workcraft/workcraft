@@ -106,6 +106,7 @@ public class InstanceManager<T>
 			if (assigned != null)
 				remove(t);
 
+
 			instances.put(t, reference);
 			getGenerator(reference.getFirst()).reserveID(reference.getSecond());
 		}

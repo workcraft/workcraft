@@ -107,11 +107,11 @@ public class SignalTransition extends Transition implements STGTransition
 
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
-		if (this.signalName != signalName)
-		{
+	//	if (this.signalName != signalName)
+	//	{
 			this.signalName = signalName;
 			sendNotification(new PropertyChangedEvent(this, "signalName"));
-		}
+	//	}
 	}
 
 	@Override

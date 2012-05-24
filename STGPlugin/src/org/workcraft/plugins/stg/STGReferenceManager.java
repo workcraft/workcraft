@@ -10,11 +10,9 @@ import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
@@ -25,7 +23,7 @@ import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
-public class STGReferenceManager extends StateSupervisor implements ReferenceManager {
+public class STGReferenceManager extends HierarchySupervisor implements ReferenceManager {
 	private InstanceManager<Node> instancedNameManager;
 	private UniqueNameManager<Node> defaultNameManager;
 	private References existingReferences;
@@ -157,6 +155,7 @@ public class STGReferenceManager extends StateSupervisor implements ReferenceMan
 
 			try {
 				final Triple<String, Direction, Integer> r = LabelParser.parseFull(s);
+
 				if (r==null)
 					throw new ArgumentException (s + " is not a valid signal transition label");
 
@@ -202,7 +201,7 @@ public class STGReferenceManager extends StateSupervisor implements ReferenceMan
 
 
 	@Override
-	public void handleHierarchyEvent(HierarchyEvent e) {
+	public void handleEvent(HierarchyEvent e) {
 		if(e instanceof NodesDeletedEvent)
 			for(Node node : e.getAffectedNodes()) {
 				nodeRemoved(node);
@@ -259,19 +258,5 @@ public class STGReferenceManager extends StateSupervisor implements ReferenceMan
 			defaultNameManager.remove(node);
 	}
 
-	@Override
-	public void handleEvent(StateEvent e) {
-		if (e instanceof PropertyChangedEvent)
-		{
-			if (e.getSender() instanceof SignalTransition)
-			{
-				SignalTransition t = (SignalTransition)e.getSender();
-				if (instancedNameManager.contains(t))
-				{
-					instancedNameManager.remove(t);
-					instancedNameManager.assign(t);
-				}
-			}
-		}
-	}
+
 }
