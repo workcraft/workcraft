@@ -176,12 +176,31 @@ public class VisualConnection extends VisualNode implements
 			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, graphic));
 
 			if (t==ConnectionType.POLYLINE) {
-				graphic = new Polyline(this);
+				Polyline p  = new Polyline(this);
+				this.graphic = p;
+
+				VisualComponent v = this.getFirst();
+				if (v == this.getSecond()) {
+					ControlPoint cp1 = new ControlPoint();
+					cp1.setPosition(new Point2D.Double(v.getX()-1.0, v.getY()+1.5));
+					ControlPoint cp2 = new ControlPoint();
+					cp2.setPosition(new Point2D.Double(v.getX()+1.0, v.getY()+1.5));
+					p.add(cp1);
+					p.add(cp2);
+				}
 			}
+
 			if (t==ConnectionType.BEZIER) {
 				Bezier b = new Bezier(this);
 				b.setDefaultControlPoints();
 				graphic = b;
+
+				VisualComponent v = this.getFirst();
+				if (v == this.getSecond()) {
+					BezierControlPoint[] cp = b.getControlPoints();
+					cp[0].setPosition(new Point2D.Double(v.getX()-2.0, v.getY()+2.0));
+					cp[1].setPosition(new Point2D.Double(v.getX()+2.0, v.getY()+2.0));
+				}
 			}
 
 			children.add(graphic);
