@@ -88,6 +88,7 @@ public class DockableTab extends JPanel {
 
 		setPreferredSize(new Dimension(x.width + y.width + 30, Math.max(y.height, x.height) + 4));
 	}
+
 	@Override
 	public void setForeground(Color fg) {
 		getLabel().setForeground(fg);
@@ -109,4 +110,5 @@ public class DockableTab extends JPanel {
 		else
 			label.setFont(label.getFont().deriveFont(Font.PLAIN));
 	}
+
 }

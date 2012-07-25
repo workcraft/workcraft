@@ -53,16 +53,9 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
-//		addPropertyDeclarations();
-
 		transition.addObserver(this);
-
 		updateText();
 	}
-
-//	private void addPropertyDeclarations() {
-//	}
-
 
 	@Override
 	public void draw(DrawRequest r) {
@@ -79,7 +72,6 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
 
 		label.draw(g);
-
 	}
 
 	@Override

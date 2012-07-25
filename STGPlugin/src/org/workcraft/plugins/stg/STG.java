@@ -45,6 +45,7 @@ import org.workcraft.plugins.stg.propertydescriptors.DummyNamePropertyDescriptor
 import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.NamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -225,6 +226,16 @@ public class STG extends AbstractMathModel implements STGModel {
 		referenceManager.setName(node, name);
 	}
 
+	public Type getSignalType (Node t) {
+		return ((SignalTransition) t).getSignalType();
+	}
+
+	public void setSignalTypeWithAutoInstance (Node t, Type type) {
+		String name = referenceManager.getName(t);
+		((SignalTransition) t).setSignalType(type);
+		referenceManager.setName(t, name);
+	}
+
 	@Override
 	public Properties getProperties(Node node) {
 		Properties.Mix result = new Properties.Mix();
@@ -233,9 +244,10 @@ public class STG extends AbstractMathModel implements STGModel {
 				result.add (new NamePropertyDescriptor(this, node));
 		}
 		if (node instanceof SignalTransition) {
+			result.add(new TypePropertyDescriptor(this, node));
 			result.add(new SignalNamePropertyDescriptor(this, (SignalTransition) node));
-			result.add(new InstancePropertyDescriptor(this, node));
 			result.add(new DirectionPropertyDescriptor(this, node));
+			result.add(new InstancePropertyDescriptor(this, node));
 		} if (node instanceof DummyTransition) {
 			result.add(new DummyNamePropertyDescriptor(this, (DummyTransition) node));
 			result.add(new InstancePropertyDescriptor(this, node));
@@ -306,7 +318,7 @@ public class STG extends AbstractMathModel implements STGModel {
 			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
 					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
 		}	else
-			return referenceManager.getNodeByReference(reference);
+		return referenceManager.getNodeByReference(reference);
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {

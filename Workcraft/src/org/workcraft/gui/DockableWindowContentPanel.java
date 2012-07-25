@@ -87,8 +87,6 @@ public class DockableWindowContentPanel extends JPanel {
 			button.setPreferredSize(new Dimension(icon.getIconWidth(),icon.getIconHeight()));
 			button.setFocusable(false);
 			button.setBorder(null);
-
-
 			button.setIcon(icon);
 			return button;
 		}

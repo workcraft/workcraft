@@ -284,7 +284,6 @@ public class MainWindow extends JFrame {
 				((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(true);
 				System.out.println (tabbedPane.getTabComponentAt(tabIndex).getParent());
 				requestFocus(editor);
-
 			}
 
 			@Override
