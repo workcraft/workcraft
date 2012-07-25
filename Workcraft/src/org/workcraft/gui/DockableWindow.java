@@ -22,6 +22,8 @@
 package org.workcraft.gui;
 
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -48,27 +50,22 @@ public class DockableWindow extends AbstractDockable {
 	private ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<DockableWindowTabListener>();
 
 	private ChangeListener tabChangeListener = new ChangeListener() {
+
+
+
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
 
 			int myTabIndex = getTabIndex(tabbedPane, DockableWindow.this);
 
-			if (myTabIndex != -2)
-				System.out.println ("GOOD: " + tabbedPane.hashCode() + " " + tabbedPane.getTabCount());
-			else {
-				System.out.println ("WHAT!? " + tabbedPane.hashCode() + " " + tabbedPane.getTabCount());
-			}
-
 			if (tabbedPane.getSelectedIndex() == myTabIndex)
 				for (DockableWindowTabListener l : tabListeners) {
-					System.out.println ("selected tabIndex: " + myTabIndex + " " + DockableWindow.this.getTitle());
 					l.tabSelected(tabbedPane, myTabIndex);
 				}
 			else
 				for (DockableWindowTabListener l : tabListeners)
 				{
-					System.out.println ("deselected tabIndex: " + myTabIndex + " " + DockableWindow.this.getTitle());
 					l.tabDeselected(tabbedPane, myTabIndex);
 				}
 		}
@@ -107,6 +104,18 @@ public class DockableWindow extends AbstractDockable {
 		this.mainWindow = mainWindow;
 		setTabText(panel.getTitle());
 		dragSources.add(panel);
+		dragSources.add(panel.header);
+
+		panel.header.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					for (DockableWindowTabListener l : tabListeners) {
+						l.headerClicked();
+					}
+				}
+			}
+		});
 	}
 
 	public Component getComponent() {
@@ -179,8 +188,9 @@ public class DockableWindow extends AbstractDockable {
 					l.dockedInTab(tabbedPane, getTabIndex(tabbedPane, this));
 			}
 
-			if (!Arrays.asList(tabbedPane.getChangeListeners()).contains(tabChangeListener))
+			if (!Arrays.asList(tabbedPane.getChangeListeners()).contains(tabChangeListener)) {
 				tabbedPane.addChangeListener(tabChangeListener);
+			}
 		} else
 		{
 			if (inTab) {
@@ -194,7 +204,7 @@ public class DockableWindow extends AbstractDockable {
 	@Override
 	public void dockingComplete(DockingEvent evt) {
 		//	System.out.println ("docked " + getTitle());
-	//	processTabEvents(evt.getNewDockingPort());
+		processTabEvents(evt.getNewDockingPort());
 		updateHeaders(evt.getNewDockingPort(), mainWindow.getDefaultActionListener());
 		super.dockingComplete(evt);
 	}
@@ -204,7 +214,7 @@ public class DockableWindow extends AbstractDockable {
 	@Override
 	public void undockingComplete(DockingEvent evt) {
 		//		System.out.println ("undocked " + getTitle());
-		//processTabEvents(evt.getOldDockingPort());
+		processTabEvents(evt.getOldDockingPort());
 		updateHeaders(evt.getOldDockingPort(), mainWindow.getDefaultActionListener());
 		super.undockingComplete(evt);
 	}

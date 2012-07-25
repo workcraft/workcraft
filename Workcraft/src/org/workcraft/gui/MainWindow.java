@@ -80,7 +80,6 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
-import org.workcraft.gui.tabs.DockableTab;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.Path;
@@ -235,7 +234,7 @@ public class MainWindow extends JFrame {
 
 		VisualModel visualModel = (modelEntry.getModel() instanceof VisualModel) ? (VisualModel) modelEntry.getModel() : null;
 
-		if (visualModel == null)
+		if (visualModel == null) {
 			try {
 				VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
 
@@ -256,14 +255,15 @@ public class MainWindow extends JFrame {
 				e.printStackTrace();
 				return null;
 			}
+		}
 
 		final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
-		String dockableTitle = we.getTitle() + " - " + visualModel.getDisplayName();
+		String title = getTitle(we, visualModel);
 
 		final DockableWindow editorWindow;
 
 		if (editorWindows.isEmpty()) {
-			editorWindow = createDockableWindow (editor, dockableTitle, documentPlaceholder,
+			editorWindow = createDockableWindow (editor, title, documentPlaceholder,
 					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 
 			DockingManager.close(documentPlaceholder);
@@ -272,7 +272,7 @@ public class MainWindow extends JFrame {
 		}
 		else {
 			DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-			editorWindow = createDockableWindow (editor, dockableTitle, firstEditorWindow,
+			editorWindow = createDockableWindow (editor, title, firstEditorWindow,
 					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON, DockingConstants.CENTER_REGION, "Document"+we.getWorkspacePath());
 		}
 
@@ -280,26 +280,24 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
-				System.out.println ("Sel " + editorWindow.getTitle() + " " + tabIndex);
-				((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(true);
-				System.out.println (tabbedPane.getTabComponentAt(tabIndex).getParent());
 				requestFocus(editor);
 			}
 
 			@Override
 			public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
-				((DockableTab)tabbedPane.getTabComponentAt(tabIndex)).setSelected(false);
-				System.out.println ("Desel " + editorWindow.getTitle());
 			}
 
 			@Override
 			public void dockedStandalone() {
-				System.out.println ("Standalone");
 			}
 
 			@Override
 			public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
-				System.out.println ("Intab");
+			}
+
+			@Override
+			public void headerClicked() {
+				requestFocus(editor);
 			}
 		});
 
@@ -309,6 +307,7 @@ public class MainWindow extends JFrame {
 		requestFocus(editor);
 
 		enableWorkActions();
+
 		return editor;
 	}
 
@@ -488,6 +487,7 @@ public class MainWindow extends JFrame {
 			if(editorInFocus == editor)
 			{
 				toolboxWindow.setContent(null);
+				mainMenu.reset();
 				editorInFocus = null;
 			}
 
@@ -789,6 +789,7 @@ public class MainWindow extends JFrame {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 		}
 		we.setChanged(false);
+		refreshTitle(we);
 		lastSavePath = we.getFile().getParent();
 	}
 
@@ -871,6 +872,9 @@ public class MainWindow extends JFrame {
 				framework.save(we.getModelEntry(), we.getFile().getPath());
 			else
 				throw new RuntimeException ("Cannot save workspace entry - it does not have an associated Workcraft model.");
+
+			refreshTitle(we);
+
 			we.setChanged(false);
 			lastSavePath = fc.getCurrentDirectory().getPath();
 		} catch (SerialisationException e) {
@@ -981,6 +985,19 @@ public class MainWindow extends JFrame {
 		//Export.exportToFile(exporter, editorInFocus.getModel(), path);
 
 		lastSavePath = fc.getCurrentDirectory().getPath();
+	}
+
+	private String getTitle(WorkspaceEntry we, VisualModel model) {
+		return we.getTitle() + " - " + model.getDisplayName();
+	}
+
+	public void refreshTitle (WorkspaceEntry we) {
+		for (DockableWindow w: editorWindows.get(we)) {
+			final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+			String title = getTitle(we, editor.getModel());
+			w.getContentPanel().setTitle(title);
+			w.setTabText(title);
+		}
 	}
 
 

@@ -7,4 +7,5 @@ public interface DockableWindowTabListener {
 	public void dockedStandalone();
 	public void tabSelected(JTabbedPane pane, int index);
 	public void tabDeselected(JTabbedPane pane, int index);
+	public void headerClicked ();
 }

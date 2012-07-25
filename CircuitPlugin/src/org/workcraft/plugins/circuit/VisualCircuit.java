@@ -40,7 +40,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.util.Hierarchy;
 
 
-@DisplayName("Visual Circuit")
+@DisplayName("Digital Circuit")
 @CustomTools ( CircuitToolsProvider.class )
 @DefaultCreateButtons ( { Joint.class, FunctionComponent.class } )
 

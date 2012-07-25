@@ -226,16 +226,6 @@ public class STG extends AbstractMathModel implements STGModel {
 		referenceManager.setName(node, name);
 	}
 
-	public Type getSignalType (Node t) {
-		return ((SignalTransition) t).getSignalType();
-	}
-
-	public void setSignalTypeWithAutoInstance (Node t, Type type) {
-		String name = referenceManager.getName(t);
-		((SignalTransition) t).setSignalType(type);
-		referenceManager.setName(t, name);
-	}
-
 	@Override
 	public Properties getProperties(Node node) {
 		Properties.Mix result = new Properties.Mix();

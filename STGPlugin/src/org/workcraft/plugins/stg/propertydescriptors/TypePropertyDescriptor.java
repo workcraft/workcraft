@@ -26,12 +26,12 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return stg.getSignalType(st);
+		return ((SignalTransition)st).getSignalType();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		stg.setSignalTypeWithAutoInstance(st, (Type)value);
+		((SignalTransition)st).setSignalType((Type)value);
 	}
 
 	@Override

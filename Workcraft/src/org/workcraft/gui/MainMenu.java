@@ -388,5 +388,10 @@ public class MainMenu extends JMenuBar {
 		if (mi!=null)
 			mi.setSelected(true);
 	}
+
+	public void reset() {
+		mnTools.setVisible(false);
+		mnTools.removeAll();
+	}
 }
 

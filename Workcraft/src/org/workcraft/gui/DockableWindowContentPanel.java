@@ -26,6 +26,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -78,6 +80,7 @@ public class DockableWindowContentPanel extends JPanel {
 
 	class DockableViewHeader extends JPanel {
 		private ActionButton btnMin, btnMax, btnClose;
+		private JLabel titleLabel = null;
 		private JPanel buttonPanel = null;
 		private boolean maximized = false;
 
@@ -145,12 +148,12 @@ public class DockableWindowContentPanel extends JPanel {
 			}
 
 
-			JLabel label = new JLabel(" "+ title);
-			label.setOpaque(false);
-			label.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
-			label.setFont(label.getFont().deriveFont(Font.BOLD));
+			titleLabel = new JLabel(" "+ title);
+			titleLabel.setOpaque(false);
+			titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
+			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 
-			add(label, BorderLayout.WEST);
+			add(titleLabel, BorderLayout.WEST);
 
 			setMaximized(false);
 		}
@@ -172,6 +175,10 @@ public class DockableWindowContentPanel extends JPanel {
 					btnMax.setToolTipText("Maximize window");
 				}
 		}
+
+		public void setTitle(String title) {
+			titleLabel.setText(title);
+		}
 	}
 
 	public static final int CLOSE_BUTTON = 1;
@@ -182,7 +189,7 @@ public class DockableWindowContentPanel extends JPanel {
 	private String title;
 	private JComponent content;
 	private JPanel contentPane;
-	private DockableViewHeader header;
+	public final DockableViewHeader header;
 	private MainWindow mainWindow;
 	private int ID;
 	private int options;
@@ -251,6 +258,11 @@ public class DockableWindowContentPanel extends JPanel {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public void setTitle(String title) {
+		header.setTitle(title);
+
 	}
 
 	public int getID() {
