@@ -1,17 +1,20 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 
-public class InstancePropertyDescriptor implements PropertyDescriptor {
+public class DirectionPropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
 	private final Node st;
 
-	public InstancePropertyDescriptor(STG stg, Node st) {
+	public DirectionPropertyDescriptor(STG stg, Node st) {
 		this.stg = stg;
 		this.st = st;
 	}
@@ -23,23 +26,26 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return stg.getInstanceNumber(st);
+		return stg.getDirection(st);
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		//throw new NotSupportedException();
-		stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
+		stg.setDirectionWithAutoInstance(st, (Direction)value);
 	}
 
 	@Override
 	public Map<Object, String> getChoice() {
-		return null;
+		LinkedHashMap<Object, String> directions = new LinkedHashMap<Object, String>();
+		directions.put(SignalTransition.Direction.PLUS, "+");
+		directions.put(SignalTransition.Direction.MINUS, "-");
+		directions.put(SignalTransition.Direction.TOGGLE, "~");
+		return directions;
 	}
 
 	@Override
 	public String getName() {
-		return "Instance";
+		return "Direction";
 	}
 
 	@Override

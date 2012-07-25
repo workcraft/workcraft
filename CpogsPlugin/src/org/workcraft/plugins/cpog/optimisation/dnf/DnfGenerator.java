@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog.optimisation.dnf;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;

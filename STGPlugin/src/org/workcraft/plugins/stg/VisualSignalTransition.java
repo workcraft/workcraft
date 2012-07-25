@@ -27,14 +27,12 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
@@ -55,28 +53,15 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
-		addPropertyDeclarations();
+//		addPropertyDeclarations();
 
 		transition.addObserver(this);
 
 		updateText();
 	}
 
-	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
-		types.put("Input", SignalTransition.Type.INPUT);
-		types.put("Output", SignalTransition.Type.OUTPUT);
-		types.put("Internal", SignalTransition.Type.INTERNAL);
-
-		LinkedHashMap<String, Object> directions = new LinkedHashMap<String, Object>();
-		directions.put("+", SignalTransition.Direction.PLUS);
-		directions.put("-", SignalTransition.Direction.MINUS);
-		directions.put("", SignalTransition.Direction.TOGGLE);
-
-		//addPropertyDeclaration(new PropertyDeclaration(this, "Signal name", "getSignalName", "setSignalName", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Transition", "getDirection", "setDirection", SignalTransition.Direction.class, directions));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Signal type", "getType", "setType", SignalTransition.Type.class, types));
-	}
+//	private void addPropertyDeclarations() {
+//	}
 
 
 	@Override

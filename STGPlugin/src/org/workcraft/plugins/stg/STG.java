@@ -40,6 +40,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.DummyNamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.NamePropertyDescriptor;
@@ -116,6 +117,7 @@ public class STG extends AbstractMathModel implements STGModel {
 		return ret;
 	}
 
+
 	public boolean isEnabled(Transition t) {
 		return PetriNet.isEnabled(this, t);
 	}
@@ -191,6 +193,18 @@ public class STG extends AbstractMathModel implements STGModel {
 		referenceManager.setInstanceNumber(st, number);
 	}
 
+	public Direction getDirection (Node t) {
+		String name = referenceManager.getName(t);
+		return LabelParser.parseFull(name).getSecond();
+	}
+
+	public void setDirectionWithAutoInstance (Node t, Direction direction) {
+		String name = referenceManager.getName(t);
+		Triple<String, Direction, Integer> old = LabelParser.parseFull(name);
+
+		referenceManager.setName(t, old.getFirst() + direction.toString());
+	}
+
 	public String makeReference (Pair<String, Integer> label) {
 		String name = label.getFirst();
 		Integer instance = label.getSecond();
@@ -221,6 +235,7 @@ public class STG extends AbstractMathModel implements STGModel {
 		if (node instanceof SignalTransition) {
 			result.add(new SignalNamePropertyDescriptor(this, (SignalTransition) node));
 			result.add(new InstancePropertyDescriptor(this, node));
+			result.add(new DirectionPropertyDescriptor(this, node));
 		} if (node instanceof DummyTransition) {
 			result.add(new DummyNamePropertyDescriptor(this, (DummyTransition) node));
 			result.add(new InstancePropertyDescriptor(this, node));
