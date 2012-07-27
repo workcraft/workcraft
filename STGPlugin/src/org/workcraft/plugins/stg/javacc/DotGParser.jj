@@ -144,10 +144,16 @@ PARSER_END(DotGParser)
 |	<"#" (~["\r","\n"])* (["\r", "\n"])*>
 }
 
-< IGNORE_REST > TOKEN:
+< IGNORE_LINE > TOKEN:
 {
 	<REST : (~["\r", "\n", "#"])*> : DEFAULT
 }
+
+< IGNORE_ALL > TOKEN:
+{
+	<ANY : ~[]>
+}
+
 
 TOKEN :
 {
@@ -159,12 +165,12 @@ TOKEN :
   	| <GRAPH: ".graph">
   	| <MARKING: ".marking">
   	| <CAPACITY: ".capacity">
-	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_REST
+	| <END: ".end"> : IGNORE_ALL
+	| <UNSUPPORTED_HEADER: "." <NAME>> : IGNORE_LINE
   	| <NAME: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9"])*>
   	| <DIRECTION: ["+","-","~"]>
   	| <INTEGER: (["0"-"9"])+>
   	| "{" | "}" | "<" | ">" | "," | "/" | "="
-	| <ANY : ~[]>
 }
 
 STG parse() : { }
@@ -173,6 +179,7 @@ STG parse() : { }
 	 ( header() <LINEBREAK> )*
 	 graph()
 	 ( footer() <LINEBREAK> )*
+	 <END> (<ANY>)*
 	 <EOF>
 	 {return stg;}
 }
@@ -180,7 +187,8 @@ STG parse() : { }
 void header() : { List<String> list; }
 {
   	(<LINEBREAK>)?
-	(	  	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
+	(
+	  	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
 		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
 		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
 		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
@@ -303,15 +311,19 @@ Pair<String, Integer> dummyTransition() :
 }
 
 Node anyTransition() :
-{	Triple<String, Direction, Integer> r;
+{
+	Triple<String, Direction, Integer> r;
 	Pair<String, Integer> r2;
 	Node t;
 }
-{	(
-	  LOOKAHEAD(signalTransition())	  r = signalTransition() { t = getOrCreate(r); }
+{
+	(
+	  LOOKAHEAD(signalTransition())
+	  r = signalTransition() { t = getOrCreate(r); }
 	| r2 = dummyTransition() { t = getOrCreate(r2); }
 )
-	{		return t;
+	{
+		return t;
 	}
 }
 
