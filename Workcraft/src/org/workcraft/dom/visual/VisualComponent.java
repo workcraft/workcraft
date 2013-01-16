@@ -45,13 +45,16 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private MathNode refNode = null;
 
 	protected final static double size = CommonVisualSettings.getSize();
-	protected final static double strokeWidth = CommonVisualSettings.getStrokeWidth();
-	protected final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	protected final static double strokeWidth = CommonVisualSettings
+			.getStrokeWidth();
+	protected final static Font labelFont = new Font("Sans-serif", Font.PLAIN,
+			1).deriveFont(0.5f);
 
 	private GlyphVector labelGlyphs = null;
 
 	private String label = "";
-	private Positioning labelPositioning = CommonVisualSettings.getTextPositioning();
+	private Positioning labelPositioning = CommonVisualSettings
+			.getTextPositioning();
 	private Point2D labelPosition = null;
 	private Rectangle2D labelBoundingBox = null;
 	private Color labelColor = CommonVisualSettings.getForegroundColor();
@@ -71,11 +74,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				"getFillColor", "setFillColor", Color.class));
 
 		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
-		for(Positioning lp : Positioning.values())
+		for (Positioning lp : Positioning.values())
 			positions.put(lp.name, lp);
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label positioning",
-				"getLabelPositioning", "setLabelPositioning", Positioning.class, positions));
+		addPropertyDeclaration(new PropertyDeclaration(this,
+				"Label positioning", "getLabelPositioning",
+				"setLabelPositioning", Positioning.class, positions));
 
 	}
 
@@ -113,13 +117,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
-	public Positioning getLabelPositioning()
-	{
+	public Positioning getLabelPositioning() {
 		return labelPositioning;
 	}
 
-	public void setLabelPositioning(Positioning labelPositioning)
-	{
+	public void setLabelPositioning(Positioning labelPositioning) {
 		this.labelPositioning = labelPositioning;
 		labelGlyphs = null;
 		labelBoundingBox = null;
@@ -169,20 +171,29 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	protected void drawLabelInLocalSpace(DrawRequest r) {
 		updateGlyph(r.getGraphics());
 		Graphics2D g = r.getGraphics();
-		g.setColor(Coloriser.colorise(labelColor, r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(labelColor, r.getDecoration()
+				.getColorisation()));
 		g.setFont(labelFont);
-		g.drawString(label, (float) labelPosition.getX(), (float) labelPosition.getY());
+		g.drawString(label, (float) labelPosition.getX(),
+				(float) labelPosition.getY());
 	}
 
 	private void updateGlyph(Graphics2D g) {
 		if (labelBoundingBox == null || labelGlyphs == null) {
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
-			Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-			Rectangle2D gbb = labelGlyphs.getLogicalBounds();
-			labelPosition = new Point2D.Double(
-					bb.getCenterX() - gbb.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + gbb.getWidth() + 0.2),
-					bb.getCenterY() - gbb.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + gbb.getHeight() + 0.2));
-			labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
+			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(),
+					getLabel());
+			Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,
+					size);
+			Rectangle2D gbb = new Rectangle2D.Double(0, 0, 0, 0);
+			if (!getLabel().isEmpty())
+				gbb = labelGlyphs.getLogicalBounds();
+			labelPosition = new Point2D.Double(bb.getCenterX()
+					- gbb.getCenterX() + 0.5 * labelPositioning.dx
+					* (bb.getWidth() + gbb.getWidth() + 0.2), bb.getCenterY()
+					- gbb.getCenterY() + 0.5 * labelPositioning.dy
+					* (bb.getHeight() + gbb.getHeight() + 0.2));
+			labelBoundingBox = new Rectangle2D.Double(gbb.getX()
+					+ labelPosition.getX(), gbb.getY() + labelPosition.getY(),
 					gbb.getWidth(), gbb.getHeight());
 		}
 	}
@@ -196,15 +207,15 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return getLabelGlyphs(g).getVisualBounds();
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace()
-	{
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,
+				size);
 		return BoundingBoxHelper.union(bb, labelBoundingBox);
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return Math.abs(pointInLocalSpace.getX()) <= size / 2
+				&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
 }

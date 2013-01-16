@@ -25,7 +25,8 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 	@Override
 	public void finished(Result<? extends SynthesisResult> result, String description) {
 		if (result.getOutcome() == Outcome.FAILED) {
-			JOptionPane.showMessageDialog(framework.getMainWindow(), "Petrify execution failed :-(", "Error", JOptionPane.ERROR_MESSAGE);
+			String msg = result.getReturnValue().getStderr();
+			JOptionPane.showMessageDialog(framework.getMainWindow(), msg, "Error", JOptionPane.ERROR_MESSAGE);
 		} else if (result.getOutcome() == Outcome.FINISHED) {
 
 			// output logfile at console
@@ -37,6 +38,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 					while ((currentLine = br.readLine()) != null) {
 						System.out.println(currentLine);
 					}
+					br.close();
 				} catch (FileNotFoundException e1) {
 					throw new RuntimeException(e1);
 				} catch (IOException e) {
@@ -53,21 +55,12 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 					while ((currentLine = br.readLine()) != null) {
 						System.out.println(currentLine);
 					}
+					br.close();
 				} catch (FileNotFoundException e1) {
 					throw new RuntimeException(e1);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-
-
-/*			// pop up MessageBox
-			final String successMessage = "Petrify synthesis succeeded.";
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					JOptionPane.showMessageDialog(null, successMessage);
-				}
-			});*/
 		}
 	}
 

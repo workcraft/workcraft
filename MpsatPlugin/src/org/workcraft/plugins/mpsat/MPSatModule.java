@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Framework;
 import org.workcraft.Module;
+import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.mpsat.tools.CscResolutionTool;
@@ -15,16 +16,18 @@ public class MPSatModule implements Module {
 
 	@Override
 	public void init(Framework framework) {
-		framework.getPluginManager().registerClass(Tool.class, CscResolutionTool.class, framework);
-		framework.getPluginManager().registerClass(Tool.class, MpsatSynthesis.class, framework);
-		framework.getPluginManager().registerClass(Tool.class, MpsatDeadlockChecker.class, framework);
-		framework.getPluginManager().registerClass(Tool.class, CustomPropertyMpsatChecker.class, framework);
+		PluginManager p = framework.getPluginManager();
 
-		framework.getPluginManager().registerClass(SettingsPage.class, MpsatUtilitySettings.class);
-		framework.getPluginManager().registerClass(SettingsPage.class, PunfUtilitySettings.class);
+		p.registerClass(Tool.class, CscResolutionTool.class, framework);
+		p.registerClass(Tool.class, MpsatSynthesis.class, framework);
+		p.registerClass(Tool.class, MpsatDeadlockChecker.class, framework);
+		p.registerClass(Tool.class, CustomPropertyMpsatChecker.class, framework);
 
-		framework.getPluginManager().registerClass(Tool.class, PcompTool.class, framework);
-		framework.getPluginManager().registerClass(SettingsPage.class, PcompUtilitySettings.class);
+		p.registerClass(SettingsPage.class, MpsatUtilitySettings.class);
+		p.registerClass(SettingsPage.class, PunfUtilitySettings.class);
+
+		p.registerClass(Tool.class, PcompTool.class, framework);
+		p.registerClass(SettingsPage.class, PcompUtilitySettings.class);
 	}
 
 	@Override

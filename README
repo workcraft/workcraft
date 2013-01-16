@@ -3,3 +3,22 @@ required search path for external tools and class paths for Workcraft plugins.
 
 To familiarise yourself with the Workcraft framework please look through the 
 practical material in the tutorial directory.
+
+
+# Tips and tricks
+
+* Hold Shift to include objects into a selection and Ctrl to exclude objects from a selection.
+
+* Outline a selection area from-right-to-left for adding fully covered objects, and from-left-to-right for adding any touched objects.
+
+* Ctrl+G groups objects into a cluster and Ctrl+U ungroups it. 
+
+* PageDown enters a group anf PageUp leaves it.
+
+* Scroll the mouse wheel up to zooms in and down to zoom out. The same can be done using keyboard: "+" or "=" to zoom in and "-" or "_" to zoom out.
+
+* Use left mouse button or arrow keys to move components.
+
+* Use the middle mouse button or Ctrl+arrow keys to pan the view.
+
+
