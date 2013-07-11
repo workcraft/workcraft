@@ -798,6 +798,8 @@ public class MainWindow extends JFrame {
 
 		mainMenu.revalidate();
 		mainMenu.repaint();
+		//propertyEditorWindow.clearObject();
+		sender.updatePropertyView();
 
 		framework.deleteJavaScriptProperty("visualModel",
 				framework.getJavaScriptGlobalScope());
@@ -1117,6 +1119,7 @@ public class MainWindow extends JFrame {
 			w.getContentPanel().setTitle(title);
 			w.setTabText(title);
 		}
+		DockableWindow.updateHeaders(rootDockingPort,getDefaultActionListener());
 	}
 
 	public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {

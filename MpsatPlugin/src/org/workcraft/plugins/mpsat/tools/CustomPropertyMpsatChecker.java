@@ -9,8 +9,8 @@ import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatConfigurationDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.presets.PresetManager;
-import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,7 +30,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
+		return WorkspaceUtils.canHas(we, PetriNetModel.class);
 	}
 
 	@Override

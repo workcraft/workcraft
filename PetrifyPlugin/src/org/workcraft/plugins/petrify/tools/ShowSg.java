@@ -5,9 +5,9 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
-import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -25,7 +25,7 @@ public class ShowSg implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
+		return WorkspaceUtils.canHas(we, PetriNetModel.class);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ShowSg implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, STGModel.class), framework);
+		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, PetriNetModel.class), framework);
 		framework.getTaskManager().queue(task, "Show state graph", new ProgressMonitor<DrawSgResult>() {
 			@Override
 			public void progressUpdate(double completion) {

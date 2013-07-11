@@ -19,11 +19,11 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyComplexGateSynthesis implements Tool {
+public class PetrifyGeneralizedCelementSynthesis implements Tool {
 
 	private final Framework framework;
 
-	public PetrifyComplexGateSynthesis(Framework framework) {
+	public PetrifyGeneralizedCelementSynthesis(Framework framework) {
 		this.framework = framework;
 	}
 
@@ -81,7 +81,7 @@ public class PetrifyComplexGateSynthesis implements Tool {
 
 	private String[] getSynthesisParameter() {
 		String[] result = new String[1];
-		result[0] = "-cg";
+		result[0] = "-gc";
 		return result;
 	}
 
@@ -107,7 +107,7 @@ public class PetrifyComplexGateSynthesis implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Complex gate synthesis (Petrify)";
+		return "Generalized C-element synthesis (Petrify)";
 	}
 
 }

@@ -19,55 +19,17 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyDummyContractionTask implements Task<PetrifyDummyContractionResult>{
+public class TransformationTask implements Task<TransformationResult>{
 	private Framework framework;
 	private WorkspaceEntry workspaceEntry;
+	String description;
+	String[] parameters;
 
-	public PetrifyDummyContractionTask(Framework framework, WorkspaceEntry workspaceEntry) {
+	public TransformationTask(Framework framework, WorkspaceEntry workspaceEntry, String description, String[] parameters) {
 		this.framework = framework;
 		this.workspaceEntry = workspaceEntry;
-	}
-
-	@Override
-	public Result<? extends PetrifyDummyContractionResult> run(ProgressMonitor<? super PetrifyDummyContractionResult> monitor) {
-		try
-		{
-			File tmp = File.createTempFile("stg_", ".g");
-
-			ExportTask exportTask = Export.createExportTask(WorkspaceUtils.getAs(workspaceEntry, STGModel.class), tmp, Format.STG, getFramework().getPluginManager());
-
-			final Result<? extends Object> exportResult = getFramework().getTaskManager().execute(exportTask, "Dummy contraction: writing .g");
-
-			if (exportResult.getOutcome() != Outcome.FINISHED)
-				if (exportResult.getOutcome() == Outcome.CANCELLED)
-					return Result.cancelled();
-				else
-					return Result.exception(exportResult.getCause());
-
-			PetrifyTask petrifyTask = new PetrifyTask(new String[] { "-hide", ".dummy" }, tmp.getAbsolutePath());
-
-			final Result<? extends ExternalProcessResult> petrifyResult = getFramework().getTaskManager().execute(petrifyTask, "Dummy contraction: executing Petrify");
-
-			if (petrifyResult.getOutcome() == Outcome.FINISHED)
-			{
-				try {
-					final STGModel stg = new DotGImporter().importSTG(new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput()));
-					return Result.finished(new PetrifyDummyContractionResult(null, stg));
-				} catch (DeserialisationException e) {
-					return Result.exception(e);
-				}
-
-			} else
-			{
-				if(petrifyResult.getOutcome() == Outcome.FAILED)
-					return Result.failed(new PetrifyDummyContractionResult(petrifyResult, null));
-				else
-					return Result.cancelled();
-			}
-		} catch (Throwable e)
-		{
-			return Result.exception(e);
-		}
+		this.description = description;
+		this.parameters = parameters;
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {
@@ -76,5 +38,47 @@ public class PetrifyDummyContractionTask implements Task<PetrifyDummyContraction
 
 	public Framework getFramework() {
 		return framework;
+	}
+
+	@Override
+	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
+		try
+		{
+			File tmp = File.createTempFile("stg_", ".g");
+
+			ExportTask exportTask = Export.createExportTask(WorkspaceUtils.getAs(workspaceEntry, STGModel.class), tmp, Format.STG, getFramework().getPluginManager());
+
+			final Result<? extends Object> exportResult = getFramework().getTaskManager().execute(exportTask, description +": writing .g");
+
+			if (exportResult.getOutcome() != Outcome.FINISHED)
+				if (exportResult.getOutcome() == Outcome.CANCELLED)
+					return Result.cancelled();
+				else
+					return Result.exception(exportResult.getCause());
+
+			PetrifyTask petrifyTask = new PetrifyTask(parameters, tmp.getAbsolutePath());
+
+			final Result<? extends ExternalProcessResult> petrifyResult = getFramework().getTaskManager().execute(petrifyTask, description + ": executing Petrify");
+
+			if (petrifyResult.getOutcome() == Outcome.FINISHED)
+			{
+				try {
+					final STGModel stg = new DotGImporter().importSTG(new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput()));
+					return Result.finished(new TransformationResult(null, stg));
+				} catch (DeserialisationException e) {
+					return Result.exception(e);
+				}
+
+			} else
+			{
+				if(petrifyResult.getOutcome() == Outcome.FAILED)
+					return Result.failed(new TransformationResult(petrifyResult, null));
+				else
+					return Result.cancelled();
+			}
+		} catch (Throwable e)
+		{
+			return Result.exception(e);
+		}
 	}
 }

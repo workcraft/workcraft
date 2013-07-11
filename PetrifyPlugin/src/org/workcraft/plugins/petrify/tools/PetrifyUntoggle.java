@@ -8,10 +8,10 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyDummyContraction implements Tool {
+public class PetrifyUntoggle implements Tool {
 	private Framework framework;
 
-	public PetrifyDummyContraction(Framework framework) {
+	public PetrifyUntoggle(Framework framework) {
 		this.framework = framework;
 	}
 
@@ -27,12 +27,12 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Dummy contraction (Petrify)";
+		return "Untoggle signal transitions (Petrify)";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(framework, we, "Dummy contraction", new String[] { "-hide", ".dummy" });
-		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(task));
+		final TransformationTask task = new TransformationTask(framework, we, "Signal transition untoggle", new String[] {"-untog"});
+		framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(task));
 	}
 }

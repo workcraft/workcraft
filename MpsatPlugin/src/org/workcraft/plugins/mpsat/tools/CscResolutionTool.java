@@ -41,6 +41,6 @@ public class CscResolutionTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Resolve CSC conflicts";
+		return "Resolve CSC conflicts (Mpsat)";
 	}
 }

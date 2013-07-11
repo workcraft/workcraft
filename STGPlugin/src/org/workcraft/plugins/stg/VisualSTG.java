@@ -26,14 +26,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -42,13 +40,10 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.tools.STGSimulationTool;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
-@CustomTools ( STGToolsProvider.class )
-@DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, DummyTransition.class } )
-@CustomToolButtons ( { STGSimulationTool.class } )
+@CustomTools(STGToolsProvider.class)
 public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 

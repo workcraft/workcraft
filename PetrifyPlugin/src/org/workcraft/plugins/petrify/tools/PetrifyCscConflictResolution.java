@@ -8,10 +8,10 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyDummyContraction implements Tool {
+public class PetrifyCscConflictResolution implements Tool {
 	private Framework framework;
 
-	public PetrifyDummyContraction(Framework framework) {
+	public PetrifyCscConflictResolution(Framework framework) {
 		this.framework = framework;
 	}
 
@@ -22,17 +22,17 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "Encoding conflicts";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Dummy contraction (Petrify)";
+		return "Resolve CSC conflicts (Petrify)";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(framework, we, "Dummy contraction", new String[] { "-hide", ".dummy" });
-		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(task));
+		final TransformationTask task = new TransformationTask(framework, we, "CSC conflicts resolution", new String[] {"-csc"});
+		framework.getTaskManager().queue(task, "Petrify CSC conflicts resolution", new TransformationResultHandler(task));
 	}
 }

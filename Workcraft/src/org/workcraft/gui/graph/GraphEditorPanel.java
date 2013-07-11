@@ -237,7 +237,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		workspaceEntry.setChanged(true);
 	}
 
-	private void updatePropertyView() {
+	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
 
 		Collection<Node> selection = visualModel.getSelection();

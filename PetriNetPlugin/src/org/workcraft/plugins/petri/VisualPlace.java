@@ -50,20 +50,6 @@ public class VisualPlace extends VisualComponent {
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 	private Color tokenColor = CommonVisualSettings.getForegroundColor();
 
-	public Place getPlace() {
-		return (Place)getReferencedComponent();
-	}
-
-	@NoAutoSerialisation
-	public int getTokens() {
-		return getPlace().getTokens();
-	}
-
-	@NoAutoSerialisation
-	public void setTokens(int tokens) {
-		getPlace().setTokens(tokens);
-	}
-
 	public VisualPlace(Place place) {
 		super(place);
 		addPropertyDeclarations();
@@ -72,6 +58,7 @@ public class VisualPlace extends VisualComponent {
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
 	}
 
 	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
@@ -115,16 +102,16 @@ public class VisualPlace extends VisualComponent {
 			}
 			else if (tokens > 7)
 			{
-				String out = Integer.toString(tokens);
+				String token_str = Integer.toString(tokens);
 				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
-
-				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
+				Rectangle2D rect = superFont.getStringBounds(token_str, g.getFontRenderContext());
 				g.setFont(superFont);
 				g.setColor(tokenColor);
-				g.drawString(Integer.toString(tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+				g.drawString(token_str, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
 			}
 		}
 	}
+
 
 	@Override
 	public void draw(DrawRequest r)
@@ -144,6 +131,15 @@ public class VisualPlace extends VisualComponent {
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
+		if (p.getCapacity() != 1) {
+			String capacity_str = Integer.toString(p.getCapacity());
+			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
+			Rectangle2D rect = superFont.getStringBounds(capacity_str, g.getFontRenderContext());
+			g.setFont(superFont);
+			g.setColor(tokenColor);
+			g.drawString(capacity_str, (float)(size/3), (float)(size/3 + rect.getHeight()));
+		}
+
 		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth,
 				Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 
@@ -153,6 +149,31 @@ public class VisualPlace extends VisualComponent {
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	}
+
+
+	public Place getPlace() {
+		return (Place)getReferencedComponent();
+	}
+
+	@NoAutoSerialisation
+	public int getTokens() {
+		return getPlace().getTokens();
+	}
+
+	@NoAutoSerialisation
+	public void setTokens(int tokens) {
+		getPlace().setTokens(tokens);
+	}
+
+	@NoAutoSerialisation
+	public int getCapacity() {
+		return getPlace().getCapacity();
+	}
+
+	@NoAutoSerialisation
+	public void setCapacity(int capacity) {
+		getPlace().setCapacity(capacity);
 	}
 
 	public Place getReferencedPlace() {
