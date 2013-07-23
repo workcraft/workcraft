@@ -33,10 +33,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.io.OutputStream;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.dom.visual.VisualModel;
@@ -48,17 +50,15 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.Properties.Mix;
 import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.StateSupervisor;
-import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
+	public OutputStream backup;
+/*
 	class Repainter extends StateSupervisor {
 		@Override
 		public void handleHierarchyEvent(HierarchyEvent e) {
@@ -74,7 +74,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			}
 		}
 	}
-
+*/
 	class Resizer implements ComponentListener {
 
 		@Override
@@ -110,8 +110,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	private static final long serialVersionUID = 1L;
 
-	protected VisualModel visualModel;
-	protected WorkspaceEntry workspaceEntry;
+	public WorkspaceEntry workspaceEntry;
 
 	protected final MainWindow mainWindow;
 	protected final ToolboxPanel toolboxPanel;
@@ -131,10 +130,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
 
-		visualModel = workspaceEntry.getModelEntry().getVisualModel();
+//!!!		new Repainter().attach(getModel().getRoot()); //FIXME detach
 
-		new Repainter().attach(visualModel.getRoot()); //FIXME detach
-		visualModel.addObserver(this);
+		workspaceEntry.addObserver(this);
 
 		view = new Viewport(0, 0, getWidth(), getHeight());
 		grid = new Grid();
@@ -191,7 +189,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-		visualModel.draw(g2d, toolboxPanel.getTool().getDecorator());
+		getModel().draw(g2d, toolboxPanel.getTool().getDecorator());
 
 		if (hasFocus())
 			toolboxPanel.getTool().drawInUserSpace(this, g2d);
@@ -213,7 +211,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	public VisualModel getModel() {
-		return visualModel;
+		return workspaceEntry.getModelEntry().getVisualModel();
 	}
 
 	public Viewport getViewport() {
@@ -240,14 +238,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
 
-		Collection<Node> selection = visualModel.getSelection();
+		Collection<Node> selection = getModel().getSelection();
 
 		if (selection.size() == 1) {
 			Node selected = selection.iterator().next();
 
 			Mix mix = new Mix();
 
-			Properties visualModelProperties = visualModel.getProperties(selected);
+			Properties visualModelProperties = getModel().getProperties(selected);
 
 			mix.add(visualModelProperties);
 
@@ -256,7 +254,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 			if (selected instanceof DependentNode) {
 				for (Node n : ((DependentNode)selected).getMathReferences()) {
-					mix.add(visualModel.getMathModel().getProperties(n));
+					mix.add(getModel().getMathModel().getProperties(n));
 					if (n instanceof Properties)
 						mix.add((Properties)n);
 				}
@@ -271,10 +269,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	public void notify(StateEvent e) {
-		if (e instanceof SelectionChangedEvent) {
-			updatePropertyView();
-			repaint();
-		}
+		updatePropertyView();
+		repaint();
 	}
 
 	@Override
@@ -284,5 +280,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public ToolboxPanel getToolBox() {
 		return toolboxPanel;
+	}
+
+	@Override
+	public Framework getFramework() {
+		return mainWindow.getFramework();
 	}
 }

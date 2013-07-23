@@ -55,10 +55,15 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.PasteException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 
@@ -85,12 +90,35 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		super(root == null? new VisualGroup() : root);
 		this.mathModel = mathModel;
 
+		final VisualModel _this = this;
+
 		currentLevel =  (VisualGroup)getRoot();
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
 		new DefaultHangingConnectionRemover(this, "Visual").attach(getRoot());
 		new DefaultMathNodeRemover().attach(getRoot());
+		new StateSupervisor() {
+			@Override
+			public void handleHierarchyEvent(HierarchyEvent e) {
+				observableState.sendNotification(new StateEvent() {
+					@Override
+					public Object getSender() {
+						return _this;
+					}
+				});
+			}
+
+			@Override
+			public void handleEvent(StateEvent e) {
+				observableState.sendNotification(new StateEvent() {
+					@Override
+					public Object getSender() {
+						return _this;
+					}
+				});
+			}
+		}.attach(getRoot());
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {

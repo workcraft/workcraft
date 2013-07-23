@@ -20,9 +20,9 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.STGPlace;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -37,7 +37,6 @@ public class STGSelectionTool extends SelectionTool
 
 		Rectangle2D bb = t.getBoundingBox();
 		Rectangle r = viewport.userToScreen(bb);
-
 
 		final JTextField text = new JTextField();
 
@@ -55,7 +54,6 @@ public class STGSelectionTool extends SelectionTool
 		text.requestFocusInWindow();
 
 		text.addKeyListener( new KeyListener() {
-
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -75,12 +73,12 @@ public class STGSelectionTool extends SelectionTool
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 			}
-
 		});
 
 		text.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
+				editor.getWorkspaceEntry().setCanDo(false);
 			}
 
 			@Override
@@ -90,14 +88,18 @@ public class STGSelectionTool extends SelectionTool
 
 				final String newName = text.getText();
 
-				if (!cancelEdit)
+				if (!cancelEdit) {
+					editor.getWorkspaceEntry().captureMemento();
 					try {
 						model.setName(t.getReferencedComponent(), newName);
+						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
 						editInPlace(editor, t, newName);
+						editor.getWorkspaceEntry().cancelMemento();
 					}
-
+				}
+				editor.getWorkspaceEntry().setCanDo(true);
 				editor.repaint();
 			}
 		});
@@ -109,30 +111,33 @@ public class STGSelectionTool extends SelectionTool
 		super.mouseClicked(e);
 
 		VisualModel model = e.getEditor().getModel();
-
 		if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount() > 1) {
 			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
-				if(node instanceof VisualPlace)
+				if (node instanceof VisualPlace)
 				{
-					VisualPlace place = (VisualPlace) node;
-					if (place.getTokens()==1)
-						place.setTokens(0);
-					else if (place.getTokens()==0)
-						place.setTokens(1);
+					Place place = ((VisualPlace) node).getPlace();
+					toggleToken(place, e);
 				} else if (node instanceof VisualImplicitPlaceArc) {
-					STGPlace place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
-					if (place.getTokens()==1)
-						place.setTokens(0);
-					else if (place.getTokens()==0)
-						place.setTokens(1);
+					Place place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
+					toggleToken(place, e);
 				} else if (node instanceof VisualSignalTransition || node instanceof VisualDummyTransition) {
 					editInPlace(e.getEditor(), (VisualComponent)node, null);
 				}
-
 			}
 		}
+	}
+
+	private void toggleToken(Place place, GraphEditorMouseEvent e) {
+		if (place.getTokens() <= 1) {
+			e.getEditor().getWorkspaceEntry().saveMemento();
+		}
+
+		if (place.getTokens()==1)
+			place.setTokens(0);
+		else if (place.getTokens()==0)
+			place.setTokens(1);
 	}
 
 }

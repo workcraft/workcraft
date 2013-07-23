@@ -23,7 +23,6 @@ package org.workcraft.serialisation.xml;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -34,6 +33,8 @@ import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 
+import static org.workcraft.serialisation.xml.BeanInfoCache.*;
+
 public class DefaultNodeSerialiser {
 	private SerialiserFactory fac;
 	private NodeSerialiser serialiser;
@@ -43,12 +44,13 @@ public class DefaultNodeSerialiser {
 		this.serialiser = serialiser;
 	}
 
+
 	private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
 		// type explicitly requested to be excluded from auto serialisation
 		if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
 			return;
 
-		BeanInfo info = Introspector.getBeanInfo(currentLevel, currentLevel.getSuperclass());
+		BeanInfo info = getBeanInfo(currentLevel);
 
 		for (PropertyDescriptor desc : info.getPropertyDescriptors())
 		{

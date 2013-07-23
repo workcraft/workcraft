@@ -53,6 +53,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 		branchTrace = null;
 		branchStep = 0;
 
+		editor.getWorkspaceEntry().setCanDo(false);
 		update();
 
 	}

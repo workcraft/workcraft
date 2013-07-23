@@ -30,7 +30,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-
 import javax.swing.Icon;
 
 import org.workcraft.dom.Container;
@@ -77,6 +76,7 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		this.editor = editor;
+		editor.getWorkspaceEntry().setCanDo(true);
 	}
 
 	@Override
@@ -132,13 +132,10 @@ public class SelectionTool extends AbstractTool {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
 			offsetSelection(e, p2.getX()-p1.getX(), p2.getY()-p1.getY());
-		}
-		else if(drag==DRAG_SELECT) {
+		} else if(drag==DRAG_SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
-
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
-
 			e.getEditor().repaint();
 		}
 	}
@@ -152,7 +149,6 @@ public class SelectionTool extends AbstractTool {
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
-
 				switch(e.getKeyModifiers()) {
 					case 0:
 						selectionMode = SELECTION_REPLACE;
@@ -180,10 +176,10 @@ public class SelectionTool extends AbstractTool {
 
 			} else {
 				// hit something
-
 				if(e.getKeyModifiers()==0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
+					editor.getWorkspaceEntry().captureMemento();
 
 					if(hitNode!=null && !model.getSelection().contains(hitNode))
 						e.getModel().select(hitNode);
@@ -196,7 +192,6 @@ public class SelectionTool extends AbstractTool {
 
 				}
 				// do nothing if pressed on a node with modifiers
-
 			}
 		}
 	}
@@ -209,7 +204,7 @@ public class SelectionTool extends AbstractTool {
 		if(e.getButton()==MouseEvent.BUTTON3) {
 
 			if(isDragging()) {
-				cancelDrag(e);
+				cancelDrag(e.getEditor());
 				e.getEditor().repaint();
 				notClick1 = true;
 				notClick3 = true;
@@ -222,8 +217,9 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void finishDrag(GraphEditorMouseEvent e) {
-		if (drag == DRAG_SELECT)
-		{
+		if (drag == DRAG_MOVE) {
+			e.getEditor().getWorkspaceEntry().saveMemento();
+		} else if (drag == DRAG_SELECT) {
 			if (selectionMode == SELECTION_REPLACE)
 				e.getModel().select(selected);
 			else if (selectionMode == SELECTION_ADD)
@@ -233,27 +229,19 @@ public class SelectionTool extends AbstractTool {
 			selectionBox = null;
 		}
 		drag = DRAG_NONE;
-
 		selected.clear();
-
 		e.getEditor().repaint();
 	}
 
 
-	private void cancelDrag(GraphEditorMouseEvent e) {
-
+	private void cancelDrag(GraphEditor editor) {
 		if(drag==DRAG_MOVE) {
-			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getStartPosition().getX()+snapOffset.getX(), e.getStartPosition().getY()+snapOffset.getY()));
-			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			offsetSelection(e, p1.getX()-p2.getX(), p1.getY()-p2.getY());
-		}
-		else if(drag == DRAG_SELECT) {
+			editor.getWorkspaceEntry().cancelMemento();
+		} else if(drag == DRAG_SELECT) {
 			selected.clear();
 			selectionBox = null;
 		}
 		drag = DRAG_NONE;
-
-		e.getEditor().repaint();
 	}
 
 	@Override
@@ -264,8 +252,15 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+			e.getEditor().getWorkspaceEntry().saveMemento();
 			e.getModel().deleteSelection();
 			e.getEditor().repaint();
+		}
+
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && isDragging()) {
+			cancelDrag(e.getEditor());
+			e.getEditor().repaint();
+			notClick1 = true;
 		}
 
 		if (!e.isCtrlDown())
@@ -359,7 +354,6 @@ public class SelectionTool extends AbstractTool {
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
 		VisualModel model = e.getEditor().getModel();
-		//System.out.println (model.getSelection().size());
 
 		for(Node node : model.getSelection()){
 			if(node instanceof Movable) {

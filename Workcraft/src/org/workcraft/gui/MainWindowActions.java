@@ -1,11 +1,6 @@
 package org.workcraft.gui;
 
-import java.awt.Dimension;
-
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -83,9 +78,9 @@ public class MainWindowActions {
 			return "Reconfigure plugins";
 		}
 		@Override
-		public void run(Framework framework) {
+		public void run(Framework f) {
 			try {
-				framework.getPluginManager().reconfigure();
+				f.getPluginManager().reconfigure();
 			} catch (PluginInstantiationException e) {
 				e.printStackTrace();
 			}
@@ -97,8 +92,28 @@ public class MainWindowActions {
 			return "Import...";
 		}
 		@Override
-		public void run(Framework framework) {
-			framework.getMainWindow().importFrom();
+		public void run(Framework f) {
+			f.getMainWindow().importFrom();
+		}
+	};
+
+	public static final Action EDIT_UNDO_ACTION = new Action() {
+		public String getText() {
+			return "Undo";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().undo();
+		}
+	};
+
+	public static final Action EDIT_REDO_ACTION = new Action() {
+		public String getText() {
+			return "Redo";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().redo();
 		}
 	};
 
@@ -107,8 +122,8 @@ public class MainWindowActions {
 			return "Preferences...";
 		}
 		@Override
-		public void run(Framework framework) {
-			framework.getMainWindow().editSettings();
+		public void run(Framework f) {
+			f.getMainWindow().editSettings();
 		}
 	};
 
@@ -119,8 +134,8 @@ public class MainWindowActions {
 		}
 
 		@Override
-		public void run(Framework framework) {
-			framework.getMainWindow().resetLayout();
+		public void run(Framework f) {
+			f.getMainWindow().resetLayout();
 		}
 
 	};

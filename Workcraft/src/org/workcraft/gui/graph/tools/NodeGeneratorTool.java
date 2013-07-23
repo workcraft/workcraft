@@ -26,7 +26,6 @@ import java.awt.Graphics2D;
 
 import javax.swing.Icon;
 
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -49,6 +48,7 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	public void mousePressed(GraphEditorMouseEvent e) {
 		try {
+			e.getEditor().getWorkspaceEntry().saveMemento();
 			generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
 		} catch (NodeCreationException e1) {
 			throw new RuntimeException (e1);

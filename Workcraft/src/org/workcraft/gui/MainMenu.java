@@ -249,9 +249,22 @@ public class MainMenu extends JMenuBar {
 		mnEdit = new JMenu();
 		mnEdit.setText("Edit");
 
+		ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
+		miUndo.setMnemonic(KeyEvent.VK_U);
+		miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
+		miRedo.setMnemonic(KeyEvent.VK_R);
+		miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
 		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		mnEdit.add(miUndo);
+		mnEdit.add(miRedo);
+		mnEdit.addSeparator();
 		mnEdit.add(miProperties);
 
 		// Utility
@@ -315,22 +328,19 @@ public class MainMenu extends JMenuBar {
 		mnExport.setEnabled(true);
 	}
 
-	final public void setMenuForWorkspaceEntry(WorkspaceEntry we) {
-		mnTools.setVisible(true);
+	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
+		we.updateDoState();
 
+		mnTools.setVisible(true);
 		mnTools.removeAll();
 
 		Framework framework = mainWindow.getFramework();
-
 		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we, framework);
 		List<String> sections = Tools.getSections(tools);
 
 		for (String section : sections) {
-
 			JMenu target = mnTools;
-
-			if (!section.isEmpty())
-			{
+			if (!section.isEmpty()) {
 				JMenu sectionMenu = new JMenu (section);
 				mnTools.add(sectionMenu);
 				target = sectionMenu;

@@ -22,6 +22,7 @@
 package org.workcraft;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -600,6 +601,14 @@ public class Framework {
 		}
 	}
 
+	public ModelEntry load(byte[] data) {
+		try {
+			return load(new ByteArrayInputStream(data));
+		} catch (DeserialisationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);
 		try {
@@ -620,7 +629,7 @@ public class Framework {
 
 		ZipOutputStream zos = new ZipOutputStream(out);
 
-		// TODO: get appropiate serialiser from config
+		// TODO: get appropriate serialiser from config
 		ModelSerialiser mathSerialiser = null;
 
 		try {
@@ -680,6 +689,17 @@ public class Framework {
 		} catch (IOException e) {
 			throw new SerialisationException(e);
 		}
+	}
+
+
+	public byte [] save(ModelEntry modelEntry) {
+		ByteArrayOutputStream s = new ByteArrayOutputStream();
+		try {
+			save(modelEntry, s);
+		} catch (SerialisationException e) {
+			throw new RuntimeException(e);
+		}
+		return s.toByteArray();
 	}
 
 	public void initPlugins() {

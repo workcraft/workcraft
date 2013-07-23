@@ -40,6 +40,7 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
@@ -130,6 +131,7 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else if (mouseOverObject != null) {
 				try {
+					e.getEditor().getWorkspaceEntry().saveMemento();
 					e.getModel().connect(first, mouseOverObject);
 
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
@@ -145,9 +147,17 @@ public class ConnectionTool extends AbstractTool {
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			first = null;
-			mouseOverObject = null;
+			warningMessage = null;
 		}
+		e.getEditor().repaint();
+	}
 
+	@Override
+	public void keyPressed(GraphEditorKeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			first = null;
+			warningMessage = null;
+		}
 		e.getEditor().repaint();
 	}
 
@@ -175,6 +185,13 @@ public class ConnectionTool extends AbstractTool {
 	public Icon getIcon() {
 		return GUI.createIconFromSVG("images/icons/svg/connect.svg");
 	}
+
+	@Override
+	public void activated(GraphEditor editor) {
+		super.activated(editor);
+		editor.getWorkspaceEntry().setCanDo(true);
+	}
+
 
 	@Override
 	public void deactivated(GraphEditor editor) {

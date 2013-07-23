@@ -37,6 +37,8 @@ import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
+import static org.workcraft.serialisation.xml.BeanInfoCache.*;
+
 class DefaultNodeDeserialiser {
 	private DeserialiserFactory fac;
 	private NodeInitialiser initialiser;
@@ -63,7 +65,7 @@ class DefaultNodeDeserialiser {
 			for (Element e : propertyElements)
 				nameMap.put(e.getAttribute("name"), e);
 
-			BeanInfo info = Introspector.getBeanInfo(currentLevel, currentLevel.getSuperclass());
+			BeanInfo info = getBeanInfo(currentLevel);
 
 			for (PropertyDescriptor desc : info.getPropertyDescriptors())
 			{

@@ -487,6 +487,8 @@ public class MainWindow extends JFrame {
 		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(false);
 		MainWindowActions.SAVE_WORK_ACTION.setEnabled(false);
 		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(false);
+		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(false);
+		MainWindowActions.EDIT_REDO_ACTION.setEnabled(false);
 	}
 
 	private void enableWorkActions() {
@@ -1180,6 +1182,22 @@ public class MainWindow extends JFrame {
 		for (DockableWindow w : new ArrayList<DockableWindow>(
 				editorWindows.get(openFile)))
 			closeDockableWindow(w);
+	}
+
+	public void undo()  {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().undo();
+		} else {
+			System.out.println("No editor in focus");
+		}
+	}
+
+	public void redo() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().redo();
+		} else {
+			System.out.println("No editor in focus");
+		}
 	}
 
 	public void editSettings() {

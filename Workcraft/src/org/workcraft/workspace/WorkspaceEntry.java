@@ -23,17 +23,32 @@ package org.workcraft.workspace;
 
 import java.io.File;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
+import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.TransformChangedEvent;
 
-public class WorkspaceEntry
+public class WorkspaceEntry implements ObservableState
 {
 	private ModelEntry modelEntry = null;
 	private boolean changed = true;
 	private boolean temporary = true;
-	private Workspace workspace;
+	private final Framework framework;
+	private final Workspace workspace;
+	private final MementoManager history = new MementoManager();
+	private boolean canDo = true;
+	private byte[] capturedMemento = null;
+	private byte[] savedMemento = null;
 
 	public WorkspaceEntry(Workspace workspace) {
 		this.workspace = workspace;
+		this.framework = workspace.getFramework();
 	}
 
 	public void setChanged(boolean changed) {
@@ -52,9 +67,39 @@ public class WorkspaceEntry
 		return modelEntry;
 	}
 
+	private StateObserver modelObserver = new StateObserver(){
+		@Override
+		public void notify(StateEvent e) {
+			observableState.sendNotification(e);
+		}
+	};
+
+	private StateSupervisor modelSupervisor = new StateSupervisor() {
+		@Override
+		public void handleEvent(StateEvent e) {
+			if (e instanceof PropertyChangedEvent || e instanceof TransformChangedEvent) {
+				setChanged(true);
+			}
+		}
+	};
+
 	public void setModelEntry(ModelEntry modelEntry)
 	{
+		if(this.modelEntry != null) {
+			this.modelEntry.getVisualModel().removeObserver(modelObserver);
+			modelSupervisor.detach();
+		}
 		this.modelEntry = modelEntry;
+
+		observableState.sendNotification(new StateEvent() {
+			@Override
+			public Object getSender() {
+				return this;
+			}
+		});
+		this.modelEntry.getVisualModel().addObserver(modelObserver);
+
+		modelSupervisor.attach(this.modelEntry.getVisualModel().getRoot());
 	}
 
 	public boolean isWork() {
@@ -108,4 +153,87 @@ public class WorkspaceEntry
 	public File getFile() {
 		return workspace.getFile(this);
 	}
+
+
+	ObservableStateImpl observableState = new ObservableStateImpl();
+
+	@Override
+	public void addObserver(StateObserver obs) {
+		observableState.addObserver(obs);
+	}
+
+	@Override
+	public void removeObserver(StateObserver obs) {
+		observableState.removeObserver(obs);
+	}
+
+	public void updateDoState() {
+		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canDo && history.canUndo());
+		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canDo && history.canRedo());
+	}
+
+	public void setCanDo(boolean canDo) {
+		this.canDo = canDo;
+		updateDoState();
+	}
+
+	public void captureMemento() {
+		capturedMemento = framework.save(getModelEntry());
+		if (changed == false) {
+			savedMemento = capturedMemento;
+		}
+	}
+
+	public void cancelMemento() {
+		setModelEntry(framework.load(capturedMemento));
+		setChanged(savedMemento != capturedMemento);
+		capturedMemento = null;
+	}
+
+	public void saveMemento() {
+		byte[] currentMemento = capturedMemento;
+		capturedMemento = null;
+		if (currentMemento == null) {
+			currentMemento = framework.save(getModelEntry());
+		}
+		if (changed == false) {
+			savedMemento = currentMemento;
+		}
+		history.pushUndo(currentMemento);
+		history.clearRedo();
+		updateDoState();
+	}
+
+	public void undo() {
+		if (history.canUndo()) {
+			byte[] undoMemento = history.pullUndo();
+			if (undoMemento != null) {
+				byte[] currentMemento = framework.save(getModelEntry());
+				if (changed == false) {
+					savedMemento = currentMemento;
+				}
+				history.pushRedo(currentMemento);
+				setModelEntry(framework.load(undoMemento));
+				setChanged(undoMemento != savedMemento);
+			}
+		}
+		updateDoState();
+	}
+
+	public void redo() {
+		if (history.canRedo()) {
+			byte[] redoMemento = history.pullRedo();
+			if (redoMemento != null) {
+				byte[] currentMemento = framework.save(getModelEntry());
+				if (changed == false) {
+					savedMemento = currentMemento;
+				}
+				history.pushUndo(currentMemento);
+				setModelEntry(framework.load(redoMemento));
+				setChanged(redoMemento != savedMemento);
+			}
+		}
+		updateDoState();
+	}
+
 }

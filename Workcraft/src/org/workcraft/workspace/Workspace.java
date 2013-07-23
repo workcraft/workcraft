@@ -548,7 +548,6 @@ public class Workspace {
 		return framework;
 	}
 
-
 	public File getWorkspaceFile() {
 		return workspaceFile;
 	}
