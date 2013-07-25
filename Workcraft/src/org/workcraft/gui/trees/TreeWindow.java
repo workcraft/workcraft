@@ -95,6 +95,8 @@ public class TreeWindow<Node> extends JPanel
 		return Collections.unmodifiableSet(checkedNodes);
 	}
 
+	boolean externalExpanded = false;
+
 	public void startup(final TreeSource<Node> source, final TreeDecorator<Node> decorator)
 	{
 		tree = new JTree();
@@ -118,6 +120,15 @@ public class TreeWindow<Node> extends JPanel
 								expanded.add(treePath);
 						}
 
+						if(!externalExpanded) {
+							for(Node n : source.getChildren(getRoot())) {
+								if(decorator.getName(n) == "!External") {
+									expanded.add(new TreePath(Path.getPath(source.getPath(n)).toArray()));
+									externalExpanded = true;
+								}
+							}
+						}
+
 						super.restructured(path);
 
 						for(TreePath p : expanded)
@@ -126,6 +137,7 @@ public class TreeWindow<Node> extends JPanel
 				};
 			};
 		};
+
 
 		final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
 		tree.setModel(modelWrapper);
@@ -259,6 +271,7 @@ public class TreeWindow<Node> extends JPanel
 			}
 		}
 		);
+
 		setLayout(new BorderLayout(0,0));
 		this.add(tree, BorderLayout.CENTER);
 	}

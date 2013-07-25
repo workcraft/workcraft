@@ -36,7 +36,6 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.PropertySupport;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 
@@ -84,6 +83,10 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 		propertySupport.addPropertyDeclaration(declaration);
 	}
 
+	public void removePropertyDeclaration(PropertyDescriptor declaration) {
+		propertySupport.removePropertyDeclaration(declaration);
+	}
+
 	public Collection<PropertyDescriptor> getDescriptors() {
 		return propertySupport.getPropertyDeclarations();
 	}
@@ -94,8 +97,6 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
-
-		sendNotification(new PropertyChangedEvent(this, "hidden"));
 	}
 
 	public void addObserver(StateObserver obs) {

@@ -47,11 +47,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	protected final static double size = CommonVisualSettings.getSize();
 	protected final static double strokeWidth = CommonVisualSettings
 			.getStrokeWidth();
-	protected final static Font labelFont = new Font("Sans-serif", Font.PLAIN,
-			1).deriveFont(0.5f);
+	protected final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private GlyphVector labelGlyphs = null;
-
+	private String glyphedLabel = null;
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings
 			.getTextPositioning();
@@ -61,6 +60,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
+
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration(this, "Label",
@@ -168,48 +168,35 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return new Point2D.Double(0, 0);
 	}
 
-	protected void drawLabelInLocalSpace(DrawRequest r) {
-		updateGlyph(r.getGraphics());
-		Graphics2D g = r.getGraphics();
-		g.setColor(Coloriser.colorise(labelColor, r.getDecoration()
-				.getColorisation()));
-		g.setFont(labelFont);
-		g.drawString(label, (float) labelPosition.getX(),
-				(float) labelPosition.getY());
-	}
-
-	private void updateGlyph(Graphics2D g) {
-		if (labelBoundingBox == null || labelGlyphs == null) {
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(),
-					getLabel());
-			Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,
-					size);
+	public void updateGlyph(Graphics2D g) {
+		if (labelBoundingBox == null || labelGlyphs == null || glyphedLabel == null || glyphedLabel != label) {
+			glyphedLabel = label;
+			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(),	getLabel());
+			Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
 			Rectangle2D gbb = new Rectangle2D.Double(0, 0, 0, 0);
-			if (!getLabel().isEmpty())
+			if (!getLabel().isEmpty()) {
 				gbb = labelGlyphs.getLogicalBounds();
-			labelPosition = new Point2D.Double(bb.getCenterX()
-					- gbb.getCenterX() + 0.5 * labelPositioning.dx
-					* (bb.getWidth() + gbb.getWidth() + 0.2), bb.getCenterY()
-					- gbb.getCenterY() + 0.5 * labelPositioning.dy
-					* (bb.getHeight() + gbb.getHeight() + 0.2));
-			labelBoundingBox = new Rectangle2D.Double(gbb.getX()
-					+ labelPosition.getX(), gbb.getY() + labelPosition.getY(),
+			}
+			labelPosition = new Point2D.Double(
+					bb.getCenterX()	- gbb.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + gbb.getWidth() + 0.2),
+					bb.getCenterY() - gbb.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + gbb.getHeight() + 0.2));
+			labelBoundingBox = new Rectangle2D.Double(
+					gbb.getX() + labelPosition.getX(),
+					gbb.getY() + labelPosition.getY(),
 					gbb.getWidth(), gbb.getHeight());
 		}
 	}
 
-	public GlyphVector getLabelGlyphs(Graphics2D g) {
+	protected void drawLabelInLocalSpace(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
 		updateGlyph(g);
-		return labelGlyphs;
-	}
-
-	public Rectangle2D getLabelBB(Graphics2D g) {
-		return getLabelGlyphs(g).getVisualBounds();
+		g.setColor(Coloriser.colorise(labelColor, r.getDecoration().getColorisation()));
+		g.setFont(labelFont);
+		g.drawString(label, (float) labelPosition.getX(), (float) labelPosition.getY());
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,
-				size);
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
 		return BoundingBoxHelper.union(bb, labelBoundingBox);
 	}
 

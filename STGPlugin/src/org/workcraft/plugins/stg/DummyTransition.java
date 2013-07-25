@@ -28,7 +28,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
-@VisualClass("org.workcraft.plugins.stg.VisualDummyTransition")
+@VisualClass(org.workcraft.plugins.stg.VisualDummyTransition.class)
 public class DummyTransition extends Transition implements STGTransition {
 	private String name;
 

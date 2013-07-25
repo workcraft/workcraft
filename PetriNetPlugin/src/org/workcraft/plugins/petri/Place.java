@@ -26,7 +26,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass("org.workcraft.plugins.petri.VisualPlace")
+@VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
 	protected int tokens = 0;
 	protected int capacity = 1;

@@ -34,7 +34,10 @@ import java.awt.event.FocusListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -48,6 +51,7 @@ import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties.Mix;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.StateEvent;
@@ -58,23 +62,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
 	public OutputStream backup;
-/*
-	class Repainter extends StateSupervisor {
-		@Override
-		public void handleHierarchyEvent(HierarchyEvent e) {
-			repaint();
-		}
 
-		@Override
-		public void handleEvent(StateEvent e) {
-			if (e instanceof PropertyChangedEvent || e instanceof TransformChangedEvent) {
-				repaint();
-				mainWindow.getPropertyView().repaint();
-				workspaceEntry.setChanged(true);
-			}
-		}
-	}
-*/
 	class Resizer implements ComponentListener {
 
 		@Override
@@ -129,8 +117,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		super (new BorderLayout());
 		this.mainWindow = mainWindow;
 		this.workspaceEntry = workspaceEntry;
-
-//!!!		new Repainter().attach(getModel().getRoot()); //FIXME detach
 
 		workspaceEntry.addObserver(this);
 
@@ -235,6 +221,51 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		workspaceEntry.setChanged(true);
 	}
 
+	private Properties propertiesWrapper(final Properties mix) {
+		return new Properties() {
+			@Override
+			public Collection<PropertyDescriptor> getDescriptors() {
+				ArrayList<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>();
+				for(final PropertyDescriptor d : mix.getDescriptors()) {
+					list.add(new PropertyDescriptor() {
+
+						@Override
+						public void setValue(Object value) throws InvocationTargetException {
+							workspaceEntry.saveMemento();
+							d.setValue(value);
+						}
+
+						@Override
+						public boolean isWritable() {
+							return d.isWritable();
+						}
+
+						@Override
+						public Object getValue() throws InvocationTargetException {
+							return d.getValue();
+						}
+
+						@Override
+						public Class<?> getType() {
+							return d.getType();
+						}
+
+						@Override
+						public String getName() {
+							return d.getName();
+						}
+
+						@Override
+						public Map<Object, String> getChoice() {
+							return d.getChoice();
+						}
+					});
+				}
+				return list;
+			}
+		};
+	}
+
 	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
 
@@ -263,7 +294,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			if(mix.isEmpty())
 				propertyWindow.clearObject();
 			else
-				propertyWindow.setObject(mix);
+				propertyWindow.setObject(propertiesWrapper(mix));
 		}
 		else propertyWindow.clearObject();
 	}

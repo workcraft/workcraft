@@ -40,7 +40,7 @@ import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass ("org.workcraft.plugins.petri.VisualPetriNet")
+@VisualClass (org.workcraft.plugins.petri.VisualPetriNet.class)
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	final UniqueNameReferenceManager names;
 

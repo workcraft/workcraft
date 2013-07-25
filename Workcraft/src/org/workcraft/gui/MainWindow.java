@@ -175,18 +175,16 @@ public class MainWindow extends JFrame {
 	}
 
 	public void setLAF(String laf) throws OperationCancelledException {
-		if (JOptionPane
-				.showConfirmDialog(
-						this,
-						"Changing Look and Feel requires GUI restart.\n\n"
-								+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-			return;
-		if (laf == null)
-			laf = UIManager.getSystemLookAndFeelClassName();
+		if (JOptionPane.showConfirmDialog(this,
+				"Changing Look and Feel requires GUI restart.\n\n"
+				+ "This will cause the visual editor windows to be closed.\n\nProceed?",
+				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+			if (laf == null)
+				laf = UIManager.getSystemLookAndFeelClassName();
 
-		framework.setConfigVar("gui.lookandfeel", laf);
-		framework.restartGUI();
+			framework.setConfigVar("gui.lookandfeel", laf);
+			framework.restartGUI();
+		}
 	}
 
 	private int getNextDockableID() {
@@ -536,17 +534,19 @@ public class MainWindow extends JFrame {
 			WorkspaceEntry we = editor.getWorkspaceEntry();
 
 			if (we.isChanged()) {
-				int result = JOptionPane.showConfirmDialog(this, "Document \""
-						+ we.getTitle()
-						+ "\" has unsaved changes.\nSave before closing?",
-						"Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
+				int result = JOptionPane.showConfirmDialog(this,
+						"Document \"" + we.getTitle() + "\" has unsaved changes.\nSave before closing?",
+						"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-				if (result == JOptionPane.YES_OPTION) {
+				switch (result) {
+				case JOptionPane.YES_OPTION:
 					save(we);
-				} else if (result == JOptionPane.CANCEL_OPTION)
-					throw new OperationCancelledException(
-							"Operation cancelled by user.");
+					break;
+				case JOptionPane.NO_OPTION:
+					break;
+				default:
+					throw new OperationCancelledException("Operation cancelled by user.");
+				}
 			}
 
 			if (DockingManager.isMaximized(dockableWindow)) {
@@ -689,17 +689,19 @@ public class MainWindow extends JFrame {
 
 		if (framework.getWorkspace().isChanged()
 				&& !framework.getWorkspace().isTemporary()) {
-			int result = JOptionPane
-					.showConfirmDialog(
-							this,
+			int result = JOptionPane.showConfirmDialog(this,
 							"Current workspace has unsaved changes.\nSave before closing?",
-							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				// workspaceWindow.saveWorkspace();
-			} else if (result == JOptionPane.CANCEL_OPTION)
-				throw new OperationCancelledException(
-						"Operation cancelled by user.");
+							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+			switch (result) {
+			case JOptionPane.YES_OPTION:
+				 workspaceWindow.saveWorkspace();
+				 break;
+			case JOptionPane.NO_OPTION:
+				break;
+			default:
+				throw new OperationCancelledException("Operation cancelled by user.");
+			}
 		}
 
 		saveDockingLayout();
@@ -903,24 +905,19 @@ public class MainWindow extends JFrame {
 
 	public void resetLayout() {
 		if (JOptionPane.showConfirmDialog(this,
-				"This will reset the GUI to the default layout.\n\n"
-						+ "Are you sure you want to do this?", "Confirm",
-				JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-			return;
-
-		if (JOptionPane
-				.showConfirmDialog(
-						this,
-						"This action requires GUI restart.\n\n"
-								+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-			return;
-
-		try {
-			framework.shutdownGUI();
-			new File(UILAYOUT_PATH).delete();
-			framework.startGUI();
-		} catch (OperationCancelledException e) {
+				"This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?",
+				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+			if (JOptionPane.showConfirmDialog(this,
+					"This action requires GUI restart.\n\n"
+					+ "This will cause the visual editor windows to be closed.\n\nProceed?",
+					"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				try {
+					framework.shutdownGUI();
+					new File(UILAYOUT_PATH).delete();
+					framework.startGUI();
+				} catch (OperationCancelledException e) {
+				}
+			}
 		}
 	}
 
@@ -949,17 +946,12 @@ public class MainWindow extends JFrame {
 
 				if (!f.exists())
 					break;
-				else if (JOptionPane
-						.showConfirmDialog(
-								this,
-								"The file \""
-										+ f.getName()
-										+ "\" already exists. Do you want to overwrite it?",
+				else if (JOptionPane.showConfirmDialog(	this,
+								"The file \"" + f.getName()	+ "\" already exists. Do you want to overwrite it?",
 								"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 					break;
 			} else
-				throw new OperationCancelledException(
-						"Save operation cancelled by user.");
+				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
 		try {
@@ -1086,17 +1078,12 @@ public class MainWindow extends JFrame {
 
 				if (!f.exists())
 					break;
-				else if (JOptionPane
-						.showConfirmDialog(
-								this,
-								"The file \""
-										+ f.getName()
-										+ "\" already exists. Do you want to overwrite it?",
-								"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+				else if (JOptionPane.showConfirmDialog(this,
+							"The file \"" + f.getName() + "\" already exists. Do you want to overwrite it?",
+							"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 					break;
 			} else
-				throw new OperationCancelledException(
-						"Save operation cancelled by user.");
+				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
 		Task<Object> exportTask = new Export.ExportTask(exporter,

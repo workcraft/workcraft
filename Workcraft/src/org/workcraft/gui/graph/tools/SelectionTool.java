@@ -24,22 +24,31 @@ package org.workcraft.gui.graph.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -73,10 +82,12 @@ public class SelectionTool extends AbstractTool {
 
 	GraphEditor editor;
 
+	private boolean cancelInPlaceEdit = false;
+
 	@Override
 	public void activated(GraphEditor editor) {
 		this.editor = editor;
-		editor.getWorkspaceEntry().setCanDo(true);
+		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
 	}
 
 	@Override
@@ -85,26 +96,30 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public boolean isDragging() {
-		return drag!=DRAG_NONE;
+		return drag != DRAG_NONE;
 	}
 
 	DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
-
 		if(notClick1 && e.getButton() == MouseEvent.BUTTON1)
 			return;
 		if(notClick3 && e.getButton() == MouseEvent.BUTTON3)
 			return;
 
-		VisualModel model = e.getEditor().getModel();
-
-		if(e.getButton()==MouseEvent.BUTTON1) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			VisualModel model = e.getEditor().getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
-				switch(e.getKeyModifiers()) {
+				if (e.getClickCount() > 1) {
+					if (node instanceof VisualComponent) {
+						VisualComponent component = (VisualComponent) node;
+						editLabelInPlace(e.getEditor(), component, component.getLabel());
+					}
+				} else {
+					switch (e.getKeyModifiers()) {
 					case 0:
 						e.getModel().select(node);
 						break;
@@ -114,20 +129,19 @@ public class SelectionTool extends AbstractTool {
 					case MouseEvent.CTRL_DOWN_MASK:
 						e.getModel().removeFromSelection(node);
 						break;
+					}
 				}
 			} else {
-				if (e.getKeyModifiers()==0)
+				if (e.getKeyModifiers() == 0)
 					e.getModel().selectNone();
 			}
 		}
-
 		anchorGenerator.mouseClicked(e);
 	}
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
-
 		if(drag==DRAG_MOVE) {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
@@ -143,32 +157,32 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void startDrag(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
-
-		if(e.getButtonModifiers()==MouseEvent.BUTTON1_DOWN_MASK) {
+		if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
 			Node hitNode = HitMan.hitTestForSelection(e.getStartPosition(), model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
-				switch(e.getKeyModifiers()) {
-					case 0:
-						selectionMode = SELECTION_REPLACE;
-						break;
-					case MouseEvent.CTRL_DOWN_MASK:
-						selectionMode = SELECTION_REMOVE;
-						break;
-					case MouseEvent.SHIFT_DOWN_MASK:
-						selectionMode = SELECTION_ADD;
-						break;
-					default:
-						selectionMode = SELECTION_NONE;
+				switch (e.getKeyModifiers()) {
+				case 0:
+					selectionMode = SELECTION_REPLACE;
+					break;
+				case MouseEvent.CTRL_DOWN_MASK:
+					selectionMode = SELECTION_REMOVE;
+					break;
+				case MouseEvent.SHIFT_DOWN_MASK:
+					selectionMode = SELECTION_ADD;
+					break;
+				default:
+					selectionMode = SELECTION_NONE;
 				}
 
-				if(selectionMode!=SELECTION_NONE) {
-					// selection will not actually be changed until drag completes
+				if (selectionMode != SELECTION_NONE) {
+					// selection will not actually be changed until drag
+					// completes
 					drag = DRAG_SELECT;
 					selected.clear();
 
-					if(selectionMode==SELECTION_REPLACE)
+					if (selectionMode == SELECTION_REPLACE)
 						model.selectNone();
 					else
 						selected.addAll(model.getSelection());
@@ -176,7 +190,7 @@ public class SelectionTool extends AbstractTool {
 
 			} else {
 				// hit something
-				if(e.getKeyModifiers()==0 && hitNode instanceof Movable) {
+				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
 					editor.getWorkspaceEntry().captureMemento();
@@ -198,18 +212,17 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		if(e.getButton()==MouseEvent.BUTTON1)
+		if (e.getButton() == MouseEvent.BUTTON1)
 			notClick1 = false;
 
-		if(e.getButton()==MouseEvent.BUTTON3) {
+		if (e.getButton() == MouseEvent.BUTTON3) {
 
-			if(isDragging()) {
+			if (isDragging()) {
 				cancelDrag(e.getEditor());
 				e.getEditor().repaint();
 				notClick1 = true;
 				notClick3 = true;
-			}
-			else {
+			} else {
 				notClick3 = false;
 			}
 		}
@@ -293,15 +306,14 @@ public class SelectionTool extends AbstractTool {
 					break;
 				}
 			} else { // Shift is pressed
-
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_RIGHT:
-					VisualModelTransformer.scaleSelection(e.getModel(),-1,1);
+					VisualModelTransformer.scaleSelection(e.getModel(), -1, 1);
 					break;
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_DOWN:
-					VisualModelTransformer.scaleSelection(e.getModel(),1,-1);
+					VisualModelTransformer.scaleSelection(e.getModel(), 1, -1);
 					break;
 				}
 			}
@@ -449,6 +461,65 @@ public class SelectionTool extends AbstractTool {
 			}
 
 		};
+	}
+
+	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
+		final JTextField text = new JTextField(initialText);
+		Rectangle bb = editor.getViewport().userToScreen(component.getBoundingBox());
+		text.setFont(text.getFont().deriveFont( Math.max(10.0f, (float)bb.getHeight()*0.7f)));
+		text.selectAll();
+		text.setBounds(bb.x, bb.y, Math.max(bb.width, 60), Math.max(bb.height, 18));
+		editor.getOverlay().add(text);
+		text.requestFocusInWindow();
+
+		text.addKeyListener( new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					cancelInPlaceEdit = false;
+					text.getParent().remove(text);
+				}
+				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					cancelInPlaceEdit = true;
+					text.getParent().remove(text);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+		});
+
+		text.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if (text.getParent() != null)
+					text.getParent().remove(text);
+				final String newName = text.getText();
+				if (!cancelInPlaceEdit) {
+					editor.getWorkspaceEntry().captureMemento();
+					try {
+						component.setLabel(newName);
+						editor.getWorkspaceEntry().saveMemento();
+					} catch (ArgumentException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage());
+						editLabelInPlace(editor, component, newName);
+						editor.getWorkspaceEntry().cancelMemento();
+					}
+				}
+				editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+				editor.repaint();
+			}
+		});
 	}
 
 }

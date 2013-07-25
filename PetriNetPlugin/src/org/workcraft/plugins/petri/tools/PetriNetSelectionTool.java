@@ -14,11 +14,10 @@ public class PetriNetSelectionTool extends SelectionTool {
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
 	{
-		super.mouseClicked(e);
+		boolean processed = false;
 
-		VisualModel model = e.getEditor().getModel();
-
-		if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount() > 1) {
+		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
+			VisualModel model = e.getEditor().getModel();
 			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
@@ -27,14 +26,20 @@ public class PetriNetSelectionTool extends SelectionTool {
 					VisualPlace place = (VisualPlace) node;
 					if (place.getTokens() <= 1) {
 						e.getEditor().getWorkspaceEntry().saveMemento();
-					}
 
-					if (place.getTokens()==1)
-						place.setTokens(0);
-					else if (place.getTokens()==0)
-						place.setTokens(1);
+						if (place.getTokens()==1)
+							place.setTokens(0);
+						else
+							place.setTokens(1);
+					}
+					processed = true;
 				}
 			}
+		}
+
+		if (!processed) {
+			super.mouseClicked(e);
+
 		}
 	}
 

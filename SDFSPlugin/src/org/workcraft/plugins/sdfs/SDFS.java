@@ -30,7 +30,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 
 @DisplayName ("Static Data Flow Structure")
-@VisualClass ("org.workcraft.plugins.sdfs.VisualSDFS")
+@VisualClass (org.workcraft.plugins.sdfs.VisualSDFS.class)
 public class SDFS extends AbstractMathModel {
 
 	public SDFS() {

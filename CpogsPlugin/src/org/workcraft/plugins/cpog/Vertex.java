@@ -29,7 +29,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 @DisplayName("Vertex")
-@VisualClass("org.workcraft.plugins.cpog.VisualVertex")
+@VisualClass(org.workcraft.plugins.cpog.VisualVertex.class)
 public class Vertex extends MathNode
 {
 	private BooleanFormula condition = One.instance();

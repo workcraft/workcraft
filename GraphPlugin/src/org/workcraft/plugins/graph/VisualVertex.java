@@ -22,7 +22,6 @@
 package org.workcraft.plugins.graph;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -30,15 +29,18 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_V)
+@DisplayName("Vertex")
 @SVGIcon("images/icons/svg/vertex.svg")
-
 public class VisualVertex extends VisualComponent {
 	private static double size = 1;
 	private static float strokeWidth = 0.1f;
@@ -56,24 +58,18 @@ public class VisualVertex extends VisualComponent {
 				size-strokeWidth);
 
 		Graphics2D g = r.getGraphics();
-
 		g.setStroke(new BasicStroke(strokeWidth));
 
-		g.setColor(Color.WHITE);
+		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
-		g.setColor(Color.BLACK);
+		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
+		drawLabelInLocalSpace(r);
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-		}
-
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		double size = CommonVisualSettings.getSize();
-
-		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
 }

@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -21,49 +22,26 @@ public class CircuitSelectionTool extends SelectionTool {
 
 	VisualNode selectedNode = null;
 
-
-	/*
-	@Override
-	public void mouseMoved(GraphEditorMouseEvent e) {
-		boolean allowDrag = true;
-
-		if(drag==DRAG_MOVE) {
-			for (Node n: e.getModel().getSelection()) {
-				if (n instanceof VisualContact) {
-					Node a = ((VisualContact)n).getParent();
-					Node b = e.getModel().getCurrentLevel();
-					if	(a!=b) {
-						allowDrag=false;
-						break;
-					}
-				}
-			}
-
-			if (!allowDrag) return;
-		}
-
-		super.mouseMoved(e);
-
-
-	}
-	*/
-
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
 	{
-		super.mouseClicked(e);
-
-		VisualModel model = e.getEditor().getModel();
-
+		boolean processed = false;
 		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			VisualModel model = e.getEditor().getModel();
+			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			JPopupMenu popup = createPopupMenu(node, e.getEditor());
-			if (popup!=null)
-				popup.show(e.getSystemEvent().getComponent(), e.getSystemEvent().getX(), e.getSystemEvent().getY());
+			if (popup != null) {
+				popup.show(e.getSystemEvent().getComponent(),
+						e.getSystemEvent().getX(), e.getSystemEvent().getY());
+			}
+			processed = true;
+		}
+		if (!processed) {
+			super.mouseClicked(e);
 		}
 	}
 
-	private JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
+	private JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
 		JPopupMenu popup = new JPopupMenu();
 
 		if (node instanceof VisualFunctionComponent) {

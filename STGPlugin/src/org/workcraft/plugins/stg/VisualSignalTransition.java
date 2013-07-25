@@ -32,6 +32,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -49,7 +50,7 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
 
-	private Label label = new Label(font, "");
+	private RenderedText renderedText = new RenderedText(font, "");
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
@@ -66,22 +67,22 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 		if(background!=null)
 		{
 			g.setColor(background);
-			g.fill(label.getBoundingBox());
+			g.fill(renderedText.getBoundingBox());
 		}
 
 		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
 
-		label.draw(g);
+		renderedText.draw(g);
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return label.getBoundingBox();
+		return renderedText.getBoundingBox();
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return label.getBoundingBox().contains(pointInLocalSpace);
+		return renderedText.getBoundingBox().contains(pointInLocalSpace);
 	}
 
 	private String getText() {
@@ -109,7 +110,7 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 
 	private void updateText() {
 		transformChanging();
-		label.setText(getText());
+		renderedText.setText(getText());
 		transformChanged();
 	}
 

@@ -44,10 +44,12 @@ import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
 
 @SuppressWarnings("serial")
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
@@ -84,6 +86,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 	}
 
 	private SelectionTool selectionTool;
+	private CommentGeneratorTool labelTool;
 	private ConnectionTool connectionTool;
 
 	private GraphEditorTool selectedTool;
@@ -180,6 +183,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
 	public void addCommonTools() {
 		addTool(selectionTool, true);
+		addTool(labelTool, false);
 		addTool(connectionTool, false);
 	}
 
@@ -231,6 +235,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 		this.setFocusable(false);
 
 		selectionTool = new SelectionTool();
+		labelTool = new CommentGeneratorTool();
 		connectionTool = new ConnectionTool();
 		selectedTool = null;
 

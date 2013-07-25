@@ -34,7 +34,6 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractNodeGenerator implements NodeGenerator {
 

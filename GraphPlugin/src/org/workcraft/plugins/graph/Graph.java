@@ -29,7 +29,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass("org.workcraft.plugins.graph.VisualGraph")
+@VisualClass(org.workcraft.plugins.graph.VisualGraph.class)
 public class Graph extends AbstractMathModel {
 
 	public Graph() {

@@ -10,7 +10,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 
 @DisplayName("Node")
-@VisualClass("org.workcraft.plugins.workflow.VisualWorkflowNode")
+@VisualClass(org.workcraft.plugins.workflow.VisualWorkflowNode.class)
 public class WorkflowNode extends MathNode {
 	private ArrayList<Port> ports = new ArrayList<Port>();
 

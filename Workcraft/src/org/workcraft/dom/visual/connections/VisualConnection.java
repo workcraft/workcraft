@@ -183,10 +183,12 @@ public class VisualConnection extends VisualNode implements
 				if (v == this.getSecond()) {
 					ControlPoint cp1 = new ControlPoint();
 					cp1.setPosition(new Point2D.Double(v.getX()-1.0, v.getY()+1.5));
+					p.add(cp1);
+					cp1.setHidden(true);
 					ControlPoint cp2 = new ControlPoint();
 					cp2.setPosition(new Point2D.Double(v.getX()+1.0, v.getY()+1.5));
-					p.add(cp1);
 					p.add(cp2);
+					cp2.setHidden(true);
 				}
 			}
 
@@ -199,7 +201,9 @@ public class VisualConnection extends VisualNode implements
 				if (v == this.getSecond()) {
 					BezierControlPoint[] cp = b.getControlPoints();
 					cp[0].setPosition(new Point2D.Double(v.getX()-2.0, v.getY()+2.0));
+					cp[0].setHidden(true);
 					cp[1].setPosition(new Point2D.Double(v.getX()+2.0, v.getY()+2.0));
+					cp[1].setHidden(true);
 				}
 			}
 

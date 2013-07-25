@@ -63,10 +63,9 @@ public class PresetManagerDialog<T> extends JDialog {
 				if (o != null) {
 					@SuppressWarnings("unchecked")
 					Preset<T> p = (Preset<T>)o;
-					if (JOptionPane.showConfirmDialog(
-							PresetManagerDialog.this,
-							"Are you sure you want to delete the preset \""
-									+ p.getDescription() + "\" ?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					if (JOptionPane.showConfirmDialog(PresetManagerDialog.this,
+							"Are you sure you want to delete the preset \""	+ p.getDescription() + "\" ?",
+							"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						presetManager.delete(p);
 						listDataModel.removeElement(o);
 						if (listDataModel.getSize() == 0)

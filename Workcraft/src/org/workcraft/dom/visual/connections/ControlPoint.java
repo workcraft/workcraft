@@ -63,4 +63,5 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 	{
 		return new Point2D.Double(0, 0);
 	}
+
 }

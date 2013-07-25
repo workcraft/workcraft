@@ -53,7 +53,7 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.SetUtils;
 import org.workcraft.util.Triple;
 
-@VisualClass("org.workcraft.plugins.stg.VisualSTG")
+@VisualClass(org.workcraft.plugins.stg.VisualSTG.class)
 public class STG extends AbstractMathModel implements STGModel {
 	private STGReferenceManager referenceManager;
 

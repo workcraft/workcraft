@@ -28,7 +28,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("FunctionContact")
-@VisualClass("org.workcraft.plugins.circuit.VisualFunctionContact")
+@VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 
 public class FunctionContact extends Contact {
 	private BooleanFormula setFunction=Zero.instance();

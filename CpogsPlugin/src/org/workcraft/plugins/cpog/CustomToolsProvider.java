@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 
 public class CustomToolsProvider implements
 		org.workcraft.gui.graph.tools.CustomToolsProvider {
@@ -11,12 +12,13 @@ public class CustomToolsProvider implements
 	@Override
 	public Iterable<GraphEditorTool> getTools()
 	{
-		ArrayList<GraphEditorTool> res = new ArrayList<GraphEditorTool>();
+		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		res.add(new SelectionTool());
-		res.add(new ConnectionTool());
+		result.add(new SelectionTool());
+		result.add(new CommentGeneratorTool());
+		result.add(new ConnectionTool());
 
-		return res;
+		return result;
 	}
 
 }

@@ -82,11 +82,7 @@ public class Annotations {
 		if (vcat == null)
 			return null;
 		else
-			try {
-				return Class.forName(vcat.value());
-			} catch (ClassNotFoundException e) {
-				return null;
-			}
+			return vcat.value();
 	}
 
 	public static Class<? extends CustomToolsProvider> getCustomToolsProvider(Class<?> cls) {

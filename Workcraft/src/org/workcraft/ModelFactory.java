@@ -65,7 +65,7 @@ public class ModelFactory {
 			return null;
 
 		try {
-			Class<?> visualClass = Class.forName(vcat.value());
+			Class<?> visualClass = vcat.value();
 			Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, model.getClass());
 			Object visual = ctor.newInstance(model);
 
@@ -76,8 +76,6 @@ public class ModelFactory {
 
 			return (VisualModel)visual;
 
-		} catch (ClassNotFoundException e) {
-			throw new VisualModelInstantiationException (e);
 		} catch (SecurityException e) {
 			throw new VisualModelInstantiationException (e);
 		} catch (NoSuchMethodException e) {

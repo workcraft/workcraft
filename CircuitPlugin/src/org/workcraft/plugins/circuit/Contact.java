@@ -30,7 +30,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @DisplayName("Contact")
-@VisualClass("org.workcraft.plugins.circuit.VisualContact")
+@VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 
 public class Contact extends MathNode implements BooleanVariable {
 

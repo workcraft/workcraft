@@ -47,13 +47,11 @@ public class NodeFactory {
 			return null;
 
 		try {
-			Class<?> visualClass = Class.forName(vcat.value());
+			Class<?> visualClass = vcat.value();
 			Constructor<?> ctor = visualClass.getConstructor();
 			VisualConnection visual = (VisualConnection)ctor.newInstance();
 			return visual;
 
-		} catch (ClassNotFoundException e) {
-			throw new NodeCreationException (e);
 		} catch (SecurityException e) {
 			throw new NodeCreationException (e);
 		} catch (NoSuchMethodException e) {
@@ -126,7 +124,7 @@ public class NodeFactory {
 			return null;
 
 		try {
-			Class<?> visualClass = Class.forName(vcat.value());
+			Class<?> visualClass = vcat.value();
 
 			Object [] args = new Object[constructorParameters.length+1];
 			args[0] = component;
@@ -141,8 +139,6 @@ public class NodeFactory {
 			VisualComponent visual = (VisualComponent) ctor.newInstance(args);
 			return visual;
 
-		} catch (ClassNotFoundException e) {
-			throw new NodeCreationException (e);
 		} catch (SecurityException e) {
 			throw new NodeCreationException (e);
 		} catch (NoSuchMethodException e) {

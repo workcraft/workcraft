@@ -26,6 +26,6 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
 @DisplayName("Vertex")
-@VisualClass("org.workcraft.plugins.graph.VisualVertex")
+@VisualClass(org.workcraft.plugins.graph.VisualVertex.class)
 public class Vertex extends MathNode {
 }

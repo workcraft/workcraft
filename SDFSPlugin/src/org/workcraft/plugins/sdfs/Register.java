@@ -26,7 +26,7 @@ import org.workcraft.dom.math.MathNode;
 
 
 @DisplayName("Register")
-@VisualClass("org.workcraft.plugins.sdfs.VisualRegister")
+@VisualClass(org.workcraft.plugins.sdfs.VisualRegister.class)
 public class Register extends MathNode {
 
 	protected boolean marked = false;

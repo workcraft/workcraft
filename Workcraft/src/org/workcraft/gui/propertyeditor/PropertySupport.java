@@ -43,4 +43,8 @@ public class PropertySupport {
 	public void addPropertyDeclaration(PropertyDescriptor declaration) {
 		propertyDeclarations.add(declaration);
 	}
+
+	public void removePropertyDeclaration(PropertyDescriptor declaration) {
+		propertyDeclarations.remove(declaration);
+	}
 }

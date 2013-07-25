@@ -37,7 +37,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Component")
-@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
+@VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 
 public class CircuitComponent extends MathNode implements Container, ObservableHierarchy {
 

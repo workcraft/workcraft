@@ -56,19 +56,18 @@ import org.workcraft.exceptions.PasteException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.XmlUtil;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
+
 	private MathModel mathModel;
 	private Container currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
@@ -90,8 +89,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		super(root == null? new VisualGroup() : root);
 		this.mathModel = mathModel;
 
-		final VisualModel _this = this;
-
 		currentLevel =  (VisualGroup)getRoot();
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
@@ -101,22 +98,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		new StateSupervisor() {
 			@Override
 			public void handleHierarchyEvent(HierarchyEvent e) {
-				observableState.sendNotification(new StateEvent() {
-					@Override
-					public Object getSender() {
-						return _this;
-					}
-				});
+				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
 			}
 
 			@Override
 			public void handleEvent(StateEvent e) {
-				observableState.sendNotification(new StateEvent() {
-					@Override
-					public Object getSender() {
-						return _this;
-					}
-				});
+				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
 			}
 		}.attach(getRoot());
 	}

@@ -593,7 +593,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		branchTrace = null;
 		branchStep = 0;
 
-		editor.getWorkspaceEntry().setCanDo(false);
+		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
 		update();
 	}
 

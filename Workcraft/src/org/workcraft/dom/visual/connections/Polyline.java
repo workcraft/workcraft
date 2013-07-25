@@ -337,18 +337,12 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void notify(SelectionChangedEvent event) {
-		//System.out.println ("Selection changed");
 		boolean controlsVisible = false;
 		for (Node n : event.getSelection())
 			if (n == getParent() || groupImpl.getChildren().contains(n)) {
 				controlsVisible = true;
 				break;
 			}
-
-		/*if (controlsVisible)
-			System.out.println ("Showing controls");
-		else
-			System.out.println ("Hiding controls");*/
 
 		for (Node n : groupImpl.getChildren())
 			((ControlPoint)n).setHidden(!controlsVisible);

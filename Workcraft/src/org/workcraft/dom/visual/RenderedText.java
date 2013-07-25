@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.dom.visual;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -7,22 +7,30 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.visual.BoundingBoxHelper;
-
-public class Label {
+public class RenderedText {
 	private GlyphVector glyphVector;
 	private Rectangle2D textBB;
 	private Font font;
 	private float textX;
 	private float textY;
+	private String text;
 
-	public Label(Font font, String text) {
+	public RenderedText(Font font, String text) {
 		this.font = font;
-		setText(text);
+		this.text = text;
+		update();
 	}
 
-	public void setText (String text)
-	{
+	public void setText (String text)	{
+		this.text = text;
+		update();
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	private void update() {
 		glyphVector = font.createGlyphVector(new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true), text);
 		textBB = glyphVector.getVisualBounds();
 

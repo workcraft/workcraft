@@ -30,7 +30,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
-@VisualClass("org.workcraft.plugins.stg.VisualSignalTransition")
+@VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
 public class SignalTransition extends Transition implements STGTransition
 {
 	public enum Type {
@@ -107,11 +107,8 @@ public class SignalTransition extends Transition implements STGTransition
 
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
-	//	if (this.signalName != signalName)
-	//	{
 			this.signalName = signalName;
 			sendNotification(new PropertyChangedEvent(this, "signalName"));
-	//	}
 	}
 
 	@Override

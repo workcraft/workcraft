@@ -26,13 +26,11 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.StateSupervisor;
-import org.workcraft.observation.TransformChangedEvent;
 
 public class WorkspaceEntry implements ObservableState
 {
@@ -42,7 +40,7 @@ public class WorkspaceEntry implements ObservableState
 	private final Framework framework;
 	private final Workspace workspace;
 	private final MementoManager history = new MementoManager();
-	private boolean canDo = true;
+	private boolean canUndoAndRedo = true;
 	private byte[] capturedMemento = null;
 	private byte[] savedMemento = null;
 
@@ -54,6 +52,9 @@ public class WorkspaceEntry implements ObservableState
 	public void setChanged(boolean changed) {
 		if(this.changed != changed) {
 			this.changed = changed;
+			if (changed == false) {
+				savedMemento = null;
+			}
 			workspace.fireEntryChanged(this);
 		}
 	}
@@ -70,16 +71,10 @@ public class WorkspaceEntry implements ObservableState
 	private StateObserver modelObserver = new StateObserver(){
 		@Override
 		public void notify(StateEvent e) {
-			observableState.sendNotification(e);
-		}
-	};
-
-	private StateSupervisor modelSupervisor = new StateSupervisor() {
-		@Override
-		public void handleEvent(StateEvent e) {
-			if (e instanceof PropertyChangedEvent || e instanceof TransformChangedEvent) {
+			if (e instanceof ModelModifiedEvent) {
 				setChanged(true);
 			}
+			observableState.sendNotification(e);
 		}
 	};
 
@@ -87,7 +82,6 @@ public class WorkspaceEntry implements ObservableState
 	{
 		if(this.modelEntry != null) {
 			this.modelEntry.getVisualModel().removeObserver(modelObserver);
-			modelSupervisor.detach();
 		}
 		this.modelEntry = modelEntry;
 
@@ -98,8 +92,6 @@ public class WorkspaceEntry implements ObservableState
 			}
 		});
 		this.modelEntry.getVisualModel().addObserver(modelObserver);
-
-		modelSupervisor.attach(this.modelEntry.getVisualModel().getRoot());
 	}
 
 	public boolean isWork() {
@@ -167,14 +159,14 @@ public class WorkspaceEntry implements ObservableState
 		observableState.removeObserver(obs);
 	}
 
-	public void updateDoState() {
-		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canDo && history.canUndo());
-		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canDo && history.canRedo());
+	public void updateUndoAndRedoState() {
+		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canUndoAndRedo && history.canUndo());
+		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canUndoAndRedo && history.canRedo());
 	}
 
-	public void setCanDo(boolean canDo) {
-		this.canDo = canDo;
-		updateDoState();
+	public void setCanUndoAndRedo(boolean canUndoAndRedo) {
+		this.canUndoAndRedo = canUndoAndRedo;
+		updateUndoAndRedoState();
 	}
 
 	public void captureMemento() {
@@ -201,7 +193,7 @@ public class WorkspaceEntry implements ObservableState
 		}
 		history.pushUndo(currentMemento);
 		history.clearRedo();
-		updateDoState();
+		updateUndoAndRedoState();
 	}
 
 	public void undo() {
@@ -217,7 +209,7 @@ public class WorkspaceEntry implements ObservableState
 				setChanged(undoMemento != savedMemento);
 			}
 		}
-		updateDoState();
+		updateUndoAndRedoState();
 	}
 
 	public void redo() {
@@ -233,7 +225,7 @@ public class WorkspaceEntry implements ObservableState
 				setChanged(redoMemento != savedMemento);
 			}
 		}
-		updateDoState();
+		updateUndoAndRedoState();
 	}
 
 }

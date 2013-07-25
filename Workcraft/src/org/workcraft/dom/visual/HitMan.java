@@ -226,7 +226,7 @@ public class HitMan
 	public static Node hitTestForConnection(Point2D point, Node node) {
 		Node nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
-				if (n instanceof Movable && ! (n instanceof Container)) {
+				if ((n instanceof Movable) && !(n instanceof Container) && !(n instanceof VisualComment)) {
 					if (n instanceof Hidable)
 						return !((Hidable)n).isHidden();
 					else
@@ -240,7 +240,7 @@ public class HitMan
 		if (nd == null)
 			nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 				public Boolean eval(Node n) {
-					if (n instanceof VisualConnection) {
+					if ((n instanceof VisualConnection) && !(n instanceof VisualComment)) {
 						if (n instanceof Hidable)
 							return !((Hidable)n).isHidden();
 						else

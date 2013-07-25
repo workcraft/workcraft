@@ -39,6 +39,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -47,16 +48,20 @@ import org.workcraft.util.GUI;
 public class ConnectionTool extends AbstractTool {
 	private VisualNode mouseOverObject = null;
 	private VisualNode first = null;
-
-	private boolean mouseExitRequiredForSelfLoop = true;
-	private boolean leftFirst = false;
-	private Point2D lastMouseCoords;
+	private boolean forbidConnectingArcs = true;
+	private boolean requireMouseExitForSelfLoop = true;
+	private boolean mouseLeftFirst = false;
+	private Point2D lastMouseCoords = new Point2D.Double();
 	private String warningMessage = null;
 
 	private static Color highlightColor = new Color(99, 130, 191).brighter();
 
 	public ConnectionTool () {
-		lastMouseCoords = new Point2D.Double();
+
+	}
+	public ConnectionTool (boolean forbidConnectingArcs, boolean requireMouseExitForSelfLoop) {
+		this.forbidConnectingArcs = forbidConnectingArcs;
+		this.requireMouseExitForSelfLoop = requireMouseExitForSelfLoop;
 	}
 
 	public Ellipse2D getBoundingCircle(Rectangle2D boundingRect) {
@@ -102,52 +107,56 @@ public class ConnectionTool extends AbstractTool {
 		return "Connect";
 	}
 
+	private void updateMouseOverObject(GraphEditorMouseEvent e) {
+		VisualNode node = (VisualNode) HitMan.hitTestForConnection(e.getPosition(), e.getModel());
+		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
+			mouseOverObject = node;
+			if (!mouseLeftFirst && requireMouseExitForSelfLoop) {
+				if (mouseOverObject == first)
+					mouseOverObject = null;
+				else
+					mouseLeftFirst = true;
+			}
+		}
+	}
+
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		lastMouseCoords = e.getPosition();
-
-		VisualNode newMouseOverObject = (VisualNode) HitMan.hitTestForConnection(e.getPosition(), e.getModel());
-
-		mouseOverObject = newMouseOverObject;
-
-		if (!leftFirst && mouseExitRequiredForSelfLoop) {
-			if (mouseOverObject == first)
-				mouseOverObject = null;
-			else
-				leftFirst = true;
-		}
-
+		updateMouseOverObject(e);
 		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			if (first == null) {
-				if (mouseOverObject != null) {
+			updateMouseOverObject(e);
+			if (mouseOverObject != null) {
+				if (first == null) {
 					first = mouseOverObject;
-					leftFirst = false;
-					mouseMoved(e);
-				}
-			} else if (mouseOverObject != null) {
-				try {
-					e.getEditor().getWorkspaceEntry().saveMemento();
-					e.getModel().connect(first, mouseOverObject);
-
-					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-						first = mouseOverObject;
-						mouseOverObject = null;
-					} else {
-						first = null;
+					mouseLeftFirst = false;
+					mouseOverObject = null;
+					e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(false);
+				} else {
+					try {
+						e.getEditor().getWorkspaceEntry().saveMemento();
+						e.getModel().connect(first, mouseOverObject);
+						if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+							first = mouseOverObject;
+							mouseOverObject = null;
+						} else {
+							first = null;
+							e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
+						}
+					} catch (InvalidConnectionException e1) {
+						Toolkit.getDefaultToolkit().beep();
 					}
-				} catch (InvalidConnectionException e1) {
-					Toolkit.getDefaultToolkit().beep();
 				}
-
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			first = null;
 			warningMessage = null;
+			e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
 		}
 		e.getEditor().repaint();
 	}
@@ -157,6 +166,7 @@ public class ConnectionTool extends AbstractTool {
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			first = null;
 			warningMessage = null;
+			e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
 		}
 		e.getEditor().repaint();
 	}
@@ -189,7 +199,8 @@ public class ConnectionTool extends AbstractTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
-		editor.getWorkspaceEntry().setCanDo(true);
+		editor.getModel().selectNone();
+		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
 	}
 
 

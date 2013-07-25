@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.plugins.petri.Place;
 
-@VisualClass("org.workcraft.plugins.petri.VisualPlace")
+@VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 @DisplayName("Place")
 public class STGPlace extends Place {
 	private boolean implicit = false;

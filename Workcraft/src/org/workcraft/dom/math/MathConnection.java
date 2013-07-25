@@ -25,7 +25,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 
 
-@VisualClass("org.workcraft.dom.visual.connections.VisualConnection")
+@VisualClass(org.workcraft.dom.visual.connections.VisualConnection.class)
 public class MathConnection extends MathNode implements Connection {
 	private MathNode first;
 	private MathNode second;
