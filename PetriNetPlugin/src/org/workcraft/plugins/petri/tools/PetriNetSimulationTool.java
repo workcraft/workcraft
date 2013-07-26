@@ -90,9 +90,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	protected JTable traceTable;
 
 	private JSlider speedSlider;
-	private JButton stopButton, playButton, pauseButton, backwardButton, forwardButton;
-	private JButton saveMarkingButton, loadMarkingButton;
-	private JButton copyTraceButton, pasteTracedButton;
+	private JButton playButton, stopButton, backwardButton, forwardButton;
+	private JButton saveMarkingButton, loadMarkingButton, copyTraceButton, pasteTracedButton;
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
@@ -128,16 +127,20 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	protected void update()
 	{
-		if (timer != null && (trace == null || traceStep == trace.size())) {
-			timer.stop();
-			timer = null;
+		if (timer == null) {
+			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+		} else {
+			if (trace == null || traceStep == trace.size()) {
+				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+				timer.stop();
+				timer = null;
+			} else {
+				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"));
+				timer.setDelay(getAnimationDelay());
+			}
 		}
 
-		if (timer != null)
-			timer.setDelay(getAnimationDelay());
-
 		playButton.setEnabled(trace != null && traceStep < trace.size());
-		pauseButton.setEnabled(timer!=null);
 		stopButton.setEnabled(trace != null || branchTrace != null);
 		backwardButton.setEnabled(traceStep > 0 || branchStep > 0);
 		forwardButton.setEnabled(branchTrace==null && trace != null && traceStep < trace.size() || branchTrace != null && branchStep < branchTrace.size());
@@ -292,6 +295,95 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
 	}
 
+	private final class TraceTableMouseListenerImplementation implements MouseListener {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			int column = traceTable.getSelectedColumn();
+			int row = traceTable.getSelectedRow();
+
+			if (column==0) {
+				if (trace!=null&&row<trace.size()) {
+
+					boolean work=true;
+
+					while (branchStep>0&&work) work=quietStepBack();
+					while (traceStep>row&&work) work=quietStepBack();
+					while (traceStep<row&&work) work=quietStep();
+
+					update();
+				}
+			} else {
+				if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+
+					boolean work=true;
+					while (traceStep+branchStep>row&&work) work=quietStepBack();
+					while (traceStep+branchStep<row&&work) work=quietStep();
+					update();
+				}
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+		}
+	}
+
+	private final class TraceTableCellRendererImplementation implements
+			TableCellRenderer {
+		JLabel label = new JLabel() {
+			@Override
+			public void paint( Graphics g ) {
+				g.setColor( getBackground() );
+				g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
+				super.paint( g );
+			}
+		};
+
+		boolean isActive(int row, int column) {
+			if (column==0) {
+				if (trace!=null&&branchTrace==null)
+					return row==traceStep;
+			} else {
+				if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+					return (row-traceStep)==branchStep;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+
+			if (!(value instanceof String)) return null;
+
+			label.setText((String)value);
+
+
+			if (isActive(row, column)) {
+				label.setBackground(Color.YELLOW);
+			} else {
+				label.setBackground(Color.WHITE);
+			}
+
+			return label;
+		}
+	}
+
 	@SuppressWarnings("serial")
 	private class TraceTableModel extends AbstractTableModel {
 		@Override
@@ -330,27 +422,26 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	};
 
 	private void createInterface() {
-		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Start automatic simulation");
-		pauseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"), "Pause automatic simulation");
-		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset simulation");
+		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
+		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
 		speedSlider = new JSlider(-1000, 1000, 0);
+		speedSlider.setToolTipText("Simulation playback speed");
 		loadMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-load.svg"), "Load marking from memory");
 		saveMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save marking to memory");
 		copyTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
 		pasteTracedButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
 
-		int wPrefered = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
-		int hPrefered = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
-		Dimension panelSize = new Dimension(wPrefered * 5, hPrefered);
+		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
+		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
+		Dimension panelSize = new Dimension(buttonWidth * 5, buttonHeight);
 
 		JPanel simulationControl = new JPanel();
 		simulationControl.setLayout(new FlowLayout());
 		simulationControl.setPreferredSize(panelSize);
 		simulationControl.setMaximumSize(panelSize);
 		simulationControl.add(playButton);
-		simulationControl.add(pauseButton);
 		simulationControl.add(stopButton);
 		simulationControl.add(backwardButton);
 		simulationControl.add(forwardButton);
@@ -405,23 +496,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		playButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				timer = new Timer(getAnimationDelay(), new ActionListener()
-				{
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						step();
-					}
-				});
-				timer.start();
-				update();
-			}
-		});
-
-		pauseButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timer.stop();
-				timer = null;
+				if (timer == null) {
+					timer = new Timer(getAnimationDelay(), new ActionListener()	{
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							step();
+						}
+					});
+					timer.start();
+				} else {
+					timer.stop();
+					timer = null;
+				}
 				update();
 			}
 		});
@@ -493,97 +579,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		});
 
-		traceTable.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int column = traceTable.getSelectedColumn();
-				int row = traceTable.getSelectedRow();
-
-				if (column==0) {
-					if (trace!=null&&row<trace.size()) {
-
-						boolean work=true;
-
-						while (branchStep>0&&work) work=quietStepBack();
-						while (traceStep>row&&work) work=quietStepBack();
-						while (traceStep<row&&work) work=quietStep();
-
-						update();
-					}
-				} else {
-					if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
-
-						boolean work=true;
-						while (traceStep+branchStep>row&&work) work=quietStepBack();
-						while (traceStep+branchStep<row&&work) work=quietStep();
-						update();
-					}
-				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-			}
-
-		});
-
-
-		traceTable.setDefaultRenderer(Object.class,
-			new TableCellRenderer() {
-				JLabel label = new JLabel() {
-					@Override
-					public void paint( Graphics g ) {
-						g.setColor( getBackground() );
-						g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-						super.paint( g );
-					}
-				};
-
-				boolean isActive(int row, int column) {
-					if (column==0) {
-						if (trace!=null&&branchTrace==null)
-							return row==traceStep;
-					} else {
-						if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
-							return (row-traceStep)==branchStep;
-						}
-					}
-					return false;
-				}
-
-				@Override
-				public Component getTableCellRendererComponent(JTable table,
-						Object value, boolean isSelected, boolean hasFocus,
-						int row, int column) {
-
-					if (!(value instanceof String)) return null;
-
-					label.setText((String)value);
-
-
-					if (isActive(row, column)) {
-						label.setBackground(Color.YELLOW);
-					} else {
-						label.setBackground(Color.WHITE);
-					}
-
-					return label;
-				}
-
-		});
+		traceTable.addMouseListener(new TraceTableMouseListenerImplementation());
+		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
 	}
 
 	@Override
@@ -595,15 +592,13 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	@Override
 	public void activated(GraphEditor editor)
 	{
+		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
 		visualNet = editor.getModel();
 		net = (PetriNetModel)visualNet.getMathModel();
-
 		initialMarking = readMarking();
 		traceStep = 0;
 		branchTrace = null;
 		branchStep = 0;
-
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
 		update();
 	}
 
@@ -699,16 +694,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	@Override
 	public Decorator getDecorator() {
 		return new Decorator() {
-
 			@Override
 			public Decoration getDecoration(Node node) {
 				if(node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
-
-
 					String transitionId = null;
 					Node transition2 = null;
-
 					if (branchTrace!=null&&branchStep<branchTrace.size()) {
 						transitionId = branchTrace.get(branchStep);
 						transition2 = net.getNodeByReference(transitionId);
@@ -719,7 +710,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 					if (transition==transition2) {
 						return new Decoration(){
-
 							@Override
 							public Color getColorisation() {
 								return PetriNetSettings.getEnabledBackgroundColor();
@@ -735,7 +725,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 					if (net.isEnabled(transition))
 						return new Decoration(){
-
 							@Override
 							public Color getColorisation() {
 								return PetriNetSettings.getEnabledForegroundColor();

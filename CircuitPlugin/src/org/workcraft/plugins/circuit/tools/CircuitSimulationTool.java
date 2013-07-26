@@ -42,20 +42,17 @@ public class CircuitSimulationTool extends STGSimulationTool {
 
 	@Override
 	public void activated(GraphEditor editor) {
-		this.editor = editor;
-		this.circuit = (VisualCircuit)editor.getModel();
-
+		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		circuit = (VisualCircuit)editor.getModel();
 		visualNet = CircuitPetriNetGenerator.generate(circuit);
 		net = (PetriNetModel)visualNet.getMathModel();
-
 		initialMarking = readMarking();
 		traceStep = 0;
 		branchTrace = null;
 		branchStep = 0;
-
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		this.editor = editor;
+		initialiseStateMap();
 		update();
-
 	}
 
 	@Override
@@ -93,7 +90,6 @@ public class CircuitSimulationTool extends STGSimulationTool {
 
 	}
 	private void createInterface() {
-
 		copyInitButton = new JButton ("Copy init");
 		copyInitButton.addActionListener(new ActionListener(){
 			@Override
@@ -101,13 +97,10 @@ public class CircuitSimulationTool extends STGSimulationTool {
 				copyInit();
 			}
 		});
-
-		interfacePanel.add(copyInitButton);
-
+		controlPanel.add(copyInitButton);
 	}
 
 	private void copyInit() {
-
 		for (VisualContact vc: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
 			Contact c = (Contact)vc.getReferencedComponent();
 			if (!vc.getReferencedTransitions().isEmpty()) {
@@ -137,7 +130,6 @@ public class CircuitSimulationTool extends STGSimulationTool {
 	@Override
 	public Decorator getDecorator() {
 		return new Decorator() {
-
 			@Override
 			public Decoration getDecoration(Node node) {
 				if(node instanceof VisualContact) {
@@ -168,9 +160,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 								return PetriNetSettings.getEnabledForegroundColor();
 							}
 						};
-
 					}
-
 
 					if (isContactExcited((VisualContact)node, net)!=null)
 						return new Decoration(){
@@ -191,8 +181,6 @@ public class CircuitSimulationTool extends STGSimulationTool {
 
 					boolean isOne = contact.getReferencedOnePlace().getTokens()==1;
 					boolean isZero = contact.getReferencedZeroPlace().getTokens()==1;
-
-
 					if (isOne&&!isZero)
 						return new Decoration(){
 							@Override
@@ -226,7 +214,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 					boolean isOne = vj.getReferencedOnePlace().getTokens()==1;
 					boolean isZero = vj.getReferencedZeroPlace().getTokens()==1;
 
-					if (isOne&&!isZero)
+					if (isOne&&!isZero) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -237,7 +225,8 @@ public class CircuitSimulationTool extends STGSimulationTool {
 								return null;
 							}
 						};
-					if (!isOne&&isZero)
+					}
+					if (!isOne&&isZero) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -248,15 +237,13 @@ public class CircuitSimulationTool extends STGSimulationTool {
 								return null;
 							}
 						};
+					}
 				} else if (node instanceof VisualCircuitConnection) {
 					VisualCircuitConnection vc = (VisualCircuitConnection)node;
-
 					if (vc.getReferencedOnePlace()==null||vc.getReferencedZeroPlace()==null) return null;
-
 					boolean isOne = vc.getReferencedOnePlace().getTokens()==1;
 					boolean isZero = vc.getReferencedZeroPlace().getTokens()==1;
-
-					if (isOne&&!isZero)
+					if (isOne&&!isZero) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -267,7 +254,8 @@ public class CircuitSimulationTool extends STGSimulationTool {
 								return null;
 							}
 						};
-					if (!isOne&&isZero)
+					}
+					if (!isOne&&isZero) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -278,12 +266,10 @@ public class CircuitSimulationTool extends STGSimulationTool {
 								return null;
 							}
 						};
-
+					}
 				}
 				return null;
 			}
-
-
 		};
 	}
 }

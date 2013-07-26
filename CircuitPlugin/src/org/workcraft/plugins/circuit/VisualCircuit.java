@@ -42,8 +42,6 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { Joint.class, FunctionComponent.class } )
-
 public class VisualCircuit extends AbstractVisualModel {
 
 	private Circuit circuit;
