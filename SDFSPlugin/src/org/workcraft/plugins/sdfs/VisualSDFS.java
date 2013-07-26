@@ -21,12 +21,23 @@
 
 package org.workcraft.plugins.sdfs;
 
+import org.workcraft.annotations.CustomTools;
+import org.workcraft.annotations.DefaultCreateButtons;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.util.Hierarchy;
 
+@DisplayName("Static Data Flow Structures")
+@CustomTools ( SDFSToolsProvider.class )
+@DefaultCreateButtons ( { Register.class, Logic.class } )
 public class VisualSDFS extends AbstractVisualModel {
 
 	public VisualSDFS(SDFS model)
@@ -40,23 +51,21 @@ public class VisualSDFS extends AbstractVisualModel {
 	}
 
 	@Override
-	public void validateConnection(Node first, Node second)
-			throws InvalidConnectionException {
-		throw new org.workcraft.exceptions.NotImplementedException();
+	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+		if (first == null || second == null) {
+			throw new InvalidConnectionException ("Connections not valid");
+		}
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	@Override
-	public String getNodeReference(Node node) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-	@Override
-	public void connect(Node first, Node second)
-			throws InvalidConnectionException {
-		throw new org.workcraft.exceptions.NotImplementedException();
+	public void connect(Node first, Node second) throws InvalidConnectionException {
+		validateConnection(first, second);
+		VisualComponent c1 = (VisualComponent) first;
+		VisualComponent c2 = (VisualComponent) second;
+		MathNode ref1 = c1.getReferencedComponent();
+		MathNode ref2 = c2.getReferencedComponent();
+		MathConnection con = ((SDFS)getMathModel()).connect(ref1, ref2);
+		VisualConnection ret = new VisualConnection(con, c1, c2);
+		Hierarchy.getNearestContainer(c1, c2).add(ret);
 	}
 }

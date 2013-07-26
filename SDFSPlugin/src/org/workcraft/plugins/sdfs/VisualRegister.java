@@ -24,6 +24,7 @@ package org.workcraft.plugins.sdfs;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
@@ -33,7 +34,9 @@ import java.util.Collection;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.PopupMenuBuilder;
@@ -46,6 +49,8 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_R)
+@DisplayName ("Register")
+@SVGIcon("images/icons/svg/sdfs-register.svg")
 public class VisualRegister extends VisualComponent {
 	static public class ToggleMarkedAction extends ScriptedAction {
 		String text;
@@ -97,26 +102,14 @@ public class VisualRegister extends VisualComponent {
 			return text;
 		}
 	}
-	private static Rectangle2D outerRect;
-	private static Rectangle2D innerRect;
-	private static Ellipse2D token;
-
-	public Register getReferencedRegister() {
-		return (Register)getReferencedComponent();
-	}
 
 	public VisualRegister(Register register) {
 		super(register);
 		addPropertyDeclarations();
-
-		setFillColor (SDFSVisualSettings.getFillColor());
-		setForegroundColor(SDFSVisualSettings.getForegroundColor());
-		setLabelColor(SDFSVisualSettings.getForegroundColor());
 	}
 
-	public VisualRegister() {
-		super();
-		addPropertyDeclarations();
+	public Register getReferencedRegister() {
+		return (Register)getReferencedComponent();
 	}
 
 	private void addPropertyDeclarations() {
@@ -140,11 +133,8 @@ public class VisualRegister extends VisualComponent {
 		});
 	}
 
-
 	@Override
 	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
-
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 
@@ -152,22 +142,20 @@ public class VisualRegister extends VisualComponent {
 		double strokeWidth = SDFSVisualSettings.getStrokeWidth();
 
 
-		outerRect = new Rectangle2D.Double (-size / 2 + strokeWidth / 2,
+		Shape outerRect = new Rectangle2D.Double (-size / 2 + strokeWidth / 2,
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth,
 				size - strokeWidth);
 
-		innerRect = new Rectangle2D.Double (
+		Shape innerRect = new Rectangle2D.Double (
 				-size / 2 + strokeWidth / 2 + size * 0.2,
 				-size / 2 + strokeWidth / 2,
 				size - strokeWidth - size * 0.4,
 				size - strokeWidth);
 
-		token = new Ellipse2D.Double (
+		Shape token = new Ellipse2D.Double (
 				-size *0.15 , -size/2  + size / 8, size * 0.3, size * 0.3
 			);
-
-
 
 		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(outerRect);
@@ -189,15 +177,8 @@ public class VisualRegister extends VisualComponent {
 			g.setColor(SDFSVisualSettings.getTokenColor());
 			g.fill(token);
 		}
-	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
-
-
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-			return true;
+		drawLabelInLocalSpace(r);
 	}
 
 	public boolean isEnabled() {
@@ -216,9 +197,4 @@ public class VisualRegister extends VisualComponent {
 		getReferencedRegister().setMarked(marked);
 	}
 
-	@Override
-	public Collection<MathNode> getMathReferences() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

@@ -26,8 +26,11 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Static Data Flow Structure")
 @VisualClass (org.workcraft.plugins.sdfs.VisualSDFS.class)
@@ -56,13 +59,9 @@ public class SDFS extends AbstractMathModel {
 		return newLogic;
 	}
 
-	@Override
-	public Node getNodeByReference(String reference) {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	@Override
-	public String getNodeReference(Node node) {
-		throw new org.workcraft.exceptions.NotImplementedException();
+	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
+		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+		Hierarchy.getNearestContainer(first, second).add(con);
+		return con;
 	}
 }

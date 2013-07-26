@@ -21,8 +21,11 @@
 
 package org.workcraft.plugins.petri.tools;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -45,6 +48,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -59,13 +64,13 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.Place;
@@ -74,18 +79,20 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
-
 public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected VisualModel visualNet;
 
 	protected PetriNetModel net;
 	protected JPanel interfacePanel;
-
-	private JButton resetButton, autoPlayButton, stopButton, backButton, stepButton, loadTraceButton, saveMarkingButton, loadMarkingButton;
-	private JButton saveToClipboardButton, loadFromClipboardButton;
-	private JSlider speedSlider;
-
+	protected JPanel controlPanel;
+	protected JScrollPane infoPanel;
+	protected JPanel statusPanel;
 	protected JTable traceTable;
+
+	private JSlider speedSlider;
+	private JButton stopButton, playButton, pauseButton, backwardButton, forwardButton;
+	private JButton saveMarkingButton, loadMarkingButton;
+	private JButton copyTraceButton, pasteTracedButton;
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
@@ -129,27 +136,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		if (timer != null)
 			timer.setDelay(getAnimationDelay());
 
-		resetButton.setEnabled(trace != null || branchTrace != null);
-		autoPlayButton.setEnabled(trace != null && traceStep < trace.size());
-		stopButton.setEnabled(timer!=null);
-
-		backButton.setEnabled(traceStep > 0 || branchStep > 0);
-
-
-		stepButton.setEnabled(branchTrace==null && trace != null && traceStep < trace.size() || branchTrace != null && branchStep < branchTrace.size());
-
-		loadTraceButton.setEnabled(true);
-
+		playButton.setEnabled(trace != null && traceStep < trace.size());
+		pauseButton.setEnabled(timer!=null);
+		stopButton.setEnabled(trace != null || branchTrace != null);
+		backwardButton.setEnabled(traceStep > 0 || branchStep > 0);
+		forwardButton.setEnabled(branchTrace==null && trace != null && traceStep < trace.size() || branchTrace != null && branchStep < branchTrace.size());
 		saveMarkingButton.setEnabled(true);
 		loadMarkingButton.setEnabled(savedMarking != null);
-
 		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
-
-		// debug
-/*		if (trace!=null)
-			System.out.println("Trace:" + traceToString(trace, traceStep));
-		if (branchTrace!=null)
-			System.out.println("Branch:" + traceToString(branchTrace, branchStep));*/
 	}
 
 	private boolean quietStepBack() {
@@ -299,52 +293,207 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	@SuppressWarnings("serial")
-	private void createInterface() {
-		interfacePanel = new JPanel(new SimpleFlowLayout(5,5));
+	private class TraceTableModel extends AbstractTableModel {
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
 
-		traceTable = new JTable(new AbstractTableModel() {
+		@Override
+		public String getColumnName(int column) {
+			if (column==0) return "Trace";
+			return "Branch";
+		}
 
-			@Override
-			public int getColumnCount() {
-				return 2;
-			}
+		@Override
+		public int getRowCount() {
+			int tnum = 0;
+			int bnum = 0;
+			if (trace!=null) tnum=trace.size();
+			if (branchTrace!=null) bnum=branchTrace.size();
 
-			@Override
-			public String getColumnName(int column) {
-				if (column==0) return "Trace";
-				return "Branch";
-			}
+			return Math.max(tnum, bnum+traceStep);
+		}
 
-			@Override
-			public int getRowCount() {
-				int tnum = 0;
-				int bnum = 0;
-				if (trace!=null) tnum=trace.size();
-				if (branchTrace!=null) bnum=branchTrace.size();
-
-				return Math.max(tnum, bnum+traceStep);
-			}
-
-			@Override
-			public Object getValueAt(int row, int col) {
-				if (col==0) {
-					if (trace!=null&&row<trace.size())
-						return trace.get(row);
-				} else {
-					if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
-						return branchTrace.get(row-traceStep);
-					}
+		@Override
+		public Object getValueAt(int row, int col) {
+			if (col==0) {
+				if (trace!=null&&row<trace.size())
+					return trace.get(row);
+			} else {
+				if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
+					return branchTrace.get(row-traceStep);
 				}
-				return "";
+			}
+			return "";
+		}
+	};
+
+	private void createInterface() {
+		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Start automatic simulation");
+		pauseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"), "Pause automatic simulation");
+		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset simulation");
+		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
+		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
+		speedSlider = new JSlider(-1000, 1000, 0);
+		loadMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-load.svg"), "Load marking from memory");
+		saveMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save marking to memory");
+		copyTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
+		pasteTracedButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
+
+		int wPrefered = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
+		int hPrefered = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
+		Dimension panelSize = new Dimension(wPrefered * 5, hPrefered);
+
+		JPanel simulationControl = new JPanel();
+		simulationControl.setLayout(new FlowLayout());
+		simulationControl.setPreferredSize(panelSize);
+		simulationControl.setMaximumSize(panelSize);
+		simulationControl.add(playButton);
+		simulationControl.add(pauseButton);
+		simulationControl.add(stopButton);
+		simulationControl.add(backwardButton);
+		simulationControl.add(forwardButton);
+
+		JPanel speedControl = new JPanel();
+		speedControl.setLayout(new BorderLayout());
+		speedControl.setPreferredSize(panelSize);
+		speedControl.setMaximumSize(panelSize);
+		speedControl.add(speedSlider, BorderLayout.CENTER);
+
+		JPanel traceControl = new JPanel();
+		traceControl.setLayout(new FlowLayout());
+		traceControl.setPreferredSize(panelSize);
+		traceControl.add(new JSeparator());
+		traceControl.add(loadMarkingButton);
+		traceControl.add(saveMarkingButton);
+		traceControl.add(copyTraceButton);
+		traceControl.add(pasteTracedButton);
+
+		controlPanel = new JPanel();
+		controlPanel.setLayout(new WrapLayout());
+		controlPanel.add(simulationControl);
+		controlPanel.add(speedControl);
+		controlPanel.add(traceControl);
+
+		traceTable = new JTable(new TraceTableModel());
+		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		infoPanel = new JScrollPane(traceTable);
+		infoPanel.setPreferredSize(new Dimension(1, 1));
+
+		statusPanel = new JPanel();
+		interfacePanel = new JPanel();
+		interfacePanel.setLayout(new BorderLayout());
+		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(infoPanel, BorderLayout.CENTER);
+		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+
+		speedSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(timer != null)
+				{
+					timer.stop();
+					timer.setInitialDelay(getAnimationDelay());
+					timer.setDelay(getAnimationDelay());
+					timer.start();
+				}
+				update();
+			}
+		});
+
+		playButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer = new Timer(getAnimationDelay(), new ActionListener()
+				{
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						step();
+					}
+				});
+				timer.start();
+				update();
+			}
+		});
+
+		pauseButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer.stop();
+				timer = null;
+				update();
+			}
+		});
+
+		stopButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				reset();
+			}
+		});
+
+		backwardButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stepBack();
+			}
+		});
+
+		forwardButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				step();
+			}
+		});
+
+		loadMarkingButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				applyMarking(savedMarking);
+				traceStep = savedStep;
+				if (savedBranchTrace != null) {
+					branchStep = savedBranchStep;
+					branchTrace = (Trace)savedBranchTrace.clone();
+				} else {
+					branchStep = 0;
+					branchTrace = null;
+				}
+				update();
+			}
+		});
+
+		saveMarkingButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				savedMarking = readMarking();
+				savedStep = traceStep;
+				savedBranchStep = 0;
+				savedBranchTrace = null;
+				if (branchTrace!=null) {
+					savedBranchTrace = (Trace)branchTrace.clone();
+					savedBranchStep = branchStep;
+				}
+				update();
+			}
+		});
+
+		copyTraceButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveToClipboard();
 			}
 
 		});
 
-
-		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		pasteTracedButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadFromClipboard();
+			}
+		});
 
 		traceTable.addMouseListener(new MouseListener() {
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int column = traceTable.getSelectedColumn();
@@ -412,7 +561,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 							return (row-traceStep)==branchStep;
 						}
 					}
-
 					return false;
 				}
 
@@ -436,144 +584,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				}
 
 		});
-
-
-		resetButton = new JButton ("Reset");
-		loadFromClipboardButton = new JButton("from Clipb");
-		saveToClipboardButton = new JButton("to Clipb");
-
-		speedSlider = new JSlider(-1000, 1000, 0);
-		autoPlayButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/start.svg"), "Automatic simulation");
-		stopButton = new JButton ("Stop");
-		backButton = new JButton ("Step <");
-		stepButton = new JButton ("Step >");
-		loadTraceButton = new JButton ("Load trace");
-		saveMarkingButton = new JButton ("Save marking");
-		loadMarkingButton = new JButton ("Load marking");
-
-		speedSlider.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(timer != null)
-				{
-					timer.stop();
-					timer.setInitialDelay(getAnimationDelay());
-					timer.setDelay(getAnimationDelay());
-					timer.start();
-				}
-				update();
-			}
-		});
-
-		resetButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				reset();
-			}
-		});
-
-		saveToClipboardButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveToClipboard();
-			}
-
-		});
-
-		loadFromClipboardButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loadFromClipboard();
-			}
-		});
-
-		autoPlayButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timer = new Timer(getAnimationDelay(), new ActionListener()
-				{
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						step();
-					}
-				});
-				timer.start();
-				update();
-			}
-		});
-
-		stopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timer.stop();
-				timer = null;
-				update();
-			}
-		});
-
-		backButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stepBack();
-			}
-		});
-
-		stepButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				step();
-			}
-		});
-
-		saveMarkingButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				savedMarking = readMarking();
-				savedStep = traceStep;
-
-				savedBranchStep = 0;
-				savedBranchTrace = null;
-
-				if (branchTrace!=null) {
-					savedBranchTrace = (Trace)branchTrace.clone();
-					savedBranchStep = branchStep;
-				}
-
-				update();
-			}
-		});
-
-		loadMarkingButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				applyMarking(savedMarking);
-				traceStep = savedStep;
-				if (savedBranchTrace!=null) {
-					branchStep = savedBranchStep;
-					branchTrace = (Trace)savedBranchTrace.clone();
-				} else {
-					branchStep = 0;
-					branchTrace = null;
-				}
-				update();
-			}
-		});
-
-		interfacePanel.add(resetButton);
-		interfacePanel.add(speedSlider);
-		interfacePanel.add(autoPlayButton);
-		interfacePanel.add(stopButton);
-		interfacePanel.add(backButton);
-		interfacePanel.add(stepButton);
-		interfacePanel.add(loadTraceButton);
-		interfacePanel.add(saveMarkingButton);
-		interfacePanel.add(loadMarkingButton);
-		interfacePanel.add(saveToClipboardButton);
-		interfacePanel.add(loadFromClipboardButton);
-		interfacePanel.add(traceTable);
 	}
 
 	@Override

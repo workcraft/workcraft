@@ -21,8 +21,11 @@
 
 package org.workcraft.plugins.sdfs;
 
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
+
+@VisualClass(org.workcraft.plugins.sdfs.VisualLogic.class)
 public class Logic extends MathNode {
 
 }

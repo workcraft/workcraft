@@ -36,7 +36,7 @@ public class CommonVisualSettings implements SettingsPage {
 
 	protected static double size = 1.0;
 	protected static double strokeWidth = 0.1;
-	protected static int iconSize = 16;
+	protected static int iconSize = 24;
 	protected static Color backgroundColor = Color.WHITE;
 	protected static Color foregroundColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
@@ -75,7 +75,7 @@ public class CommonVisualSettings implements SettingsPage {
 
 	public void load(Config config) {
 		size = config.getDouble("CommonVisualSettings.size", 1.0);
-		iconSize = config.getInt("Commo`nVisualSettings.iconSize", 16);
+		iconSize = config.getInt("CommonVisualSettings.iconSize", 24);
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
 		backgroundColor = config.getColor("CommonVisualSettings.backgroundColor", Color.WHITE);
 		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
