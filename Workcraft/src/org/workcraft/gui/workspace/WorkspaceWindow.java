@@ -321,8 +321,9 @@ public class WorkspaceWindow extends JPanel {
 
 	private void checkSaved() throws OperationCancelledException {
 		if (framework.getWorkspace().isChanged()) {
-			int result = JOptionPane.showConfirmDialog(mainWindow, "Current workspace is not saved. Do you wish to save it before opening?", "Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
+			int result = JOptionPane.showConfirmDialog(mainWindow,
+					"Current workspace is not saved. Do you wish to save it before opening?",
+					"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 			if (result == JOptionPane.CANCEL_OPTION)
 				throw new OperationCancelledException("Cancelled by user.");

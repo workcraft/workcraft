@@ -227,7 +227,7 @@ public class CircuitPetriNetGenerator {
 			Map<VisualContact, ContactSTG> drivers,
 			Map<Contact, VisualContact> targetDrivers, Dnf set, Dnf reset, SignalTransition.Type ttype) throws InvalidConnectionException {
 
-		AffineTransform transform = TransformHelper.getTransformToAncestor(contact, circuit.getRoot());
+		AffineTransform transform = TransformHelper.getTransformToRoot(contact);
 		Point2D center = new Point2D.Double(xScaling*(transform.getTranslateX()+contact.getX()), yScaling*(transform.getTranslateY()+contact.getY()));
 
 		Point2D direction;

@@ -37,7 +37,6 @@ import javax.swing.Icon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -78,26 +77,25 @@ public class ConnectionTool extends AbstractTool {
 		g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
 
 		if (first != null) {
-			VisualGroup root = (VisualGroup)editor.getModel().getRoot();
 			warningMessage = null;
 			if (mouseOverObject != null) {
 				try {
 					editor.getModel().validateConnection(first, mouseOverObject);
-					drawConnectingLine(g, root, Color.GREEN);
+					drawConnectingLine(g, Color.GREEN);
 				} catch (InvalidConnectionException e) {
 					warningMessage = e.getMessage();
-					drawConnectingLine(g, root, Color.RED);
+					drawConnectingLine(g, Color.RED);
 				}
 			} else {
-				drawConnectingLine(g, root, Color.BLUE);
+				drawConnectingLine(g, Color.BLUE);
 			}
 		}
 	}
 
-	private void drawConnectingLine(Graphics2D g, VisualGroup root, Color color) {
+	private void drawConnectingLine(Graphics2D g, Color color) {
 		g.setColor(color);
 
-		Point2D center = TransformHelper.transform(first, TransformHelper.getTransformToAncestor(first, root)).getCenter();
+		Point2D center = TransformHelper.transform(first, TransformHelper.getTransformToRoot(first)).getCenter();
 
 		Line2D line = new Line2D.Double(center.getX(), center.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
 		g.draw(line);
@@ -201,6 +199,8 @@ public class ConnectionTool extends AbstractTool {
 		super.activated(editor);
 		editor.getModel().selectNone();
 		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+		first = null;
+		mouseOverObject = null;
 	}
 
 

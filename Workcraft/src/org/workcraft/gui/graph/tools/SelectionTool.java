@@ -30,6 +30,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -44,6 +45,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
@@ -114,9 +117,9 @@ public class SelectionTool extends AbstractTool {
 			if (node != null)
 			{
 				if (e.getClickCount() > 1) {
-					if (node instanceof VisualComponent) {
-						VisualComponent component = (VisualComponent) node;
-						editLabelInPlace(e.getEditor(), component, component.getLabel());
+					if (node instanceof VisualComment) {
+						VisualComment comment = (VisualComment) node;
+						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
 					}
 				} else {
 					switch (e.getKeyModifiers()) {
@@ -465,10 +468,12 @@ public class SelectionTool extends AbstractTool {
 
 	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
 		final JTextField text = new JTextField(initialText);
-		Rectangle bb = editor.getViewport().userToScreen(component.getBoundingBox());
-		text.setFont(text.getFont().deriveFont( Math.max(10.0f, (float)bb.getHeight()*0.7f)));
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
+		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
+		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
+		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width*2, bbScreen.height);
+		text.setFont(VisualComponent.labelFont.deriveFont((float)bbScreen.getHeight()/VisualComponent.labelFont.getSize()/3.0f));
 		text.selectAll();
-		text.setBounds(bb.x, bb.y, Math.max(bb.width, 60), Math.max(bb.height, 18));
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();
 

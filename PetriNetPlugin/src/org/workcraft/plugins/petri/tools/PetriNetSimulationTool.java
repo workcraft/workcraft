@@ -584,15 +584,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	@Override
-	public void deactivated(GraphEditor editor)
-	{
-		reset();
-	}
-
-	@Override
 	public void activated(GraphEditor editor)
 	{
 		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();
@@ -600,6 +595,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		branchTrace = null;
 		branchStep = 0;
 		update();
+	}
+
+	@Override
+	public void deactivated(GraphEditor editor)
+	{
+		editor.getWorkspaceEntry().cancelMemento();
 	}
 
 	protected Map<Place, Integer> readMarking() {

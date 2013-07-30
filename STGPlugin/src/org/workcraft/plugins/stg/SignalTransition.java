@@ -26,12 +26,11 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
 @VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
-public class SignalTransition extends Transition implements STGTransition
+public class SignalTransition extends NamedTransition
 {
 	public enum Type {
 		INPUT,
@@ -81,8 +80,7 @@ public class SignalTransition extends Transition implements STGTransition
 	}
 
 	public void setSignalType(Type type) {
-		if (this.type != type)
-		{
+		if (this.type != type) {
 			this.type = type;
 			sendNotification(new PropertyChangedEvent(this, "signalType"));
 		}
@@ -93,8 +91,7 @@ public class SignalTransition extends Transition implements STGTransition
 	}
 
 	public void setDirection(Direction direction) {
-		if (this.direction != direction)
-		{
+		if (this.direction != direction) {
 			this.direction = direction;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 		}
@@ -107,22 +104,25 @@ public class SignalTransition extends Transition implements STGTransition
 
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
-			this.signalName = signalName;
-			sendNotification(new PropertyChangedEvent(this, "signalName"));
+		this.signalName = signalName;
+		sendNotification(new PropertyChangedEvent(this, "signalName"));
 	}
 
-	@Override
-	public DummyTransition asDummy() {
-		return null;
+	@NoAutoSerialisation
+	public String getName() {
+		final StringBuffer result = new StringBuffer(signalName);
+		switch (direction) {
+		case PLUS:
+			result.append("+");
+			break;
+		case MINUS:
+			result.append("-");
+			break;
+		case TOGGLE:
+			result.append("~");
+			break;
+		}
+		return result.toString();
 	}
 
-	@Override
-	public SignalTransition asSignal() {
-		return this;
-	}
-
-	@Override
-	public Transition getTransition() {
-		return this;
-	}
 }

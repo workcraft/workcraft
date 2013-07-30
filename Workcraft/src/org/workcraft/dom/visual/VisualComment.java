@@ -50,7 +50,7 @@ public class VisualComment extends VisualComponent {
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 0.0);
+		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 1.0);
 	}
 
 	@Override

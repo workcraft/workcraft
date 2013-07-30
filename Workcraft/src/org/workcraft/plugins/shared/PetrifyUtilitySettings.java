@@ -67,7 +67,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 
 	public void load(Config config) {
 		petrifyCommand = config.getString(petrifyCommandKey, "petrify");
-		petrifyArgs = config.getString(petrifyArgsKey, "");
+		petrifyArgs = config.getString(petrifyArgsKey, "-nosi -lib tools/petrify.lib");
 		draw_astgCommand = config.getString(draw_astgCommandKey, "draw_astg");
 		draw_astgArgs= config.getString(draw_astgArgsKey, "");
 		write_sgCommand = config.getString(write_sgCommandKey, "write_sg");

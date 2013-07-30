@@ -45,15 +45,13 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private MathNode refNode = null;
 
 	protected final static double size = CommonVisualSettings.getSize();
-	protected final static double strokeWidth = CommonVisualSettings
-			.getStrokeWidth();
-	protected final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	protected final static double strokeWidth = CommonVisualSettings.getStrokeWidth();
+	public final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private GlyphVector labelGlyphs = null;
 	private String glyphedLabel = null;
 	private String label = "";
-	private Positioning labelPositioning = CommonVisualSettings
-			.getTextPositioning();
+	private Positioning labelPositioning = CommonVisualSettings.getTextPositioning();
 	private Point2D labelPosition = null;
 	private Rectangle2D labelBoundingBox = null;
 	private Color labelColor = CommonVisualSettings.getForegroundColor();
@@ -204,5 +202,4 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2
 				&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
-
 }

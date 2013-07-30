@@ -22,6 +22,7 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
+
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.util.Geometry;
@@ -52,6 +53,19 @@ public class TransformHelper {
 		}
 
 		return t;
+	}
+
+	public static AffineTransform getTransformToRoot(Node node) {
+		Node root = null;
+		Node parent = node;
+		do {
+			parent = parent.getParent();
+			if (parent != null) {
+				root = parent;
+			}
+		} while (parent != null);
+
+		return getTransformToAncestor(node, root);
 	}
 
 	public static AffineTransform getTransform(Node node1, Node node2) {

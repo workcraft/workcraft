@@ -22,96 +22,48 @@
 package org.workcraft.plugins.stg;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Signal Transition")
 @SVGIcon("images/icons/svg/signal-transition.svg")
-public class VisualSignalTransition extends VisualTransition implements StateObserver {
-	private static Color inputsColor = Color.RED.darker();
-	private static Color outputsColor = Color.BLUE.darker();
-	private static Color internalsColor = Color.GREEN.darker();
-
-	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-
-	private RenderedText renderedText = new RenderedText(font, "");
+public class VisualSignalTransition extends VisualNamedTransition implements StateObserver {
+	protected static Color inputsColor = Color.RED.darker();
+	protected static Color outputsColor = Color.BLUE.darker();
+	protected static Color internalsColor = Color.GREEN.darker();
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
-		transition.addObserver(this);
-		updateText();
 	}
 
 	@Override
-	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
-		Graphics2D g = r.getGraphics();
-
-		Color background = r.getDecoration().getBackground();
-		if(background!=null)
-		{
-			g.setColor(background);
-			g.fill(renderedText.getBoundingBox());
-		}
-
-		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
-
-		renderedText.draw(g);
-	}
-
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return renderedText.getBoundingBox();
-	}
-
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return renderedText.getBoundingBox().contains(pointInLocalSpace);
-	}
-
-	private String getText() {
+	public String getName() {
 		final StringBuffer result = new StringBuffer(getReferencedTransition().getSignalName());
 		switch (getReferencedTransition().getDirection()) {
-		case PLUS:
-			result.append("+"); break;
-		case MINUS:
-			result.append("-"); break;
-		case TOGGLE:
-			result.append("~"); break;
+			case PLUS:		result.append("+"); break;
+			case MINUS:		result.append("-"); break;
+			case TOGGLE: 	result.append("~"); break;
 		}
 		return result.toString();
 	}
 
-	private Color getColor() {
-		if (getType() == SignalTransition.Type.INTERNAL)
-			return internalsColor;
-		if (getType() == SignalTransition.Type.INPUT)
-			return inputsColor;
-		if (getType() == SignalTransition.Type.OUTPUT)
-			return outputsColor;
-		return Color.BLACK;
-	}
-
-	private void updateText() {
-		transformChanging();
-		renderedText.setText(getText());
-		transformChanged();
+	@Override
+	public Color getColor() {
+		Color result;
+		switch (getType()) {
+			case INTERNAL:	result = internalsColor; break;
+			case INPUT:		result = inputsColor; break;
+			case OUTPUT:	result = outputsColor; break;
+			default:		result = defaultColor; break;
+		}
+		return result;
 	}
 
 	@NoAutoSerialisation
@@ -120,14 +72,20 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 	}
 
 	@NoAutoSerialisation
+	public void setType(SignalTransition.Type type) {
+		getReferencedTransition().setSignalType(type);
+		updateRenderedName();
+	}
+
+	@NoAutoSerialisation
 	public SignalTransition.Type getType() {
 		return getReferencedTransition().getSignalType();
 	}
 
 	@NoAutoSerialisation
-	public void setType(SignalTransition.Type type) {
-		getReferencedTransition().setSignalType(type);
-		updateText();
+	public void setDirection(SignalTransition.Direction direction) {
+		getReferencedTransition().setDirection(direction);
+		updateRenderedName();
 	}
 
 	@NoAutoSerialisation
@@ -136,24 +94,13 @@ public class VisualSignalTransition extends VisualTransition implements StateObs
 	}
 
 	@NoAutoSerialisation
-	public void setDirection(SignalTransition.Direction direction) {
-		getReferencedTransition().setDirection(direction);
-		updateText();
+	public void setSignalName(String name) {
+		getReferencedTransition().setSignalName(name);
+		updateRenderedName();
 	}
 
 	@NoAutoSerialisation
 	public String getSignalName() {
 		return getReferencedTransition().getSignalName();
-	}
-
-	@NoAutoSerialisation
-	public void setSignalName(String name) {
-		getReferencedTransition().setSignalName(name);
-		updateText();
-	}
-
-	@Override
-	public void notify(StateEvent e) {
-		updateText();
 	}
 }

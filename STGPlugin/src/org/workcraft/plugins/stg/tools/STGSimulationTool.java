@@ -23,7 +23,6 @@ import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.stg.SignalTransition;
 
-
 public class STGSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
 	private static Color outputsColor = Color.BLUE.darker();
@@ -247,6 +246,7 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();

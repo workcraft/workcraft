@@ -18,12 +18,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 	private String[] args;
 	private File inputFile;
 	private File equationsFile;
-	private File libraryFile;
 	private File logFile;
-
-	private volatile boolean finished;
-	private volatile int returnCode;
-	private boolean userCancelled = false;
 
 	/**
 	 * @param args - arguments corresponding to type of logic synthesis
@@ -32,19 +27,15 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 	 * @param libraryFile - could be null
 	 * @param logFile - could be null
 	 */
-	public SynthesisTask(String[] args, File inputFile,
-			File equationsFile, File libraryFile,
-			File logFile) {
+	public SynthesisTask(String[] args, File inputFile, File equationsFile, File logFile) {
 		this.args = args;
 		this.inputFile = inputFile;
 		this.equationsFile = equationsFile;
-		this.libraryFile = libraryFile;
 		this.logFile = logFile;
 	}
 
 	@Override
 	public Result<? extends SynthesisResult> run(ProgressMonitor<? super SynthesisResult> monitor) {
-
 		// build the command line call for petrify
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PetrifyUtilitySettings.getPetrifyCommand());
@@ -57,20 +48,14 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add(arg);
 
 		try {
-
-			if (this.logFile == null)
+			if (this.logFile == null) {
 				this.logFile = File.createTempFile("petrify", ".log");
+			}
 			command.add("-log");
 			command.add(logFile.getCanonicalPath());
 
 			command.add("-eqn");
 			command.add(equationsFile.getCanonicalPath());
-
-			if (this.libraryFile != null) {
-				command.add("-tm");
-				command.add("-lib");
-				command.add(libraryFile.getCanonicalPath());
-			}
 
 			command.add(inputFile.getCanonicalPath());
 		} catch (IOException e1) {
@@ -98,23 +83,16 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		}
 	}
 
-
 	@Override
 	public void processFinished(int returnCode) {
-		this.returnCode = returnCode;
-		this.finished = true;
 	}
 
 	@Override
 	public void errorData(byte[] data) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void outputData(byte[] data) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -6,13 +6,15 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -21,9 +23,7 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.VisualDummyTransition;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualNamedTransition;
 
 public class STGSelectionTool extends SelectionTool
 {
@@ -38,18 +38,13 @@ public class STGSelectionTool extends SelectionTool
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null)
 			{
-				if (node instanceof VisualPlace)
-				{
+				if (node instanceof VisualPlace) {
 					Place place = ((VisualPlace) node).getPlace();
 					toggleToken(place, e);
 					processed = true;
-				} else if (node instanceof VisualImplicitPlaceArc) {
-					Place place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
-					toggleToken(place, e);
-					processed = true;
-				} else if (node instanceof VisualSignalTransition || node instanceof VisualDummyTransition) {
-					VisualComponent component = (VisualComponent)node;
-					editNameInPlace(e.getEditor(), component, model.getNodeReference(component.getReferencedComponent()));
+				} else if (node instanceof VisualNamedTransition) {
+					VisualNamedTransition transition = (VisualNamedTransition)node;
+					editNameInPlace(e.getEditor(), transition, transition.getName());
 					processed = true;
 				}
 			}
@@ -70,13 +65,17 @@ public class STGSelectionTool extends SelectionTool
 		}
 	}
 
-	private void editNameInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
+	private void editNameInPlace (final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
 		final STG model = (STG)editor.getModel().getMathModel();
 		final JTextField text = new JTextField(initialText);
-		Rectangle bb = editor.getViewport().userToScreen(component.getBoundingBox());
-		text.setFont(text.getFont().deriveFont( Math.max(10.0f, (float)bb.getHeight()*0.7f)));
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
+		Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
+//		Rectangle2D bbRoot = TransformHelper.transform(transition.getRenderedName(), localToRootTransform).getBoundingBox();
+		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
+		int dyScreen = Math.max((int)Math.round(bbScreen.height*0.25), 5);
+		text.setBounds(bbScreen.x, bbScreen.y-dyScreen, bbScreen.width*2, bbScreen.height+2*dyScreen);
+		text.setFont(VisualNamedTransition.font.deriveFont((float)bbScreen.getHeight()/VisualNamedTransition.font.getSize()));
 		text.selectAll();
-		text.setBounds(bb.x, bb.y, Math.max(bb.width, 60), Math.max(bb.height, 18));
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();
 
@@ -116,11 +115,11 @@ public class STGSelectionTool extends SelectionTool
 				if (!cancelInPlaceEdit) {
 					editor.getWorkspaceEntry().captureMemento();
 					try {
-						model.setName(component.getReferencedComponent(), newName);
+						model.setName(transition.getReferencedComponent(), newName);
 						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
-						editNameInPlace(editor, component, newName);
+						editNameInPlace(editor, transition, newName);
 						editor.getWorkspaceEntry().cancelMemento();
 					}
 				}
