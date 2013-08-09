@@ -40,8 +40,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-public abstract class VisualComponent extends VisualTransformableNode implements
-		Drawable, DependentNode {
+public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	private MathNode refNode = null;
 
 	protected final static double size = CommonVisualSettings.getSize();

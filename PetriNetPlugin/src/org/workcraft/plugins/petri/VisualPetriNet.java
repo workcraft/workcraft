@@ -39,7 +39,6 @@ import org.workcraft.util.Hierarchy;
 @DefaultCreateButtons ( { Place.class, Transition.class } )
 @CustomTools ( PetriNetToolProvider.class )
 public class VisualPetriNet extends AbstractVisualModel {
-	private PetriNet net;
 
 	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {
 		this (model, null);
@@ -47,15 +46,13 @@ public class VisualPetriNet extends AbstractVisualModel {
 
 	public VisualPetriNet (PetriNet model, VisualGroup root) {
 		super(model, root);
-
-		if (root == null)
+		if (root == null) {
 			try {
 				createDefaultFlatStructure();
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
-
-		this.net = model;
+		}
 	}
 
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
@@ -72,6 +69,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 		VisualComponent c1 = (VisualComponent) first;
 		VisualComponent c2 = (VisualComponent) second;
 
+		PetriNet net = (PetriNet)getMathModel();
 		MathConnection con = (MathConnection) net.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
 
 		VisualConnection ret = new VisualConnection(con, c1, c2);

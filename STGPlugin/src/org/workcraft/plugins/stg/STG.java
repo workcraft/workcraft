@@ -269,7 +269,6 @@ public class STG extends AbstractMathModel implements STGModel {
 		}
 	}
 
-	@Override
 	public String getNodeReference(Node node) {
 		if(node instanceof STGPlace)
 		{
@@ -288,7 +287,6 @@ public class STG extends AbstractMathModel implements STGModel {
 			return referenceManager.getNodeReference(node);
 	}
 
-	@Override
 	public Node getNodeByReference(String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions!=null) {

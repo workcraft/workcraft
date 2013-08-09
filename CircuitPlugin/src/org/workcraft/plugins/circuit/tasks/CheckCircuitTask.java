@@ -6,7 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitPetriNetGenerator;
+import org.workcraft.plugins.circuit.tools.STGGenerator;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -71,7 +71,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			monitor.progressUpdate(0.05);
 			VisualCircuit circuit = (VisualCircuit) we.getModelEntry().getVisualModel();
-			model = (STGModel) CircuitPetriNetGenerator.generate(circuit).getMathModel();
+			model = (STGModel) STGGenerator.generate(circuit).getMathModel();
 			monitor.progressUpdate(0.10);
 
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);

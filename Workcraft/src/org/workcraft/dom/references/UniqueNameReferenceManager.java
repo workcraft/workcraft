@@ -40,6 +40,7 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 
 		super.attach(root);
 	}
+
 	private void setExistingReference(Node n) {
 		final String reference = existing.getReference(n);
 		if (reference != null)
@@ -72,7 +73,11 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 			}
 	}
 
-	public void setName(Node node, String label) {
-		manager.setName(node, label);
+	public void setName(Node node, String name) {
+		manager.setName(node, name);
+	}
+
+	public String getName(Node node) {
+		return manager.getName(node);
 	}
 }

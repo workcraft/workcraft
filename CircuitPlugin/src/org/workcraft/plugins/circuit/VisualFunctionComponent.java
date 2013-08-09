@@ -78,7 +78,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			}
 
 			if (renderingResult!=null) {
-				updateStepPosition();
+				updateStepPositions();
 				updateTotalBB();
 			}
 		}
@@ -193,7 +193,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	@Override
-	protected void updateStepPosition()
+	protected void updateStepPositions()
 	{
 		ComponentRenderingResult res = getRenderingResult();
 		if (res!=null)
@@ -238,7 +238,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 		else
 		{
-			super.updateStepPosition();
+			super.updateStepPositions();
 		}
 	}
 
@@ -252,7 +252,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 			if (pc.getPropertyName().equals("direction")) {
 				if (getMainContact()==pc.getSender()&&getRenderingResult()!=null)
-					updateStepPosition();
+					updateStepPositions();
 			}
 		}
 	}

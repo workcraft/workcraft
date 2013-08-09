@@ -41,6 +41,18 @@ public class CommonVisualSettings implements SettingsPage {
 	protected static Color foregroundColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
 	private static Positioning textPositioning = Positioning.TOP;
+	private static boolean useEnabledForegroundColor = true;
+	private static Color enabledForegroundColor = new Color(1.0f, 0.5f, 0.0f);
+	private static boolean useEnabledBackgroundColor = false;
+	private static Color enabledBackgroundColor = new Color(0.0f, 0.0f, 0.0f);
+
+	public String getSection() {
+		return "Visual";
+	}
+
+	public String getName() {
+		return "Common visual settings";
+	}
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -67,6 +79,18 @@ public class CommonVisualSettings implements SettingsPage {
 			positions.put(lp.name, lp);
 		properties.add(new PropertyDeclaration(this, "Default text positioning",
 				"getTextPositioning", "setTextPositioning", Positioning.class, positions));
+
+		properties.add(new PropertyDeclaration(this, "Use enabled component foreground",
+				"getUseEnabledForegroundColor", "setUseEnabledForegroundColor", Boolean.class));
+
+		properties.add(new PropertyDeclaration(this, "Enabled component foreground",
+				"getEnabledForegroundColor", "setEnabledForegroundColor", Color.class));
+
+		properties.add(new PropertyDeclaration(this, "Use enabled component background",
+				"getUseEnabledBackgroundColor", "setUseEnabledBackgroundColor", Boolean.class));
+
+		properties.add(new PropertyDeclaration(this, "Enabled component background",
+				"getEnabledBackgroundColor", "setEnabledBackgroundColor", Color.class));
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -81,6 +105,10 @@ public class CommonVisualSettings implements SettingsPage {
 		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
 		textPositioning = config.getTextPositioning("CommonVisualSettings.textPositioning", Positioning.TOP);
+		useEnabledForegroundColor = config.getBoolean("CommonVisualSettings.useEnabledForegroundColor", true);
+		enabledForegroundColor = config.getColor("CommonVisualSettings.enabledForegroundColor", new Color(1.0f, 0.5f, 0.0f));
+		useEnabledBackgroundColor = config.getBoolean("CommonVisualSettings.useEnabledBackgroundColor", false);
+		enabledBackgroundColor = config.getColor("CommonVisualSettings.enabledBackgroundColor", new Color(1.0f, 0.5f, 0.0f));
 	}
 
 	public void save(Config config) {
@@ -91,6 +119,10 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setColor("CommonVisualSettings.foregroundColor", foregroundColor);
 		config.setColor("CommonVisualSettings.fillColor", fillColor);
 		config.setTextPositioning("CommonVisualSettings.textPositioning", getTextPositioning());
+		config.setBoolean("CommonVisualSettings.useEnabledForegroundColor", useEnabledForegroundColor);
+		config.setColor("CommonVisualSettings.enabledBackgroundColor", enabledBackgroundColor);
+		config.setBoolean("CommonVisualSettings.useEnabledBackgroundColor", useEnabledBackgroundColor);
+		config.setColor("CommonVisualSettings.enabledForegroundColor", enabledForegroundColor);
 	}
 
 	public static Color getBackgroundColor() {
@@ -125,17 +157,12 @@ public class CommonVisualSettings implements SettingsPage {
 		CommonVisualSettings.textPositioning = textPositioning;
 	}
 
-	public String getSection() {
-		return "Visual";
-	}
-
 	public static double getSize() {
 		return size;
 	}
 
 	public static void setSize(double size) {
 		CommonVisualSettings.size = size;
-
 	}
 
 	public static double getStrokeWidth() {
@@ -158,8 +185,36 @@ public class CommonVisualSettings implements SettingsPage {
 		CommonVisualSettings.iconSize = iconSize;
 	}
 
-	@Override
-	public String getName() {
-		return "Common visual settings";
+	public static void setUseEnabledForegroundColor(Boolean useEnabledForegroundColor) {
+		CommonVisualSettings.useEnabledForegroundColor = useEnabledForegroundColor;
+	}
+
+	public static Boolean getUseEnabledForegroundColor() {
+		return useEnabledForegroundColor;
+	}
+
+	public static void setEnabledForegroundColor(Color enabledForegroundColor) {
+		CommonVisualSettings.enabledForegroundColor = enabledForegroundColor;
+	}
+
+	public static Color getEnabledForegroundColor() {
+		return useEnabledForegroundColor ? enabledForegroundColor : null;
+	}
+
+	public static void setUseEnabledBackgroundColor(
+			Boolean useEnabledBackgroundColor) {
+		CommonVisualSettings.useEnabledBackgroundColor = useEnabledBackgroundColor;
+	}
+
+	public static Boolean getUseEnabledBackgroundColor() {
+		return useEnabledBackgroundColor;
+	}
+
+	public static void setEnabledBackgroundColor(Color enabledBackgroundColor) {
+		CommonVisualSettings.enabledBackgroundColor = enabledBackgroundColor;
+	}
+
+	public static Color getEnabledBackgroundColor() {
+		return useEnabledBackgroundColor ? enabledBackgroundColor : null;
 	}
 }

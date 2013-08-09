@@ -19,8 +19,8 @@ import javax.swing.table.TableCellRenderer;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 
 public class STGSimulationTool extends PetriNetSimulationTool {
@@ -134,8 +134,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 			label.setText((String) value);
 			label.setForeground(Color.BLACK);
 
-			Color fore = PetriNetSettings.getEnabledForegroundColor();
-			Color back = PetriNetSettings.getEnabledBackgroundColor();
+			Color fore = CommonVisualSettings.getEnabledForegroundColor();
+			Color back = CommonVisualSettings.getEnabledBackgroundColor();
 
 			Node node = net.getNodeByReference((String) value);
 			if (node instanceof SignalTransition) {

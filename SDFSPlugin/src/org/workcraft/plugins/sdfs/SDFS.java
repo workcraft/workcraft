@@ -24,12 +24,16 @@ package org.workcraft.plugins.sdfs;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Static Data Flow Structure")
@@ -37,31 +41,40 @@ import org.workcraft.util.Hierarchy;
 public class SDFS extends AbstractMathModel {
 
 	public SDFS() {
-		super(null);
+		this(null, null);
 	}
 
-	public void validate() throws ModelValidationException {
-	}
-
-
-	public void validateConnection(Connection connection)	throws InvalidConnectionException {
-	}
-
-	final public Register createRegister() {
-		Register newRegister = new Register();
-		add(newRegister);
-		return newRegister;
-	}
-
-	final public Logic createLogic() {
-		Logic newLogic = new Logic();
-		add(newLogic);
-		return newLogic;
+	public SDFS(Container root, References refs) {
+		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+			@Override
+			public String eval(Node arg) {
+				if (arg instanceof Logic)
+					return "l";
+				if (arg instanceof Register)
+					return "r";
+				if (arg instanceof Connection)
+					return "con";
+				return "node";
+			}
+		}));
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
+	}
+
+	@Override
+	public Properties getProperties(Node node) {
+		return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+	}
+
+	public String getName(Node node) {
+		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
+	}
+
+	public void setName(Node node, String name) {
+		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
 	}
 }

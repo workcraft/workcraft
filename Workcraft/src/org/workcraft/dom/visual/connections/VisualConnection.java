@@ -29,6 +29,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.workcraft.dom.Connection;
@@ -92,7 +93,7 @@ public class VisualConnection extends VisualNode implements
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
 
-	private HashSet<Node> children = new HashSet<Node>();
+	private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
 	protected void initialise() {

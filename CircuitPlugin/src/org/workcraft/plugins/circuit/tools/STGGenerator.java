@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit.stg;
+package org.workcraft.plugins.circuit.tools;
 
 import static org.workcraft.util.Geometry.add;
 import static org.workcraft.util.Geometry.subtract;
@@ -45,7 +45,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Hierarchy;
 
-public class CircuitPetriNetGenerator {
+public class STGGenerator {
 
 	static class ContactSTG
 	{
@@ -66,15 +66,12 @@ public class CircuitPetriNetGenerator {
 	}
 
 	public static VisualContact findDriver(VisualCircuit circuit, VisualContact target) {
-
 		Set<Node> neighbours = new HashSet<Node>(circuit.getPreset(target));
 
 		while (neighbours.size()>=1) {
-
 			if(neighbours.size() != 1) throw new RuntimeException("Found more than one potential driver for target "+getContactName(circuit, target)+"!");
 
 			Node node = neighbours.iterator().next();
-
 			if (VisualContact.isDriver(node)) {
 				// if it is a driver, return it
 				return (VisualContact)node;
@@ -83,13 +80,10 @@ public class CircuitPetriNetGenerator {
 			// continue searching otherwise
 			neighbours = new HashSet<Node>(circuit.getPreset(node));
 		}
-
 		return null;
 	}
 
-	private static ContactSTG generatePlaces(VisualCircuit circuit,
-			VisualSTG stg, VisualContact contact) {
-
+	private static ContactSTG generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
 		String contactName = getContactName(circuit, contact);
 		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
 		zeroPlace.setLabel(contactName+"=0");
@@ -100,9 +94,7 @@ public class CircuitPetriNetGenerator {
 		onePlace.setLabel(contactName+"=1");
 		if (contact.getInitOne()) onePlace.setTokens(1);
 
-		ContactSTG contactSTG = new ContactSTG(zeroPlace, onePlace);
-
-		return contactSTG;
+		return new ContactSTG(zeroPlace, onePlace);
 	}
 
 	public static void attachConnections(VisualCircuit circuit, VisualComponent component, ContactSTG cstg) {
@@ -130,7 +122,6 @@ public class CircuitPetriNetGenerator {
 					attachConnections(circuit, (VisualContact)c.getSecond(), cstg);
 				}
 			}
-
 		}
 	}
 
@@ -153,7 +144,7 @@ public class CircuitPetriNetGenerator {
 					// attach driven wires to the place
 					attachConnections(circuit, contact, cstg);
 
-					// put itself on a target list as well, so that it cab be addressed by other drivers
+					// put itself on a target list as well, so that it can be addressed by other drivers
 					targetDrivers.put(contact.getReferencedContact(), contact);
 				} else {
 					// if not a driver, find related driver, add to the map of targets

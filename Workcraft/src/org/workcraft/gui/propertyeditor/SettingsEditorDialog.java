@@ -38,6 +38,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.workcraft.Framework;
@@ -54,8 +55,7 @@ public class SettingsEditorDialog extends JDialog {
 	private JScrollPane sectionScroll;
 
 	private DefaultMutableTreeNode sectionRoot;
-
-		private JTree sectionTree;
+	private JTree sectionTree;
 
 	private final Framework framework;
 	private final PropertyEditorTable propertiesTable;
@@ -158,6 +158,12 @@ public class SettingsEditorDialog extends JDialog {
 		}
 
 		sectionTree.setModel(new DefaultTreeModel(sectionRoot));
+
+		// expand all tree branches
+		for(int i=0;i<sectionTree.getRowCount();i++) {
+			final TreePath treePath = sectionTree.getPathForRow(i);
+			sectionTree.expandPath(treePath);
+		}
 	}
 
 	private void setObject(SettingsPage p) {

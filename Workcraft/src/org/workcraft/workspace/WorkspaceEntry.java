@@ -46,7 +46,11 @@ public class WorkspaceEntry implements ObservableState
 
 	public WorkspaceEntry(Workspace workspace) {
 		this.workspace = workspace;
-		this.framework = workspace.getFramework();
+		if (workspace != null) {
+			this.framework = workspace.getFramework();
+		} else {
+			this.framework = null;
+		}
 	}
 
 	public void setChanged(boolean changed) {

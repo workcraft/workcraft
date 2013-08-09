@@ -22,6 +22,7 @@
 package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -52,15 +53,15 @@ public class VisualTransition extends VisualComponent {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Shape shape = new Rectangle2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
+		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
+		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), background), colorisation));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), background), colorisation));
+		g.setStroke(new BasicStroke((float) strokeWidth));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
 	}

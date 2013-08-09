@@ -72,7 +72,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	static public AffineTransform getDirectionTransform(Direction dir) {
 		AffineTransform at = new AffineTransform();
-		at.setToIdentity();
 		if (dir!=null) {
 			switch (dir) {
 			case NORTH:
@@ -83,6 +82,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				break;
 			case WEST:
 				at.quadrantRotate(2);
+				break;
+			case EAST:
+				at.setToIdentity();
 				break;
 			}
 		}
@@ -190,6 +192,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			case EAST:
 				at.quadrantRotate(2);
 				break;
+			case WEST:
+				at.setToIdentity();
+				break;
 			}
 
 			g.transform(at);
@@ -213,7 +218,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
 			AffineTransform at = new AffineTransform();
-
 			switch (getDirection()) {
 			case SOUTH:
 				at.quadrantRotate(2);
@@ -274,6 +278,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			case EAST:
 				at.quadrantRotate(2);
 				break;
+			case WEST:
+				at.setToIdentity();
+				break;
 			}
 
 			at.transform(pointInLocalSpace, p2);
@@ -283,14 +290,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (shape!=null) return shape.contains(p2);
 		return false;
 	}
-
-
-/*	@Override
- * 	public Collection<MathNode> getMathReferences() {
-		return Collections.emptyList();
-	}
-
-	*/
 
 	/////////////////////////////////////////////////////////
 	public GlyphVector getNameGlyphs(Graphics2D g) {
@@ -310,15 +309,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public void setDirection(VisualContact.Direction dir) {
-
-		if (dir==direction) return;
-
-		this.direction=dir;
-
-		nameGlyph = null;
-
-		sendNotification(new PropertyChangedEvent(this, "direction"));
-		sendNotification(new TransformChangedEvent(this));
+		if (dir != direction) {
+			this.direction=dir;
+			nameGlyph = null;
+			sendNotification(new PropertyChangedEvent(this, "direction"));
+			sendNotification(new TransformChangedEvent(this));
+		}
 	}
 
 	public VisualContact.Direction getDirection() {

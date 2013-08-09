@@ -24,7 +24,6 @@ package org.workcraft.plugins.circuit;
 import java.awt.geom.Point2D;
 
 import org.workcraft.annotations.CustomTools;
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;

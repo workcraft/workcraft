@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit;
 
 import java.util.ArrayList;
 
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;

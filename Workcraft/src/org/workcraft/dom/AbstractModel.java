@@ -36,11 +36,9 @@ import org.workcraft.gui.propertyeditor.Properties;
  *
  */
 public abstract class AbstractModel implements Model {
-	private NodeContextTracker nodeContextTracker = new NodeContextTracker();
-	private ReferenceManager referenceManager = new DefaultReferenceManager();
-
+	final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
+	private ReferenceManager referenceManager;
 	private String title = "";
-
 	private Container root;
 
 	public AbstractModel (Container root) {

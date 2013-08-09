@@ -22,14 +22,11 @@
 package org.workcraft.plugins.sdfs;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
@@ -37,7 +34,6 @@ import javax.swing.JPopupMenu;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.PopupMenuBuilder;
 import org.workcraft.dom.visual.VisualComponent;
@@ -45,8 +41,9 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.actions.ScriptedAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.sdfs.tools.RegisterDecoration;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
@@ -63,15 +60,19 @@ public class VisualRegister extends VisualComponent {
 			else
 				text = "Mark";
 		}
+
 		public String getScript() {
 			throw new RuntimeException("Not implemented");
 		}
+
 		public String getUndoScript() {
 			return getScript();
 		}
+
 		public String getRedoScript() {
 			return getScript();
 		}
+
 		public String getText() {
 			return text;
 		}
@@ -88,16 +89,20 @@ public class VisualRegister extends VisualComponent {
 			else
 				text = "Enable";
 		}
+
 		public String getScript() {
 			throw new RuntimeException("Not implemented");
 			//return "r=model.getComponentByID("+regID+");\nr.setEnabled(!r.isEnabled());\nmodel.fireNodePropertyChanged(\"Enabled\", r);";
 		}
+
 		public String getUndoScript() {
 			return getScript();
 		}
+
 		public String getRedoScript() {
 			return getScript();
 		}
+
 		public String getText() {
 			return text;
 		}
@@ -136,45 +141,42 @@ public class VisualRegister extends VisualComponent {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
+		Decoration d = r.getDecoration();
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		double dx = 0.2 * size;
+		double strokeWidth2 = strokeWidth / 2;
+		double dy = strokeWidth2 / 2;
+		Shape outerRect = new Rectangle2D.Double (xy, xy, wh, wh);;
+		Shape innerRect = new Rectangle2D.Double (xy + dx, xy + dy, wh - dx - dx, wh - dy - dy);
+		Shape token = new Ellipse2D.Double (-size *0.15 , -size/2  + size / 8, size * 0.3, size * 0.3);
 
-		double size = SDFSVisualSettings.getSize();
-		double strokeWidth = SDFSVisualSettings.getStrokeWidth();
-
-
-		Shape outerRect = new Rectangle2D.Double (-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-
-		Shape innerRect = new Rectangle2D.Double (
-				-size / 2 + strokeWidth / 2 + size * 0.2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth - size * 0.4,
-				size - strokeWidth);
-
-		Shape token = new Ellipse2D.Double (
-				-size *0.15 , -size/2  + size / 8, size * 0.3, size * 0.3
-			);
-
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(outerRect);
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(outerRect);
 
-		if (isEnabled())
-			g.setColor(Coloriser.colorise(SDFSVisualSettings.getEnabledRegisterColor(), colorisation));
-		else
-			g.setColor(Coloriser.colorise(SDFSVisualSettings.getDisabledRegisterColor(), colorisation));
+		boolean enabled = isEnabled();
+		if (d instanceof RegisterDecoration) {
+			enabled =((RegisterDecoration)d).isEnabled();
+		}
+		if (enabled) {
+			g.setColor(Coloriser.colorise(SDFSVisualSettings.getEnabledRegisterColor(), d.getBackground()));
+		} else {
+			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+		}
 		g.fill(innerRect);
-
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+		g.setStroke(new BasicStroke((float)strokeWidth2));
 		g.draw(innerRect);
 
-		if (isMarked()) {
-			g.setColor(SDFSVisualSettings.getTokenColor());
+		boolean marked = isMarked();
+		if (d instanceof RegisterDecoration) {
+			marked = ((RegisterDecoration)d).isMarked();
+		}
+		if (marked) {
+			g.setColor(getForegroundColor());
 			g.fill(token);
 		}
 
@@ -196,5 +198,4 @@ public class VisualRegister extends VisualComponent {
 	public void setMarked(boolean marked) {
 		getReferencedRegister().setMarked(marked);
 	}
-
 }

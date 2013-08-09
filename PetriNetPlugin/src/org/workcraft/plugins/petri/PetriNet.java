@@ -42,7 +42,6 @@ import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.petri.VisualPetriNet.class)
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
-	final UniqueNameReferenceManager names;
 
 	public PetriNet() {
 		this(null, null);
@@ -65,35 +64,17 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 				return "node";
 			}
 		}));
+	}
 
-		names = (UniqueNameReferenceManager) getReferenceManager();
+	public void setName(Node node, String name) {
+		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
+	}
+
+	public String getName(Node node) {
+		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
 	}
 
 	public void validate() throws ModelValidationException {
-	}
-
-	final public Place createPlace() {
-		return createPlace(null);
-	}
-
-	final public Transition createTransition() {
-		return createDummyTransition(null);
-	}
-
-	final public Place createPlace(String name) {
-		Place newPlace = new Place();
-		if (name!=null)
-			setName(newPlace, name);
-		getRoot().add(newPlace);
-		return newPlace;
-	}
-
-	final public Transition createDummyTransition(String name) {
-		Transition newTransition = new Transition();
-		if (name!=null)
-			setName(newTransition, name);
-		getRoot().add(newTransition);
-		return newTransition;
 	}
 
 	final public Collection<Place> getPlaces() {
@@ -205,14 +186,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		Hierarchy.getNearestContainer(first, second).add(con);
 
 		return con;
-	}
-
-	public String getName(Node n) {
-		return this.names.getNodeReference(n);
-	}
-
-	public void setName(Node n, String name) {
-		this.names.setName(n, name);
 	}
 
 	@Override

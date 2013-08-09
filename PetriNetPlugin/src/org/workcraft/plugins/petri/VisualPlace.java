@@ -75,33 +75,26 @@ public class VisualPlace extends VisualComponent {
 			g.setColor(tokenColor);
 			g.fill(shape);
 		} else {
-			if (tokens > 1 && tokens < 8)
-			{
+			if (tokens > 1 && tokens < 8) {
 				double al = Math.PI / tokens;
 				if (tokens == 7) al = Math.PI / 6;
-
 				double r = (diameter / 2 - borderWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
 				double R = r / Math.sin(al);
-
 				r -= multipleTokenSeparation;
-
-				for(int i = 0; i < tokens; i++)
-				{
-					if (i == 6)
+				for(int i = 0; i < tokens; i++) 	{
+					if (i == 6) {
 						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
-					else
+					} else {
 						shape = new Ellipse2D.Double(
 								-R * Math.sin(i * al * 2) - r,
 								-R * Math.cos(i * al * 2) - r,
 								r * 2,
 								r * 2);
-
+					}
 					g.setColor(tokenColor);
 					g.fill(shape);
 				}
-			}
-			else if (tokens > 7)
-			{
+			} else if (tokens > 7)	{
 				String token_str = Integer.toString(tokens);
 				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
 				Rectangle2D rect = superFont.getStringBounds(token_str, g.getFontRenderContext());
@@ -117,16 +110,13 @@ public class VisualPlace extends VisualComponent {
 	public void draw(DrawRequest r)
 	{
 		Graphics2D g = r.getGraphics();
-
-		Shape shape = new Ellipse2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
+		Color colorisation = r.getDecoration().getColorisation();
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
+		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
@@ -141,7 +131,7 @@ public class VisualPlace extends VisualComponent {
 		}
 
 		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth,
-				Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
+				Coloriser.colorise(getTokenColor(), colorisation), g);
 
 		drawLabelInLocalSpace(r);
 	}

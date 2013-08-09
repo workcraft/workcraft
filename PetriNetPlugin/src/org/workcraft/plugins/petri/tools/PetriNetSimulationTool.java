@@ -72,10 +72,10 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
@@ -341,6 +341,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private final class TraceTableCellRendererImplementation implements
 			TableCellRenderer {
 		JLabel label = new JLabel() {
@@ -512,7 +513,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		});
 
-		stopButton.addActionListener(new ActionListener(){
+		stopButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				reset();
@@ -564,7 +565,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		});
 
-		copyTraceButton.addActionListener(new ActionListener(){
+		copyTraceButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveToClipboard();
@@ -572,7 +573,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		});
 
-		pasteTracedButton.addActionListener(new ActionListener(){
+		pasteTracedButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				loadFromClipboard();
@@ -584,8 +585,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	@Override
-	public void activated(GraphEditor editor)
-	{
+	public void activated(GraphEditor editor) {
 		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
 		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
@@ -598,8 +598,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	@Override
-	public void deactivated(GraphEditor editor)
-	{
+	public void deactivated(GraphEditor editor) {
 		editor.getWorkspaceEntry().cancelMemento();
 	}
 
@@ -618,6 +617,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	public void executeTransition(Transition t) {
+		if (t == null) return;
+
 		// if clicked on the trace event, do the step forward
 		if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
 			String transitionId = trace.get(traceStep);
@@ -650,7 +651,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
+		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+			new Func<Node, Boolean>() {
 				@Override
 				public Boolean eval(Node node) {
 					return node instanceof VisualTransition
@@ -713,12 +715,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return PetriNetSettings.getEnabledBackgroundColor();
+								return CommonVisualSettings.getEnabledBackgroundColor();
 							}
 
 							@Override
 							public Color getBackground() {
-								return PetriNetSettings.getEnabledForegroundColor();
+								return CommonVisualSettings.getEnabledForegroundColor();
 							}
 						};
 
@@ -728,12 +730,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return PetriNetSettings.getEnabledForegroundColor();
+								return CommonVisualSettings.getEnabledForegroundColor();
 							}
 
 							@Override
 							public Color getBackground() {
-								return PetriNetSettings.getEnabledBackgroundColor();
+								return CommonVisualSettings.getEnabledBackgroundColor();
 							}
 						};
 				}

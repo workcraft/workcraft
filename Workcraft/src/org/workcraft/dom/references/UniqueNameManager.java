@@ -30,55 +30,53 @@ public class UniqueNameManager<T> {
 		};
 	}
 
-	public String getName(T T) {
-		String name = Ts.getKey(T);
+	public String getName(T t) {
+		String name = Ts.getKey(t);
 		if (name == null)
-			throw new NotFoundException("Object \"" + T.toString() + "\" was not issued a name");
+			throw new NotFoundException("Object \"" + t.toString() + "\" was not issued a name");
 		return name;
 	}
 
-	public void setName(T T, String label) {
-		final T occupant = Ts.getValue(label);
-		if(occupant == T)
+	public void setName(T t, String name) {
+		final T occupant = Ts.getValue(name);
+		if(occupant == t)
 			return;
 		if(occupant != null)
-			throw new ArgumentException("The name \"" + label + "\" is already taken. Please choose another name.");
+			throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
 
-		if (!Identifier.isValid(label))
-			throw new ArgumentException(
-			"\"" + label + "\" is not a valid C-style identifier.\nThe first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
+		if (!Identifier.isValid(name))
+			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\nThe first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
 
-		Ts.removeValue(T);
-		Ts.put(label, T);
+		Ts.removeValue(t);
+		Ts.put(name, t);
 	}
 
-	public void setDefaultNameIfUnnamed(T T) {
-		if (Ts.containsValue(T))
+	public void setDefaultNameIfUnnamed(T t) {
+		if (Ts.containsValue(t))
 			return;
 
 		String candidate;
 
-		final String name = defaultName.eval(T);
+		final String name = defaultName.eval(t);
 		Integer counter = defaultNameCounters.get(name);
 
 		if (counter == null)
 			counter = 0;
 
-		do
-		{
+		do	{
 			candidate = name + counter++;
 		} while (Ts.containsKey(candidate));
 
 		defaultNameCounters.put(name, counter);
 
-		Ts.put(candidate, T);
+		Ts.put(candidate, t);
 	}
 
 	public T get (String name) {
 		return Ts.getValue(name);
 	}
 
-	public void remove (T n) {
-		Ts.removeValue(n);
+	public void remove (T t) {
+		Ts.removeValue(t);
 	}
 }

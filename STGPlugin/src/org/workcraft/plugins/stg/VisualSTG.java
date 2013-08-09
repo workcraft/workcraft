@@ -37,6 +37,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -207,12 +208,12 @@ public class VisualSTG extends AbstractVisualModel {
 				maybeMakeImplicit(place);
 	}
 
-	public VisualPlace createPlace() {
-		return createPlace(null);
+	public VisualPlace createPlace(String name) {
+		return createPlace(stg.createPlace(name));
 	}
 
-	public VisualPlace createPlace(String name) {
-		VisualPlace place = new VisualPlace(stg.createPlace(name));
+	public VisualPlace createPlace(Place p) {
+		VisualPlace place = new VisualPlace(p);
 		add(place);
 		return place;
 	}

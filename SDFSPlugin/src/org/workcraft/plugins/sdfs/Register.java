@@ -25,8 +25,8 @@ import org.workcraft.dom.math.MathNode;
 
 @VisualClass(org.workcraft.plugins.sdfs.VisualRegister.class)
 public class Register extends MathNode {
-	protected boolean marked = false;
-	protected boolean enabled = false;
+	private boolean marked = false;
+	private boolean enabled = false;
 
 	public boolean isEnabled() {
 		return enabled;

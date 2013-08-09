@@ -24,8 +24,15 @@ package org.workcraft.plugins.sdfs;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
-
 @VisualClass(org.workcraft.plugins.sdfs.VisualLogic.class)
 public class Logic extends MathNode {
+	private boolean computed = false;
 
+	public boolean isComputed() {
+		return computed;
+	}
+
+	public void setComputed(boolean computed) {
+		this.computed = computed;
+	}
 }

@@ -20,6 +20,7 @@
 */
 
 package org.workcraft.plugins.sdfs;
+
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,149 +30,50 @@ import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class SDFSVisualSettings implements SettingsPage, Plugin {
 	private static LinkedList<PropertyDescriptor> properties;
-
-	private static boolean useGlobal = true;
-
-	private static double size = 1.0;
-	private static double strokeWidth = 0.1;
-
-	private static Color backgroundColor = Color.WHITE;
-	private static Color foregroundColor = Color.BLACK;
-	private static Color fillColor = Color.WHITE;
+	private static Color computedLogicColor  = new Color (153, 153, 255);
 	private static Color enabledRegisterColor = new Color (153, 255, 153);
-	private static Color disabledRegisterColor = Color.WHITE;
-	private static Color tokenColor = Color.BLACK;
 
 	public SDFSVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration(this, "Enabled register color", "getEnabledRegisterColor", "setEnabledRegisterColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Disabled register color", "getDisabledRegisterColor", "setDisabledRegisterColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Token color", "getTokenColor", "setTokenColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Computed logic color",
+				"getComputedLogicColor", "setComputedLogicColor", Color.class));
 
-		properties.add(new PropertyDeclaration(this, "Use global settings", "getUseGlobal", "setUseGlobal", boolean.class));
-		properties.add(new PropertyDeclaration(this, "Base component size (cm)", "getSize", "setSize", double.class));
-		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)", "getStrokeWidth", "setStrokeWidth", double.class));
-
-		properties.add(new PropertyDeclaration(this, "Editor background color", "getBackgroundColor", "setBackgroundColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Default foreground color", "getForegroundColor", "setForegroundColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Default fill color", "getFillColor", "setFillColor", Color.class));
-	}
+		properties.add(new PropertyDeclaration(this, "Enabled register color",
+				"getEnabledRegisterColor", "setEnabledRegisterColor", Color.class));
+}
 
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
 	public void load(Config config) {
-		useGlobal = config.getBoolean("SDFS.VisualSettings.useGlobal", true);
-		size = config.getDouble("SDFS.VisualSettings.size", 1.0);
-		strokeWidth = config.getDouble("SDFS.VisualSettings.strokeWidth", 0.1);
-		backgroundColor = config.getColor("SDFS.VisualSettings.backgroundColor", Color.WHITE);
-		foregroundColor = config.getColor("SDFS.VisualSettings.foregroundColor", Color.BLACK);
-		fillColor = config.getColor("SDFS.VisualSettings.fillColor", Color.WHITE);
-		enabledRegisterColor = config.getColor("SDFS.VisualSettings.enabledRegisterColor", new Color (153, 255, 153));
-		disabledRegisterColor = config.getColor("SDFS.VisualSettings.disabledRegisterColor", Color.WHITE);
-		tokenColor = config.getColor("SDFS.VisualSettings.tokenColor", Color.BLACK);
+		setComputedLogicColor(config.getColor("SDFS.VisualSettings.computedLogicColor", new Color (153, 153, 255)));
+		setEnabledRegisterColor(config.getColor("SDFS.VisualSettings.enabledRegisterColor", new Color (153, 255, 153)));
 	}
 
 	public void save(Config config) {
-		config.setBoolean("SDFS.VisualSettings.useGlobal", useGlobal);
-		config.setDouble("SDFS.VisualSettings.size", size);
-		config.setDouble("SDFS.VisualSettings.strokeWidth", strokeWidth);
-		config.setColor("SDFS.VisualSettings.backgroundColor", backgroundColor);
-		config.setColor("SDFS.VisualSettings.foregroundColor", foregroundColor);
-		config.setColor("SDFS.VisualSettings.fillColor", fillColor);
-		config.setColor("SDFS.VisualSettings.disabledRegisterColor", disabledRegisterColor);
-		config.setColor("SDFS.VisualSettings.enabledRegisterColor", enabledRegisterColor);
-		config.setColor("SDFS.VisualSettings.tokenColor", tokenColor);
-	}
-
-	public static Color getBackgroundColor() {
-		if (useGlobal)
-			return CommonVisualSettings.getBackgroundColor();
-		else
-			return CommonVisualSettings.getBackgroundColor();
-
-	}
-
-	public void setBackgroundColor(Color backgroundColor) {
-		if (useGlobal)
-			CommonVisualSettings.setBackgroundColor(backgroundColor);
-		else
-			SDFSVisualSettings.backgroundColor = backgroundColor;
-	}
-
-	public static Color getForegroundColor() {
-		if (useGlobal)
-			return CommonVisualSettings.getForegroundColor();
-		else
-			return foregroundColor;
-	}
-
-	public void setForegroundColor(Color foregroundColor) {
-		if (useGlobal)
-			CommonVisualSettings.setForegroundColor(foregroundColor);
-		else
-			SDFSVisualSettings.foregroundColor = foregroundColor;
-	}
-
-	public static Color getFillColor() {
-		if (useGlobal)
-			return CommonVisualSettings.getFillColor();
-		else
-			return fillColor;
-	}
-
-	public void setFillColor(Color fillColor) {
-		if (useGlobal)
-			CommonVisualSettings.setFillColor(fillColor);
-		else
-			SDFSVisualSettings.fillColor = fillColor;
+		config.setColor("SDFS.VisualSettings.computedLogicColor", getComputedLogicColor());
+		config.setColor("SDFS.VisualSettings.enabledRegisterColor", getEnabledRegisterColor());
 	}
 
 	public String getSection() {
 		return "Visual";
 	}
 
-	public static double getSize() {
-		if (useGlobal)
-			return CommonVisualSettings.getSize();
-		else
-			return size;
+	public String getName() {
+		return "SDFS";
 	}
 
-	public static void setSize(double size) {
-		if (useGlobal)
-			CommonVisualSettings.setSize(size);
-		else
-			SDFSVisualSettings.size = size;
-
+	public static Color getComputedLogicColor() {
+		return computedLogicColor;
 	}
 
-	public static double getStrokeWidth() {
-		if (useGlobal)
-			return CommonVisualSettings.getStrokeWidth();
-		else
-			return strokeWidth;
-	}
-
-	public static void setStrokeWidth(double strokeWidth) {
-		if (useGlobal)
-			CommonVisualSettings.setStrokeWidth(strokeWidth);
-		else
-			SDFSVisualSettings.strokeWidth = strokeWidth;
-	}
-
-	public static boolean getUseGlobal() {
-		return useGlobal;
-	}
-
-	public static void setUseGlobal(boolean useGlobal) {
-		SDFSVisualSettings.useGlobal = useGlobal;
+	public static void setComputedLogicColor(Color computedLogicColor) {
+		SDFSVisualSettings.computedLogicColor = computedLogicColor;
 	}
 
 	public static Color getEnabledRegisterColor() {
@@ -181,26 +83,4 @@ public class SDFSVisualSettings implements SettingsPage, Plugin {
 	public static void setEnabledRegisterColor(Color enabledRegisterColor) {
 		SDFSVisualSettings.enabledRegisterColor = enabledRegisterColor;
 	}
-
-	public static Color getDisabledRegisterColor() {
-		return disabledRegisterColor;
-	}
-
-	public static void setDisabledRegisterColor(Color disabledRegisterColor) {
-		SDFSVisualSettings.disabledRegisterColor = disabledRegisterColor;
-	}
-
-	public static Color getTokenColor() {
-		return tokenColor;
-	}
-
-	public static void setTokenColor(Color tokenColor) {
-		SDFSVisualSettings.tokenColor = tokenColor;
-	}
-
-	@Override
-	public String getName() {
-		return "SDFS";
-	}
-
 }
