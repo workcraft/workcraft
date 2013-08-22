@@ -14,8 +14,6 @@ public class SDFSModule implements Module {
 	@Override
 	public void init(final Framework framework) {
 		final PluginManager pm = framework.getPluginManager();
-		pm.registerClass(ModelDescriptor.class, SDFSModelDescriptor.class);
-		pm.registerClass(SettingsPage.class, SDFSVisualSettings.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
@@ -24,6 +22,8 @@ public class SDFSModule implements Module {
 			}
 		});
 
+		pm.registerClass(ModelDescriptor.class, SDFSModelDescriptor.class);
+		pm.registerClass(SettingsPage.class, SDFSVisualSettings.class);
 	}
 
 	@Override

@@ -157,6 +157,4 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 		return name;
 	}
 
-
-
 }

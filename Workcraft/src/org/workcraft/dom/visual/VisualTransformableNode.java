@@ -34,8 +34,6 @@ import org.workcraft.util.Geometry;
 
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable {
-	private Point2D _tmpPoint = new Point2D.Double();
-
 	protected AffineTransform localToParentTransform = new AffineTransform();
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
@@ -105,8 +103,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
 
 	public boolean hitTest(Point2D point) {
-		parentToLocalTransform.transform(point, _tmpPoint);
-		return hitTestInLocalSpace(_tmpPoint);
+		return hitTestInLocalSpace(parentToLocalTransform.transform(point, null));
 	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();

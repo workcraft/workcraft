@@ -48,9 +48,9 @@ public class SDFS extends AbstractMathModel {
 		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
-				if (arg instanceof Logic)
+				if ((arg instanceof SpreadtokenLogic) || (arg instanceof CounterflowLogic))
 					return "l";
-				if (arg instanceof Register)
+				if ((arg instanceof SpreadtokenRegister) || (arg instanceof CounterflowRegister))
 					return "r";
 				if (arg instanceof Connection)
 					return "con";

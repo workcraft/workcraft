@@ -410,5 +410,4 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return getPointOnCurve(0.5);
 	}
 
-
 }

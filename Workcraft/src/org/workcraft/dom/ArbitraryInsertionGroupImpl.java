@@ -53,4 +53,5 @@ public class ArbitraryInsertionGroupImpl extends AbstractGroup implements Observ
 	protected void removeInternal(Node node) {
 		children.remove(node);
 	}
+
 }

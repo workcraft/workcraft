@@ -26,12 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
-public class SDFSVisualSettings implements SettingsPage, Plugin {
+public class SDFSVisualSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 	private static Color computedLogicColor  = new Color (153, 153, 255);
 	private static Color enabledRegisterColor = new Color (153, 255, 153);

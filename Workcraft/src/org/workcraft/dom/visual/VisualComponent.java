@@ -131,6 +131,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabelColor(Color labelColor) {
 		this.labelColor = labelColor;
+		sendNotification(new PropertyChangedEvent(this, "label color"));
 	}
 
 	public Color getForegroundColor() {
@@ -139,6 +140,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setForegroundColor(Color foregroundColor) {
 		this.foregroundColor = foregroundColor;
+		sendNotification(new PropertyChangedEvent(this, "foreground color"));
 	}
 
 	public Color getFillColor() {
@@ -147,6 +149,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setFillColor(Color fillColor) {
 		this.fillColor = fillColor;
+		sendNotification(new PropertyChangedEvent(this, "fill color"));
 	}
 
 	public MathNode getReferencedComponent() {

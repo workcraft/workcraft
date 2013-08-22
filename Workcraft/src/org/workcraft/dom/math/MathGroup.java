@@ -32,47 +32,59 @@ import org.workcraft.observation.ObservableHierarchy;
 public class MathGroup extends MathNode implements ObservableHierarchy, Container {
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
+	@Override
 	public void add(Node node) {
 		groupImpl.add(node);
 	}
 
+	@Override
 	public void addObserver(HierarchyObserver obs) {
 		groupImpl.addObserver(obs);
 	}
 
+	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
 
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
+	@Override
 	public void remove(Node node) {
 		groupImpl.remove(node);
 	}
 
+	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
 	}
 
+	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
 
+	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
+
 }

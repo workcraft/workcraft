@@ -72,6 +72,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 								return null;
 							}
 							break;
+						default:
+								break;
 						}
 					}
 				}
@@ -326,6 +328,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 				case WEST:
 					at.quadrantRotate(2);
 					bt.quadrantRotate(2);
+					break;
+				case EAST:
 					break;
 				}
 				g.transform(at);

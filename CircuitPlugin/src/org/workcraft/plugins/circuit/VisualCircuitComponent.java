@@ -505,7 +505,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		if (node instanceof VisualContact) {
 			contactLabelBB = null;
 		}
-
 		groupImpl.remove(node);
 	}
 
@@ -517,7 +516,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			}
 		}
 	}
-
 
 	public void remove(Collection<Node> nodes) {
 		for (Node n: nodes) {

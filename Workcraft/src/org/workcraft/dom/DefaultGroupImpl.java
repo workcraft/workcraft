@@ -47,4 +47,5 @@ public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarc
 	protected void removeInternal(Node node) {
 		children.remove(node);
 	}
+
 }

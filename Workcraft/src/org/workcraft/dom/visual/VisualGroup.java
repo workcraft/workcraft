@@ -88,61 +88,69 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public Set<MathNode> getMathReferences() {
 		return Collections.emptySet();
 	}
+
+	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return false;
 	}
 
-
+	@Override
 	public void add(Node node) {
 		groupImpl.add(node);
 	}
 
-
+	@Override
 	public void addObserver(HierarchyObserver obs) {
 		groupImpl.addObserver(obs);
 	}
 
-
+	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
 
-
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
-
+	@Override
 	public void remove(Node node) {
 		groupImpl.remove(node);
 	}
 
 
+	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
 
 
+	@Override
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
 	}
 
 
+	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
 
 
+	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
 
+	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
 
 
+	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
@@ -152,4 +160,5 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	{
 		return new Point2D.Double(0, 0);
 	}
+
 }

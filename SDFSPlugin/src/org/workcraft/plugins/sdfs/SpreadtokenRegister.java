@@ -22,9 +22,10 @@
 package org.workcraft.plugins.sdfs;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.sdfs.VisualRegister.class)
-public class Register extends MathNode {
+@VisualClass(org.workcraft.plugins.sdfs.VisualSpreadtokenRegister.class)
+public class SpreadtokenRegister extends MathNode {
 	private boolean marked = false;
 	private boolean enabled = false;
 
@@ -34,6 +35,7 @@ public class Register extends MathNode {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		sendNotification(new PropertyChangedEvent(this, "enabled"));
 	}
 
 	public boolean isMarked() {
@@ -42,5 +44,6 @@ public class Register extends MathNode {
 
 	public void setMarked(boolean marked) {
 		this.marked = marked;
+		sendNotification(new PropertyChangedEvent(this, "marked"));
 	}
 }

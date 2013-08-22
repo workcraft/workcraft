@@ -21,11 +21,6 @@
 
 package org.workcraft.plugins.sdfs;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
@@ -62,7 +57,15 @@ public class VisualSDFS extends AbstractVisualModel {
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
 		if (first == null || second == null) {
-			throw new InvalidConnectionException ("Connections not valid");
+			throw new InvalidConnectionException ("Invalid connection");
+		}
+		if ( ((first instanceof VisualSpreadtokenLogic) && !(second instanceof VisualSpreadtokenLogic || second instanceof VisualSpreadtokenRegister))
+		  || ((second instanceof VisualSpreadtokenLogic) && !(first instanceof VisualSpreadtokenLogic || first instanceof VisualSpreadtokenRegister))) {
+			throw new InvalidConnectionException ("Invalid connection between spreadtoken logic and counterflow nodes");
+		}
+		if ( ((first instanceof VisualCounterflowLogic) && !(second instanceof VisualCounterflowLogic || second instanceof VisualCounterflowRegister))
+		  || ((second instanceof VisualCounterflowLogic) && !(first instanceof VisualCounterflowLogic || first instanceof VisualCounterflowRegister)) ) {
+			throw new InvalidConnectionException ("Invalid connection between counterflow logic and spreadtoken nodes");
 		}
 	}
 
@@ -80,49 +83,5 @@ public class VisualSDFS extends AbstractVisualModel {
 
 	public String getName(VisualComponent component) {
 		return ((SDFS)getMathModel()).getName(component.getReferencedComponent());
-	}
-
-	public Set<VisualRegister> getRegisterPreset(VisualComponent component) {
-		Set<VisualRegister> result = new HashSet<VisualRegister>();
-		Set<VisualComponent> visited = new HashSet<VisualComponent>();
-		Queue<VisualComponent> queue = new LinkedList<VisualComponent>();
-		queue.add(component);
-		while (!queue.isEmpty()) {
-			VisualComponent currentComponent = queue.remove();
-			if (visited.contains(currentComponent)) continue;
-			visited.add(currentComponent);
-			for (Node prevNode: getPreset(currentComponent)) {
-				if (prevNode instanceof VisualComponent) {
-					VisualComponent prevComponent = (VisualComponent) prevNode;
-					if (prevComponent instanceof VisualRegister) {
-						result.add((VisualRegister)prevComponent);
-					} else
-					queue.add(prevComponent);
-				}
-			}
-		}
-		return result;
-	}
-
-	public Set<VisualRegister> getRegisterPostset(VisualComponent component) {
-		Set<VisualRegister> result = new HashSet<VisualRegister>();
-		Set<VisualComponent> visited = new HashSet<VisualComponent>();
-		Queue<VisualComponent> queue = new LinkedList<VisualComponent>();
-		queue.add(component);
-		while (!queue.isEmpty()) {
-			VisualComponent currentComponent = queue.remove();
-			if (visited.contains(currentComponent)) continue;
-			visited.add(currentComponent);
-			for (Node succNode: getPostset(currentComponent)) {
-				if (succNode instanceof VisualComponent) {
-					VisualComponent succComponent = (VisualComponent) succNode;
-					if (succComponent instanceof VisualRegister) {
-						result.add((VisualRegister)succComponent);
-					} else
-					queue.add(succComponent);
-				}
-			}
-		}
-		return result;
 	}
 }

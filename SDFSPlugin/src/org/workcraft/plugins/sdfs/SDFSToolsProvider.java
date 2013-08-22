@@ -20,8 +20,10 @@ public class SDFSToolsProvider implements CustomToolsProvider {
 		result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Register.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SpreadtokenLogic.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SpreadtokenRegister.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowLogic.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowRegister.class)));
 		result.add(new SimulationTool());
 		return result;
 	}

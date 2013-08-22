@@ -3,6 +3,7 @@ package org.workcraft.plugins.sdfs.tools;
 import org.workcraft.Tool;
 import org.workcraft.plugins.sdfs.SDFS;
 import org.workcraft.plugins.sdfs.VisualSDFS;
+import org.workcraft.plugins.sdfs.stg.STGGenerator;
 import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;

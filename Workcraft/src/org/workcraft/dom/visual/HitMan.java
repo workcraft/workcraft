@@ -36,6 +36,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Func;
+import org.workcraft.util.Func2;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
@@ -67,7 +68,14 @@ public class HitMan
 		return reverse(filterByBB(node.getChildren(), point));
 	}
 
-	public static Node hitDeepest(Point2D point, Node node, Func<Node, Boolean> filter) {
+	public static Node hitDeepest(Point2D point, Node node, final Func<Node, Boolean> filter) {
+		return hitDeepest(point, node, new Func2<Point2D, Node, Boolean> () {@Override
+		public Boolean eval(Point2D point, Node node) {
+			return filter.eval(node);
+		}});
+	}
+
+	public static Node hitDeepest(Point2D point, Node node, final Func2<Point2D, Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
 
 		for (Node n : getFilteredChildren(transformedPoint, node)) {
@@ -76,7 +84,7 @@ public class HitMan
 				return result;
 		}
 
-		if (filter.eval(node))
+		if (filter.eval(point, node))
 			return hitBranch(point, node);
 		return null;
 	}
@@ -147,10 +155,8 @@ public class HitMan
 		return (T) hitFirstChild(point, node, Hierarchy.getTypeFilter(type));
 	}
 
-	private static Point2D transformToChildSpace(Point2D point,
-			Node node) {
+	private static Point2D transformToChildSpace(Point2D point, Node node) {
 		Point2D transformedPoint;
-
 		if (node instanceof Movable) {
 			transformedPoint = new Point2D.Double();
 			AffineTransform t = Geometry.optimisticInverse(((Movable)node).getTransform());
@@ -226,14 +232,12 @@ public class HitMan
 	public static Node hitTestForConnection(Point2D point, Node node) {
 		Node nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
-				if ((n instanceof Movable) && !(n instanceof Container) && !(n instanceof VisualComment)) {
-					if (n instanceof Hidable)
+				if ( (n instanceof Movable) && !(n instanceof Container) ) {
+					if (n instanceof Hidable) {
 						return !((Hidable)n).isHidden();
-					else
-						return true;
+					}
 				}
-				else
-					return false;
+				return false;
 			}
 		});
 
@@ -241,13 +245,11 @@ public class HitMan
 			nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 				public Boolean eval(Node n) {
 					if ((n instanceof VisualConnection) && !(n instanceof VisualComment)) {
-						if (n instanceof Hidable)
+						if (n instanceof Hidable) {
 							return !((Hidable)n).isHidden();
-						else
-							return true;
+						}
 					}
-					else
-						return false;
+					return false;
 				}
 			});
 
