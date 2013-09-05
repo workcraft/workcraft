@@ -27,36 +27,18 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
-public class CheckCircuitTask extends MpsatChainTask {
-	private final MpsatSettings deadlockSettings;
-	private final MpsatSettings hazardSettings;
+public class CheckCircuitDeadlockTask extends MpsatChainTask {
+	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
 	private final Framework framework;
 	private String message = "";
 
-	// setup for searching hazards in circuits
-	private final String nonPersReach =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
-		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
-		"	  @t1 &\n"+
-		"	  exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
-		"	    @t2 &\n"+
-		"	    forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
-		"	       exists p in pre t3 \\ post t2 { ~$p }\n"+
-		"	    }\n"+
-		"	  }\n"+
-		"	}\n";
-
-	public CheckCircuitTask(WorkspaceEntry we, Framework framework) {
+	public CheckCircuitDeadlockTask(WorkspaceEntry we, Framework framework) {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
-				CircuitSettings.getCheckMode(), ((CircuitSettings.getCheckMode()==SolutionMode.ALL) ? 10 : 1), null);
-
-		this.hazardSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
-				CircuitSettings.getCheckMode(), ((CircuitSettings.getCheckMode()==SolutionMode.ALL) ? 10 : 1), nonPersReach);
+		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
+				CircuitSettings.getCheckMode(), (CircuitSettings.getCheckMode()==SolutionMode.ALL)?10:1, null);
 	}
 
 	@Override
@@ -81,7 +63,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, deadlockSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, settings));
 			}
 			monitor.progressUpdate(0.20);
 
@@ -94,46 +76,29 @@ public class CheckCircuitTask extends MpsatChainTask {
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, deadlockSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, settings));
 			}
-			monitor.progressUpdate(0.40);
+			monitor.progressUpdate(0.70);
 
-			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running deadlock checking (mpsat)", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings ));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings ));
 			}
-			monitor.progressUpdate(0.60);
+			monitor.progressUpdate(0.90);
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
-				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings, "Circuit has a deadlock"));
-			}
-			monitor.progressUpdate(0.70);
-
-			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), mciFile.getCanonicalPath());
-			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking (mpsat)", mon);
-			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings));
-			}
-			monitor.progressUpdate(0.90);
-
-			mdp = new MpsatResultParser(mpsatResult.getReturnValue());
-			if (!mdp.getSolutions().isEmpty()) {
-				mciFile.delete();
-				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Circuit has hazard(s)"));
+				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit has a deadlock"));
 			}
 			monitor.progressUpdate(1.0);
 
 			mciFile.delete();
-			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Circuit is deadlock-free and hazard-free"));
+			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit is deadlock-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);

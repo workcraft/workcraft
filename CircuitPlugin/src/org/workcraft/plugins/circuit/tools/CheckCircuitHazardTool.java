@@ -9,7 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.Trace;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
+import org.workcraft.plugins.circuit.tasks.CheckCircuitHazardTask;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
@@ -19,17 +19,17 @@ import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckCircuitTool implements Tool {
+public class CheckCircuitHazardTool implements Tool {
 	private final Framework framework;
-	private CheckCircuitTask task;
+	private CheckCircuitHazardTask task;
 	ProgressMonitor<? super MpsatChainResult> monitor;
 
-	public CheckCircuitTool(Framework framework, Workspace ws) {
+	public CheckCircuitHazardTool(Framework framework, Workspace ws) {
 		this.framework = framework;
 	}
 
 	public String getDisplayName() {
-		return "Check circuit for deadlocks and hazards (reuse unfolding data)";
+		return "Check circuit for hazards";
 	}
 
 
@@ -46,9 +46,9 @@ public class CheckCircuitTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 
-		task = new CheckCircuitTask(we, framework);
+		task = new CheckCircuitHazardTask(we, framework);
 
-		framework.getTaskManager().queue(task, "Checking circuit for deadlocks and hazards",
+		framework.getTaskManager().queue(task, "Checking circuit for hazards",
 				new ProgressMonitor<MpsatChainResult>() {
 
 					@Override

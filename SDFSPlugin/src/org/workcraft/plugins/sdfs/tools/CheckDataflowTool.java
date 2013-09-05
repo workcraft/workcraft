@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit.tools;
+package org.workcraft.plugins.sdfs.tools;
 
 import java.util.List;
 
@@ -8,30 +8,29 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.Trace;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.sdfs.SDFS;
+import org.workcraft.plugins.sdfs.tasks.CheckDataflowTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckCircuitTool implements Tool {
+public class CheckDataflowTool implements Tool {
 	private final Framework framework;
-	private CheckCircuitTask task;
+	private CheckDataflowTask task;
 	ProgressMonitor<? super MpsatChainResult> monitor;
 
-	public CheckCircuitTool(Framework framework, Workspace ws) {
+	public CheckDataflowTool(Framework framework, Workspace ws) {
 		this.framework = framework;
 	}
 
 	public String getDisplayName() {
-		return "Check circuit for deadlocks and hazards (reuse unfolding data)";
+		return "Check dataflow for deadlocks and hazards (reuse unfolding data)";
 	}
-
 
 	@Override
 	public String getSection() {
@@ -40,15 +39,13 @@ public class CheckCircuitTool implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof Circuit;
+		return we.getModelEntry().getMathModel() instanceof SDFS;
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-
-		task = new CheckCircuitTask(we, framework);
-
-		framework.getTaskManager().queue(task, "Checking circuit for deadlocks and hazards",
+		task = new CheckDataflowTask(we, framework);
+		framework.getTaskManager().queue(task, "Checking dataflow for deadlocks and hazards",
 				new ProgressMonitor<MpsatChainResult>() {
 
 					@Override

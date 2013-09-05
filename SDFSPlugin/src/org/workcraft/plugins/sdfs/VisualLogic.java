@@ -15,14 +15,14 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.sdfs.decorations.SpreadtokenLogicDecoration;
+import org.workcraft.plugins.sdfs.decorations.LogicDecoration;
 
 @Hotkey(KeyEvent.VK_L)
 @DisplayName ("Logic")
 @SVGIcon("images/icons/svg/sdfs-logic.svg")
-public class VisualSpreadtokenLogic extends VisualComponent {
+public class VisualLogic extends VisualComponent {
 
-	public VisualSpreadtokenLogic(SpreadtokenLogic logic) {
+	public VisualLogic(Logic logic) {
 		super(logic);
 		addPropertyDeclarations();
 	}
@@ -50,8 +50,8 @@ public class VisualSpreadtokenLogic extends VisualComponent {
 		eeShape.lineTo(-w2, h2 - strokeWidth4);
 
 		boolean computed = isComputed();
-		if (d instanceof SpreadtokenLogicDecoration) {
-			computed = ((SpreadtokenLogicDecoration)d).isComputed();
+		if (d instanceof LogicDecoration) {
+			computed = ((LogicDecoration)d).isComputed();
 		}
 		if (computed) {
 			g.setColor(Coloriser.colorise(SDFSVisualSettings.getComputedLogicColor(), d.getBackground()));
@@ -66,27 +66,28 @@ public class VisualSpreadtokenLogic extends VisualComponent {
 		}
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
+
 		drawLabelInLocalSpace(r);
 	}
 
-	public SpreadtokenLogic getReferencedSpreadtokenLogic() {
-		return (SpreadtokenLogic)getReferencedComponent();
+	public Logic getReferencedLogic() {
+		return (Logic)getReferencedComponent();
 	}
 
 	public boolean isComputed() {
-		return getReferencedSpreadtokenLogic().isComputed();
+		return getReferencedLogic().isComputed();
 	}
 
 	public void setComputed(boolean computed) {
-		getReferencedSpreadtokenLogic().setComputed(computed);
+		getReferencedLogic().setComputed(computed);
 	}
 
 	public boolean isIndicating() {
-		return getReferencedSpreadtokenLogic().isIndicating();
+		return getReferencedLogic().isIndicating();
 	}
 
 	public void setIndicating(boolean indicating) {
-		getReferencedSpreadtokenLogic().setIndicating(indicating);
+		getReferencedLogic().setIndicating(indicating);
 	}
 
 }

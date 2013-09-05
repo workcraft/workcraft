@@ -104,6 +104,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 			else
 				underlyingModel = null;
 
+			assert(deserialiser==null); ///!!!
 			if (deserialiser instanceof ModelXMLDeserialiser) {
 				result = ((ModelXMLDeserialiser)deserialiser).deserialise(element, (Model)underlyingModel, root, state.getInternalReferences(), state.getExternalReferences());
 			} else if (deserialiser != null) {

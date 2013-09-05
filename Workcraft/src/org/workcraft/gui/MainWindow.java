@@ -770,18 +770,14 @@ public class MainWindow extends JFrame {
 					// mathModel.getTitle() + " - " +
 					// mathModel.getDisplayName(), DockingManager.NORTH_REGION,
 					// 0.8f);
-				} else
-					framework.getWorkspace().add(path, name,
-							new ModelEntry(info, mathModel), false);
+				} else {
+					framework.getWorkspace().add(path, name, new ModelEntry(info, mathModel), false);
+				}
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
-				JOptionPane
-						.showMessageDialog(
-								this,
-								"Visual model could not be created: "
-										+ e.getMessage()
-										+ "\n\nPlease see the Problems window for details.",
-								"Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+					"Visual model could not be created: " + e.getMessage() + "\n\nPlease see the Problems window for details.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else
 			throw new OperationCancelledException(
@@ -802,7 +798,6 @@ public class MainWindow extends JFrame {
 
 		mainMenu.revalidate();
 		mainMenu.repaint();
-		//propertyEditorWindow.clearObject();
 		sender.updatePropertyView();
 
 		framework.deleteJavaScriptProperty("visualModel",
@@ -830,67 +825,67 @@ public class MainWindow extends JFrame {
 	public void openWork() throws OperationCancelledException {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
-
-		if (lastOpenPath != null)
+		if (lastOpenPath != null) {
 			fc.setCurrentDirectory(new File(lastOpenPath));
-
+		}
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 		fc.setMultiSelectionEnabled(true);
 		fc.setDialogTitle("Open work file(s)");
 
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
-			for (File f : fc.getSelectedFiles())
+			for (File f : fc.getSelectedFiles()) {
 				openWork(f);
+			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();
-		} else
-			throw new OperationCancelledException(
-					"Open operation cancelled by user.");
+		} else {
+			throw new OperationCancelledException("Open operation cancelled by user.");
+		}
 	}
 
 	public void openWork(File f) {
 		try {
 			WorkspaceEntry we = framework.getWorkspace().open(f, true);
-			if (we.getModelEntry().isVisual())
+			if (we.getModelEntry().isVisual()) {
 				createEditorWindow(we);
+			}
 		} catch (DeserialisationException e) {
-			JOptionPane.showMessageDialog(
-					this,
-					"A problem was encountered while trying to load \""
-							+ f.getPath()
-							+ "\".\nPlease see Problems window for details.",
-					"Load failed", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+				"A problem was encountered while trying to load \""	+ f.getPath() + "\".\nPlease see Problems window for details.",
+				"Load failed", JOptionPane.ERROR_MESSAGE);
 			printCause(e);
 		}
 	}
 
 	public void saveWork() throws OperationCancelledException {
-		if (editorInFocus != null)
+		if (editorInFocus != null) {
 			save(editorInFocus.getWorkspaceEntry());
-		else
+		} else {
 			System.out.println("No editor in focus");
+		}
 	}
 
 	public void saveWorkAs() throws OperationCancelledException {
-		if (editorInFocus != null)
+		if (editorInFocus != null) {
 			saveAs(editorInFocus.getWorkspaceEntry());
-		else
+		} else {
 			System.err.println("No editor in focus");
+		}
 	}
 
 	public void save(WorkspaceEntry we) throws OperationCancelledException {
 		if (!we.getFile().exists()) {
 			saveAs(we);
 		}
+
 		try {
-			if (we.getModelEntry() != null)
+			if (we.getModelEntry() != null) {
 				framework.save(we.getModelEntry(), we.getFile().getPath());
-			else
-				throw new RuntimeException(
-						"Cannot save workspace entry - it does not have an associated Workcraft model.");
+			} else {
+				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+			}
 		} catch (SerialisationException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(),
-					"Model export failed", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
 		}
 		we.setChanged(false);
 		refreshTitle(we);
@@ -924,53 +919,48 @@ public class MainWindow extends JFrame {
 	public void saveAs(WorkspaceEntry we) throws OperationCancelledException {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
-
 		String title = we.getTitle();
 		title = removeSpecialFileNameCharacters(title);
 
 		fc.setSelectedFile(new File(title));
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-
 		fc.setCurrentDirectory(we.getFile().getParentFile());
-
 		String path;
-
 		while (true) {
 			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				path = fc.getSelectedFile().getPath();
-
-				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION))
+				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 					path += FileFilters.DOCUMENT_EXTENSION;
-
+				}
 				File f = new File(path);
-
-				if (!f.exists())
+				if (!f.exists()) {
 					break;
-				else if (JOptionPane.showConfirmDialog(	this,
-								"The file \"" + f.getName()	+ "\" already exists. Do you want to overwrite it?",
-								"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+				}
+				if (JOptionPane.showConfirmDialog(	this, "The file \"" + f.getName()	+ "\" already exists. Do you want to overwrite it?",
+						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					break;
-			} else
+				}
+			} else {
 				throw new OperationCancelledException("Save operation cancelled by user.");
+			}
 		}
 
 		try {
-
 			File destination = new File(path);
 			Workspace ws = framework.getWorkspace();
 
 			final Path<String> wsFrom = we.getWorkspacePath();
 			Path<String> wsTo = ws.getWorkspacePath(destination);
-			if (wsTo == null)
+			if (wsTo == null) {
 				wsTo = ws.tempMountExternalFile(destination);
+			}
 			ws.moved(wsFrom, wsTo);
 
-			if (we.getModelEntry() != null)
+			if (we.getModelEntry() != null) {
 				framework.save(we.getModelEntry(), we.getFile().getPath());
-			else
-				throw new RuntimeException(
-						"Cannot save workspace entry - it does not have an associated Workcraft model.");
-
+			} else {
+				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+			}
 			refreshTitle(we);
 
 			we.setChanged(false);
@@ -988,28 +978,25 @@ public class MainWindow extends JFrame {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
 
-		if (lastOpenPath != null)
+		if (lastOpenPath != null) {
 			fc.setCurrentDirectory(new File(lastOpenPath));
-
+		}
 		Collection<PluginInfo<? extends Importer>> importerInfo = framework
 				.getPluginManager().getPlugins(Importer.class);
 		Importer[] importers = new Importer[importerInfo.size()];
 
 		int cnt = 0;
-
 		for (PluginInfo<? extends Importer> info : importerInfo) {
 			importers[cnt++] = info.getSingleton();
 		}
 
 		fc.setAcceptAllFileFilterUsed(false);
-
 		for (Importer importer : importers) {
 			fc.addChoosableFileFilter(new ImporterFileFilter(importer));
 		}
 
 		fc.setMultiSelectionEnabled(true);
 		fc.setDialogTitle("Import model(s)");
-
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
 				for (Importer importer : importers) {
@@ -1017,13 +1004,12 @@ public class MainWindow extends JFrame {
 						ModelEntry modelEntry;
 						try {
 							modelEntry = Import.importFromFile(importer, f);
-							modelEntry.getModel().setTitle(
-									FileUtils.getFileNameWithoutExtension(f));
+							modelEntry.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
 							WorkspaceEntry we = framework.getWorkspace().add(
-									Path.<String> empty(), f.getName(),
-									modelEntry, false);
-							if (we.getModelEntry().isVisual())
+									Path.<String> empty(), f.getName(),	modelEntry, false);
+							if (we.getModelEntry().isVisual()) {
 								createEditorWindow(we);
+							}
 							break;
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -1086,13 +1072,8 @@ public class MainWindow extends JFrame {
 				throw new OperationCancelledException("Save operation cancelled by user.");
 		}
 
-		Task<Object> exportTask = new Export.ExportTask(exporter,
-				editorInFocus.getModel(), path);
-		framework.getTaskManager().queue(exportTask, "Exporting " + title,
-				new TaskFailureNotifier());
-
-		// Export.exportToFile(exporter, editorInFocus.getModel(), path);
-
+		Task<Object> exportTask = new Export.ExportTask(exporter, editorInFocus.getModel(), path);
+		framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
 		lastSavePath = fc.getCurrentDirectory().getPath();
 	}
 

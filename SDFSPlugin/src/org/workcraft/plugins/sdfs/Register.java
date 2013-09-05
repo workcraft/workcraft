@@ -20,31 +20,20 @@
 */
 
 package org.workcraft.plugins.sdfs;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.sdfs.VisualSpreadtokenLogic.class)
-public class SpreadtokenLogic extends MathNode {
-	private boolean computed = false;
-	private boolean indicating = true;
+@VisualClass(org.workcraft.plugins.sdfs.VisualRegister.class)
+public class Register extends MathNode {
+	private boolean marked = false;
 
-	public boolean isComputed() {
-		return computed;
+	public boolean isMarked() {
+		return marked;
 	}
 
-	public void setComputed(boolean computed) {
-		this.computed = computed;
-		sendNotification(new PropertyChangedEvent(this, "computed"));
-	}
-
-	public boolean isIndicating() {
-		return indicating;
-	}
-
-	public void setIndicating(boolean indicating) {
-		this.indicating = indicating;
-		sendNotification(new PropertyChangedEvent(this, "indicating"));
+	public void setMarked(boolean marked) {
+		this.marked = marked;
+		sendNotification(new PropertyChangedEvent(this, "marked"));
 	}
 }

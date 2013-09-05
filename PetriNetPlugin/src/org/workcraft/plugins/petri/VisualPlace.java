@@ -107,8 +107,7 @@ public class VisualPlace extends VisualComponent {
 
 
 	@Override
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r)	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		double xy = -size / 2 + strokeWidth / 2;
@@ -136,8 +135,8 @@ public class VisualPlace extends VisualComponent {
 		drawLabelInLocalSpace(r);
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 

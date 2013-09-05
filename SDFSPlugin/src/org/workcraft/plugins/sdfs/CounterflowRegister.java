@@ -5,7 +5,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.sdfs.VisualCounterflowRegister.class)
-public class CounterflowRegister  extends MathNode {
+public class CounterflowRegister extends MathNode {
 	private boolean forwardEnabled = false;
 	private boolean backwardEnabled = false;
 	private boolean orMarked = false;

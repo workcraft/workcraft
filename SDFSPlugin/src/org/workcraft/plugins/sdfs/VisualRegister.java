@@ -37,24 +37,23 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.sdfs.decorations.SpreadtokenRegisterDecoration;
+import org.workcraft.plugins.sdfs.decorations.RegisterDecoration;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
 @SVGIcon("images/icons/svg/sdfs-register.svg")
-public class VisualSpreadtokenRegister extends VisualComponent {
+public class VisualRegister extends VisualComponent {
 
-	public VisualSpreadtokenRegister(SpreadtokenRegister register) {
+	public VisualRegister(Register register) {
 		super(register);
 		addPropertyDeclarations();
 	}
 
-	public SpreadtokenRegister getReferencedSpreadtokenRegister() {
-		return (SpreadtokenRegister)getReferencedComponent();
+	public Register getReferencedRegister() {
+		return (Register)getReferencedComponent();
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Enabled", "isEnabled", "setEnabled", boolean.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Marked", "isMarked", "setMarked", boolean.class));
 	}
 
@@ -72,80 +71,44 @@ public class VisualSpreadtokenRegister extends VisualComponent {
 		float strokeWidth1 = (float)strokeWidth;
 		float strokeWidth2 = strokeWidth1 / 2;
 
-		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
-		Shape innerShape = new Rectangle2D.Double (-w2 + dx, -h2 + dy, w - dx - dx, h - dy - dy);
-		Shape tokenShape = new Ellipse2D.Double (-dt , -dt, 2 * dt, 2 * dt);
-
-		boolean enabled = isEnabled();
-		boolean enabledExcited = false;
-		if (d instanceof SpreadtokenRegisterDecoration) {
-			enabled = ((SpreadtokenRegisterDecoration)d).isEnabled();
-			enabledExcited = ((SpreadtokenRegisterDecoration)d).isEnabledExcited();
-		}
+		Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
+		Shape innerShape = new Rectangle2D.Double(-w2 + dx, -h2 + dy, w - dx - dx, h - dy - dy);
+		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
 		boolean marked = isMarked();
-		boolean markedExcited = false;
-		if (d instanceof SpreadtokenRegisterDecoration) {
-			marked = ((SpreadtokenRegisterDecoration)d).isMarked();
-			markedExcited = ((SpreadtokenRegisterDecoration)d).isMarkedExcited();
-		}
-
+		boolean excited = false;
 		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		if (d instanceof SpreadtokenRegisterDecoration) {
+		if (d instanceof RegisterDecoration) {
+			marked = ((RegisterDecoration)d).isMarked();
+			excited = ((RegisterDecoration)d).isExcited();
 			defaultColor = getForegroundColor();
 		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
 
-		if (enabled) {
-			g.setColor(Coloriser.colorise(SDFSVisualSettings.getEnabledRegisterColor(), d.getBackground()));
-		} else {
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		}
-		g.fill(innerShape);
-
-		if (enabledExcited) {
+		if (excited) {
 			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		} else {
 			g.setColor(defaultColor);
 		}
 		g.setStroke(new BasicStroke(strokeWidth2));
 		g.draw(innerShape);
-
-		if (marked) {
-			if (markedExcited) {
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			} else {
-				g.setColor(defaultColor);
-			}
-			g.fill(tokenShape);
-		} if (markedExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(tokenShape);
-		}
-
-		g.setColor(defaultColor);
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
+		if (marked) {
+			g.fill(tokenShape);
+		}
 
 		drawLabelInLocalSpace(r);
 	}
 
-	public boolean isEnabled() {
-		return getReferencedSpreadtokenRegister().isEnabled();
-	}
-
-	public void setEnabled(boolean enabled) {
-		getReferencedSpreadtokenRegister().setEnabled(enabled);
-	}
-
 	public boolean isMarked() {
-		return getReferencedSpreadtokenRegister().isMarked();
+		return getReferencedRegister().isMarked();
 	}
 
 	public void setMarked(boolean marked) {
-		getReferencedSpreadtokenRegister().setMarked(marked);
+		getReferencedRegister().setMarked(marked);
 	}
+
 }

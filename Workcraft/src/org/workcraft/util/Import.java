@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.workcraft.PluginProvider;
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;

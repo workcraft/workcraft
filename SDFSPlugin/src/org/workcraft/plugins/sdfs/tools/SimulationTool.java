@@ -13,20 +13,25 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.sdfs.VisualControlRegister;
 import org.workcraft.plugins.sdfs.VisualCounterflowLogic;
 import org.workcraft.plugins.sdfs.VisualCounterflowRegister;
-import org.workcraft.plugins.sdfs.VisualSpreadtokenLogic;
-import org.workcraft.plugins.sdfs.VisualSpreadtokenRegister;
+import org.workcraft.plugins.sdfs.VisualLogic;
+import org.workcraft.plugins.sdfs.VisualPopRegister;
+import org.workcraft.plugins.sdfs.VisualPushRegister;
+import org.workcraft.plugins.sdfs.VisualRegister;
 import org.workcraft.plugins.sdfs.VisualSDFS;
+import org.workcraft.plugins.sdfs.decorations.BinaryRegisterDecoration;
 import org.workcraft.plugins.sdfs.decorations.CounterflowLogicDecoration;
 import org.workcraft.plugins.sdfs.decorations.CounterflowRegisterDecoration;
-import org.workcraft.plugins.sdfs.decorations.SpreadtokenLogicDecoration;
-import org.workcraft.plugins.sdfs.decorations.SpreadtokenRegisterDecoration;
+import org.workcraft.plugins.sdfs.decorations.LogicDecoration;
+import org.workcraft.plugins.sdfs.decorations.RegisterDecoration;
+import org.workcraft.plugins.sdfs.stg.BinaryRegisterSTG;
 import org.workcraft.plugins.sdfs.stg.CounterflowLogicSTG;
 import org.workcraft.plugins.sdfs.stg.CounterflowRegisterSTG;
 import org.workcraft.plugins.sdfs.stg.STGGenerator;
-import org.workcraft.plugins.sdfs.stg.SpreadtokenLogicSTG;
-import org.workcraft.plugins.sdfs.stg.SpreadtokenRegisterSTG;
+import org.workcraft.plugins.sdfs.stg.LogicSTG;
+import org.workcraft.plugins.sdfs.stg.RegisterSTG;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.STGSimulationTool;
@@ -86,7 +91,7 @@ public class SimulationTool extends STGSimulationTool {
 			} else {
 				transition = getExcitedTransitionOfCollection(lstg.getBackwardTransitions());
 			}
-		} else 	if (node instanceof VisualCounterflowRegister) {
+		} else if (node instanceof VisualCounterflowRegister) {
 			VisualCounterflowRegister register = (VisualCounterflowRegister)node;
 			CounterflowRegisterSTG rstg = generator.getCounterflowRegisterSTG(register);
 			if (register.getParentToLocalTransform().transform(point, null).getY() < 0) {
@@ -100,7 +105,32 @@ public class SimulationTool extends STGSimulationTool {
 					transition = getExcitedTransitionOfCollection(rstg.getBackwardTransitions());
 				}
 			}
+		} else if (node instanceof VisualControlRegister) {
+			VisualControlRegister register = (VisualControlRegister)node;
+			BinaryRegisterSTG rstg = generator.getControlRegisterSTG(register);
+			if (register.getParentToLocalTransform().transform(point, null).getY() < 0) {
+				transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+			} else {
+				transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+			}
+		} else if (node instanceof VisualPushRegister) {
+			VisualPushRegister register = (VisualPushRegister)node;
+			BinaryRegisterSTG rstg = generator.getPushRegisterSTG(register);
+			if (register.getParentToLocalTransform().transform(point, null).getY() < 0) {
+				transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+			} else {
+				transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+			}
+		} else if (node instanceof VisualPopRegister) {
+			VisualPopRegister register = (VisualPopRegister)node;
+			BinaryRegisterSTG rstg = generator.getPopRegisterSTG(register);
+			if (register.getParentToLocalTransform().transform(point, null).getY() < 0) {
+				transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+			} else {
+				transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+			}
 		}
+
 		if (transition == null) {
 			transition = getExcitedTransitionOfNode(node);
 		}
@@ -128,11 +158,10 @@ public class SimulationTool extends STGSimulationTool {
 				final boolean isExcited = (getExcitedTransitionOfNode(node) != null);
 				final boolean isHighlighted = generator.isRelated(node, transition);
 
-				if (node instanceof VisualSpreadtokenLogic) {
-					VisualSpreadtokenLogic logic = (VisualSpreadtokenLogic) node;
-					final SpreadtokenLogicSTG lstg = generator.getSpreadtokenLogicSTG(logic);
+				if (node instanceof VisualLogic) {
+					final LogicSTG lstg = generator.getLogicSTG((VisualLogic) node);
 
-					return new SpreadtokenLogicDecoration() {
+					return new LogicDecoration() {
 						@Override
 						public Color getColorisation() {
 							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
@@ -154,11 +183,10 @@ public class SimulationTool extends STGSimulationTool {
 					};
 				}
 
-				if (node instanceof VisualSpreadtokenRegister) {
-					VisualSpreadtokenRegister register = (VisualSpreadtokenRegister) node;
-					final SpreadtokenRegisterSTG rstg = generator.getSpreadtokenRegisterSTG(register);
+				if (node instanceof VisualRegister) {
+					final RegisterSTG rstg = generator.getRegisterSTG((VisualRegister) node);
 
-					return new SpreadtokenRegisterDecoration() {
+					return new RegisterDecoration() {
 						@Override
 						public Color getColorisation() {
 							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
@@ -179,25 +207,14 @@ public class SimulationTool extends STGSimulationTool {
 						}
 
 						@Override
-						public boolean isEnabled() {
-							return (rstg.E0.getTokens() == 0);
-						}
-
-						@Override
-						public boolean isMarkedExcited() {
-							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF)) != null);
-						}
-
-						@Override
-						public boolean isEnabledExcited() {
-							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.ER, rstg.EF)) != null);
+						public boolean isExcited() {
+							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF, rstg.fMR, rstg.fMF)) != null);
 						}
 					};
 				}
 
 				if (node instanceof VisualCounterflowLogic) {
-					VisualCounterflowLogic logic = (VisualCounterflowLogic) node;
-					final CounterflowLogicSTG lstg = generator.getCounterflowLogicSTG(logic);
+					final CounterflowLogicSTG lstg = generator.getCounterflowLogicSTG((VisualCounterflowLogic) node);
 
 					return new CounterflowLogicDecoration() {
 						@Override
@@ -237,8 +254,7 @@ public class SimulationTool extends STGSimulationTool {
 				}
 
 				if (node instanceof VisualCounterflowRegister) {
-					VisualCounterflowRegister register = (VisualCounterflowRegister) node;
-					final CounterflowRegisterSTG rstg = generator.getCounterflowRegisterSTG(register);
+					final CounterflowRegisterSTG rstg = generator.getCounterflowRegisterSTG((VisualCounterflowRegister) node);
 
 					return new CounterflowRegisterDecoration() {
 						@Override
@@ -297,6 +313,56 @@ public class SimulationTool extends STGSimulationTool {
 					};
 				}
 
+				if (node instanceof VisualControlRegister || node instanceof VisualPushRegister || node instanceof VisualPopRegister) {
+					BinaryRegisterSTG tmp = null;
+					if (node instanceof VisualControlRegister) {
+						tmp = generator.getControlRegisterSTG((VisualControlRegister) node);
+					}
+					if (node instanceof VisualPushRegister) {
+						tmp = generator.getPushRegisterSTG((VisualPushRegister) node);
+					}
+					if (node instanceof VisualPopRegister) {
+						tmp = generator.getPopRegisterSTG((VisualPopRegister) node);
+					}
+					final BinaryRegisterSTG rstg = tmp;
+
+					return new BinaryRegisterDecoration() {
+						@Override
+						public Color getColorisation() {
+							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							return null;
+						}
+
+						@Override
+						public boolean isTrueMarked() {
+							return (rstg.tM0.getTokens() == 0);
+						}
+
+						@Override
+						public boolean isTrueExcited() {
+							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.tMR, rstg.tMF)) != null);
+						}
+
+						@Override
+						public boolean isFalseMarked() {
+							return (rstg.fM0.getTokens() == 0);
+						}
+
+						@Override
+						public boolean isFalseExcited() {
+							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.fMR, rstg.fMF)) != null);
+						}
+					};
+				}
+
 				return null;
 			}
 		};
@@ -305,18 +371,20 @@ public class SimulationTool extends STGSimulationTool {
 	private Transition getExcitedTransitionOfNode(Node node) {
 		List<VisualSignalTransition> ts = null;
 		if (node != null) {
-			if (node instanceof VisualSpreadtokenLogic) {
-				VisualSpreadtokenLogic logic = (VisualSpreadtokenLogic) node;
-				ts = generator.getSpreadtokenLogicSTG(logic).getAllTransitions();
-			} else if (node instanceof VisualSpreadtokenRegister) {
-				VisualSpreadtokenRegister register = (VisualSpreadtokenRegister) node;
-				ts = generator.getSpreadtokenRegisterSTG(register).getAllTransitions();
+			if (node instanceof VisualLogic) {
+				ts = generator.getLogicSTG((VisualLogic) node).getAllTransitions();
+			} else if (node instanceof VisualRegister) {
+				ts = generator.getRegisterSTG((VisualRegister) node).getAllTransitions();
 			} else if (node instanceof VisualCounterflowLogic) {
-				VisualCounterflowLogic logic = (VisualCounterflowLogic) node;
-				ts = generator.getCounterflowLogicSTG(logic).getAllTransitions();
+				ts = generator.getCounterflowLogicSTG((VisualCounterflowLogic) node).getAllTransitions();
 			} else if (node instanceof VisualCounterflowRegister) {
-				VisualCounterflowRegister register = (VisualCounterflowRegister) node;
-				ts = generator.getCounterflowRegisterSTG(register).getAllTransitions();
+				ts = generator.getCounterflowRegisterSTG((VisualCounterflowRegister) node).getAllTransitions();
+			} else if (node instanceof VisualControlRegister) {
+				ts = generator.getControlRegisterSTG((VisualControlRegister) node).getAllTransitions();
+			} else if (node instanceof VisualPushRegister) {
+				ts = generator.getPushRegisterSTG((VisualPushRegister) node).getAllTransitions();
+			} else if (node instanceof VisualPopRegister) {
+				ts = generator.getPopRegisterSTG((VisualPopRegister) node).getAllTransitions();
 			}
 		}
 		return getExcitedTransitionOfCollection(ts);
@@ -325,6 +393,7 @@ public class SimulationTool extends STGSimulationTool {
 	private Transition getExcitedTransitionOfCollection(List<VisualSignalTransition> ts) {
 		if (ts != null) {
 			for (VisualSignalTransition t: ts) {
+				if (t == null) continue;
 				Transition transition = t.getReferencedTransition();
 				if (net.isEnabled(transition)) {
 					return transition;

@@ -12,14 +12,14 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class CounterflowLogicSTG extends NodeSTG {
-	public final VisualPlace fwC0;
-	public final VisualPlace fwC1;
-	public final Map<Node, VisualSignalTransition> fwCRs;
-	public final Map<Node, VisualSignalTransition>  fwCFs;
-	public final VisualPlace bwC0;
-	public final VisualPlace bwC1;
-	public final Map<Node, VisualSignalTransition>  bwCRs;
-	public final Map<Node, VisualSignalTransition>  bwCFs;
+	public final VisualPlace fwC0;							// forwardC=0
+	public final VisualPlace fwC1;							// forwardC=1
+	public final Map<Node, VisualSignalTransition> fwCRs;	// forwardC+
+	public final Map<Node, VisualSignalTransition>  fwCFs;	// forwardC-
+	public final VisualPlace bwC0;							// backwardC=0
+	public final VisualPlace bwC1;							// backwardC=1
+	public final Map<Node, VisualSignalTransition>  bwCRs;	// backwardC+
+	public final Map<Node, VisualSignalTransition>  bwCFs;	// backwardC-
 
 	public CounterflowLogicSTG(
 			VisualPlace fwC0, VisualPlace fwC1, Map<Node, VisualSignalTransition>  fwCRs, Map<Node, VisualSignalTransition>  fwCFs,

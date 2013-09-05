@@ -85,7 +85,9 @@ public class WorkspaceEntry implements ObservableState
 	public void setModelEntry(ModelEntry modelEntry)
 	{
 		if(this.modelEntry != null) {
-			this.modelEntry.getVisualModel().removeObserver(modelObserver);
+			if (this.modelEntry.isVisual()) {
+				this.modelEntry.getVisualModel().removeObserver(modelObserver);
+			}
 		}
 		this.modelEntry = modelEntry;
 
@@ -95,7 +97,10 @@ public class WorkspaceEntry implements ObservableState
 				return this;
 			}
 		});
-		this.modelEntry.getVisualModel().addObserver(modelObserver);
+
+		if (this.modelEntry.isVisual()) {
+			this.modelEntry.getVisualModel().addObserver(modelObserver);
+		}
 	}
 
 	public boolean isWork() {

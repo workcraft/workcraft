@@ -12,14 +12,16 @@ public abstract class NodeSTG {
 	public abstract List<VisualPlace> getAllPlaces();
 
 	public boolean contains(Node n) {
-		for (VisualPlace p: getAllPlaces()) {
-			if (n == p || n == p.getReferencedPlace()) {
-				return true;
+		if (n != null) {
+			for (VisualPlace p: getAllPlaces()) {
+				if (n == p || (p != null && n == p.getReferencedPlace())) {
+					return true;
+				}
 			}
-		}
-		for (VisualSignalTransition t: getAllTransitions()) {
-			if (n == t || n == t.getReferencedTransition()) {
-				return true;
+			for (VisualSignalTransition t: getAllTransitions()) {
+				if (n == t || (t != null && n == t.getReferencedTransition())) {
+					return true;
+				}
 			}
 		}
 		return false;

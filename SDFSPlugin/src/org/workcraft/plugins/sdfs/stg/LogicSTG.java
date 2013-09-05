@@ -11,13 +11,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
-public class SpreadtokenLogicSTG extends NodeSTG {
-	public final VisualPlace C0;
-	public final VisualPlace C1;
-	public final Map<Node, VisualSignalTransition> CRs;
-	public final Map<Node, VisualSignalTransition> CFs;
+public class LogicSTG extends NodeSTG {
+	public final VisualPlace C0;							// C=0
+	public final VisualPlace C1;							// C=1
+	public final Map<Node, VisualSignalTransition> CRs;	// C+
+	public final Map<Node, VisualSignalTransition> CFs;	// C-
 
-	public SpreadtokenLogicSTG(VisualPlace C0, VisualPlace C1, Map<Node, VisualSignalTransition> CRs, Map<Node, VisualSignalTransition> CFs) {
+	public LogicSTG(VisualPlace C0, VisualPlace C1, Map<Node, VisualSignalTransition> CRs, Map<Node, VisualSignalTransition> CFs) {
 		this.C0 = C0;
 		this.C1 = C1;
 		this.CRs = CRs;

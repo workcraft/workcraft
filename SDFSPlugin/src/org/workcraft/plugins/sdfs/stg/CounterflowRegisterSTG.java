@@ -7,24 +7,24 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class CounterflowRegisterSTG extends NodeSTG {
-	public final VisualPlace fwE0;
-	public final VisualPlace fwE1;
-	public final VisualSignalTransition fwER;
-	public final VisualSignalTransition fwEF;
-	public final VisualPlace bwE0;
-	public final VisualPlace bwE1;
-	public final VisualSignalTransition bwER;
-	public final VisualSignalTransition bwEF;
-	public final VisualPlace orM0;
-	public final VisualPlace orM1;
-	public final VisualSignalTransition orMRfw;
-	public final VisualSignalTransition orMRbw;
-	public final VisualSignalTransition orMFfw;
-	public final VisualSignalTransition orMFbw;
-	public final VisualPlace andM0;
-	public final VisualPlace andM1;
-	public final VisualSignalTransition andMR;
-	public final VisualSignalTransition andMF;
+	public final VisualPlace fwE0;				// forwardE=0
+	public final VisualPlace fwE1;				// forwardE=1
+	public final VisualSignalTransition fwER;	// forwardE+
+	public final VisualSignalTransition fwEF;	// forwardE-
+	public final VisualPlace bwE0;				// backwardE=0
+	public final VisualPlace bwE1;				// backwardE=1
+	public final VisualSignalTransition bwER;	// backwardE+
+	public final VisualSignalTransition bwEF;	// backwardE-
+	public final VisualPlace orM0;				// orM=0
+	public final VisualPlace orM1;				// orM=1
+	public final VisualSignalTransition orMRfw;// orMforward+
+	public final VisualSignalTransition orMRbw;// orMbackward+
+	public final VisualSignalTransition orMFfw;// orMforward-
+	public final VisualSignalTransition orMFbw;// orMbackward-
+	public final VisualPlace andM0;			// andMforward=0
+	public final VisualPlace andM1;			// andMforward=1
+	public final VisualSignalTransition andMR;	// andMforward+
+	public final VisualSignalTransition andMF;	// andMforward-
 
 	public CounterflowRegisterSTG(
 			VisualPlace fwE0, VisualPlace fwE1, VisualSignalTransition fwER, VisualSignalTransition fwEF,
