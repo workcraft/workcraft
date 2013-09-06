@@ -100,7 +100,7 @@ public class CircuitSettings implements SettingsPage {
 
 	@Override
 	public String getName() {
-		return "Circuit";
+		return "Digital Circuit";
 	}
 
 	@Override

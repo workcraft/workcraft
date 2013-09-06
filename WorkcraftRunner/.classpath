@@ -9,7 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MpsatPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SDFSPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DfsPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
 	<classpathentry kind="output" path="bin"/>
