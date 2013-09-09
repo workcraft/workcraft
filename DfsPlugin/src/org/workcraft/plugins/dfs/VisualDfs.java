@@ -64,6 +64,9 @@ public class VisualDfs extends AbstractVisualModel {
 		if (first == null || second == null) {
 			throw new InvalidConnectionException ("Invalid connection");
 		}
+		if (first == second) {
+			throw new InvalidConnectionException ("Self-loops are not allowed");
+		}
 		// Connection from spreadtoken logic
 		if (first instanceof VisualLogic && second instanceof VisualCounterflowLogic) {
 			throw new InvalidConnectionException ("Invalid connection from spreadtoken logic to counterflow logic");

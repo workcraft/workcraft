@@ -20,6 +20,7 @@ public class ControlRegister extends MathNode {
 	}
 
 	private Marking marking = Marking.EMPTY;
+	private boolean inverted;
 
 	public Marking getMarking() {
 		return marking;
@@ -36,6 +37,15 @@ public class ControlRegister extends MathNode {
 
 	public boolean isTrusMarked() {
 		return (this.marking == Marking.TRUE_TOKEN);
+	}
+
+	public boolean isInverted() {
+		return inverted;
+	}
+
+	public void setInverted(boolean value) {
+		this.inverted = value;
+		sendNotification(new PropertyChangedEvent(this, "inverted"));
 	}
 
 }

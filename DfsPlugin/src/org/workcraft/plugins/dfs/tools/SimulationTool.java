@@ -96,14 +96,8 @@ public class SimulationTool extends STGSimulationTool {
 			CounterflowRegisterStg rstg = generator.getCounterflowRegisterSTG(register);
 			if (register.getParentToLocalTransform().transform(point, null).getY() < 0) {
 				transition = getExcitedTransitionOfCollection(rstg.getOrTransitions());
-				if (transition == null) {
-					transition = getExcitedTransitionOfCollection(rstg.getForwardTransitions());
-				}
 			} else {
 				transition = getExcitedTransitionOfCollection(rstg.getAndTransitions());
-				if (transition == null) {
-					transition = getExcitedTransitionOfCollection(rstg.getBackwardTransitions());
-				}
 			}
 		} else if (node instanceof VisualControlRegister) {
 			VisualControlRegister register = (VisualControlRegister)node;
@@ -272,13 +266,13 @@ public class SimulationTool extends STGSimulationTool {
 						}
 
 						@Override
-						public boolean isForwardEnabled() {
-							return (rstg.fwE0.getTokens() == 0);
+						public boolean isForwardExcited() {
+							return (getExcitedTransitionOfCollection(rstg.getForwardTransitions()) != null);
 						}
 
 						@Override
-						public boolean isBackwardEnabled() {
-							return (rstg.bwE0.getTokens() == 0);
+						public boolean isBackwardExcited() {
+							return (getExcitedTransitionOfCollection(rstg.getBackwardTransitions()) != null);
 						}
 
 						@Override
@@ -289,16 +283,6 @@ public class SimulationTool extends STGSimulationTool {
 						@Override
 						public boolean isAndMarked() {
 							return (rstg.andM0.getTokens() == 0);
-						}
-
-						@Override
-						public boolean isForwardEnabledExcited() {
-							return (getExcitedTransitionOfCollection(rstg.getForwardTransitions()) != null);
-						}
-
-						@Override
-						public boolean isBackwardEnabledExcited() {
-							return (getExcitedTransitionOfCollection(rstg.getBackwardTransitions()) != null);
 						}
 
 						@Override

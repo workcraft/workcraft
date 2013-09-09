@@ -29,8 +29,14 @@ public class VisualCounterflowLogic extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Forward Indicating", "isForwardIndicating", "setForwardIndicating", boolean.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Backward Indicating", "isBackwardIndicating", "setBackwardIndicating", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Forward Computed",
+				"isForwardComputed", "setForwardComputed", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Forward Early Evaluation",
+				"isForwardEarlyEvaluation", "setForwardEarlyEvaluation", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Backward Computed",
+				"isBackwardComputed", "setBackwardComputed", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Backward Early Evaluation",
+				"isBackwardEarlyEvaluation", "setBackwardEarlyEvaluation", boolean.class));
 	}
 
 	@Override
@@ -41,12 +47,11 @@ public class VisualCounterflowLogic extends VisualComponent {
 		double h = size - strokeWidth;
 		double w2 = w/2;
 		double h2 = h/2;
-		double h4 = h/4;
 		float strokeWidth1 = (float)strokeWidth;
 		float strokeWidth2 = strokeWidth1 / 2;
 		float strokeWidth4 = strokeWidth1 / 4;
-
-		Shape separatorShape = new Line2D.Double(-w2, 0, w2, 0);
+		int kd = 6;
+		double dd = (size - strokeWidth1 - strokeWidth1) / (4 * kd);
 
 		Path2D forwardShape = new Path2D.Double();
 		forwardShape.moveTo(-w2, -strokeWidth4);
@@ -55,9 +60,18 @@ public class VisualCounterflowLogic extends VisualComponent {
 		forwardShape.lineTo( w2, -strokeWidth4);
 
 		Path2D forwardEarlyShape = new Path2D.Double();
-		forwardEarlyShape.moveTo(-w2, -h2 + strokeWidth2);
-		forwardEarlyShape.lineTo( w2 - strokeWidth1, -h4);
-		forwardEarlyShape.lineTo(-w2,   0 - strokeWidth4);
+		forwardEarlyShape.moveTo(-2*dd + dd, (-kd-2) * dd);
+		forwardEarlyShape.lineTo(-2*dd - dd, (-kd-2) * dd);
+		forwardEarlyShape.lineTo(-2*dd - dd, (-kd+2) * dd);
+		forwardEarlyShape.lineTo(-2*dd + dd, (-kd+2) * dd);
+		forwardEarlyShape.moveTo(-2*dd + dd, (-kd+0) * dd);
+		forwardEarlyShape.lineTo(-2*dd - dd, (-kd+0) * dd);
+		forwardEarlyShape.moveTo(+2*dd + dd, (-kd-2) * dd);
+		forwardEarlyShape.lineTo(+2*dd - dd, (-kd-2) * dd);
+		forwardEarlyShape.lineTo(+2*dd - dd, (-kd+2) * dd);
+		forwardEarlyShape.lineTo(+2*dd + dd, (-kd+2) * dd);
+		forwardEarlyShape.moveTo(+2*dd + dd, (-kd+0) * dd);
+		forwardEarlyShape.lineTo(+2*dd - dd, (-kd+0) * dd);
 
 		Path2D backwardShape = new Path2D.Double();
 		backwardShape.moveTo( w2, strokeWidth4);
@@ -66,26 +80,32 @@ public class VisualCounterflowLogic extends VisualComponent {
 		backwardShape.lineTo(-w2, strokeWidth4);
 
 		Path2D backwardEarlyShape = new Path2D.Double();
-		backwardEarlyShape.moveTo( w2,   0 + strokeWidth4);
-		backwardEarlyShape.lineTo(-w2 + strokeWidth1,  h4);
-		backwardEarlyShape.lineTo( w2,  h2 - strokeWidth2);
+		backwardEarlyShape.moveTo(-2*dd + dd, (+kd-2) * dd);
+		backwardEarlyShape.lineTo(-2*dd - dd, (+kd-2) * dd);
+		backwardEarlyShape.lineTo(-2*dd - dd, (+kd+2) * dd);
+		backwardEarlyShape.lineTo(-2*dd + dd, (+kd+2) * dd);
+		backwardEarlyShape.moveTo(-2*dd + dd, (+kd+0) * dd);
+		backwardEarlyShape.lineTo(-2*dd - dd, (+kd+0) * dd);
+		backwardEarlyShape.moveTo(+2*dd + dd, (+kd-2) * dd);
+		backwardEarlyShape.lineTo(+2*dd - dd, (+kd-2) * dd);
+		backwardEarlyShape.lineTo(+2*dd - dd, (+kd+2) * dd);
+		backwardEarlyShape.lineTo(+2*dd + dd, (+kd+2) * dd);
+		backwardEarlyShape.moveTo(+2*dd + dd, (+kd+0) * dd);
+		backwardEarlyShape.lineTo(+2*dd - dd, (+kd+0) * dd);
 
+		Shape separatorShape = new Line2D.Double(-w2, 0, w2, 0);
+
+		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		boolean forwardComputed = isForwardComputed();
 		boolean forwardComputedExcited = false;
-		if (d instanceof CounterflowLogicDecoration) {
-			forwardComputed = ((CounterflowLogicDecoration)d).isForwardComputed();
-			forwardComputedExcited = ((CounterflowLogicDecoration)d).isForwardComputedExcited();
-		}
 		boolean backwardComputed = isBackwardComputed();
 		boolean backwardComputedExcited = false;
 		if (d instanceof CounterflowLogicDecoration) {
+			defaultColor = getForegroundColor();
+			forwardComputed = ((CounterflowLogicDecoration)d).isForwardComputed();
+			forwardComputedExcited = ((CounterflowLogicDecoration)d).isForwardComputedExcited();
 			backwardComputed = ((CounterflowLogicDecoration)d).isBackwardComputed();
 			backwardComputedExcited = ((CounterflowLogicDecoration)d).isBackwardComputedExcited();
-		}
-
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		if (d instanceof CounterflowLogicDecoration) {
-			defaultColor = getForegroundColor();
 		}
 
 		if (forwardComputed) {
@@ -106,16 +126,16 @@ public class VisualCounterflowLogic extends VisualComponent {
 		if (!forwardComputedExcited) {
 			g.setStroke(new BasicStroke(strokeWidth1));
 			g.draw(forwardShape);
-			if (!isForwardIndicating()) {
-				g.setStroke(new BasicStroke(strokeWidth2));
+			if (isForwardEarlyEvaluation()) {
+				g.setStroke(new BasicStroke(strokeWidth4));
 				g.draw(forwardEarlyShape);
 			}
 		}
 		if (!backwardComputedExcited) {
 			g.setStroke(new BasicStroke(strokeWidth1));
 			g.draw(backwardShape);
-			if (!isBackwardIndicating()) {
-				g.setStroke(new BasicStroke(strokeWidth2));
+			if (isBackwardEarlyEvaluation()) {
+				g.setStroke(new BasicStroke(strokeWidth4));
 				g.draw(backwardEarlyShape);
 			}
 		}
@@ -124,16 +144,16 @@ public class VisualCounterflowLogic extends VisualComponent {
 		if (forwardComputedExcited) {
 			g.setStroke(new BasicStroke(strokeWidth1));
 			g.draw(forwardShape);
-			if (!isForwardIndicating()) {
-				g.setStroke(new BasicStroke(strokeWidth2));
+			if (isForwardEarlyEvaluation()) {
+				g.setStroke(new BasicStroke(strokeWidth4));
 				g.draw(forwardEarlyShape);
 			}
 		}
 		if (backwardComputedExcited) {
 			g.setStroke(new BasicStroke(strokeWidth1));
 			g.draw(backwardShape);
-			if (!isBackwardIndicating()) {
-				g.setStroke(new BasicStroke(strokeWidth2));
+			if (isBackwardEarlyEvaluation()) {
+				g.setStroke(new BasicStroke(strokeWidth4));
 				g.draw(backwardEarlyShape);
 			}
 		}
@@ -157,32 +177,32 @@ public class VisualCounterflowLogic extends VisualComponent {
 		return getReferencedCounterflowLogic().isForwardComputed();
 	}
 
-	public void setForwardComputed(boolean forwardComputed) {
-		getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
+	public void setForwardComputed(boolean value) {
+		getReferencedCounterflowLogic().setForwardComputed(value);
 	}
 
 	public boolean isBackwardComputed() {
 		return getReferencedCounterflowLogic().isBackwardComputed();
 	}
 
-	public void setBackwardComputed(boolean backwardComputed) {
-		getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
+	public void setBackwardComputed(boolean value) {
+		getReferencedCounterflowLogic().setBackwardComputed(value);
 	}
 
-	public boolean isForwardIndicating() {
-		return getReferencedCounterflowLogic().isForwardIndicating();
+	public boolean isForwardEarlyEvaluation() {
+		return getReferencedCounterflowLogic().isForwardEarlyEvaluation();
 	}
 
-	public void setForwardIndicating(boolean forwardIndicating) {
-		getReferencedCounterflowLogic().setForwardIndicating(forwardIndicating);
+	public void setForwardEarlyEvaluation(boolean value) {
+		getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
 	}
 
-	public boolean isBackwardIndicating() {
-		return getReferencedCounterflowLogic().isBackwardIndicating();
+	public boolean isBackwardEarlyEvaluation() {
+		return getReferencedCounterflowLogic().isBackwardEarlyEvaluation();
 	}
 
-	public void setBackwardIndicating(boolean backwardIndicating) {
-		getReferencedCounterflowLogic().setBackwardIndicating(backwardIndicating);
+	public void setBackwardEarlyEvaluation(boolean value) {
+		getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
 	}
 
 }

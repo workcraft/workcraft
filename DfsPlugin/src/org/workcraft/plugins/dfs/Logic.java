@@ -28,23 +28,23 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.dfs.VisualLogic.class)
 public class Logic extends MathNode {
 	private boolean computed = false;
-	private boolean indicating = true;
+	private boolean earlyEvaluation = false;
 
 	public boolean isComputed() {
 		return computed;
 	}
 
-	public void setComputed(boolean computed) {
-		this.computed = computed;
+	public void setComputed(boolean value) {
+		this.computed = value;
 		sendNotification(new PropertyChangedEvent(this, "computed"));
 	}
 
-	public boolean isIndicating() {
-		return indicating;
+	public boolean isEarlyEvaluation() {
+		return earlyEvaluation;
 	}
 
-	public void setIndicating(boolean indicating) {
-		this.indicating = indicating;
-		sendNotification(new PropertyChangedEvent(this, "indicating"));
+	public void setEarlyEvaluation(boolean value) {
+		this.earlyEvaluation = value;
+		sendNotification(new PropertyChangedEvent(this, "early evaluation"));
 	}
 }

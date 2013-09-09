@@ -7,14 +7,6 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class CounterflowRegisterStg extends NodeStg {
-	public final VisualPlace fwE0;				// forwardE=0
-	public final VisualPlace fwE1;				// forwardE=1
-	public final VisualSignalTransition fwER;	// forwardE+
-	public final VisualSignalTransition fwEF;	// forwardE-
-	public final VisualPlace bwE0;				// backwardE=0
-	public final VisualPlace bwE1;				// backwardE=1
-	public final VisualSignalTransition bwER;	// backwardE+
-	public final VisualSignalTransition bwEF;	// backwardE-
 	public final VisualPlace orM0;				// orM=0
 	public final VisualPlace orM1;				// orM=1
 	public final VisualSignalTransition orMRfw;// orMforward+
@@ -27,18 +19,8 @@ public class CounterflowRegisterStg extends NodeStg {
 	public final VisualSignalTransition andMF;	// andMforward-
 
 	public CounterflowRegisterStg(
-			VisualPlace fwE0, VisualPlace fwE1, VisualSignalTransition fwER, VisualSignalTransition fwEF,
-			VisualPlace bwE0, VisualPlace bwE1, VisualSignalTransition bwER, VisualSignalTransition bwEF,
 			VisualPlace orM0, VisualPlace orM1, VisualSignalTransition orMRfw, VisualSignalTransition orMRbw, VisualSignalTransition orMFfw, VisualSignalTransition orMFbw,
 			VisualPlace andM0, VisualPlace andM1, VisualSignalTransition andMR, VisualSignalTransition andMF) {
-		this.fwE0 = fwE0;
-		this.fwE1 = fwE1;
-		this.fwER = fwER;
-		this.fwEF = fwEF;
-		this.bwE0 = bwE0;
-		this.bwE1 = bwE1;
-		this.bwER = bwER;
-		this.bwEF = bwEF;
 		this.orM0 = orM0;
 		this.orM1 = orM1;
 		this.orMRfw = orMRfw;
@@ -51,16 +33,16 @@ public class CounterflowRegisterStg extends NodeStg {
 		this.andMF = andMF;
 	}
 
+	public  List<VisualSignalTransition> getOrTransitions() {
+		return Arrays.asList(orMRfw, orMFfw, orMRbw, orMFbw);
+	}
+
 	public  List<VisualSignalTransition> getForwardTransitions() {
-		return Arrays.asList(fwER, fwEF);
+		return Arrays.asList(orMRfw, orMFfw, andMR, andMR);
 	}
 
 	public  List<VisualSignalTransition> getBackwardTransitions() {
-		return Arrays.asList(bwER, bwEF);
-	}
-
-	public  List<VisualSignalTransition> getOrTransitions() {
-		return Arrays.asList(orMRfw, orMFfw, orMRbw, orMFbw);
+		return Arrays.asList(orMRbw, orMFbw, andMR, andMR);
 	}
 
 	public  List<VisualSignalTransition> getAndTransitions() {
@@ -69,11 +51,12 @@ public class CounterflowRegisterStg extends NodeStg {
 
 	@Override
 	public List<VisualSignalTransition> getAllTransitions() {
-		return Arrays.asList(fwER, fwEF, bwER, bwEF, orMRfw, orMFfw, orMRbw, orMFbw, andMR, andMF);
+		return Arrays.asList(orMRfw, orMFfw, orMRbw, orMFbw, andMR, andMF);
 	}
 
 	@Override
 	public List<VisualPlace> getAllPlaces() {
-		return Arrays.asList(fwE0, fwE1, bwE0, bwE1, orM0, orM1, andM0, andM1);
+		return Arrays.asList(orM0, orM1, andM0, andM1);
 	}
+
 }

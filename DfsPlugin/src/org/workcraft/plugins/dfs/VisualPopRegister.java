@@ -57,9 +57,9 @@ public class VisualPopRegister extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		LinkedHashMap<String, Object> markingChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.Marking marking : ControlRegister.Marking.values())
+		for (ControlRegister.Marking marking : ControlRegister.Marking.values()) {
 			markingChoice.put(marking.name, marking);
-
+		}
 		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
 				ControlRegister.Marking.class, markingChoice));
 	}

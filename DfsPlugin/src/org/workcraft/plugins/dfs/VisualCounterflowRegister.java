@@ -29,8 +29,6 @@ public class VisualCounterflowRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Forward enabled", "isForwardEnabled", "setForwardEnabled", boolean.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Backward enabled", "isBackwardEnabled", "setBackwardEnabled", boolean.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "Or-marked", "isOrMarked", "setOrMarked", boolean.class));
 		addPropertyDeclaration(new PropertyDeclaration (this, "And-marked", "isAndMarked", "setAndMarked", boolean.class));
 	}
@@ -49,14 +47,23 @@ public class VisualCounterflowRegister extends VisualComponent {
 		double h2 = h/2;
 		double dx = size / 5;
 		double v2 = w2 - dx;
-		double v = v2 + v2;
 		double dt = (size - strokeWidth) / 8;
 		float strokeWidth1 = (float)strokeWidth;
 		float strokeWidth2 = strokeWidth1 / 2;
 
 		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
-		Shape forwardShape = new Rectangle2D.Double (-v2, -h2, v, h2);
-		Shape backwardShape = new Rectangle2D.Double (-v2, 0, v, h2);
+
+		Path2D forwardShape = new Path2D.Double();
+		forwardShape.moveTo(-v2, -h2);
+		forwardShape.lineTo(-v2, 0);
+		forwardShape.lineTo( v2, 0);
+		forwardShape.lineTo( v2, -h2);
+
+		Path2D backwardShape = new Path2D.Double();
+		backwardShape.moveTo( v2, h2);
+		backwardShape.lineTo( v2, 0);
+		backwardShape.lineTo(-v2, 0);
+		backwardShape.lineTo(-v2, h2);
 
 		Shape andTokenShape = new Rectangle2D.Double (-dt, dt, 2 * dt, 2 * dt);
 		Path2D orTokenShape = new Path2D.Double();
@@ -65,30 +72,17 @@ public class VisualCounterflowRegister extends VisualComponent {
 		orTokenShape.lineTo(-dt, -dt);
 		orTokenShape.closePath();
 
-		boolean forwardEnabled = isForwardEnabled();
-		boolean forwardEnabledExcited = false;
-		if (d instanceof CounterflowRegisterDecoration) {
-			forwardEnabled = ((CounterflowRegisterDecoration)d).isForwardEnabled();
-			forwardEnabledExcited = ((CounterflowRegisterDecoration)d).isForwardEnabledExcited();
-		}
-
-		boolean backwardEnabled = isBackwardEnabled();
-		boolean backwardEnabledExcited = false;
-		if (d instanceof CounterflowRegisterDecoration) {
-			backwardEnabled = ((CounterflowRegisterDecoration)d).isBackwardEnabled();
-			backwardEnabledExcited = ((CounterflowRegisterDecoration)d).isBackwardEnabledExcited();
-		}
-
+		boolean forwardExcited = false;
+		boolean backwardExcited = false;
 		boolean orMarked = isOrMarked();
 		boolean orMarkedExcited = false;
-		if (d instanceof CounterflowRegisterDecoration) {
-			orMarked = ((CounterflowRegisterDecoration)d).isOrMarked();
-			orMarkedExcited = ((CounterflowRegisterDecoration)d).isOrMarkedExcited();
-		}
-
 		boolean andMarked = isAndMarked();
 		boolean andMarkedExcited = false;
 		if (d instanceof CounterflowRegisterDecoration) {
+			forwardExcited = ((CounterflowRegisterDecoration)d).isForwardExcited();
+			backwardExcited = ((CounterflowRegisterDecoration)d).isBackwardExcited();
+			orMarked = ((CounterflowRegisterDecoration)d).isOrMarked();
+			orMarkedExcited = ((CounterflowRegisterDecoration)d).isOrMarkedExcited();
 			andMarked = ((CounterflowRegisterDecoration)d).isAndMarked();
 			andMarkedExcited = ((CounterflowRegisterDecoration)d).isAndMarkedExcited();
 		}
@@ -101,35 +95,29 @@ public class VisualCounterflowRegister extends VisualComponent {
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
 
-		if (forwardEnabled) {
-			g.setColor(Coloriser.colorise(DfsSettings.getEnabledRegisterColor(), d.getBackground()));
-		} else {
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		}
-		g.fill(forwardShape);
-
-		if (backwardEnabled) {
-			g.setColor(Coloriser.colorise(DfsSettings.getEnabledRegisterColor(), d.getBackground()));
-		} else {
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		}
-		g.fill(backwardShape);
-
 		g.setStroke(new BasicStroke(strokeWidth2));
 		g.setColor(defaultColor);
-		if (!forwardEnabledExcited) {
+		if (!forwardExcited) {
 			g.draw(forwardShape);
 		}
-		if (!backwardEnabledExcited) {
+		if (!backwardExcited) {
 			g.draw(backwardShape);
 		}
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		if (forwardEnabledExcited) {
+		if (forwardExcited) {
 			g.draw(forwardShape);
 		}
-		if (backwardEnabledExcited) {
+		if (backwardExcited) {
 			g.draw(backwardShape);
 		}
+
+		if (forwardExcited || backwardExcited || orMarkedExcited || andMarkedExcited) {
+			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+		} else {
+			g.setColor(defaultColor);
+		}
+		g.setStroke(new BasicStroke(strokeWidth1));
+		g.draw(shape);
 
 		if (orMarked) {
 			if (orMarkedExcited) {
@@ -138,10 +126,6 @@ public class VisualCounterflowRegister extends VisualComponent {
 				g.setColor(defaultColor);
 			}
 			g.fill(orTokenShape);
-		} else 	if (orMarkedExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(orTokenShape);
 		}
 
 		if (andMarked) {
@@ -151,33 +135,9 @@ public class VisualCounterflowRegister extends VisualComponent {
 				g.setColor(defaultColor);
 			}
 			g.fill(andTokenShape);
-		} else if (andMarkedExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(andTokenShape);
 		}
 
-		g.setColor(defaultColor);
-		g.setStroke(new BasicStroke(strokeWidth1));
-		g.draw(shape);
-
 		drawLabelInLocalSpace(r);
-	}
-
-	public boolean isForwardEnabled() {
-		return getReferencedCounterflowRegister().isForwardEnabled();
-	}
-
-	public void setForwardEnabled(boolean value) {
-		getReferencedCounterflowRegister().setForwardEnabled(value);
-	}
-
-	public boolean isBackwardEnabled() {
-		return getReferencedCounterflowRegister().isBackwardEnabled();
-	}
-
-	public void setBackwardEnabled(boolean value) {
-		getReferencedCounterflowRegister().setBackwardEnabled(value);
 	}
 
 	public boolean isOrMarked() {

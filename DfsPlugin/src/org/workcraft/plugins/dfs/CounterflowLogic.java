@@ -8,15 +8,15 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class CounterflowLogic extends MathNode {
 	private boolean forwardComputed = false;
 	private boolean backwardComputed = false;
-	private boolean forwardIndicating = true;
-	private boolean backwardIndicating = true;
+	private boolean forwardEarlyEvaluation = false;
+	private boolean backwardEarlyEvaluation = false;
 
 	public boolean isForwardComputed() {
 		return forwardComputed;
 	}
 
-	public void setForwardComputed(boolean forwardComputed) {
-		this.forwardComputed = forwardComputed;
+	public void setForwardComputed(boolean value) {
+		this.forwardComputed = value;
 		sendNotification(new PropertyChangedEvent(this, "forward computed"));
 	}
 
@@ -24,26 +24,26 @@ public class CounterflowLogic extends MathNode {
 		return backwardComputed;
 	}
 
-	public void setBackwardComputed(boolean backwardComputed) {
-		this.backwardComputed = backwardComputed;
+	public void setBackwardComputed(boolean value) {
+		this.backwardComputed = value;
 		sendNotification(new PropertyChangedEvent(this, "backward computed"));
 	}
 
-	public boolean isForwardIndicating() {
-		return forwardIndicating;
+	public boolean isForwardEarlyEvaluation() {
+		return forwardEarlyEvaluation;
 	}
 
-	public void setForwardIndicating(boolean forwardIndicating) {
-		this.forwardIndicating = forwardIndicating;
-		sendNotification(new PropertyChangedEvent(this, "forward indicating"));
+	public void setForwardEarlyEvaluation(boolean value) {
+		this.forwardEarlyEvaluation = value;
+		sendNotification(new PropertyChangedEvent(this, "forward early evaluation"));
 	}
 
-	public boolean isBackwardIndicating() {
-		return backwardIndicating;
+	public boolean isBackwardEarlyEvaluation() {
+		return backwardEarlyEvaluation;
 	}
 
-	public void setBackwardIndicating(boolean backwardIndicating) {
-		this.backwardIndicating = backwardIndicating;
-		sendNotification(new PropertyChangedEvent(this, "backward indicating"));
+	public void setBackwardEarlyEvaluation(boolean value) {
+		this.backwardEarlyEvaluation = value;
+		sendNotification(new PropertyChangedEvent(this, "backward early evaluation"));
 	}
 }
