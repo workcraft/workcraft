@@ -72,7 +72,7 @@ public class VisualGraph extends AbstractVisualModel {
 		VisualConnection ret = new VisualConnection(con, c1, c2);
 		Hierarchy.getNearestContainer(c1, c2).add(ret);
 		if (c1 == c2) {
-			ret.setConnectionType(ConnectionType.BEZIER);
+			ret.setConnectionType(ConnectionType.BEZIER, true);
 		}
 	}
 }

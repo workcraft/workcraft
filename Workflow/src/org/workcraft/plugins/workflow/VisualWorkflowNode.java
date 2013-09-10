@@ -7,16 +7,14 @@ import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.VisualComponent;
 
 @DisplayName("Node")
 public class VisualWorkflowNode extends VisualComponent {
 	private Rectangle2D shape = new Rectangle2D.Double(-1,-1,1,1);
 
-	public VisualWorkflowNode(WorkflowNode node)
-	{
-
+	public VisualWorkflowNode(WorkflowNode node) {
+		super(node);
 	}
 
 	@Override

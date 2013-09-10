@@ -38,6 +38,10 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 	private double size = 0.15;
 	private Color fillColor = Color.BLUE;
 
+	public ControlPoint() {
+		setHidden(true);
+	}
+
 	Shape shape = new Ellipse2D.Double(
 			-size / 2,
 			-size / 2,

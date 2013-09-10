@@ -231,6 +231,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 		ControlPoint ap = new ControlPoint();
 		ap.setPosition(pointOnConnection);
+		ap.setHidden(false);
 
 		groupImpl.add(segment, ap);
 

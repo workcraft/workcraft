@@ -186,6 +186,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	@NoAutoSerialisation
 	public void setConnectionType(ConnectionType t) {
+		setConnectionType(t, false);
+	}
+
+	@NoAutoSerialisation
+	public void setConnectionType(ConnectionType t, boolean hiddenConnectionPoints) {
 		if (connectionType != t) {
 			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(
 					this, graphic));
@@ -201,12 +206,12 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				if (v == this.getSecond()) {
 					ControlPoint cp1 = new ControlPoint();
 					cp1.setPosition(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5));
+					cp1.setHidden(hiddenConnectionPoints);
 					p.add(cp1);
-					cp1.setHidden(true);
 					ControlPoint cp2 = new ControlPoint();
 					cp2.setPosition(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5));
+					cp2.setHidden(hiddenConnectionPoints);
 					p.add(cp2);
-					cp2.setHidden(true);
 				}
 			}
 
@@ -215,13 +220,13 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				b.setDefaultControlPoints();
 				graphic = b;
 
+				BezierControlPoint[] cp = b.getControlPoints();
+				cp[0].setHidden(hiddenConnectionPoints);
+				cp[1].setHidden(hiddenConnectionPoints);
 				VisualComponent v = this.getFirst();
 				if (v == this.getSecond()) {
-					BezierControlPoint[] cp = b.getControlPoints();
-					cp[0].setPosition(new Point2D.Double(v.getX() - 2.0, v.getY() + 2.0));
-					cp[0].setHidden(true);
+					cp[0] .setPosition(new Point2D.Double(v.getX() - 2.0, v.getY() + 2.0));
 					cp[1].setPosition(new Point2D.Double(v.getX() + 2.0, v.getY() + 2.0));
-					cp[1].setHidden(true);
 				}
 			}
 

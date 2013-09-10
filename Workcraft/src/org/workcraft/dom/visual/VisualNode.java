@@ -38,6 +38,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public abstract class VisualNode implements Properties, Node, Touchable, ObservableState, Hidable {
@@ -91,10 +92,12 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 		return propertySupport.getPropertyDeclarations();
 	}
 
+	@NoAutoSerialisation
 	public boolean isHidden() {
 		return hidden;
 	}
 
+	@NoAutoSerialisation
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}

@@ -58,6 +58,24 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
+	public VisualComponent(MathNode refNode) {
+		super();
+		this.refNode = refNode;
+
+		if (refNode instanceof ObservableState)
+			((ObservableState) refNode).addObserver(new StateObserver() {
+				public void notify(StateEvent e) {
+					observableStateImpl.sendNotification(e);
+				}
+			});
+
+		addPropertyDeclarations();
+
+		setFillColor(CommonVisualSettings.getFillColor());
+		setForegroundColor(CommonVisualSettings.getForegroundColor());
+		setLabelColor(CommonVisualSettings.getForegroundColor());
+		setLabelPositioning(CommonVisualSettings.getTextPositioning());
+	}
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration(this, "Label",
@@ -80,29 +98,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	}
 
-	public VisualComponent(MathNode refNode) {
-		super();
-		this.refNode = refNode;
-
-		if (refNode instanceof ObservableState)
-			((ObservableState) refNode).addObserver(new StateObserver() {
-				public void notify(StateEvent e) {
-					observableStateImpl.sendNotification(e);
-				}
-			});
-
-		addPropertyDeclarations();
-
-		setFillColor(CommonVisualSettings.getFillColor());
-		setForegroundColor(CommonVisualSettings.getForegroundColor());
-		setLabelColor(CommonVisualSettings.getForegroundColor());
-		setLabelPositioning(CommonVisualSettings.getTextPositioning());
-	}
-/* ???
-	public VisualComponent() {
-		addPropertyDeclarations();
-	}
-*/
 	public String getLabel() {
 		return label;
 	}

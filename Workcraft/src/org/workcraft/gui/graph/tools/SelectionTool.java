@@ -325,10 +325,12 @@ public class SelectionTool extends AbstractTool {
 		if (e.isCtrlDown()) {
 			switch(e.getKeyCode()){
 			case KeyEvent.VK_G:
+				e.getEditor().getWorkspaceEntry().saveMemento();
 				e.getModel().groupSelection();
 				e.getEditor().repaint();
 				break;
 			case KeyEvent.VK_U:
+				e.getEditor().getWorkspaceEntry().saveMemento();
 				e.getModel().ungroupSelection();
 				e.getEditor().repaint();
 				break;

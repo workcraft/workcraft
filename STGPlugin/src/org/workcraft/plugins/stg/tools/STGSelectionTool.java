@@ -36,8 +36,7 @@ public class STGSelectionTool extends SelectionTool
 		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
 			VisualModel model = e.getEditor().getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
-			if (node != null)
-			{
+			if (node != null) {
 				if (node instanceof VisualPlace) {
 					Place place = ((VisualPlace) node).getPlace();
 					toggleToken(place, e);
