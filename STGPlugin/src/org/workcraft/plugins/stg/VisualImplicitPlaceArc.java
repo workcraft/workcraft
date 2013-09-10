@@ -49,30 +49,9 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	private static double multipleTokenSeparation = 0.0125;
 	private static Color tokenColor = Color.BLACK;
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
-	}
-
 	public VisualImplicitPlaceArc () {
 		super();
 		addPropertyDeclarations();
-	}
-
-	public void setImplicitPlaceArcDependencies (MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
-		this.refCon1 = refCon1;
-		this.refCon2 = refCon2;
-		this.implicitPlace = implicitPlace;
-
-		addPlaceObserver(implicitPlace);
-	}
-
-	private void addPlaceObserver(Place implicitPlace) {
-		implicitPlace.addObserver( new StateObserver() {
-				public void notify(StateEvent e) {
-					observableStateImpl.sendNotification(e);
-				}
-			});
 	}
 
 	public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
@@ -82,9 +61,28 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		this.implicitPlace = implicitPlace;
 
 		addPlaceObserver(implicitPlace);
-
-
 		addPropertyDeclarations();
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
+		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
+	}
+
+	private void addPlaceObserver(Place implicitPlace) {
+		implicitPlace.addObserver( new StateObserver() {
+			public void notify(StateEvent e) {
+				observableStateImpl.sendNotification(e);
+			}
+		});
+	}
+
+	public void setImplicitPlaceArcDependencies (MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
+		this.refCon1 = refCon1;
+		this.refCon2 = refCon2;
+		this.implicitPlace = implicitPlace;
+
+		addPlaceObserver(implicitPlace);
 	}
 
 	public void draw(DrawRequest r) {

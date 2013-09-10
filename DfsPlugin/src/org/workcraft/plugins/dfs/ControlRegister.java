@@ -19,8 +19,20 @@ public class ControlRegister extends MathNode {
 		}
 	}
 
+	public enum SynchronisationType {
+		PLAIN("plain"),
+		AND("and"),
+		OR("or");
+
+		public final String name;
+
+		private SynchronisationType(String name) {
+			this.name = name;
+		}
+	}
+
 	private Marking marking = Marking.EMPTY;
-	private boolean inverted;
+	private SynchronisationType synchronisationType = SynchronisationType.PLAIN;
 
 	public Marking getMarking() {
 		return marking;
@@ -39,13 +51,13 @@ public class ControlRegister extends MathNode {
 		return (this.marking == Marking.TRUE_TOKEN);
 	}
 
-	public boolean isInverted() {
-		return inverted;
+	public SynchronisationType getSynchronisationType() {
+		return synchronisationType;
 	}
 
-	public void setInverted(boolean value) {
-		this.inverted = value;
-		sendNotification(new PropertyChangedEvent(this, "inverted"));
+	public void setSynchronisationType(SynchronisationType value) {
+		this.synchronisationType = value;
+		sendNotification(new PropertyChangedEvent(this, "synchronisation type"));
 	}
 
 }

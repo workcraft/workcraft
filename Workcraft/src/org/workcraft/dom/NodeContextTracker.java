@@ -122,7 +122,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 		return Collections.unmodifiableSet(postsets.get(node));
 	}
 
-	public Set<Connection> getConnections (Node node) {
+	public Set<Connection> getConnections(Node node) {
 		return Collections.unmodifiableSet(connections.get(node));
 	}
 

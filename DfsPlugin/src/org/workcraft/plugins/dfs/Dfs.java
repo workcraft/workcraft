@@ -69,6 +69,12 @@ public class Dfs extends AbstractMathModel {
 		return con;
 	}
 
+	public ControlConnection controlConnect(Node first, Node second) throws InvalidConnectionException {
+		ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
+		Hierarchy.getNearestContainer(first, second).add(con);
+		return con;
+	}
+
 	@Override
 	public Properties getProperties(Node node) {
 		return Properties.Mix.from(new NamePropertyDescriptor(this, node));

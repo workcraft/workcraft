@@ -8,11 +8,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.dfs.VisualControlConnection;
 import org.workcraft.plugins.dfs.VisualControlRegister;
 import org.workcraft.plugins.dfs.VisualCounterflowLogic;
 import org.workcraft.plugins.dfs.VisualCounterflowRegister;
@@ -718,7 +720,8 @@ public class StgGenerator {
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
-			if (r.isInverted()) {
+			Connection connection = dfs.getConnection(n, r);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMR);
 				createReadArc(nstg.tM0, rstg.fMF);
 				createReadArc(nstg.fM1, rstg.tMR);
@@ -754,7 +757,8 @@ public class StgGenerator {
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
-			if (n.isInverted()) {
+			Connection connection = dfs.getConnection(r, n);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMF);
 				createReadArc(nstg.fM1, rstg.tMF);
 			} else {
@@ -766,15 +770,27 @@ public class StgGenerator {
 		}
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
 			BinaryRegisterStg nstg = getPushRegisterSTG(n);
-			createReadArc(nstg.tM1, rstg.tMF);
-			createReadArc(nstg.fM1, rstg.fMF);
+			Connection connection = dfs.getConnection(r, n);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+				createReadArc(nstg.tM1, rstg.fMF);
+				createReadArc(nstg.fM1, rstg.tMF);
+			} else {
+				createReadArc(nstg.tM1, rstg.tMF);
+				createReadArc(nstg.fM1, rstg.fMF);
+			}
 			createReadArc(nstg.M0, rstg.tMR);
 			createReadArc(nstg.M0, rstg.fMR);
 		}
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
 			BinaryRegisterStg nstg = getPopRegisterSTG(n);
-			createReadArc(nstg.tM1, rstg.tMF);
-			createReadArc(nstg.fM1, rstg.fMF);
+			Connection connection = dfs.getConnection(r, n);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+				createReadArc(nstg.tM1, rstg.fMF);
+				createReadArc(nstg.fM1, rstg.tMF);
+			} else {
+				createReadArc(nstg.tM1, rstg.tMF);
+				createReadArc(nstg.fM1, rstg.fMF);
+			}
 			createReadArc(nstg.M0, rstg.tMR);
 			createReadArc(nstg.M0, rstg.fMR);
 		}
@@ -817,10 +833,18 @@ public class StgGenerator {
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
-			createReadArc(nstg.tM1, rstg.tMR);
-			createReadArc(nstg.tM0, rstg.tMF);
-			createReadArc(nstg.fM1, rstg.fMR);
-			createReadArc(nstg.fM0, rstg.fMF);
+			Connection connection = dfs.getConnection(n, r);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+				createReadArc(nstg.tM1, rstg.fMR);
+				createReadArc(nstg.tM0, rstg.fMF);
+				createReadArc(nstg.fM1, rstg.tMR);
+				createReadArc(nstg.fM0, rstg.tMF);
+			} else {
+				createReadArc(nstg.tM1, rstg.tMR);
+				createReadArc(nstg.tM0, rstg.tMF);
+				createReadArc(nstg.fM1, rstg.fMR);
+				createReadArc(nstg.fM0, rstg.fMF);
+			}
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
 			BinaryRegisterStg nstg = getPushRegisterSTG(n);
@@ -893,10 +917,18 @@ public class StgGenerator {
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
-			createReadArc(nstg.tM1, rstg.tMR);
-			createReadArc(nstg.tM0, rstg.tMF);
-			createReadArc(nstg.fM1, rstg.fMR);
-			createReadArc(nstg.fM0, rstg.fMF);
+			Connection connection = dfs.getConnection(n, r);
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+				createReadArc(nstg.tM1, rstg.fMR);
+				createReadArc(nstg.tM0, rstg.fMF);
+				createReadArc(nstg.fM1, rstg.tMR);
+				createReadArc(nstg.fM0, rstg.tMF);
+			} else {
+				createReadArc(nstg.tM1, rstg.tMR);
+				createReadArc(nstg.tM0, rstg.tMF);
+				createReadArc(nstg.fM1, rstg.fMR);
+				createReadArc(nstg.fM0, rstg.fMF);
+			}
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
 			BinaryRegisterStg nstg = getPushRegisterSTG(n);

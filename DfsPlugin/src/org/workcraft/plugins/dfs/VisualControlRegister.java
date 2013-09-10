@@ -38,7 +38,13 @@ public class VisualControlRegister extends VisualComponent {
 		}
 		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
 				ControlRegister.Marking.class, markingChoice));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Inverted", "isInverted", "setInverted", boolean.class));
+
+		LinkedHashMap<String, Object> synchronisationTypeChoice = new LinkedHashMap<String, Object>();
+		for (ControlRegister.SynchronisationType synchronisationType : ControlRegister.SynchronisationType.values()) {
+			synchronisationTypeChoice.put(synchronisationType.name, synchronisationType);
+		}
+		addPropertyDeclaration(new PropertyDeclaration(this, "Synchronisation type", "getSynchronisationType", "setSynchronisationType",
+				ControlRegister.SynchronisationType.class, synchronisationTypeChoice));
 	}
 
 	public ControlRegister getReferencedControlRegister() {
@@ -100,8 +106,6 @@ public class VisualControlRegister extends VisualComponent {
 		Shape trueTokenShape = new Ellipse2D.Double( -tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
 		Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
 		Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
-		Shape leftInvertedShape = new Ellipse2D.Double(-w2 - strokeWidth4 - dd, -2*dd, 4*dd, 4*dd);
-		Shape rightInvertedShape = new Ellipse2D.Double(w2 - strokeWidth2 - dd, -2*dd, 4*dd, 4*dd);
 
 		boolean trueMarked = isTrueMarked();
 		boolean trueExcited = false;
@@ -157,19 +161,6 @@ public class VisualControlRegister extends VisualComponent {
 
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
-		if (isInverted()) {
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-			g.fill(leftInvertedShape);
-			g.fill(rightInvertedShape);
-			if (trueExcited || falseExcited) {
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			} else {
-				g.setColor(defaultColor);
-			}
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(leftInvertedShape);
-			g.draw(rightInvertedShape);
-		}
 
 		if (trueMarked) {
 			g.setStroke(new BasicStroke(strokeWidth2));
@@ -185,7 +176,20 @@ public class VisualControlRegister extends VisualComponent {
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+		double w2 = size/2;
+		double h2 = size/2;
+		double dx = size / 5 - strokeWidth / 2;
+
+		Path2D shape = new Path2D.Double();
+		shape.moveTo(-w2,  0);
+		shape.lineTo(-w2 + dx, -h2);
+		shape.lineTo(+w2 - dx, -h2);
+		shape.lineTo(+w2,   0);
+		shape.lineTo(+w2 - dx, +h2);
+		shape.lineTo(-w2 + dx, +h2);
+		shape.closePath();
+
+		return shape.contains(pointInLocalSpace);
 	}
 
 	public ControlRegister.Marking getMarking() {
@@ -204,12 +208,12 @@ public class VisualControlRegister extends VisualComponent {
 		return getReferencedControlRegister().isTrusMarked();
 	}
 
-	public boolean isInverted() {
-		return getReferencedControlRegister().isInverted();
+	public ControlRegister.SynchronisationType getSynchronisationType() {
+		return getReferencedControlRegister().getSynchronisationType();
 	}
 
-	public void setInverted(boolean value) {
-		getReferencedControlRegister().setInverted(value);
+	public void setSynchronisationType(ControlRegister.SynchronisationType value) {
+		getReferencedControlRegister().setSynchronisationType(value);
 	}
 
 }

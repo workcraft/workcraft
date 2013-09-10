@@ -53,7 +53,7 @@ public class VisualComment extends VisualComponent implements Container {
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 1.0);
+		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 0.0);
 	}
 
 	@Override

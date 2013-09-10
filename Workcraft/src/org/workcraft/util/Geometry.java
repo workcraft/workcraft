@@ -160,12 +160,9 @@ public class Geometry {
 	}
 
 
-	public static double getBorderPointParameter (Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd)
-	{
+	public static double getBorderPointParameter (Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
 		Point2D point = new Point2D.Double();
-
-		while(Math.abs(tEnd-tStart) > 1e-6)
-		{
+		while(Math.abs(tEnd-tStart) > 1e-6) {
 			double t = (tStart + tEnd)*0.5;
 			point = curve.getPointOnCurve(t);
 
@@ -174,7 +171,6 @@ public class Geometry {
 			else
 				tEnd = t;
 		}
-
 		return tStart;
 	}
 
@@ -182,29 +178,23 @@ public class Geometry {
 		PartialCurveInfo info = new PartialCurveInfo();
 		info.tStart = getBorderPointParameter(connectionInfo.getFirstShape(), curve, 0, 1);
 		info.tEnd = getBorderPointParameter(connectionInfo.getSecondShape(), curve, 1, endCutoff);
-
-		info.arrowHeadPosition = curve.getPointOnCurve(info.tEnd);
+		info.headPosition = curve.getPointOnCurve(info.tEnd);
 
 		double dt = info.tEnd;
 		double t = 0.0;
+		double arrowLengthSq = connectionInfo.getArrowLength() * connectionInfo.getArrowLength();
 
 		Point2D pt = new Point2D.Double();
-
-		double arrowLengthSq = connectionInfo.getArrowLength()*connectionInfo.getArrowLength();
-
-		while(dt > 1e-6)
-		{
+		while(dt > 1e-6) {
 			dt /= 2.0;
 			t += dt;
 			pt = curve.getPointOnCurve(t);
-
-			if (info.arrowHeadPosition.distanceSq(pt) < arrowLengthSq)
-				t-=dt;
+			if (info.headPosition.distanceSq(pt) < arrowLengthSq) {
+				t -= dt;
+			}
 		}
-
 		info.tEnd = t;
-		info.arrowOrientation = Math.atan2(info.arrowHeadPosition.getY() - pt.getY() , info.arrowHeadPosition.getX() - pt.getX());
-
+		info.headOrientation = Math.atan2(info.headPosition.getY() - pt.getY() , info.headPosition.getX() - pt.getX());
 		return info;
 	}
 

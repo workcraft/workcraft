@@ -92,18 +92,18 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
 		g.setColor(color);
-//		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
-
 		g.draw(visibleCurve);
 
-		if(connectionInfo.hasArrow())
-			DrawHelper
-			.drawArrowHead(g, color,
-						curveInfo.arrowHeadPosition,
-						curveInfo.arrowOrientation, connectionInfo
-								.getArrowLength(), connectionInfo
-								.getArrowWidth());
+		if(connectionInfo.hasArrow()) {
+			DrawHelper.drawArrowHead(g, curveInfo.headPosition,	curveInfo.headOrientation,
+					connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
+		}
+
+		if (connectionInfo.hasBubble()) {
+			DrawHelper.drawBubbleHead(g, curveInfo.headPosition, curveInfo.headOrientation,
+					connectionInfo.getBubbleSize(),	color, connectionInfo.getStroke());
+		}
 	}
 
 	public Rectangle2D getBoundingBox() {
@@ -181,7 +181,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	@Override
 	public Point2D getNearestPointOnCurve(Point2D pt) {
 		// FIXME: should be done using some proper algorithm
-
 		Point2D nearest = new Point2D.Double(curve.getX1(), curve.getY1());
 		double nearestDist = Double.MAX_VALUE;
 

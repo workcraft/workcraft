@@ -56,8 +56,7 @@ class DefaultNodeDeserialiser {
 		if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
 			return;
 
-		try
-		{
+		try	{
 			List<Element> propertyElements = XmlUtil.getChildElements("property", currentLevelElement);
 			HashMap<String, Element> nameMap = new HashMap<String, Element>();
 
@@ -202,9 +201,9 @@ class DefaultNodeDeserialiser {
 
 	void doInitialisation (Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
-
-		if (currentLevelElement != null)
+		if (currentLevelElement != null) {
 			autoDeserialiseProperties(currentLevelElement, instance, currentLevel, externalReferenceResolver);
+		}
 
 		try {
 			XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
@@ -217,8 +216,9 @@ class DefaultNodeDeserialiser {
 			throw new DeserialisationException(e);
 		}
 
-		if (currentLevel.getSuperclass() != Object.class)
-			doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
+		if (currentLevel.getSuperclass() != Object.class) {
+				doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
+		}
 	}
 
 	void doFinalisation(Element element, Object instance,
@@ -226,13 +226,8 @@ class DefaultNodeDeserialiser {
 			ReferenceResolver externalReferenceResolver,
 			Class<?> currentLevel)
 	throws DeserialisationException {
-
-		//System.out.println ("Finalising " + instance);
-
 		Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
-
-		if (currentLevelElement != null)
-		{
+		if (currentLevelElement != null) {
 			try {
 				XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 				if (deserialiser instanceof CustomXMLDeserialiser) {
@@ -245,8 +240,9 @@ class DefaultNodeDeserialiser {
 				throw new DeserialisationException(e);
 			}
 
-			if (currentLevel.getSuperclass() != Object.class)
+			if (currentLevel.getSuperclass() != Object.class) {
 				doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, currentLevel.getSuperclass());
+			}
 		}
 	}
 

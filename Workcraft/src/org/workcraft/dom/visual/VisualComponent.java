@@ -98,11 +98,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		setLabelColor(CommonVisualSettings.getForegroundColor());
 		setLabelPositioning(CommonVisualSettings.getTextPositioning());
 	}
-
+/* ???
 	public VisualComponent() {
 		addPropertyDeclarations();
 	}
-
+*/
 	public String getLabel() {
 		return label;
 	}

@@ -1,23 +1,23 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft.dom.visual.connections;
 
@@ -49,26 +49,21 @@ import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.ObservableHierarchyImpl;
+import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class VisualConnection extends VisualNode implements
-		Node, Drawable, Connection,
-		DependentNode, VisualConnectionProperties, ObservableHierarchy {
+public class VisualConnection extends VisualNode implements Node, Drawable, DependentNode,
+		Connection, VisualConnectionProperties, ObservableHierarchy {
 
-	public enum ConnectionType
-	{
-		POLYLINE,
-		BEZIER
+	public enum ConnectionType {
+		POLYLINE, BEZIER
 	};
 
-	public enum ScaleMode
-	{
-		NONE,
-		LOCK_RELATIVELY,
-		SCALE,
-		STRETCH,
-		ADAPTIVE
+	public enum ScaleMode {
+		NONE, LOCK_RELATIVELY, SCALE, STRETCH, ADAPTIVE
 	}
 
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
@@ -85,34 +80,57 @@ public class VisualConnection extends VisualNode implements
 	private static double defaultLineWidth = 0.02;
 	private static double defaultArrowWidth = 0.15;
 	private static double defaultArrowLength = 0.4;
+	private static double defaultBubbleSize = 0.15;
 	public static double HIT_THRESHOLD = 0.2;
 	private static Color defaultColor = Color.BLACK;
 
 	private Color color = defaultColor;
 	private double lineWidth = defaultLineWidth;
+
+	private boolean hasArrow = true;
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
+
+	private boolean hasBubble = false;
+	private double bubbleSize = defaultBubbleSize;
 
 	private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
+	public VisualConnection() {
+	}
+
+	public VisualConnection(MathConnection refConnection,
+			VisualComponent first, VisualComponent second) {
+		this.refConnection = refConnection;
+		this.first = first;
+		this.second = second;
+		this.graphic = new Polyline(this);
+
+		initialise();
+	}
+
 	protected void initialise() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Line width", "getLineWidth", "setLineWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width", "getArrowWidth", "setArrowWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Line width",
+				"getLineWidth", "setLineWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width",
+				"getArrowWidth", "setArrowWidth", double.class));
 
 		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
 		arrowLengths.put("short", 0.2);
 		arrowLengths.put("medium", 0.4);
 		arrowLengths.put("long", 0.8);
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow length",
+				"getArrowLength", "setArrowLength", double.class, arrowLengths));
 
 		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
 
 		hm.put("Polyline", ConnectionType.POLYLINE);
 		hm.put("Bezier", ConnectionType.BEZIER);
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Connection type", "getConnectionType", "setConnectionType", ConnectionType.class, hm));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Connection type",
+				"getConnectionType", "setConnectionType", ConnectionType.class, hm));
 
 		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
 
@@ -122,24 +140,30 @@ public class VisualConnection extends VisualNode implements
 		hm2.put("Stretch", ScaleMode.STRETCH);
 		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Scale mode", "getScaleMode", "setScaleMode", ScaleMode.class, hm2));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Scale mode",
+				"getScaleMode", "setScaleMode", ScaleMode.class, hm2));
 
 		componentsTransformObserver = new ComponentsTransformObserver(this);
 
 		children.add(componentsTransformObserver);
 		children.add(graphic);
+
+		if (refConnection instanceof ObservableState)
+			((ObservableState) refConnection).addObserver(new StateObserver() {
+				public void notify(StateEvent e) {
+					observableStateImpl.sendNotification(e);
+				}
+			});
 	}
 
-	public VisualConnection() {
-
-	}
-
-	public void setVisualConnectionDependencies(VisualComponent first, VisualComponent second, ConnectionGraphic graphic, MathConnection refConnection) {
-		if(first == null)
+	public void setVisualConnectionDependencies(VisualComponent first,
+			VisualComponent second, ConnectionGraphic graphic,
+			MathConnection refConnection) {
+		if (first == null)
 			throw new NullPointerException("first");
-		if(second == null)
+		if (second == null)
 			throw new NullPointerException("second");
-		if(graphic == null)
+		if (graphic == null)
 			throw new NullPointerException("graphic");
 
 		this.first = first;
@@ -155,15 +179,6 @@ public class VisualConnection extends VisualNode implements
 		initialise();
 	}
 
-	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
-		this.refConnection = refConnection;
-		this.first = first;
-		this.second = second;
-		this.graphic = new Polyline(this);
-
-		initialise();
-	}
-
 	@NoAutoSerialisation
 	public ConnectionType getConnectionType() {
 		return connectionType;
@@ -171,29 +186,31 @@ public class VisualConnection extends VisualNode implements
 
 	@NoAutoSerialisation
 	public void setConnectionType(ConnectionType t) {
-		if (connectionType!=t) {
-			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, graphic));
+		if (connectionType != t) {
+			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(
+					this, graphic));
 			children.remove(graphic);
-			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, graphic));
+			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(
+					this, graphic));
 
-			if (t==ConnectionType.POLYLINE) {
-				Polyline p  = new Polyline(this);
+			if (t == ConnectionType.POLYLINE) {
+				Polyline p = new Polyline(this);
 				this.graphic = p;
 
 				VisualComponent v = this.getFirst();
 				if (v == this.getSecond()) {
 					ControlPoint cp1 = new ControlPoint();
-					cp1.setPosition(new Point2D.Double(v.getX()-1.0, v.getY()+1.5));
+					cp1.setPosition(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5));
 					p.add(cp1);
 					cp1.setHidden(true);
 					ControlPoint cp2 = new ControlPoint();
-					cp2.setPosition(new Point2D.Double(v.getX()+1.0, v.getY()+1.5));
+					cp2.setPosition(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5));
 					p.add(cp2);
 					cp2.setHidden(true);
 				}
 			}
 
-			if (t==ConnectionType.BEZIER) {
+			if (t == ConnectionType.BEZIER) {
 				Bezier b = new Bezier(this);
 				b.setDefaultControlPoints();
 				graphic = b;
@@ -201,15 +218,15 @@ public class VisualConnection extends VisualNode implements
 				VisualComponent v = this.getFirst();
 				if (v == this.getSecond()) {
 					BezierControlPoint[] cp = b.getControlPoints();
-					cp[0].setPosition(new Point2D.Double(v.getX()-2.0, v.getY()+2.0));
+					cp[0].setPosition(new Point2D.Double(v.getX() - 2.0, v.getY() + 2.0));
 					cp[0].setHidden(true);
-					cp[1].setPosition(new Point2D.Double(v.getX()+2.0, v.getY()+2.0));
+					cp[1].setPosition(new Point2D.Double(v.getX() + 2.0, v.getY() + 2.0));
 					cp[1].setHidden(true);
 				}
 			}
 
 			children.add(graphic);
-			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, graphic));
+			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,	graphic));
 
 			graphic.invalidate();
 			connectionType = t;
@@ -217,9 +234,6 @@ public class VisualConnection extends VisualNode implements
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getColor()
-	 */
 	public Color getColor() {
 		return color;
 	}
@@ -228,9 +242,11 @@ public class VisualConnection extends VisualNode implements
 		this.color = color;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getLineWidth()
-	 */
+	@Override
+	public Color getDrawColor() {
+		return getColor();
+	}
+
 	public double getLineWidth() {
 		return lineWidth;
 	}
@@ -245,45 +261,73 @@ public class VisualConnection extends VisualNode implements
 		invalidate();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getArrowWidth()
-	 */
+	@Override
+	public Stroke getStroke() {
+		return new BasicStroke((float) getLineWidth());
+	}
+
+	@Override
+	public boolean hasArrow() {
+		return hasArrow;
+	}
+
+	public void setArrow(boolean value) {
+		hasArrow = value;
+	}
+
+	@Override
 	public double getArrowWidth() {
 		return arrowWidth;
 	}
 
-	public void setArrowWidth(double arrowWidth) {
-		if (arrowWidth > 1)
-			arrowWidth = 1;
-		if (arrowWidth < 0.1)
-			arrowWidth = 0.1;
-		this.arrowWidth = arrowWidth;
+	public void setArrowWidth(double value) {
+		if (value > 1)	value = 1;
+		if (value < 0.1) value = 0.1;
+		this.arrowWidth = value;
 
 		invalidate();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getArrowLength()
-	 */
-	public double getArrowLength()
-	{
-		if (!hasArrow()) return 0.0;
+	@Override
+	public double getArrowLength() {
+		if (!hasArrow())
+			return 0.0;
 		return arrowLength;
 	}
 
-	public void setArrowLength(double arrowLength) {
-		if (arrowLength > 1)
-			arrowLength = 1;
-		if (arrowLength < 0.1)
-			arrowLength = 0.1;
-		this.arrowLength = arrowLength;
-
+	public void setArrowLength(double value) {
+		if (value > 1) value = 1;
+		if (value < 0.1) value = 0.1;
+		this.arrowLength = value;
 		invalidate();
 	}
 
 	private void invalidate() {
-		if (graphic != null)
+		if (graphic != null) {
 			graphic.invalidate();
+		}
+	}
+
+	@Override
+	public boolean hasBubble() {
+		return hasBubble;
+	}
+
+	public void setBubble(boolean value) {
+		hasBubble = value;
+	}
+
+	@Override
+	public double getBubbleSize() {
+		if (!hasArrow()) return 0.0;
+		return bubbleSize;
+	}
+
+	public void setBubbleSize(double value) {
+		if (value > 1)value = 1;
+		if (value < 0.1) value = 0.1;
+		this.bubbleSize = value;
+		invalidate();
 	}
 
 	public Point2D getPointOnConnection(double t) {
@@ -297,7 +341,6 @@ public class VisualConnection extends VisualNode implements
 	@Override
 	public void setParent(Node parent) {
 		super.setParent(parent);
-
 		invalidate();
 	};
 
@@ -342,11 +385,6 @@ public class VisualConnection extends VisualNode implements
 		return children;
 	}
 
-	@Override
-	public Color getDrawColor() {
-		return color;
-	}
-
 	public void addObserver(HierarchyObserver obs) {
 		observableHierarchyImpl.addObserver(obs);
 	}
@@ -354,12 +392,6 @@ public class VisualConnection extends VisualNode implements
 	public void removeObserver(HierarchyObserver obs) {
 		observableHierarchyImpl.removeObserver(obs);
 	}
-
-	@Override
-	public boolean hasArrow() {
-		return true;
-	}
-
 	@Override
 	public Point2D getFirstCenter() {
 		return componentsTransformObserver.getFirstCenter();
@@ -380,23 +412,18 @@ public class VisualConnection extends VisualNode implements
 		return componentsTransformObserver.getSecondShape();
 	}
 
+	@Override
 	public ScaleMode getScaleMode() {
 		return scaleMode;
+	}
+
+	@Override
+	public Point2D getCenter() {
+		return graphic.getCenter();
 	}
 
 	public void setScaleMode(ScaleMode scaleMode) {
 		this.scaleMode = scaleMode;
 	}
 
-	@Override
-	public Point2D getCenter()
-	{
-		return graphic.getCenter();
-	}
-
-	@Override
-	public Stroke getStroke()
-	{
-		return new BasicStroke((float)getLineWidth());
-	}
 }

@@ -88,16 +88,22 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-		Color connColor = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
-		g.setColor(connColor);
+		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+		g.setColor(color);
 
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 
-		if (connectionInfo.hasArrow())
-			DrawHelper.drawArrowHead(g, connColor, curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
-				connectionInfo.getArrowLength(), connectionInfo.getArrowWidth());
+		if(connectionInfo.hasArrow()) {
+			DrawHelper.drawArrowHead(g, curveInfo.headPosition,	curveInfo.headOrientation,
+					connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
+		}
+
+		if (connectionInfo.hasBubble()) {
+			DrawHelper.drawBubbleHead(g, curveInfo.headPosition, curveInfo.headOrientation,
+					connectionInfo.getBubbleSize(),	color, connectionInfo.getStroke());
+		}
 	}
 
 	public Rectangle2D getBoundingBox() {
@@ -115,9 +121,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 			else
 				boundingBox.add(getSegmentBoundsWithThreshold(seg));
 		}
-
 		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
-
 		valid = true;
 	}
 
@@ -384,8 +388,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@Override
-	public Point2D getDerivativeAt(double t)
-	{
+	public Point2D getDerivativeAt(double t) {
 		if (t < 0) t = 0;
 		if (t > 1) t = 1;
 
@@ -396,8 +399,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@Override
-	public Point2D getSecondDerivativeAt(double t)
-	{
+	public Point2D getSecondDerivativeAt(double t) 	{
 		Point2D left = getDerivativeAt(t - 0.05);
 		Point2D right = getDerivativeAt(t + 0.05);
 
@@ -405,8 +407,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@Override
-	public Point2D getCenter()
-	{
+	public Point2D getCenter() {
 		return getPointOnCurve(0.5);
 	}
 
