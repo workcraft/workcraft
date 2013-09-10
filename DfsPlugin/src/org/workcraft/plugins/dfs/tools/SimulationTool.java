@@ -332,7 +332,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isTrueExcited() {
-							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.tMR, rstg.tMF)) != null);
+							return (getExcitedTransitionOfCollection(rstg.getTrueTransitions()) != null);
 						}
 
 						@Override
@@ -342,7 +342,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isFalseExcited() {
-							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.fMR, rstg.fMF)) != null);
+							return (getExcitedTransitionOfCollection(rstg.getFalseTransitions()) != null);
 						}
 					};
 				}

@@ -29,39 +29,22 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_U)
 @DisplayName ("Push register")
 @SVGIcon("images/icons/svg/dfs-push_register.svg")
-public class VisualPushRegister extends VisualComponent {
+public class VisualPushRegister extends VisualBinaryRegister {
 
 	public VisualPushRegister(PushRegister register) {
 		super(register);
-		addPropertyDeclarations();
-	}
-
-	public PushRegister getReferencedPushRegister() {
-		return (PushRegister)getReferencedComponent();
-	}
-
-	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> markingChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.Marking marking : ControlRegister.Marking.values()) {
-			markingChoice.put(marking.name, marking);
-		}
-		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
-				ControlRegister.Marking.class, markingChoice));
 	}
 
 	@Override
@@ -145,20 +128,8 @@ public class VisualPushRegister extends VisualComponent {
 		drawLabelInLocalSpace(r);
 	}
 
-	public PushRegister.Marking getMarking() {
-		return getReferencedPushRegister().getMarking();
-	}
-
-	public void setMarking(PushRegister.Marking value) {
-		getReferencedPushRegister().setMarking(value);
-	}
-
-	public boolean isFalseMarked() {
-		return getReferencedPushRegister().isFalseMarked();
-	}
-
-	public boolean isTrueMarked() {
-		return getReferencedPushRegister().isTrusMarked();
+	public PushRegister getReferencedPushRegister() {
+		return (PushRegister)getReferencedComponent();
 	}
 
 }

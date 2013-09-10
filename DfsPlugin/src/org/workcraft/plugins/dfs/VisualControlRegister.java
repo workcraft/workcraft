@@ -15,16 +15,16 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Control register")
 @SVGIcon("images/icons/svg/dfs-control_register.svg")
-public class VisualControlRegister extends VisualComponent {
+public class VisualControlRegister extends VisualBinaryRegister {
 
 	public VisualControlRegister(ControlRegister register) {
 		super(register);
@@ -32,13 +32,6 @@ public class VisualControlRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> markingChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.Marking marking : ControlRegister.Marking.values()) {
-			markingChoice.put(marking.name, marking);
-		}
-		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
-				ControlRegister.Marking.class, markingChoice));
-
 		LinkedHashMap<String, Object> synchronisationTypeChoice = new LinkedHashMap<String, Object>();
 		for (ControlRegister.SynchronisationType synchronisationType : ControlRegister.SynchronisationType.values()) {
 			synchronisationTypeChoice.put(synchronisationType.name, synchronisationType);
@@ -90,18 +83,18 @@ public class VisualControlRegister extends VisualComponent {
 		falseInnerShape.lineTo(-w2 + dx, h2);
 		falseInnerShape.lineTo(-w2 + dx, dy);
 
-		Path2D trueShape = new Path2D.Double();
-		trueShape.moveTo(-dd, (-kd-2) * dd);
-		trueShape.lineTo(+dd, (-kd-2) * dd);
-		trueShape.moveTo(  0, (-kd-2) * dd);
-		trueShape.lineTo(  0, (-kd+2) * dd);
+		Path2D trueMarkerShape = new Path2D.Double();
+		trueMarkerShape.moveTo(-dd, (-kd-2) * dd);
+		trueMarkerShape.lineTo(+dd, (-kd-2) * dd);
+		trueMarkerShape.moveTo(  0, (-kd-2) * dd);
+		trueMarkerShape.lineTo(  0, (-kd+2) * dd);
 
-		Path2D falseShape = new Path2D.Double();
-		falseShape.moveTo(+dd, (+kd-2) * dd);
-		falseShape.lineTo(-dd, (+kd-2) * dd);
-		falseShape.lineTo(-dd, (+kd+2) * dd);
-		falseShape.moveTo(+dd, (+kd+0) * dd);
-		falseShape.lineTo(-dd, (+kd+0) * dd);
+		Path2D falseMarkerShape = new Path2D.Double();
+		falseMarkerShape.moveTo(+dd, (+kd-2) * dd);
+		falseMarkerShape.lineTo(-dd, (+kd-2) * dd);
+		falseMarkerShape.lineTo(-dd, (+kd+2) * dd);
+		falseMarkerShape.moveTo(+dd, (+kd+0) * dd);
+		falseMarkerShape.lineTo(-dd, (+kd+0) * dd);
 
 		Shape trueTokenShape = new Ellipse2D.Double( -tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
 		Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
@@ -123,18 +116,26 @@ public class VisualControlRegister extends VisualComponent {
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
 
+		g.setColor(Coloriser.colorise(DfsSettings.getEnabledRegisterColor(), d.getBackground()));
+		if (getSynchronisationType() == SynchronisationType.AND) {
+			g.fill(falseInnerShape);
+		}
+		if (getSynchronisationType() == SynchronisationType.OR) {
+			g.fill(trueInnerShape);
+		}
+
 		g.setColor(defaultColor);
 		if (!trueExcited) {
 			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(trueInnerShape);
 			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(trueShape);
+			g.draw(trueMarkerShape);
 		}
 		if (!falseExcited) {
 			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(falseInnerShape);
 			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(falseShape);
+			g.draw(falseMarkerShape);
 		}
 
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
@@ -142,13 +143,13 @@ public class VisualControlRegister extends VisualComponent {
 			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(trueInnerShape);
 			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(trueShape);
+			g.draw(trueMarkerShape);
 		}
 		if (falseExcited) {
 			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(falseInnerShape);
 			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(falseShape);
+			g.draw(falseMarkerShape);
 		}
 
 		if (trueExcited || falseExcited) {
@@ -190,22 +191,6 @@ public class VisualControlRegister extends VisualComponent {
 		shape.closePath();
 
 		return shape.contains(pointInLocalSpace);
-	}
-
-	public ControlRegister.Marking getMarking() {
-		return getReferencedControlRegister().getMarking();
-	}
-
-	public void setMarking(ControlRegister.Marking value) {
-		getReferencedControlRegister().setMarking(value);
-	}
-
-	public boolean isFalseMarked() {
-		return getReferencedControlRegister().isFalseMarked();
-	}
-
-	public boolean isTrueMarked() {
-		return getReferencedControlRegister().isTrusMarked();
 	}
 
 	public ControlRegister.SynchronisationType getSynchronisationType() {

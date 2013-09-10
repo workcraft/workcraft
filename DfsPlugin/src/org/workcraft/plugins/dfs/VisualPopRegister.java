@@ -35,7 +35,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -44,15 +43,11 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 @Hotkey(KeyEvent.VK_O)
 @DisplayName ("Pop register")
 @SVGIcon("images/icons/svg/dfs-pop_register.svg")
-public class VisualPopRegister extends VisualComponent {
+public class VisualPopRegister extends VisualBinaryRegister {
 
 	public VisualPopRegister(PopRegister register) {
 		super(register);
 		addPropertyDeclarations();
-	}
-
-	public PopRegister getReferencedPopRegister() {
-		return (PopRegister)getReferencedComponent();
 	}
 
 	private void addPropertyDeclarations() {
@@ -142,20 +137,8 @@ public class VisualPopRegister extends VisualComponent {
 		drawLabelInLocalSpace(r);
 	}
 
-	public PopRegister.Marking getMarking() {
-		return getReferencedPopRegister().getMarking();
-	}
-
-	public void setMarking(PopRegister.Marking value) {
-		getReferencedPopRegister().setMarking(value);
-	}
-
-	public boolean isFalseMarked() {
-		return getReferencedPopRegister().isFalseMarked();
-	}
-
-	public boolean isTrueMarked() {
-		return getReferencedPopRegister().isTrusMarked();
+	public PopRegister getReferencedPopRegister() {
+		return (PopRegister)getReferencedComponent();
 	}
 
 }
