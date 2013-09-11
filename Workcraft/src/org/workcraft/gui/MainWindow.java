@@ -481,6 +481,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void disableWorkActions() {
+		MainWindowActions.MERGE_WORK_ACTION.setEnabled(false);
 		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(false);
 		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(false);
 		MainWindowActions.SAVE_WORK_ACTION.setEnabled(false);
@@ -490,6 +491,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void enableWorkActions() {
+		MainWindowActions.MERGE_WORK_ACTION.setEnabled(true);
 		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(true);
 		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(true);
 		MainWindowActions.SAVE_WORK_ACTION.setEnabled(true);
@@ -737,15 +739,13 @@ public class MainWindow extends JFrame {
 		createWork(Path.<String> empty());
 	}
 
-	public void createWork(Path<String> path)
-			throws OperationCancelledException {
+	public void createWork(Path<String> path)	throws OperationCancelledException {
 		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
 			ModelDescriptor info = dialog.getSelectedModel();
 			try {
 				MathModel mathModel = info.createMathModel();
-
 				String name = dialog.getModelTitle();
 
 				if (!dialog.getModelTitle().isEmpty())
@@ -753,23 +753,14 @@ public class MainWindow extends JFrame {
 
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
-
-					if (v == null)
-						throw new VisualModelInstantiationException(
-								"visual model is not defined for \""
-										+ info.getDisplayName() + "\".");
-
+					if (v == null) {
+						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");
+					}
 					VisualModel visualModel = v.create(mathModel);
-					WorkspaceEntry we = framework.getWorkspace().add(path,
-							name, new ModelEntry(info, visualModel), false);
-					if (dialog.openInEditorSelected())
+					WorkspaceEntry we = framework.getWorkspace().add(path, name, new ModelEntry(info, visualModel), false);
+					if (dialog.openInEditorSelected()) {
 						createEditorWindow(we);
-					// rootDockingPort.dock(new GraphEditorPane(visualModel),
-					// CENTER_REGION);
-					// addView(new GraphEditorPane(visualModel),
-					// mathModel.getTitle() + " - " +
-					// mathModel.getDisplayName(), DockingManager.NORTH_REGION,
-					// 0.8f);
+					}
 				} else {
 					framework.getWorkspace().add(path, name, new ModelEntry(info, mathModel), false);
 				}
@@ -779,16 +770,14 @@ public class MainWindow extends JFrame {
 					"Visual model could not be created: " + e.getMessage() + "\n\nPlease see the Problems window for details.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			}
-		} else
-			throw new OperationCancelledException(
-					"Create operation cancelled by user.");
+		} else {
+			throw new OperationCancelledException("Create operation cancelled by user.");
+		}
 	}
 
 	public void requestFocus(GraphEditorPanel sender) {
 		sender.requestFocusInWindow();
-
-		if (editorInFocus == sender)
-			return;
+		if (editorInFocus == sender) return;
 
 		editorInFocus = sender;
 
@@ -800,15 +789,13 @@ public class MainWindow extends JFrame {
 		mainMenu.repaint();
 		sender.updatePropertyView();
 
-		framework.deleteJavaScriptProperty("visualModel",
-				framework.getJavaScriptGlobalScope());
+		framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
 		framework.setJavaScriptProperty("visualModel", sender.getModel(),
 				framework.getJavaScriptGlobalScope(), true);
 
-		framework.deleteJavaScriptProperty("model",
-				framework.getJavaScriptGlobalScope());
-		framework.setJavaScriptProperty("model", sender.getModel()
-				.getMathModel(), framework.getJavaScriptGlobalScope(), true);
+		framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
+		framework.setJavaScriptProperty("model", sender.getModel().getMathModel(),
+				framework.getJavaScriptGlobalScope(), true);
 	}
 
 	public SimpleContainer getToolboxWindow() {
@@ -831,7 +818,6 @@ public class MainWindow extends JFrame {
 		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 		fc.setMultiSelectionEnabled(true);
 		fc.setDialogTitle("Open work file(s)");
-
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
 				openWork(f);
@@ -850,7 +836,44 @@ public class MainWindow extends JFrame {
 			}
 		} catch (DeserialisationException e) {
 			JOptionPane.showMessageDialog(this,
-				"A problem was encountered while trying to load \""	+ f.getPath() + "\".\nPlease see Problems window for details.",
+				"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
+				+ "Please see Problems window for details.",
+				"Load failed", JOptionPane.ERROR_MESSAGE);
+			printCause(e);
+		}
+	}
+
+	public void mergeWork() throws OperationCancelledException {
+		JFileChooser fc = new JFileChooser();
+		fc.setDialogType(JFileChooser.OPEN_DIALOG);
+		if (lastOpenPath != null) {
+			fc.setCurrentDirectory(new File(lastOpenPath));
+		}
+		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+		fc.setMultiSelectionEnabled(true);
+		fc.setDialogTitle("Merge work file(s)");
+
+		if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
+			for (File f : fc.getSelectedFiles()) {
+				mergeWork(f);
+			}
+			lastOpenPath = fc.getCurrentDirectory().getPath();
+		} else {
+			throw new OperationCancelledException("Merge operation cancelled by user.");
+		}
+	}
+
+	public void mergeWork(File f) {
+		try {
+			if (editorInFocus == null) {
+				openWork(f);
+			} else {
+				WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+				framework.getWorkspace().merge(we, f);
+			}
+		} catch (DeserialisationException e) {
+			JOptionPane.showMessageDialog(this,
+				"A problem was encountered while trying to merge \""	+ f.getPath() + "\".\nPlease see Problems window for details.",
 				"Load failed", JOptionPane.ERROR_MESSAGE);
 			printCause(e);
 		}

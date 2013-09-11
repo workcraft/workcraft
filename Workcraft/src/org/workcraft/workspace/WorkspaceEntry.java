@@ -21,9 +21,12 @@
 
 package org.workcraft.workspace;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.ModelModifiedEvent;
@@ -32,8 +35,7 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 
-public class WorkspaceEntry implements ObservableState
-{
+public class WorkspaceEntry implements ObservableState {
 	private ModelEntry modelEntry = null;
 	private boolean changed = true;
 	private boolean temporary = true;
@@ -67,8 +69,7 @@ public class WorkspaceEntry implements ObservableState
 		return changed;
 	}
 
-	public ModelEntry getModelEntry()
-	{
+	public ModelEntry getModelEntry() {
 		return modelEntry;
 	}
 
@@ -155,7 +156,6 @@ public class WorkspaceEntry implements ObservableState
 		return workspace.getFile(this);
 	}
 
-
 	ObservableStateImpl observableState = new ObservableStateImpl();
 
 	@Override
@@ -235,6 +235,22 @@ public class WorkspaceEntry implements ObservableState
 			}
 		}
 		updateUndoAndRedoState();
+	}
+
+	public void insert(ModelEntry me) {
+		try {
+			byte[] currentData = framework.save(getModelEntry());
+			byte[] insertData = framework.save(me);
+			InputStream is1 = new ByteArrayInputStream(currentData);
+			InputStream is2 = new ByteArrayInputStream(insertData);
+			ModelEntry result = framework.load(is1, is2);
+			saveMemento();
+			setModelEntry(result);
+			setChanged(true);
+		} catch (DeserialisationException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -26,7 +26,6 @@ public class WorkcraftOpen implements FileHandler {
 	}
 
 	public void execute(File f) {
-
 		try {
 			final Workspace workspace = framework.getWorkspace();
 			WorkspaceEntry we = workspace.open(f, false);

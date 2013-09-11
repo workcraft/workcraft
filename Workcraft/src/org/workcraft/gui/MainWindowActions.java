@@ -23,6 +23,14 @@ public class MainWindowActions {
 			return "Open work...";
 		};
 	};
+	public static final Action MERGE_WORK_ACTION = new Action() {
+		@Override public void run(Framework f) {
+			try { f.getMainWindow().mergeWork(); } catch (OperationCancelledException e) { }
+		}
+		@Override public String getText() {
+			return "Merge work...";
+		};
+	};
 	public static final Action SAVE_WORK_ACTION = new Action() {
 		@Override public void run(Framework f) {
 			try { f.getMainWindow().saveWork(); } catch (OperationCancelledException e) { }

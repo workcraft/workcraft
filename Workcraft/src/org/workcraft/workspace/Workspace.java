@@ -40,9 +40,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.interop.Importer;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.Import;
 import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
@@ -92,55 +90,49 @@ public class Workspace {
 		addMount(Path.<String>empty(), baseDir(), true);
 	}
 
-	public WorkspaceEntry open(File file, boolean temporary) throws DeserialisationException
-	{
-		if (file.exists()) {
-			Path<String> workspacePath = getWorkspacePath(file);
+	public WorkspaceEntry open(File file, boolean temporary) throws DeserialisationException {
+		// Option 1: file does not exist
+		if (!file.exists()) return null;
 
-			for(WorkspaceEntry we : openFiles.values())
-				if(we.getWorkspacePath().equals(workspacePath))
-					return we;
-
-			WorkspaceEntry we = new WorkspaceEntry(this);
-			we.setTemporary(temporary);
-			we.setChanged(false);
-			if (file.getName().endsWith(".work")) {
-				if (workspacePath == null)
-					workspacePath = tempMountExternalFile(file);
-
-				ModelEntry modelEntry = framework.load(file.getPath());
-				we.setModelEntry(modelEntry);
-			} else {
-				try {
-					Path<String> parent;
-					if(workspacePath == null)
-						parent = Path.empty();
-					else
-						parent = workspacePath.getParent();
-
-					final Importer importer = Import.chooseBestImporter(framework.getPluginManager(), file);
-					ModelEntry modelEntry = Import.importFromFile(importer, file);
-					we.setModelEntry(modelEntry);
-
-					workspacePath = newName(parent, FileUtils.getFileNameWithoutExtension(file));
-				} catch (IOException e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
-				} catch (DeserialisationException e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			openFiles.put(workspacePath, we);
-			fireModelLoaded(we);
-			return we;
+		// Option 2: file already loaded
+		Path<String> workspacePath = getWorkspacePath(file);
+		for(WorkspaceEntry we : openFiles.values()) {
+			if(we.getWorkspacePath().equals(workspacePath))
+				return we;
 		}
-		else
-			return null;
+
+		// Option 3: file needs loading (from *.work) or importing (other extensions)
+		WorkspaceEntry we = new WorkspaceEntry(this);
+		we.setTemporary(temporary);
+		we.setChanged(false);
+		if (file.getName().endsWith(".work")) {
+			we.setModelEntry(framework.loadFile(file));
+			if (workspacePath == null) {
+				workspacePath = tempMountExternalFile(file);
+			}
+		} else {
+			we.setModelEntry(framework.importFile(file));
+			Path<String> parent;
+			if(workspacePath == null) {
+				parent = Path.empty();
+			} else {
+				parent = workspacePath.getParent();
+			}
+			workspacePath = newName(parent, FileUtils.getFileNameWithoutExtension(file));
+		}
+		openFiles.put(workspacePath, we);
+		fireModelLoaded(we);
+		return we;
 	}
 
-	public File getFile(Path<String> wsPath)
-	{
+	public WorkspaceEntry merge(WorkspaceEntry we, File file) throws DeserialisationException {
+		if (we != null && file.exists() && file.getName().endsWith(".work")) {
+			we.insert(framework.loadFile(file));
+		}
+		return we;
+	}
+
+	public File getFile(Path<String> wsPath) {
 		List<String> names = Path.getPath(wsPath);
 		MountTree current = getHardMountsRoot();
 		for(String name : names)
@@ -148,7 +140,7 @@ public class Workspace {
 		return current.mountTo;
 	}
 
-	File getFile(WorkspaceEntry we) {
+	public File getFile(WorkspaceEntry we)	{
 		return getFile(we.getWorkspacePath());
 	}
 
@@ -300,13 +292,13 @@ public class Workspace {
 
 			List<Element> mounts = XmlUtil.getChildElements("mount", xmlroot);
 
-			for (Element mountElement : mounts)
-			{
+			for (Element mountElement : mounts) {
 				final String mountPoint = XmlUtil.readStringAttr(mountElement, "mountPoint");
 				final String filePath = XmlUtil.readStringAttr(mountElement, "filePath");
 				File file = new File(filePath);
-				if(!file.isAbsolute())
+				if(!file.isAbsolute()) {
 					file = new File(baseDir(), file.getPath());
+				}
 				addMount(Path.fromString(mountPoint), file, false);
 			}
 			addMount(Path.<String>empty(), baseDir(), true);
@@ -444,7 +436,7 @@ public class Workspace {
 		Map<Path<String>, File> allMounts = new HashMap<Path<String>, File>(mounts);
 		for(WorkspaceEntry we : openFiles.values())
 		{
-			final File file = getFile(we);
+			final File file = getFile(we.getWorkspacePath());
 			if(!file.exists())
 				allMounts.put(openFiles.getKey(we), file);
 		}

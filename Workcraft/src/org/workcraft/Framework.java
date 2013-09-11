@@ -62,11 +62,13 @@ import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.serialisation.XMLDualModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
-import org.workcraft.serialisation.ModelDeserialiser;
+import org.workcraft.serialisation.DualDeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.tasks.DefaultTaskManager;
@@ -77,6 +79,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.Import;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -509,85 +512,100 @@ public class Framework {
 		contextFactory.call(setargs);
 	}
 
-	public ModelEntry load(String path) throws DeserialisationException {
+	public ModelEntry loadFile(File file) throws DeserialisationException {
 		try {
-			FileInputStream fis = new FileInputStream(path);
+			FileInputStream fis = new FileInputStream(file);
 			return load(fis);
 		} catch (FileNotFoundException e) {
 			throw new DeserialisationException(e);
 		}
 	}
 
+	public ModelEntry importFile(File file) throws DeserialisationException  {
+		try {
+			final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
+			return Import.importFromFile(importer, file);
+		} catch (IOException e) {
+			throw new DeserialisationException(e);
+		}
+	}
+
 	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
 		ZipInputStream zis = new ZipInputStream(zippedData);
-
 		ZipEntry ze;
 
-		while ((ze = zis.getNextEntry()) != null)
-		{
-			if (ze.getName().equals(name))
+		while ((ze = zis.getNextEntry()) != null)	{
+			if (ze.getName().equals(name)) {
 				return zis;
-
+			}
 			zis.closeEntry();
 		}
-
 		zis.close();
-
 		return null;
+	}
+
+	private InputStream getMathData(byte[] bufferedInput, Document metaDoc) throws IOException {
+		Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
+		InputStream mathData = null;
+		if (mathElement != null) {
+			InputStream is = new ByteArrayInputStream(bufferedInput);
+			mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), is);
+		}
+		return mathData;
+	}
+
+	private InputStream getVisualData(byte[] bufferedInput, Document metaDoc)	throws IOException {
+		Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
+		InputStream visualData = null;
+		if (visualElement  != null) {
+			InputStream is = new ByteArrayInputStream(bufferedInput);
+			visualData = getUncompressedEntry(visualElement.getAttribute("entry-name"), is);
+		}
+		return visualData;
+	}
+
+	private ModelDescriptor loadMetaDescriptor(Document metaDoc)
+			throws InstantiationException, IllegalAccessException,	ClassNotFoundException {
+		Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
+		String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
+		ModelDescriptor descriptor = (ModelDescriptor)Class.forName(descriptorClass).newInstance();
+		return descriptor;
+	}
+
+	private Document loadMetaDoc(byte[] bufferedInput)
+			throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
+		InputStream metaData = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
+		if (metaData == null) {
+			throw new DeserialisationException("meta entry is missing in the ZIP file");
+		}
+		Document metaDoc = XmlUtil.loadDocument(metaData);
+		metaData.close();
+		return metaDoc;
 	}
 
 	public ModelEntry load(InputStream is) throws DeserialisationException   {
 		try {
-			byte[] bufferedInput = DataAccumulator.loadStream(is);
-
-			InputStream metadata = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
-
-			if (metadata == null)
-				throw new DeserialisationException("meta entry is missing in the ZIP file");
-
-			Document metaDoc = XmlUtil.loadDocument(metadata);
-
-			metadata.close();
-
-			Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
-
-
-
-			String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
-
-			ModelDescriptor descriptor = (ModelDescriptor) Class.forName(descriptorClass).newInstance();
+			// load meta data
+			byte[] bi = DataAccumulator.loadStream(is);
+			Document metaDoc = loadMetaDoc(bi);
+			ModelDescriptor descriptor = loadMetaDescriptor(metaDoc);
 
 			// load math model
-
-			Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
-			//UUID mathFormatUUID = UUID.fromString(mathElement.getAttribute("format-uuid"));
-
-			InputStream mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
-			// TODO: get proper deserialiser for format
-
-			ModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager()); //pluginManager.getSingleton(XMLDeserialiser.class);
-
-			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null);
-
+			InputStream mathData = getMathData(bi, metaDoc);
+			XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
+			DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
 			mathData.close();
 
-			// load visual model if present
-
-			Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
-
-			if (visualElement == null)
+			// load visual model (if present)
+			InputStream visualData = getVisualData(bi, metaDoc);
+			if (visualData == null) {
 				return new ModelEntry(descriptor, mathResult.model);
+			}
+			XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());
+			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData,
+					mathResult.referenceResolver, mathResult.model);
 
-			//UUID visualFormatUUID = UUID.fromString(visualElement.getAttribute("format-uuid"));
-			InputStream visualData = getUncompressedEntry (visualElement.getAttribute("entry-name"), new ByteArrayInputStream(bufferedInput));
-
-			//TODO:get proper deserialiser
-			XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());//pluginManager.getSingleton(XMLDeserialiser.class);
-
-			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathResult.referenceResolver);
-			//visualResult.model.getVisualModel().setMathModel(mathResult.model.getMathModel());
 			return new ModelEntry(descriptor, visualResult.model);
-
 		} catch (IOException e) {
 			throw new DeserialisationException(e);
 		} catch (ParserConfigurationException e) {
@@ -611,6 +629,67 @@ public class Framework {
 		}
 	}
 
+	public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
+		try {
+			// load meta data
+			byte[] bi1 = DataAccumulator.loadStream(is1);
+			Document metaDoc1 = loadMetaDoc(bi1);
+			ModelDescriptor descriptor1 = loadMetaDescriptor(metaDoc1);
+
+			byte[] bi2 = DataAccumulator.loadStream(is2);
+			Document metaDoc2 = loadMetaDoc(bi2);
+			ModelDescriptor descriptor2 = loadMetaDescriptor(metaDoc2);
+
+			// load math models
+			InputStream mathData1 = getMathData(bi1, metaDoc1);
+			InputStream mathData2 = getMathData(bi2, metaDoc2);
+			if (!descriptor1.getDisplayName().equals(descriptor2.getDisplayName()) ) {
+				// math models cannot be merged
+				throw new DeserialisationException("incompatible models cannot be merged");
+			}
+			XMLDualModelDeserialiser mathDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
+			DualDeserialisationResult mathResult = mathDeserialiser.deserialise(mathData1, mathData2, null, null, null);
+			mathData1.close();
+			mathData2.close();
+
+			// load visual models (if present)
+			InputStream visualData1 = getVisualData(bi1, metaDoc1);
+			InputStream visualData2 = getVisualData(bi2, metaDoc2);
+			if (visualData1 == null && visualData2 == null) {
+				return new ModelEntry(descriptor1, mathResult.model);
+			}
+			if (visualData1 == null || visualData2 == null) {
+				// visual models cannot be merged
+				throw new DeserialisationException("incompatible models cannot be merged");
+			}
+			XMLDualModelDeserialiser visualDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
+			DualDeserialisationResult visualResult = visualDeserialiser.deserialise(visualData1, visualData2,
+					mathResult.referenceResolver1, mathResult.referenceResolver2, mathResult.model);
+
+			return new ModelEntry(descriptor1, visualResult.model);
+		} catch (IOException e) {
+			throw new DeserialisationException(e);
+		} catch (ParserConfigurationException e) {
+			throw new DeserialisationException(e);
+		} catch (SAXException e) {
+			throw new DeserialisationException(e);
+		} catch (InstantiationException e) {
+			throw new DeserialisationException(e);
+		} catch (IllegalAccessException e) {
+			throw new DeserialisationException(e);
+		} catch (ClassNotFoundException e) {
+			throw new DeserialisationException(e);
+		}
+	}
+
+	public ModelEntry load(byte[] data1, byte[] data2) {
+		try {
+			return load(new ByteArrayInputStream(data1), new ByteArrayInputStream(data2));
+		} catch (DeserialisationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);
 		try {
@@ -628,15 +707,11 @@ public class Framework {
 		Model model = modelEntry.getModel();
 		VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
 		Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
-
 		ZipOutputStream zos = new ZipOutputStream(out);
-
 		// TODO: get appropriate serialiser from config
 		ModelSerialiser mathSerialiser = null;
-
 		try {
 			mathSerialiser = new XMLModelSerialiser(getPluginManager());
-
 
 			String mathEntryName = "model" + mathSerialiser.getExtension();
 			ZipEntry ze = new ZipEntry(mathEntryName);
@@ -646,7 +721,6 @@ public class Framework {
 
 			String visualEntryName = null;
 			ModelSerialiser visualSerialiser = null;
-
 			if (visualModel != null) {
 				visualSerialiser = new XMLModelSerialiser(getPluginManager());
 
@@ -705,9 +779,9 @@ public class Framework {
 	}
 
 	public void initPlugins() {
-		if (!silent)
+		if (!silent) {
 			System.out.println ("Loading plugins configuration...");
-
+		}
 		try {
 			pluginManager.loadManifest();
 		} catch (IOException e) {

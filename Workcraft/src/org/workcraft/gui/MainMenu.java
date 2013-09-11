@@ -151,6 +151,10 @@ public class MainMenu extends JMenuBar {
 		miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ActionMenuItem miMergeModel = new ActionMenuItem(MainWindowActions.MERGE_WORK_ACTION);
+		miMergeModel.setMnemonic(KeyEvent.VK_M);
+		miMergeModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miSaveWork = new ActionMenuItem(MainWindowActions.SAVE_WORK_ACTION);
 		miSaveWork.setMnemonic(KeyEvent.VK_S);
 		miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
@@ -189,6 +193,7 @@ public class MainMenu extends JMenuBar {
 
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
+		mnFile.add(miMergeModel);
 		mnFile.add(miSaveWork);
 		mnFile.add(miSaveWorkAs);
 		mnFile.add(miCloseActive);
@@ -196,7 +201,6 @@ public class MainMenu extends JMenuBar {
 		mnFile.addSeparator();
 		mnFile.add(miImport);
 		mnFile.add(mnExport);
-
 
 		mnFile.addSeparator();
 		mnFile.add(miNewWorkspace);
@@ -207,7 +211,6 @@ public class MainMenu extends JMenuBar {
 		mnFile.addSeparator();
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);
-
 
 		// View
 		mnView = new JMenu();

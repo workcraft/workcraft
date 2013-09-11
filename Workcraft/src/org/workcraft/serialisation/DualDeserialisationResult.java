@@ -21,12 +21,19 @@
 
 package org.workcraft.serialisation;
 
-import java.io.InputStream;
-
 import org.workcraft.dom.Model;
-import org.workcraft.exceptions.DeserialisationException;
 
-public interface ModelDeserialiser extends SerialFormat {
-		public String getDescription();
-		public DeserialisationResult deserialise (InputStream is, ReferenceResolver rr, Model underlyingModel) throws DeserialisationException;
+public class DualDeserialisationResult {
+	public Model model;
+	public ReferenceResolver referenceResolver;
+	public ReferenceResolver referenceResolver1;
+	public ReferenceResolver referenceResolver2;
+
+	public DualDeserialisationResult(Model model, ReferenceResolver referenceResolver,
+			ReferenceResolver referenceResolver1, ReferenceResolver referenceResolver2) {
+		this.model = model;
+		this.referenceResolver = referenceResolver;
+		this.referenceResolver1 = referenceResolver1;
+		this.referenceResolver2 = referenceResolver2;
+	}
 }

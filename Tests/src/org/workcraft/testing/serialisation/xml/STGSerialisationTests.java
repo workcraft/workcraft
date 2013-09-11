@@ -65,8 +65,8 @@ public class STGSerialisationTests {
 		// deserialise
 		XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);
 
-		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null);
-		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.referenceResolver);
+		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null, ikljfdghdgh);
+		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.referenceResolver, ikljfdghdgh);
 
 		SerialisationTestingUtils.compareNodes(stg.getRoot(), visualResult.model.getRoot());
 	}

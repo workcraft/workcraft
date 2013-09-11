@@ -30,7 +30,7 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 
 public class MathGroup extends MathNode implements ObservableHierarchy, Container {
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	@Override
 	public void add(Node node) {

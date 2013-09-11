@@ -37,25 +37,28 @@ import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.serialisation.References;
 import org.workcraft.serialisation.xml.XMLDeserialisationManager;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class XMLModelDeserialiser implements ModelDeserialiser {
-	XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
 
-	public XMLModelDeserialiser(PluginProvider mock) {
-		deserialisation.processPlugins(mock);
+	PluginProvider plugins;
+	public XMLModelDeserialiser(PluginProvider plugins) {
+		this.plugins = plugins;
 	}
 
-	public DeserialisationResult deserialise(InputStream inputStream,
-			ReferenceResolver externalReferenceResolver)
-	throws DeserialisationException {
+	public DeserialisationResult deserialise(InputStream is,
+			ReferenceResolver e_rr, Model underlyingModel) throws DeserialisationException {
 		try {
-			Document doc = XmlUtil.loadDocument(inputStream);
+			XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
+			deserialisation.processPlugins(plugins);
+
+			Document doc = XmlUtil.loadDocument(is);
 			Element modelElement = doc.getDocumentElement();
 
-			deserialisation.begin(externalReferenceResolver);
+			deserialisation.begin(e_rr);
 
 			// 1st pass -- init instances
 			Element rootElement = XmlUtil.getChildElement("root", modelElement);
@@ -65,9 +68,16 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 			deserialisation.finaliseInstances();
 
 			// create model
-			Model model = (Model)deserialisation.createModel(modelElement, root);
+			String modelClassName = modelElement.getAttribute("class");
+			if (modelClassName == null || modelClassName.isEmpty())
+				throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
+			Class<?> cls = Class.forName(modelClassName);
 
-			return new DeserialisationResult(model, deserialisation.end());
+			References i_rr = deserialisation.getReferenceResolver();
+			Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, i_rr);
+			deserialisation.deserialiseModelProperties(modelElement, model);
+
+			return new DeserialisationResult(model, i_rr);
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {
@@ -77,6 +87,8 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 		} catch (SecurityException e) {
 			throw new DeserialisationException(e);
 		} catch (IllegalArgumentException e) {
+			throw new DeserialisationException(e);
+		} catch (ClassNotFoundException e) {
 			throw new DeserialisationException(e);
 		}
 	}
