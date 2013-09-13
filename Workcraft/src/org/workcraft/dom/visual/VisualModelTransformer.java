@@ -6,7 +6,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class VisualModelTransformer {
 	/**
@@ -62,13 +61,11 @@ public class VisualModelTransformer {
 		transformNodePosition(vm.getSelection(), t);
 	}
 
-	public static void rotateSelection(GraphEditor ge, VisualModel vm, double theta) {
+	public static void rotateSelection(VisualModel vm, double theta) {
 		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
 
 		AffineTransform t = new AffineTransform();
-
-		//Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
-		Point2D cp = ge.snap(new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
+		Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
 
 		t.translate(cp.getX(), cp.getY());
 		t.rotate(theta);

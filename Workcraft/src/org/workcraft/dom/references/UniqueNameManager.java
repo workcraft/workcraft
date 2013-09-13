@@ -39,14 +39,16 @@ public class UniqueNameManager<T> {
 
 	public void setName(T t, String name) {
 		final T occupant = Ts.getValue(name);
-		if(occupant == t)
+		if(occupant == t) {
 			return;
-		if(occupant != null)
+		}
+		if(occupant != null) {
 			throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
-
-		if (!Identifier.isValid(name))
-			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\nThe first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
-
+		}
+		if (!Identifier.isValid(name)) {
+			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
+					+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
+		}
 		Ts.removeValue(t);
 		Ts.put(name, t);
 	}

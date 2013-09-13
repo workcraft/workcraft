@@ -26,6 +26,7 @@ package org.workcraft.serialisation.xml;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
@@ -38,13 +39,20 @@ import org.workcraft.util.TwoWayMap;
 
 class XMLDeserialiserState implements References {
 	private final ReferenceResolver externalReferences;
-
-	GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<String, Object>();
-	HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
-	ListMap<Container, Node> children = new ListMap<Container, Node>();
+	private GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<String, Object>();
+	public HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
+	private ListMap<Container, Node> children = new ListMap<Container, Node>();
 
 	public XMLDeserialiserState(ReferenceResolver externalReferences) {
 		this.externalReferences = externalReferences;
+	}
+
+	public ReferenceResolver getExternalReferences() {
+		return externalReferences;
+	}
+
+	public References getInternalReferences() {
+		return this;
 	}
 
 	public void addChildNode (Container parent, Node child) {
@@ -67,6 +75,7 @@ class XMLDeserialiserState implements References {
 		internalReferenceMap.put(reference, obj);
 	}
 
+	@Override
 	public Object getObject(String reference) {
 		return internalReferenceMap.getValue(reference);
 	}
@@ -76,11 +85,14 @@ class XMLDeserialiserState implements References {
 		return internalReferenceMap.getKey(obj);
 	}
 
-	public References getInternalReferences() {
-		return this;
+	@Override
+	public Set<Object> getObjects() {
+		return internalReferenceMap.getValues();
 	}
 
-	public ReferenceResolver getExternalReferences() {
-		return externalReferences;
+	@Override
+	public Set<String> getReferences() {
+		return internalReferenceMap.getKeys();
 	}
+
 }

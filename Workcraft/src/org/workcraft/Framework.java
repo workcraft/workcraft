@@ -32,8 +32,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -52,8 +55,10 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -71,6 +76,7 @@ import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.DualDeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.References;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.ProgressMonitorArray;
@@ -81,6 +87,7 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.XmlUtil;
+import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
@@ -183,6 +190,8 @@ public class Framework {
 	private boolean silent = false;
 
 	private MainWindow mainWindow;
+
+	public Memento clipboard;
 
 	public Framework() {
 		pluginManager = new PluginManager(this);
@@ -583,6 +592,31 @@ public class Framework {
 		return metaDoc;
 	}
 
+	private void loadVisualModelState(byte[] bi, VisualModel model, References references)
+			throws IOException, ParserConfigurationException, SAXException {
+		InputStream stateData = getUncompressedEntry("state.xml", new ByteArrayInputStream(bi));
+		if (stateData != null) {
+			Document stateDoc = XmlUtil.loadDocument(stateData);
+			Element stateElement = stateDoc.getDocumentElement();
+			// level
+			Element levelElement = XmlUtil.getChildElement("level", stateElement);
+			Object currentLevel = references.getObject(levelElement.getAttribute("ref"));
+			if (currentLevel instanceof Container) {
+				model.setCurrentLevel((Container)currentLevel);
+			}
+			// selection
+			Element selectionElement = XmlUtil.getChildElement("selection", stateElement);
+			Set<Node> nodes = new HashSet<Node>();
+			for (Element nodeElement: XmlUtil.getChildElements("node", selectionElement)) {
+				Object node = references.getObject(nodeElement.getAttribute("ref"));
+				if (node instanceof Node) {
+					nodes.add((Node)node);
+				}
+			}
+			model.addToSelection(nodes);
+		}
+	}
+
 	public ModelEntry load(InputStream is) throws DeserialisationException   {
 		try {
 			// load meta data
@@ -603,8 +637,12 @@ public class Framework {
 			}
 			XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());
 			DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData,
-					mathResult.referenceResolver, mathResult.model);
+					mathResult.references, mathResult.model);
 
+			// load current level and selection
+			if (visualResult.model instanceof VisualModel) {
+				loadVisualModelState(bi, (VisualModel)visualResult.model, visualResult.references);
+			}
 			return new ModelEntry(descriptor, visualResult.model);
 		} catch (IOException e) {
 			throw new DeserialisationException(e);
@@ -621,9 +659,9 @@ public class Framework {
 		}
 	}
 
-	public ModelEntry load(byte[] data) {
+	public ModelEntry load(Memento memento) {
 		try {
-			return load(new ByteArrayInputStream(data));
+			return load(memento.getStream());
 		} catch (DeserialisationException e) {
 			throw new RuntimeException(e);
 		}
@@ -664,8 +702,26 @@ public class Framework {
 			}
 			XMLDualModelDeserialiser visualDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
 			DualDeserialisationResult visualResult = visualDeserialiser.deserialise(visualData1, visualData2,
-					mathResult.referenceResolver1, mathResult.referenceResolver2, mathResult.model);
+					mathResult.references1, mathResult.references2, mathResult.model);
 
+			// load current level and selection
+			if (visualResult.model instanceof VisualModel) {
+				VisualModel visualModel = (VisualModel)visualResult.model;
+				loadVisualModelState(bi1, visualModel, visualResult.references1);
+				// move the nodes of model2 into the current level of model2
+				Collection<Node> nodes = new HashSet<Node>();
+				for (Object obj: visualResult.references2.getObjects()) {
+					if (obj instanceof Node) {
+						Node node = (Node)obj;
+						if (node.getParent() == visualModel.getRoot()) {
+							nodes.add(node);
+						}
+					}
+				}
+				visualModel.getRoot().reparent(nodes, visualModel.getCurrentLevel());
+				// select the nodes of model2
+				visualModel.select(nodes);
+			}
 			return new ModelEntry(descriptor1, visualResult.model);
 		} catch (IOException e) {
 			throw new DeserialisationException(e);
@@ -703,61 +759,76 @@ public class Framework {
 		}
 	}
 
+	private void saveSelectionState(VisualModel visualModel, ZipOutputStream zos, ReferenceProducer visualRefs)
+			throws ParserConfigurationException, IOException {
+		Document stateDoc = XmlUtil.createDocument();
+		Element stateRoot = stateDoc.createElement("workcraft-state");
+		stateDoc.appendChild(stateRoot);
+
+		Element levelElement = stateDoc.createElement("level");
+		levelElement.setAttribute("ref", visualRefs.getReference(visualModel.getCurrentLevel()));
+		stateRoot.appendChild(levelElement);
+
+		Element selectionElement = stateDoc.createElement("selection");
+		for (Node node: visualModel.getSelection()) {
+			Element nodeElement = stateDoc.createElement("node");
+			nodeElement.setAttribute("ref", visualRefs.getReference(node));
+			selectionElement.appendChild(nodeElement);
+		}
+		stateRoot.appendChild(selectionElement);
+		XmlUtil.writeDocument(stateDoc, zos);
+	}
+
 	public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
 		Model model = modelEntry.getModel();
 		VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
 		Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
 		ZipOutputStream zos = new ZipOutputStream(out);
-		// TODO: get appropriate serialiser from config
-		ModelSerialiser mathSerialiser = null;
 		try {
-			mathSerialiser = new XMLModelSerialiser(getPluginManager());
-
+			ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
+			// serialise math model
 			String mathEntryName = "model" + mathSerialiser.getExtension();
-			ZipEntry ze = new ZipEntry(mathEntryName);
-			zos.putNextEntry(ze);
+			zos.putNextEntry(new ZipEntry(mathEntryName));
 			ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
 			zos.closeEntry();
-
+			// serialise visual model
 			String visualEntryName = null;
 			ModelSerialiser visualSerialiser = null;
 			if (visualModel != null) {
 				visualSerialiser = new XMLModelSerialiser(getPluginManager());
 
 				visualEntryName = "visualModel" + visualSerialiser.getExtension();
-				ze = new ZipEntry(visualEntryName);
-				zos.putNextEntry(ze);
-				visualSerialiser.serialise(visualModel, zos, refResolver);
+				zos.putNextEntry(new ZipEntry(visualEntryName));
+				ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, zos, refResolver);
+				zos.closeEntry();
+				// serialise visual model selection state
+				zos.putNextEntry(new ZipEntry("state.xml"));
+				saveSelectionState(visualModel, zos, visualRefs);
 				zos.closeEntry();
 			}
+			// serialise meta data
+			zos.putNextEntry(new ZipEntry("meta"));
+			Document metaDoc = XmlUtil.createDocument();
+			Element metaRoot = metaDoc.createElement("workcraft-meta");
+			metaDoc.appendChild(metaRoot);
 
-			ze = new ZipEntry("meta");
-			zos.putNextEntry(ze);
+			Element metaDescriptor = metaDoc.createElement("descriptor");
+			metaDescriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
+			metaRoot.appendChild(metaDescriptor);
 
-			Document doc;
-			doc = XmlUtil.createDocument();
-
-			Element root = doc.createElement("workcraft-meta");
-			doc.appendChild(root);
-
-			Element descriptor = doc.createElement("descriptor");
-			descriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
-			root.appendChild(descriptor);
-
-			Element math = doc.createElement("math");
-			math.setAttribute("entry-name", mathEntryName);
-			math.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
-			root.appendChild(math);
+			Element mathElement = metaDoc.createElement("math");
+			mathElement.setAttribute("entry-name", mathEntryName);
+			mathElement.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
+			metaRoot.appendChild(mathElement);
 
 			if (visualModel != null) {
-				Element visual = doc.createElement("visual");
-				visual.setAttribute("entry-name", visualEntryName);
-				visual.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
-				root.appendChild(visual);
+				Element visualElement = metaDoc.createElement("visual");
+				visualElement.setAttribute("entry-name", visualEntryName);
+				visualElement.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
+				metaRoot.appendChild(visualElement);
 			}
 
-			XmlUtil.writeDocument(doc, zos);
-
+			XmlUtil.writeDocument(metaDoc, zos);
 			zos.closeEntry();
 			zos.close();
 		} catch (ParserConfigurationException e) {
@@ -767,15 +838,14 @@ public class Framework {
 		}
 	}
 
-
-	public byte [] save(ModelEntry modelEntry) {
+	public Memento save(ModelEntry modelEntry) {
 		ByteArrayOutputStream s = new ByteArrayOutputStream();
 		try {
 			save(modelEntry, s);
 		} catch (SerialisationException e) {
 			throw new RuntimeException(e);
 		}
-		return s.toByteArray();
+		return new Memento(s.toByteArray());
 	}
 
 	public void initPlugins() {

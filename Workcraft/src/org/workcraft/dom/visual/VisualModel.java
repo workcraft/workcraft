@@ -46,6 +46,7 @@ public interface VisualModel extends Model, ObservableState {
 
 	public void selectAll();
 	public void selectNone();
+	public void selectInverse();
 	public void select(Node node);
 	public void select(Collection<Node> node);
 	public void addToSelection (Collection<Node> node);

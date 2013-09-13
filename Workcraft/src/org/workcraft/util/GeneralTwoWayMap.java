@@ -84,4 +84,13 @@ public class GeneralTwoWayMap<T1,T2> {
 	public boolean containsValue(T2 value) {
 		return from2to1.containsKey(value);
 	}
+
+	public Set<T1> getKeys() {
+		return from1to2.keySet();
+	}
+
+	public Set<T2> getValues() {
+		return from2to1.keySet();
+	}
+
 }

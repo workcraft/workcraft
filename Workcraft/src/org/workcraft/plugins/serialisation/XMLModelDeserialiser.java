@@ -49,8 +49,8 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 		this.plugins = plugins;
 	}
 
-	public DeserialisationResult deserialise(InputStream is,
-			ReferenceResolver e_rr, Model underlyingModel) throws DeserialisationException {
+	public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
+			Model underlyingModel) throws DeserialisationException {
 		try {
 			XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
 			deserialisation.processPlugins(plugins);
@@ -58,7 +58,7 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 			Document doc = XmlUtil.loadDocument(is);
 			Element modelElement = doc.getDocumentElement();
 
-			deserialisation.begin(e_rr);
+			deserialisation.begin(extRef);
 
 			// 1st pass -- init instances
 			Element rootElement = XmlUtil.getChildElement("root", modelElement);
@@ -73,11 +73,11 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 				throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
 			Class<?> cls = Class.forName(modelClassName);
 
-			References i_rr = deserialisation.getReferenceResolver();
-			Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, i_rr);
+			References intRef = deserialisation.getReferenceResolver();
+			Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, intRef);
 			deserialisation.deserialiseModelProperties(modelElement, model);
 
-			return new DeserialisationResult(model, i_rr);
+			return new DeserialisationResult(model, intRef);
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {

@@ -1,26 +1,30 @@
+Start
+-----
 In Windows start run.bat script, in Linux - run.sh. The script will set up the 
 required search path for external tools and class paths for Workcraft plugins.
 
+Tutorial
+--------
 To familiarise yourself with the Workcraft framework please look through the 
 practical material in the tutorial directory.
 
 
-# Tips and tricks
-
-* Hold Shift to include objects into a selection and Ctrl to exclude objects from a selection.
-
-* Outline a selection area from-right-to-left for adding fully covered objects, and from-left-to-right for adding any touched objects.
-
-* Ctrl+G combines selected objects into a group and Ctrl+U ungroups them. 
-
-* PageDown enters a group anf PageUp leaves it.
-
-* Scroll the mouse wheel up to zooms in and down to zoom out. Alternatively press "+" to zoom in and "-" to zoom out.
-
-* Use left mouse button or arrow keys to move selected components.
-
-* Use the middle mouse button or Ctrl+arrow keys to pan the view.
-
-* Use "[" and "]" keys to navigate through the simulation trace.
-
-* In Signal-State table the values of excited signals are depicted in bold font.
+Tips and tricks
+---------------
+* Selection
+    - Hold _Shift_ to include objects into a selection and _Ctrl_ to exclude objects from a selection.
+    - Outline a selection area _from-right-to-left_ for adding fully covered objects, and _from-left-to-right_ for adding any touched objects.
+    - Use _left mouse button_ or _arrow keys_ to move selected components.
+    - Selected components can be removed by pressing Delete key.
+* Clipboard and History
+    - Clipboard operations are allowed between the models of the same type: _Ctrl+C_ to copy, _Ctrl+X_ to cut and _Ctrl+V_ to insert.
+    - History of modifications can be browsed: _Ctrl+Z_ to undo and _Ctrl+Shift+Z_ to redo.
+* Navigation and Grouping
+    - _Ctrl+G_ combines selected objects into a group and _Ctrl+Shift+G_ ungroups them. 
+    - _PageDown_ enters a group and _PageUp_ leaves it.
+    - Scroll the mouse wheel _forward_ to zooms in and _backward_ to zoom out. 
+    - Alternatively press _+_ to zoom in and _-_ to zoom out.
+    - Use the middle mouse button or _Ctrl+arrow keys_ to pan the view.
+* Simulation
+    - Use _[_ and _]_ keys to navigate through the simulation trace.
+    - In Signal-State table the values of excited signals are depicted in bold font.

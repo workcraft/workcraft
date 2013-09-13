@@ -125,6 +125,46 @@ public class MainWindowActions {
 		}
 	};
 
+	public static final Action EDIT_CUT_ACTION = new Action() {
+		public String getText() {
+			return "Cut";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().cut();
+		}
+	};
+
+	public static final Action EDIT_COPY_ACTION = new Action() {
+		public String getText() {
+			return "Copy";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().copy();
+		}
+	};
+
+	public static final Action EDIT_PASTE_ACTION = new Action() {
+		public String getText() {
+			return "Paste";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().paste();
+		}
+	};
+
+	public static final Action EDIT_DELETE_ACTION = new Action() {
+		public String getText() {
+			return "Delete";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().delete();
+		}
+	};
+
 	public static final Action EDIT_SETTINGS_ACTION = new Action() {
 		public String getText() {
 			return "Preferences...";
@@ -132,6 +172,86 @@ public class MainWindowActions {
 		@Override
 		public void run(Framework f) {
 			f.getMainWindow().editSettings();
+		}
+	};
+
+	public static final Action OBJECT_GROUP_ACTION = new Action() {
+		public String getText() {
+			return "Group";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().group();
+		}
+	};
+
+	public static final Action OBJECT_UNGROUP_ACTION = new Action() {
+		public String getText() {
+			return "Ungroup";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().ungroup();
+		}
+	};
+
+	public static final Action OBJECT_LEVEL_UP_ACTION = new Action() {
+		public String getText() {
+			return "Level up";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().levelUp();
+		}
+	};
+
+	public static final Action OBJECT_LEVEL_DOWN_ACTION = new Action() {
+		public String getText() {
+			return "Level down";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().levelDown();
+		}
+	};
+
+	public static final Action OBJECT_ROTATE_CLOCKWISE_ACTION = new Action() {
+		public String getText() {
+			return "Rotate clockwise";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().rotateClockwise();
+		}
+	};
+
+	public static final Action OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION = new Action() {
+		public String getText() {
+			return "Rotate counterclockwise";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().rotateCounterclockwise();
+		}
+	};
+
+	public static final Action OBJECT_FLIP_HORIZONTAL_ACTION = new Action() {
+		public String getText() {
+			return "Flip horizontal";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().flipHorizontal();
+		}
+	};
+
+	public static final Action OBJECT_FLIP_VERTICAL_ACTION = new Action() {
+		public String getText() {
+			return "Flip vertical";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().flipVertical();
 		}
 	};
 
@@ -151,17 +271,25 @@ public class MainWindowActions {
 	public static final Action HINTS_ACTION = new Action() {
 		@Override public void run(Framework f) {
 			String text =
-				"<html><il>" +
-				"<li>Hold <i>Shift</i> to include objects into a selection and <i>Ctrl</i> to exclude objects from a selection.</li>" +
-				"<li>Outline a selection area from-right-to-left for adding fully covered objects, and from-left-to-right for adding any touched objects.</li>" +
-				"<li><i>Ctrl+G</i> combines selected objects into a group and <i>Ctrl+U</i> ungroups them.</li>" +
-				"<li><i>PageDown</i> enters a group and <i>PageUp</i> leaves it.</li>" +
-				"<li>Scroll mouse wheel <i>forward</i> to zooms in and <i>backward</i> to zoom out. Alternatively press <i>'+'</i> to zoom in and <i>'-'</i> to zoom out.</li>" +
-				"<li>Use <i>left mouse button</i> or <i>arrow keys</i> to move selected components.</li>" +
-				"<li>Use <i>middle mouse button</i> or <i>Ctrl+arrow keys</i> to pan the view.</li>" +
-				"<li>Use <i>[</i> and <i>]</i> keys to navigate through the simulation trace.</li>" +
-				"<li>In Signal-State table the values of excited signals are depicted in bold font.</li>" +
-				"</il></html>";
+				"<html><ul>" +
+				"<li><b>Selection</b></li><ul>" +
+					"<li>Hold <i>Shift</i> to include objects into a selection and <i>Ctrl</i> to exclude objects from a selection.</li>" +
+					"<li>Outline a selection area <i>from-right-to-left</i> for adding fully covered objects, and <i>from-left-to-right</i> for adding any touched objects.</li>" +
+					"<li>Use <i>left mouse button</i> or <i>arrow keys</i> to move selected components.</li>" +
+					"<li>Selected components can be removed by pressing <i>Delete</i> key.</li>" +
+				"</ul><li><b>Clipboard and History</b></li><ul>" +
+					"<li>Clipboard operations are allowed between the models of the same type: <i>Ctrl+C</i> to copy, <i>Ctrl+X</i> to cut and <i>Ctrl+V</i> to insert.</li>" +
+					"<li>History of modifications can be browsed: <i>Ctrl+Z</i> to undo and <i>Ctrl+Shift+Z</i> to redo.</li>" +
+				"</ul><li><b>Navigation and Grouping</b></li><ul>" +
+					"<li><i>Ctrl+G</i> combines selected objects into a group and <i>Ctrl+Shift+U</i> ungroups them.</li>" +
+					"<li><i>PageDown</i> enters a group and <i>PageUp</i> leaves it.</li>" +
+					"<li>Scroll mouse wheel <i>forward</i> to zooms in and <i>backward</i> to zoom out.</li>" +
+					"<li>Alternatively press <i>'+'</i> to zoom in and <i>'-'</i> to zoom out.</li>" +
+					"<li>Use <i>middle mouse button</i> or <i>Ctrl+arrow keys</i> to pan the view.</li>" +
+				"</ul><li><b>Simulation</b></li><ul>" +
+					"<li>Use <i>[</i> and <i>]</i> keys to navigate through the simulation trace.</li>" +
+					"<li>In Signal-State table the values of excited signals are depicted in bold font.</li>" +
+				"</ul></ul></html>";
 			JOptionPane.showMessageDialog(f.getMainWindow(), text);
 		}
 		public String getText() {

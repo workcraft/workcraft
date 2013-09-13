@@ -25,15 +25,12 @@ import org.workcraft.dom.Model;
 
 public class DualDeserialisationResult {
 	public Model model;
-	public ReferenceResolver referenceResolver;
-	public ReferenceResolver referenceResolver1;
-	public ReferenceResolver referenceResolver2;
+	public References references1;
+	public References references2;
 
-	public DualDeserialisationResult(Model model, ReferenceResolver referenceResolver,
-			ReferenceResolver referenceResolver1, ReferenceResolver referenceResolver2) {
+	public DualDeserialisationResult(Model model, References references1, References references2) {
 		this.model = model;
-		this.referenceResolver = referenceResolver;
-		this.referenceResolver1 = referenceResolver1;
-		this.referenceResolver2 = referenceResolver2;
+		this.references1 = references1;
+		this.references2 = references2;
 	}
 }

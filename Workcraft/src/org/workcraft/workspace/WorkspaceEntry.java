@@ -21,11 +21,15 @@
 
 package org.workcraft.workspace;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
@@ -34,6 +38,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
 	private ModelEntry modelEntry = null;
@@ -43,8 +48,8 @@ public class WorkspaceEntry implements ObservableState {
 	private final Workspace workspace;
 	private final MementoManager history = new MementoManager();
 	private boolean canUndoAndRedo = true;
-	private byte[] capturedMemento = null;
-	private byte[] savedMemento = null;
+	private Memento capturedMemento = null;
+	private Memento savedMemento = null;
 
 	public WorkspaceEntry(Workspace workspace) {
 		this.workspace = workspace;
@@ -179,7 +184,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void captureMemento() {
-		capturedMemento = framework.save(getModelEntry());
+		capturedMemento = framework.save(modelEntry);
 		if (changed == false) {
 			savedMemento = capturedMemento;
 		}
@@ -192,10 +197,10 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void saveMemento() {
-		byte[] currentMemento = capturedMemento;
+		Memento currentMemento = capturedMemento;
 		capturedMemento = null;
 		if (currentMemento == null) {
-			currentMemento = framework.save(getModelEntry());
+			currentMemento = framework.save(modelEntry);
 		}
 		if (changed == false) {
 			savedMemento = currentMemento;
@@ -207,9 +212,9 @@ public class WorkspaceEntry implements ObservableState {
 
 	public void undo() {
 		if (history.canUndo()) {
-			byte[] undoMemento = history.pullUndo();
+			Memento undoMemento = history.pullUndo();
 			if (undoMemento != null) {
-				byte[] currentMemento = framework.save(getModelEntry());
+				Memento currentMemento = framework.save(modelEntry);
 				if (changed == false) {
 					savedMemento = currentMemento;
 				}
@@ -223,9 +228,9 @@ public class WorkspaceEntry implements ObservableState {
 
 	public void redo() {
 		if (history.canRedo()) {
-			byte[] redoMemento = history.pullRedo();
+			Memento redoMemento = history.pullRedo();
 			if (redoMemento != null) {
-				byte[] currentMemento = framework.save(getModelEntry());
+				Memento currentMemento = framework.save(modelEntry);
 				if (changed == false) {
 					savedMemento = currentMemento;
 				}
@@ -239,17 +244,126 @@ public class WorkspaceEntry implements ObservableState {
 
 	public void insert(ModelEntry me) {
 		try {
-			byte[] currentData = framework.save(getModelEntry());
-			byte[] insertData = framework.save(me);
-			InputStream is1 = new ByteArrayInputStream(currentData);
-			InputStream is2 = new ByteArrayInputStream(insertData);
-			ModelEntry result = framework.load(is1, is2);
+			Memento currentMemento = framework.save(modelEntry);
+			Memento insertMemento = framework.save(me);
+			ModelEntry result = framework.load(currentMemento.getStream(), insertMemento.getStream());
 			saveMemento();
 			setModelEntry(result);
 			setChanged(true);
 		} catch (DeserialisationException e) {
 			System.err.println(e.getMessage());
-			e.printStackTrace();
+		}
+	}
+
+	public void delete() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			model.deleteSelection();
+		}
+	}
+
+	public void copy() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			captureMemento();
+			// copy selected nodes inside a group as if it was the root
+			if (model.getCurrentLevel() != model.getRoot()) {
+				Collection<Node> nodes = new HashSet<Node>(model.getSelection());
+				levelUp();
+				model.ungroupSelection();
+				model.select(nodes);
+			}
+			model.selectInverse();
+			model.deleteSelection();
+			framework.clipboard = framework.save(modelEntry);
+			cancelMemento();
+		}
+	}
+
+	public void cut() {
+		copy();
+		delete();
+	}
+
+	public void paste() {
+		try {
+			Memento memento = framework.save(modelEntry);
+			ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
+			saveMemento();
+			setModelEntry(result);
+			setChanged(true);
+		} catch (DeserialisationException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	public void group() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			model.groupSelection();
+		}
+	}
+
+	public void ungroup() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			model.ungroupSelection();
+		}
+	}
+
+	public void levelDown() {
+		VisualModel model = modelEntry.getVisualModel();
+		Collection<Node> selection = model.getSelection();
+		if (selection.size() == 1) {
+			Node node = selection.iterator().next();
+			if(node instanceof Container) {
+				model.setCurrentLevel((Container)node);
+			}
+		}
+	}
+
+	public void levelUp() {
+		VisualModel model = modelEntry.getVisualModel();
+		Container level = model.getCurrentLevel();
+		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+		if(parent!=null) {
+			model.setCurrentLevel(parent);
+			model.addToSelection(level);
+		}
+	}
+
+	public void rotateClockwise() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			VisualModelTransformer.rotateSelection(model, Math.PI/2);
+		}
+	}
+
+	public void rotateCounterclockwise() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
+		}
+	}
+
+	public void flipHorizontal() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			VisualModelTransformer.scaleSelection(model, -1, 1);
+		}
+	}
+
+	public void flipVertical() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			VisualModelTransformer.scaleSelection(model, 1, -1);
 		}
 	}
 

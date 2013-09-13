@@ -1178,16 +1178,36 @@ public class MainWindow extends JFrame {
 	public void undo()  {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
-		} else {
-			System.out.println("No editor in focus");
 		}
 	}
 
 	public void redo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().redo();
-		} else {
-			System.out.println("No editor in focus");
+		}
+	}
+
+	public void cut() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().cut();
+		}
+	}
+
+	public void copy() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().copy();
+		}
+	}
+
+	public void paste() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().paste();
+		}
+	}
+
+	public void delete() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().delete();
 		}
 	}
 
@@ -1196,6 +1216,54 @@ public class MainWindow extends JFrame {
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
+	}
+
+	public void group() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().group();
+		}
+	}
+
+	public void ungroup() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().ungroup();
+		}
+	}
+
+	public void levelUp() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().levelUp();
+		}
+	}
+
+	public void levelDown() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().levelDown();
+		}
+	}
+
+	public void flipHorizontal() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().flipHorizontal();
+		}
+	}
+
+	public void flipVertical() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().flipVertical();
+		}
+	}
+
+	public void rotateClockwise() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().rotateClockwise();
+		}
+	}
+
+	public void rotateCounterclockwise() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().rotateCounterclockwise();
+		}
 	}
 
 	public WorkspaceWindow getWorkspaceView() {

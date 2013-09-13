@@ -116,7 +116,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
 
-		g.setColor(Coloriser.colorise(DfsSettings.getEnabledRegisterColor(), d.getBackground()));
+		g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
 		if (getSynchronisationType() == SynchronisationType.AND) {
 			g.fill(falseInnerShape);
 		}

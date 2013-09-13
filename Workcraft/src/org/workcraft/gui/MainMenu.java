@@ -102,7 +102,7 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnUtility, mnHelp, mnWindows;
+	private JMenu mnFile, mnEdit, mnView, mnObject, mnUtility, mnHelp, mnWindows;
 	private JMenu mnExport;
 
 	private MainWindow mainWindow;
@@ -212,6 +212,102 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);
 
+		// Edit
+		mnEdit = new JMenu();
+		mnEdit.setText("Edit");
+
+		ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
+		miUndo.setMnemonic(KeyEvent.VK_U);
+		miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
+		miRedo.setMnemonic(KeyEvent.VK_R);
+		miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miCut = new ActionMenuItem(MainWindowActions.EDIT_CUT_ACTION);
+		miCut.setMnemonic(KeyEvent.VK_T);
+		miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		miCut.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miCopy = new ActionMenuItem(MainWindowActions.EDIT_COPY_ACTION);
+		miCopy.setMnemonic(KeyEvent.VK_C);
+		miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		miCopy.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miPaste = new ActionMenuItem(MainWindowActions.EDIT_PASTE_ACTION);
+		miPaste.setMnemonic(KeyEvent.VK_P);
+		miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+		miPaste.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miDelete = new ActionMenuItem(MainWindowActions.EDIT_DELETE_ACTION);
+		miDelete.setMnemonic(KeyEvent.VK_D);
+		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
+		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		mnEdit.add(miUndo);
+		mnEdit.add(miRedo);
+		mnEdit.addSeparator();
+		mnEdit.add(miCut);
+		mnEdit.add(miCopy);
+		mnEdit.add(miPaste);
+		mnEdit.add(miDelete);
+		mnEdit.addSeparator();
+		mnEdit.add(miProperties);
+
+		// Object
+		mnObject = new JMenu();
+		mnObject.setText("Object");
+
+		ActionMenuItem miGroup = new ActionMenuItem(MainWindowActions.OBJECT_GROUP_ACTION);
+		miGroup.setMnemonic(KeyEvent.VK_G);
+		miGroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+		miGroup.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miUngroup = new ActionMenuItem(MainWindowActions.OBJECT_UNGROUP_ACTION);
+		miUngroup.setMnemonic(KeyEvent.VK_U);
+		miUngroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		miUngroup.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miLevelUp = new ActionMenuItem(MainWindowActions.OBJECT_LEVEL_UP_ACTION);
+		miLevelUp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0));
+		miLevelUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miLevelDown = new ActionMenuItem(MainWindowActions.OBJECT_LEVEL_DOWN_ACTION);
+		miLevelDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0));
+		miLevelDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miRotateClockwise = new ActionMenuItem(MainWindowActions.OBJECT_ROTATE_CLOCKWISE_ACTION);
+		miRotateClockwise.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+		miRotateClockwise.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miRotateCounterclockwise = new ActionMenuItem(MainWindowActions.OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION);
+		miRotateCounterclockwise.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		miRotateCounterclockwise.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miFlipHorizontal = new ActionMenuItem(MainWindowActions.OBJECT_FLIP_HORIZONTAL_ACTION);
+		miFlipHorizontal.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		miFlipHorizontal.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miFlipVertical = new ActionMenuItem(MainWindowActions.OBJECT_FLIP_VERTICAL_ACTION);
+		miFlipVertical.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		miFlipVertical.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		mnObject.add(miGroup);
+		mnObject.add(miUngroup);
+		mnObject.addSeparator();
+		mnObject.add(miLevelUp);
+		mnObject.add(miLevelDown);
+		mnObject.addSeparator();
+		mnObject.add(miRotateClockwise);
+		mnObject.add(miRotateCounterclockwise);
+		mnObject.add(miFlipHorizontal);
+		mnObject.add(miFlipVertical);
+
 		// View
 		mnView = new JMenu();
 		mnView.setText ("View");
@@ -248,28 +344,6 @@ public class MainMenu extends JMenuBar {
 		mnView.add(mnWindows);
 		mnView.add(mnLAF);
 
-		// Edit
-		mnEdit = new JMenu();
-		mnEdit.setText("Edit");
-
-		ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
-		miUndo.setMnemonic(KeyEvent.VK_U);
-		miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
-		miRedo.setMnemonic(KeyEvent.VK_R);
-		miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
-		miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
-		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		mnEdit.add(miUndo);
-		mnEdit.add(miRedo);
-		mnEdit.addSeparator();
-		mnEdit.add(miProperties);
-
 		// Utility
 		mnUtility = new JMenu();
 		mnUtility.setText("Utility");
@@ -281,7 +355,6 @@ public class MainMenu extends JMenuBar {
 
 		ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
 		miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
 
 		mnUtility.add(miResetLayout);
 
@@ -298,6 +371,7 @@ public class MainMenu extends JMenuBar {
 		add(mnFile);
 		add(mnEdit);
 		add(mnView);
+		add(mnObject);
 		add(mnUtility);
 		add(mnHelp);
 

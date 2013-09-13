@@ -22,8 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.MouseListeners;
 import org.workcraft.dom.AbstractModel;
@@ -52,7 +46,6 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.PasteException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.observation.HierarchyEvent;
@@ -63,7 +56,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.XmlUtil;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
@@ -89,7 +81,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		super(root == null? new VisualGroup() : root);
 		this.mathModel = mathModel;
 
-		currentLevel =  (VisualGroup)getRoot();
+		currentLevel = (VisualGroup)getRoot();
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
@@ -164,6 +156,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	/**
 	 * Select all components, connections and groups from the <code>root</code> group.
 	 */
+	@Override
 	public void selectAll() {
 		if(selection.size()==getRoot().getChildren().size())
 			return;
@@ -179,6 +172,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	/**
 	 * Clear selection.
 	 */
+	@Override
 	public void selectNone() {
 		if (!selection.isEmpty()) {
 			Collection<Node> s = saveSelection();
@@ -187,6 +181,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 			notifySelectionChanged(s);
 		}
+	}
+
+	/**
+	 * Invert selection.
+	 */
+	@Override
+	public void selectInverse() {
+		Collection<Node> s = saveSelection();
+		selection.clear();
+		for (Node node: getRoot().getChildren()) {
+			if (!s.contains(node)) {
+				selection.add(node);
+			}
+		}
+		notifySelectionChanged(getRoot().getChildren());
 	}
 
 	private void validateSelection (Node node) {
@@ -218,6 +227,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		notifySelectionChanged(s);
 	}
 
+	@Override
 	public void select(Node node) {
 		if (selection.size() == 1 && selection.contains(node))
 			return;
@@ -231,6 +241,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		notifySelectionChanged(s);
 	}
 
+	@Override
 	public void addToSelection(Node node) {
 		if (selection.contains(node))
 			return;
@@ -243,6 +254,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		notifySelectionChanged(s);
 	}
 
+	@Override
 	public void addToSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
@@ -253,6 +265,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			notifySelectionChanged(s);
 	}
 
+	@Override
 	public void removeFromSelection(Node node) {
 		if (selection.contains(node)) {
 			Collection<Node> s = saveSelection();
@@ -263,6 +276,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 	}
 
+	@Override
 	public void removeFromSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
 
@@ -272,10 +286,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			notifySelectionChanged(s);
 	}
 
+	@Override
 	public MathModel getMathModel() {
 		return mathModel;
 	}
 
+	@Override
 	public VisualModel getVisualModel() {
 		return this;
 	}
@@ -283,43 +299,46 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	/**
 	 * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
 	 */
+	@Override
 	public Collection<Node> getSelection() {
 		return Collections.unmodifiableSet(selection);
 	}
 
 	public Collection<Node> getOrderedCurrentLevelSelection() {
 		List<Node> result = new ArrayList<Node>();
-		for(Node node : currentLevel.getChildren())
-		{
+		for(Node node : currentLevel.getChildren())	{
 			if(selection.contains(node) && node instanceof VisualNode)
 				result.add((VisualNode)node);
 		}
 		return result;
 	}
 
+	@Override
 	public Container getCurrentLevel() {
 		return currentLevel;
 	}
 
+	@Override
 	public void setCurrentLevel(Container newCurrentLevel) {
 		selection.clear();
 		currentLevel = newCurrentLevel;
 	}
 
-	private Collection<Node> getGroupableSelection()
-	{
+	private Collection<Node> getGroupableSelection() {
 		ArrayList<Node> result = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection())
-			if(node instanceof VisualTransformableNode)
+		for(Node node : getOrderedCurrentLevelSelection()) {
+			if(node instanceof VisualTransformableNode) {
 				result.add((VisualTransformableNode)node);
+			}
+		}
 		return result;
 	}
-
 
 	/**
 	 * Groups the selection, and selects the newly created group.
 	 * @author Arseniy Alekseyev
 	 */
+	@Override
 	public void groupSelection() {
 		Collection<Node> selected = getGroupableSelection();
 		VisualGroup vg = groupCollection(selected);
@@ -327,72 +346,49 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public VisualGroup groupCollection(Collection<Node> selected) {
-
 		if(selected.size() <= 1)
 			return null;
 
 		VisualGroup group = new VisualGroup();
-
 		currentLevel.add(group);
-
 		currentLevel.reparent(selected, group);
 
 		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-
-		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class))
-		{
+		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
 			if(Hierarchy.isDescendant(connection.getFirst(), group) &&
 					Hierarchy.isDescendant(connection.getSecond(), group)) {
 				connectionsToGroup.add(connection);
 			}
 		}
-
 		currentLevel.reparent(connectionsToGroup, group);
-
 		return group;
-
 	}
 
 	/**
 	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.
 	 * @author Arseniy Alekseyev
 	 */
+	@Override
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
-
-		for(Node node : getOrderedCurrentLevelSelection())
-		{
-			if(node instanceof VisualGroup)
-			{
+		for(Node node : getOrderedCurrentLevelSelection()) {
+			if(node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
-				for(Node subNode : group.unGroup())
+				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
+				}
 				currentLevel.remove(group);
-			}
-			else
+			} else {
 				toSelect.add(node);
+			}
 		}
-
 		select(toSelect);
 	}
 
-	/*protected void removeGroup(VisualGroup group) {
-		removeNodes(group.getChildren());
-
-		((Container)group.getParent()).remove(group);
-		selection.remove(group);
-	}*/
-
-
-	/**
-	 * Deletes the selection.
-	 * @author Ivan Poliakov
-	 */
+	@Override
 	public void deleteSelection() {
-		//System.out.println ("Deleting selection (" + selection.size()+" nodes)");
 		HashMap<Container, LinkedList<Node>> batches = new HashMap<Container, LinkedList<Node>>();
 		LinkedList<Node> remainingSelection = new LinkedList<Node>();
-
 
 		for (Node n : selection) {
 			if (n.getParent() instanceof Container) {
@@ -406,79 +402,31 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			} else remainingSelection.add(n);
 		}
 
-		for (Container c : batches.keySet())
+		for (Container c : batches.keySet()) {
 			c.remove(batches.get(c));
-
+		}
 		select(remainingSelection);
 	}
 
-	/**
-	 * @param clipboard
-	 * @param clipboardOwner
-	 * @author Ivan Poliakov
-	 * @throws ParserConfigurationException
-	 */
-	public void copy(Clipboard clipboard, ClipboardOwner clipboardOwner) throws ParserConfigurationException {
-		Document doc = XmlUtil.createDocument();
-
-		Element root = doc.createElement("workcraft-clipboard-contents");
-
-		doc.appendChild(root);
-		root = doc.getDocumentElement();
-		//selectionToXML(root);
-		clipboard.setContents(new TransferableDocument(doc), clipboardOwner);
-	}
-
-	public Collection<Node> paste(Collection<Node> what, Point2D where) throws PasteException {
-		/*try {
-			Document doc = (Document)clipboard.getData(TransferableDocument.DOCUMENT_FLAVOR);
-
-			Element root = doc.getDocumentElement();
-			if (!root.getTagName().equals("workcraft-clipboard-contents"))
-				return null;
-
-			Element mathModelElement = XmlUtil.getChildElement("model", root);
-			Element visualModelElement = XmlUtil.getChildElement("visual-model", root);
-
-			if (mathModelElement == null || visualModelElement == null)
-				throw new PasteException("Structure of clipboard XML is invalid.");
-
-			mathModel.pasteFromXML(mathModelElement);
-			//return pasteFromXML(visualModelElement, where);
-		} catch (UnsupportedFlavorException e) {
-		} catch (IOException e) {
-			throw new PasteException (e);
-		} catch (LoadFromXMLException e) {
-			throw new PasteException (e);
-		}*/
-
-		return null;
-	}
-
-
-
-	public void cut(Clipboard clipboard, ClipboardOwner clipboardOwner) throws ParserConfigurationException {
-		copy(clipboard, clipboardOwner);
-		deleteSelection();
-	}
-
-	private Point2D transformToCurrentSpace(Point2D pointInRootSpace)
-	{
+	private Point2D transformToCurrentSpace(Point2D pointInRootSpace) {
 		Point2D newPoint = new Point2D.Double();
 		TransformHelper.getTransform(getRoot(), currentLevel).transform(pointInRootSpace, newPoint);
 		return newPoint;
 	}
 
+	@Override
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2) {
 		p1 = transformToCurrentSpace(p1);
 		p2 = transformToCurrentSpace(p2);
 		return HitMan.boxHitTest(currentLevel, p1, p2);
 	}
 
+	@Override
 	public void addObserver(StateObserver obs) {
 		observableState.addObserver(obs);
 	}
 
+	@Override
 	public void removeObserver(StateObserver obs) {
 		observableState.removeObserver(obs);
 	}
@@ -487,7 +435,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		observableState.sendNotification(e);
 	}
 
-	@Override public Properties getProperties(Node node) {
+	@Override
+	public Properties getProperties(Node node) {
 		return null;
 	}
 }

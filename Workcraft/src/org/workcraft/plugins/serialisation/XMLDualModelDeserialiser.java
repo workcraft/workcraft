@@ -35,6 +35,7 @@ import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.DualDeserialisationResult;
 import org.workcraft.serialisation.DualModelDeserialiser;
@@ -42,12 +43,13 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.References;
 import org.workcraft.serialisation.xml.XMLDeserialisationManager;
+import org.workcraft.serialisation.xml.XMLDualDeserialiserState;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class XMLDualModelDeserialiser implements DualModelDeserialiser {
-	XMLDeserialisationManager deserialisation1 = new XMLDeserialisationManager();
-	XMLDeserialisationManager deserialisation2 = new XMLDeserialisationManager();
+	private XMLDeserialisationManager deserialisation1 = new XMLDeserialisationManager();
+	private XMLDeserialisationManager deserialisation2 = new XMLDeserialisationManager();
 
 	public XMLDualModelDeserialiser(PluginProvider mock) {
 		deserialisation1.processPlugins(mock);
@@ -55,7 +57,7 @@ public class XMLDualModelDeserialiser implements DualModelDeserialiser {
 	}
 
 	public DualDeserialisationResult deserialise(InputStream is1, InputStream is2,
-			ReferenceResolver rr1, ReferenceResolver rr2, Model underlyingModel) throws DeserialisationException {
+			ReferenceResolver extRef1, ReferenceResolver extRef2, Model underlyingModel) throws DeserialisationException {
 		try {
 			Document doc1 = XmlUtil.loadDocument(is1);
 			Element modelElement1 = doc1.getDocumentElement();
@@ -63,8 +65,8 @@ public class XMLDualModelDeserialiser implements DualModelDeserialiser {
 			Document doc2 = XmlUtil.loadDocument(is2);
 			Element modelElement2 = doc2.getDocumentElement();
 
-			deserialisation1.begin(rr1);
-			deserialisation2.begin(rr2);
+			deserialisation1.begin(extRef1);
+			deserialisation2.begin(extRef2);
 
 			// 1st pass -- init instances
 			Element rootElement1 = XmlUtil.getChildElement("root", modelElement1);
@@ -88,48 +90,20 @@ public class XMLDualModelDeserialiser implements DualModelDeserialiser {
 			}
 			Class<?> cls = Class.forName(modelClassName1);
 
-			System.out.printf("> root1 = %d, root2 = %d\n", root1.getChildren().size(), root2.getChildren().size());
-			Collection<Node> nodes = new HashSet<Node>(((Container)root2).getChildren());
-			// Option 1) Why reparent does not work here?
-			((Container)root2).reparent(nodes, (Container)root1);
-			// Probably because of unmodifiableCollection returned by groupImplementation.getChildren()
-			/* // Option 2) As a quick fix we do it node-by-node.
-			for (Node node : ((Container)root2).getChildren()) {
-				((Container)root2).remove(node);
-				((Container)root1).add(node);
-			} */
-			System.out.printf("< root1 = %d, root2 = %d\n", root1.getChildren().size(), root2.getChildren().size());
+			Collection<Node> nodes2 = new HashSet<Node>(((Container)root2).getChildren());
+			((Container)root2).reparent(nodes2, (Container)root1);
 
-			final References r1 = deserialisation1.getReferenceResolver();
-			final References r2 = deserialisation2.getReferenceResolver();
-			References r = new References() {
-				final String suffix1 = " ";
-				final String suffix2 = "_";
-
-				@Override
-				public Object getObject(String reference) {
-					if (reference.endsWith(suffix2)) {
-						return r2.getObject(reference.substring(0, reference.length() - suffix2.length()));
-					} else {
-						return r1.getObject(reference.substring(0, reference.length() - suffix1.length()));
-					}
-				}
-
-				@Override
-				public String getReference(Object obj) {
-					String s1 = r1.getReference(obj);
-					String s2 = r2.getReference(obj);
-					if(s1 != null) {
-						return s1 + suffix1;
-					} else {
-						return s2 + suffix2;
-					}
-				}
-			};
+			References intRef1 = deserialisation1.getReferenceResolver();
+			References intRef2 = deserialisation2.getReferenceResolver();
+			References references = new XMLDualDeserialiserState(intRef1, intRef2);
 
 			// create model
-			Model model = XMLDeserialisationManager.createModel(cls, root1, underlyingModel, r);
-			return new DualDeserialisationResult(model, r, r1, r2);
+			Model model = XMLDeserialisationManager.createModel(cls, root1, underlyingModel, references);
+			deserialisation1.deserialiseModelProperties(modelElement1, model);
+			if (model instanceof VisualModel) {
+				((VisualModel)model).select(nodes2);
+			}
+			return new DualDeserialisationResult(model, intRef1, intRef2);
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException(e);
 		} catch (SAXException e) {

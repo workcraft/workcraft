@@ -33,14 +33,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
@@ -55,7 +53,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SelectionTool extends AbstractTool {
 	private static final int DRAG_NONE = 0;
@@ -180,15 +178,14 @@ public class SelectionTool extends AbstractTool {
 				}
 
 				if (selectionMode != SELECTION_NONE) {
-					// selection will not actually be changed until drag
-					// completes
+					// selection will not actually be changed until drag completes
 					drag = DRAG_SELECT;
 					selected.clear();
-
-					if (selectionMode == SELECTION_REPLACE)
+					if (selectionMode == SELECTION_REPLACE) {
 						model.selectNone();
-					else
+					} else {
 						selected.addAll(model.getSelection());
+					}
 				}
 
 			} else {
@@ -197,18 +194,17 @@ public class SelectionTool extends AbstractTool {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
 					editor.getWorkspaceEntry().captureMemento();
-
-					if(hitNode!=null && !model.getSelection().contains(hitNode))
+					if (hitNode != null && !model.getSelection().contains(hitNode)) {
 						e.getModel().select(hitNode);
-
+					}
 					Movable node = (Movable) hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
 					Point2D pSnap = e.getEditor().snap(pos);
 					offsetSelection(e, pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
 					snapOffset = new Point2D.Double(pSnap.getX()-e.getStartPosition().getX(), pSnap.getY()-e.getStartPosition().getY());
-
+				} else {
+					// do nothing if pressed on a node with modifiers
 				}
-				// do nothing if pressed on a node with modifiers
 			}
 		}
 	}
@@ -267,111 +263,37 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-			e.getEditor().getWorkspaceEntry().saveMemento();
-			e.getModel().deleteSelection();
-			e.getEditor().repaint();
-		}
-
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE && isDragging()) {
+		WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE && isDragging()) {
 			cancelDrag(e.getEditor());
-			e.getEditor().repaint();
 			notClick1 = true;
 		}
 
-		if (!e.isCtrlDown())
-		{
-			if (!e.isShiftDown()) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_PAGE_UP:
-					currentLevelUp(e.getModel());
-					break;
-				case KeyEvent.VK_PAGE_DOWN:
-					currentLevelDown(e.getModel());
-					break;
-				case KeyEvent.VK_OPEN_BRACKET:
-					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),-Math.PI/2);
-					break;
-				case KeyEvent.VK_CLOSE_BRACKET:
-					VisualModelTransformer.rotateSelection(e.getEditor(), e.getModel(),Math.PI/2);
-					break;
-				case KeyEvent.VK_LEFT:
-					VisualModelTransformer.translateSelection(e.getModel(), -1,0);
-					break;
-				case KeyEvent.VK_RIGHT:
-					VisualModelTransformer.translateSelection(e.getModel(), 1,0);
-					break;
-				case KeyEvent.VK_UP:
-					VisualModelTransformer.translateSelection(e.getModel(),0,-1);
-					break;
-				case KeyEvent.VK_DOWN:
-					VisualModelTransformer.translateSelection(e.getModel(),0,1);
-					break;
-				}
-			} else { // Shift is pressed
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_LEFT:
-				case KeyEvent.VK_RIGHT:
-					VisualModelTransformer.scaleSelection(e.getModel(), -1, 1);
-					break;
-				case KeyEvent.VK_UP:
-				case KeyEvent.VK_DOWN:
-					VisualModelTransformer.scaleSelection(e.getModel(), 1, -1);
-					break;
-				}
+		if (!e.isCtrlDown() && !e.isShiftDown()) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_LEFT:
+				we.saveMemento();
+				VisualModelTransformer.translateSelection(e.getModel(),-1, 0);
+				break;
+			case KeyEvent.VK_RIGHT:
+				we.saveMemento();
+				VisualModelTransformer.translateSelection(e.getModel(), 1, 0);
+				break;
+			case KeyEvent.VK_UP:
+				we.saveMemento();
+				VisualModelTransformer.translateSelection(e.getModel(), 0,-1);
+				break;
+			case KeyEvent.VK_DOWN:
+				we.saveMemento();
+				VisualModelTransformer.translateSelection(e.getModel(), 0, 1);
+				break;
 			}
-		}
-
-		if (e.isCtrlDown()) {
-			switch(e.getKeyCode()){
-			case KeyEvent.VK_G:
-				e.getEditor().getWorkspaceEntry().saveMemento();
-				e.getModel().groupSelection();
-				e.getEditor().repaint();
-				break;
-			case KeyEvent.VK_U:
-				e.getEditor().getWorkspaceEntry().saveMemento();
-				e.getModel().ungroupSelection();
-				e.getEditor().repaint();
-				break;
-			case KeyEvent.VK_C:
-				break;
-			case KeyEvent.VK_X:
-				break;
-			case KeyEvent.VK_V:
-				e.getModel().selectNone();
-				//addToSelection(e.getModel(), e.getModel().paste(Toolkit.getDefaultToolkit().getSystemClipboard(), prevPosition));
-				//e.getModel().fireSelectionChanged();
-				e.getEditor().repaint();
-			}
-		}
-	}
-
-	protected void currentLevelDown(VisualModel model) {
-		Collection<Node> selection = model.getSelection();
-		if(selection.size() == 1)
-		{
-			Node selectedNode = selection.iterator().next();
-			if(selectedNode instanceof Container)
-				model.setCurrentLevel((Container)selectedNode);
-		}
-		editor.repaint();
-	}
-
-	protected void currentLevelUp(VisualModel model) {
-		Container level = model.getCurrentLevel();
-		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-		if(parent!=null)
-		{
-			model.setCurrentLevel(parent);
-			model.addToSelection(level);
 		}
 		editor.repaint();
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
 		VisualModel model = e.getEditor().getModel();
-
 		for(Node node : model.getSelection()){
 			if(node instanceof Movable) {
 				Movable mv = (Movable) node;

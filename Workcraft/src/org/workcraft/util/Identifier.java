@@ -8,7 +8,6 @@ public class Identifier {
 
 	public static boolean isValid (String s) {
 		final Matcher matcher = identifierPattern.matcher(s);
-		if (!matcher.find()) return false;
-		return matcher.end() == s.length();
+		return (matcher.find() && matcher.start() == 0 && matcher.end() == s.length());
 	}
 }

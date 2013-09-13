@@ -239,24 +239,21 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	private void loadFromClipboard() {
 		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 		Transferable contents = clip.getContents(null);
-		boolean hasTransferableText =
-		      (contents != null) &&
-		      contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
 		String str="";
-
-		if ( hasTransferableText ) {
-		      try {
-		        str = (String)contents.getTransferData(DataFlavor.stringFlavor);
-		      }
-		      catch (UnsupportedFlavorException ex){
-		        System.out.println(ex);
-		        ex.printStackTrace();
-		      }
-		      catch (IOException ex) {
-		        System.out.println(ex);
-		        ex.printStackTrace();
-		      }
-		    }
+		if (hasTransferableText) {
+			try {
+				str = (String)contents.getTransferData(DataFlavor.stringFlavor);
+			}
+			catch (UnsupportedFlavorException ex){
+				System.out.println(ex);
+				ex.printStackTrace();
+			}
+			catch (IOException ex) {
+				System.out.println(ex);
+				ex.printStackTrace();
+			}
+		}
 
 		int i=0;
 
@@ -264,7 +261,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		branchTrace = null;
 		traceStep = 0;
 		branchStep = 0;
-
 		for (String s: str.split("\n")) {
 			if (i==0) {
 				trace.fromString(s);

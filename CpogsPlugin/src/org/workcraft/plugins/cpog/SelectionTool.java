@@ -11,29 +11,23 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool
 {
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e)
-	{
+	public void mouseClicked(GraphEditorMouseEvent e) {
 		super.mouseClicked(e);
-		if (e.getClickCount() > 1)
-		{
+		if (e.getClickCount() > 1) {
 			Collection<Node> selection = e.getModel().getSelection();
-			if(selection.size() == 1)
-			{
+			if(selection.size() == 1) {
 				Node selectedNode = selection.iterator().next();
 
-				if(selectedNode instanceof VisualVariable)
-				{
+				if(selectedNode instanceof VisualVariable) {
 					((VisualVariable) selectedNode).toggle();
 				}
 
-				if(selectedNode instanceof VisualScenario)
-				{
+				if(selectedNode instanceof VisualScenario) {
 					VisualScenario scenario = (VisualScenario) selectedNode;
 					Variable var = scenario.getVariableAt(e.getPosition());
-
-					if (var == null) currentLevelDown(e.getModel());
-					else
-					{
+					if (var == null) {
+						e.getEditor().getWorkspaceEntry().levelDown();
+					} else {
 						Encoding encoding = scenario.getEncoding();
 						encoding.toggleState(var);
 						scenario.sendNotification(new PropertyChangedEvent(scenario, "encoding"));
@@ -43,10 +37,12 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool
 
 		}
 	}
+
 	@Override
-	public void keyPressed(GraphEditorKeyEvent e)
-	{
+	public void keyPressed(GraphEditorKeyEvent e) {
 		super.keyPressed(e);
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) currentLevelUp(e.getModel());
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			e.getEditor().getWorkspaceEntry().levelUp();
+		}
 	}
 }

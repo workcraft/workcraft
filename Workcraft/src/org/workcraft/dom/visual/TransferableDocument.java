@@ -58,10 +58,8 @@ public class TransferableDocument implements Transferable {
 	}
 	public synchronized Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
 		if (isDataFlavorSupported(flavor)) {
-			if (flavor == DataFlavor.stringFlavor)
-			{
-				try
-				{
+			if (flavor == DataFlavor.stringFlavor) {
+				try {
 					TransformerFactory tFactory = TransformerFactory.newInstance();
 					tFactory.setAttribute("indent-number", new Integer(2));
 

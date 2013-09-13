@@ -40,7 +40,6 @@ import org.workcraft.util.XmlUtil;
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
 	private HashMap<String, XMLDeserialiser> deserialisers = new HashMap<String, XMLDeserialiser>();
 	private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
-
 	private XMLDeserialiserState state = null;
 
 	private void registerDeserialiser (XMLDeserialiser deserialiser) {
@@ -83,7 +82,6 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 	}
 
 	public static Model createModel (Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
-
 		Model result;
 		try {
 

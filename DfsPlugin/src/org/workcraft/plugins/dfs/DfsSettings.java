@@ -32,8 +32,8 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class DfsSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
-	private static Color computedLogicColor  = new Color (153, 153, 255);
-	private static Color enabledRegisterColor = new Color (153, 255, 153);
+	private static Color computedLogicColor  = new Color (153, 153, 153);
+	private static Color synchronisationRegisterColor = new Color (153, 153, 153);
 
 	public DfsSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -41,8 +41,8 @@ public class DfsSettings implements SettingsPage {
 		properties.add(new PropertyDeclaration(this, "Computed logic color",
 				"getComputedLogicColor", "setComputedLogicColor", Color.class));
 
-		properties.add(new PropertyDeclaration(this, "Enabled register color",
-				"getEnabledRegisterColor", "setEnabledRegisterColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Register synchronisation color",
+				"getSynchronisationRegisterColor", "setSynchronisationRegisterColor", Color.class));
 }
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -50,13 +50,13 @@ public class DfsSettings implements SettingsPage {
 	}
 
 	public void load(Config config) {
-		setComputedLogicColor(config.getColor("DfsSettings.computedLogicColor", new Color (153, 153, 255)));
-		setEnabledRegisterColor(config.getColor("DfsSettings.enabledRegisterColor", new Color (153, 255, 153)));
+		setComputedLogicColor(config.getColor("DfsSettings.computedLogicColor", new Color (153, 153, 153)));
+		setSynchronisationRegisterColor(config.getColor("DfsSettings.synchronisationRegisterColor", new Color (153, 153, 153)));
 	}
 
 	public void save(Config config) {
 		config.setColor("DfsSettings.computedLogicColor", getComputedLogicColor());
-		config.setColor("DfsSettings.enabledRegisterColor", getEnabledRegisterColor());
+		config.setColor("DfsSettings.synchronisationRegisterColor", getSynchronisationRegisterColor());
 	}
 
 	public String getSection() {
@@ -75,11 +75,11 @@ public class DfsSettings implements SettingsPage {
 		DfsSettings.computedLogicColor = computedLogicColor;
 	}
 
-	public static Color getEnabledRegisterColor() {
-		return enabledRegisterColor;
+	public static Color getSynchronisationRegisterColor() {
+		return synchronisationRegisterColor;
 	}
 
-	public static void setEnabledRegisterColor(Color enabledRegisterColor) {
-		DfsSettings.enabledRegisterColor = enabledRegisterColor;
+	public static void setSynchronisationRegisterColor(Color synchronisationRegisterColor) {
+		DfsSettings.synchronisationRegisterColor = synchronisationRegisterColor;
 	}
 }

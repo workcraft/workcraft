@@ -37,8 +37,7 @@ import org.workcraft.exceptions.NodeCreationException;
 
 public abstract class AbstractNodeGenerator implements NodeGenerator {
 
-	public interface MathNodeGenerator
-	{
+	public interface MathNodeGenerator {
 		public MathNode createNode();
 		public String getLabel();
 		public int getHotKeyCode();
@@ -52,8 +51,7 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 		VisualNode vc = NodeFactory.createVisualComponent(mn);
 		model.getCurrentLevel().add(vc);
 
-		if (vc instanceof Movable)
-		{
+		if (vc instanceof Movable) {
 			AffineTransform transform = TransformHelper.getTransform(model.getRoot(), vc);
 			Point2D transformed = new Point2D.Double();
 			transform.transform(where, transformed);

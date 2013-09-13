@@ -25,10 +25,10 @@ import org.workcraft.dom.Model;
 
 public class DeserialisationResult {
 	public Model model;
-	public ReferenceResolver referenceResolver;
+	public References references;
 
-	public DeserialisationResult(Model model, ReferenceResolver referenceResolver) {
+	public DeserialisationResult(Model model, References references) {
 		this.model = model;
-		this.referenceResolver = referenceResolver;
+		this.references = references;
 	}
 }
