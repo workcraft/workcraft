@@ -6,6 +6,7 @@ import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyClassProvider;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.cpog.serialisation.ArcDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.ArcSerialiser;
 import org.workcraft.plugins.cpog.serialisation.RhoClauseDeserialiser;
@@ -35,6 +36,8 @@ public class CpogModule implements Module {
 		p.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
 		p.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
 		p.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
+		p.registerClass(SettingsPage.class, CpogSettings.class);
+
 
 		p.registerClass(Tool.class, CpogEncoder.class);
 	}

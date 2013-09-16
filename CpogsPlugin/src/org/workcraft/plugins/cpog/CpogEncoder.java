@@ -23,7 +23,7 @@ public class CpogEncoder implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "CPOG Encoding...";
+		return "CPOG Encoding";
 	}
 
 	@Override
@@ -73,6 +73,8 @@ public class CpogEncoder implements Tool {
 	public void run(WorkspaceEntry we)
 	{
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+
+		we.captureMemento();
 
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
 		int n = 0;
@@ -167,6 +169,7 @@ public class CpogEncoder implements Tool {
 												"Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.",
 												"Invalid scenario",
 												JOptionPane.ERROR_MESSAGE);
+					we.cancelMemento();
 					return;
 				}
 
@@ -206,8 +209,8 @@ public class CpogEncoder implements Tool {
 
 		for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
-		int freeVariables = 2;
-		int derivedVariables = 1;
+		int freeVariables = CpogSettings.getEncodingWidth();
+		int derivedVariables = CpogSettings.getCircuitSize();
 
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 
@@ -216,16 +219,24 @@ public class CpogEncoder implements Tool {
 		Variable [] vars = new Variable[freeVariables];
 		for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
 
-		CpogEncoding solution = solverCnf.solve(instance, vars, derivedVariables);
-
-		if(solution == null)
+		CpogEncoding solution = null;
+		try
 		{
-			JOptionPane.showMessageDialog(null,
-					"No solution.",
-					"Encoding result",
-					JOptionPane.INFORMATION_MESSAGE);
-			return;
+			solution = solverCnf.solve(instance, vars, derivedVariables);
+			if (solution == null)
+			{
+				we.cancelMemento();
+				JOptionPane.showMessageDialog(null, "No solution.", "Encoding result", JOptionPane.INFORMATION_MESSAGE);
+			}
+
 		}
+		catch(Exception e)
+		{
+			we.cancelMemento();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
+		}
+
+		if(solution == null) return;
 
 		// create result
 
@@ -282,6 +293,7 @@ public class CpogEncoder implements Tool {
 					arc.setCondition(condition);
 				}
 			}
+		we.saveMemento();
 	}
 
 }

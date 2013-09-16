@@ -20,13 +20,10 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
+import org.workcraft.plugins.cpog.CpogSettings;
+
 
 public class ConsoleBooleanSolver {
-
-	private static final String minisatPath = "minisat";
-	private static final String claspPath = "D:\\cheetah\\bin\\clasp-1.3.6-win32.exe";
-
-	static final boolean useClasp = true;
 
 	public BooleanSolution solve(CnfTask task)
 	{
@@ -37,10 +34,13 @@ public class ConsoleBooleanSolver {
 	}
 
 	private String solve(String cnf) {
-		if(!useClasp)
-			return ProcessIO.minisat(minisatPath, cnf);
-		else
-			return ProcessIO.runViaStreams(cnf, new String[]{claspPath});
+		switch (CpogSettings.getSatSolver()) {
+		case CLASP:
+			return ProcessIO.runViaStreams(cnf, new String[]{CpogSettings.getClaspCommand()});
+		case MINISAT:
+			return ProcessIO.minisat(CpogSettings.getMinisatCommand(), cnf);
+		default :
+			throw new RuntimeException("Unknown SAT Solver: " + CpogSettings.getSatSolver());
+		}
 	}
-
 }
