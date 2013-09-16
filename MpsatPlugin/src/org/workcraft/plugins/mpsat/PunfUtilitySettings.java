@@ -32,28 +32,15 @@ public class PunfUtilitySettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	private static String punfCommand = "punf";
-	private static String punfArgs = "";
-
-	private static boolean punfRAComplexityReduction = false;
+	private static String punfArgs = "-r";
 
 	private static final String punfCommandKey = "Tools.punf.command";
 	private static final String punfArgsKey = "Tools.punf.args";
-
-	private static final String punfRAComplexityReductionKey = "Tools.punf.RAComplexityReduction";
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
 		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
-//		properties.add(new PropertyDeclaration(this, "Do read-arc complexity reduction", "getDoRAComplexityReduction", "setDoRAComplexityReduction", boolean.class));
-	}
-
-	public static boolean getDoRAComplexityReduction() {
-		return punfRAComplexityReduction;
-	}
-
-	public static void setDoRAComplexityReduction(boolean doReduction) {
-		PunfUtilitySettings.punfRAComplexityReduction = doReduction;
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -63,13 +50,11 @@ public class PunfUtilitySettings implements SettingsPage {
 	public void load(Config config) {
 		punfCommand = config.getString(punfCommandKey, "punf");
 		punfArgs = config.getString(punfArgsKey, "");
-		punfRAComplexityReduction = config.getBoolean(punfRAComplexityReductionKey, false);
 	}
 
 	public void save(Config config) {
 		config.set(punfCommandKey, punfCommand);
 		config.set(punfArgsKey, punfArgs);
-		config.setBoolean(punfRAComplexityReductionKey, punfRAComplexityReduction );
 	}
 
 	public String getSection() {
@@ -94,6 +79,6 @@ public class PunfUtilitySettings implements SettingsPage {
 
 	@Override
 	public String getName() {
-		return "punf";
+		return "Punf";
 	}
 }

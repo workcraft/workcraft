@@ -37,7 +37,8 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
+//		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
+		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, new String(mpsatResult.getReturnValue().getErrors())));
 			}
 			monitor.progressUpdate(0.90);
 

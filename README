@@ -28,3 +28,7 @@ Tips and tricks
 * Simulation
     - Use _[_ and _]_ keys to navigate through the simulation trace.
     - In Signal-State table the values of excited signals are depicted in bold font.
+* Settings
+ - Use punf with -r option to replicate Petri net places sensed by read-arcs and speed up the unfolding.
+ - Use petrify with -nosi option to allow synthesis of non-speed-independent specifications.
+ - Add "-lib tools/petrify.lib" to the petrify options to enable technology mapping into this libraty.

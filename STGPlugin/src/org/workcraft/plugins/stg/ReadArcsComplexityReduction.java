@@ -7,7 +7,12 @@ import java.util.LinkedList;
 import org.workcraft.dom.Connection;
 import org.workcraft.plugins.petri.Place;
 
-
+/*
+ *  This class is obsolete as punf has -r option now to replicate the Petri net places sensed by read-arcs.
+ *
+ *  @deprecated use -r option of punf instead.
+ */
+@Deprecated
 public class ReadArcsComplexityReduction {
 
 	public static STG reduce (STG source) {

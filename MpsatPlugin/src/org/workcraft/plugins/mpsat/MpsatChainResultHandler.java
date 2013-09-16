@@ -43,7 +43,9 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(null, "MPSat mode \"" + mpsatMode.getArgument() + "\" is not (yet) supported." , "Sorry..", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"MPSat mode \"" + mpsatMode.getArgument() + "\" is not (yet) supported." ,
+								"Sorry..", JOptionPane.WARNING_MESSAGE);
 					}
 				});
 				break;

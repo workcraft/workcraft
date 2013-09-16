@@ -27,14 +27,12 @@ public abstract class AbstractMpsatChecker {
 	}
 
 	public final void run(WorkspaceEntry we) {
-		PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
-		String title = model.getTitle();
 		String description = "MPSat tool chain";
-		if (!title.isEmpty())
+		String title = we.getModelEntry().getModel().getTitle();
+		if (!title.isEmpty()) {
 			description += "(" + title +")";
-
+		}
 		final MpsatChainTask mpsatTask = new MpsatChainTask(we, getSettings(), framework);
-
 		framework.getTaskManager().queue(mpsatTask, description, new MpsatChainResultHandler(mpsatTask));
 	}
 }

@@ -32,10 +32,8 @@ public class CscResolutionTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-
 		MpsatSettings settings = new MpsatSettings(MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
 		MpsatChainTask mpsatTask = new MpsatChainTask(we, settings, framework);
-
 		framework.getTaskManager().queue(mpsatTask, "CSC conflicts resolution", new MpsatChainResultHandler(mpsatTask));
 	}
 

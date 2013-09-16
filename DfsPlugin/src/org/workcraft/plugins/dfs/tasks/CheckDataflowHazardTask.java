@@ -50,7 +50,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-		this.settings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, nonPersReach);
+		this.settings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, nonPersReach);
 	}
 
 	@Override
