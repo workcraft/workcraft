@@ -1,28 +1,15 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.Trace;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitDeadlockTask;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.util.GUI;
+import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitDeadlockTool implements Tool {
 	private final Framework framework;
-	private CheckCircuitDeadlockTask task;
-	ProgressMonitor<? super MpsatChainResult> monitor;
 
 	public CheckCircuitDeadlockTool(Framework framework, Workspace ws) {
 		this.framework = framework;
@@ -45,46 +32,13 @@ public class CheckCircuitDeadlockTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		task = new CheckCircuitDeadlockTask(we, framework);
-
-		framework.getTaskManager().queue(task, "Checking circuit for deadlocks",
-				new ProgressMonitor<MpsatChainResult>() {
-					@Override
-					public void finished(final Result<? extends MpsatChainResult> result, String description) {
-						SwingUtilities.invokeLater(new Runnable(){
-							@Override
-							public void run() {
-								MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
-								List<Trace> solutions = mdp.getSolutions();
-								if (!solutions.isEmpty()) {
-									final SolutionsDialog solutionsDialog = new SolutionsDialog(task, result.getReturnValue().getMessage(), solutions);
-									GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
-									solutionsDialog.setVisible(true);
-								} else {
-									JOptionPane.showMessageDialog(null, result.getReturnValue().getMessage());
-								}
-							}
-						});
-					}
-
-					@Override
-					public boolean isCancelRequested() {
-						return false;
-					}
-
-					@Override
-					public void progressUpdate(double completion) {
-					}
-
-					@Override
-					public void stderr(byte[] data) {
-					}
-
-					@Override
-					public void stdout(byte[] data) {
-					}
-				}
-		);
+		final CheckCircuitDeadlockTask task = new CheckCircuitDeadlockTask(we, framework);
+		String description = "MPSat tool chain";
+		String title = we.getModelEntry().getModel().getTitle();
+		if (!title.isEmpty()) {
+			description += "(" + title +")";
+		}
+		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 
 }

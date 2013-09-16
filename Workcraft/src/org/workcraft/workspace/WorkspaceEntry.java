@@ -251,7 +251,7 @@ public class WorkspaceEntry implements ObservableState {
 			setModelEntry(result);
 			setChanged(true);
 		} catch (DeserialisationException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -287,14 +287,16 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void paste() {
-		try {
-			Memento memento = framework.save(modelEntry);
-			ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
-			saveMemento();
-			setModelEntry(result);
-			setChanged(true);
-		} catch (DeserialisationException e) {
-			System.err.println(e.getMessage());
+		if (framework.clipboard != null) {
+			try {
+				Memento memento = framework.save(modelEntry);
+				ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
+				saveMemento();
+				setModelEntry(result);
+				setChanged(true);
+			} catch (DeserialisationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

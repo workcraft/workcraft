@@ -710,11 +710,9 @@ public class MainWindow extends JFrame {
 
 		content.remove(rootDockingPort);
 
-		framework.setConfigVar("gui.main.maximised", Boolean
-				.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0));
+		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0));
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
-		framework
-				.setConfigVar("gui.main.height", Integer.toString(getHeight()));
+		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
 
 		if (lastSavePath != null)
 			framework.setConfigVar("gui.main.lastSavePath", lastSavePath);

@@ -738,14 +738,6 @@ public class Framework {
 		}
 	}
 
-	public ModelEntry load(byte[] data1, byte[] data2) {
-		try {
-			return load(new ByteArrayInputStream(data1), new ByteArrayInputStream(data2));
-		} catch (DeserialisationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);
 		try {

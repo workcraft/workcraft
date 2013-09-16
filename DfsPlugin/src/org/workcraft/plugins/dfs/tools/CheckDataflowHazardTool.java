@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.tasks.CheckDataflowDeadlockTask;
+import org.workcraft.plugins.dfs.tasks.CheckDataflowHazardTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,7 +31,7 @@ public class CheckDataflowHazardTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckDataflowDeadlockTask task = new CheckDataflowDeadlockTask(we, framework);
+		final CheckDataflowHazardTask task = new CheckDataflowHazardTask(we, framework);
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {

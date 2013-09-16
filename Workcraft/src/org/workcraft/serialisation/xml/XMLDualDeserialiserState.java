@@ -9,7 +9,7 @@ public class XMLDualDeserialiserState implements References {
 	private final References references1;
 	private final References references2;
 	private final Set<String> conflicts;
-	private final String suffix;
+	private final String prefix;
 
 	public XMLDualDeserialiserState(References references1, References references2) {
 		this.references1 = references1;
@@ -21,23 +21,23 @@ public class XMLDualDeserialiserState implements References {
 				conflicts.add(ref);
 			}
 		}
-		// find a non-conflicting suffix for model2
-		String goodSuffix = null;
-		for (int code = 0; goodSuffix == null; ++code) {
+		// find a non-conflicting prefix for model2
+		String goodPrefix = null;
+		for (int code = 0; goodPrefix == null; ++code) {
 			boolean pass = true;
-			String candidateSuffix = codeToString(code);
+			String candidatePrefix = codeToString(code);
 			for (String ref: conflicts) {
-				String tmp = ref + candidateSuffix;
+				String tmp = candidatePrefix + ref;
 				if (references1.getObject(tmp) != null || references2.getObject(tmp) != null) {
 					pass = false;
 					break;
 				}
 			}
 			if (pass) {
-				goodSuffix = candidateSuffix;
+				goodPrefix = candidatePrefix;
 			}
 		}
-		suffix = goodSuffix;
+		prefix = goodPrefix;
 	}
 
 	private static String codeToString(int code) {
@@ -53,8 +53,8 @@ public class XMLDualDeserialiserState implements References {
 	public Object getObject(String ref) {
 		Object obj = null;
 		if (conflicts.contains(ref)) {
-			if (ref.endsWith(suffix)) {
-				obj = references2.getObject(ref.substring(0, ref.length() - suffix.length()));
+			if (ref.startsWith(prefix)) {
+				obj = references2.getObject(ref.substring(prefix.length()));
 			} else {
 				obj = references1.getObject(ref);
 			}
@@ -72,7 +72,7 @@ public class XMLDualDeserialiserState implements References {
 		String ref1 = references1.getReference(obj);
 		String ref2 = references2.getReference(obj);
 		if (conflicts.contains(ref1) || conflicts.contains(ref2)) {
-			return (ref1 != null ? ref1 : ref2 + suffix);
+			return (ref1 != null ? ref1 : prefix + ref2);
 		} else {
 			return (ref1 != null ? ref1 : ref2);
 		}
@@ -90,7 +90,7 @@ public class XMLDualDeserialiserState implements References {
 		Set<String> result = references1.getReferences();
 		result.addAll(references2.getReferences());
 		for (String ref: conflicts) {
-			result.add(ref + suffix);
+			result.add(prefix + ref);
 		}
 		return result;
 	}
