@@ -55,8 +55,8 @@ public class SignalTransition extends NamedTransition
 			throw new ArgumentException ("Unexpected string: " + s);
 		}
 
-
-		@Override public String toString() {
+		@Override
+		public String toString() {
 			switch(this)
 			{
 			case PLUS:
@@ -109,6 +109,7 @@ public class SignalTransition extends NamedTransition
 	}
 
 	@NoAutoSerialisation
+	@Override
 	public String getName() {
 		final StringBuffer result = new StringBuffer(signalName);
 		switch (direction) {

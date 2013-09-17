@@ -98,4 +98,5 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	public void notify(StateEvent e) {
 		updateRenderedName();
 	}
+
 }

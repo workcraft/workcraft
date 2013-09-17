@@ -18,24 +18,23 @@ import org.workcraft.util.TwoWayMap;
  *
  * @param <T>
  */
-public class InstanceManager<T>
-{
+public class InstanceManager<T> {
 	private GeneralTwoWayMap<T, Pair<String,Integer>> instances = new TwoWayMap<T, Pair<String, Integer>>();
 
 	private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
 	private final Func<T, String> labelGetter;
+	private boolean forbidInstanceChange = false;
 
 	public InstanceManager (Func<T, String> labelGetter) {
-		if(labelGetter == null)
+		if(labelGetter == null) {
 			throw new NullPointerException();
+		}
 		this.labelGetter = labelGetter;
 	}
 
-	private IDGenerator getGenerator(String label)
-	{
+	private IDGenerator getGenerator(String label)	{
 		IDGenerator result = generators.get(label);
-		if(result == null)
-		{
+		if(result == null) 	{
 			result = new IDGenerator();
 			generators.put(label, result);
 		}
@@ -79,34 +78,30 @@ public class InstanceManager<T>
 	 */
 	public void assign (T t, Pair<String, Integer> reference) {
 		final Pair<String, Integer> assigned = instances.getValue(t);
-
-		if (reference.getSecond() == null) {
+		if (reference.getSecond() == null || !forbidInstanceChange) {
 			if (assigned != null) {
-				if (assigned.getFirst().equals(reference.getFirst())) // already registered with same name
+				if (assigned.getFirst().equals(reference.getFirst())){
+					// already registered with same name, just return
 					return;
-				// release old instance
-				remove (t);
+				} else {
+					// release old instance
+					remove(t);
+				}
 			}
-
 			instances.put(t, Pair.of(reference.getFirst(), getGenerator(reference.getFirst()).getNextID()));
-		}
-		else {
+		} else {
 			// check if desired instance is already taken
 			final T refHolder = instances.getKey(reference);
-
-			// requested instance already taken by t, do nothing
-			if (refHolder == t)
-					return;
-
-			// requested instance taken by somebody else
-			if(refHolder != null)
-					throw new DuplicateIDException (reference.getSecond());
-
-			// release old instance
-			if (assigned != null)
+			if (refHolder == t) {
+				// requested instance already taken by t, do nothing
+				return;
+			} else if(refHolder != null) {
+				// requested instance taken by somebody else
+				throw new DuplicateIDException(reference.getSecond());
+			} else if (assigned != null) {
+				// release old instance
 				remove(t);
-
-
+			}
 			instances.put(t, reference);
 			getGenerator(reference.getFirst()).reserveID(reference.getSecond());
 		}
@@ -126,5 +121,9 @@ public class InstanceManager<T>
 			throw new NotFoundException("Instance not assigned");
 		generators.get(assignment.getFirst()).releaseID(assignment.getSecond());
 		instances.removeKey(T);
+	}
+
+	public void setForbidInstanceChange(boolean value) {
+		this.forbidInstanceChange = value;
 	}
 }

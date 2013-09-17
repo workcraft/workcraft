@@ -1,6 +1,8 @@
 package org.workcraft.plugins.circuit.tools;
 
+import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.stg.STGModelDescriptor;
@@ -10,12 +12,10 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class STGGeneratorTool implements Tool {
+	private final Framework framework;
 
-	private final Workspace ws;
-
-	public STGGeneratorTool(Workspace ws)
-	{
-		this.ws = ws;
+	public STGGeneratorTool(Framework framework) {
+		this.framework = framework;
 	}
 
 	@Override
@@ -35,10 +35,13 @@ public class STGGeneratorTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
-		VisualSTG vstg = STGGenerator.generate(circuit);
-		ws.add(we.getWorkspacePath().getParent(), we.getWorkspacePath().getNode(),
-				new ModelEntry(new STGModelDescriptor(), vstg),	false);
+		final VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
+		final VisualSTG vstg = STGGenerator.generate(circuit);
+		final Workspace workspace = framework.getWorkspace();
+		final Path<String> directory = we.getWorkspacePath().getParent();
+		final String name = we.getWorkspacePath().getNode();
+		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), vstg);
+		workspace.add(directory, name, me, false, true);
 	}
 
 }

@@ -5,13 +5,12 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.CheckDataflowTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDataflowTool implements Tool {
 	private final Framework framework;
 
-	public CheckDataflowTool(Framework framework, Workspace ws) {
+	public CheckDataflowTool(Framework framework) {
 		this.framework = framework;
 	}
 

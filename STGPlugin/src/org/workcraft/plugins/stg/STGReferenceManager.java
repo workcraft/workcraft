@@ -69,11 +69,11 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 		if (existingReferences != null) {
 			setExistingReference(root);
-			for (Node n: Hierarchy.getDescendantsOfType(root, Node.class))
+			for (Node n: Hierarchy.getDescendantsOfType(root, Node.class)) {
 				setExistingReference(n);
+			}
 			existingReferences = null;
 		}
-
 		super.attach(root);
 	}
 
@@ -81,24 +81,27 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		final String reference = existingReferences.getReference(n);
 		if (reference != null) {
 			if (n instanceof STGPlace) {
-				if (! ((STGPlace) n).isImplicit())
+				if (! ((STGPlace) n).isImplicit()) {
 					setName (n, reference);
-			} else setName (n, reference);
+				}
+			} else {
+				setName (n, reference);
+			}
 		}
 	}
 
 	@Override
 	public Node getNodeByReference(String reference) {
 		Pair<String, Integer> instancedName = LabelParser.parse(reference);
-		if (instancedName != null)
-		{
-			if (instancedName.getSecond() == null)
+		if (instancedName != null)	{
+			if (instancedName.getSecond() == null) {
 				instancedName = Pair.of(instancedName.getFirst(), 0);
+			}
 			Node n = instancedNameManager.getObject(instancedName);
-			if (n!=null)
+			if (n!=null) {
 				return n;
+			}
 		}
-
 		return defaultNameManager.get(reference);
 	}
 
@@ -114,13 +117,13 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		} else if (node instanceof Transition) {
 			final Transition t = (Transition)node;
 			final Pair<String, Integer> name = instancedNameManager.getInstance(t);
-
-			if (name.getSecond() == 0)
+			if (name.getSecond() == 0) {
 				return name.getFirst();
-			else
+			} else {
 				return name.getFirst() + "/" + name.getSecond();
-		} else
-			return defaultNameManager.getName(node);
+			}
+		}
+		return defaultNameManager.getName(node);
 	}
 
 	public Pair<String, Integer> getNamePair(Node node) {
@@ -155,9 +158,9 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 			try {
 				final Triple<String, Direction, Integer> r = LabelParser.parseFull(s);
-
-				if (r==null)
+				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
+				}
 
 				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()));
 
@@ -258,5 +261,8 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			defaultNameManager.remove(node);
 	}
 
+	public void setForbidInstanceChange(boolean value) {
+		instancedNameManager.setForbidInstanceChange(value);
+	}
 
 }

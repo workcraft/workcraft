@@ -118,30 +118,29 @@ public class WorkspaceEntry implements ObservableState {
 		String name = getWorkspacePath().getNode();
 		if (isWork()) {
 			int dot = name.lastIndexOf('.');
-			if (dot == -1)
+			if (dot == -1) {
 				res = name;
-			else
+			} else {
 				res = name.substring(0,dot);
-		} else
+			}
+		} else {
 			res = name;
-
+		}
 		return res;
 	}
 
 	@Override
 	public String toString() {
 		String res = getTitle();
-
-		if (modelEntry != null)
-			if (modelEntry.isVisual())
-				res = res + " [V]";
-
-		if (changed)
+		if (modelEntry != null && modelEntry.isVisual()) {
+			res = res + " [V]";
+		}
+		if (changed) {
 			res = "* " + res;
-
-		if (temporary)
+		}
+		if (temporary) {
 			res = res + " (not in workspace)";
-
+		}
 		return res;
 	}
 

@@ -31,28 +31,28 @@ public class CircuitModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new STGGeneratorTool(framework.getWorkspace());
+				return new STGGeneratorTool(framework);
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitDeadlockTool(framework, framework.getWorkspace());
+				return new CheckCircuitDeadlockTool(framework);
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitHazardTool(framework, framework.getWorkspace());
+				return new CheckCircuitHazardTool(framework);
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitTool(framework, framework.getWorkspace());
+				return new CheckCircuitTool(framework);
 			}
 		});
 

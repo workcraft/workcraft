@@ -68,7 +68,6 @@ public class STG extends AbstractMathModel implements STGModel {
 	public STG(Container root, References refs) {
 		super(root, new STGReferenceManager(refs));
 		referenceManager = (STGReferenceManager) getReferenceManager();
-
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
 
@@ -90,34 +89,32 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	final public STGPlace createPlace(String name, boolean markAsImplicit) {
 		STGPlace newPlace = new STGPlace();
-
 		newPlace.setImplicit(markAsImplicit);
-
-		if (name!=null)
+		if (name!=null) {
 			setName(newPlace, name);
-
+		}
 		getRoot().add(newPlace);
-
 		return newPlace;
 	}
 
 
 	final public DummyTransition createDummyTransition(String name) {
 		DummyTransition newTransition = new DummyTransition();
-		if (name!=null)
+		if (name!=null) {
 			setName(newTransition, name);
+		}
 		getRoot().add(newTransition);
 		return newTransition;
 	}
 
 	final public SignalTransition createSignalTransition(String name) {
 		SignalTransition ret = new SignalTransition();
-		if (name!=null)
+		if (name!=null) {
 			setName(ret, name);
+		}
 		getRoot().add(ret);
 		return ret;
 	}
-
 
 	public boolean isEnabled(Transition t) {
 		return PetriNet.isEnabled(this, t);
@@ -174,15 +171,17 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Set<String> getDummyNames() {
 		Set<String> result = new HashSet<String>();
-		for (Transition t : getDummies())
+		for (Transition t : getDummies()) {
 			result.add(referenceManager.getNamePair(t).getFirst());
+		}
 		return result;
 	}
 
 	private Set<String> getUniqueNames(Collection<SignalTransition> transitions) {
 		Set<String> result = new HashSet<String>();
-		for (SignalTransition st : transitions)
+		for (SignalTransition st : transitions) {
 			result.add(st.getSignalName());
+		}
 		return result;
 	}
 
@@ -202,7 +201,6 @@ public class STG extends AbstractMathModel implements STGModel {
 	public void setDirectionWithAutoInstance (Node t, Direction direction) {
 		String name = referenceManager.getName(t);
 		Triple<String, Direction, Integer> old = LabelParser.parseFull(name);
-
 		referenceManager.setName(t, old.getFirst() + direction.toString());
 	}
 
@@ -229,8 +227,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	@Override
 	public Properties getProperties(Node node) {
 		Properties.Mix result = new Properties.Mix();
-		if (node instanceof STGPlace) {
-			if (!((STGPlace) node).isImplicit())
+		if (node instanceof STGPlace && !((STGPlace) node).isImplicit()) {
 				result.add (new NamePropertyDescriptor(this, node));
 		}
 		if (node instanceof SignalTransition) {
@@ -297,9 +294,8 @@ public class STG extends AbstractMathModel implements STGModel {
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
 			for (Node node : implicitPlaceCandidates) {
-				if (node instanceof STGPlace) {
-					if (((STGPlace) node).isImplicit())
-						return node;
+				if (node instanceof STGPlace && ((STGPlace) node).isImplicit()) {
+					return node;
 				}
 			}
 
@@ -312,6 +308,10 @@ public class STG extends AbstractMathModel implements STGModel {
 	public void makeExplicit(STGPlace implicitPlace) {
 		implicitPlace.setImplicit(false);
 		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
+	}
+
+	public void setForbidInstanceChange(boolean value) {
+		referenceManager.setForbidInstanceChange(value);
 	}
 
 }

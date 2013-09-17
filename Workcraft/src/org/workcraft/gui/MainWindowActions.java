@@ -1,6 +1,7 @@
 package org.workcraft.gui;
 
 import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -82,6 +83,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action RECONFIGURE_PLUGINS_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Reconfigure plugins";
 		}
@@ -96,6 +98,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action IMPORT_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Import...";
 		}
@@ -106,6 +109,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_UNDO_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Undo";
 		}
@@ -116,6 +120,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_REDO_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Redo";
 		}
@@ -126,6 +131,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_CUT_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Cut";
 		}
@@ -136,6 +142,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_COPY_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Copy";
 		}
@@ -146,6 +153,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_PASTE_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Paste";
 		}
@@ -156,6 +164,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_DELETE_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Delete";
 		}
@@ -166,6 +175,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action EDIT_SETTINGS_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Preferences...";
 		}
@@ -176,6 +186,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_GROUP_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Group";
 		}
@@ -186,6 +197,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_UNGROUP_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Ungroup";
 		}
@@ -196,6 +208,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_LEVEL_UP_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Level up";
 		}
@@ -206,6 +219,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_LEVEL_DOWN_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Level down";
 		}
@@ -216,6 +230,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_ROTATE_CLOCKWISE_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Rotate clockwise";
 		}
@@ -226,6 +241,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Rotate counterclockwise";
 		}
@@ -236,6 +252,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_FLIP_HORIZONTAL_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Flip horizontal";
 		}
@@ -246,6 +263,7 @@ public class MainWindowActions {
 	};
 
 	public static final Action OBJECT_FLIP_VERTICAL_ACTION = new Action() {
+		@Override
 		public String getText() {
 			return "Flip vertical";
 		}
@@ -269,7 +287,8 @@ public class MainWindowActions {
 	};
 
 	public static final Action HINTS_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override
+		public void run(Framework f) {
 			String text =
 				"<html><ul>" +
 				"<li><b>Selection</b></li><ul>" +
@@ -289,6 +308,10 @@ public class MainWindowActions {
 				"</ul><li><b>Simulation</b></li><ul>" +
 					"<li>Use <i>[</i> and <i>]</i> keys to navigate through the simulation trace.</li>" +
 					"<li>In Signal-State table the values of excited signals are depicted in bold font.</li>" +
+				"</ul><li><b>Settings</b></li><ul>" +
+					"<li>Use punf with <i>-r</i> option to replicate Petri net places sensed by read-arcs and speed up the unfolding.</li>" +
+					"<li>Use petrify with <i>-nosi</i> option to allow synthesis of non-speed-independent specifications.</li>" +
+					"<li>Add <i>-lib tools/petrify.lib</i> to the petrify options to enable technology mapping into this library.</li>" +
 				"</ul></ul></html>";
 			JOptionPane.showMessageDialog(f.getMainWindow(), text);
 		}

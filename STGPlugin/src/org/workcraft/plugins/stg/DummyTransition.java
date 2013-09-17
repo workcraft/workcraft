@@ -38,6 +38,7 @@ public class DummyTransition extends NamedTransition {
 	}
 
 	@NoAutoSerialisation
+	@Override
 	public String getName() {
 		return name;
 	}

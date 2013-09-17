@@ -5,13 +5,12 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitDeadlockTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitDeadlockTool implements Tool {
 	private final Framework framework;
 
-	public CheckCircuitDeadlockTool(Framework framework, Workspace ws) {
+	public CheckCircuitDeadlockTool(Framework framework) {
 		this.framework = framework;
 	}
 

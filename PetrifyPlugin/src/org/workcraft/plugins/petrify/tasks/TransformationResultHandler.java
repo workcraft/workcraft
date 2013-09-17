@@ -14,6 +14,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationResultHandler extends DummyProgressMonitor<TransformationResult> {
@@ -35,15 +36,18 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 
 				String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 
-				if (result.getOutcome() == Outcome.FINISHED)
-				{
+				if (result.getOutcome() == Outcome.FINISHED) {
 					STGModel model = result.getReturnValue().getResult();
-					final WorkspaceEntry resolved = task.getFramework().getWorkspace().add(path.getParent(), fileName + "_transformed", new ModelEntry(new STGModelDescriptor() , model), true);
-					task.getFramework().getMainWindow().createEditorWindow(resolved);
-				} else
-				{
+					final Workspace workspace = task.getFramework().getWorkspace();
+					final Path<String> directory = path.getParent();
+					final String name = fileName + "_transformed";
+					final ModelEntry me = new ModelEntry(new STGModelDescriptor() , model);
+					workspace.add(directory, name, me, true, true);
+				} else {
 					if (result.getCause() == null)
-						JOptionPane.showMessageDialog(task.getFramework().getMainWindow(), "Petrify output: \n\n" + new String(result.getReturnValue().getPetrifyResult().getReturnValue().getErrors()), "Transformation failed", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(task.getFramework().getMainWindow(),
+								"Petrify output: \n\n" + new String(result.getReturnValue().getPetrifyResult().getReturnValue().getErrors()),
+								"Transformation failed", JOptionPane.WARNING_MESSAGE);
 					else
 						ExceptionDialog.show(task.getFramework().getMainWindow(), result.getCause());
 				}

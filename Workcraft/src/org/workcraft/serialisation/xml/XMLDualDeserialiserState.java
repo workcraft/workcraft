@@ -3,13 +3,14 @@ package org.workcraft.serialisation.xml;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.serialisation.References;
 
 public class XMLDualDeserialiserState implements References {
 	private final References references1;
 	private final References references2;
 	private final Set<String> conflicts;
-	private final String prefix;
+	private final String suffix;
 
 	public XMLDualDeserialiserState(References references1, References references2) {
 		this.references1 = references1;
@@ -17,27 +18,31 @@ public class XMLDualDeserialiserState implements References {
 		// calculate reference conflicts
 		conflicts = new HashSet<String>();
 		for (String ref: references1.getReferences()) {
-			if (references1.getObject(ref) != null && references2.getObject(ref) != null) {
-				conflicts.add(ref);
+			Object obj1 = references1.getObject(ref);
+			if (obj1 instanceof MathNode && ((MathNode)obj1).requireReferenceConflictResolution()) {
+				Object obj2 = references2.getObject(ref);
+				if (obj1 != null && obj2 != null) {
+					conflicts.add(ref);
+				}
 			}
 		}
 		// find a non-conflicting prefix for model2
-		String goodPrefix = null;
-		for (int code = 0; goodPrefix == null; ++code) {
+		String suffixGood = null;
+		for (int code = 0; suffixGood == null; ++code) {
 			boolean pass = true;
-			String candidatePrefix = codeToString(code);
+			String suffixCandidate = codeToString(code);
 			for (String ref: conflicts) {
-				String tmp = candidatePrefix + ref;
+				String tmp = ref + suffixCandidate;
 				if (references1.getObject(tmp) != null || references2.getObject(tmp) != null) {
 					pass = false;
 					break;
 				}
 			}
 			if (pass) {
-				goodPrefix = candidatePrefix;
+				suffixGood = suffixCandidate;
 			}
 		}
-		prefix = goodPrefix;
+		suffix = suffixGood;
 	}
 
 	private static String codeToString(int code) {
@@ -53,8 +58,8 @@ public class XMLDualDeserialiserState implements References {
 	public Object getObject(String ref) {
 		Object obj = null;
 		if (conflicts.contains(ref)) {
-			if (ref.startsWith(prefix)) {
-				obj = references2.getObject(ref.substring(prefix.length()));
+			if (ref.endsWith(suffix)) {
+				obj = references2.getObject(ref.substring(0, ref.length() - suffix.length()));
 			} else {
 				obj = references1.getObject(ref);
 			}
@@ -72,7 +77,7 @@ public class XMLDualDeserialiserState implements References {
 		String ref1 = references1.getReference(obj);
 		String ref2 = references2.getReference(obj);
 		if (conflicts.contains(ref1) || conflicts.contains(ref2)) {
-			return (ref1 != null ? ref1 : prefix + ref2);
+			return (ref1 != null ? ref1 : ref2 + suffix);
 		} else {
 			return (ref1 != null ? ref1 : ref2);
 		}
@@ -90,7 +95,7 @@ public class XMLDualDeserialiserState implements References {
 		Set<String> result = references1.getReferences();
 		result.addAll(references2.getReferences());
 		for (String ref: conflicts) {
-			result.add(prefix + ref);
+			result.add(ref + suffix);
 		}
 		return result;
 	}

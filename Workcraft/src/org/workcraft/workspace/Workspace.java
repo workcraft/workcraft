@@ -181,7 +181,7 @@ public class Workspace {
 		return null;
 	}
 
-	public WorkspaceEntry add(Path<String> directory, String desiredName, ModelEntry modelEntry, boolean temporary) {
+	public WorkspaceEntry add(Path<String> directory, String desiredName, ModelEntry modelEntry, boolean temporary, boolean open) {
 		final Path<String> path = newName(directory, desiredName);
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setTemporary(temporary);
@@ -189,21 +189,26 @@ public class Workspace {
 		we.setModelEntry(modelEntry);
 		openFiles.put(path, we);
 		fireEntryAdded(we);
+		if (open) {
+			framework.getMainWindow().createEditorWindow(we);
+		}
 		return we;
 	}
 
 	public void add (String pathRelativeToWorkspace, File file, boolean temporary) {
-		addMount (Path.fromString(pathRelativeToWorkspace), file, temporary);
+		addMount(Path.fromString(pathRelativeToWorkspace), file, temporary);
 	}
 
 	public void addMount(Path<String> path, File file, boolean temporary)
 	{
 		final Path<String> wsPath = getWorkspacePath(file);
-		if(wsPath != null)
+		if (wsPath != null) {
 			throw new RuntimeException("Path already in the workspace: " + wsPath);
+		}
 		mounts.put(path, file.getAbsoluteFile());
-		if(!temporary)
+		if (!temporary) {
 			permanentMounts.put(path, tryMakeRelative(file, baseDir()));
+		}
 		fireWorkspaceChanged();
 	}
 
@@ -220,15 +225,17 @@ public class Workspace {
 
 	private File tryMakeRelative(File file, File base) {
 		final Path<String> relative = getRelative(base, file);
-		if(relative == null)
+		if(relative == null) {
 			return file;
+		}
 		return new File(relative.toString().replaceAll("/", File.pathSeparator));
 	}
 
 	public void fireWorkspaceChanged() {
 		// TODO : categorize and route events
-		for(WorkspaceListener listener : workspaceListeners)
+		for(WorkspaceListener listener : workspaceListeners) {
 			listener.workspaceLoaded();
+		}
 	}
 
 	private Path<String> newName(Path<String> dir, String desired) {
@@ -238,19 +245,15 @@ public class Workspace {
 		int dotIndex = desired.lastIndexOf(".");
 		String name;
 		String ext;
-		if(dotIndex == -1)
-		{
+		if (dotIndex == -1) {
 			name = desired;
 			ext = null;
-		}
-		else
-		{
+		} else {
 			name = desired.substring(0, dotIndex);
 			ext = desired.substring(dotIndex + 1);
 		}
 		Path<String> desiredPath = Path.append(dir, desired);
-		while(pathTaken(desiredPath))
-		{
+		while (pathTaken(desiredPath)) {
 			desiredPath = Path.append(dir, name + " " + i++ + (ext==null?"":"."+ext));
 		}
 		return desiredPath;
@@ -302,9 +305,7 @@ public class Workspace {
 				addMount(Path.fromString(mountPoint), file, false);
 			}
 			addMount(Path.<String>empty(), baseDir(), true);
-
 			setTemporary (false);
-
 		} catch (ParserConfigurationException e) {
 			throw new DeserialisationException (e);
 		} catch (SAXException e) {
@@ -316,8 +317,9 @@ public class Workspace {
 	}
 
 	public void clear() {
-		if(!openFiles.isEmpty())
+		if (!openFiles.isEmpty()) {
 			throw new RuntimeException("Current Workspace has some open files. Must close them before loading.");
+		}
 		mounts.clear();
 		permanentMounts.clear();
 	}
@@ -392,31 +394,36 @@ public class Workspace {
 
 	private void fireWorkspaceSaved() {
 		changed = false;
-		for (WorkspaceListener listener : workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners) {
 			listener.workspaceSaved();
+		}
 	}
 
 	void fireModelLoaded(WorkspaceEntry we) {
-		for (WorkspaceListener listener : workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners) {
 			listener.modelLoaded(we);
+		}
 	}
 
 	void fireEntryAdded(WorkspaceEntry we) {
 		changed = true;
-		for (WorkspaceListener listener : workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners) {
 			listener.entryAdded(we);
+		}
 	}
 
 	void fireEntryRemoved(WorkspaceEntry we) {
 		changed = true;
-		for (WorkspaceListener listener : workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners) {
 			listener.entryRemoved(we);
+		}
 	}
 
 	void fireEntryChanged(WorkspaceEntry we) {
 		changed = true;
-		for (WorkspaceListener listener : workspaceListeners)
+		for (WorkspaceListener listener : workspaceListeners) {
 			listener.entryChanged(we);
+		}
 	}
 
 	public boolean isTemporary() {
@@ -454,20 +461,16 @@ public class Workspace {
 	private void move(Path<String> from, Path<String> to) throws IOException {
 		File fileFrom = getFile(from);
 		File fileTo = getFile(to);
-		if(fileFrom.exists())
+		if(fileFrom.exists()) {
 			FileUtils.moveFile(fileFrom, fileTo);
-
+		}
 		moved(from, to);
-
 		File mountFrom = mounts.get(from);
-
-		if(mountFrom != null)
-		{
+		if (mountFrom != null) {
 			mounts.remove(from);
 			final File perm = permanentMounts.get(from);
 			mounts.put(to, mountFrom);
-			if(perm!=null)
-			{
+			if (perm!=null) {
 				permanentMounts.remove(from);
 				permanentMounts.put(to, perm);
 			}
@@ -481,15 +484,14 @@ public class Workspace {
 		{
 			final Path<String> newName = newName(to.getParent(), to.getNode());
 			final File toDelete = openFileTo.getFile();
-			if(toDelete.exists())
-				if(!toDelete.delete())
-					throw new IOException("Unable to delete '"+toDelete.getAbsolutePath()+"'");
+			if (toDelete.exists() && !toDelete.delete()) {
+				throw new IOException("Unable to delete '"+toDelete.getAbsolutePath()+"'");
+			}
 			move(to, newName);
 		}
 
 		System.out.println("moved from "+from+" to "+to);
-		if(openFileFrom != null)
-		{
+		if (openFileFrom != null) {
 			System.out.println("correcting open file path...");
 			openFiles.removeKey(from);
 			openFiles.put(to, openFileFrom);
@@ -498,8 +500,9 @@ public class Workspace {
 
 	public MountTree getMountTree(Path<String> path) {
 		MountTree result = getRoot();
-		for(String s : Path.getPath(path))
+		for(String s : Path.getPath(path)) {
 			result = result.getSubtree(s);
+		}
 		return result;
 	}
 
@@ -510,12 +513,14 @@ public class Workspace {
 
 	private void deleteFile (Path<String> path) throws OperationCancelledException {
 		final WorkspaceEntry openFile = getOpenFile(path);
-		if(openFile != null)
-				framework.getMainWindow().closeEditors(openFile);
+		if (openFile != null) {
+			framework.getMainWindow().closeEditors(openFile);
+		}
 		openFiles.removeValue(openFile);
 		final File file = getFile(path);
-		if(file.exists() && !file.delete())
+		if (file.exists() && !file.delete()) {
 			JOptionPane.showMessageDialog(null, "Deletion failed");
+		}
 	}
 
 	public void delete(Path<String> path) throws OperationCancelledException {
@@ -524,13 +529,13 @@ public class Workspace {
 		if (!file.exists())
 			return;
 
-		if (file.isDirectory())
-		{
-			for (File f : file.listFiles())
+		if (file.isDirectory())	{
+			for (File f : file.listFiles()) {
 				delete(getWorkspacePath(f));
-
-			if (!file.delete())
+			}
+			if (!file.delete()) {
 				JOptionPane.showMessageDialog(null, "Deletion failed");
+			}
 		} else {
 			deleteFile(path);
 		}
@@ -544,13 +549,11 @@ public class Workspace {
 		return workspaceFile;
 	}
 
-
 	public Path<String> getPath(WorkspaceEntry entry) {
 		return openFiles.getKey(entry);
 	}
 
-	public void createAssociation(Path<String> dependentFile,
-			Path<String> masterFile) {
+	public void createAssociation(Path<String> dependentFile, Path<String> masterFile) {
 		dependencyManager.createAssociation(dependentFile, masterFile);
 	}
 

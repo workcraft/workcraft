@@ -66,4 +66,9 @@ public abstract class MathNode implements Node, ObservableState {
 	public void removeObserver(StateObserver obs) {
 		observableStateImpl.removeObserver(obs);
 	}
+
+	public boolean requireReferenceConflictResolution() {
+		return true;
+	}
+
 }

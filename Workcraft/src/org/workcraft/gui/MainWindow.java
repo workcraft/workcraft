@@ -746,21 +746,20 @@ public class MainWindow extends JFrame {
 				MathModel mathModel = info.createMathModel();
 				String name = dialog.getModelTitle();
 
-				if (!dialog.getModelTitle().isEmpty())
+				if (!dialog.getModelTitle().isEmpty()) {
 					mathModel.setTitle(dialog.getModelTitle());
-
+				}
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
 					if (v == null) {
 						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");
 					}
 					VisualModel visualModel = v.create(mathModel);
-					WorkspaceEntry we = framework.getWorkspace().add(path, name, new ModelEntry(info, visualModel), false);
-					if (dialog.openInEditorSelected()) {
-						createEditorWindow(we);
-					}
+					ModelEntry me = new ModelEntry(info, visualModel);
+					framework.getWorkspace().add(path, name, me, false, dialog.openInEditorSelected());
 				} else {
-					framework.getWorkspace().add(path, name, new ModelEntry(info, mathModel), false);
+					ModelEntry me = new ModelEntry(info, mathModel);
+					framework.getWorkspace().add(path, name, me, false, false);
 				}
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
@@ -1022,15 +1021,11 @@ public class MainWindow extends JFrame {
 			for (File f : fc.getSelectedFiles()) {
 				for (Importer importer : importers) {
 					if (importer.accept(f)) {
-						ModelEntry modelEntry;
+						ModelEntry me;
 						try {
-							modelEntry = Import.importFromFile(importer, f);
-							modelEntry.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
-							WorkspaceEntry we = framework.getWorkspace().add(
-									Path.<String> empty(), f.getName(),	modelEntry, false);
-							if (we.getModelEntry().isVisual()) {
-								createEditorWindow(we);
-							}
+							me = Import.importFromFile(importer, f);
+							me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
+							framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, me.isVisual());
 							break;
 						} catch (IOException e) {
 							e.printStackTrace();

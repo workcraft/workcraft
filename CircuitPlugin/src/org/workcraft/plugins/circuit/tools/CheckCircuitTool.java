@@ -5,13 +5,12 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitTool implements Tool {
 	private final Framework framework;
 
-	public CheckCircuitTool(Framework framework, Workspace ws) {
+	public CheckCircuitTool(Framework framework) {
 		this.framework = framework;
 	}
 

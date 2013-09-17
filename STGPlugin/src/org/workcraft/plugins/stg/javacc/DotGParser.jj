@@ -35,6 +35,7 @@ public class DotGParser {
 	private void init() {
 		signals = new HashMap<String, Type>();
 		stg = new STG();
+		stg.setForbidInstanceChange(true);
 		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
 	}
 	
@@ -181,7 +182,7 @@ STG parse() : { }
 	 ( footer() <LINEBREAK> )*
 	 <END> (<ANY>)*
 	 <EOF>
-	 {return stg;}
+	 { stg.setForbidInstanceChange(false); }	 { return stg;}
 }
 
 void header() : { List<String> list; }

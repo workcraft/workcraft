@@ -414,16 +414,13 @@ public class Framework {
 			System.out.println ("Already in GUI mode");
 			return;
 		}
-
 		GUIRestartRequested = false;
-
 		System.out.println ("Switching to GUI mode...");
-
 
 		if (SwingUtilities.isEventDispatchThread()) {
 			mainWindow = new MainWindow(Framework.this);
 			mainWindow.startup();
-		} else
+		} else {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
@@ -436,25 +433,24 @@ public class Framework {
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
+		}
 
-			contextFactory.call(new ContextAction() {
-				public Object run(Context cx) {
-					Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
-					ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
-					systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
-					return null;
+		contextFactory.call(new ContextAction() {
+			public Object run(Context cx) {
+				Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
+				ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
+				systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
+				return null;
 
-				}
-			});
+			}
+		});
 
-			System.out.println ("Now in GUI mode.");
-			inGUIMode = true;
-
+		System.out.println ("Now in GUI mode.");
+		inGUIMode = true;
 	}
 
 	public void shutdownGUI() throws OperationCancelledException {
 		if (inGUIMode) {
-
 			mainWindow.shutdown();
 			mainWindow.dispose();
 			mainWindow = null;
@@ -466,7 +462,6 @@ public class Framework {
 					return null;
 				}
 			});
-
 		}
 		System.out.println ("Now in console mode.");
 	}

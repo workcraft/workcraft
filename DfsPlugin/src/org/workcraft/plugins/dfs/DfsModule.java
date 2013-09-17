@@ -21,7 +21,7 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new StgGeneratorTool(framework.getWorkspace());
+				return new StgGeneratorTool(framework);
 			}
 		});
 
@@ -35,14 +35,14 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDataflowHazardTool(framework, framework.getWorkspace());
+				return new CheckDataflowHazardTool(framework);
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDataflowTool(framework, framework.getWorkspace());
+				return new CheckDataflowTool(framework);
 			}
 		});
 
