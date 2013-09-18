@@ -4,13 +4,12 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tools.STGGenerator;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -20,8 +19,8 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,28 +30,15 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
 	private final Framework framework;
-	private String message = "";
-
-	// setup for searching hazards in circuits
-	private final String nonPersReach =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
-		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
-		"	  @t1 &\n"+
-		"	  exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
-		"	    @t2 &\n"+
-		"	    forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
-		"	       exists p in pre t3 \\ post t2 { ~$p }\n"+
-		"	    }\n"+
-		"	  }\n"+
-		"	}\n";
 
 	public CheckCircuitHazardTask(WorkspaceEntry we, Framework framework) {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
 		this.settings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
-				CircuitSettings.getCheckMode(), ((CircuitSettings.getCheckMode()==SolutionMode.ALL) ? 10 : 1), nonPersReach);
-	}
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				MpsatSettings.propertySemimodularity);
+}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
@@ -115,10 +101,6 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		}
-	}
-
-	public String getMessage() {
-		return message;
 	}
 
 }

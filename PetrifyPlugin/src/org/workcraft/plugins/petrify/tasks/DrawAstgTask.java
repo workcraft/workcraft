@@ -27,9 +27,9 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PetrifyUtilitySettings.getDraw_astgCommand());
+		command.add(PetrifyUtilitySettings.getDrawAstgCommand());
 
-		for (String arg : PetrifyUtilitySettings.getDraw_astgArgs().split(" "))
+		for (String arg : PetrifyUtilitySettings.getDrawAstgArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 

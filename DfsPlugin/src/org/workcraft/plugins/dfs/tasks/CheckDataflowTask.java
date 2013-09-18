@@ -9,7 +9,7 @@ import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -19,8 +19,8 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,28 +31,18 @@ public class CheckDataflowTask extends MpsatChainTask {
 	private final MpsatSettings hazardSettings;
 	private final WorkspaceEntry we;
 	private final Framework framework;
-	private String message = "";
-
-	// setup for searching hazards in circuits
-	private final String nonPersReach =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
-		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
-		"	  @t1 &\n"+
-		"	  exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
-		"	    @t2 &\n"+
-		"	    forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
-		"	       exists p in pre t3 \\ post t2 { ~$p }\n"+
-		"	    }\n"+
-		"	  }\n"+
-		"	}\n";
-
 
 	public CheckDataflowTask(WorkspaceEntry we, Framework framework) {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
-		this.hazardSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, nonPersReach);
+
+		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
+
+		this.hazardSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				MpsatSettings.propertySemimodularity);
 	}
 
 	@Override
@@ -132,10 +122,6 @@ public class CheckDataflowTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		}
-	}
-
-	public String getMessage() {
-		return message;
 	}
 
 }

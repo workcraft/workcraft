@@ -21,17 +21,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatCscResolutionResultHandler implements Runnable {
 
 	private final MpsatChainTask task;
-	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Result<? extends MpsatChainResult> result;
 
-	public MpsatCscResolutionResultHandler(MpsatChainTask task,
-			Result<? extends MpsatChainResult> mpsatChainResult) {
+	public MpsatCscResolutionResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 				this.task = task;
-				this.mpsatChainResult = mpsatChainResult;
+				this.result = result;
 	}
 
 	public STGModel getResolvedStg()
 	{
-		final byte[] output = mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue().getOutputFile("mpsat.g");
+		final byte[] output = result.getReturnValue().getMpsatResult().getReturnValue().getOutputFile("mpsat.g");
 		if(output == null)
 			return null;
 
@@ -51,7 +50,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 		STGModel model = getResolvedStg();
 		if (model == null) {
 			JOptionPane.showMessageDialog(task.getFramework().getMainWindow(),
-					"MPSat output: \n\n" + new String(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue().getErrors()),
+					"MPSat output: \n\n" + new String(result.getReturnValue().getMpsatResult().getReturnValue().getErrors()),
 					"Conflict resolution failed", JOptionPane.WARNING_MESSAGE );
 		} else {
 			Path<String> directory = path.getParent();

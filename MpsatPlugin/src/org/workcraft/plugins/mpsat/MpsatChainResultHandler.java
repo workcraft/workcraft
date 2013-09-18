@@ -22,21 +22,21 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 	}
 
 	@Override
-	public void finished(final Result<? extends MpsatChainResult> mpsatChainResult, String description) {
-		if (mpsatChainResult.getOutcome() == Outcome.FINISHED) {
-			final MpsatMode mpsatMode = mpsatChainResult.getReturnValue().getMpsatSettings().getMode();
+	public void finished(final Result<? extends MpsatChainResult> result, String description) {
+		if (result.getOutcome() == Outcome.FINISHED) {
+			final MpsatMode mpsatMode = result.getReturnValue().getMpsatSettings().getMode();
 			switch (mpsatMode) {
 			case DEADLOCK:
-				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(task, mpsatChainResult));
+				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(task, result));
 				break;
 			case RESOLVE_ENCODING_CONFLICTS:
-				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(task, mpsatChainResult));
+				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(task, result));
 				break;
 			case COMPLEX_GATE_IMPLEMENTATION:
-				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, mpsatChainResult));
+				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, result));
 				break;
 			case STG_REACHABILITY:
-				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, mpsatChainResult));
+				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, result));
 				break;
 
 			default:
@@ -51,17 +51,17 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				break;
 			}
 		}
-		else if (mpsatChainResult.getOutcome() != Outcome.CANCELLED) {
+		else if (result.getOutcome() != Outcome.CANCELLED) {
 			errorMessage = "MPSat tool chain execution failed :-(";
 
-			Throwable cause1 = mpsatChainResult.getCause();
+			Throwable cause1 = result.getCause();
 
 			if (cause1 != null) {
 				// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
 				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the \"Problems\" tab for more details.";
 			} else
 			{
-				Result<? extends Object> exportResult = mpsatChainResult.getReturnValue().getExportResult();
+				Result<? extends Object> exportResult = result.getReturnValue().getExportResult();
 				if (exportResult.getOutcome() == Outcome.FAILED) {
 					errorMessage += "\n\nFailed to export the model as a .g file.";
 					Throwable cause = exportResult.getCause();
@@ -70,7 +70,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 					else
 						errorMessage += "\n\nThe exporter class did not offer further explanation.";
 				} else {
-					Result<? extends ExternalProcessResult> punfResult = mpsatChainResult.getReturnValue().getPunfResult();
+					Result<? extends ExternalProcessResult> punfResult = result.getReturnValue().getPunfResult();
 
 					if (punfResult.getOutcome() == Outcome.FAILED) {
 						errorMessage += "\n\nPunf could not build the unfolding prefix.";
@@ -80,7 +80,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 						else
 							errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
 					} else {
-						Result<? extends ExternalProcessResult> mpsatResult = mpsatChainResult.getReturnValue().getMpsatResult();
+						Result<? extends ExternalProcessResult> mpsatResult = result.getReturnValue().getMpsatResult();
 
 						if (mpsatResult.getOutcome() == Outcome.FAILED) {
 							errorMessage += "\n\nMPSat failed to execute as expected.";

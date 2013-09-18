@@ -31,54 +31,59 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class PunfUtilitySettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String punfCommand = "punf";
-	private static String punfArgs = "-r";
+	private static final String commandKey = "Tools.punf.command";
+	private static final String extraArgsKey = "Tools.punf.args";
 
-	private static final String punfCommandKey = "Tools.punf.command";
-	private static final String punfArgsKey = "Tools.punf.args";
+	private static String command = "punf";
+	private static String extraArgs = "-r";
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
+		properties.add(new PropertyDeclaration(this, "Punf command", "getCommand", "setCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getExtraArgs", "setExtrafArgs", String.class));
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		punfCommand = config.getString(punfCommandKey, "punf");
-		punfArgs = config.getString(punfArgsKey, "");
+		command = config.getString(commandKey, "punf");
+		extraArgs = config.getString(extraArgsKey, "");
 	}
 
+	@Override
 	public void save(Config config) {
-		config.set(punfCommandKey, punfCommand);
-		config.set(punfArgsKey, punfArgs);
+		config.set(commandKey, command);
+		config.set(extraArgsKey, extraArgs);
 	}
 
+	@Override
 	public String getSection() {
 		return "External tools";
-	}
-
-	public static String getPunfCommand() {
-		return punfCommand;
-	}
-
-	public static void setPunfCommand(String punfCommand) {
-		PunfUtilitySettings.punfCommand = punfCommand;
-	}
-
-	public static String getPunfArgs() {
-		return punfArgs;
-	}
-
-	public static void setPunfArgs(String punfArgs) {
-		PunfUtilitySettings.punfArgs = punfArgs;
 	}
 
 	@Override
 	public String getName() {
 		return "Punf";
 	}
+
+	public static String getCommand() {
+		return command;
+	}
+
+	public static void setCommand(String value) {
+		PunfUtilitySettings.command = value;
+	}
+
+	public static String getExtraArgs() {
+		return extraArgs;
+	}
+
+	public static void setExtraArgs(String value) {
+		PunfUtilitySettings.extraArgs = value;
+	}
+
 }

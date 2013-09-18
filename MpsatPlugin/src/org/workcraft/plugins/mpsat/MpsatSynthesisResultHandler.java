@@ -15,18 +15,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatSynthesisResultHandler implements Runnable {
 
 	private final MpsatChainTask task;
-	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Result<? extends MpsatChainResult> result;
 
-	public MpsatSynthesisResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> mpsatChainResult) {
+	public MpsatSynthesisResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 		this.task = task;
-		this.mpsatChainResult = mpsatChainResult;
+		this.result = result;
 	}
 
 	@Override
 	public void run() {
 		final Workspace workspace = task.getFramework().getWorkspace();
 		final WorkspaceEntry we = task.getWorkspaceEntry();
-		final String mpsatOutput = new String(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue().getOutput());
+		final String mpsatOutput = new String(result.getReturnValue().getMpsatResult().getReturnValue().getOutput());
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String name = FileUtils.getFileNameWithoutExtension(new File(we.getWorkspacePath().getNode()));
 		final ModelEntry me = new ModelEntry(new GateLevelModelDescriptor(), new MpsatEqnParser().parse(mpsatOutput));

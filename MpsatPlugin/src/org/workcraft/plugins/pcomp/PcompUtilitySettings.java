@@ -31,54 +31,59 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class PcompUtilitySettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String pcompCommand = "pcomp";
-	private static String pcompArgs = "";
+	private static final String commandKey = "Tools.pcomp.command";
+	private static final String extraArgsKey = "Tools.pcomp.args";
 
-	private static final String pcompCommandKey = "Tools.pcomp.command";
-	private static final String pcompArgsKey = "Tools.pcomp.args";
+	private static String command = "pcomp";
+	private static String extraArgs = "";
 
 	public PcompUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "PComp command", "getPcompCommand", "setPcompCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPcompArgs", "setPcompArgs", String.class));
+		properties.add(new PropertyDeclaration(this, "PComp command", "getCommand", "setCommand", String.class));
+		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getExtraArgs", "setExtraArgs", String.class));
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		pcompCommand = config.getString(pcompCommandKey, "pcomp");
-		pcompArgs = config.getString(pcompArgsKey, "");
+		command = config.getString(commandKey, "pcomp");
+		extraArgs = config.getString(extraArgsKey, "");
 	}
 
+	@Override
 	public void save(Config config) {
-		config.set(pcompCommandKey, pcompCommand);
-		config.set(pcompArgsKey, pcompArgs);
+		config.set(commandKey, command);
+		config.set(extraArgsKey, extraArgs);
 	}
 
+	@Override
 	public String getSection() {
 		return "External tools";
-	}
-
-	public static String getPcompCommand() {
-		return pcompCommand;
-	}
-
-	public static void setPcompCommand(String pcompCommand) {
-		PcompUtilitySettings.pcompCommand = pcompCommand;
-	}
-
-	public static String getPcompArgs() {
-		return pcompArgs;
-	}
-
-	public static void setPcompArgs(String pcompArgs) {
-		PcompUtilitySettings.pcompArgs = pcompArgs;
 	}
 
 	@Override
 	public String getName() {
 		return "PComp";
 	}
+
+	public static String getCommand() {
+		return command;
+	}
+
+	public static void setCommand(String value) {
+		PcompUtilitySettings.command = value;
+	}
+
+	public static String getExtraArgs() {
+		return extraArgs;
+	}
+
+	public static void setExtraArgs(String value) {
+		PcompUtilitySettings.extraArgs = value;
+	}
+
 }

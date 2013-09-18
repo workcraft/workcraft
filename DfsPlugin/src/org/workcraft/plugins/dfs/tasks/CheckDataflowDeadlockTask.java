@@ -9,7 +9,7 @@ import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -19,8 +19,8 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,15 +30,13 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
 	private final Framework framework;
-	private String message = "";
-
 
 	public CheckDataflowDeadlockTask(WorkspaceEntry we, Framework framework) {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-//		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
-		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.MINIMUM_COST, 1, null);
+		this.settings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 	}
 
 	@Override
@@ -101,10 +99,6 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		}
-	}
-
-	public String getMessage() {
-		return message;
 	}
 
 }

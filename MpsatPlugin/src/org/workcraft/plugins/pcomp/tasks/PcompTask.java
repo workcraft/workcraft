@@ -30,9 +30,9 @@ public class PcompTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PcompUtilitySettings.getPcompCommand());
+		command.add(PcompUtilitySettings.getCommand());
 
-		for (String arg : PcompUtilitySettings.getPcompArgs().split(" "))
+		for (String arg : PcompUtilitySettings.getExtraArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 
