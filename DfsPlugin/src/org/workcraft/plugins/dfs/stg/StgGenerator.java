@@ -303,6 +303,8 @@ public class StgGenerator {
 			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
 			createReadArc(nstg.orM1, rstg.MR);
 			createReadArc(nstg.orM0, rstg.MF);
+			createReadArc(nstg.andM1, rstg.MF);
+			createReadArc(nstg.andM0, rstg.MR);
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
@@ -568,12 +570,16 @@ public class StgGenerator {
         for (VisualRegister n: dfs.getPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterSTG(n);
             createReadArc(nstg.M1, rstg.orMRfw);
+            createReadArc(nstg.M1, rstg.andMR);
             createReadArc(nstg.M0, rstg.orMFfw);
+            createReadArc(nstg.M0, rstg.andMF);
         }
         for (VisualRegister n: dfs.getPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterSTG(n);
             createReadArc(nstg.M1, rstg.orMRbw);
+            createReadArc(nstg.M1, rstg.andMR);
             createReadArc(nstg.M0, rstg.orMFbw);
+            createReadArc(nstg.M0, rstg.andMF);
         }
 
         for (VisualCounterflowLogic n: dfs.getPreset(r, VisualCounterflowLogic.class)) {
