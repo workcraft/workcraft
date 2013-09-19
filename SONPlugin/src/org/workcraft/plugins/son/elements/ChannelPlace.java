@@ -4,15 +4,15 @@ import java.awt.Color;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualChannelPlace.class)
-public class ChannelPlace extends Place{
+public class ChannelPlace extends NamedElement {
 
 	private String label="";
 	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
+	protected boolean token=false;
 
 	public void setLabel(String label){
 		this.label=label;
@@ -21,6 +21,15 @@ public class ChannelPlace extends Place{
 
 	public String getLabel(){
 		return label;
+	}
+
+	public boolean hasToken() {
+		return token;
+	}
+
+		public void setToken(boolean token) {
+		this.token=token;
+		sendNotification( new PropertyChangedEvent(this, "token") );
 	}
 
 	public Color getForegroundColor() {

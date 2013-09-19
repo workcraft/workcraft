@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
+import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
@@ -42,6 +44,7 @@ public class ParallelSimDialog  extends JDialog{
 	private SONModel net;
 	protected SimulationAlg alg;
 
+	boolean reverse = false;
 	private List<Event> possibleEvents, minimalEvents;
 	private Event clickedEvent;
 
@@ -51,6 +54,8 @@ public class ParallelSimDialog  extends JDialog{
 	private JList<EventItem> eventList;
 
 	private HashSet<Event> selectedEvents = new HashSet<Event>();
+	private Collection<ArrayList<Node>> sync;
+	private Collection<Event> enabledEvents;
 
 	private int run = 0;
 	private Window owner;
@@ -148,29 +153,45 @@ public class ParallelSimDialog  extends JDialog{
 						if(item instanceof EventItem){
 							if(item.isSelected() ){
 								selectedEvents.add(item.getEvent());
+								List<Event> set;
+								if(!reverse)
+									set = alg.getMinimalExeResult(item.getEvent(), sync, enabledEvents);
+								else
+									set = alg.getMinimalReverseExeResult(item.getEvent(), sync, enabledEvents);
 
-								for(Event e : alg.getPreRelate(item.getEvent())){
-									for(EventItem eventItem : itemList){
-										if(e==eventItem.getEvent()){
-											selectedEvents.add(e);
-											eventItem.setSelected(true);
-											eventItem.setForegroudColor(Color.BLUE);
+									for(Event e : set){
+										for(EventItem eventItem : itemList){
+											if(e==eventItem.getEvent()){
+												selectedEvents.add(e);
+												eventItem.setSelected(true);
+												eventItem.setForegroudColor(Color.BLUE);
+											}
 										}
 									}
-								}
 								item.setForegroudColor(Color.BLUE);
 								alg.clearEventSet();
-
 							}
+
 							if(!item.isSelected() ){
 								selectedEvents.remove(item.getEvent());
-
-								for(Event e : alg.getPostRelate(item.getEvent())){
-									for(EventItem eventItem : itemList){
-										if(e==eventItem.getEvent()){
-											selectedEvents.remove(e);
-											eventItem.setSelected(false);
-											eventItem.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+								if(!reverse){
+									for(Event e : alg.getPostExeResult(item.getEvent(), sync, enabledEvents)){
+										for(EventItem eventItem : itemList){
+											if(e==eventItem.getEvent()){
+												selectedEvents.remove(e);
+												eventItem.setSelected(false);
+												eventItem.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+											}
+										}
+									}
+								}else{
+									for(Event e : alg.getPreExeResult(item.getEvent(), sync, enabledEvents)){
+										for(EventItem eventItem : itemList){
+											if(e==eventItem.getEvent()){
+												selectedEvents.remove(e);
+												eventItem.setSelected(false);
+												eventItem.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+											}
 										}
 									}
 								}
@@ -248,7 +269,7 @@ public class ParallelSimDialog  extends JDialog{
 	private String[][] createData(){
 		String dataVal[][] = new String[this.minimalEvents.size()+1][2];
 
-		dataVal[0][0] = net.getName(clickedEvent);
+		dataVal[0][0] = net.getName(clickedEvent)+ "(clicked)";
 		dataVal[0][1] = this.clickedEvent.getLabel();
 
 		if(!this.minimalEvents.isEmpty()){
@@ -262,15 +283,18 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	public  ParallelSimDialog (Window owner, SONModel net, List<Event> possibleEvents, List<Event> minimalEvents, Event event){
+	public  ParallelSimDialog (Window owner, SONModel net, List<Event> possibleEvents, List<Event> minimalEvents, Event event, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents, boolean reverse){
 		super(owner, "Parallel Execution Setting", ModalityType.APPLICATION_MODAL);
 
 		alg = new SimulationAlg(net);
 
 		this.net = net;
+		this.reverse = reverse;
 		this.possibleEvents = possibleEvents;
 		this.minimalEvents = minimalEvents;
 		this.clickedEvent = event;
+		this.sync = sync;
+		this.enabledEvents = enabledEvents;
 
 		setEventsColor(minimalEvents, event);
 
@@ -318,6 +342,5 @@ public class ParallelSimDialog  extends JDialog{
 	public int getRun(){
 		return run;
 	}
-
 
 }

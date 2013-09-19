@@ -4,24 +4,14 @@ import java.awt.Color;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends Transition{
+public class Event extends NamedElement {
 
 	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label="";
-
-	public enum State {
-		UNCHECKED,
-		ERROR_RELATION,
-		ERROR_CYCLE,
-		OK
-	}
-
-	private State state = State.UNCHECKED;
 
 	public void setLabel(String label){
 		this.label=label;
@@ -48,14 +38,6 @@ public class Event extends Transition{
 
 	public Color getFillColor() {
 		return fillColor;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState(State state) {
-		this.state = state;
 	}
 
 }

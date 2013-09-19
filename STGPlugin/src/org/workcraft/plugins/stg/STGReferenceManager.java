@@ -24,14 +24,17 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
 public class STGReferenceManager extends HierarchySupervisor implements ReferenceManager {
+	private static final String inputTransitionName = "in";
+	private static final String outputTransitionName = "out";
+	private static final String internalTransitionName = "s";
+	private static final String dummyTransitionName = "dum";
+
 	private InstanceManager<Node> instancedNameManager;
 	private UniqueNameManager<Node> defaultNameManager;
 	private References existingReferences;
-
 	private ListMap<String, SignalTransition> transitions = new ListMap<String, SignalTransition>();
 
-	private int signalCounter = 0;
-	private int dummyCounter = 0;
+
 
 	public STGReferenceManager(References existingReferences) {
 		this.existingReferences = existingReferences;
@@ -222,30 +225,43 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	public void setDefaultNameIfUnnamed(Node node) {
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
-
-			if (instancedNameManager.contains(st))
+			if (instancedNameManager.contains(st)) {
 				return;
-
-			String name = "signal" + signalCounter++;
+			}
+			String name = null;
+			switch (st.getSignalType()) {
+			case DUMMY:
+				name = dummyTransitionName;
+				break;
+			case INPUT:
+				name = inputTransitionName;
+				break;
+			case INTERNAL:
+				name = internalTransitionName;
+				break;
+			case OUTPUT:
+				name = outputTransitionName;
+				break;
+			}
 			st.setSignalName(name);
 			transitions.put(name, st);
 			instancedNameManager.assign(st);
 		} else if (node instanceof DummyTransition) {
 			final DummyTransition dt = (DummyTransition)node;
-
-			if (instancedNameManager.contains(dt))
+			if (instancedNameManager.contains(dt)) {
 				return;
-
-			String name = "dummy" + dummyCounter++;
+			}
+			String name = dummyTransitionName;
 			dt.setName(name);
-
 			instancedNameManager.assign(dt);
 		} else if (node instanceof STGPlace) {
-			if (!((STGPlace) node).isImplicit())
+			STGPlace p = (STGPlace) node;
+			if (!p.isImplicit()) {
 				defaultNameManager.setDefaultNameIfUnnamed(node);
-		}
-		else
+			}
+		} else {
 			defaultNameManager.setDefaultNameIfUnnamed(node);
+		}
 	}
 
 	private void nodeRemoved(Node node) {

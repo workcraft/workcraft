@@ -2,11 +2,11 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ColorRefreshTool implements Tool {
+public class SuperGroupTool implements Tool{
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);
@@ -17,12 +17,11 @@ public class ColorRefreshTool implements Tool {
 	}
 
 	public String getDisplayName(){
-		return "Refresh color";
+		return "Super group";
 	}
 
 	public void run(WorkspaceEntry we){
-		SONModel net=(SONModel)we.getModelEntry().getMathModel();
-		net.refreshColor();
+		VisualSON net=(VisualSON)we.getModelEntry().getVisualModel();
+		net.superGroupSelection();
 	}
-
 }

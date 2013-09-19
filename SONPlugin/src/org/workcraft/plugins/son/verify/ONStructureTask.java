@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.verify;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -8,42 +7,41 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.algorithm.GroupCycleAlg;
+import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
 
-public class GroupStructureTask implements SONStructureVerification{
+public class ONStructureTask implements SONStructureVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> iniStateResult;
 	private Collection<Node> finalStateResult ;
-	private Collection<Node> conflictResult ;
+	private Collection<Node> postConflictResult, preConflictResult;
 	private Collection<ArrayList<Node>> cycleResult;
 	private Collection<ArrayList<Node>> backwardCycleResult;
 
-	private GroupCycleAlg traverse;
+	private ONPathAlg traverse;
 	private RelationAlg relation;
-	private Color relationColor;
-	private Color cycleColor;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public GroupStructureTask(SONModel net){
+	public ONStructureTask(SONModel net){
 		this.net = net;
 		relation = new RelationAlg(net);
-		traverse = new GroupCycleAlg(net);
+		traverse = new ONPathAlg(net);
 
 	}
 
 	public void task(ONGroup group){
 
-		logger.info("--------------------------Group Verification--------------------------");
+		logger.info("-------------------------Occurrence Net Verification-------------------------");
 
 		//group info
 		logger.info("Initialising group components...");
@@ -52,9 +50,9 @@ public class GroupStructureTask implements SONStructureVerification{
 
 		Collection<Node> groupComponents = group.getComponents();
 			if(group.getLabel().isEmpty())
-				logger.info("Group label = empty" );
+				logger.info("Group label : empty" );
 			else
-				logger.info("Group label = " + group.getLabel() );
+				logger.info("Group label : " + group.getLabel() );
 
 		logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
 		logger.info("Running group relation check...");
@@ -90,14 +88,18 @@ public class GroupStructureTask implements SONStructureVerification{
 		}
 
 		//conflict output
-		conflictResult = conflictTask(groupComponents);
-		if (conflictResult.isEmpty())
+		postConflictResult = postConflictTask(groupComponents);
+		preConflictResult = preConflictTask(groupComponents);
+
+		if (postConflictResult.isEmpty() && preConflictResult.isEmpty())
 			logger.info("Condition structure correct.");
 		else{
 			hasErr = true;
-			errNumber = errNumber + conflictResult.size();
-			for(Node condition : conflictResult)
-				logger.error("ERROR : Pre/post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+			errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
+			for(Node condition : postConflictResult)
+				logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+			for(Node condition : preConflictResult)
+				logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
 		}
 		logger.info("Relation checking complete.");
 
@@ -137,39 +139,49 @@ public class GroupStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	private Collection<Node> conflictTask(Collection<Node> groupNodes){
+	private Collection<Node> postConflictTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Condition)
-				if(relation.isConflict(node))
+				if(relation.hasPostConflictEvents(node))
 					result.add(node);
 		return result;
 	}
 
+	private Collection<Node> preConflictTask(Collection<Node> groupNodes){
+		ArrayList<Node> result = new ArrayList<Node>();
+		for (Node node : groupNodes)
+			if(node instanceof Condition)
+				if(relation.hasPreConflictEvents(node))
+					result.add(node);
+		return result;
+	}
 
 	public void errNodesHighlight(){
-		this.relationColor = new Color(255, 128, 0, 64);
-		this.cycleColor = new Color(255, 0, 0, 164);
 
 		for(Node node : this.iniStateResult){
-			this.net.setFillColor(node, relationColor);
+			this.net.setFillColor(node, SONSettings.getRelationErrColor());
 		}
 
 		for(Node node : finalStateResult){
-			this.net.setFillColor(node, relationColor);
+			this.net.setFillColor(node, SONSettings.getRelationErrColor());
 		}
 
-		for(Node node : conflictResult){
-			this.net.setFillColor(node, relationColor);
+		for(Node node : postConflictResult){
+			this.net.setFillColor(node, SONSettings.getRelationErrColor());
+		}
+
+		for(Node node : preConflictResult){
+			this.net.setFillColor(node, SONSettings.getRelationErrColor());
 		}
 
 		for (ArrayList<Node> list : this.cycleResult)
 			for (Node node : list)
-				this.net.setForegroundColor(node, cycleColor);
+				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 
 		for (ArrayList<Node> list : this.backwardCycleResult)
 			for (Node node : list)
-				this.net.setForegroundColor(node, cycleColor);
+				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 
 	}
 

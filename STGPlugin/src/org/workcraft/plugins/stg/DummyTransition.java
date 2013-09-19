@@ -42,4 +42,5 @@ public class DummyTransition extends NamedTransition {
 	public String getName() {
 		return name;
 	}
+
 }

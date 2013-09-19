@@ -11,8 +11,9 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.son.VisualONGroup;
+import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.VisualSuperGroup;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
@@ -45,18 +46,22 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 				if(selectedNode instanceof VisualONGroup)
 				{
 					setChannelPlaceToolState(false);
-					currentLevelDown(e.getModel());
+					e.getEditor().getWorkspaceEntry().levelDown();
+				}
+				if(selectedNode instanceof VisualSuperGroup)
+				{
+					e.getEditor().getWorkspaceEntry().levelDown();
 				}
 				if(selectedNode instanceof VisualCondition){
-					VisualPlace place = (VisualPlace) node;
-					if (place.getTokens()==1)
-						place.setTokens(0);
-					else if (place.getTokens()==0)
-						place.setTokens(1);
+					VisualCondition vc = (VisualCondition)selectedNode;
+					if (vc.hasToken()==false)
+							vc.setToken(true);
+					else if (vc.hasToken()==true)
+							vc.setToken(false);
 				}
 
 				if(selectedNode instanceof VisualChannelPlace){
-					VisualPlace cPlace = (VisualPlace) node;
+					VisualChannelPlace cPlace = (VisualChannelPlace) node;
 					for (Connection con : model.getConnections(cPlace)){
 						if (((VisualSONConnection) con).getSONConnectionType() == VisualSONConnection.SONConnectionType.ASYNLINE)
 							this.sync = false;
@@ -93,7 +98,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 		super.keyPressed(e);
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			setChannelPlaceToolState(true);
-			currentLevelUp(e.getModel());
+			e.getEditor().getWorkspaceEntry().levelUp();
 		}
 		if (!e.isCtrlDown())
 		{
@@ -101,13 +106,21 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_PAGE_UP:
 					setChannelPlaceToolState(true);
-					currentLevelUp(e.getModel());
+					e.getEditor().getWorkspaceEntry().levelUp();
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
 					setChannelPlaceToolState(false);
-					currentLevelDown(e.getModel());
+					e.getEditor().getWorkspaceEntry().levelDown();
 					break;
 				}
+			}
+		}
+		if(e.isCtrlDown()){
+			switch (e.getKeyCode()){
+			case KeyEvent.VK_B:
+				((VisualSON)(e.getModel())).superGroupSelection();
+				e.getEditor().repaint();
+				break;
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.verify;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +12,8 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Event;
@@ -24,7 +24,7 @@ public class CSONStructureTask implements SONStructureVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private RelationAlg relation;
-	private CSONCycleAlg traverse;
+	private CSONPathAlg traverse;
 
 	private Collection<ChannelPlace> cPlaceResult;
 	private Collection<ChannelPlace> cPlaceConTypeResult;
@@ -35,18 +35,15 @@ public class CSONStructureTask implements SONStructureVerification{
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	private Color relationColor;
-	private Color cycleColor;
-
 	public CSONStructureTask(SONModel net){
 		this.net = net;
 		relation = new RelationAlg(net);
-		traverse = new CSONCycleAlg(net);
+		traverse = new CSONPathAlg(net);
 	}
 
-	public void Task(Collection<ONGroup> groups){
+	public void task(Collection<ONGroup> groups){
 
-		logger.info("------------------Communication-SON Verification------------------");
+		logger.info("-----------------Communication-SON Verification-----------------");
 
 		//group info
 		logger.info("Initialising selected groups components...");
@@ -100,7 +97,6 @@ public class CSONStructureTask implements SONStructureVerification{
 		//global cycle detection
 		logger.info("Running cycle detection...");
 		cycleResult = traverse.cycleTask(components);
-		cycleResult = this.cyclePathFilter(cycleResult);
 
 		if (cycleResult.isEmpty() )
 			logger.info("Acyclic checking correct");
@@ -128,7 +124,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
 
 		for(ChannelPlace cPlace : cPlaces){
-			if(net.getSONConnectionsTypes(cPlace).size() > 1)
+			if(net.getSONConnectionTypes(cPlace).size() > 1)
 				result.add(cPlace);
 		}
 		return result;
@@ -187,9 +183,9 @@ public class CSONStructureTask implements SONStructureVerification{
 			if (cpList.size() > 2)
 				result.add(cpList);
 			if (cpList.size() == 2)
-				if(!net.getPostset(cpList.get(0)).containsAll(net.getPreset(cpList.get(1)))
-						&& !net.getSONConnectionsTypes(cpList.get(0)).contains("ASYNLINE")
-						&& !net.getSONConnectionsTypes(cpList.get(1)).contains("ASYNLINE")){
+				if(!(net.getPostset(cpList.get(0)).containsAll(net.getPreset(cpList.get(1)))
+						&& net.getSONConnectionTypes(cpList.get(0)).contains("ASYNLINE")
+						&& net.getSONConnectionTypes(cpList.get(1)).contains("ASYNLINE"))){
 					result.add(cpList);
 				}
 		}
@@ -213,39 +209,24 @@ public class CSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> pathResult){
-		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
-		for (ArrayList<Node> path : pathResult){
-			if(!net.getSONConnectionsTypes(path).contains("POLYLINE"))
-				delList.add(path);
-			if(!net.getSONConnectionsTypes(path).contains("SYNCLINE") && !net.getSONConnectionsTypes(path).contains("ASYNLINE"))
-				delList.add(path);
-		}
-		pathResult.removeAll(delList);
-
-		return pathResult;
-	}
-
 	public void errNodesHighlight(){
-		this.relationColor = new Color(255, 128, 0, 64);
-		this.cycleColor = new Color(255, 0, 0, 164);
 
 		for(ChannelPlace cPlace : cPlaceResult){
-			this.net.setFillColor(cPlace, relationColor);
+			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
 		}
 
 		for(ChannelPlace cPlace : cPlaceConTypeResult){
-			this.net.setFillColor(cPlace, relationColor);
+			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
 		}
 
 		for(List<ChannelPlace> list : cPlaceStructureResult)
 			for(ChannelPlace cPlace : list)
-			this.net.setFillColor(cPlace, relationColor);
+			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
 
 
 		for (ArrayList<Node> list : this.cycleResult)
 			for (Node node : list)
-				this.net.setForegroundColor(node, cycleColor);
+				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 	}
 
 	public boolean hasErr(){

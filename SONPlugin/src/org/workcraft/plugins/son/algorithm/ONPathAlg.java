@@ -8,16 +8,16 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 
-public class GroupCycleAlg{
+public class ONPathAlg{
 
-	private SONModel net;
-	private RelationAlg relation;
-	private Collection<Node> history;
-	private Collection<ArrayList<Node>> pathResult;
-	private Collection<ArrayList<Node>> cycleResult;
+	protected SONModel net;
+	protected RelationAlg relation;
+	protected Collection<Node> history;
+	protected Collection<ArrayList<Node>> pathResult;
+	protected Collection<ArrayList<Node>> cycleResult;
 
 
-	public GroupCycleAlg(SONModel net){
+	public ONPathAlg(SONModel net){
 		this.net = net;
 		relation = new RelationAlg(net);
 		history = new ArrayList<Node>();
@@ -54,6 +54,12 @@ public class GroupCycleAlg{
 	public void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
+
+		if(start == end){
+			ArrayList<Node> path = new ArrayList<Node>();
+			path.add(start);
+			pathResult.add(path);
+		}
 
 		for (int i=0; i< adj.size(); i++){
 			if (((Node)adj.get(i)[0]).equals(start)){
@@ -102,10 +108,14 @@ public class GroupCycleAlg{
 		 return pathResult;
 	}
 
-	private void clearAll(){
+	protected void clearAll(){
 		history.clear();
 		cycleResult.clear();
 		pathResult.clear();
+	}
+
+	public Collection<ArrayList<Node>> getPathSet(){
+		return this.pathResult;
 	}
 
 	//Backward Traverse

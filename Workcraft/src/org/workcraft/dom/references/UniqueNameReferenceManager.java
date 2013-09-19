@@ -18,33 +18,34 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 	public UniqueNameReferenceManager(References existing, Func<Node, String> defaultName) {
 		this (null, existing, defaultName);
 	}
-	public UniqueNameReferenceManager(UniqueNameManager<Node> manager, References existing, Func<Node, String> defaultName)
-	{
+
+	public UniqueNameReferenceManager(UniqueNameManager<Node> manager, References existing, Func<Node, String> defaultName) {
 		this.existing = existing;
-		if (manager == null)
+		if (manager == null) {
 			this.manager = new UniqueNameManager<Node>(defaultName);
-		else
+		} else {
 			this.manager = manager;
+		}
 	}
 
 
 	@Override
-	public void attach(Node root)
-	{
+	public void attach(Node root) {
 		if (existing != null) {
 			setExistingReference(root);
-			for(Node n : Hierarchy.getDescendantsOfType(root, Node.class))
+			for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
 				setExistingReference(n);
+			}
 			existing = null;
 		}
-
 		super.attach(root);
 	}
 
 	private void setExistingReference(Node n) {
 		final String reference = existing.getReference(n);
-		if (reference != null)
+		if (reference != null) {
 			manager.setName(n, reference);
+		}
 	}
 
 	@Override
@@ -59,18 +60,22 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-		if(e instanceof NodesAddedEvent)
+		if(e instanceof NodesAddedEvent) {
 			for(Node node : e.getAffectedNodes()) {
 				manager.setDefaultNameIfUnnamed(node);
-				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class))
+				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
 					manager.setDefaultNameIfUnnamed(node2);
+				}
 			}
-		if(e instanceof NodesDeletedEvent)
+		}
+		if(e instanceof NodesDeletedEvent) {
 			for(Node node : e.getAffectedNodes()) {
 				manager.remove(node);
-				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class))
+				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
 					manager.remove(node2);
+				}
 			}
+		}
 	}
 
 	public void setName(Node node, String name) {
@@ -80,4 +85,5 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 	public String getName(Node node) {
 		return manager.getName(node);
 	}
+
 }

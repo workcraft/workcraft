@@ -1,0 +1,152 @@
+package org.workcraft.plugins.son;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.son.connections.VisualSONConnection;
+import org.workcraft.util.Hierarchy;
+
+public class VisualSuperGroup extends VisualGroup{
+
+	private static final float strokeWidth = 0.03f;
+	private static final float frameDepth = 0.5f;
+
+	private GlyphVector glyphVector;
+	private Rectangle2D contentsBB = null;
+	private Rectangle2D labelBB = null;
+	private String label="";
+
+	private static Font labelFont;
+
+	static {
+		try {
+			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.75f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public VisualSuperGroup(){
+		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
+	}
+
+	private Rectangle2D getContentsBoundingBox(){
+		Rectangle2D bb = null;
+
+		for(VisualComponent v: Hierarchy.getChildrenOfType(this, VisualComponent.class))
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		for( VisualONGroup v: Hierarchy.getChildrenOfType(this, VisualONGroup.class))
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		for(VisualSONConnection v: Hierarchy.getChildrenOfType(this, VisualSONConnection.class))
+				bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		if (bb == null) bb = contentsBB;
+		else
+		bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
+				   bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+
+		if (bb == null) bb = new Rectangle2D.Double(0, 0, 1, 1);
+
+		contentsBB = (Rectangle2D) bb.clone();
+
+		return bb;
+	}
+
+	@Override
+	public void draw(DrawRequest r)
+	{
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
+		Rectangle2D bb = getContentsBoundingBox();
+
+		if (bb != null && getParent() != null)
+		{
+			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+			g.fill(bb);
+			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
+			g.setStroke(new BasicStroke((float)(strokeWidth * 0.5)));
+			g.draw(bb);
+
+			// draw label
+
+			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
+
+			labelBB = glyphVector.getVisualBounds();
+
+			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
+
+			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
+
+			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
+
+		}
+	}
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D p)
+	{
+		return getContentsBoundingBox().contains(p);
+	}
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	public String getLabel()
+	{
+		return this.label;
+	}
+
+	public Collection<VisualComponent> getVisualComponents(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
+
+	}
+
+	public Collection<VisualSONConnection> getVisualSONConnections(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
+
+	}
+
+	public Collection<VisualONGroup> getVisualONGroups(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualONGroup.class);
+
+	}
+
+	public Collection<Node> getVisualNodes(){
+		Collection<Node> result = new HashSet<Node>();
+
+		result.addAll(getVisualComponents());
+		result.addAll(getVisualSONConnections());
+		for(VisualONGroup vg : this.getVisualONGroups())
+			result.addAll(vg.getVisualComment());
+
+		return result;
+	}
+}

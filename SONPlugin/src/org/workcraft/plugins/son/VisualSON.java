@@ -13,6 +13,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -28,9 +29,11 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Structured Occurrence Nets")
 @CustomTools ( SONToolProvider.class )
+
 public class VisualSON extends AbstractVisualModel{
 
 	private String title="Invalid Group Selection";
+	private String title2="Invalid Super Group Selection";
 	private SON net;
 
 	public VisualSON(SON model){
@@ -52,8 +55,7 @@ public class VisualSON extends AbstractVisualModel{
 		this.net = model;
 	}
 
-	public void validateConnection (Node first, Node second) throws InvalidConnectionException
-	{
+	public void validateConnection (Node first, Node second) throws InvalidConnectionException{
 	}
 
 	public void validateConnection (Node first, Node second, SONConnectionType type) throws InvalidConnectionException{
@@ -118,17 +120,19 @@ public class VisualSON extends AbstractVisualModel{
 	}
 
 	private boolean isGrouped(Node node){
-		for (VisualONGroup group : getVisualGroups()){
-			if (group.getVisualComponents().contains(node))
+		for (VisualONGroup group : getVisualONGroups()){
+			if (group.getVisualComponents().contains(node)){
 				return true;
+			}
 		}
 		return false;
 	}
 
 	private boolean isInSameGroup (Node first, Node second){
-		for (VisualONGroup group : getVisualGroups()){
-			if (group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second))
+		for (VisualONGroup group : getVisualONGroups()){
+			if ( group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second)){
 				return true;
+			}
 		}
 		return false;
 	}
@@ -177,7 +181,7 @@ public class VisualSON extends AbstractVisualModel{
 		if (validateSelection ())
 		{
 			for(Node node : getOrderedCurrentLevelSelection()){
-				if (node instanceof VisualCondition || node instanceof VisualEvent || node instanceof VisualSONConnection)
+				if (node instanceof VisualCondition || node instanceof VisualEvent || node instanceof VisualSONConnection || node instanceof VisualComment)
 					result.add(node);
 				else
 				{
@@ -267,10 +271,111 @@ public class VisualSON extends AbstractVisualModel{
 		select(group);
 	}
 
+
+	//super group
+
+	private Collection<Node> getSuperGroupableSelection()
+	{
+		Collection<Node> result = new HashSet<Node>();
+		Collection<Node> groupComponents = new HashSet<Node>();
+
+		for(Node node : getOrderedCurrentLevelSelection()){
+			if(node instanceof VisualComponent
+					|| node instanceof VisualSONConnection)
+				result.add(node);
+			if (node instanceof VisualONGroup){
+				result.add(node);
+				groupComponents.addAll(((VisualONGroup)node).getVisualComponents());
+			}
+			if(node instanceof VisualSuperGroup){
+				result.removeAll(result);
+				return result;}
+		}
+
+		if(getOrderedCurrentLevelSelection().isEmpty())
+			return result;
+
+		boolean validateSelection = true;
+		for (VisualSONConnection connect : getVisualConnections()){
+			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.POLYLINE){
+				if (result.contains(connect.getFirst()) && !result.contains(connect.getSecond()))
+					validateSelection = false;
+				if (!result.contains(connect.getFirst()) && result.contains(connect.getSecond()))
+					validateSelection = false;
+			}
+			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.SYNCLINE
+					|| connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.ASYNLINE){
+				if(result.contains(connect.getFirst()) && !groupComponents.contains(connect.getSecond()))
+					validateSelection = false;
+				if(!result.contains(connect.getFirst()) && groupComponents.contains(connect.getSecond()))
+					validateSelection = false;
+				if(result.contains(connect.getSecond()) && !groupComponents.contains(connect.getFirst()))
+					validateSelection = false;
+				if(!result.contains(connect.getSecond()) && groupComponents.contains(connect.getFirst()))
+					validateSelection = false;
+			}
+
+			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
+				if(groupComponents.contains(connect.getFirst()) || groupComponents.contains(connect.getSecond()) && !result.contains(connect))
+					result.add(connect);
+
+		}
+		boolean hasComponent = false;
+		for (Node node : result){
+			if (node instanceof VisualComponent)
+				hasComponent = true;
+			if (node instanceof VisualONGroup)
+				hasComponent = true;
+		}
+
+		if(!hasComponent)
+			validateSelection=false;
+
+		if(!validateSelection){
+			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title2, JOptionPane.WARNING_MESSAGE);
+			result.removeAll(result);
+			return result;
+		}
+
+
+		return result;
+	}
+
+	public void superGroupSelection(){
+		Collection<Node> selected = getSuperGroupableSelection();
+		Collection<Node> cons = new HashSet<Node>();
+
+		if (selected.size() < 1) return;
+		VisualGroup vsgroup = new VisualSuperGroup();
+
+		Container currentLevel = getCurrentLevel();
+
+		currentLevel.add(vsgroup);
+
+		for(Node n : selected)
+			if(n instanceof VisualSONConnection)
+				cons.add(n);
+
+		currentLevel.reparent(selected, vsgroup);
+		// && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE
+
+		vsgroup.reparent(cons, this.getRoot());
+
+
+		select(vsgroup);
+	}
+
 	@Override
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 		Collection<Node> mathNodes = new ArrayList<Node>();
+		int i = 0;
+		for(Node node : getOrderedCurrentLevelSelection()){
+			if(node instanceof VisualONGroup)
+				i++;
+		}
+		if(i>1)
+			return;
 
 		for(Node node : getOrderedCurrentLevelSelection())
 		{
@@ -288,6 +393,13 @@ public class VisualSON extends AbstractVisualModel{
 				this.net.remove(group.getMathGroup());
 				getCurrentLevel().remove(group);
 
+			}
+			else if(node instanceof VisualSuperGroup){
+				VisualSuperGroup sGroup = (VisualSuperGroup)node;
+				for(Node subNode : sGroup.unGroup()){
+					toSelect.add(subNode);
+				}
+				getCurrentLevel().remove(sGroup);
 			}
 			else
 				toSelect.add(node);
@@ -308,6 +420,11 @@ public class VisualSON extends AbstractVisualModel{
 			{
 				VisualONGroup group = (VisualONGroup)node;
 				this.net.getRoot().remove(group.getMathGroup());
+			}
+			if(node instanceof VisualSuperGroup){
+				Collection<VisualONGroup> groups = ((VisualSuperGroup)node).getVisualONGroups();
+				for(VisualONGroup group : groups)
+					this.net.getRoot().remove(group.getMathGroup());
 			}
 		}
 
@@ -330,28 +447,23 @@ public class VisualSON extends AbstractVisualModel{
 
 	}
 
-	public Collection<VisualONGroup> getVisualGroups()
+	public Collection<VisualONGroup> getVisualONGroups()
 	{
-		return Hierarchy.getChildrenOfType(getRoot(), VisualONGroup.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualONGroup.class);
+	}
+
+	public Collection<VisualSuperGroup> getVisualSuperGroups()
+	{
+		return Hierarchy.getChildrenOfType(getRoot(), VisualSuperGroup.class);
 	}
 
 	public Collection<VisualComponent> getVisualComponent(){
-		Collection<VisualComponent> result = new HashSet<VisualComponent>();
-		result.addAll(Hierarchy.getChildrenOfType(getRoot(), VisualComponent.class));
-		for(VisualONGroup vGroup : this.getVisualGroups())
-			result.addAll(vGroup.getComponents());
-
-		return result;
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualComponent.class);
 	}
 
 	public Collection<VisualSONConnection> getVisualConnections()
 	{
-		Collection<VisualSONConnection> result = new HashSet<VisualSONConnection>();
-		result.addAll(Hierarchy.getChildrenOfType(getRoot(), VisualSONConnection.class));
-		for(VisualONGroup vGroup : this.getVisualGroups())
-			result.addAll(vGroup.getVisualSONConnections());
-
-		return result;
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualSONConnection.class);
 	}
 
 	public Collection<VisualSONConnection> getVisualConnections(VisualComponent node)
@@ -373,17 +485,4 @@ public class VisualSON extends AbstractVisualModel{
 		}
 		return result;
 	}
-
-	public VisualChannelPlace createChannelPlace() {
-		return createChannelPlace(null);
-	}
-
-	public VisualChannelPlace createChannelPlace(String name) {
-		VisualChannelPlace cPlace = new VisualChannelPlace(net.createChannelPlace(name));
-		cPlace.setX(0);
-		cPlace.setY(0);
-		add(cPlace);
-		return cPlace;
-	}
-
 }

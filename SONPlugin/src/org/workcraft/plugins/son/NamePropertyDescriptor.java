@@ -41,7 +41,7 @@ final class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public boolean isWritable() {
-		return false;
+		return true;
 	}
 
 	@Override

@@ -3,12 +3,10 @@ package org.workcraft.plugins.son;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,13 +16,12 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.Hierarchy;
@@ -37,22 +34,10 @@ public class VisualONGroup extends VisualGroup{
 	private GlyphVector glyphVector;
 	private Rectangle2D contentsBB = null;
 	private Rectangle2D labelBB = null;
-	private static Font labelFont;
 
 	private ONGroup mathGroup = null;
-	private Color fillColor = CommonVisualSettings.getFillColor();
+	private Color fillColor = Color.WHITE;
 
-	static {
-		try {
-			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.75f);
-		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public VisualONGroup(){
 		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
@@ -116,6 +101,12 @@ public class VisualONGroup extends VisualGroup{
 		for(VisualEvent v: Hierarchy.getChildrenOfType(this, VisualEvent.class))
 			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
 
+		for(VisualComment v: Hierarchy.getChildrenOfType(this, VisualComment.class))
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
+		for(VisualSONConnection v: Hierarchy.getChildrenOfType(this, VisualSONConnection.class))
+			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+
 		if (bb == null) bb = contentsBB;
 		else
 		bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
@@ -146,7 +137,7 @@ public class VisualONGroup extends VisualGroup{
 			g.draw(bb);
 
 			// draw label
-
+			Font labelFont = new Font("Calibri", Font.PLAIN, 1).deriveFont(0.65f);
 			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
 
 			labelBB = glyphVector.getVisualBounds();
@@ -211,15 +202,15 @@ public class VisualONGroup extends VisualGroup{
 
 	}
 
-	public Collection<VisualChannelPlace> getVisualChannelPlaces(){
-
-		return Hierarchy.getDescendantsOfType(this, VisualChannelPlace.class);
-
-	}
-
 	public Collection<VisualSONConnection> getVisualSONConnections(){
 
 		return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
+
+	}
+
+	public Collection<VisualComment> getVisualComment(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualComment.class);
 
 	}
 

@@ -23,7 +23,10 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.BSONPathAlg;
+import org.workcraft.plugins.son.algorithm.CSONPathAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.AsynLine;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -31,6 +34,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.test.test;
+import org.workcraft.plugins.son.verify.BSONStructureTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -63,7 +67,55 @@ public class TestTool implements Tool{
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		System.out.println("visual Connections type test: ");
+		RelationAlg alg = new RelationAlg(net);
+		BSONStructureTask task = new BSONStructureTask(net);
+
+
+		Collection<Condition[]> before = new ArrayList<Condition[]>();
+		for(Event e : net.getEvents()){
+			before =  alg.before(e);
+
+			if(!before.isEmpty()){
+			System.out.println("before event = " + net.getName(e));
+			System.out.println(before.size());
+			for(Condition[] condition : before)
+				System.out.print(" ["+net.getName(condition[0]) + " " + net.getName(condition[1])+ "], ");
+			System.out.println();
+					}
+		}
+
+		BSONPathAlg path = new BSONPathAlg(net);
+		Collection<ArrayList<Node>> cycle = path.cycleTask(net.getComponents());
+
+		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
+		for(ArrayList<Node> filter : cycle)
+			if(!net.getSONConnectionTypes( filter).contains("POLYLINE"))
+				delList.add( filter);
+
+		cycle.removeAll(delList);
+
+		System.out.println("cycle size  "  + cycle.size());
+		for(ArrayList<Node> c : cycle){
+			System.out.println("cycle:  ");
+			for(Node n : c)
+				System.out.print(net.getName(n));
+					System.out.println();
+		}
+		System.out.println();
+
+
+
+		/*
+		SimulationAlg alg = new SimulationAlg(net);
+		for(Event e : net.getEvents()){
+			System.out.println("start   " + net.getName(e) +  "  test");
+			for(Event test : alg.getSyncRelate(e))
+			System.out.println(net.getName(test));
+			alg.clearEventSet();
+		System.out.println();
+		}
+
+	System.out.println("visual Connections type test: ");
 		System.out.println("size="+ vnet.getVisualConnections().size());
 
 		for(Node node : vnet.getVisualConnections()){

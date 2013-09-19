@@ -45,7 +45,7 @@ public class StructureVerifyDialog extends JDialog{
 	private JButton runButton, cancelButton;
 	private JComboBox<typeMode> typeCombo;
 	private JList<CheckListItem> groupList;
-	private JCheckBox highLight;
+	private JCheckBox highLight, outputBefore;
 
 	private ArrayList<ONGroup> seletedGroups = new ArrayList<ONGroup>();
 	private Font font = new Font("Arial", Font.PLAIN, 12);
@@ -258,14 +258,23 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	private void createSettingPanel(){
-		settingPanel = new JPanel(new FlowLayout());
+		settingPanel = new JPanel(new BorderLayout());
+		JPanel leftColumn = new JPanel();
+		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
 
 		settingPanel.setBorder(BorderFactory.createTitledBorder("Setting"));
 		highLight = new JCheckBox("Highlight erroneous nodes");
 		highLight.setFont(font);
 		highLight.setSelected(true);
 
-		settingPanel.add(highLight);
+		outputBefore = new JCheckBox("Output 'before(e)'");
+		outputBefore.setFont(font);
+		outputBefore.setSelected(false);
+
+		leftColumn.add(highLight);
+		leftColumn.add(outputBefore);
+
+		settingPanel.add(leftColumn, BorderLayout.WEST);
 	}
 
 	private void createButtonsPanel() {
@@ -343,7 +352,7 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	public StructureVerifySettings getSetting(){
-		return new StructureVerifySettings(this.highLight.isSelected(),  getSelectedGroup(), this.typeCombo.getSelectedIndex());
+		return new StructureVerifySettings(this.highLight.isSelected(), this.outputBefore.isSelected(),  getSelectedGroup(), this.typeCombo.getSelectedIndex());
 	}
 
 	public int getRun(){

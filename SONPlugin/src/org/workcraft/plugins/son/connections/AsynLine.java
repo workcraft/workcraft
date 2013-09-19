@@ -44,8 +44,8 @@ public class AsynLine extends Polyline {
 
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-		Color connColor = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
-		g.setColor(connColor);
+		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+		g.setColor(color);
 
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(new BasicStroke( 0.18f , BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
@@ -59,8 +59,8 @@ public class AsynLine extends Polyline {
 		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
 
 		if (connectionInfo.hasArrow())
-			DrawHelper.drawArrowHead(g, connColor, curveInfo.arrowHeadPosition, curveInfo.arrowOrientation,
-				connectionInfo.getArrowLength(), connectionInfo.getArrowWidth());
+			DrawHelper.drawArrowHead(g, curveInfo.headPosition,	curveInfo.headOrientation,
+					connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
 
 	}
 

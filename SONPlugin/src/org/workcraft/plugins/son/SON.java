@@ -12,7 +12,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -21,18 +20,17 @@ import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.NamedElement;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel implements SONModel{
-
-	final UniqueNameReferenceManager names;
+	private final SONReferenceManager referenceManager;
 
 	public SON(){
-		this(null,null);
+		this(null);
 	}
 
 	public SON(Container root){
@@ -40,23 +38,9 @@ public class SON extends AbstractMathModel implements SONModel{
 	}
 
 	public SON(Container root, References refs){
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
-			public String eval(Node arg) {
-				if (arg instanceof Condition)
-					return "c";
-				if (arg instanceof Event)
-					return "e";
-				if (arg instanceof SONConnection)
-					return "con";
-				if (arg instanceof ChannelPlace)
-					return "q";
-				return "node";
-			}
-		}));
-
-		names = (UniqueNameReferenceManager) getReferenceManager();
+		super(root, new SONReferenceManager(refs));
+		referenceManager = (SONReferenceManager) getReferenceManager();
 	}
-
 
 	public void validate() throws ModelValidationException {
 	}
@@ -79,19 +63,20 @@ public class SON extends AbstractMathModel implements SONModel{
 		if ((first instanceof ChannelPlace && second instanceof Condition) || (first instanceof Condition && second instanceof ChannelPlace))
 			throw new InvalidConnectionException ("Connections between channel place and condition are not valid");
 
-			SONConnection con = new SONConnection((MathNode)first, (MathNode)second, conType);
-
-			Hierarchy.getNearestContainer(first, second).add(con);
-
-			return con;
+		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, conType);
+		Hierarchy.getNearestContainer(first, second).add(con);
+		return con;
 	}
 
 	public String getName(Node n) {
-		return this.names.getNodeReference(n);
+		return this.referenceManager.getNodeReference(n);
 	}
 
 	public void setName(Node n, String name) {
-		this.names.setName(n, name);
+		this.referenceManager.setName(n, name);
+		if (n instanceof NamedElement) {
+			((NamedElement)n).setName(name);
+		}
 	}
 
 	public Collection<Condition> getConditions(){
@@ -100,7 +85,7 @@ public class SON extends AbstractMathModel implements SONModel{
 
 	public Collection<ChannelPlace> getChannelPlace(){
 		return Hierarchy.getDescendantsOfType(getRoot(), ChannelPlace.class);
-		}
+	}
 
 	public Collection<Event> getEvents(){
 		return Hierarchy.getDescendantsOfType(getRoot(),Event.class);
@@ -145,6 +130,10 @@ public class SON extends AbstractMathModel implements SONModel{
 		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
+
+		if (n instanceof SONConnection)
+			((SONConnection)n).setColor(nodeColor);
+
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
@@ -167,6 +156,9 @@ public class SON extends AbstractMathModel implements SONModel{
 		for (ONGroup group : this.getGroups()){
 			setForegroundColor(group, CommonVisualSettings.getForegroundColor());
 		}
+
+		for (SONConnection con : this.getSONConnections())
+			setForegroundColor(con, CommonVisualSettings.getForegroundColor());
 	}
 
 	@Override
@@ -229,7 +221,7 @@ public class SON extends AbstractMathModel implements SONModel{
 		return result;
 	}
 
-	public Collection<String> getSONConnectionsTypes (Node node){
+	public Collection<String> getSONConnectionTypes (Node node){
 		Collection<String> result =  new HashSet<String>();
 		for (SONConnection con : getSONConnections(node)){
 			result.add(con.getType());
@@ -238,7 +230,7 @@ public class SON extends AbstractMathModel implements SONModel{
 		return result;
 	}
 
-	public Collection<String> getSONConnectionsTypes (Collection<Node> nodes){
+	public Collection<String> getSONConnectionTypes (Collection<Node> nodes){
 		Collection<String> result =  new HashSet<String>();
 		for(Node node : nodes){
 			for (SONConnection con : getSONConnections(node)){
@@ -249,7 +241,7 @@ public class SON extends AbstractMathModel implements SONModel{
 		return result;
 	}
 
-	public Collection<String> getSONConnectionsTypes (Node first, Node second){
+	public Collection<String> getSONConnectionTypes (Node first, Node second){
 		Collection<String> result =  new HashSet<String>();
 		for (SONConnection con : getSONConnections(first, second)){
 			result.add(con.getType());
@@ -258,7 +250,7 @@ public class SON extends AbstractMathModel implements SONModel{
 		return result;
 	}
 
-	public Collection<String> getInputSONConnectionsTypes(Node node){
+	public Collection<String> getInputSONConnectionTypes(Node node){
 		Collection<String> result =  new HashSet<String>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)
@@ -268,7 +260,7 @@ public class SON extends AbstractMathModel implements SONModel{
 		return result;
 	}
 
-	public Collection<String> getOutputSONConnectionsTypes(Node node){
+	public Collection<String> getOutputSONConnectionTypes(Node node){
 		Collection<String> result =  new HashSet<String>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)

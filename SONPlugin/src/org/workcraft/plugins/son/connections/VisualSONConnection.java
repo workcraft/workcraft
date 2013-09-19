@@ -57,9 +57,6 @@ public class VisualSONConnection extends VisualConnection
 	private static double defaultArrowWidth = 0.15;
 	private static double defaultArrowLength = 0.4;
 	public static double HIT_THRESHOLD = 0.2;
-	private static Color defaultColor = Color.BLACK;
-
-	private Color color = defaultColor;
 	private double lineWidth = defaultLineWidth;
 	private double arrowWidth = defaultArrowWidth;
 	private double arrowLength = defaultArrowLength;
@@ -71,7 +68,7 @@ public class VisualSONConnection extends VisualConnection
 
 		addPropertyDeclaration(new PropertyDeclaration(this, "Line width", "getLineWidth", "setLineWidth", double.class));
 		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width", "getArrowWidth", "setArrowWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Line Color", "getColor", "setColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration(this, "Line Color", "getDrawColor", "setColor", Color.class));
 
 		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
 		arrowLengths.put("short", 0.2);
@@ -108,6 +105,10 @@ public class VisualSONConnection extends VisualConnection
 	}
 
 	public VisualSONConnection() {
+	}
+
+	public VisualSONConnection(SONConnection refConnection) {
+		this.refConnection = refConnection;
 	}
 
 	public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second) {
@@ -339,21 +340,13 @@ public class VisualSONConnection extends VisualConnection
 
 	@Override
 	public Color getDrawColor() {
-		return color;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getColor()
-
-	public Color getColor() {
 		return this.getReferencedConnection().getColor();
 	}
 
 	public void setColor(Color color) {
 		this.getReferencedConnection().setColor(color);
 	}
-		 */
+
 	@Override
 	public void addObserver(HierarchyObserver obs) {
 		observableHierarchyImpl.addObserver(obs);

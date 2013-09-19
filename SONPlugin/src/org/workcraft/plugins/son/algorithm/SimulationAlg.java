@@ -2,13 +2,12 @@ package org.workcraft.plugins.son.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -19,120 +18,225 @@ public class SimulationAlg {
 
 	private SONModel net;
 
-	private List<Event> preEventSet = new ArrayList<Event>();
-	private List<Event> postEventSet = new ArrayList<Event>();
-	//private Collection<Event> history;
-	//private Collection<ArrayList<Event>> pathResult;
-	//private Collection<ArrayList<Event>> cycleResult;
+	private Collection<Event> syncEventSet = new HashSet<Event>();
+	private Collection<Node> checkedEvents = new HashSet<Node>();
+
+	private Collection<Node> history;
+	private List<ArrayList<Node>> syncCycles;
+	private Collection<ArrayList<Node>> cycleResult;
+
+	private Collection<Node> minimalExeEvents = new HashSet<Node>();
+	private Collection<Node> minimalReverseExeEvents = new HashSet<Node>();
+	private Collection<Node> postEventSet = new HashSet<Node>();
+	private Collection<Node> preEventSet = new HashSet<Node>();
 
 	public SimulationAlg(SONModel net){
 		this.net = net;
+		history = new ArrayList<Node>();
+		syncCycles= new ArrayList<ArrayList<Node>>();
+		cycleResult = new HashSet<ArrayList<Node>>();
 	}
 
 	private List<Event> getPreAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
-		for(Node node : net.getPreset(e))
-			if(node instanceof ChannelPlace)
+		for(Node node : net.getPreset(e)){
+			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
+			&& net.getSONConnectionTypes(node, e).contains("ASYNLINE"))
 				for(Node node2 : net.getPreset(node))
 					if(node2 instanceof Event)
 						result.add((Event)node2);
-		return result;
-	}
-
-	public List<Event> getPreRelate(Event n){
-		if(this.isEnabled(n))
-			for(Event node : this.getPreAsynEvents(n)){
-				if(preEventSet.contains(node))
-					return preEventSet;
-				if(this.isEnabled(node))
-					preEventSet.add(node);
-					getPreRelate(node);
-			}
-		else{
-			return preEventSet;
 		}
-		return preEventSet;
+		return result;
 	}
 
 	private List<Event> getPostAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
-		for(Node node : net.getPostset(e))
-			if(node instanceof ChannelPlace)
+		for(Node node : net.getPostset(e) )
+			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
+			&& net.getSONConnectionTypes(node, e).contains("ASYNLINE"))
 				for(Node node2 : net.getPostset(node))
 					if(node2 instanceof Event)
 						result.add((Event)node2);
 		return result;
 	}
 
-	public List<Event> getPostRelate(Event n){
-		if(this.isEnabled(n))
-			for(Event node : this.getPostAsynEvents(n)){
-				if( postEventSet.contains(node))
-					return  postEventSet;
-				if(this.isEnabled(node))
-					postEventSet.add(node);
-					getPostRelate(node);
-			}
-		else{
-			return postEventSet;
+	private void getMinimalExeEventSet (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
 		}
-		return  postEventSet;
+
+		if(!syncEvents.isEmpty()){
+			for(Node n : syncEvents){
+				if(enabledEvents.contains(n) && !minimalExeEvents.contains(n)){
+					minimalExeEvents.add(n);
+
+					for(Event pre : this.getPreAsynEvents((Event)n)){
+						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
+							getMinimalExeEventSet((Event)n, sync, enabledEvents);
+					}
+
+				}
+				if(!enabledEvents.contains(n))
+					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle  "+net.getName(n), "error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+
+		if(!this.getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!minimalExeEvents.contains(e))
+				minimalExeEvents.add(e);
+
+			for(Event n : this.getPreAsynEvents(e))
+				if(!minimalExeEvents.contains(n) && enabledEvents.contains(n)){
+					minimalExeEvents.add(n);
+					getMinimalExeEventSet((Event)n, sync, enabledEvents);
+				}
+		}
+		else
+			minimalExeEvents.add(e);
 	}
 
-	public List<Event> getPossibleExeEvents(Event n){
+	public List<Event> getMinimalExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 		List<Event> result = new ArrayList<Event>();
-		Collection<Event> subResult = new HashSet<Event>();
-		List<Event> preRelateEvents = this.getPreRelate(n);
 
-		subResult.addAll(this.getPostRelate(n));
-		for(Event e : preRelateEvents)
-			subResult.addAll(this.getPostRelate(e));
+		getMinimalExeEventSet(e, sync, enabledEvents);
 
-		for(Event e : subResult)
-			if(e !=n && !preRelateEvents.contains(e))
-			result.add(e);
+		for(Node n : this.minimalExeEvents)
+			if(n instanceof Event)
+				result.add((Event)n);;
 
 		return result;
 	}
-	/*
-	private List<Event[]> createAdj(Collection<Event> nodes){
 
-		List<Event[]> result = new ArrayList<Event[]>();
+	private void getPostEventsSet(Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 
-		for (Event n: nodes){
-			for (Event next: this.getPostAsynEvents(n))
-				if(nodes.contains(next)){
-					Event[] adjoin = new Event[2];
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
+		}
+
+		if(!syncEvents.isEmpty()){
+			for(Node n : syncEvents){
+				if(enabledEvents.contains(n) && !postEventSet.contains(n)){
+					postEventSet.add(n);
+
+					for(Event post : this.getPostAsynEvents((Event)n)){
+						if(!syncEvents.contains(post) && enabledEvents.contains(post))
+							getPostEventsSet((Event)n, sync, enabledEvents);
+					}
+
+				}
+				if(!enabledEvents.contains(n))
+					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle", "error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+
+		if(!this.getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!postEventSet.contains(e))
+				postEventSet.add(e);
+
+			for(Event n : this.getPostAsynEvents(e))
+				if(!postEventSet.contains(n) && enabledEvents.contains(n)){
+					postEventSet.add(n);
+					getPostEventsSet((Event)n, sync, enabledEvents);
+				}
+		}
+		else
+			postEventSet.add(e);
+	}
+
+	public List<Event> getPostExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+		List<Event> result = new ArrayList<Event>();
+		getPostEventsSet(e, sync, enabledEvents);
+
+		for(Node n : this.postEventSet)
+			if(n instanceof Event)
+				result.add((Event)n);
+
+		return result;
+	}
+
+	public void clearEventSet(){
+			syncEventSet.clear();
+			checkedEvents.clear();
+
+			history.clear();
+			syncCycles.clear();
+			cycleResult.clear();
+
+			minimalExeEvents.clear();
+			minimalReverseExeEvents.clear();
+			postEventSet.clear();
+			preEventSet.clear();
+	}
+
+	// enable ,fire
+
+	private List<Node[]> createAdj(Collection<Node> nodes){
+
+		List<Node[]> result = new ArrayList<Node[]>();
+
+		for (Node n: nodes){
+			for (Node next: net.getPostset(n)){
+				if(next instanceof ChannelPlace && net.getSONConnectionTypes(next, n).size() ==1
+						&& net.getSONConnectionTypes(next, n).contains("ASYNLINE")){
+					Node[] adjoin = new Node[2];
+					for(Node n2 : net.getPostset(next))
+						if(n2 instanceof Event){
+							adjoin[0] = n;
+							adjoin[1] = n2;
+							result.add(adjoin);
+						}
+				}
+
+				if(next instanceof ChannelPlace && net.getSONConnectionTypes(next, n).size() ==1
+						&& net.getSONConnectionTypes(next, n).contains("SYNCLINE")){
+					Node[] adjoin = new Node[2];
+					Node[] reAdjoin = new Node[2];
+					for(Node n2 : net.getPostset(next))
+						if(n2 instanceof Event){
+							adjoin[0] = n;
+							adjoin[1] = n2;
+							reAdjoin[0] = n2;
+							reAdjoin[1] = n;
+							result.add(adjoin);
+							result.add(reAdjoin);
+						}
+				}
+
+				if(next instanceof Event || next instanceof Condition){
+					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
 					result.add(adjoin);
+					}
 				}
 		}
 		return result;
 	}
 
-	private void getAllPath(Event start, Event end, List<Event[]> adj){
+	public void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
 
 		for (int i=0; i< adj.size(); i++){
-			if (((Event)adj.get(i)[0]).equals(start)){
-				if(((Event)adj.get(i)[1]).equals(end)){
-					ArrayList<Event> path= new ArrayList<Event>();
-
-					path.addAll(history);
-					path.add(end);
-					pathResult.add(path);
+			if (((Node)adj.get(i)[0]).equals(start)){
+				if(((Node)adj.get(i)[1]).equals(end)){
 					continue;
 				}
-				if(!history.contains((Event)adj.get(i)[1])){
-					getAllPath((Event)adj.get(i)[1], end, adj);
+				if(!history.contains((Node)adj.get(i)[1])){
+					getAllPath((Node)adj.get(i)[1], end, adj);
 				}
 				else {
-					ArrayList<Event> cycle=new ArrayList<Event>();
+					ArrayList<Node> cycle=new ArrayList<Node>();
 
 						cycle.addAll(history);
-						int n=cycle.indexOf(((Event)adj.get(i)[1]));
+						int n=cycle.indexOf(((Node)adj.get(i)[1]));
 						for (int m = 0; m < n; m++ ){
 							cycle.remove(0);
 						}
@@ -143,228 +247,372 @@ public class SimulationAlg {
 		history.remove(start);
 	}
 
-	private Collection<ArrayList<Event>> getPostPath(Event start, List<Event> list){
-		Collection<ArrayList<Event>> result = new HashSet<ArrayList<Event>>();
-		ArrayList<Event> endSet = new ArrayList<Event>();
-		ArrayList<Event> eventSet = new ArrayList<Event>();
 
-		List<Event[]> adj = this.createAdj(list);
+	public Collection<ArrayList<Node>> getSyncCycles(Collection<Node> nodes){
+		RelationAlg relation = new RelationAlg(net);
 
-		for(Event e : list){
-			eventSet.add(e);
-			if(this.getPostAsynEvents(e).isEmpty()){
-				endSet.add(e);
+		List<ArrayList<Node>> subResult = new ArrayList<ArrayList<Node>>();
+		Collection<ArrayList<Node>> result = new ArrayList<ArrayList<Node>>();
+
+		this.clearEventSet();
+
+		for(Node start : relation.getInitial(nodes))
+			for(Node end : relation.getFinal(nodes))
+				getAllPath(start, end, createAdj(nodes));
+
+		if(!cycleResult.isEmpty()){
+			for(ArrayList<Node> cycle : cycleResult){
+				boolean hasCondition = false;
+				for(Node n : cycle)
+					if(n instanceof Condition)
+						hasCondition = true;
+				if(!hasCondition)
+					subResult.add(cycle);
 			}
-			if(!list.containsAll(this.getPostAsynEvents(e))){
-				endSet.add(e);
+
+			getLongestCycle(subResult);
+
+			for(ArrayList<Node> list : getLongestCycle(subResult)){
+				HashSet<Node> filter = new HashSet<Node>();
+				filter.addAll(list);
+				ArrayList<Node> cycle = new ArrayList<Node>();
+				cycle.addAll(filter);
+				result.add(cycle);
 			}
 		}
+		return result;
+	}
 
-		for(Event end : endSet){
-			getAllPath(start, end, adj);
-		}
+	private List<ArrayList<Node>> getLongestCycle(List<ArrayList<Node>> cycles){
 
-		if(endSet.isEmpty()){
-			result.add(eventSet);
-			return result;
-		}
+		if(syncCycles.isEmpty())
+			syncCycles.add(cycles.get(0));
 
-		return pathResult;
+			boolean hasMerged = false;
+			int i = syncCycles.size()-1;
+			Collection<Node> merge = new HashSet<Node>();
+			ArrayList<Node> cycle = new ArrayList<Node>();
+
+
+		for(int j=0; j < cycles.size(); j++){
+				if(!syncCycles.get(i).containsAll(cycles.get(j)) && this.hasCommonElements(syncCycles.get(i), cycles.get(j))){
+					hasMerged = true;
+					merge.addAll(syncCycles.get(i));
+					merge.addAll(cycles.get(j));
+					syncCycles.remove(i);
+					cycle.addAll(merge);
+					syncCycles.add(cycle);
+					}
+			}
+
+			if(hasMerged)
+				getLongestCycle(cycles);
+			else{
+				for(int m=0; m<cycles.size(); m++){
+					boolean b = true;
+					for(int n=0; n<syncCycles.size();n++){
+						if(syncCycles.get(n).containsAll(cycles.get(m)))
+							b = false;
+					}
+					if(b){
+						syncCycles.add(cycles.get(m));
+						getLongestCycle(cycles);
+					}
+				}
+			}
+		return syncCycles;
+	}
+
+	private boolean hasCommonElements(ArrayList<Node> cycle1, ArrayList<Node> cycle2){
+		for(Node n : cycle1)
+			if(cycle2.contains(n))
+				return true;
+		for(Node n : cycle2)
+			if(cycle1.contains(n))
+				return true;
+		return false;
 	}
 
 
-	public  Collection<ArrayList<Event>> getPostRelate(Event n){
-		history = new ArrayList<Event>();
-		pathResult =new  HashSet<ArrayList<Event>>();
-		cycleResult = new HashSet<ArrayList<Event>>();
-		List<Event> postSet = new ArrayList<Event>();
-		postSet.add(n);
-		postSet.addAll(this.getPostSet(n));
-		return this.getPostPath(n, postSet);
-	}*/
-
-	public void clearEventSet(){
-			preEventSet.clear();
-			postEventSet.clear();
-			//this.cycleResult.clear();
-			//this.history.clear();
-			//this.pathResult.clear();
+	private boolean isPNEnabled (Event e) {
+		// gather number of connections for each pre-place
+		for (Node n : net.getPreset(e)){
+			if(n instanceof Condition)
+				if (!((Condition)n).hasToken())
+					return false;
+			}
+		return true;
 	}
 
-	// enable ,fire
-	final public boolean isEnabled (SONModel net, Event e){
-		if(isPolyEnabled(e) && isSyncEnabled(e))
+	private boolean isSyncEnabled(Event e, Collection<ArrayList<Node>> sync){
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
+		}
+
+		if(syncEvents.contains(e)){
+			checkedEvents.addAll(syncEvents);
+			for(Node n : syncEvents)
+				if(n instanceof Event){
+					if(!this.isPNEnabled((Event)n))
+							return false;
+					for(Node pre : this.getPreAsynEvents((Event)n)){
+						if(pre instanceof Event && !syncEvents.contains(pre)){
+							if(!this.isAsynEnabled((Event)n, sync))
+								return false;
+						}
+					}
+				}
+			}
+
+		return true;
+	}
+
+	private boolean isAsynEnabled(Event e, Collection<ArrayList<Node>> sync){
+
+		for (Node n : net.getPreset(e)){
+			if(n instanceof ChannelPlace)
+				if (((ChannelPlace)n).hasToken() == false)
+					for(Node node : net.getPreset(n)){
+						if(node instanceof Event && !checkedEvents.contains(node)){
+							if(!this.isPNEnabled((Event)node) ||!this.isSyncEnabled((Event)node, sync)||!this.isAsynEnabled((Event)node, sync))
+								return false;
+						}
+				}
+		}
+		return true;
+	}
+
+	final public boolean isEnabled (Event e, Collection<ArrayList<Node>> sync){
+		checkedEvents.clear();
+		if(isPNEnabled(e) && isSyncEnabled(e, sync) && this.isAsynEnabled(e, sync))
 			return true;
 		return false;
 	}
 
-	private boolean isPolyEnabled (Event e) {
-		// gather number of connections for each pre-place
-		Map<Node, Integer> map = new HashMap<Node, Integer>();
-		for (SONConnection c: net.getSONConnections(e)) {
-			if (c.getType() == "POLYLINE" && c.getSecond()==e) {
-				if (map.containsKey(c.getFirst())) {
-					map.put((Condition)c.getFirst(), map.get(c.getFirst())+1);
-				} else {
-					map.put((Condition)c.getFirst(), 1);
-				}
-			}
-		}
-		for (Node n : net.getPreset(e)){
-			if(n instanceof Condition)
-				if (((Condition)n).getTokens() < map.get((Condition)n))
-					return false;
-			}
-		return true;
-	}
-
-	private boolean isSyncEnabled(Event e) throws StackOverflowError{
-		Map<Node, Integer> map = new HashMap<Node, Integer>();
-
-		for (SONConnection c: net.getSONConnections(e)) {
-			if (c.getType() == "ASYNLINE" && c.getSecond()==e){
-				if (map.containsKey(c.getFirst())) {
-						map.put((ChannelPlace)c.getFirst(), map.get(c.getFirst())+1);
-					} else {
-						map.put((ChannelPlace)c.getFirst(), 1);
-					}
-				}
-			}
-		try{
-		for (Node n : net.getPreset(e)){
-			if(n instanceof ChannelPlace)
-				if (((ChannelPlace)n).getTokens() < map.get((ChannelPlace)n))
-					for(Node node : net.getPreset(n))
-						if(node instanceof Event)
-							if(!this.isEnabled((Event)node))
-								return false;
-			}
-		}catch (StackOverflowError exception){
-			System.err.println("cycle path!!");
-		}
-		return true;
-	}
-
-	final public boolean isEnabled (Event e) {
-		return isEnabled (net, e);
-	}
-
-	final public boolean isUnfireEnabled (SONModel net, Event e) {
-		// gather number of connections for each post-place
-		Map<Place, Integer> map = new HashMap<Place, Integer>();
-
-		for (SONConnection c: net.getSONConnections(e)) {
-			if (c.getType() == "POLYLINE" && c.getFirst()==e) {
-				if (map.containsKey(c.getSecond())) {
-					map.put((Condition)c.getSecond(), map.get(c.getSecond())+1);
-				} else {
-					map.put((Condition)c.getSecond(), 1);
-				}
-			}
-		}
-
-		for (Node n : net.getPostset(e)){
-			if(n instanceof Condition)
-				if (((Condition)n).getTokens() < map.get((Condition)n))
-					return false;
-		}
-		return true;
-	}
-
-	public boolean isUnfireEnabled(Event e) {
-		return isUnfireEnabled (net, e);
-	}
-
-	public void fire (Event e, String type) {
-		if (isEnabled(e))
-		{
+	public void fire(Collection<Event> events){
+		for(Event e : events){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
-					if(type=="a" || type=="s"){
 					Condition to = (Condition)c.getSecond();
-					to.setTokens(((Condition)to).getTokens()+1);
-					}
+					if(to.hasToken())
+						JOptionPane.showMessageDialog(null, "Token setting error: the number of token in "+net.getName(to) + " > 1", "Error", JOptionPane.WARNING_MESSAGE);
+					to.setToken(true);
 				}
 				if (c.getType() == "POLYLINE" && e==c.getSecond()) {
-					if(type=="a" || type=="s"){
 					Condition from = (Condition)c.getFirst();
-					from.setTokens(((Condition)from).getTokens()-1);
-					}
+					from.setToken(false);
+
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getFirst()){
-					if(type=="a"){
 						ChannelPlace to = (ChannelPlace)c.getSecond();
-						to.setTokens(((ChannelPlace)to).getTokens()+1);
-					}
+						if(events.containsAll(net.getPostset(to)) && events.containsAll(net.getPreset(to)))
+							to.setToken(((ChannelPlace)to).hasToken());
+						else{
+							if(to.hasToken())
+								JOptionPane.showMessageDialog(null, "Token setting error: the number of token in "+net.getName(to) + " > 1", "Error", JOptionPane.WARNING_MESSAGE);
+							to.setToken(true);
+						}
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getSecond()){
-					if(type=="a"){
 						ChannelPlace from = (ChannelPlace)c.getFirst();
-						if(from.getTokens() > 0)
-							from.setTokens(((ChannelPlace)from).getTokens()-1);
-					}
+						if(events.containsAll(net.getPostset(from)) && events.containsAll(net.getPreset(from)))
+							from.setToken(((ChannelPlace)from).hasToken());
+						else
+							from.setToken(!((ChannelPlace)from).hasToken());
 				}
 			}
 		}
 	}
 
-	public void fire(Collection<Event> events, String type){
-			for(Event e : events){
-				for (SONConnection c : net.getSONConnections(e)) {
-					if (c.getType() == "POLYLINE" && e==c.getFirst()) {
-						if(type=="a" || type=="s"){
-						Condition to = (Condition)c.getSecond();
-						to.setTokens(((Condition)to).getTokens()+1);
-						}
-					}
-					if (c.getType() == "POLYLINE" && e==c.getSecond()) {
-						if(type=="a" || type=="s"){
-						Condition from = (Condition)c.getFirst();
-						from.setTokens(((Condition)from).getTokens()-1);
-						}
-					}
-					if (c.getType() == "ASYNLINE" && e==c.getFirst()){
-						if(type=="s"){
-							ChannelPlace to = (ChannelPlace)c.getSecond();
-							if(events.containsAll(net.getPostset(to)) && events.containsAll(net.getPreset(to)))
-								to.setTokens(((ChannelPlace)to).getTokens());
-							else
-								to.setTokens(((ChannelPlace)to).getTokens()+1);
-						}
-					}
-					if (c.getType() == "ASYNLINE" && e==c.getSecond()){
-						if(type=="s"){
-							ChannelPlace from = (ChannelPlace)c.getFirst();
-							if(events.containsAll(net.getPostset(from)) && events.containsAll(net.getPreset(from)))
-								from.setTokens(((ChannelPlace)from).getTokens());
-							else
-								if(from.getTokens() > 0)
-								from.setTokens(((ChannelPlace)from).getTokens()-1);
+	//reverse simulation
+
+	final public boolean isUnfireEnabled (Event e, Collection<ArrayList<Node>> sync) {
+		checkedEvents.clear();
+		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync) && this.isAsynUnEnabled(e, sync))
+			return true;
+		return false;
+	}
+
+
+	private boolean isPNUnEnabled (Event e) {
+		for (Node n : net.getPostset(e)){
+			if(n instanceof Condition)
+				if (!((Condition)n).hasToken())
+					return false;
+			}
+		return true;
+	}
+
+	private boolean isSyncUnEnabled(Event e, Collection<ArrayList<Node>> sync){
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
+		}
+
+		if(syncEvents.contains(e)){
+			checkedEvents.addAll(syncEvents);
+			for(Node n : syncEvents)
+				if(n instanceof Event){
+					if(!this.isPNUnEnabled((Event)n))
+							return false;
+					for(Node post : this.getPostAsynEvents((Event)n)){
+						if(post instanceof Event && !syncEvents.contains(post)){
+							if(!this.isAsynUnEnabled((Event)n, sync))
+								return false;
 						}
 					}
 				}
 			}
-		}
-
-	final public void unFire(Event t) {
-		unFire(net, t);
+		return true;
 	}
 
-	final public static void unFire(SONModel net, Event e) {
-		// the opposite action to fire, no additional checks,
-		// the transition given must be correct
-		// for the transition to be enabled
+	private boolean isAsynUnEnabled(Event e, Collection<ArrayList<Node>> sync){
 
-		for (SONConnection c : net.getSONConnections(e)) {
-			if (c.getType() == "POLYLINE" && e==c.getFirst()) {
-				Condition to = (Condition)c.getSecond();
-				to.setTokens(((Place)to).getTokens()-1);
-			}
-			if (c.getType() == "POLYLINE" && e==c.getSecond()) {
-				Condition from = (Condition)c.getFirst();
-				from.setTokens(((Condition)from).getTokens()+1);
+		for (Node n : net.getPostset(e)){
+			if(n instanceof ChannelPlace)
+				if (((ChannelPlace)n).hasToken() == false)
+					for(Node node : net.getPostset(n)){
+						if(node instanceof Event && !checkedEvents.contains(node)){
+							if(!this.isPNUnEnabled((Event)node) ||!this.isSyncUnEnabled((Event)node, sync)||!this.isAsynUnEnabled((Event)node, sync))
+								return false;
+						}
+				}
+		}
+		return true;
+	}
+
+	public void unFire(Collection<Event> events){
+		for(Event e : events){
+			for (SONConnection c : net.getSONConnections(e)) {
+				if (c.getType() == "POLYLINE" && e==c.getSecond()) {
+					Condition to = (Condition)c.getFirst();
+					to.setToken(true);
+				}
+				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
+					Condition from = (Condition)c.getSecond();
+					from.setToken(false);
+				}
+				if (c.getType() == "ASYNLINE" && e==c.getSecond()){
+						ChannelPlace to = (ChannelPlace)c.getFirst();
+						if(events.containsAll(net.getPreset(to)) && events.containsAll(net.getPostset(to)))
+							to.setToken(((ChannelPlace)to).hasToken());
+						else
+							to.setToken(!((ChannelPlace)to).hasToken());
+				}
+				if (c.getType() == "ASYNLINE" && e==c.getFirst()){
+						ChannelPlace from = (ChannelPlace)c.getSecond();
+						if(events.containsAll(net.getPreset(from)) && events.containsAll(net.getPostset(from)))
+							from.setToken(((ChannelPlace)from).hasToken());
+						else
+							from.setToken(!((ChannelPlace)from).hasToken());
+				}
 			}
 		}
 	}
 
+	private void getMinimalReverseExeEventSet (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
+		}
+
+		if(!syncEvents.isEmpty()){
+			for(Node n : syncEvents){
+				if(enabledEvents.contains(n) && !minimalReverseExeEvents.contains(n)){
+					minimalReverseExeEvents.add(n);
+
+					for(Event pre : this.getPostAsynEvents((Event)n)){
+						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
+							getMinimalReverseExeEventSet((Event)n, sync, enabledEvents);
+					}
+
+				}
+				if(!enabledEvents.contains(n))
+					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle  "+net.getName(n), "error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+
+		if(!this.getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!minimalReverseExeEvents.contains(e))
+				minimalReverseExeEvents.add(e);
+
+			for(Event n : this.getPostAsynEvents(e))
+				if(!minimalReverseExeEvents.contains(n) && enabledEvents.contains(n)){
+					minimalReverseExeEvents.add(n);
+					getMinimalReverseExeEventSet((Event)n, sync, enabledEvents);
+				}
+		}
+		else
+			minimalReverseExeEvents.add(e);
+	}
+
+	public List<Event> getMinimalReverseExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+		List<Event> result = new ArrayList<Event>();
+
+		getMinimalReverseExeEventSet(e, sync, enabledEvents);
+
+		for(Node n : this.minimalReverseExeEvents)
+			if(n instanceof Event)
+				result.add((Event)n);;
+
+		return result;
+	}
+
+	private void getPreEventsSet(Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+
+		HashSet<Node> syncEvents = new HashSet<Node>();
+
+		for(ArrayList<Node> cycle : sync){
+			if(cycle.contains(e))
+				syncEvents.addAll(cycle);
+		}
+
+		if(!syncEvents.isEmpty()){
+			for(Node n : syncEvents){
+				if(enabledEvents.contains(n) && !preEventSet.contains(n)){
+					preEventSet.add(n);
+
+					for(Event pre : this.getPreAsynEvents((Event)n)){
+						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
+							getPreEventsSet((Event)n, sync, enabledEvents);
+					}
+
+				}
+				if(!enabledEvents.contains(n))
+					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle", "error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+
+		if(!this.getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!preEventSet.contains(e))
+				preEventSet.add(e);
+
+			for(Event n : this.getPreAsynEvents(e))
+				if(!preEventSet.contains(n) && enabledEvents.contains(n)){
+					preEventSet.add(n);
+					getPreEventsSet((Event)n, sync, enabledEvents);
+				}
+		}
+		else
+			preEventSet.add(e);
+	}
+
+	public List<Event> getPreExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+		List<Event> result = new ArrayList<Event>();
+		getPreEventsSet(e, sync, enabledEvents);
+
+		for(Node n : this.preEventSet)
+			if(n instanceof Event)
+				result.add((Event)n);
+
+		return result;
+	}
 }

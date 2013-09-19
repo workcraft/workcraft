@@ -1,10 +1,15 @@
 package org.workcraft.plugins.son.verify;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.gui.StructureVerifySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -32,7 +37,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 
 		//group structure task
 		if(settings.getType() == 0){
-			GroupStructureTask groupSTask = new GroupStructureTask(net);
+			ONStructureTask groupSTask = new ONStructureTask(net);
 
 			for(ONGroup group : settings.getSelectedGroups()){
 				//main group task
@@ -52,7 +57,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 		//CSON structure task
 		if(settings.getType() == 1){
 			CSONStructureTask csonSTask = new CSONStructureTask(net);
-			csonSTask.Task(settings.getSelectedGroups());
+			csonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
 				csonSTask.errNodesHighlight();
@@ -64,12 +69,35 @@ public class SONStructureTask implements Task<VerificationResult>{
 		//BSON structure task
 		if(settings.getType() == 2){
 			BSONStructureTask bsonSTask = new BSONStructureTask(net);
-			bsonSTask.Task(settings.getSelectedGroups());
+			bsonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
 				bsonSTask.errNodesHighlight();
 			}
+
 			totalErrNum = totalErrNum + bsonSTask.getErrNumber();
+
+			if(settings.getOuputBefore()){
+				if(totalErrNum > 0){
+					totalWarningNum++;
+					logger.info("WARNING: Erroneous model structre may lead to incorrect before(e).");
+				}
+
+				RelationAlg alg = new RelationAlg(net);
+				logger.info("\nOutput before(e):");
+				Collection<Condition[]> before = new ArrayList<Condition[]>();
+				for(Event e : net.getEvents()){
+					before =  alg.before(e);
+					if(!before.isEmpty()){
+						Collection<String> subResult = new ArrayList<String>();
+						logger.info("before("+ net.getName(e)+"): ");
+						for(Condition[] condition : before)
+							subResult.add("("+net.getName(condition[0]) + " " + net.getName(condition[1])+ ")");
+						logger.info(subResult);
+					}
+				}
+			}
+
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 		}
 

@@ -4,29 +4,26 @@ import java.awt.Color;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
-public class Condition extends Place{
+public class Condition extends NamedElement {
 
 	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label="";
 	protected boolean token=false;
 
-	/*
-	public boolean getToken() {
+	public boolean hasToken() {
 		return token;
 	}
 
-
 	public void setToken(boolean token) {
 		this.token=token;
-		sendNotification( new PropertyChangedEvent(this, "token (Condition)") );
+		sendNotification( new PropertyChangedEvent(this, "token") );
 	}
-	*/
+
 	public Color getForegroundColor() {
 		return foregroundColor;
 	}
@@ -53,6 +50,5 @@ public class Condition extends Place{
 	public String getLabel(){
 		return label;
 	}
-
 
 }

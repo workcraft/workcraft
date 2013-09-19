@@ -74,7 +74,7 @@ public class VisualSONConnectionDeserialiser extends VisualConnectionDeserialise
 	public Object createInstance(Element element,
 			ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters) {
-		return new VisualSONConnection();
+		return new VisualSONConnection((SONConnection)externalReferenceResolver.getObject(element.getAttribute("ref")));
 	}
 
 	@Override

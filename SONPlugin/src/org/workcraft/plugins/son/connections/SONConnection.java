@@ -9,6 +9,7 @@ public class SONConnection extends MathConnection{
 
 	private String conType;
 	private static Color defaultColor = Color.BLACK;
+
 	private Color color = defaultColor;
 
 	public SONConnection(){
@@ -32,11 +33,10 @@ public class SONConnection extends MathConnection{
 		super.setDependencies(first, second);
 		this.conType = type;
 	}
-
-
 	/* (non-Javadoc)
 	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getColor()
 	 */
+
 	public Color getColor() {
 		return color;
 	}

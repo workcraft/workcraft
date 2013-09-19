@@ -12,5 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DfsPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SONPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
