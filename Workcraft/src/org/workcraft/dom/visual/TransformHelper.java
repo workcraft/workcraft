@@ -30,32 +30,7 @@ import org.workcraft.util.Hierarchy;
 
 public class TransformHelper {
 
-	public static void applyTransform(Node node, AffineTransform transform) {
-		if(node instanceof Movable)
-			((Movable) node).applyTransform(transform);
-	}
-
-	public static void applyTransformToChildNodes(Node node, AffineTransform transform) {
-		for(Node n: node.getChildren())
-			applyTransform(n, transform);
-	}
-
-	public static AffineTransform getTransformToAncestor(Node node, Node ancestor) {
-		AffineTransform t = new AffineTransform();
-
-		while (ancestor != node) {
-			Node next = node.getParent();
-			if (next == null)
-				throw new NotAnAncestorException();
-			if(next instanceof Movable)
-				t.preConcatenate(((Movable)next).getTransform());
-			node = next;
-		}
-
-		return t;
-	}
-
-	public static AffineTransform getTransformToRoot(Node node) {
+	private static Node getRoot(Node node) {
 		Node root = null;
 		Node parent = node;
 		do {
@@ -64,8 +39,38 @@ public class TransformHelper {
 				root = parent;
 			}
 		} while (parent != null);
+		return root;
+	}
 
-		return getTransformToAncestor(node, root);
+	public static void applyTransform(Node node, AffineTransform transform) {
+		if(node instanceof Movable) {
+			((Movable) node).applyTransform(transform);
+		}
+	}
+
+	public static void applyTransformToChildNodes(Node node, AffineTransform transform) {
+		for(Node n: node.getChildren()) {
+			applyTransform(n, transform);
+		}
+	}
+
+	public static AffineTransform getTransformToAncestor(Node node, Node ancestor) {
+		AffineTransform t = new AffineTransform();
+		while (ancestor != node) {
+			Node next = node.getParent();
+			if (next == null) {
+				throw new NotAnAncestorException();
+			}
+			if(next instanceof Movable) {
+				t.preConcatenate(((Movable)next).getTransform());
+			}
+			node = next;
+		}
+		return t;
+	}
+
+	public static AffineTransform getTransformToRoot(Node node) {
+		return getTransformToAncestor(node, getRoot(node));
 	}
 
 	public static AffineTransform getTransform(Node node1, Node node2) {
@@ -78,8 +83,7 @@ public class TransformHelper {
 		return parentToNode2;
 	}
 
-	public static Touchable transform(Touchable touchable, AffineTransform transform)
-	{
+	public static Touchable transform(Touchable touchable, AffineTransform transform) {
 		return new TouchableTransformer(touchable, transform);
 	}
 }

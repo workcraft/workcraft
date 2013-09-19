@@ -75,7 +75,8 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, punfResult, null, settings));
 			}
 			monitor.progressUpdate(0.70);
 
@@ -85,18 +86,21 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings));
 			}
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
-				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit has hazard(s)"));
+				return new Result<MpsatChainResult>(Outcome.FINISHED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
 			mciFile.delete();
-			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit is hazard-free"));
+			return new Result<MpsatChainResult>(Outcome.FINISHED,
+					new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit is hazard-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);

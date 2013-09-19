@@ -69,7 +69,6 @@ public class STGSelectionTool extends SelectionTool
 		final JTextField text = new JTextField(initialText);
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
 		Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
-//		Rectangle2D bbRoot = TransformHelper.transform(transition.getRenderedName(), localToRootTransform).getBoundingBox();
 		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
 		int dyScreen = Math.max((int)Math.round(bbScreen.height*0.25), 5);
 		text.setBounds(bbScreen.x, bbScreen.y-dyScreen, bbScreen.width*2, bbScreen.height+2*dyScreen);

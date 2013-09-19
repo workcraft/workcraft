@@ -167,6 +167,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return 0;
 	}
 
+	@Override
 	public AffineTransform getTransform() {
 		return getLocalToParentTransform();
 	}

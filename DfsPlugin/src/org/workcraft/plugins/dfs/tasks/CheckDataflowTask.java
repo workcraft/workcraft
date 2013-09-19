@@ -65,7 +65,8 @@ public class CheckDataflowTask extends MpsatChainTask {
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, deadlockSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, null, null, deadlockSettings));
 			}
 			monitor.progressUpdate(0.20);
 
@@ -78,7 +79,8 @@ public class CheckDataflowTask extends MpsatChainTask {
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, deadlockSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, punfResult, null, deadlockSettings));
 			}
 			monitor.progressUpdate(0.40);
 
@@ -88,14 +90,16 @@ public class CheckDataflowTask extends MpsatChainTask {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings));
 			}
 			monitor.progressUpdate(0.60);
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
-				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings, "Dataflow has a deadlock"));
+				return new Result<MpsatChainResult>(Outcome.FINISHED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, deadlockSettings, "Dataflow has a deadlock"));
 			}
 			monitor.progressUpdate(0.70);
 
@@ -105,19 +109,22 @@ public class CheckDataflowTask extends MpsatChainTask {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings));
 			}
 			monitor.progressUpdate(0.90);
 
 			mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
-				return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Dataflow has hazard(s)"));
+				return new Result<MpsatChainResult>(Outcome.FINISHED,
+						new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Dataflow has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
 			mciFile.delete();
-			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Dataflow is deadlock-free and hazard-free"));
+			return new Result<MpsatChainResult>(Outcome.FINISHED,
+					new MpsatChainResult(exportResult, punfResult, mpsatResult, hazardSettings, "Dataflow is deadlock-free and hazard-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
