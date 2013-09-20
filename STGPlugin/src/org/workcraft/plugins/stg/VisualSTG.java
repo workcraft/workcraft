@@ -48,6 +48,27 @@ import org.workcraft.util.Hierarchy;
 public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 
+	public VisualSTG(STG model) {
+		this (model, null);
+	}
+
+	public VisualSTG(STG model, VisualGroup root) {
+		super(model, root);
+
+		if (root == null)
+			try {
+				createDefaultFlatStructure();
+			} catch (NodeCreationException e) {
+				throw new RuntimeException(e);
+			}
+
+			this.stg = model;
+
+			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
+			for(VisualPlace place : places)
+				maybeMakeImplicit(place);
+	}
+
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
 		if (first==second) {
@@ -185,27 +206,6 @@ public class VisualSTG extends AbstractVisualModel {
 			remove(place);
 			// connections will get removed automatically by the hanging connection remover
 		}
-	}
-
-	public VisualSTG(STG model) {
-		this (model, null);
-	}
-
-	public VisualSTG(STG model, VisualGroup root) {
-		super(model, root);
-
-		if (root == null)
-			try {
-				createDefaultFlatStructure();
-			} catch (NodeCreationException e) {
-				throw new RuntimeException(e);
-			}
-
-			this.stg = model;
-
-			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
-			for(VisualPlace place : places)
-				maybeMakeImplicit(place);
 	}
 
 	public VisualPlace createPlace(String name) {

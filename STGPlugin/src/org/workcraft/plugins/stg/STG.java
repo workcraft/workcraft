@@ -97,7 +97,6 @@ public class STG extends AbstractMathModel implements STGModel {
 		return newPlace;
 	}
 
-
 	final public DummyTransition createDummyTransition(String name) {
 		DummyTransition newTransition = new DummyTransition();
 		if (name!=null) {

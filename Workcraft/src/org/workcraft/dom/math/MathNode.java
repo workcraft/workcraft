@@ -53,7 +53,7 @@ public abstract class MathNode implements Node, ObservableState {
 		this.parent = parent;
 	}
 
-	final protected void sendNotification(StateEvent e) {
+	final public void sendNotification(StateEvent e) {
 		observableStateImpl.sendNotification(e);
 	}
 

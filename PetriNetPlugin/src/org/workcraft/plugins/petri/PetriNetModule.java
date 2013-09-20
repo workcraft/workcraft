@@ -13,7 +13,7 @@ public class PetriNetModule implements Module {
 
 	@Override
 	public String getDescription() {
-		return "Petri nets";
+		return "Petri Net";
 	}
 
 }

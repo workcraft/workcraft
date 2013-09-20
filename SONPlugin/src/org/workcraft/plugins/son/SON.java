@@ -12,22 +12,23 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.NamedElement;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
-public class SON extends AbstractMathModel implements SONModel{
-	private final SONReferenceManager referenceManager;
+public class SON extends AbstractMathModel implements SONModel {
 
 	public SON(){
 		this(null);
@@ -37,9 +38,21 @@ public class SON extends AbstractMathModel implements SONModel{
 		this(root, null);
 	}
 
-	public SON(Container root, References refs){
-		super(root, new SONReferenceManager(refs));
-		referenceManager = (SONReferenceManager) getReferenceManager();
+	public SON(Container root, References refs) {
+		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+			@Override
+			public String eval(Node arg) {
+				if (arg instanceof Condition)
+					return "c";
+				if (arg instanceof Event)
+					return "e";
+				if (arg instanceof SONConnection)
+					return "con";
+				if (arg instanceof ChannelPlace)
+					return "q";
+				return "node";
+			}
+		}));
 	}
 
 	public void validate() throws ModelValidationException {
@@ -68,15 +81,15 @@ public class SON extends AbstractMathModel implements SONModel{
 		return con;
 	}
 
-	public String getName(Node n) {
-		return this.referenceManager.getNodeReference(n);
+	public void setName(Node node, String name) {
+		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
+		if (node instanceof MathNode) {
+			((MathNode)node).sendNotification(new PropertyChangedEvent(node, "name"));
+		}
 	}
 
-	public void setName(Node n, String name) {
-		this.referenceManager.setName(n, name);
-		if (n instanceof NamedElement) {
-			((NamedElement)n).setName(name);
-		}
+	public String getName(Node node) {
+		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
 	}
 
 	public Collection<Condition> getConditions(){
@@ -283,4 +296,5 @@ public class SON extends AbstractMathModel implements SONModel{
 		}
 		return false;
 	}
+
 }

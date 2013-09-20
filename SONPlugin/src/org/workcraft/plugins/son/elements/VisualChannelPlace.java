@@ -20,8 +20,6 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
@@ -63,9 +61,8 @@ public class VisualChannelPlace extends VisualComponent {
 		g.draw(shape);
 
 		ChannelPlace c = (ChannelPlace)getReferencedComponent();
-
 		drawToken(c.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
-		drawName(c.hasToken(), g, size, strokeWidth);
+		drawName(r);
 	}
 
 	public static void drawToken (boolean b, double singleTokenSize, Color tokenColor,	Graphics2D g) {
@@ -81,32 +78,26 @@ public class VisualChannelPlace extends VisualComponent {
 		}
 	}
 
-	public void drawName(boolean token, Graphics2D g, double size, double strokeWidth){
+	public void drawName(DrawRequest r){
 		if (SONSettings.getDisplayName()) {
+			Graphics2D g = r.getGraphics();
 			GlyphVector glyphVector=null;
 			Rectangle2D labelBB=null;
 
 			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.4f);
-			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getName());
+			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+			if (name != null) {
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), name);
 
-			labelBB = glyphVector.getVisualBounds();
-			Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-			if(!token) {
-				g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
-			} else {
-				g.drawGlyphVector(glyphVector, -this.getLabelPositioning().dx, -this.getLabelPositioning().dy);
+				labelBB = glyphVector.getVisualBounds();
+				Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
+				if(!this.hasToken()) {
+					g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
+				} else {
+					g.drawGlyphVector(glyphVector, -this.getLabelPositioning().dx, -this.getLabelPositioning().dy);
+				}
 			}
 		}
-	}
-
-	@NoAutoSerialisation
-	public String getName(){
-		return ((ChannelPlace)getReferencedComponent()).getName();
-	}
-
-	@NoAutoSerialisation
-	public void setName(String name){
-		((ChannelPlace)getReferencedComponent()).setName(name);
 	}
 
 	public void setDisplayName(boolean showName){

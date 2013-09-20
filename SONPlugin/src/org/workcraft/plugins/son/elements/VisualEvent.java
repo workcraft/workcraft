@@ -18,7 +18,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_E)
 @DisplayName ("Event")
@@ -44,22 +43,26 @@ public class VisualEvent extends VisualComponent {
 		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
-		drawName(g, size, strokeWidth);
+		drawName(r);
 		drawLabelInLocalSpace(r);
 
 	}
 
-	public void drawName(Graphics2D g, double size, double strokeWidth){
+	public void drawName(DrawRequest r){
 		if (SONSettings.getDisplayName()) {
+			Graphics2D g = r.getGraphics();
 			GlyphVector glyphVector=null;
 			Rectangle2D labelBB=null;
 
 			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.4f);
-			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getName());
+			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+			if (name != null) {
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), name);
 
-			labelBB = glyphVector.getVisualBounds();
-			Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-			g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
+				labelBB = glyphVector.getVisualBounds();
+				Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
+				g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
+			}
 		}
 	}
 
@@ -67,16 +70,6 @@ public class VisualEvent extends VisualComponent {
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
-	}
-
-	@NoAutoSerialisation
-	public String getName(){
-		return ((Event)getReferencedComponent()).getName();
-	}
-
-	@NoAutoSerialisation
-	public void setName(String name){
-		((Event)getReferencedComponent()).setName(name);
 	}
 
 	public void setDisplayName(boolean showName){

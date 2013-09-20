@@ -3,12 +3,13 @@ package org.workcraft.plugins.son.elements;
 import java.awt.Color;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
-public class Condition extends NamedElement {
+public class Condition extends MathNode {
 
 	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
