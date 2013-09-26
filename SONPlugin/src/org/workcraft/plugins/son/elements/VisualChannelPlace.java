@@ -26,8 +26,8 @@ import org.workcraft.plugins.son.SONSettings;
 @SVGIcon("images/icons/svg/channel-place.svg")
 public class VisualChannelPlace extends VisualComponent {
 
-	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
-	private Color tokenColor = CommonVisualSettings.getForegroundColor();
+	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
+	private Color tokenColor = CommonVisualSettings.getBorderColor();
 	private boolean displayName = false;
 
 	public VisualChannelPlace(ChannelPlace cplace) {
@@ -45,7 +45,7 @@ public class VisualChannelPlace extends VisualComponent {
 
 		drawLabelInLocalSpace(r);
 
-		double size = CommonVisualSettings.getSize()*1.2;
+		double size = CommonVisualSettings.getBaseSize()*1.2;
 		double strokeWidth = CommonVisualSettings.getStrokeWidth()*2.0;
 
 		Shape shape = new Ellipse2D.Double(

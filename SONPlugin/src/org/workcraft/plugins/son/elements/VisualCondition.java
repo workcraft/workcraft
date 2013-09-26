@@ -28,8 +28,8 @@ import org.workcraft.plugins.son.SONSettings;
 @SVGIcon("images/icons/svg/place_empty.svg")
 public class VisualCondition extends VisualComponent{
 
-	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
-	private Color tokenColor = CommonVisualSettings.getForegroundColor();
+	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
+	private Color tokenColor = CommonVisualSettings.getBorderColor();
 	private boolean displayName = false;
 
 	public VisualCondition(Condition condition){

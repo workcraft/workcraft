@@ -102,17 +102,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	private Trace savedBranchTrace;
 	private int savedBranchStep = 0;
 
-	public PetriNetSimulationTool() {
-		super();
-		createInterface();
-	}
-
 	protected Trace branchTrace;
 	protected int branchStep = 0;
 	protected Trace trace;
 	protected int traceStep = 0;
 
 	private Timer timer = null;
+
+	public PetriNetSimulationTool() {
+		super();
+		createInterface();
+	}
 
 	private void applyMarking(Map<Place, Integer> marking)
 	{

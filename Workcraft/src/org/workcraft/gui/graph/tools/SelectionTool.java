@@ -22,7 +22,9 @@
 package org.workcraft.gui.graph.tools;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
@@ -37,6 +39,8 @@ import java.util.LinkedHashSet;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
@@ -52,6 +56,7 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -69,6 +74,11 @@ public class SelectionTool extends AbstractTool {
 	protected Color selectionFillColor = new Color(99, 130, 191, 32);
 	protected Color grayOutColor = Color.LIGHT_GRAY;
 
+	protected JPanel interfacePanel;
+	protected JPanel controlPanel;
+	protected JScrollPane infoPanel;
+	protected JPanel statusPanel;
+
 	private int drag = DRAG_NONE;
 	private boolean notClick1 = false;
 	private boolean notClick3 = false;
@@ -81,14 +91,33 @@ public class SelectionTool extends AbstractTool {
 	private Rectangle2D selectionBox = null;
 
 	private boolean cancelInPlaceEdit = false;
-
 	protected GraphEditor editor;
 
+	public SelectionTool() {
+		super();
+	}
+
+	private void createInterface() {
+		controlPanel = new JPanel();
+		infoPanel = new JScrollPane();
+		statusPanel = new JPanel();
+		interfacePanel = new JPanel();
+		interfacePanel.setLayout(new BorderLayout());
+		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(infoPanel, BorderLayout.CENTER);
+		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+	}
+
+	@Override
+	public JPanel getInterfacePanel() {
+		return interfacePanel;
+	}
 
 	@Override
 	public void activated(GraphEditor editor) {
 		this.editor = editor;
 		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+		createInterface();
 	}
 
 	@Override
@@ -396,7 +425,7 @@ public class SelectionTool extends AbstractTool {
 		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
 		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
 		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width*2, bbScreen.height);
-		text.setFont(VisualComponent.labelFont.deriveFont((float)bbScreen.getHeight()/VisualComponent.labelFont.getSize()/3.0f));
+		text.setFont(component.labelFont.deriveFont((float)bbScreen.getHeight()/component.labelFont.getSize()/3.0f));
 		text.selectAll();
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();

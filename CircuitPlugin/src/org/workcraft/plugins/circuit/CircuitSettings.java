@@ -94,7 +94,7 @@ public class CircuitSettings implements SettingsPage {
 
 	@Override
 	public String getSection() {
-		return "Visual";
+		return "Models";
 	}
 
 	@Override

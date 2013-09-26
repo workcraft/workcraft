@@ -43,9 +43,9 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	private MathNode refNode = null;
 
-	protected final static double size = CommonVisualSettings.getSize();
-	protected final static double strokeWidth = CommonVisualSettings.getStrokeWidth();
-	public final static Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	protected double size = CommonVisualSettings.getBaseSize();
+	protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
+	public final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private GlyphVector labelGlyphs = null;
 	private String glyphedLabel = null;
@@ -53,9 +53,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Positioning labelPositioning = CommonVisualSettings.getTextPositioning();
 	private Point2D labelPosition = null;
 	private Rectangle2D labelBoundingBox = null;
-	private Color labelColor = CommonVisualSettings.getForegroundColor();
+	private Color labelColor = CommonVisualSettings.getBorderColor();
 
-	private Color foregroundColor = CommonVisualSettings.getForegroundColor();
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -72,8 +72,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		addPropertyDeclarations();
 
 		setFillColor(CommonVisualSettings.getFillColor());
-		setForegroundColor(CommonVisualSettings.getForegroundColor());
-		setLabelColor(CommonVisualSettings.getForegroundColor());
+		setForegroundColor(CommonVisualSettings.getBorderColor());
+		setLabelColor(CommonVisualSettings.getBorderColor());
 		setLabelPositioning(CommonVisualSettings.getTextPositioning());
 	}
 

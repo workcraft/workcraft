@@ -39,16 +39,16 @@ import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 
 
 @SuppressWarnings("serial")
@@ -105,7 +105,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 		button.setMargin(new Insets(0,0,0,0));
 
 		Insets insets = button.getInsets();
-		int iconSize = CommonVisualSettings.getIconSize();
+		int iconSize = CommonEditorSettings.getIconSize();
 		int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
 
 		Icon icon = tool.getIcon();

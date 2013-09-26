@@ -27,6 +27,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
+import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -51,13 +52,33 @@ public class VisualBundledTransition extends VisualTransition {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
+		PolicyNet model = (PolicyNet)r.getModel().getMathModel();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();
-		double xy = -size / 2 + strokeWidth / 2;
-		double wh = size - strokeWidth;
-		Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), background), colorisation));
-		g.fill(shape);
+		double w = size - strokeWidth;
+		double h = size - strokeWidth;
+		double w2 = w / 2;
+		double h2 = h / 2;
+		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
+
+		Set<Bundle> bundles = model.getTransitionBundles(getReferencedTransition());
+		if (bundles.size() > 0) {
+			h = (h - strokeWidth) /bundles.size();
+			h2 = h/2;
+		}
+
+		if (bundles.isEmpty()) {
+			g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), background), colorisation));
+			g.fill(shape);
+		} else {
+			double y = -size/2 + strokeWidth + h2;
+			for (Bundle b: bundles) {
+				Shape bundleShape = new Rectangle2D.Double (-w2, y-h2, w, h);
+				g.setColor(Coloriser.colorise(Coloriser.colorise(b.getColor(), background), colorisation));
+				g.fill(bundleShape);
+				y += h;
+			}
+		}
 		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), background), colorisation));
 		g.setStroke(new BasicStroke((float) strokeWidth));
 		g.draw(shape);

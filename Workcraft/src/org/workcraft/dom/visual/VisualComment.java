@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
@@ -16,16 +15,21 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.shared.CommonCommentSettings;
 
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
 @SVGIcon("images/icons/svg/note.svg")
 public class VisualComment extends VisualComponent implements Container {
+	protected double size = CommonCommentSettings.getBaseSize();
+	protected double strokeWidth = CommonCommentSettings.getStrokeWidth();
 
 	public VisualComment(CommentNode note) {
 		super(note);
 		setLabelPositioning(Positioning.CENTER);
-		setForegroundColor(Color.GRAY);
+		setForegroundColor(CommonCommentSettings.getBorderColor());
+		setFillColor(CommonCommentSettings.getFillColor());
+		setLabelColor(CommonCommentSettings.getTextColor());
 		modifyPropertyDeclarations();
 	}
 
@@ -47,11 +51,13 @@ public class VisualComment extends VisualComponent implements Container {
 		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
-		g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{0.1f, 0.1f}, 0.0f));
+		float w = (float)strokeWidth;
+		g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{10*w, 10*w}, 0.0f));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
 	}
 
+	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 0.0);
 	}
@@ -63,38 +69,26 @@ public class VisualComment extends VisualComponent implements Container {
 
 	@Override
 	public void add(Node node) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void add(Collection<Node> nodes) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void remove(Node node) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void remove(Collection<Node> nodes) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void reparent(Collection<Node> nodes) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

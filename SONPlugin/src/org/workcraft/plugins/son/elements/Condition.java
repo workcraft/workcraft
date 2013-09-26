@@ -11,7 +11,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
 public class Condition extends MathNode {
 
-	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
+	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label="";
 	protected boolean token=false;

@@ -141,14 +141,12 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
         TableCellEditor editor = getCellEditor();
         if (editor != null) {
         	Object value = editor.getCellEditorValue();
-            try
-            {
+            try {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
-            }
-            catch(Throwable t)
-            {
+            } catch(Throwable t) {
             	JOptionPane.showMessageDialog(null, t.getMessage(), "Cannot change property", JOptionPane.WARNING_MESSAGE);
+            	t.printStackTrace();
             }
         }
     }

@@ -1,18 +1,21 @@
 
-package org.workcraft.plugins.policy;
+package org.workcraft.plugins.policy.propertydescriptors;
 
+import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.policy.Bundle;
+import org.workcraft.plugins.policy.PolicyNet;
 
-final class BundlesPropertyDescriptor implements PropertyDescriptor {
+public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
 	private final PolicyNet model;
-	private final BundledTransition transition;
+	private final Bundle bundle;
 
-	public BundlesPropertyDescriptor(PolicyNet model, BundledTransition transition) {
+	public BundleColorPropertyDescriptor(PolicyNet model, Bundle bundle) {
 		this.model = model;
-		this.transition = transition;
+		this.bundle = bundle;
 	}
 
 	@Override
@@ -22,17 +25,17 @@ final class BundlesPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Bundles";
+		return model.getName(bundle) + " color";
 	}
 
 	@Override
 	public Class<?> getType() {
-		return String.class;
+		return Color.class;
 	}
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return model.getBundlesAsString(transition);
+		return bundle.getColor();
 	}
 
 	@Override
@@ -42,6 +45,6 @@ final class BundlesPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		model.setBundlesAsString(transition, (String)value);
+		bundle.setColor((Color)value);
 	}
 }

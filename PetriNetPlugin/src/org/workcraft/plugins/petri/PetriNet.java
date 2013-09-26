@@ -52,16 +52,31 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	public PetriNet(Container root, References refs) {
+		this(root, refs, new Func<Node, String>() {
+			@Override
+			public String eval(Node arg) {
+				return null;
+			}
+		});
+	}
+
+	public PetriNet(Container root, References refs, final Func<Node, String> nodePrefixFunc) {
 		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
-				if (arg instanceof Place)
-					return "p";
-				if (arg instanceof Transition)
-					return "t";
-				if (arg instanceof Connection)
-					return "con";
-				return "node";
+				String result = nodePrefixFunc.eval(arg);
+				if (result == null) {
+					if (arg instanceof Place) {
+						result = "p";
+					} else if (arg instanceof Transition) {
+						result = "t";
+					} else if (arg instanceof Connection) {
+						result = "con";
+					} else {
+						result = "node";
+					}
+				}
+				return result;
 			}
 		}));
 	}
@@ -72,6 +87,32 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
 	public String getName(Node node) {
 		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
+	}
+
+	final public Place createPlace(String name) {
+		Place newPlace = new Place();
+		if (name != null) {
+			setName(newPlace, name);
+		}
+		getRoot().add(newPlace);
+		return newPlace;
+	}
+
+	final public Place createPlace() {
+		return createPlace(null);
+	}
+
+	final public Transition createTransition(String name) {
+		Transition newTransition = new Transition();
+		if (name != null) {
+			setName(newTransition, name);
+		}
+		getRoot().add(newTransition);
+		return newTransition;
+	}
+
+	final public Transition createTransition() {
+		return createTransition(null);
 	}
 
 	public void validate() throws ModelValidationException {
@@ -186,17 +227,17 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		if (first instanceof Transition && second instanceof Transition)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
 
-
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-
 		Hierarchy.getNearestContainer(first, second).add(con);
-
 		return con;
 	}
 
 	@Override
 	public Properties getProperties(Node node) {
-		return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		if (node != null) {
+			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		}
+		return null;
 	}
 
 }

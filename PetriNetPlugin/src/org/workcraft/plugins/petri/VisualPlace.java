@@ -46,9 +46,9 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
 
-	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
+	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
-	private Color tokenColor = CommonVisualSettings.getForegroundColor();
+	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
 	public VisualPlace(Place place) {
 		super(place);
@@ -96,7 +96,7 @@ public class VisualPlace extends VisualComponent {
 				}
 			} else if (tokens > 7)	{
 				String token_str = Integer.toString(tokens);
-				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
+				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
 				Rectangle2D rect = superFont.getStringBounds(token_str, g.getFontRenderContext());
 				g.setFont(superFont);
 				g.setColor(tokenColor);
@@ -122,7 +122,7 @@ public class VisualPlace extends VisualComponent {
 		Place p = (Place)getReferencedComponent();
 		if (p.getCapacity() != 1) {
 			String capacity_str = Integer.toString(p.getCapacity());
-			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
+			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
 			Rectangle2D rect = superFont.getStringBounds(capacity_str, g.getFontRenderContext());
 			g.setFont(superFont);
 			g.setColor(tokenColor);

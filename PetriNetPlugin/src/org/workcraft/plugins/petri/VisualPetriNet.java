@@ -53,6 +53,30 @@ public class VisualPetriNet extends AbstractVisualModel {
 		}
 	}
 
+	public PetriNet getPetriNet() {
+		return (PetriNet)getMathModel();
+	}
+
+	public VisualPlace createPlace(Place place) {
+		VisualPlace visualPlace = new VisualPlace(place);
+		add(visualPlace);
+		return visualPlace;
+	}
+
+	public VisualPlace createPlace(String name) {
+		return createPlace(getPetriNet().createPlace(name));
+	}
+
+	public VisualTransition createTransition(Transition transition) {
+		VisualTransition visualTransition = new VisualTransition(transition);
+		add(visualTransition);
+		return visualTransition;
+	}
+
+	public VisualTransition createTransition(String name) {
+		return createTransition(getPetriNet().createTransition(name));
+	}
+
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first instanceof VisualPlace && second instanceof VisualPlace)
 			throw new InvalidConnectionException ("Connections between places are not valid");
@@ -74,4 +98,5 @@ public class VisualPetriNet extends AbstractVisualModel {
 
 		Hierarchy.getNearestContainer(c1, c2).add(ret);
 	}
+
 }

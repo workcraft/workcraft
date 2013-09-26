@@ -266,8 +266,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		Graphics2D g = r.getGraphics();
 
 		Color colorisation = r.getDecoration().getColorisation();
-		Color col1 = Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation);
-		Color col2 = Coloriser.colorise(CommonVisualSettings.getBackgroundColor(), colorisation);
+		Color col1 = Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation);
+		Color col2 = Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation);
 
 
 		if (res!=null) {
@@ -291,7 +291,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			// draw component label
 			updateNameGlyph(r.getGraphics());
 
-			r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
+			r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
 
 			r.getGraphics().setFont(nameFont);
 			Rectangle2D rec = getResBB();

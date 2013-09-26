@@ -22,7 +22,7 @@ public class SONSettings implements SettingsPage {
 	}
 
 	public String getSection() {
-		return "Visual";
+		return "Models";
 	}
 
 	public SONSettings(){

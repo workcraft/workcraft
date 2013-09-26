@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.elements.Event;
 public class ONGroup extends MathGroup{
 
 	private String label="";
-	private Color color = CommonVisualSettings.getForegroundColor();
+	private Color color = CommonVisualSettings.getBorderColor();
 
 	public Collection<Node> getComponents(){
 		HashSet<Node> result = new HashSet<Node>();

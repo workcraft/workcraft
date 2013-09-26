@@ -11,7 +11,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 public class ChannelPlace extends MathNode {
 
 	private String label="";
-	private Color foregroundColor=CommonVisualSettings.getForegroundColor();
+	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	protected boolean token=false;
 

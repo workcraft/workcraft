@@ -21,7 +21,10 @@
 
 package org.workcraft.plugins.policy;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -29,20 +32,35 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
+import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
+import org.workcraft.plugins.policy.propertydescriptors.BundleTransitionsPropertyDescriptor;
+import org.workcraft.plugins.policy.propertydescriptors.TransitionBundlesPropertyDescriptor;
 
 @VisualClass (org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
 
 	public PolicyNet() {
+		this(null, null);
 	}
 
 	public PolicyNet(Container root) {
-		super(root);
+		this(root, null);
 	}
 
 	public PolicyNet(Container root, References refs) {
-		super(root, refs);
+		super(root, refs, new Func<Node, String>() {
+			@Override
+			public String eval(Node arg) {
+				String result = null;
+				if (arg instanceof Bundle) {
+					result = "bundle";
+				}
+				return result;
+			}
+		});
 	}
 
 	@Override
@@ -107,20 +125,28 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
-	public String getBundlesAsString(BundledTransition t) {
-		String result = "";
+	public Set<Bundle> getTransitionBundles(BundledTransition t) {
+		Set<Bundle> result = new HashSet<Bundle>();
 		for (Bundle b: getBundles()) {
 			if (b.contains(t)) {
-				if (result != "") {
-					result += ", ";
-				}
-				result += getName(b);
+				result.add(b);
 			}
 		}
 		return result;
 	}
 
-	public void setBundlesAsString(BundledTransition t, String s) {
+	public String getTransitionBundlesAsString(BundledTransition t) {
+		String result = "";
+		for (Bundle b: getTransitionBundles(t)) {
+			if (result != "") {
+				result += ", ";
+			}
+			result += getNodeReference(b);
+		}
+		return result;
+	}
+
+	public void setTransitionBundlesAsString(BundledTransition t, String s) {
 		for (Bundle b: getBundles()) {
 			b.remove(t);
 		}
@@ -136,12 +162,42 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
+	public String getBundleTransitionsAsString(Bundle b) {
+		String result = "";
+		for (BundledTransition t: b.getTransitions()) {
+			if (result != "") {
+				result += ", ";
+			}
+			result += getNodeReference(t);
+		}
+		return result;
+	}
+
+	public void setBundleTransitionsAsString(Bundle b, String s) {
+		for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
+			b.remove(t);
+		}
+		for (String ref : s.split("\\s*,\\s*")) {
+			Node node = getNodeByReference(ref);
+			if (node instanceof BundledTransition) {
+				b.add((BundledTransition)node);
+			}
+		}
+	}
+
 	@Override
 	public Properties getProperties(Node node) {
 		Properties properties = super.getProperties(node);
-		if (node instanceof BundledTransition) {
+		if (node == null) {
+			for (Bundle b: getBundles()) {
+				properties = Properties.Merge.add(properties,
+						new BundleNamePropertyDescriptor(this, b),
+						new BundleColorPropertyDescriptor(this, b),
+						new BundleTransitionsPropertyDescriptor(this, b));
+			}
+		} else if (node instanceof BundledTransition) {
 			BundledTransition t = (BundledTransition)node;
-			properties = Properties.Merge.add(properties, new BundlesPropertyDescriptor(this, t));
+			properties = Properties.Merge.add(properties, new TransitionBundlesPropertyDescriptor(this, t));
 		}
 		return properties;
 	}

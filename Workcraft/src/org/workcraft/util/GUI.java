@@ -33,7 +33,7 @@ import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 
 public class GUI {
 
@@ -152,7 +152,7 @@ public class GUI {
 	}
 
 	public static ImageIcon createIconFromSVG(String path) {
-		int iconSize = CommonVisualSettings.getIconSize();
+		int iconSize = CommonEditorSettings.getIconSize();
 		return createIconFromSVG(path, iconSize, iconSize);
 	}
 
@@ -164,7 +164,7 @@ public class GUI {
 		JButton result = new JButton(icon);
 		result.setToolTipText(toolTip);
 		result.setMargin(new Insets(0,0,0,0));
-		int iconSize = CommonVisualSettings.getIconSize();
+		int iconSize = CommonEditorSettings.getIconSize();
 		Insets insets = result.getInsets();
 		int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
 		result.setPreferredSize(new Dimension(minSize, minSize));

@@ -63,13 +63,11 @@ public interface Properties {
 		}
 	}
 
-	static class Merge implements Properties
-	{
+	static class Merge implements Properties	{
 		private final Properties p1;
 		private final Properties p2;
 
-		Merge(Properties p1, Properties p2)
-		{
+		public Merge(Properties p1, Properties p2) {
 			this.p1 = p1;
 			this.p2 = p2;
 		}
@@ -83,20 +81,22 @@ public interface Properties {
 		}
 
 		public static Properties add(Properties properties, PropertyDescriptor... toAdd) {
-			if(toAdd == null || toAdd.length == 0)
+			if (toAdd == null || toAdd.length == 0)
 				return properties;
 			final List<PropertyDescriptor> list = Arrays.asList(toAdd);
 
-			return merge(properties, new Properties(){
-				@Override public Collection<PropertyDescriptor> getDescriptors() { return list; }
+			return merge(properties, new Properties() {
+				@Override
+				public Collection<PropertyDescriptor> getDescriptors() {
+					return list;
+				}
 			});
 		}
 
-		public static Properties merge(Properties p1,
-				Properties p2) {
-			if(p1 == null)
+		public static Properties merge(Properties p1,	Properties p2) {
+			if (p1 == null)
 				return p2;
-			if(p2 == null)
+			if (p2 == null)
 				return p1;
 			return new Merge(p1, p2);
 		}

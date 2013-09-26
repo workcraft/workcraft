@@ -53,9 +53,9 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties.Mix;
-import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -154,42 +154,44 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		AffineTransform screenTransform = (AffineTransform)g2d.getTransform().clone();
 
-		g2d.setBackground(CommonVisualSettings.getBackgroundColor());
+		g2d.setBackground(CommonEditorSettings.getBackgroundColor());
 		g2d.clearRect(0, 0, getWidth(), getHeight());
 
-		grid.draw(g2d);
+		if (CommonEditorSettings.getShowGrid()) {
+			grid.draw(g2d);
+		}
 		g2d.setTransform(screenTransform);
 
 		if (firstPaint) {
 			reshape();
 			firstPaint = false;
 		}
-
 		g2d.transform(view.getTransform());
 
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
 		getModel().draw(g2d, toolboxPanel.getTool().getDecorator());
 
-		if (hasFocus())
+		if (hasFocus()) {
 			toolboxPanel.getTool().drawInUserSpace(this, g2d);
-
+		}
 		g2d.setTransform(screenTransform);
 
-		ruler.draw(g2d);
+		if (CommonEditorSettings.getShowRulers()) {
+			ruler.draw(g2d);
+		}
 
 		if (hasFocus()) {
 			toolboxPanel.getTool().drawInScreenSpace(this, g2d);
 			g2d.setTransform(screenTransform);
 
 			g2d.setStroke(borderStroke);
-			g2d.setColor(CommonVisualSettings.getForegroundColor());
+			g2d.setColor(CommonVisualSettings.getBorderColor());
 			g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
 		}
 
@@ -214,11 +216,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public MainWindow getMainWindow() {
 		return mainWindow;
-	}
-
-	public void notify(HierarchyEvent e) {
-		repaint();
-		workspaceEntry.setChanged(true);
 	}
 
 	private Properties propertiesWrapper(final Properties mix) {
@@ -268,35 +265,33 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
-
+		Mix mix = new Mix();
 		Collection<Node> selection = getModel().getSelection();
-
 		if (selection.size() == 1) {
-			Node selected = selection.iterator().next();
-
-			Mix mix = new Mix();
-
-			Properties visualModelProperties = getModel().getProperties(selected);
-
-			mix.add(visualModelProperties);
-
-			if (selected instanceof Properties)
-				mix.add((Properties)selected);
-
-			if (selected instanceof DependentNode) {
-				for (Node n : ((DependentNode)selected).getMathReferences()) {
+			Node singleSelected = selection.iterator().next();
+			mix.add(getModel().getProperties(singleSelected));
+			if (singleSelected instanceof Properties) {
+				mix.add((Properties)singleSelected);
+			}
+			if (singleSelected instanceof DependentNode) {
+				for (Node n : ((DependentNode)singleSelected).getMathReferences()) {
 					mix.add(getModel().getMathModel().getProperties(n));
-					if (n instanceof Properties)
+					if (n instanceof Properties) {
 						mix.add((Properties)n);
+					}
 				}
 			}
 
-			if(mix.isEmpty())
-				propertyWindow.clearObject();
-			else
-				propertyWindow.setObject(propertiesWrapper(mix));
+		} else {
+			mix.add(getModel().getProperties(null));
+			mix.add(getModel().getMathModel().getProperties(null));
 		}
-		else propertyWindow.clearObject();
+
+		if(mix.isEmpty()) {
+			propertyWindow.clearObject();
+		} else {
+			propertyWindow.setObject(propertiesWrapper(mix));
+		}
 	}
 
 	public void notify(StateEvent e) {

@@ -39,4 +39,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 		super(model, root);
 	}
 
+	public PolicyNet getPolicyNet() {
+		return (PolicyNet)getMathModel();
+	}
 }

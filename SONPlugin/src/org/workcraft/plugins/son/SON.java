@@ -164,14 +164,14 @@ public class SON extends AbstractMathModel implements SONModel {
 	public void refreshColor(){
 		for(Node n:  getComponents()){
 			setFillColor(n,CommonVisualSettings.getFillColor());
-			setForegroundColor(n, CommonVisualSettings.getForegroundColor());
+			setForegroundColor(n, CommonVisualSettings.getBorderColor());
 		}
 		for (ONGroup group : this.getGroups()){
-			setForegroundColor(group, CommonVisualSettings.getForegroundColor());
+			setForegroundColor(group, CommonVisualSettings.getBorderColor());
 		}
 
 		for (SONConnection con : this.getSONConnections())
-			setForegroundColor(con, CommonVisualSettings.getForegroundColor());
+			setForegroundColor(con, CommonVisualSettings.getBorderColor());
 	}
 
 	@Override

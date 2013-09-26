@@ -64,8 +64,7 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	private final class StateTableCellRendererImplementation implements
-			TableCellRenderer {
+	private final class StateTableCellRendererImplementation implements	TableCellRenderer {
 		JLabel label = new JLabel() {
 			@Override
 			public void paint( Graphics g ) {

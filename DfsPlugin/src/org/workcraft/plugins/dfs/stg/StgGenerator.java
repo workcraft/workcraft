@@ -66,14 +66,6 @@ public class StgGenerator {
 	private final VisualDfs dfs;
 	private final VisualSTG stg;
 
-	public VisualSTG getSTG() {
-		return stg;
-	}
-
-	static void setPosition(Movable node, double x, double y) {
-		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
-	}
-
 	public StgGenerator(VisualDfs dfs) {
 		this.dfs = dfs;
 		try {
@@ -136,6 +128,14 @@ public class StgGenerator {
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public VisualSTG getSTG() {
+		return stg;
+	}
+
+	static void setPosition(Movable node, double x, double y) {
+		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
 	}
 
 	private void createReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {

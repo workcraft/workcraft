@@ -60,7 +60,7 @@ public class DfsSettings implements SettingsPage {
 	}
 
 	public String getSection() {
-		return "Visual";
+		return "Models";
 	}
 
 	public String getName() {

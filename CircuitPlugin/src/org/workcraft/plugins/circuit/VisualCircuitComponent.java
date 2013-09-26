@@ -132,7 +132,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	protected void drawLabelInLocalSpace(DrawRequest r) {
 		updateNameGlyph(r.getGraphics());
 
-		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
+		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
 		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
 		// (float)labelPosition.getY());
 		r.getGraphics().setFont(nameFont);
@@ -153,7 +153,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	protected void drawNameInLocalSpace(DrawRequest r) {
 		updateNameGlyph(r.getGraphics());
 
-		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), r.getDecoration().getColorisation()));
+		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
 
 		r.getGraphics().setFont(nameFont);
 		if (contactLabelBB!=null)
@@ -350,24 +350,24 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				VisualContact vc=(VisualContact)n;
 				if (vc.getDirection().equals(Direction.EAST)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), bb.getMaxX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 				if (vc.getDirection().equals(Direction.WEST)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), bb.getMinX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.NORTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMinY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.SOUTH)) {
 					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMaxY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
+					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 			}
@@ -445,7 +445,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getForegroundColor(), colorisation));
+		g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
 
 		if (!getIsEnvironment()) {
 			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
@@ -469,7 +469,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		if (totalBB!=null) return totalBB;
 
-		double size = CommonVisualSettings.getSize();
+		double size = CommonVisualSettings.getBaseSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 

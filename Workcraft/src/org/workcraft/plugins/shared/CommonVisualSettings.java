@@ -34,11 +34,9 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class CommonVisualSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	protected static double size = 1.0;
+	protected static double baseSize = 1.0;
 	protected static double strokeWidth = 0.1;
-	protected static int iconSize = 24;
-	protected static Color backgroundColor = Color.WHITE;
-	protected static Color foregroundColor = Color.BLACK;
+	protected static Color borderColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
 	private static Positioning textPositioning = Positioning.TOP;
 	private static boolean useEnabledForegroundColor = true;
@@ -47,36 +45,32 @@ public class CommonVisualSettings implements SettingsPage {
 	private static Color enabledBackgroundColor = new Color(0.0f, 0.0f, 0.0f);
 
 	public String getSection() {
-		return "Visual";
+		return "Common";
 	}
 
 	public String getName() {
-		return "Common visual settings";
+		return "Visual";
 	}
 
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Base icon width (pixels, 8-256)",
-				"getIconSize", "setIconSize", int.class));
 
-		properties.add(new PropertyDeclaration(this, "Base component size (cm)",
-				"getSize", "setSize", double.class));
+		properties.add(new PropertyDeclaration(this, "Base size (cm)",
+				"getBaseSize", "setBaseSize", double.class));
 
-		properties.add(new PropertyDeclaration(this, "Default stroke width (cm)",
+		properties.add(new PropertyDeclaration(this, "Stroke width (cm)",
 				"getStrokeWidth", "setStrokeWidth", double.class));
 
-		properties.add(new PropertyDeclaration(this, "Editor background color",
-				"getBackgroundColor", "setBackgroundColor", Color.class));
+		properties.add(new PropertyDeclaration(this, "Border color",
+				"getBorderColor", "setBorderColor", Color.class));
 
-		properties.add(new PropertyDeclaration(this, "Default foreground color",
-				"getForegroundColor", "setForegroundColor", Color.class));
-
-		properties.add(new PropertyDeclaration(this, "Default fill color",
+		properties.add(new PropertyDeclaration(this, "Fill color",
 				"getFillColor", "setFillColor", Color.class));
 
 		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
-		for(Positioning lp : Positioning.values())
+		for(Positioning lp : Positioning.values()) {
 			positions.put(lp.name, lp);
+		}
 		properties.add(new PropertyDeclaration(this, "Default text positioning",
 				"getTextPositioning", "setTextPositioning", Positioning.class, positions));
 
@@ -98,25 +92,23 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public void load(Config config) {
-		size = config.getDouble("CommonVisualSettings.size", 1.0);
-		iconSize = config.getInt("CommonVisualSettings.iconSize", 24);
+		baseSize = config.getDouble("CommonVisualSettings.baseSize", 1.0);
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
-		backgroundColor = config.getColor("CommonVisualSettings.backgroundColor", Color.WHITE);
-		foregroundColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
+		borderColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
 		textPositioning = config.getTextPositioning("CommonVisualSettings.textPositioning", Positioning.TOP);
+
 		useEnabledForegroundColor = config.getBoolean("CommonVisualSettings.useEnabledForegroundColor", true);
 		enabledForegroundColor = config.getColor("CommonVisualSettings.enabledForegroundColor", new Color(1.0f, 0.5f, 0.0f));
+
 		useEnabledBackgroundColor = config.getBoolean("CommonVisualSettings.useEnabledBackgroundColor", false);
 		enabledBackgroundColor = config.getColor("CommonVisualSettings.enabledBackgroundColor", new Color(1.0f, 0.5f, 0.0f));
 	}
 
 	public void save(Config config) {
-		config.setInt("CommonVisualSettings.iconSize", iconSize);
-		config.setDouble("CommonVisualSettings.size", size);
+		config.setDouble("CommonVisualSettings.baseSize", baseSize);
 		config.setDouble("CommonVisualSettings.strokeWidth", strokeWidth);
-		config.setColor("CommonVisualSettings.backgroundColor", backgroundColor);
-		config.setColor("CommonVisualSettings.foregroundColor", foregroundColor);
+		config.setColor("CommonVisualSettings.borderColor", borderColor);
 		config.setColor("CommonVisualSettings.fillColor", fillColor);
 		config.setTextPositioning("CommonVisualSettings.textPositioning", getTextPositioning());
 		config.setBoolean("CommonVisualSettings.useEnabledForegroundColor", useEnabledForegroundColor);
@@ -125,96 +117,76 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setColor("CommonVisualSettings.enabledForegroundColor", enabledForegroundColor);
 	}
 
-	public static Color getBackgroundColor() {
-		return backgroundColor;
+	public static double getBaseSize() {
+		return baseSize;
 	}
 
-	public static void setBackgroundColor(Color backgroundColor) {
-		CommonVisualSettings.backgroundColor = backgroundColor;
-	}
-
-	public static Color getForegroundColor() {
-		return foregroundColor;
-	}
-
-	public static void setForegroundColor(Color foregroundColor) {
-		CommonVisualSettings.foregroundColor = foregroundColor;
-	}
-
-	public static Color getFillColor() {
-		return fillColor;
-	}
-
-	public static void setFillColor(Color fillColor) {
-		CommonVisualSettings.fillColor = fillColor;
-	}
-
-	public static Positioning getTextPositioning() {
-		return textPositioning;
-	}
-
-	public static void setTextPositioning(Positioning textPositioning) {
-		CommonVisualSettings.textPositioning = textPositioning;
-	}
-
-	public static double getSize() {
-		return size;
-	}
-
-	public static void setSize(double size) {
-		CommonVisualSettings.size = size;
+	public static void setBaseSize(double value) {
+		CommonVisualSettings.baseSize = value;
 	}
 
 	public static double getStrokeWidth() {
 		return strokeWidth;
 	}
 
-	public static void setStrokeWidth(double strokeWidth) {
-		CommonVisualSettings.strokeWidth = strokeWidth;
+	public static void setStrokeWidth(double value) {
+		CommonVisualSettings.strokeWidth = value;
 	}
 
-	public static int getIconSize() {
-		return iconSize;
+	public static Color getBorderColor() {
+		return borderColor;
 	}
 
-	public static void setIconSize(int iconSize) {
-		if (iconSize<8)
-			iconSize = 8;
-		if (iconSize>256)
-			iconSize = 256;
-		CommonVisualSettings.iconSize = iconSize;
+	public static void setBorderColor(Color value) {
+		CommonVisualSettings.borderColor = value;
 	}
 
-	public static void setUseEnabledForegroundColor(Boolean useEnabledForegroundColor) {
-		CommonVisualSettings.useEnabledForegroundColor = useEnabledForegroundColor;
+	public static Color getFillColor() {
+		return fillColor;
+	}
+
+	public static void setFillColor(Color value) {
+		CommonVisualSettings.fillColor = value;
+	}
+
+	public static Positioning getTextPositioning() {
+		return textPositioning;
+	}
+
+	public static void setTextPositioning(Positioning value) {
+		CommonVisualSettings.textPositioning = value;
+	}
+
+	public static void setUseEnabledForegroundColor(Boolean value) {
+		CommonVisualSettings.useEnabledForegroundColor = value;
 	}
 
 	public static Boolean getUseEnabledForegroundColor() {
 		return useEnabledForegroundColor;
 	}
 
-	public static void setEnabledForegroundColor(Color enabledForegroundColor) {
-		CommonVisualSettings.enabledForegroundColor = enabledForegroundColor;
+	public static void setEnabledForegroundColor(Color value) {
+		CommonVisualSettings.enabledForegroundColor = value;
 	}
 
 	public static Color getEnabledForegroundColor() {
 		return useEnabledForegroundColor ? enabledForegroundColor : null;
 	}
 
-	public static void setUseEnabledBackgroundColor(
-			Boolean useEnabledBackgroundColor) {
-		CommonVisualSettings.useEnabledBackgroundColor = useEnabledBackgroundColor;
+	public static void setUseEnabledBackgroundColor(Boolean value) {
+		CommonVisualSettings.useEnabledBackgroundColor = value;
 	}
 
 	public static Boolean getUseEnabledBackgroundColor() {
 		return useEnabledBackgroundColor;
 	}
 
-	public static void setEnabledBackgroundColor(Color enabledBackgroundColor) {
-		CommonVisualSettings.enabledBackgroundColor = enabledBackgroundColor;
+	public static void setEnabledBackgroundColor(Color value) {
+		CommonVisualSettings.enabledBackgroundColor = value;
 	}
 
 	public static Color getEnabledBackgroundColor() {
 		return useEnabledBackgroundColor ? enabledBackgroundColor : null;
 	}
+
 }
