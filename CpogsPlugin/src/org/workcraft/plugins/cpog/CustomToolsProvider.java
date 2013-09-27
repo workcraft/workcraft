@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.plugins.cpog.expressions.CpogExpressionTool;
 
 public class CustomToolsProvider implements
 		org.workcraft.gui.graph.tools.CustomToolsProvider {
@@ -17,6 +18,7 @@ public class CustomToolsProvider implements
 		result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
+		result.add(new CpogExpressionTool());
 
 		return result;
 	}

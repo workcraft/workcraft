@@ -42,6 +42,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
+import org.workcraft.plugins.cpog.expressions.CpogVisitor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
@@ -52,7 +54,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 @Hotkey(KeyEvent.VK_V)
 @SVGIcon("images/icons/svg/vertex.svg")
-public class VisualVertex extends VisualComponent
+public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 {
 	private final static double size = 1;
 	private final static float strokeWidth = 0.1f;
@@ -173,5 +175,10 @@ public class VisualVertex extends VisualComponent
 				}
 			}
 		);
+	}
+
+	@Override
+	public <T> T accept(CpogVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 }

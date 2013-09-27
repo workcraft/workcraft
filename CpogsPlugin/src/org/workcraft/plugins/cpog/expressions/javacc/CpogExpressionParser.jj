@@ -1,0 +1,116 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;
+  UNICODE_INPUT = true;
+}
+PARSER_BEGIN(CpogExpressionParser)
+package org.workcraft.plugins.cpog.expressions.javacc;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.workcraft.plugins.cpog.expressions.*;
+import org.workcraft.util.Func;
+
+public class CpogExpressionParser {
+  public CpogExpressionParser(Reader reader, Func<String, ? extends CpogFormula> vars)
+  {
+    this (reader);
+    this.vars = vars;
+  }
+  
+  CpogWorker worker = new CleverCpogWorker();
+  Func<String, ? extends CpogFormula> vars;
+  
+  CpogFormula var(String name) throws ParseException
+  {
+	CpogFormula result = vars.eval(name);
+    if (result == null)
+    throw new ParseException("Undefined variable: '" + name + "'");
+    return result;
+  }
+  
+  CpogFormula overlay(CpogFormula a, CpogFormula b)
+  {
+    return worker.overlay(a, b);
+  }
+  
+  CpogFormula sequence(CpogFormula a, CpogFormula b)
+  {
+    return worker.sequence(a, b);
+  }
+  
+  public static CpogFormula parse(String text, Func<String, ? extends CpogFormula> vars) throws ParseException
+  {
+    return new CpogExpressionParser(new StringReader(text), vars).formula();
+  }
+
+  public static CpogFormula parse(String text, Collection <? extends CpogFormulaVariable> variables) throws ParseException
+  {
+    final HashMap<String, CpogFormulaVariable> map = new HashMap<String, CpogFormulaVariable>();
+    for(CpogFormulaVariable var : variables)
+	  map.put(var.getLabel(), var);
+    return parse(text, new Func<String, CpogFormulaVariable>()    {
+      public CpogFormulaVariable eval(String label)      {
+        return map.get(label);      }    });
+  }
+
+  public static void main(String [] args) throws Exception
+  {
+    System.out.println(CpogFormulaToString.toString(new CpogExpressionParser(System.in).formula()));
+  }
+}
+PARSER_END(CpogExpressionParser)
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+|	"\n"
+}
+TOKEN : /* OPERATORS */
+{
+  	< OVERLAY: "+" >
+|  	< SEQUENCE: "->" >
+}
+TOKEN :
+{
+    < VARIABLE: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9","[","]"])* >
+}
+CpogFormula formula() :
+{
+  	CpogFormula result;
+  	CpogFormula op;
+}
+{
+  result = overlayOp() ( < OVERLAY > op = overlayOp()  { result = overlay(result, op); } )*
+  { return result; }}
+
+CpogFormula overlayOp() :
+{
+  	CpogFormula result;
+  	CpogFormula op;
+}
+{
+  result = literal() ( < SEQUENCE > op = literal()
+  { result = sequence(result, op); } ) *
+  { return result; }
+}
+
+CpogFormula literal() :
+{
+  Token t;
+  CpogFormula result;}
+{
+   (     t = < VARIABLE >
+	{ result = var(t.image); }
+    | "(" result = formula() ")"
+  )
+  { return result; }}

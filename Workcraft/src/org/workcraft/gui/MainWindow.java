@@ -118,6 +118,8 @@ public class MainWindow extends JFrame {
 	}
 
 	private OutputWindow outputWindow;
+
+
 	private ErrorWindow errorWindow;
 	private JavaScriptWindow jsWindow;
 	private PropertyEditorWindow propertyEditorWindow;
@@ -149,6 +151,7 @@ public class MainWindow extends JFrame {
 		propertyEditorWindow = new PropertyEditorWindow(framework);
 
 		outputWindow = new OutputWindow(framework);
+
 		errorWindow = new ErrorWindow(framework);
 		jsWindow = new JavaScriptWindow(framework);
 
@@ -409,8 +412,11 @@ public class MainWindow extends JFrame {
 		outputDockable = createDockableWindow(outputWindow, "Output",
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.8f);
+
 		DockableWindow problems = createDockableWindow(errorWindow, "Problems",
 				outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
+
+
 		DockableWindow javaScript = createDockableWindow(jsWindow,
 				"Javascript", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
@@ -461,6 +467,7 @@ public class MainWindow extends JFrame {
 		registerUtilityWindow(toolbox);
 		registerUtilityWindow(tasks);
 		registerUtilityWindow(tiw);
+
 		utilityWindows.add(documentPlaceholder);
 
 		new Thread(new Runnable() {
@@ -780,6 +787,7 @@ public class MainWindow extends JFrame {
 
 		toolboxWindow.setContent(sender.getToolBox());
 		toolInterfaceWindow.setContent(sender.getToolBox().getControlPanel());
+
 		mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 
 		mainMenu.revalidate();
@@ -795,9 +803,10 @@ public class MainWindow extends JFrame {
 				framework.getJavaScriptGlobalScope(), true);
 	}
 
-	public SimpleContainer getToolboxWindow() {
-		return toolboxWindow;
-	}
+// TODO: commented out Public Morozov, remove completely?
+//	public SimpleContainer getToolboxWindow() {
+//		return toolboxWindow;
+//	}
 
 	private void printCause(Throwable e) {
 		e.printStackTrace();
