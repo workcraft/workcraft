@@ -32,6 +32,7 @@ public class CpogConnector implements CpogVisitor< Set<VisualVertex> > {
 		for(VisualVertex l : left)
 			for(VisualVertex r : right)
 			{
+				// TODO: handle self-loops properly
 				cpog.connect(l, r);
 			}
 

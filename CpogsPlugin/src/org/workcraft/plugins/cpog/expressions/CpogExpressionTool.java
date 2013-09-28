@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -29,7 +30,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CpogExpressionTool extends ExpressionTool implements ActionListener {
 
 	final int margin = 4;
-	final double radius = 1;
+	final double minRadius = 2.0;
+	final double expandRadius = 2.0;
 
 	private JScrollPane scrollExpression;
 	private JTextArea txtExpression;
@@ -93,7 +95,6 @@ public class CpogExpressionTool extends ExpressionTool implements ActionListener
 		workspaceEntry.captureMemento();
 
 		final HashMap<String, VisualVertex> map = new HashMap<String, VisualVertex>();
-
 		CpogFormula f = null;
 		try {
 			f = CpogExpressionParser.parse(text, new Func<String, CpogFormula>() {
@@ -106,11 +107,12 @@ public class CpogExpressionTool extends ExpressionTool implements ActionListener
 					// TODO: Optimise!
 
 					if (!createDuplicates)
-						for(VisualVertex v : visualCpog.getVertices()) if (v.getLabel().equals(label)) { vertex = v; break; }
+						for(VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
+							if (v.getLabel().equals(label)) { vertex = v; break; }
 
 					if (vertex == null)
 					{
-						vertex = visualCpog.createVisualVertex(visualCpog.getRoot());
+						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
 						vertex.setLabel(label);
 						map.put(label, vertex);
 					}
@@ -119,24 +121,29 @@ public class CpogExpressionTool extends ExpressionTool implements ActionListener
 			});
 		} catch (ParseException e) {
 			workspaceEntry.cancelMemento();
-			// TODO: add window owner
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		visualCpog.selectNone();
 
 		int n = map.size();
 		int i = 0;
 
 		for(VisualVertex v : map.values())
 		{
-			Point2D.Double pos = new Point2D.Double(radius * Math.cos(2 * Math.PI * i / n), radius * Math.sin(2 * Math.PI * i / n));
+			double radius = Math.max(minRadius, expandRadius * n / Math.PI / 2.0);
+			Point2D.Double pos = new Point2D.Double(radius * Math.cos(2.0 * Math.PI * i / n), radius * Math.sin(2.0 * Math.PI * i / n));
 			v.setPosition(pos);
+			visualCpog.addToSelection(v);
 			i++;
 		}
 
 		CpogConnector cc = new CpogConnector(visualCpog);
 		f.accept(cc);
 
+		// TODO: fix the bug after exception; find out if the line below is needed
+		workspaceEntry.setChanged(true);
 		workspaceEntry.saveMemento();
 	}
 
@@ -147,6 +154,8 @@ public class CpogExpressionTool extends ExpressionTool implements ActionListener
 
 	@Override
 	public void activated(GraphEditor editor) {
+		super.activated(editor);
+
 		workspaceEntry = editor.getWorkspaceEntry();
 		visualCpog  = (VisualCPOG)editor.getModel();
 	}
