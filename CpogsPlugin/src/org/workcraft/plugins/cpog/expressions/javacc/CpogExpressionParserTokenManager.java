@@ -70,7 +70,7 @@ private int jjMoveStringLiteralDfa1_0(long active0)
 private int jjMoveNfa_0(int startState, int curPos)
 {
    int startsAt = 0;
-   jjnewStateCnt = 2;
+   jjnewStateCnt = 3;
    int i = 1;
    jjstateSet[0] = startState;
    int kind = 0x7fffffff;
@@ -86,10 +86,14 @@ private int jjMoveNfa_0(int startState, int curPos)
             switch(jjstateSet[--i])
             {
                case 1:
-                  if ((0x3ff000000000000L & l) == 0L)
+                  if ((0x3ff008000000000L & l) == 0L)
                      break;
                   kind = 7;
-                  jjstateSet[jjnewStateCnt++] = 1;
+                  jjAddStates(0, 1);
+                  break;
+               case 2:
+                  if ((0x280000000000L & l) != 0L)
+                     kind = 7;
                   break;
                default : break;
             }
@@ -107,14 +111,18 @@ private int jjMoveNfa_0(int startState, int curPos)
                      break;
                   if (kind > 7)
                      kind = 7;
-                  jjCheckNAdd(1);
+                  jjCheckNAddTwoStates(1, 2);
                   break;
                case 1:
                   if ((0x7fffffeaffffffeL & l) == 0L)
                      break;
                   if (kind > 7)
                      kind = 7;
-                  jjCheckNAdd(1);
+                  jjCheckNAddTwoStates(1, 2);
+                  break;
+               case 2:
+                  if (curChar == 126)
+                     kind = 7;
                   break;
                default : break;
             }
@@ -142,13 +150,14 @@ private int jjMoveNfa_0(int startState, int curPos)
          kind = 0x7fffffff;
       }
       ++curPos;
-      if ((i = jjnewStateCnt) == (startsAt = 2 - (jjnewStateCnt = startsAt)))
+      if ((i = jjnewStateCnt) == (startsAt = 3 - (jjnewStateCnt = startsAt)))
          return curPos;
       try { curChar = input_stream.readChar(); }
       catch(java.io.IOException e) { return curPos; }
    }
 }
 static final int[] jjnextStates = {
+   1, 2,
 };
 
 /** Token literal values. */
@@ -166,8 +175,8 @@ static final long[] jjtoSkip = {
    0x1eL,
 };
 protected SimpleCharStream input_stream;
-private final int[] jjrounds = new int[2];
-private final int[] jjstateSet = new int[4];
+private final int[] jjrounds = new int[3];
+private final int[] jjstateSet = new int[6];
 protected char curChar;
 /** Constructor. */
 public CpogExpressionParserTokenManager(SimpleCharStream stream){
@@ -194,7 +203,7 @@ private void ReInitRounds()
 {
    int i;
    jjround = 0x80000001;
-   for (i = 2; i-- > 0;)
+   for (i = 3; i-- > 0;)
       jjrounds[i] = 0x80000000;
 }
 

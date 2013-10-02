@@ -24,6 +24,7 @@ import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.javacc.CpogExpressionParser;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
+import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -122,6 +123,10 @@ public class CpogExpressionTool extends ExpressionTool implements ActionListener
 		} catch (ParseException e) {
 			workspaceEntry.cancelMemento();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error", JOptionPane.ERROR_MESSAGE);
+			return;
+		} catch (TokenMgrError e) {
+			workspaceEntry.cancelMemento();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Lexical error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 

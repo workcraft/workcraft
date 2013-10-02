@@ -64,7 +64,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   final public CpogFormula formula() throws ParseException {
         CpogFormula result;
         CpogFormula op;
-    result = overlayOp();
+    result = overlayOp1();
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -76,6 +76,28 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         break label_1;
       }
       jj_consume_token(OVERLAY);
+      op = overlayOp1();
+    result = overlay(result, op);
+    }
+    {if (true) return result;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public CpogFormula overlayOp1() throws ParseException {
+        CpogFormula result;
+        CpogFormula op;
+    result = overlayOp();
+    label_2:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VARIABLE:
+      case 8:
+        ;
+        break;
+      default:
+        jj_la1[1] = jj_gen;
+        break label_2;
+      }
       op = overlayOp();
     result = overlay(result, op);
     }
@@ -87,15 +109,15 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         CpogFormula result;
         CpogFormula op;
     result = literal();
-    label_2:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SEQUENCE:
         ;
         break;
       default:
-        jj_la1[1] = jj_gen;
-        break label_2;
+        jj_la1[2] = jj_gen;
+        break label_3;
       }
       jj_consume_token(SEQUENCE);
       op = literal();
@@ -119,7 +141,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
       jj_consume_token(9);
       break;
     default:
-      jj_la1[2] = jj_gen;
+      jj_la1[3] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -136,13 +158,13 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[3];
+  final private int[] jj_la1 = new int[4];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x20,0x40,0x180,};
+      jj_la1_0 = new int[] {0x20,0x180,0x40,0x180,};
    }
 
   /** Constructor with InputStream. */
@@ -156,7 +178,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -170,7 +192,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -180,7 +202,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -190,7 +212,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -199,7 +221,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -208,7 +230,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -264,7 +286,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

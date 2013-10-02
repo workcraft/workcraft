@@ -82,7 +82,7 @@ TOKEN : /* OPERATORS */
 }
 TOKEN :
 {
-    < VARIABLE: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9","[","]"])* >
+    < VARIABLE: ["A"-"Z","a"-"z","_"](["_","A"-"Z","a"-"z","0"-"9","[","]", "'"])* (["+", "-", "~"])?>
 }
 CpogFormula formula() :
 {
@@ -90,8 +90,19 @@ CpogFormula formula() :
   	CpogFormula op;
 }
 {
-  result = overlayOp() ( < OVERLAY > op = overlayOp()  { result = overlay(result, op); } )*
+  result = overlayOp1() ( < OVERLAY > op = overlayOp1()  { result = overlay(result, op); } )*
   { return result; }}
+
+CpogFormula overlayOp1() :
+{
+  	CpogFormula result;
+  	CpogFormula op;
+}
+{
+  result = overlayOp() ( op = overlayOp()
+  { result = overlay(result, op); } )*
+  { return result; }
+}
 
 CpogFormula overlayOp() :
 {
