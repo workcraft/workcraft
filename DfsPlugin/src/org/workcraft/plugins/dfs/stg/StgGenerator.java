@@ -162,14 +162,14 @@ public class StgGenerator {
 		VisualPlace C0 = stg.createPlace(nameC + name + name0);
 		C0.setLabel(labelC + name + label0);
 		C0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.isComputed()) C0.setTokens(1);
+		if (!l.getReferencedLogic().isComputed()) C0.setTokens(1);
 		setPosition(C0, x + 2.0, y + 1.0);
 		nodes.add(C0);
 
 		VisualPlace C1 = stg.createPlace(nameC + name + name1);
 		C1.setLabel(labelC + name + label1);
 		C1.setLabelPositioning(Positioning.TOP);
-		if (l.isComputed()) C1.setTokens(1);
+		if (l.getReferencedLogic().isComputed()) C1.setTokens(1);
 		setPosition(C1, x + 2.0, y - 1.0);
 		nodes.add(C1);
 
@@ -186,7 +186,7 @@ public class StgGenerator {
 		VisualSignalTransition CF = null;
 		double dy = 0.0;
 		for (Node n: preset) {
-			if (CR == null || l.isEarlyEvaluation()) {
+			if (CR == null || l.getReferencedLogic().isEarlyEvaluation()) {
 				CR = stg.createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS);
 				stg.connect(C0, CR);
 				stg.connect(CR, C1);
@@ -205,7 +205,8 @@ public class StgGenerator {
 			dy += 1.0;
 		}
 
-		stg.groupCollection(nodes);
+		stg.select(nodes);
+		stg.groupSelection();
 		return new LogicStg(C0, C1, CRs, CFs);
 	}
 
@@ -281,7 +282,8 @@ public class StgGenerator {
 		setPosition(MF, x - 2.0, y - 1.0);
 		nodes.add(MF);
 
-		stg.groupCollection(nodes);
+		stg.select(nodes);
+		stg.groupSelection();
 		return new RegisterStg(M0, M1, MR, MF);
 	}
 
@@ -364,14 +366,14 @@ public class StgGenerator {
 		VisualPlace fwC0 = stg.createPlace(nameFwC + name + name0);
 		fwC0.setLabel(labelFwC + name + label0);
 		fwC0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.isForwardComputed()) fwC0.setTokens(1);
+		if (!l.getReferencedCounterflowLogic().isForwardComputed()) fwC0.setTokens(1);
 		setPosition(fwC0, x + 2.0, y - 2.0);
 		nodes.add(fwC0);
 
 		VisualPlace fwC1 = stg.createPlace(nameFwC + name + name1);
 		fwC1.setLabel(labelFwC + name + label1);
 		fwC1.setLabelPositioning(Positioning.TOP);
-		if (l.isForwardComputed()) fwC1.setTokens(1);
+		if (l.getReferencedCounterflowLogic().isForwardComputed()) fwC1.setTokens(1);
 		setPosition(fwC1, x + 2.0, y - 4.0);
 		nodes.add(fwC1);
 
@@ -386,7 +388,7 @@ public class StgGenerator {
 			VisualSignalTransition fwCF = null;
 			double dy = 0.0;
 			for (Node n: preset) {
-				if (fwCR == null || l.isForwardEarlyEvaluation()) {
+				if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
 					fwCR = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS);
 					stg.connect(fwC0, fwCR);
 					stg.connect(fwCR, fwC1);
@@ -409,14 +411,14 @@ public class StgGenerator {
 		VisualPlace bwC0 = stg.createPlace(nameBwC + name + name0);
 		bwC0.setLabel(labelBwC + name + label0);
 		bwC0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.isBackwardComputed()) bwC0.setTokens(1);
+		if (!l.getReferencedCounterflowLogic().isBackwardComputed()) bwC0.setTokens(1);
 		setPosition(bwC0, x + 2.0, y + 4.0);
 		nodes.add(bwC0);
 
 		VisualPlace bwC1 = stg.createPlace(nameBwC + name + name1);
 		bwC1.setLabel(labelBwC + name + label1);
 		bwC1.setLabelPositioning(Positioning.TOP);
-		if (l.isBackwardComputed()) bwC1.setTokens(1);
+		if (l.getReferencedCounterflowLogic().isBackwardComputed()) bwC1.setTokens(1);
 		setPosition(bwC1, x + 2.0, y + 2.0);
 		nodes.add(bwC1);
 
@@ -431,7 +433,7 @@ public class StgGenerator {
 			VisualSignalTransition bwCF = null;
 			double dy = 0.0;
 			for (Node n: postset) {
-				if (bwCR == null || l.isBackwardEarlyEvaluation()) {
+				if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
 					bwCR = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS);
 					stg.connect(bwC0, bwCR);
 					stg.connect(bwCR, bwC1);
@@ -451,7 +453,8 @@ public class StgGenerator {
 			}
 		}
 
-		stg.groupCollection(nodes);
+		stg.select(nodes);
+		stg.groupSelection();
 		return new CounterflowLogicStg(fwC0, fwC1, fwCRs, fwCFs, bwC0, bwC1, bwCRs, bwCFs);
 	}
 
@@ -499,14 +502,14 @@ public class StgGenerator {
 		VisualPlace orM0 = stg.createPlace(nameOrM + name + name0);
 		orM0.setLabel(labelOrM + name + label0);
 		orM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isOrMarked()) orM0.setTokens(1);
+		if (!r.getReferencedCounterflowRegister().isOrMarked()) orM0.setTokens(1);
 		setPosition(orM0, x + 2.0, y - 2.0);
 		nodes.add(orM0);
 
 		VisualPlace orM1 = stg.createPlace(nameOrM + name + name1);
 		orM1.setLabel(labelOrM + name + label1);
 		orM1.setLabelPositioning(Positioning.TOP);
-		if (r.isOrMarked()) orM1.setTokens(	1);
+		if (r.getReferencedCounterflowRegister().isOrMarked()) orM1.setTokens(	1);
 		setPosition(orM1, x + 2.0, y - 4.0);
 		nodes.add(orM1);
 
@@ -537,14 +540,14 @@ public class StgGenerator {
 		VisualPlace andM0 = stg.createPlace(nameAndM + name + name0);
 		andM0.setLabel(labelAndM + name + label0);
 		andM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isAndMarked()) andM0.setTokens(1);
+		if (!r.getReferencedCounterflowRegister().isAndMarked()) andM0.setTokens(1);
 		setPosition(andM0, x + 2.0, y + 4.0);
 		nodes.add(andM0);
 
 		VisualPlace andM1 = stg.createPlace(nameAndM + name + name1);
 		andM1.setLabel(labelAndM + name + label1);
 		andM1.setLabelPositioning(Positioning.TOP);
-		if (r.isAndMarked()) andM1.setTokens(1);
+		if (r.getReferencedCounterflowRegister().isAndMarked()) andM1.setTokens(1);
 		setPosition(andM1, x + 2.0, y + 2.0);
 		nodes.add(andM1);
 
@@ -560,7 +563,8 @@ public class StgGenerator {
 		setPosition(andMF, x - 2.0, y + 2.0);
 		nodes.add(andMF);
 
-		stg.groupCollection(nodes);
+		stg.select(nodes);
+		stg.groupSelection();
 		return new CounterflowRegisterStg(orM0, orM1, orMRfw, orMRbw, orMFfw, orMFbw, andM0, andM1, andMR, andMF);
 	}
 
@@ -644,28 +648,32 @@ public class StgGenerator {
 		VisualPlace M0 = stg.createPlace(nameM + name + name0);
 		M0.setLabel(labelM + name + label0);
 		M0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isTrueMarked() && !r.isFalseMarked()) M0.setTokens(1);
+		if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
+			M0.setTokens(1);
+		}
 		setPosition(M0, x - 4.0, y + 1.0);
 		nodes.add(M0);
 
 		VisualPlace M1 = stg.createPlace(nameM + name + name1);
 		M1.setLabel(labelM + name + label1);
 		M1.setLabelPositioning(Positioning.TOP);
-		if (r.isTrueMarked() || r.isFalseMarked()) M1.setTokens(1);
+		if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
+			M1.setTokens(1);
+		}
 		setPosition(M1, x - 4.0, y - 1.0);
 		nodes.add(M1);
 
 		VisualPlace tM0 = stg.createPlace(nameTrueM + name + name0);
 		tM0.setLabel(labelTrueM + name + label0);
 		tM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isTrueMarked()) tM0.setTokens(1);
+		if (!r.getReferencedBinaryRegister().isTrueMarked()) tM0.setTokens(1);
 		setPosition(tM0, x + 4.0, y - 2.0);
 		nodes.add(tM0);
 
 		VisualPlace tM1 = stg.createPlace(nameTrueM + name + name1);
 		tM1.setLabel(labelTrueM + name + label1);
 		tM1.setLabelPositioning(Positioning.TOP);
-		if (r.isTrueMarked()) tM1.setTokens(1);
+		if (r.getReferencedBinaryRegister().isTrueMarked()) tM1.setTokens(1);
 		setPosition(tM1, x + 4.0, y - 4.0);
 		nodes.add(tM1);
 
@@ -700,14 +708,14 @@ public class StgGenerator {
 		VisualPlace fM0 = stg.createPlace(nameFalseM + name + name0);
 		fM0.setLabel(labelFalseM + name + label0);
 		fM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isFalseMarked()) fM0.setTokens(1);
+		if (!r.getReferencedBinaryRegister().isFalseMarked()) fM0.setTokens(1);
 		setPosition(fM0, x + 4.0, y + 4.0);
 		nodes.add(fM0);
 
 		VisualPlace fM1 = stg.createPlace(nameFalseM + name + name1);
 		fM1.setLabel(labelFalseM + name + label1);
 		fM1.setLabelPositioning(Positioning.TOP);
-		if (r.isFalseMarked()) fM1.setTokens(1);
+		if (r.getReferencedBinaryRegister().isFalseMarked()) fM1.setTokens(1);
 		setPosition(fM1, x + 4.0, y + 2.0);
 		nodes.add(fM1);
 
@@ -739,13 +747,14 @@ public class StgGenerator {
 		createReadArcs(tM0, fMRs.values());
 		createReadArcs(fM0, tMRs.values());
 
-		stg.groupCollection(nodes);
+		stg.select(nodes);
+		stg.groupSelection();
 		return new BinaryRegisterStg(M0, M1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
 	}
 
 	private BinaryRegisterStg generateControlRegisterSTG(VisualControlRegister r) throws InvalidConnectionException {
-		boolean andSync = (r.getSynchronisationType() == SynchronisationType.AND);
-		boolean orSync = (r.getSynchronisationType() == SynchronisationType.OR);
+		boolean andSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND);
+		boolean orSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR);
 		return generateBinaryRegisterSTG(r, andSync, orSync);
 	}
 
@@ -771,18 +780,18 @@ public class StgGenerator {
 		for (VisualControlRegister n: crPreset) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
 			Connection connection = dfs.getConnection(n, r);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n));
 				createReadArc(nstg.fM1, rstg.tMRs.get(n));
 			} else {
 				createReadArc(nstg.tM1, rstg.tMRs.get(n));
 				createReadArc(nstg.fM1, rstg.fMRs.get(n));
 			}
-			if (r.getSynchronisationType() != SynchronisationType.PLAIN) {
+			if (r.getReferencedControlRegister().getSynchronisationType() != SynchronisationType.PLAIN) {
 				for (VisualControlRegister m: crPreset) {
 					if (m == n) continue;
 					BinaryRegisterStg mstg = getControlRegisterSTG(m);
-					if (r.getSynchronisationType() == SynchronisationType.OR) {
+					if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
 						createReadArc(mstg.M1, rstg.tMRs.get(n));
 					} else {
 						createReadArc(mstg.M1, rstg.fMRs.get(n));
@@ -816,16 +825,6 @@ public class StgGenerator {
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
-/*
-			Connection connection = dfs.getConnection(r, n);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
-				createReadArcs(nstg.tM1, rstg.fMFs.values());
-				createReadArcs(nstg.fM1, rstg.tMFs.values());
-			} else {
-				createReadArcs(nstg.tM1, rstg.tMFs.values());
-				createReadArcs(nstg.fM1, rstg.fMFs.values());
-			}
-*/
 			createReadArc(nstg.M1, rstg.tMF);
 			createReadArc(nstg.M1, rstg.fMF);
 			createReadArcs(nstg.M0, rstg.tMRs.values());
@@ -834,7 +833,7 @@ public class StgGenerator {
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
 			BinaryRegisterStg nstg = getPushRegisterSTG(n);
 			Connection connection = dfs.getConnection(r, n);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMF);
 				createReadArc(nstg.fM1, rstg.tMF);
 			} else {
@@ -847,7 +846,7 @@ public class StgGenerator {
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
 			BinaryRegisterStg nstg = getPopRegisterSTG(n);
 			Connection connection = dfs.getConnection(r, n);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMF);
 				createReadArc(nstg.fM1, rstg.tMF);
 			} else {
@@ -888,7 +887,7 @@ public class StgGenerator {
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
 			Connection connection = dfs.getConnection(n, r);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n));
 				createReadArc(nstg.fM1, rstg.tMRs.get(n));
 				createReadArc(nstg.tM0, rstg.fMF);
@@ -963,7 +962,7 @@ public class StgGenerator {
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
 			BinaryRegisterStg nstg = getControlRegisterSTG(n);
 			Connection connection = dfs.getConnection(n, r);
-			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).isInverting()) {
+			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n));
 				createReadArc(nstg.fM1, rstg.tMRs.get(n));
 				createReadArc(nstg.tM0, rstg.fMF);

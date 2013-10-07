@@ -1,5 +1,6 @@
 package org.workcraft.plugins.policy.tools;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
@@ -23,7 +25,6 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.tools.PetriNetSelectionTool;
 import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.BundledTransition;
@@ -49,7 +50,6 @@ public class PolicyNetSelectionTool extends PetriNetSelectionTool {
 		model = (PolicyNet)visualModel.getMathModel();
 		createInterface();
 	}
-
 
 	@SuppressWarnings("serial")
 	private final class BundleTableModel extends AbstractTableModel {
@@ -109,8 +109,12 @@ public class PolicyNetSelectionTool extends PetriNetSelectionTool {
 		bundleTable.setFillsViewportHeight(true);
 		bundleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		bundleTable.setDefaultRenderer(Object.class, new BundleTableCellRendererImplementation());
-		infoPanel.setViewportView(bundleTable);
-		infoPanel.setPreferredSize(new Dimension(1, 1));
+
+		JScrollPane bundlePane = new JScrollPane(bundleTable);
+		bundlePane.setPreferredSize(new Dimension(1, 1));
+		infoPanel.setLayout(new BorderLayout());
+		infoPanel.add(bundlePane, BorderLayout.CENTER);
+
 		editor.getWorkspaceEntry().addObserver(new StateObserver() {
 			@Override
 			public void notify(StateEvent e) {

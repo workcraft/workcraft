@@ -29,68 +29,50 @@ public class PropertyDeclaration implements PropertyDescriptor {
 	public String name;
 	public String getter;
 	public String setter;
-
 	public Class<?> cls;
 	public Map<String, Object> predefinedValues;
 	public Map<Object, String> valueNames;
-
 	private boolean choice;
-	private final Object owner;
+	private final Object object;
 
 	public boolean isChoice() {
 		return choice;
 	}
 
 	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls) {
-		this.owner = object;
+		this.object = object;
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
 		this.cls = cls;
 		this.predefinedValues = null;
 		this.valueNames = null;
-
-		choice = false;
+		this.choice = false;
 	}
 
 	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
-		this.owner = object;
+		this.object = object;
 		this.name = name;
 		this.getter = getter;
 		this.setter = setter;
 		this.cls = cls;
 		this.predefinedValues = predefinedValues;
-
-		valueNames = new LinkedHashMap<Object, String>();
-
+		this.valueNames = new LinkedHashMap<Object, String>();
 		for (String k : predefinedValues.keySet()) {
-			valueNames.put(predefinedValues.get(k), k);
+			this.valueNames.put(predefinedValues.get(k), k);
 		}
-
-		choice = true;
+		this.choice = true;
 	}
 
+	@Override
 	public Map<Object, String> getChoice() {
 		return valueNames;
 	}
 
+	@Override
 	public Object getValue() throws InvocationTargetException {
-			try {
-				return owner.getClass().getMethod(getter).invoke(owner);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (SecurityException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (NoSuchMethodException e) {
-				throw new RuntimeException(e);
-			}
-	}
-
-	public void setValue(Object value) throws InvocationTargetException {
 		try {
-			owner.getClass().getMethod(setter, cls).invoke(owner, value);
+			return object.getClass().getMethod(getter).invoke(object);
 		} catch (IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		} catch (SecurityException e) {
@@ -102,15 +84,39 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		}
 	}
 
+	@Override
+	public void setValue(Object value) throws InvocationTargetException {
+		try {
+			object.getClass().getMethod(setter, cls).invoke(object, value);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public Class<?> getType() {
 		return cls;
 	}
 
+	@Override
 	public boolean isWritable() {
 		return setter != null;
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return true;
+	}
+
 }

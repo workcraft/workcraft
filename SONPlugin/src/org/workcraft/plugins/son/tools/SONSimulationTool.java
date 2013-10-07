@@ -672,7 +672,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	@Override
 	public void activated(GraphEditor editor)
 	{
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
 		this.setFramework(editor.getFramework());

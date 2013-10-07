@@ -23,7 +23,7 @@ public class InstanceManager<T> {
 
 	private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
 	private final Func<T, String> labelGetter;
-	private boolean forbidInstanceChange = false;
+	private boolean forbidInstanceChange = true;
 
 	public InstanceManager (Func<T, String> labelGetter) {
 		if(labelGetter == null) {
@@ -78,7 +78,7 @@ public class InstanceManager<T> {
 	 */
 	public void assign (T t, Pair<String, Integer> reference) {
 		final Pair<String, Integer> assigned = instances.getValue(t);
-		if (reference.getSecond() == null || !forbidInstanceChange) {
+		if (reference.getSecond() == null || forbidInstanceChange) {
 			if (assigned != null) {
 				if (assigned.getFirst().equals(reference.getFirst())){
 					// already registered with same name, just return

@@ -134,7 +134,7 @@ public class ConnectionTool extends AbstractTool {
 					first = mouseOverObject;
 					mouseLeftFirst = false;
 					mouseOverObject = null;
-					e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(false);
+					e.getEditor().getWorkspaceEntry().setCanModify(false);
 				} else {
 					try {
 						e.getEditor().getWorkspaceEntry().saveMemento();
@@ -144,7 +144,7 @@ public class ConnectionTool extends AbstractTool {
 							mouseOverObject = null;
 						} else {
 							first = null;
-							e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
+							e.getEditor().getWorkspaceEntry().setCanModify(true);
 						}
 					} catch (InvalidConnectionException e1) {
 						Toolkit.getDefaultToolkit().beep();
@@ -154,7 +154,7 @@ public class ConnectionTool extends AbstractTool {
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			first = null;
 			warningMessage = null;
-			e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
+			e.getEditor().getWorkspaceEntry().setCanModify(true);
 		}
 		e.getEditor().repaint();
 	}
@@ -164,7 +164,7 @@ public class ConnectionTool extends AbstractTool {
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			first = null;
 			warningMessage = null;
-			e.getEditor().getWorkspaceEntry().setCanUndoAndRedo(true);
+			e.getEditor().getWorkspaceEntry().setCanModify(true);
 		}
 		e.getEditor().repaint();
 	}
@@ -198,7 +198,7 @@ public class ConnectionTool extends AbstractTool {
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
 		editor.getModel().selectNone();
-		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+		editor.getWorkspaceEntry().setCanModify(true);
 		first = null;
 		mouseOverObject = null;
 	}

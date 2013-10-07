@@ -138,7 +138,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	final public static boolean isUnfireEnabled (PetriNetModel net, Transition t) {
 		// gather number of connections for each post-place
 		Map<Place, Integer> map = new HashMap<Place, Integer>();
-
 		for (Connection c: net.getConnections(t)) {
 			if (c.getFirst()==t) {
 				if (map.containsKey(c.getSecond())) {
@@ -148,10 +147,11 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 				}
 			}
 		}
-
-		for (Node n : net.getPostset(t))
-			if (((Place)n).getTokens() < map.get((Place)n))
+		for (Node n : net.getPostset(t)) {
+			if (((Place)n).getTokens() < map.get((Place)n)) {
 				return false;
+			}
+		}
 		return true;
 	}
 
@@ -167,10 +167,11 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 				}
 			}
 		}
-
-		for (Node n : net.getPreset(t))
-			if (((Place)n).getTokens() < map.get((Place)n))
+		for (Node n : net.getPreset(t)) {
+			if (((Place)n).getTokens() < map.get((Place)n)) {
 				return false;
+			}
+		}
 		return true;
 	}
 

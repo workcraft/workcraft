@@ -122,15 +122,15 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		if(node instanceof VisualFunctionContact)
-		{
+		if(node instanceof VisualFunctionContact) {
 			VisualFunctionContact contact = (VisualFunctionContact)node;
 			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
 			return Properties.Merge.add(super.getProperties(node),
 					props.getSetProperty(contact),
 					props.getResetProperty(contact));
+		} else {
+			return super.getProperties(node);
 		}
-		else return super.getProperties(node);
 	}
 
 	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {

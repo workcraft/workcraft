@@ -176,7 +176,12 @@ public class SON extends AbstractMathModel implements SONModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		Properties properties = super.getProperties(node);
+		if (node != null) {
+			properties = Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		}
+		return properties;
+
 	}
 
 	final public ChannelPlace createChannelPlace() {

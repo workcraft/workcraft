@@ -9,7 +9,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -17,7 +16,9 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
@@ -32,16 +33,21 @@ public class VisualControlRegister extends VisualBinaryRegister {
 	}
 
 	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> synchronisationTypeChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.SynchronisationType synchronisationType : ControlRegister.SynchronisationType.values()) {
-			synchronisationTypeChoice.put(synchronisationType.name, synchronisationType);
-		}
-		addPropertyDeclaration(new PropertyDeclaration(this, "Synchronisation type", "getSynchronisationType", "setSynchronisationType",
-				ControlRegister.SynchronisationType.class, synchronisationTypeChoice));
-	}
-
-	public ControlRegister getReferencedControlRegister() {
-		return (ControlRegister)getReferencedComponent();
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualControlRegister, SynchronisationType>(
+				this, "Synchronisation type",
+				new Getter<VisualControlRegister, SynchronisationType>() {
+					@Override
+					public SynchronisationType eval(VisualControlRegister object) {
+						return object.getReferencedControlRegister().getSynchronisationType();
+					}
+				},
+				new Setter<VisualControlRegister, SynchronisationType>() {
+					@Override
+					public void eval(VisualControlRegister object, SynchronisationType value) {
+						object.getReferencedControlRegister().setSynchronisationType(value);
+					}
+				},
+				SynchronisationType.class, SynchronisationType.getChoice()));
 	}
 
 	@Override
@@ -100,9 +106,9 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
 		Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 
-		boolean trueMarked = isTrueMarked();
+		boolean trueMarked = getReferencedControlRegister().isTrueMarked();
 		boolean trueExcited = false;
-		boolean falseMarked = isFalseMarked();
+		boolean falseMarked = getReferencedControlRegister().isFalseMarked();
 		boolean falseExcited = false;
 		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof BinaryRegisterDecoration) {
@@ -117,10 +123,10 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		g.fill(shape);
 
 		g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
-		if (getSynchronisationType() == SynchronisationType.AND) {
+		if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
 			g.fill(falseInnerShape);
 		}
-		if (getSynchronisationType() == SynchronisationType.OR) {
+		if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
 			g.fill(trueInnerShape);
 		}
 
@@ -193,12 +199,8 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		return shape.contains(pointInLocalSpace);
 	}
 
-	public ControlRegister.SynchronisationType getSynchronisationType() {
-		return getReferencedControlRegister().getSynchronisationType();
-	}
-
-	public void setSynchronisationType(ControlRegister.SynchronisationType value) {
-		getReferencedControlRegister().setSynchronisationType(value);
+	public ControlRegister getReferencedControlRegister() {
+		return (ControlRegister)getReferencedComponent();
 	}
 
 }

@@ -29,7 +29,6 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -37,7 +36,6 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_O)
@@ -47,16 +45,6 @@ public class VisualPopRegister extends VisualBinaryRegister {
 
 	public VisualPopRegister(PopRegister register) {
 		super(register);
-		addPropertyDeclarations();
-	}
-
-	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> markingChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.Marking marking : ControlRegister.Marking.values()) {
-			markingChoice.put(marking.name, marking);
-		}
-		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
-				ControlRegister.Marking.class, markingChoice));
 	}
 
 	@Override
@@ -88,9 +76,9 @@ public class VisualPopRegister extends VisualBinaryRegister {
 
 		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
-		boolean trueMarked = isTrueMarked();
+		boolean trueMarked = getReferencedPopRegister().isTrueMarked();
 		boolean trueExcited = false;
-		boolean falseMarked = isFalseMarked();
+		boolean falseMarked = getReferencedPopRegister().isFalseMarked();
 		boolean falseExcited = false;
 		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof BinaryRegisterDecoration) {

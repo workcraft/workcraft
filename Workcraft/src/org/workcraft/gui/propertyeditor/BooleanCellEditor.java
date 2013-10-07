@@ -39,15 +39,16 @@ public class BooleanCellEditor extends AbstractCellEditor implements
 
 	public BooleanCellEditor() {
 		 checkBox = new JCheckBox();
-		 checkBox.setOpaque(false);
 		 checkBox.setFocusable(false);
-
 		 checkBox.addItemListener(this);
 	}
 
-	public Component getTableCellEditorComponent(JTable table, Object value,
-			boolean isSelected, int row, int column) {
-		checkBox.setSelected((Boolean)value);
+	public Component getTableCellEditorComponent(
+			JTable table, Object value,	boolean isSelected, int row, int column) {
+		if (value != null) {
+			checkBox.setSelected((Boolean)value);
+		}
+		checkBox.setOpaque(value == null);
 		return checkBox;
 	}
 

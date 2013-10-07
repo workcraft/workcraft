@@ -45,4 +45,9 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 		return String.class;
 	}
 
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
+
 }

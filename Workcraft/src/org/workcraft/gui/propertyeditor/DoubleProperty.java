@@ -23,7 +23,6 @@ package org.workcraft.gui.propertyeditor;
 
 import java.util.IllegalFormatException;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -35,7 +34,7 @@ public class DoubleProperty implements PropertyClass {
 	}
 
 	public TableCellRenderer getCellRenderer() {
-		return new DefaultTableCellRenderer();
+		return new DefaultCellRenderer();
 	}
 
 	public Object fromCellEditorValue(Object editorComponentValue) {
@@ -47,10 +46,14 @@ public class DoubleProperty implements PropertyClass {
 	}
 
 	public Object toCellRendererValue(Object value) {
-		try {
-			return String.format("%.2f", value);
-		} catch (IllegalFormatException e) {
-			return "#getter did not return a double";
+		String result = "";
+		if (value != null) {
+			try {
+				result = String.format("%.2f", value);
+			} catch (IllegalFormatException e) {
+				result = "#getter did not return a double";
+			}
 		}
+		return result;
 	}
 }

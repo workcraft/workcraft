@@ -48,4 +48,9 @@ final class NamePropertyDescriptor implements PropertyDescriptor {
 	public void setValue(Object value) throws InvocationTargetException {
 		this.net.setName(node, (String)value);
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
 }

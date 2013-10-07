@@ -21,41 +21,48 @@
 
 package org.workcraft.gui.propertyeditor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.workcraft.util.Pair;
 
 public interface Properties {
 	public Collection<PropertyDescriptor> getDescriptors();
 
 	public class Mix implements Properties {
-		private LinkedList<PropertyDescriptor> descriptors = new LinkedList<PropertyDescriptor>();
+		private LinkedList<PropertyDescriptor> mixDescriptors = new LinkedList<PropertyDescriptor>();
 
 		public Mix(PropertyDescriptor... descriptors) {
 			for (PropertyDescriptor descriptor : descriptors)
-				this.descriptors.add(descriptor);
+				this.mixDescriptors.add(descriptor);
 		}
 
 		@Override
 		public Collection<PropertyDescriptor> getDescriptors() {
-			return descriptors;
+			return mixDescriptors;
 		}
 
 		public void add (PropertyDescriptor descriptor) {
 			if (descriptor != null)
-				descriptors.add(descriptor);
+				mixDescriptors.add(descriptor);
 		}
 
 		public void add (Properties properties) {
 			if (properties != null)
 				for (PropertyDescriptor desc : properties.getDescriptors())
-					descriptors.add(desc);
+					mixDescriptors.add(desc);
 		}
 
 		public boolean isEmpty() {
-			return descriptors.isEmpty();
+			return mixDescriptors.isEmpty();
 		}
 
 		public static Mix from (PropertyDescriptor... descriptors) {
@@ -101,4 +108,109 @@ public interface Properties {
 			return new Merge(p1, p2);
 		}
 	}
+
+
+	public class Combine implements Properties {
+		private LinkedList<PropertyDescriptor> combinedDescriptors = new LinkedList<PropertyDescriptor>();
+
+		public Combine(PropertyDescriptor... descriptors) {
+			LinkedHashMap<Pair<String, Class<?>>, Set<PropertyDescriptor>> categories =
+					new LinkedHashMap<Pair<String, Class<?>>, Set<PropertyDescriptor>>();
+
+			for (PropertyDescriptor descriptor: descriptors) {
+				if (descriptor.isCombinable()) {
+					Pair<String, Class<?>> key = new Pair<String, Class<?>>(descriptor.getName(), descriptor.getType());
+					Set<PropertyDescriptor> value = categories.get(key);
+					if (value == null) {
+						value = new HashSet<PropertyDescriptor>();
+						categories.put(key, value);
+					}
+					value.add(descriptor);
+				}
+			}
+
+			for (Pair<String, Class<?>> key: categories.keySet()) {
+				final String name = key.getFirst();
+				final Class<?> type = key.getSecond();
+				final Set<PropertyDescriptor> values = categories.get(key);
+				PropertyDescriptor comboDescriptor = new PropertyDescriptor() {
+					@Override
+					public Object getValue() throws InvocationTargetException {
+						Object result = null;
+						for (PropertyDescriptor descriptor: values) {
+							if (result == null) {
+								result = descriptor.getValue();
+							} else if (!result.equals(descriptor.getValue())) {
+								return null;
+							}
+						}
+						return result;
+					}
+
+					@Override
+					public void setValue(Object value)  throws InvocationTargetException {
+						for (PropertyDescriptor descriptor: values) {
+							descriptor.setValue(value);
+						}
+					}
+
+					@Override
+					public Map<? extends Object, String> getChoice() {
+						Map<? extends Object, String> result = null;
+						for (PropertyDescriptor descriptor: values) {
+							result = descriptor.getChoice();
+						}
+						return result;
+					}
+
+					@Override
+					public String getName() {
+						return name;
+					}
+
+					@Override
+					public Class<?> getType() {
+						return type;
+					}
+
+					@Override
+					public boolean isWritable() {
+						boolean result = true;
+						for (PropertyDescriptor descriptor: values) {
+							result = result && descriptor.isWritable();
+						}
+						return result;
+					}
+
+					@Override
+					public boolean isCombinable() {
+						boolean result = true;
+						for (PropertyDescriptor descriptor: values) {
+							result = result && descriptor.isCombinable();
+						}
+						return result;
+					}
+				};
+				combinedDescriptors.add(comboDescriptor);
+			}
+		}
+
+		@Override
+		public Collection<PropertyDescriptor> getDescriptors() {
+			return combinedDescriptors;
+		}
+
+		public boolean isEmpty() {
+			return combinedDescriptors.isEmpty();
+		}
+
+		public static Combine from (PropertyDescriptor... descriptors) {
+			return new Combine(descriptors);
+		}
+
+		public static Combine from (Collection<PropertyDescriptor> descriptors) {
+			return new Combine(descriptors.toArray(new PropertyDescriptor[0]));
+		}
+	}
+
 }

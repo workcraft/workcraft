@@ -24,7 +24,6 @@ package org.workcraft.gui.graph.tools;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
@@ -40,7 +39,6 @@ import java.util.LinkedHashSet;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
@@ -56,7 +54,6 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -76,7 +73,8 @@ public class SelectionTool extends AbstractTool {
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
-	protected JScrollPane infoPanel;
+//	protected JScrollPane infoPanel;
+	protected JPanel infoPanel;
 	protected JPanel statusPanel;
 
 	private int drag = DRAG_NONE;
@@ -99,7 +97,8 @@ public class SelectionTool extends AbstractTool {
 
 	private void createInterface() {
 		controlPanel = new JPanel();
-		infoPanel = new JScrollPane();
+//		infoPanel = new JScrollPane();
+		infoPanel = new JPanel();
 		statusPanel = new JPanel();
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
@@ -116,7 +115,7 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		this.editor = editor;
-		editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+		editor.getWorkspaceEntry().setCanModify(true);
 		createInterface();
 	}
 
@@ -455,7 +454,7 @@ public class SelectionTool extends AbstractTool {
 		text.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+				editor.getWorkspaceEntry().setCanModify(false);
 			}
 
 			@Override
@@ -474,7 +473,7 @@ public class SelectionTool extends AbstractTool {
 						editor.getWorkspaceEntry().cancelMemento();
 					}
 				}
-				editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+				editor.getWorkspaceEntry().setCanModify(true);
 				editor.repaint();
 			}
 		});

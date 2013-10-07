@@ -15,7 +15,9 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_Q)
@@ -29,12 +31,37 @@ public class VisualCounterflowRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Or-marked", "isOrMarked", "setOrMarked", boolean.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "And-marked", "isAndMarked", "setAndMarked", boolean.class));
-	}
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowRegister, Boolean>(
+				this, "Or-marked",
+				new Getter<VisualCounterflowRegister, Boolean>() {
+					@Override
+					public Boolean eval(VisualCounterflowRegister object) {
+						return object.getReferencedCounterflowRegister().isOrMarked();
+					}
+				},
+				new Setter<VisualCounterflowRegister, Boolean>() {
+					@Override
+					public void eval(VisualCounterflowRegister object, Boolean value) {
+						object.getReferencedCounterflowRegister().setOrMarked(value);
+					}
+				},
+				Boolean.class));
 
-	public CounterflowRegister getReferencedCounterflowRegister() {
-		return (CounterflowRegister)getReferencedComponent();
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowRegister, Boolean>(
+				this, "And-marked",
+				new Getter<VisualCounterflowRegister, Boolean>() {
+					@Override
+					public Boolean eval(VisualCounterflowRegister object) {
+						return object.getReferencedCounterflowRegister().isAndMarked();
+					}
+				},
+				new Setter<VisualCounterflowRegister, Boolean>() {
+					@Override
+					public void eval(VisualCounterflowRegister object, Boolean value) {
+						object.getReferencedCounterflowRegister().setAndMarked(value);
+					}
+				},
+				Boolean.class));
 	}
 
 	@Override
@@ -74,9 +101,9 @@ public class VisualCounterflowRegister extends VisualComponent {
 
 		boolean forwardExcited = false;
 		boolean backwardExcited = false;
-		boolean orMarked = isOrMarked();
+		boolean orMarked = getReferencedCounterflowRegister().isOrMarked();
 		boolean orMarkedExcited = false;
-		boolean andMarked = isAndMarked();
+		boolean andMarked = getReferencedCounterflowRegister().isAndMarked();
 		boolean andMarkedExcited = false;
 		if (d instanceof CounterflowRegisterDecoration) {
 			forwardExcited = ((CounterflowRegisterDecoration)d).isForwardExcited();
@@ -140,20 +167,8 @@ public class VisualCounterflowRegister extends VisualComponent {
 		drawLabelInLocalSpace(r);
 	}
 
-	public boolean isOrMarked() {
-		return getReferencedCounterflowRegister().isOrMarked();
-	}
-
-	public void setOrMarked(boolean value) {
-		getReferencedCounterflowRegister().setOrMarked(value);
-	}
-
-	public boolean isAndMarked() {
-		return getReferencedCounterflowRegister().isAndMarked();
-	}
-
-	public void setAndMarked(boolean value) {
-		getReferencedCounterflowRegister().setAndMarked(value);
+	public CounterflowRegister getReferencedCounterflowRegister() {
+		return (CounterflowRegister)getReferencedComponent();
 	}
 
 }

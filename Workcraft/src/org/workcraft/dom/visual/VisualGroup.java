@@ -28,14 +28,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.HierarchyObserver;
@@ -85,10 +82,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 			TransformHelper.applyTransform(node, localToParentTransform);
 
 		return nodesToReparent;
-	}
-
-	public Set<MathNode> getMathReferences() {
-		return Collections.emptySet();
 	}
 
 	@Override

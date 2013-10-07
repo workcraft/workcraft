@@ -77,7 +77,10 @@ public class Dfs extends AbstractMathModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		if (node != null) {
+			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+		}
+		return null;
 	}
 
 	public String getName(Node node) {

@@ -100,7 +100,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 				return rowClasses[row].toCellRendererValue(value);
 			else
 			{
-				Map<Object, String> choice = declarations[row].getChoice();
+				Map<? extends Object, String> choice = declarations[row].getChoice();
 				if(choice != null)
 					return choice.get(value);
 				else
@@ -115,14 +115,15 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 		PropertyDescriptor desc = declarations[row];
-
-		if (rowClasses[row] != null)
+		if (rowClasses[row] != null) {
 			value = rowClasses[row].fromCellEditorValue(value);
-
-		try {
-			desc.setValue(value);
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException(e.getCause().getMessage(), e);
+		}
+		if (value != null) {
+			try {
+				desc.setValue(value);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException(e.getCause().getMessage(), e);
+			}
 		}
 	}
 

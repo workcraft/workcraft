@@ -46,4 +46,9 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 	public void setValue(Object value) throws InvocationTargetException {
 		model.setName(bundle, (String)value);
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
 }

@@ -74,6 +74,11 @@ public class VisualContactFormulaProperties {
 			public Map<Object, String> getChoice() {
 				return null;
 			}
+
+			@Override
+			public boolean isCombinable() {
+				return false;
+			}
 		};
 	}
 
@@ -113,6 +118,11 @@ public class VisualContactFormulaProperties {
 			@Override
 			public Map<Object, String> getChoice() {
 				return null;
+			}
+
+			@Override
+			public boolean isCombinable() {
+				return false;
 			}
 		};
 	}

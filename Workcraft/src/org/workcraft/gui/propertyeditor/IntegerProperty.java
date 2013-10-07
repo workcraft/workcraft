@@ -23,7 +23,6 @@ package org.workcraft.gui.propertyeditor;
 
 import java.util.IllegalFormatException;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -35,7 +34,7 @@ public class IntegerProperty implements PropertyClass {
 	}
 
 	public TableCellRenderer getCellRenderer() {
-		return new DefaultTableCellRenderer();
+		return new DefaultCellRenderer();
 	}
 
 	public Object fromCellEditorValue(Object editorComponentValue) {
@@ -47,11 +46,15 @@ public class IntegerProperty implements PropertyClass {
 	}
 
 	public Object toCellRendererValue(Object value) {
-		try {
-			return String.format("%d", value);
-		} catch (IllegalFormatException e) {
-			return "#getter did not return an int";
+		String result = "";
+		if (value != null) {
+			try {
+				result = String.format("%d", value);
+			} catch (IllegalFormatException e) {
+				result = "#getter did not return an int";
+			}
 		}
+		return result;
 	}
 
 }

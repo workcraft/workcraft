@@ -23,21 +23,26 @@ package org.workcraft.plugins.policy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundleTransitionsPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.TransitionBundlesPropertyDescriptor;
+import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
+import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
@@ -51,16 +56,33 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 	}
 
 	public PolicyNet(Container root, References refs) {
-		super(root, refs, new Func<Node, String>() {
+		super((root == null ? new Locality() : root), refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				String result = null;
 				if (arg instanceof Bundle) {
 					result = "bundle";
+				} else if (arg instanceof Locality) {
+					result = "loc";
 				}
 				return result;
 			}
 		});
+		// update all bundles when a transition is removed or re-parented
+		new HierarchySupervisor() {
+			@Override
+			public void handleEvent(HierarchyEvent e) {
+				if (e instanceof NodesDeletingEvent) {
+					for (Node node: e.getAffectedNodes()) {
+						if (node instanceof BundledTransition) {
+							for (Bundle b: new ArrayList<Bundle>(getBundles())) {
+								b.remove((BundledTransition)node);
+							}
+						}
+					}
+				}
+			}
+		}.attach(getRoot());
 	}
 
 	@Override
@@ -184,6 +206,46 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 			}
 		}
 	}
+
+	public Locality createLocality(ArrayList<Node> selection, Container currentLevel) {
+		Locality locality = new Locality();
+		currentLevel.add(locality);
+		currentLevel.reparent(selection, locality);
+
+		ArrayList<Node> connectionsToLocality = new ArrayList<Node>();
+		for (Connection connection : Hierarchy.getChildrenOfType(currentLevel, Connection.class)) {
+			if (Hierarchy.isDescendant(connection.getFirst(), locality)	&& Hierarchy.isDescendant(connection.getSecond(), locality)) {
+				connectionsToLocality.add(connection);
+			}
+		}
+		currentLevel.reparent(connectionsToLocality, locality);
+
+		HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<Bundle, HashSet<BundledTransition>>();
+		for (Node node: selection) {
+			if (node instanceof BundledTransition) {
+				BundledTransition t = (BundledTransition)node;
+				for (Bundle b: ((PolicyNet)getMathModel()).getTransitionBundles(t)) {
+					HashSet<BundledTransition> transitions = subBundles.get(b);
+					if (transitions == null) {
+						transitions = new HashSet<BundledTransition>();
+						subBundles.put(b, transitions);
+					}
+					transitions.add(t);
+				}
+			}
+		}
+
+		for (Bundle b: subBundles.keySet()) {
+			HashSet<BundledTransition> transitions = subBundles.get(b);
+			if (b.getTransitions().size() > transitions.size()) {
+				((PolicyNet)getMathModel()).bundle(transitions);
+				b.removeAll(subBundles.get(b));
+			}
+		}
+
+		return locality;
+	}
+
 
 	@Override
 	public Properties getProperties(Node node) {

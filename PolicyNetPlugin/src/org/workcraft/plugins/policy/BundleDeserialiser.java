@@ -51,9 +51,9 @@ public class BundleDeserialiser implements CustomXMLDeserialiser {
 	}
 
 	@Override
-	public void initInstance(Element element, Object instance,
-			ReferenceResolver externalReferenceResolver,
+	public void initInstance(Element element, Object instance,	ReferenceResolver externalReferenceResolver,
 			NodeInitialiser nodeInitialiser) throws DeserialisationException {
+
 	}
 
 	@Override

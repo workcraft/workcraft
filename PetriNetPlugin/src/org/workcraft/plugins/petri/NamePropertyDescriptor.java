@@ -45,4 +45,9 @@ final class NamePropertyDescriptor implements PropertyDescriptor {
 	public void setValue(Object value) throws InvocationTargetException {
 		model.setName(node, (String)value);
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
 }

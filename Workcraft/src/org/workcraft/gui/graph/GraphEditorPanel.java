@@ -37,7 +37,10 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -51,12 +54,14 @@ import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.propertyeditor.Properties.Combine;
 import org.workcraft.gui.propertyeditor.Properties.Mix;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
@@ -253,8 +258,13 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 						}
 
 						@Override
-						public Map<Object, String> getChoice() {
+						public Map<? extends Object, String> getChoice() {
 							return d.getChoice();
+						}
+
+						@Override
+						public boolean isCombinable() {
+							return d.isCombinable();
 						}
 					});
 				}
@@ -263,34 +273,53 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		};
 	}
 
-	public void updatePropertyView() {
-		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
+	private Properties getPropertiesDefault() {
 		Mix mix = new Mix();
-		Collection<Node> selection = getModel().getSelection();
-		if (selection.size() == 1) {
-			Node singleSelected = selection.iterator().next();
-			mix.add(getModel().getProperties(singleSelected));
-			if (singleSelected instanceof Properties) {
-				mix.add((Properties)singleSelected);
+		mix.add(getModel().getProperties(null));
+		mix.add(getModel().getMathModel().getProperties(null));
+		return mix;
+	}
+
+	private Properties getPropertiesMix(Collection<Node> selection) {
+		Mix mix = new Mix();
+		for (Node selected: selection) {
+			if (selected instanceof Properties) {
+				mix.add((Properties)selected);
 			}
-			if (singleSelected instanceof DependentNode) {
-				for (Node n : ((DependentNode)singleSelected).getMathReferences()) {
-					mix.add(getModel().getMathModel().getProperties(n));
-					if (n instanceof Properties) {
-						mix.add((Properties)n);
+			if (selected instanceof DependentNode) {
+				for (Node node : ((DependentNode)selected).getMathReferences()) {
+					mix.add(getModel().getMathModel().getProperties(node));
+					if (node instanceof Properties) {
+						mix.add((Properties)node);
 					}
 				}
 			}
+		}
+		return mix;
+	}
 
+	private Properties getPropertiesCombo(Collection<Node> selection) {
+		Properties properties = getPropertiesMix(selection);
+		Collection<PropertyDescriptor> descriptors = properties.getDescriptors();;
+		return Combine.from(descriptors.toArray(new PropertyDescriptor[0]));
+	}
+
+	public void updatePropertyView() {
+		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
+		Properties properties;
+		Collection<Node> selection = getModel().getSelection();
+		if (selection.size() == 0) {
+			properties = getPropertiesDefault();
+		} else	if (selection.size() == 1) {
+			properties = getPropertiesMix(selection);
 		} else {
-			mix.add(getModel().getProperties(null));
-			mix.add(getModel().getMathModel().getProperties(null));
+			properties = getPropertiesCombo(selection);
 		}
 
-		if(mix.isEmpty()) {
+		if(properties.getDescriptors().isEmpty()) {
 			propertyWindow.clearObject();
 		} else {
-			propertyWindow.setObject(propertiesWrapper(mix));
+			propertyWindow.setObject(propertiesWrapper(properties));
 		}
 	}
 

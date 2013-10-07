@@ -53,4 +53,9 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 		return int.class;
 	}
 
+	@Override
+	public boolean isCombinable() {
+		return true;
+	}
+
 }

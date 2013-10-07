@@ -562,16 +562,17 @@ public class MainWindow extends JFrame {
 			}
 
 			editorWindows.remove(we, dockableWindow);
-
-			if (editorWindows.get(we).isEmpty())
+			if (editorWindows.get(we).isEmpty()) {
 				framework.getWorkspace().close(we);
+			}
 
 			if (editorWindows.isEmpty()) {
 				DockingManager.registerDockable(documentPlaceholder);
-				DockingManager.dock(documentPlaceholder, dockableWindow,
-						DockingConstants.CENTER_REGION);
+				DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
 				utilityWindows.add(documentPlaceholder);
-
+				propertyEditorWindow.removeAll();
+				toolboxWindow.removeAll();
+				toolInterfaceWindow.removeAll();
 				disableWorkActions();
 			}
 
@@ -1122,10 +1123,6 @@ public class MainWindow extends JFrame {
 	public void repaintCurrentEditor() {
 		if (editorInFocus != null)
 			editorInFocus.repaint();
-	}
-
-	public void togglePropertyEditor() {
-
 	}
 
 	public PropertyEditorWindow getPropertyView() {

@@ -47,7 +47,7 @@ public class SimulationTool extends STGSimulationTool {
 
 	@Override
 	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().setCanModify(false);
 		// editor.getWorkspaceEntry().captureMemento(); // saving-restoring memento not needed in this tool
 		dfs = (VisualDfs)editor.getModel();
 		generator = new StgGenerator(dfs);

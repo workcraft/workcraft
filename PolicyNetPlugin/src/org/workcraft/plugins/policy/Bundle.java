@@ -9,24 +9,32 @@ import java.util.Set;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-public class Bundle extends MathNode {
+public class Bundle extends MathNode  {
 	private final Set<BundledTransition> transitions = new HashSet<BundledTransition>();
 	private Color color = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
 
 	public Bundle() {
 	}
 
-	public void add(BundledTransition t) {
-		transitions.add(t);
-		sendNotification(new PropertyChangedEvent(this, "added"));
-		t.sendNotification(new PropertyChangedEvent(this, "bundled"));
+	public void add(BundledTransition transition) {
+		if (transition != null) {
+			transitions.add(transition);
+			sendNotification(new PropertyChangedEvent(this, "added"));
+			transition.sendNotification(new PropertyChangedEvent(this, "bundled"));
+		}
 	}
 
-	public void remove(BundledTransition t) {
-		if (contains(t)) {
-			transitions.remove(t);
+	public void remove(BundledTransition transition) {
+		if (contains(transition)) {
+			transitions.remove(transition);
 			sendNotification(new PropertyChangedEvent(this, "removed"));
-			t.sendNotification(new PropertyChangedEvent(this, "unbundled"));
+			transition.sendNotification(new PropertyChangedEvent(this, "unbundled"));
+		}
+	}
+
+	public void removeAll(Collection<BundledTransition> transitions) {
+		for (BundledTransition transition: transitions) {
+			remove(transition);
 		}
 	}
 

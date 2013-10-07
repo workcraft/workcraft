@@ -44,6 +44,6 @@ public class DisabledPanel extends JPanel {
 
 		g.setFont(font);
 		g.drawString("N/A", getWidth()/2, getHeight()/2);
-
 	}
+
 }

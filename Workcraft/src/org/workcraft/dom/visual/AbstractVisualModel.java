@@ -324,44 +324,36 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		currentLevel = newCurrentLevel;
 	}
 
-	private Collection<Node> getGroupableSelection() {
-		ArrayList<Node> result = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualTransformableNode) {
-				result.add((VisualTransformableNode)node);
-			}
-		}
-		return result;
-	}
-
 	/**
 	 * Groups the selection, and selects the newly created group.
 	 * @author Arseniy Alekseyev
 	 */
 	@Override
 	public void groupSelection() {
-		Collection<Node> selected = getGroupableSelection();
-		VisualGroup vg = groupCollection(selected);
-		if (vg!=null) select(vg);
-	}
-
-	public VisualGroup groupCollection(Collection<Node> selected) {
-		if(selected.size() <= 1)
-			return null;
-
-		VisualGroup group = new VisualGroup();
-		currentLevel.add(group);
-		currentLevel.reparent(selected, group);
-
-		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-			if(Hierarchy.isDescendant(connection.getFirst(), group) &&
-					Hierarchy.isDescendant(connection.getSecond(), group)) {
-				connectionsToGroup.add(connection);
+		ArrayList<Node> selected = new ArrayList<Node>();
+		for(Node node : getOrderedCurrentLevelSelection()) {
+			if(node instanceof VisualTransformableNode) {
+				selected.add((VisualTransformableNode)node);
 			}
 		}
-		currentLevel.reparent(connectionsToGroup, group);
-		return group;
+
+		if(selected.size() > 1) {
+			VisualGroup group = new VisualGroup();
+			currentLevel.add(group);
+			currentLevel.reparent(selected, group);
+
+			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
+				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
+						Hierarchy.isDescendant(connection.getSecond(), group)) {
+					connectionsToGroup.add(connection);
+				}
+			}
+			currentLevel.reparent(connectionsToGroup, group);
+			if (group != null) {
+				select(group);
+			}
+		}
 	}
 
 	/**

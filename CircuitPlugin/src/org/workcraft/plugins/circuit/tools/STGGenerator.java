@@ -289,9 +289,8 @@ public class STGGenerator {
 				subtract(add(center, direction), pOffset),  minusDirection,
 				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
 
-		stg.groupCollection(nodes);
-
-
+		stg.select(nodes);
+		stg.groupSelection();
 	}
 
 	private static LinkedList<VisualNode> buildTransitions(VisualContact parentContact,

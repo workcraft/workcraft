@@ -33,7 +33,7 @@ public class CircuitSimulationTool extends STGSimulationTool {
 
 	@Override
 	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().captureMemento();
 		circuit = (VisualCircuit) editor.getModel();
 		visualNet = STGGenerator.generate(circuit);

@@ -79,9 +79,9 @@ public class VisualPushRegister extends VisualBinaryRegister {
 
 		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
-		boolean trueMarked = isTrueMarked();
+		boolean trueMarked = getReferencedPushRegister().isTrueMarked();
 		boolean trueExcited = false;
-		boolean falseMarked = isFalseMarked();
+		boolean falseMarked = getReferencedPushRegister().isFalseMarked();
 		boolean falseExcited = false;
 		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof BinaryRegisterDecoration) {

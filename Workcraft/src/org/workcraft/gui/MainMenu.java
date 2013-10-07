@@ -406,7 +406,7 @@ public class MainMenu extends JMenuBar {
 	}
 
 	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
-		we.updateUndoAndRedoState();
+		we.updateActionState();
 
 		mnTools.setVisible(true);
 		mnTools.removeAll();

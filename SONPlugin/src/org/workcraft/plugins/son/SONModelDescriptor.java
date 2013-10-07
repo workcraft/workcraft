@@ -19,5 +19,4 @@ public class SONModelDescriptor implements ModelDescriptor{
 		return new SONVisualModelDescriptor();
 	}
 
-
 }

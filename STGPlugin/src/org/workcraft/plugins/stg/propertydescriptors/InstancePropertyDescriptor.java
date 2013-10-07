@@ -46,4 +46,9 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 	public Class<?> getType() {
 		return int.class;
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
 }

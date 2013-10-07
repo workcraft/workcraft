@@ -21,7 +21,6 @@
 
 package org.workcraft.gui.propertyeditor;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -33,7 +32,7 @@ public class StringProperty implements PropertyClass {
 	}
 
 	public TableCellRenderer getCellRenderer() {
-		return new DefaultTableCellRenderer();
+		return new DefaultCellRenderer();
 	}
 
 	public Object fromCellEditorValue(Object editorComponentValue) {
@@ -41,6 +40,10 @@ public class StringProperty implements PropertyClass {
 	}
 
 	public Object toCellRendererValue(Object value) {
-		return ""+value;
+		String result = "";
+		if (value != null) {
+			result = "" + value;
+		}
+		return result;
 	}
 }

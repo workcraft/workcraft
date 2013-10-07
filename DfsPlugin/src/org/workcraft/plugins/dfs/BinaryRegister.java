@@ -1,5 +1,8 @@
 package org.workcraft.plugins.dfs;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
@@ -10,10 +13,18 @@ public class BinaryRegister extends MathNode {
 		FALSE_TOKEN("false"),
 		TRUE_TOKEN("true");
 
-		public final String name;
+		private final String name;
 
 		private Marking(String name) {
 			this.name = name;
+		}
+
+		static public Map<String, Marking> getChoice() {
+			LinkedHashMap<String, Marking> choice = new LinkedHashMap<String, Marking>();
+			for (Marking item : Marking.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
 		}
 	}
 
@@ -32,7 +43,7 @@ public class BinaryRegister extends MathNode {
 		return (this.marking == Marking.FALSE_TOKEN);
 	}
 
-	public boolean isTrusMarked() {
+	public boolean isTrueMarked() {
 		return (this.marking == Marking.TRUE_TOKEN);
 	}
 

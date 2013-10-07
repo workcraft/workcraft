@@ -50,12 +50,10 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( CustomToolsProvider.class )
 public class VisualCPOG extends AbstractVisualModel
 {
-	private final class BooleanFormulaPropertyDescriptor implements
-			PropertyDescriptor {
+	private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
 		private final Node node;
 
-		private BooleanFormulaPropertyDescriptor(Node node)
-		{
+		private BooleanFormulaPropertyDescriptor(Node node) {
 			this.node = node;
 		}
 
@@ -65,8 +63,7 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 
 		@Override
-		public String getName()
-		{
+		public String getName() {
 			if (node instanceof VisualRhoClause) return "Function";
 			return "Condition";
 		}
@@ -77,22 +74,15 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 
 		@Override
-		public Object getValue() throws InvocationTargetException
-		{
+		public Object getValue() throws InvocationTargetException {
 			if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
 			if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
 			return FormulaToString.toString(((VisualArc)node).getCondition());
 		}
 
 		@Override
-		public boolean isWritable() {
-			return true;
-		}
-
-		@Override
 		public void setValue(Object value) throws InvocationTargetException {
-			try
-			{
+			try {
 				if (node instanceof VisualRhoClause) ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
 				else
 				if (node instanceof VisualArc) ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
@@ -101,6 +91,16 @@ public class VisualCPOG extends AbstractVisualModel
 			} catch (ParseException e) {
 				throw new InvocationTargetException(e);
 			}
+		}
+
+		@Override
+		public boolean isWritable() {
+			return true;
+		}
+
+		@Override
+		public boolean isCombinable() {
+			return false;
 		}
 	}
 
@@ -188,7 +188,7 @@ public class VisualCPOG extends AbstractVisualModel
 		return arc;
 	}
 
-	private Collection<Node> getGroupableSelection()
+	public Collection<Node> getGroupableSelection()
 	{
 		HashSet<Node> result = new HashSet<Node>();
 

@@ -46,4 +46,9 @@ public final class TransitionBundlesPropertyDescriptor implements PropertyDescri
 	public void setValue(Object value) throws InvocationTargetException {
 		model.setTransitionBundlesAsString(transition, (String)value);
 	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
 }

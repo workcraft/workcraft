@@ -6,6 +6,8 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.plugins.policy.serialisation.VisualLocalityDeserialiser;
+import org.workcraft.plugins.policy.serialisation.VisualLocalitySerialiser;
 import org.workcraft.plugins.policy.tools.PetriNetGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -26,6 +28,8 @@ public class PolicyNetModule implements Module {
 		pm.registerClass(ModelDescriptor.class, PolicyNetModelDescriptor.class);
 		pm.registerClass(XMLSerialiser.class, BundleSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, BundleDeserialiser.class);
+		pm.registerClass(XMLSerialiser.class, VisualLocalitySerialiser.class);
+		pm.registerClass(XMLDeserialiser.class,VisualLocalityDeserialiser.class);
 	}
 
 	@Override

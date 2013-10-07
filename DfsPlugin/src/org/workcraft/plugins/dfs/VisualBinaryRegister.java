@@ -1,10 +1,11 @@
 package org.workcraft.plugins.dfs;
 
-import java.util.LinkedHashMap;
-
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 
 public class VisualBinaryRegister extends VisualComponent {
 
@@ -14,12 +15,21 @@ public class VisualBinaryRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> markingChoice = new LinkedHashMap<String, Object>();
-		for (ControlRegister.Marking marking : ControlRegister.Marking.values()) {
-			markingChoice.put(marking.name, marking);
-		}
-		addPropertyDeclaration(new PropertyDeclaration(this, "Marking", "getMarking", "setMarking",
-				ControlRegister.Marking.class, markingChoice));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualBinaryRegister, Marking>(
+				this, "Marking",
+				new Getter<VisualBinaryRegister, Marking>() {
+					@Override
+					public Marking eval(VisualBinaryRegister object) {
+						return object.getReferencedBinaryRegister().getMarking();
+					}
+				},
+				new Setter<VisualBinaryRegister, Marking>() {
+					@Override
+					public void eval(VisualBinaryRegister object, Marking value) {
+						object.getReferencedBinaryRegister().setMarking(value);
+					}
+				},
+				Marking.class, Marking.getChoice()));
 	}
 
 	@Override
@@ -27,24 +37,8 @@ public class VisualBinaryRegister extends VisualComponent {
 
 	}
 
-	public BinaryRegister getReferencedControlRegister() {
+	public BinaryRegister getReferencedBinaryRegister() {
 		return (BinaryRegister)getReferencedComponent();
-	}
-
-	public ControlRegister.Marking getMarking() {
-		return getReferencedControlRegister().getMarking();
-	}
-
-	public void setMarking(ControlRegister.Marking value) {
-		getReferencedControlRegister().setMarking(value);
-	}
-
-	public boolean isFalseMarked() {
-		return getReferencedControlRegister().isFalseMarked();
-	}
-
-	public boolean isTrueMarked() {
-		return getReferencedControlRegister().isTrusMarked();
 	}
 
 }

@@ -174,8 +174,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	}
 
-	private Collection<Node> getGroupableSelection()
-	{
+	private Collection<Node> getGroupableSelection() {
 		boolean validate = false;
 		HashSet<Node> result = new HashSet<Node>();
 		if (validateSelection ())
@@ -190,8 +189,7 @@ public class VisualSON extends AbstractVisualModel{
 					return result;
 				}
 			}
-		}else
-			{
+		} else	{
 					JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title, JOptionPane.WARNING_MESSAGE);
 					result.removeAll(result);
 					return result;

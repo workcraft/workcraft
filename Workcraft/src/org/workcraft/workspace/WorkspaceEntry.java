@@ -47,7 +47,7 @@ public class WorkspaceEntry implements ObservableState {
 	private final Framework framework;
 	private final Workspace workspace;
 	private final MementoManager history = new MementoManager();
-	private boolean canUndoAndRedo = true;
+	private boolean canModify = true;
 	private Memento capturedMemento = null;
 	private Memento savedMemento = null;
 
@@ -172,14 +172,26 @@ public class WorkspaceEntry implements ObservableState {
 		observableState.removeObserver(obs);
 	}
 
-	public void updateUndoAndRedoState() {
-		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canUndoAndRedo && history.canUndo());
-		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canUndoAndRedo && history.canRedo());
+	public void updateActionState() {
+		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
+		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
+		MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_GROUP_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_UNGROUP_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_LEVEL_UP_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_LEVEL_DOWN_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_ROTATE_CLOCKWISE_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_FLIP_HORIZONTAL_ACTION.setEnabled(canModify);
+		MainWindowActions.OBJECT_FLIP_VERTICAL_ACTION.setEnabled(canModify);
 	}
 
-	public void setCanUndoAndRedo(boolean canUndoAndRedo) {
-		this.canUndoAndRedo = canUndoAndRedo;
-		updateUndoAndRedoState();
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+		updateActionState();
 	}
 
 	public void captureMemento() {
@@ -206,7 +218,7 @@ public class WorkspaceEntry implements ObservableState {
 		}
 		history.pushUndo(currentMemento);
 		history.clearRedo();
-		updateUndoAndRedoState();
+		updateActionState();
 	}
 
 	public void undo() {
@@ -222,7 +234,7 @@ public class WorkspaceEntry implements ObservableState {
 				setChanged(undoMemento != savedMemento);
 			}
 		}
-		updateUndoAndRedoState();
+		updateActionState();
 	}
 
 	public void redo() {
@@ -238,7 +250,7 @@ public class WorkspaceEntry implements ObservableState {
 				setChanged(redoMemento != savedMemento);
 			}
 		}
-		updateUndoAndRedoState();
+		updateActionState();
 	}
 
 	public void insert(ModelEntry me) {

@@ -14,7 +14,9 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.plugins.dfs.decorations.LogicDecoration;
 
 @Hotkey(KeyEvent.VK_L)
@@ -28,10 +30,37 @@ public class VisualLogic extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Computed",
-				"isComputed", "setComputed", boolean.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Early Evaluation",
-				"isEarlyEvaluation", "setEarlyEvaluation", boolean.class));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualLogic, Boolean>(
+				this, "Computed",
+				new Getter<VisualLogic, Boolean>() {
+					@Override
+					public Boolean eval(VisualLogic object) {
+						return object.getReferencedLogic().isComputed();
+					}
+				},
+				new Setter<VisualLogic, Boolean>() {
+					@Override
+					public void eval(VisualLogic object, Boolean value) {
+						object.getReferencedLogic().setComputed(value);
+					}
+				},
+				Boolean.class));
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualLogic, Boolean>(
+				this, "Early Evaluation",
+				new Getter<VisualLogic, Boolean>() {
+					@Override
+					public Boolean eval(VisualLogic object) {
+						return object.getReferencedLogic().isEarlyEvaluation();
+					}
+				},
+				new Setter<VisualLogic, Boolean>() {
+					@Override
+					public void eval(VisualLogic object, Boolean value) {
+						object.getReferencedLogic().setEarlyEvaluation(value);
+					}
+				},
+				Boolean.class));
 	}
 
 	@Override
@@ -62,7 +91,7 @@ public class VisualLogic extends VisualComponent {
 		eeShape.moveTo(+2*dd + dd, 0);
 		eeShape.lineTo(+2*dd - dd, 0);
 
-		boolean computed = isComputed();
+		boolean computed = getReferencedLogic().isComputed();
 		if (d instanceof LogicDecoration) {
 			computed = ((LogicDecoration)d).isComputed();
 		}
@@ -73,7 +102,7 @@ public class VisualLogic extends VisualComponent {
 		}
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		if (isEarlyEvaluation()) {
+		if (getReferencedLogic().isEarlyEvaluation()) {
 			g.setStroke(new BasicStroke(strokeWidth4));
 			g.draw(eeShape);
 		}
@@ -85,22 +114,6 @@ public class VisualLogic extends VisualComponent {
 
 	public Logic getReferencedLogic() {
 		return (Logic)getReferencedComponent();
-	}
-
-	public boolean isComputed() {
-		return getReferencedLogic().isComputed();
-	}
-
-	public void setComputed(boolean value) {
-		getReferencedLogic().setComputed(value);
-	}
-
-	public boolean isEarlyEvaluation() {
-		return getReferencedLogic().isEarlyEvaluation();
-	}
-
-	public void setEarlyEvaluation(boolean value) {
-		getReferencedLogic().setEarlyEvaluation(value);
 	}
 
 }

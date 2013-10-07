@@ -582,7 +582,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	@Override
 	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
 		net = (PetriNetModel)visualNet.getMathModel();

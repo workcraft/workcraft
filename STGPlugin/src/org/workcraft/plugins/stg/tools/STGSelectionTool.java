@@ -102,7 +102,7 @@ public class STGSelectionTool extends SelectionTool
 		text.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				editor.getWorkspaceEntry().setCanUndoAndRedo(false);
+				editor.getWorkspaceEntry().setCanModify(false);
 			}
 
 			@Override
@@ -121,7 +121,7 @@ public class STGSelectionTool extends SelectionTool
 						editor.getWorkspaceEntry().cancelMemento();
 					}
 				}
-				editor.getWorkspaceEntry().setCanUndoAndRedo(true);
+				editor.getWorkspaceEntry().setCanModify(true);
 				editor.repaint();
 			}
 		});

@@ -9,11 +9,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComment;
@@ -181,13 +179,6 @@ public class VisualONGroup extends VisualGroup{
 
 	public void setMathGroup(ONGroup mathGroup){
 		this.mathGroup = mathGroup;
-	}
-
-	@Override
-	public Set<MathNode> getMathReferences() {
-		Set<MathNode> result = new HashSet<MathNode>();
-		result.add(getMathGroup());
-		return result;
 	}
 
 	public Collection<VisualCondition> getVisualConditions(){

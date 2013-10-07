@@ -39,12 +39,17 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public void setValue(Object value) throws InvocationTargetException {
+		bundle.setColor((Color)value);
+	}
+
+	@Override
 	public boolean isWritable() {
 		return true;
 	}
 
 	@Override
-	public void setValue(Object value) throws InvocationTargetException {
-		bundle.setColor((Color)value);
+	public boolean isCombinable() {
+		return false;
 	}
 }
