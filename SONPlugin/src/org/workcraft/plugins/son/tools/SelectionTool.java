@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 
-public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
+public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 	private GraphEditorTool channelPlaceTool = null;
 	private boolean asyn = true;
@@ -43,14 +43,9 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 			{
 				Node selectedNode = selection.iterator().next();
 
-				if(selectedNode instanceof VisualONGroup)
+				if(selectedNode instanceof VisualONGroup || selectedNode instanceof VisualSuperGroup)
 				{
-					setChannelPlaceToolState(false);
-					e.getEditor().getWorkspaceEntry().levelDown();
-				}
-				if(selectedNode instanceof VisualSuperGroup)
-				{
-					e.getEditor().getWorkspaceEntry().levelDown();
+					selectionLevelDown();
 				}
 				if(selectedNode instanceof VisualCondition){
 					VisualCondition vc = (VisualCondition)selectedNode;
@@ -96,25 +91,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 	public void keyPressed(GraphEditorKeyEvent e)
 	{
 		super.keyPressed(e);
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			setChannelPlaceToolState(true);
-			e.getEditor().getWorkspaceEntry().levelUp();
-		}
-		if (!e.isCtrlDown())
-		{
-			if (!e.isShiftDown()) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_PAGE_UP:
-					setChannelPlaceToolState(true);
-					e.getEditor().getWorkspaceEntry().levelUp();
-					break;
-				case KeyEvent.VK_PAGE_DOWN:
-					setChannelPlaceToolState(false);
-					e.getEditor().getWorkspaceEntry().levelDown();
-					break;
-				}
-			}
-		}
+
 		if(e.isCtrlDown()){
 			switch (e.getKeyCode()){
 			case KeyEvent.VK_B:
@@ -127,6 +104,18 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool{
 
 	private void setChannelPlaceToolState(boolean state) {
 		editor.getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
+	}
+
+	@Override
+	protected void selectionLevelDown() {
+		setChannelPlaceToolState(false);
+		super.selectionLevelDown();
+	}
+
+	@Override
+	protected void selectionLevelUp() {
+		setChannelPlaceToolState(true);
+		super.selectionLevelUp();
 	}
 
 }

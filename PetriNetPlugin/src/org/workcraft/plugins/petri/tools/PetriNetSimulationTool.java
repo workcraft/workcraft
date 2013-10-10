@@ -745,6 +745,4 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	public void lostOwnership(Clipboard clip, Transferable arg) {
 	}
 
-
-
 }

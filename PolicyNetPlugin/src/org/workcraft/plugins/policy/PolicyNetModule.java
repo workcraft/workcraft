@@ -6,6 +6,8 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.plugins.policy.serialisation.BundleDeserialiser;
+import org.workcraft.plugins.policy.serialisation.BundleSerialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalityDeserialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalitySerialiser;
 import org.workcraft.plugins.policy.tools.PetriNetGeneratorTool;

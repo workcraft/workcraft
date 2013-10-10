@@ -31,7 +31,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -85,15 +84,13 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		addPlaceObserver(implicitPlace);
 	}
 
+	@Override
 	public void draw(DrawRequest r) {
 		super.draw(r);
-
 		int tokens = implicitPlace.getTokens();
-
 		Point2D p = getPointOnConnection(0.5);
-
 		r.getGraphics().translate(p.getX(), p.getY());
-		VisualPlace.drawTokens(tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, Coloriser.colorise(tokenColor, r.getDecoration().getColorisation()), r.getGraphics());
+		VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
 	}
 
 	@NoAutoSerialisation

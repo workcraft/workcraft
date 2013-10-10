@@ -102,7 +102,7 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnObject, mnUtility, mnHelp, mnWindows;
+	private JMenu mnFile, mnEdit, mnView, mnUtility, mnHelp, mnWindows;
 	private JMenu mnExport;
 
 	private MainWindow mainWindow;
@@ -259,55 +259,6 @@ public class MainMenu extends JMenuBar {
 		mnEdit.addSeparator();
 		mnEdit.add(miProperties);
 
-		// Object
-		mnObject = new JMenu();
-		mnObject.setText("Object");
-
-		ActionMenuItem miGroup = new ActionMenuItem(MainWindowActions.OBJECT_GROUP_ACTION);
-		miGroup.setMnemonic(KeyEvent.VK_G);
-		miGroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
-		miGroup.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miUngroup = new ActionMenuItem(MainWindowActions.OBJECT_UNGROUP_ACTION);
-		miUngroup.setMnemonic(KeyEvent.VK_U);
-		miUngroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-		miUngroup.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miLevelUp = new ActionMenuItem(MainWindowActions.OBJECT_LEVEL_UP_ACTION);
-		miLevelUp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0));
-		miLevelUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miLevelDown = new ActionMenuItem(MainWindowActions.OBJECT_LEVEL_DOWN_ACTION);
-		miLevelDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0));
-		miLevelDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miRotateClockwise = new ActionMenuItem(MainWindowActions.OBJECT_ROTATE_CLOCKWISE_ACTION);
-		miRotateClockwise.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-		miRotateClockwise.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miRotateCounterclockwise = new ActionMenuItem(MainWindowActions.OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION);
-		miRotateCounterclockwise.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-		miRotateCounterclockwise.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miFlipHorizontal = new ActionMenuItem(MainWindowActions.OBJECT_FLIP_HORIZONTAL_ACTION);
-		miFlipHorizontal.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-		miFlipHorizontal.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		ActionMenuItem miFlipVertical = new ActionMenuItem(MainWindowActions.OBJECT_FLIP_VERTICAL_ACTION);
-		miFlipVertical.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
-		miFlipVertical.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-		mnObject.add(miGroup);
-		mnObject.add(miUngroup);
-		mnObject.addSeparator();
-		mnObject.add(miLevelUp);
-		mnObject.add(miLevelDown);
-		mnObject.addSeparator();
-		mnObject.add(miRotateClockwise);
-		mnObject.add(miRotateCounterclockwise);
-		mnObject.add(miFlipHorizontal);
-		mnObject.add(miFlipVertical);
-
 		// View
 		mnView = new JMenu();
 		mnView.setText ("View");
@@ -315,7 +266,7 @@ public class MainMenu extends JMenuBar {
 		JMenu mnLAF = new JMenu();
 		mnLAF.setText("Look and Feel");
 
-		for(int i=0; i<lafClasses.length; i++) {
+		for (int i = 0; i < lafClasses.length; i++) {
 			JMenuItem miLAFItem = new JMenuItem();
 			miLAFItem.setText(lafCaptions[i]);
 			final String lafClass = lafClasses[i];
@@ -371,7 +322,6 @@ public class MainMenu extends JMenuBar {
 		add(mnFile);
 		add(mnEdit);
 		add(mnView);
-		add(mnObject);
 		add(mnUtility);
 		add(mnHelp);
 

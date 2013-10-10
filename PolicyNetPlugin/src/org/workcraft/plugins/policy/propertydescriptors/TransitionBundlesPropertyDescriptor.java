@@ -34,7 +34,7 @@ public final class TransitionBundlesPropertyDescriptor implements PropertyDescri
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return model.getTransitionBundlesAsString(transition);
+		return model.getBundlesOfTransitionAsString(transition);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public final class TransitionBundlesPropertyDescriptor implements PropertyDescri
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		model.setTransitionBundlesAsString(transition, (String)value);
+		model.setBundlesOfTransitionAsString(transition, (String)value);
 	}
 
 	@Override

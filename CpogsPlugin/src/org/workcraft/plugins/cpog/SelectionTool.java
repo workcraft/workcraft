@@ -1,10 +1,8 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 
@@ -26,7 +24,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool
 					VisualScenario scenario = (VisualScenario) selectedNode;
 					Variable var = scenario.getVariableAt(e.getPosition());
 					if (var == null) {
-						e.getEditor().getWorkspaceEntry().levelDown();
+						selectionLevelDown();
 					} else {
 						Encoding encoding = scenario.getEncoding();
 						encoding.toggleState(var);
@@ -38,11 +36,4 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool
 		}
 	}
 
-	@Override
-	public void keyPressed(GraphEditorKeyEvent e) {
-		super.keyPressed(e);
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			e.getEditor().getWorkspaceEntry().levelUp();
-		}
-	}
 }

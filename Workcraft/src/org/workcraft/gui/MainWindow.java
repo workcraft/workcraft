@@ -1208,54 +1208,6 @@ public class MainWindow extends JFrame {
 		dlg.setVisible(true);
 	}
 
-	public void group() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().group();
-		}
-	}
-
-	public void ungroup() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().ungroup();
-		}
-	}
-
-	public void levelUp() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().levelUp();
-		}
-	}
-
-	public void levelDown() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().levelDown();
-		}
-	}
-
-	public void flipHorizontal() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().flipHorizontal();
-		}
-	}
-
-	public void flipVertical() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().flipVertical();
-		}
-	}
-
-	public void rotateClockwise() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().rotateClockwise();
-		}
-	}
-
-	public void rotateCounterclockwise() {
-		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().rotateCounterclockwise();
-		}
-	}
-
 	public WorkspaceWindow getWorkspaceView() {
 		return workspaceWindow;
 	}

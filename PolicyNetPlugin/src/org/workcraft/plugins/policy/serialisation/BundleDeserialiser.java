@@ -19,10 +19,12 @@
 *
 */
 
-package org.workcraft.plugins.policy;
+package org.workcraft.plugins.policy.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.policy.Bundle;
+import org.workcraft.plugins.policy.BundledTransition;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;

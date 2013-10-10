@@ -37,7 +37,9 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -48,7 +50,7 @@ public class VisualPlace extends VisualComponent {
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
-	private Color tokenColor = CommonVisualSettings.getBorderColor();
+	protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
 	public VisualPlace(Place place) {
 		super(place);
@@ -61,78 +63,83 @@ public class VisualPlace extends VisualComponent {
 		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
 	}
 
-	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
-			double diameter, double borderWidth, Color tokenColor,	Graphics2D g) {
-		Shape shape;
-		if (tokens == 1)
-		{
-			shape = new Ellipse2D.Double(
-					-singleTokenSize / 2,
-					-singleTokenSize / 2,
-					singleTokenSize,
-					singleTokenSize);
-
-			g.setColor(tokenColor);
-			g.fill(shape);
-		} else {
-			if (tokens > 1 && tokens < 8) {
-				double al = Math.PI / tokens;
-				if (tokens == 7) al = Math.PI / 6;
-				double r = (diameter / 2 - borderWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
-				double R = r / Math.sin(al);
-				r -= multipleTokenSeparation;
-				for(int i = 0; i < tokens; i++) 	{
-					if (i == 6) {
-						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
-					} else {
-						shape = new Ellipse2D.Double(
-								-R * Math.sin(i * al * 2) - r,
-								-R * Math.cos(i * al * 2) - r,
-								r * 2,
-								r * 2);
-					}
-					g.setColor(tokenColor);
-					g.fill(shape);
-				}
-			} else if (tokens > 7)	{
-				String token_str = Integer.toString(tokens);
-				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
-				Rectangle2D rect = superFont.getStringBounds(token_str, g.getFontRenderContext());
-				g.setFont(superFont);
-				g.setColor(tokenColor);
-				g.drawString(token_str, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
-			}
-		}
-	}
-
-
 	@Override
 	public void draw(DrawRequest r)	{
 		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
+		Decoration d = r.getDecoration();
+
 		double xy = -size / 2 + strokeWidth / 2;
 		double wh = size - strokeWidth;
 		Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+
+		Color borderColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+		Color fillColor = Coloriser.colorise(getFillColor(), d.getColorisation());
+		g.setColor(fillColor);
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+		g.setColor(borderColor);
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
 		Place p = (Place)getReferencedComponent();
-		if (p.getCapacity() != 1) {
-			String capacity_str = Integer.toString(p.getCapacity());
-			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
-			Rectangle2D rect = superFont.getStringBounds(capacity_str, g.getFontRenderContext());
-			g.setFont(superFont);
-			g.setColor(tokenColor);
-			g.drawString(capacity_str, (float)(size/3), (float)(size/3 + rect.getHeight()));
+		int tokens = p.getTokens();
+		if (d instanceof PlaceDecoration) {
+			tokens = ((PlaceDecoration)d).getTokens();
 		}
-
-		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth,
-				Coloriser.colorise(getTokenColor(), colorisation), g);
-
+		drawCapacity(r, p.getCapacity());
+		drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, size, strokeWidth, getTokenColor());
 		drawLabelInLocalSpace(r);
+	}
+
+	public void drawCapacity(DrawRequest r, int capacity) {
+		if (capacity != 1) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			String capacityString = Integer.toString(capacity);
+			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+			Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
+			g.setFont(superFont);
+			g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
+			g.drawString(capacityString, (float)(size/3), (float)(size/3 + rect.getHeight()));
+		}
+	}
+
+	public static void drawTokens(DrawRequest r, int tokens, double size, double separation,
+			double diameter, double borderWidth, Color color) {
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
+		Shape shape;
+		if (tokens == 1) {
+			shape = new Ellipse2D.Double(-size / 2, -size / 2,	size, size);
+			g.setColor(Coloriser.colorise(color, d.getColorisation()));
+			g.fill(shape);
+		} else {
+			if (tokens > 1 && tokens < 8) {
+				double alpha = Math.PI / tokens;
+				if (tokens == 7) alpha = Math.PI / 6;
+				double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
+				double step = radius / Math.sin(alpha);
+				radius -= separation;
+				for(int i = 0; i < tokens; i++) 	{
+					if (i == 6) {
+						shape = new Ellipse2D.Double( -radius, -radius, radius * 2, radius * 2);
+					} else {
+						shape = new Ellipse2D.Double(
+								-step * Math.sin(i * alpha * 2) - radius,
+								-step * Math.cos(i * alpha * 2) - radius,
+								radius * 2,	radius * 2);
+					}
+					g.setColor(Coloriser.colorise(color, d.getColorisation()));
+					g.fill(shape);
+				}
+			} else if (tokens > 7)	{
+				String tokenString = Integer.toString(tokens);
+				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+				Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
+				g.setFont(superFont);
+				g.setColor(Coloriser.colorise(color, d.getColorisation()));
+				g.drawString(tokenString, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+			}
+		}
 	}
 
 	@Override

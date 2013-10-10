@@ -179,14 +179,6 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_GROUP_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_UNGROUP_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_LEVEL_UP_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_LEVEL_DOWN_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_ROTATE_CLOCKWISE_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_ROTATE_COUNTERCLOCKWISE_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_FLIP_HORIZONTAL_ACTION.setEnabled(canModify);
-		MainWindowActions.OBJECT_FLIP_VERTICAL_ACTION.setEnabled(canModify);
 	}
 
 	public void setCanModify(boolean canModify) {
@@ -281,7 +273,12 @@ public class WorkspaceEntry implements ObservableState {
 			// copy selected nodes inside a group as if it was the root
 			if (model.getCurrentLevel() != model.getRoot()) {
 				Collection<Node> nodes = new HashSet<Node>(model.getSelection());
-				levelUp();
+				Container level = model.getCurrentLevel();
+				Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+				if (parent != null) {
+					model.setCurrentLevel(parent);
+					model.addToSelection(level);
+				}
 				model.ungroupSelection();
 				model.select(nodes);
 			}
@@ -305,78 +302,10 @@ public class WorkspaceEntry implements ObservableState {
 				saveMemento();
 				setModelEntry(result);
 				setChanged(true);
+				VisualModelTransformer.translateSelection(result.getVisualModel(), 1.0, 1.0);
 			} catch (DeserialisationException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	public void group() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			model.groupSelection();
-		}
-	}
-
-	public void ungroup() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			model.ungroupSelection();
-		}
-	}
-
-	public void levelDown() {
-		VisualModel model = modelEntry.getVisualModel();
-		Collection<Node> selection = model.getSelection();
-		if (selection.size() == 1) {
-			Node node = selection.iterator().next();
-			if(node instanceof Container) {
-				model.setCurrentLevel((Container)node);
-			}
-		}
-	}
-
-	public void levelUp() {
-		VisualModel model = modelEntry.getVisualModel();
-		Container level = model.getCurrentLevel();
-		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-		if(parent!=null) {
-			model.setCurrentLevel(parent);
-			model.addToSelection(level);
-		}
-	}
-
-	public void rotateClockwise() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			VisualModelTransformer.rotateSelection(model, Math.PI/2);
-		}
-	}
-
-	public void rotateCounterclockwise() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
-		}
-	}
-
-	public void flipHorizontal() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			VisualModelTransformer.scaleSelection(model, -1, 1);
-		}
-	}
-
-	public void flipVertical() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			VisualModelTransformer.scaleSelection(model, 1, -1);
 		}
 	}
 

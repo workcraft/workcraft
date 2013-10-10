@@ -27,7 +27,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
-import java.util.Set;
+import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -61,7 +61,7 @@ public class VisualBundledTransition extends VisualTransition {
 		double h2 = h / 2;
 		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
 
-		Set<Bundle> bundles = model.getTransitionBundles(getReferencedTransition());
+		Collection<Bundle> bundles = model.getBundlesOfTransition(getReferencedTransition());
 		if (bundles.size() > 0) {
 			h = (h - strokeWidth) /bundles.size();
 			h2 = h/2;

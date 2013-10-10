@@ -9,8 +9,8 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
-import org.workcraft.plugins.policy.tools.PolicyNetSelectionTool;
+import org.workcraft.plugins.policy.tools.SelectionTool;
+import org.workcraft.plugins.policy.tools.SimulationTool;
 
 public class PolicyNetToolProvider implements CustomToolsProvider {
 
@@ -18,12 +18,12 @@ public class PolicyNetToolProvider implements CustomToolsProvider {
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new PolicyNetSelectionTool());
+		result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(BundledTransition.class)));
-		result.add(new PetriNetSimulationTool());
+		result.add(new SimulationTool());
 
 		return result;
 	}

@@ -23,6 +23,7 @@ package org.workcraft.plugins.policy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -33,6 +34,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Policy Net")
@@ -115,6 +117,36 @@ public class VisualPolicyNet extends VisualPetriNet {
 			}
 			select(toSelect);
 		}
+	}
+
+	public Collection<VisualPlace> getPlaces() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
+	}
+
+	public Collection<VisualBundledTransition> getBundledTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualBundledTransition.class);
+	}
+
+	public Collection<VisualLocality> getLocalities() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualLocality.class);
+	}
+
+	public Collection<Bundle> getBundlesOfTransition(VisualBundledTransition t) {
+		Collection<Bundle> result = new HashSet<Bundle>();
+		if (t != null) {
+			result.addAll(getPolicyNet().getBundlesOfTransition(t.getReferencedTransition()));
+		}
+		return result;
+	}
+
+	public Collection<VisualBundledTransition> getTransitionsOfBundle(Bundle b) {
+		Collection<VisualBundledTransition> result = new HashSet<VisualBundledTransition>();
+		for(VisualBundledTransition t: getBundledTransitions()) {
+			if (b.contains(t.getReferencedTransition())) {
+				result.add(t);
+			}
+		}
+		return result;
 	}
 
 }

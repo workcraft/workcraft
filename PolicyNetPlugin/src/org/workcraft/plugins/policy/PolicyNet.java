@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
@@ -106,7 +105,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		getRoot().remove(b);
 	}
 
-	public void bundle(Collection<BundledTransition> transitions) {
+	public void bundleTransitions(Collection<BundledTransition> transitions) {
 		if (transitions != null && !transitions.isEmpty()) {
 			Bundle bundle = createBundle();
 			for (BundledTransition t: transitions) {
@@ -115,7 +114,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
-	public void unbundle(Collection<BundledTransition> transitions) {
+	public void unbundleTransitions(Collection<BundledTransition> transitions) {
 		for (BundledTransition t: transitions) {
 			for (Bundle b: getBundles()) {
 				if (b.contains(t)) {
@@ -147,8 +146,8 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
-	public Set<Bundle> getTransitionBundles(BundledTransition t) {
-		Set<Bundle> result = new HashSet<Bundle>();
+	public Collection<Bundle> getBundlesOfTransition(BundledTransition t) {
+		Collection<Bundle> result = new HashSet<Bundle>();
 		for (Bundle b: getBundles()) {
 			if (b.contains(t)) {
 				result.add(b);
@@ -157,9 +156,9 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		return result;
 	}
 
-	public String getTransitionBundlesAsString(BundledTransition t) {
+	public String getBundlesOfTransitionAsString(BundledTransition t) {
 		String result = "";
-		for (Bundle b: getTransitionBundles(t)) {
+		for (Bundle b: getBundlesOfTransition(t)) {
 			if (result != "") {
 				result += ", ";
 			}
@@ -168,7 +167,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		return result;
 	}
 
-	public void setTransitionBundlesAsString(BundledTransition t, String s) {
+	public void setBundlesOfTransitionAsString(BundledTransition t, String s) {
 		for (Bundle b: getBundles()) {
 			b.remove(t);
 		}
@@ -184,7 +183,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
-	public String getBundleTransitionsAsString(Bundle b) {
+	public String getTransitionsOfBundleAsString(Bundle b) {
 		String result = "";
 		for (BundledTransition t: b.getTransitions()) {
 			if (result != "") {
@@ -195,7 +194,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		return result;
 	}
 
-	public void setBundleTransitionsAsString(Bundle b, String s) {
+	public void setTransitionsOfBundleAsString(Bundle b, String s) {
 		for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
 			b.remove(t);
 		}
@@ -224,7 +223,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		for (Node node: selection) {
 			if (node instanceof BundledTransition) {
 				BundledTransition t = (BundledTransition)node;
-				for (Bundle b: ((PolicyNet)getMathModel()).getTransitionBundles(t)) {
+				for (Bundle b: ((PolicyNet)getMathModel()).getBundlesOfTransition(t)) {
 					HashSet<BundledTransition> transitions = subBundles.get(b);
 					if (transitions == null) {
 						transitions = new HashSet<BundledTransition>();
@@ -238,7 +237,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		for (Bundle b: subBundles.keySet()) {
 			HashSet<BundledTransition> transitions = subBundles.get(b);
 			if (b.getTransitions().size() > transitions.size()) {
-				((PolicyNet)getMathModel()).bundle(transitions);
+				((PolicyNet)getMathModel()).bundleTransitions(transitions);
 				b.removeAll(subBundles.get(b));
 			}
 		}
