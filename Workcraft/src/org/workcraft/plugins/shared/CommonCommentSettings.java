@@ -33,7 +33,7 @@ public class CommonCommentSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	protected static double baseSize = 1.0;
-	protected static double strokeWidth = 0.1;
+	protected static double strokeWidth = 0.02;
 	protected static Color textColor = Color.BLACK;
 	protected static Color borderColor = Color.GRAY;
 	protected static Color fillColor = new Color(255, 255, 200);
@@ -71,10 +71,10 @@ public class CommonCommentSettings implements SettingsPage {
 
 	public void load(Config config) {
 		baseSize = config.getDouble("CommonCommentSettings.baseSize", 1.0);
-		strokeWidth = config.getDouble("CommonCommentSettings.strokeWidth", 0.1);
-		textColor = config.getColor("CommonCommentSettings.foregroundColor", Color.BLACK);
+		strokeWidth = config.getDouble("CommonCommentSettings.strokeWidth", 0.02);
+		textColor = config.getColor("CommonCommentSettings.textColor", Color.BLACK);
 		borderColor = config.getColor("CommonCommentSettings.foregroundColor", Color.GRAY);
-		fillColor = config.getColor("CommonCommentSettings.fillColor", Color.WHITE);
+		fillColor = config.getColor("CommonCommentSettings.fillColor", new Color(255, 255, 200));
 	}
 
 	public void save(Config config) {
