@@ -26,6 +26,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -52,6 +53,7 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
@@ -70,8 +72,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	private RelationAlg relationAlg;
 	protected SimulationAlg alg;
 
-	protected SONModel net;
-	protected Collection<ArrayList<Node>> sync;
+	private SONModel net;
+	private Collection<ArrayList<Node>> sync;
+	private Map<Condition, Collection<Condition>> phases;
+
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
 	protected JScrollPane infoPanel;
@@ -82,7 +86,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected JSlider speedSlider;
 	protected JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
 	protected JButton saveMarkingButton, loadMarkingButton;
-	protected JComboBox<typeMode> typeCombo;
+	protected JComboBox typeCombo;
 
 	protected Map<Node, Boolean>initialMarking = null;
 	Map<Node, Boolean> savedMarking = null;
@@ -299,6 +303,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return result;
 	}
 
+	//auto set initial marking
 	protected Map<Node, Boolean> autoInitalMarking(){
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 
@@ -310,19 +315,55 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			cp.setToken(false);
 			result.put(cp, false);
 		}
-
+		//initial marking for abstract groups and behavioral groups
+		for(ONGroup abstractGroup : relationAlg.getAbstractGroups(net.getGroups())){
+			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
+				if(c instanceof Condition){
+					result.put(c, true);
+					((Condition) c).setToken(true);
+					Collection<ONGroup> bhvGroup = relationAlg.getBhvGroups((Condition) c);
+					if(bhvGroup.size() != 1)
+						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
+					else
+						for(ONGroup group : bhvGroup){
+							//can optimize
+							Collection<Node> initial = relationAlg.getInitial(group.getComponents());
+							if(relationAlg.getPhase((Condition)c).containsAll(initial))
+								for(Node c1 : relationAlg.getInitial(group.getComponents())){
+									result.put(c1, true);
+									((Condition) c1).setToken(true);}
+							else
+								JOptionPane.showMessageDialog(null, "Incorrect BSON structure (minimal phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
+						}
+				}
+			}
+		}
+		//initial marking for channel places
 		for(Node c : relationAlg.getInitial(net.getComponents())){
-			if(c instanceof Condition){
-				result.put(c, true);
-				((Condition) c).setToken(true);}
 			if(c instanceof ChannelPlace){
 				result.put(c, true);
 				((ChannelPlace)c).setToken(true);}
 		}
+
+		//initial marking for other groups.
+		for(ONGroup group : net.getGroups()){
+			boolean hasBhvLine = false;
+			for(Condition c : group.getConditions())
+				if(net.getSONConnectionTypes(c).contains("BHVLINE"))
+					hasBhvLine = true;
+			if(!hasBhvLine){
+				for(Node c : relationAlg.getInitial(group.getComponents())){
+					if(c instanceof Condition){
+						result.put(c, true);
+						((Condition)c).setToken(true);}
+				}
+			}
+		}
+
 		return result;
 	}
 
-	protected Map<Node, Boolean> autoReverseInitalMarking(){
+	protected Map<Node, Boolean> autoInitalReverseMarking(){
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 
 		for (Condition c : net.getConditions()) {
@@ -333,15 +374,51 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			cp.setToken(false);
 			result.put(cp, false);
 		}
-
+		//initial marking for abstract groups and behavioral groups
+		for(ONGroup abstractGroup : relationAlg.getAbstractGroups(net.getGroups())){
+			for(Node c : relationAlg.getFinal(abstractGroup.getComponents())){
+				if(c instanceof Condition){
+					result.put(c, true);
+					((Condition) c).setToken(true);
+					Collection<ONGroup> bhvGroup = relationAlg.getBhvGroups((Condition) c);
+					if(bhvGroup.size() != 1)
+						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
+					else
+						for(ONGroup group : bhvGroup){
+							//can optimize
+							Collection<Node> fin = relationAlg.getFinal(group.getComponents());
+							if(relationAlg.getPhase((Condition)c).containsAll(fin))
+								for(Node c1 : relationAlg.getFinal(group.getComponents())){
+									result.put(c1, true);
+									((Condition) c1).setToken(true);}
+							else
+								JOptionPane.showMessageDialog(null, "Incorrect BSON structure (minimal phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
+						}
+				}
+			}
+		}
+		//initial marking for channel places
 		for(Node c : relationAlg.getFinal(net.getComponents())){
-			if(c instanceof Condition){
-				result.put(c, true);
-				((Condition) c).setToken(true);}
 			if(c instanceof ChannelPlace){
 				result.put(c, true);
 				((ChannelPlace)c).setToken(true);}
 		}
+
+		//initial marking for other groups.
+		for(ONGroup group : net.getGroups()){
+			boolean hasBhvLine = false;
+			for(Condition c : group.getConditions())
+				if(net.getSONConnectionTypes(c).contains("BHVLINE"))
+					hasBhvLine = true;
+			if(!hasBhvLine){
+				for(Node c : relationAlg.getFinal(group.getComponents())){
+					if(c instanceof Condition){
+						result.put(c, true);
+						((Condition)c).setToken(true);}
+				}
+			}
+		}
+
 		return result;
 	}
 
@@ -447,7 +524,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		@Override
 		public String getColumnName(int column) {
 			if (column==0) return "Trace";
-			return "Branch";
+			return "Trace";
 		}
 
 		@Override
@@ -478,7 +555,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	private void createSimuControalPanel(){
 		simuControalPanel = new JPanel();
 
-		typeCombo = new JComboBox<typeMode>();
+		typeCombo = new JComboBox();
 		typeCombo.addItem(new typeMode(0, "Forward"));
 		typeCombo.addItem(new typeMode(1, "Backward"));
 
@@ -614,7 +691,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					if(!reverse)
 						initialMarking = autoInitalMarking();
 					else
-						initialMarking = autoReverseInitalMarking();
+						initialMarking = autoInitalReverseMarking();
 					update();
 			}
 		});
@@ -677,15 +754,23 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		visualNet = editor.getModel();
 		this.setFramework(editor.getFramework());
 		net = (SONModel)visualNet.getMathModel();
-		alg = new SimulationAlg(net);
 		relationAlg = new RelationAlg(net);;
 		initialMarking = autoInitalMarking();
+		alg = new SimulationAlg(net);
 
 		reverse=false;
 		traceStep = 0;
 		branchTrace = null;
 		branchStep = 0;
+
 		sync = getSyncCycles();
+		Collection<ONGroup> abstractGroups = relationAlg.getAbstractGroups(net.getGroups());
+		phases = new HashMap<Condition, Collection<Condition>>();
+		for(ONGroup group : abstractGroups){
+			for(Condition c : group.getConditions())
+				phases.put(c, relationAlg.getPhase(c));
+		}
+
 		update();
 	}
 
@@ -741,10 +826,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
 				@Override
 				public Boolean eval(Node node) {
-					if(node instanceof VisualEvent && alg.isEnabled(((VisualEvent)node).getReferencedEvent(), sync) && !reverse){
+
+					if(node instanceof VisualEvent && alg.isEnabled(((VisualEvent)node).getReferencedEvent(), sync, phases) && !reverse){
 						return true;
 					}
-					if(node instanceof VisualEvent && alg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), sync) && reverse){
+					if(node instanceof VisualEvent && alg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), sync, phases) && reverse){
 						return true;
 					}
 					return false;
@@ -758,12 +844,12 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 			if(reverse){
 				for(Event enable : net.getEvents())
-					if(alg.isUnfireEnabled(enable, sync))
+					if(alg.isUnfireEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}
 			else{
 				for(Event enable : net.getEvents())
-					if(alg.isEnabled(enable, sync))
+					if(alg.isEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}
 
@@ -784,9 +870,9 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					syncList.add(event);
 					executeEvent(syncList);
 					alg.clearEventSet();
-					} else{
+				}else{
+					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalEvents, event, sync, enabledEvents, reverse);
-
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
@@ -817,7 +903,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					syncList.add(event);
 					executeEvent(syncList);
 					alg.clearEventSet();
-					} else{
+				} else {
+					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, sync, enabledEvents, reverse);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
@@ -898,7 +985,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 					}
 
-					if (alg.isEnabled(event, sync)&& !reverse)
+					if (alg.isEnabled(event, sync, phases)&& !reverse)
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -910,7 +997,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 								return CommonVisualSettings.getEnabledBackgroundColor();
 							}
 						};
-					if (alg.isUnfireEnabled(event, sync)&& reverse)
+					if (alg.isUnfireEnabled(event, sync, phases)&& reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {

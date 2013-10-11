@@ -62,7 +62,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
 
 		//channel place relation
-		logger.info("Running Communication-SON relation check...");
+		logger.info("Running model structure and components relation check...");
 		cPlaceResult = cPlaceRelationTask(relatedcPlaces);
 		cPlaceConTypeResult = cPlaceConTypeTask(relatedcPlaces);
 		if(cPlaceResult.isEmpty() && cPlaceConTypeResult.isEmpty())
@@ -93,20 +93,21 @@ public class CSONStructureTask implements SONStructureVerification{
 			}
 		}
 
+		logger.info("Model strucuture and components relation task complete.");
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
 		cycleResult = traverse.cycleTask(components);
 
 		if (cycleResult.isEmpty() )
-			logger.info("Acyclic checking correct");
+			logger.info("Acyclic structure correct");
 		else{
 			hasErr = true;
 			errNumber++;
 			logger.error("ERROR : global cycles = "+ cycleResult.size() + ".");
 		}
 
-		logger.info("Cycle detection complete.");
+		logger.info("Cycle detection complete.\n");
 
 	}
 
@@ -195,16 +196,14 @@ public class CSONStructureTask implements SONStructureVerification{
 	private String nodesOrder(String first, String second){
 		String result = new String();
 
-		String newFirst = first.replaceAll("e", "");
-		String newSecond = second.replaceAll("e", "");
+		int compare = first.compareTo(second);
 
-		Integer firstNumber = Integer.valueOf(newFirst);
-		Integer secondNumber = Integer.valueOf(newSecond);
-
-		if (firstNumber < secondNumber)
-			result = "e" + firstNumber.toString() + "e" + secondNumber.toString();
+		if (compare>0)
+			result = first + second;
+		else if (compare < 0)
+			result = second + first;
 		else
-			result = "e" + secondNumber.toString() + "e" + firstNumber.toString();
+			System.err.println("same nodes"+this.toString());
 
 		return result;
 	}

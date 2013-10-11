@@ -219,6 +219,55 @@ public class RelationAlg{
 		return null;
 	}
 
+	public Collection<ONGroup> getBhvGroups(Condition c){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+		for(SONConnection con : net.getInputSONConnections(c))
+			if(con.getType()=="BHVLINE")
+				for(ONGroup group : net.getGroups())
+					if(group.getConditions().contains(con.getFirst()))
+						result.add(group);
+		return result;
+	}
+
+	//get unchecked abstract groups.
+	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+		for(ONGroup group : groups){
+			boolean isInput = false;
+			boolean isOutput = false;
+			for(Node node : group.getComponents()){
+				if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+					isInput = true;
+				if(net.getOutputSONConnectionTypes(node).contains("BHVLINE"))
+					isOutput = true;
+			}
+			if(!isInput && isOutput)
+				result.add(group);
+
+		}
+		return result;
+	}
+
+	//get unchecked abstract groups.
+	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+		for(ONGroup group : groups){
+			boolean isInput = false;
+			boolean isOutput = false;
+			if(this.isLineLikeGroup(group)){
+				for(Node node : group.getComponents()){
+					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+						isInput = true;
+					if(net.getOutputSONConnectionTypes(node).contains("BHVLINE"))
+						isOutput = true;
+				}
+				if(isInput && !isOutput)
+					result.add(group);
+			}
+		}
+		return result;
+	}
+
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node n : net.getPreset(c))
@@ -230,7 +279,18 @@ public class RelationAlg{
 		return result;
 	}
 
-	public Collection<Condition> getMinialPhase(Collection<Condition> phase){
+	public Collection<Condition> getPostPNCondition(Condition c){
+		Collection<Condition> result = new ArrayList<Condition>();
+		for(Node n : net.getPostset(c))
+			if(n instanceof Event && net.getSONConnectionTypes(c, n).size()==1 && net.getSONConnectionTypes(c, n).contains("POLYLINE"))
+				for(Node n2 : net.getPostset(n))
+					if(n2 instanceof Condition && net.getSONConnectionTypes(n, n2).size()==1 && net.getSONConnectionTypes(n, n2).contains("POLYLINE"))
+						result.add((Condition)n2);
+
+		return result;
+	}
+
+	public Collection<Condition> getMinimalPhase(Collection<Condition> phase){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMinimal = true;
@@ -240,17 +300,6 @@ public class RelationAlg{
 			if(isMinimal)
 				result.add(c);
 		}
-		return result;
-	}
-
-	public Collection<Condition> getPostPNCondition(Condition c){
-		Collection<Condition> result = new ArrayList<Condition>();
-		for(Node n : net.getPostset(c))
-			if(n instanceof Event && net.getSONConnectionTypes(c, n).size()==1 && net.getSONConnectionTypes(c, n).contains("POLYLINE"))
-				for(Node n2 : net.getPostset(n))
-					if(n2 instanceof Condition && net.getSONConnectionTypes(n, n2).size()==1 && net.getSONConnectionTypes(n, n2).contains("POLYLINE"))
-						result.add((Condition)n2);
-
 		return result;
 	}
 
@@ -364,7 +413,7 @@ public class RelationAlg{
 		}
 
 		Collection<Condition> maxI = getMaximalPhase(phaseI);
-		Collection<Condition> minI2 = getMinialPhase(phaseI2);
+		Collection<Condition> minI2 = getMinimalPhase(phaseI2);
 		Collection<Condition> PRE = this.getPREset(e);
 		Collection<Condition> POST = this.getPOSTset(e);
 		if(!maxI.containsAll(minI2)){

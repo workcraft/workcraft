@@ -126,7 +126,7 @@ public class SimulationTool extends PetriNetSimulationTool {
 						}
 						@Override
 						public int getTokens() {
-							return (p == null ? 0 : p.getTokens());
+							return (p == null ? 0 : p.getReferencedPlace().getTokens());
 						}
 					};
 				}

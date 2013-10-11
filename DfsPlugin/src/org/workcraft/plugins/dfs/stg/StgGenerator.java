@@ -162,14 +162,18 @@ public class StgGenerator {
 		VisualPlace C0 = stg.createPlace(nameC + name + name0);
 		C0.setLabel(labelC + name + label0);
 		C0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.getReferencedLogic().isComputed()) C0.setTokens(1);
+		if (!l.getReferencedLogic().isComputed()) {
+			C0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(C0, x + 2.0, y + 1.0);
 		nodes.add(C0);
 
 		VisualPlace C1 = stg.createPlace(nameC + name + name1);
 		C1.setLabel(labelC + name + label1);
 		C1.setLabelPositioning(Positioning.TOP);
-		if (l.getReferencedLogic().isComputed()) C1.setTokens(1);
+		if (l.getReferencedLogic().isComputed()) {
+			C1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(C1, x + 2.0, y - 1.0);
 		nodes.add(C1);
 
@@ -179,7 +183,9 @@ public class StgGenerator {
 		preset.addAll(dfs.getPreset(l, VisualControlRegister.class));
 		preset.addAll(dfs.getPreset(l, VisualPushRegister.class));
 		preset.addAll(dfs.getPreset(l, VisualPopRegister.class));
-		if (preset.size() == 0) preset.add(l);
+		if (preset.size() == 0) {
+			preset.add(l);
+		}
 		Map<Node, VisualSignalTransition> CRs = new HashMap<Node, VisualSignalTransition>();
 		Map<Node, VisualSignalTransition> CFs = new HashMap<Node, VisualSignalTransition>();
 		VisualSignalTransition CR = null;
@@ -259,14 +265,18 @@ public class StgGenerator {
 		VisualPlace M0 = stg.createPlace(nameM + name + name0);
 		M0.setLabel(labelM + name + label0);
 		M0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.isMarked()) M0.setTokens(1);
+		if (!r.getReferencedRegister().isMarked()) {
+			M0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(M0, x + 2.0, y + 1.0);
 		nodes.add(M0);
 
 		VisualPlace M1 = stg.createPlace(nameM + name + name1);
 		M1.setLabel(labelM + name + label1);
 		M1.setLabelPositioning(Positioning.TOP);
-		if (r.isMarked()) M1.setTokens(1);
+		if (r.getReferencedRegister().isMarked()) {
+			M1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(M1, x + 2.0, y - 1.0);
 		nodes.add(M1);
 
@@ -366,21 +376,27 @@ public class StgGenerator {
 		VisualPlace fwC0 = stg.createPlace(nameFwC + name + name0);
 		fwC0.setLabel(labelFwC + name + label0);
 		fwC0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.getReferencedCounterflowLogic().isForwardComputed()) fwC0.setTokens(1);
+		if (!l.getReferencedCounterflowLogic().isForwardComputed()) {
+			fwC0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(fwC0, x + 2.0, y - 2.0);
 		nodes.add(fwC0);
 
 		VisualPlace fwC1 = stg.createPlace(nameFwC + name + name1);
 		fwC1.setLabel(labelFwC + name + label1);
 		fwC1.setLabelPositioning(Positioning.TOP);
-		if (l.getReferencedCounterflowLogic().isForwardComputed()) fwC1.setTokens(1);
+		if (l.getReferencedCounterflowLogic().isForwardComputed()) {
+			fwC1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(fwC1, x + 2.0, y - 4.0);
 		nodes.add(fwC1);
 
 		Set<Node> preset = new HashSet<Node>();
 		preset.addAll(dfs.getPreset(l, VisualCounterflowLogic.class));
 		preset.addAll(dfs.getPreset(l, VisualCounterflowRegister.class));
-		if (preset.size() == 0) preset.add(l);
+		if (preset.size() == 0) {
+			preset.add(l);
+		}
 		Map<Node, VisualSignalTransition> fwCRs = new HashMap<Node, VisualSignalTransition>();
 		Map<Node, VisualSignalTransition> fwCFs = new HashMap<Node, VisualSignalTransition>();
 		{
@@ -411,21 +427,27 @@ public class StgGenerator {
 		VisualPlace bwC0 = stg.createPlace(nameBwC + name + name0);
 		bwC0.setLabel(labelBwC + name + label0);
 		bwC0.setLabelPositioning(Positioning.BOTTOM);
-		if (!l.getReferencedCounterflowLogic().isBackwardComputed()) bwC0.setTokens(1);
+		if (!l.getReferencedCounterflowLogic().isBackwardComputed()) {
+			bwC0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(bwC0, x + 2.0, y + 4.0);
 		nodes.add(bwC0);
 
 		VisualPlace bwC1 = stg.createPlace(nameBwC + name + name1);
 		bwC1.setLabel(labelBwC + name + label1);
 		bwC1.setLabelPositioning(Positioning.TOP);
-		if (l.getReferencedCounterflowLogic().isBackwardComputed()) bwC1.setTokens(1);
+		if (l.getReferencedCounterflowLogic().isBackwardComputed()) {
+			bwC1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(bwC1, x + 2.0, y + 2.0);
 		nodes.add(bwC1);
 
 		Set<Node> postset = new HashSet<Node>();
 		postset.addAll(dfs.getPostset(l, VisualCounterflowLogic.class));
 		postset.addAll(dfs.getPostset(l, VisualCounterflowRegister.class));
-		if (postset.size() == 0) postset.add(l);
+		if (postset.size() == 0) {
+			postset.add(l);
+		}
 		Map<Node, VisualSignalTransition> bwCRs = new HashMap<Node, VisualSignalTransition>();
 		Map<Node, VisualSignalTransition> bwCFs = new HashMap<Node, VisualSignalTransition>();
 		{
@@ -502,14 +524,18 @@ public class StgGenerator {
 		VisualPlace orM0 = stg.createPlace(nameOrM + name + name0);
 		orM0.setLabel(labelOrM + name + label0);
 		orM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.getReferencedCounterflowRegister().isOrMarked()) orM0.setTokens(1);
+		if (!r.getReferencedCounterflowRegister().isOrMarked()) {
+			orM0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(orM0, x + 2.0, y - 2.0);
 		nodes.add(orM0);
 
 		VisualPlace orM1 = stg.createPlace(nameOrM + name + name1);
 		orM1.setLabel(labelOrM + name + label1);
 		orM1.setLabelPositioning(Positioning.TOP);
-		if (r.getReferencedCounterflowRegister().isOrMarked()) orM1.setTokens(	1);
+		if (r.getReferencedCounterflowRegister().isOrMarked()) {
+			orM1.getReferencedPlace().setTokens(	1);
+		}
 		setPosition(orM1, x + 2.0, y - 4.0);
 		nodes.add(orM1);
 
@@ -540,14 +566,18 @@ public class StgGenerator {
 		VisualPlace andM0 = stg.createPlace(nameAndM + name + name0);
 		andM0.setLabel(labelAndM + name + label0);
 		andM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.getReferencedCounterflowRegister().isAndMarked()) andM0.setTokens(1);
+		if (!r.getReferencedCounterflowRegister().isAndMarked()) {
+			andM0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(andM0, x + 2.0, y + 4.0);
 		nodes.add(andM0);
 
 		VisualPlace andM1 = stg.createPlace(nameAndM + name + name1);
 		andM1.setLabel(labelAndM + name + label1);
 		andM1.setLabelPositioning(Positioning.TOP);
-		if (r.getReferencedCounterflowRegister().isAndMarked()) andM1.setTokens(1);
+		if (r.getReferencedCounterflowRegister().isAndMarked()) {
+			andM1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(andM1, x + 2.0, y + 2.0);
 		nodes.add(andM1);
 
@@ -649,7 +679,7 @@ public class StgGenerator {
 		M0.setLabel(labelM + name + label0);
 		M0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
-			M0.setTokens(1);
+			M0.getReferencedPlace().setTokens(1);
 		}
 		setPosition(M0, x - 4.0, y + 1.0);
 		nodes.add(M0);
@@ -658,7 +688,7 @@ public class StgGenerator {
 		M1.setLabel(labelM + name + label1);
 		M1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
-			M1.setTokens(1);
+			M1.getReferencedPlace().setTokens(1);
 		}
 		setPosition(M1, x - 4.0, y - 1.0);
 		nodes.add(M1);
@@ -666,20 +696,26 @@ public class StgGenerator {
 		VisualPlace tM0 = stg.createPlace(nameTrueM + name + name0);
 		tM0.setLabel(labelTrueM + name + label0);
 		tM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.getReferencedBinaryRegister().isTrueMarked()) tM0.setTokens(1);
+		if (!r.getReferencedBinaryRegister().isTrueMarked()) {
+			tM0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(tM0, x + 4.0, y - 2.0);
 		nodes.add(tM0);
 
 		VisualPlace tM1 = stg.createPlace(nameTrueM + name + name1);
 		tM1.setLabel(labelTrueM + name + label1);
 		tM1.setLabelPositioning(Positioning.TOP);
-		if (r.getReferencedBinaryRegister().isTrueMarked()) tM1.setTokens(1);
+		if (r.getReferencedBinaryRegister().isTrueMarked()) {
+			tM1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(tM1, x + 4.0, y - 4.0);
 		nodes.add(tM1);
 
 		Set<Node> preset = new HashSet<Node>();
 		preset.addAll(dfs.getRPreset(r, VisualControlRegister.class));
-		if (preset.size() == 0) preset.add(r);
+		if (preset.size() == 0) {
+			preset.add(r);
+		}
 
 		Map<Node, VisualSignalTransition> tMRs = new HashMap<Node, VisualSignalTransition>();
 		VisualSignalTransition tMR = null;
@@ -708,14 +744,18 @@ public class StgGenerator {
 		VisualPlace fM0 = stg.createPlace(nameFalseM + name + name0);
 		fM0.setLabel(labelFalseM + name + label0);
 		fM0.setLabelPositioning(Positioning.BOTTOM);
-		if (!r.getReferencedBinaryRegister().isFalseMarked()) fM0.setTokens(1);
+		if (!r.getReferencedBinaryRegister().isFalseMarked()) {
+			fM0.getReferencedPlace().setTokens(1);
+		}
 		setPosition(fM0, x + 4.0, y + 4.0);
 		nodes.add(fM0);
 
 		VisualPlace fM1 = stg.createPlace(nameFalseM + name + name1);
 		fM1.setLabel(labelFalseM + name + label1);
 		fM1.setLabelPositioning(Positioning.TOP);
-		if (r.getReferencedBinaryRegister().isFalseMarked()) fM1.setTokens(1);
+		if (r.getReferencedBinaryRegister().isFalseMarked()) {
+			fM1.getReferencedPlace().setTokens(1);
+		}
 		setPosition(fM1, x + 4.0, y + 2.0);
 		nodes.add(fM1);
 

@@ -68,7 +68,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
 
-		polyButton = new JRadioButton("PN Connection");
+		polyButton = new JRadioButton("Petri-Net Connection");
 		polyButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
 				conType = 1;

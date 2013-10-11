@@ -31,7 +31,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Place;
@@ -64,8 +66,37 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+				this, "Tokens",
+				new Getter<VisualImplicitPlaceArc, Integer>() {
+					@Override
+					public Integer eval(VisualImplicitPlaceArc object) {
+						return object.getImplicitPlace().getTokens();
+					}
+				},
+				new Setter<VisualImplicitPlaceArc, Integer>() {
+					@Override
+					public void eval(VisualImplicitPlaceArc object, Integer value) {
+						object.getImplicitPlace().setTokens(value);
+					}
+				},
+				Integer.class));
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+				this, "Capacity",
+				new Getter<VisualImplicitPlaceArc, Integer>() {
+					@Override
+					public Integer eval(VisualImplicitPlaceArc object) {
+						return object.getImplicitPlace().getCapacity();
+					}
+				},
+				new Setter<VisualImplicitPlaceArc, Integer>() {
+					@Override
+					public void eval(VisualImplicitPlaceArc object, Integer value) {
+						object.getImplicitPlace().setCapacity(value);
+					}
+				},
+				Integer.class));
 	}
 
 	private void addPlaceObserver(Place implicitPlace) {
@@ -91,26 +122,6 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		Point2D p = getPointOnConnection(0.5);
 		r.getGraphics().translate(p.getX(), p.getY());
 		VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
-	}
-
-	@NoAutoSerialisation
-	public int getTokens() {
-		return implicitPlace.getTokens();
-	}
-
-	@NoAutoSerialisation
-	public void setTokens(int tokens) {
-		implicitPlace.setTokens(tokens);
-	}
-
-	@NoAutoSerialisation
-	public int getCapacity() {
-		return implicitPlace.getCapacity();
-	}
-
-	@NoAutoSerialisation
-	public void setCapacity(int c) {
-		implicitPlace.setCapacity(c);
 	}
 
 	@NoAutoSerialisation

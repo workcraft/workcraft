@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,8 +44,8 @@ public class StructureVerifyDialog extends JDialog{
 
 	private JPanel  buttonsPanel, GroupPanel, groupPanelContent, ArcTypePanel, settingPanel;
 	private JButton runButton, cancelButton;
-	private JComboBox<typeMode> typeCombo;
-	private JList<CheckListItem> groupList;
+	private JComboBox typeCombo;
+	private JList groupList;
 	private JCheckBox highLight, outputBefore;
 
 	private ArrayList<ONGroup> seletedGroups = new ArrayList<ONGroup>();
@@ -134,10 +135,11 @@ public class StructureVerifyDialog extends JDialog{
 	private void createArcTypesPanel(){
 		ArcTypePanel = new JPanel();
 
-		typeCombo = new JComboBox<typeMode>();
-		typeCombo.addItem(new typeMode(0, "Occurrence Net (Group)"));
-		typeCombo.addItem(new typeMode(1, "Communication Structured Occurrence Nets"));
-		typeCombo.addItem(new typeMode(2, "Behavioural Abstraction"));
+		typeCombo = new JComboBox();
+		typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
+		typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
+		typeCombo.addItem(new typeMode(2, "Communication Structured Occurrence Nets"));
+		typeCombo.addItem(new typeMode(3, "Behavioural Abstraction"));
 
 		ArcTypePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 
@@ -151,13 +153,13 @@ public class StructureVerifyDialog extends JDialog{
 		JLabel label = new JLabel("Group items:");
 		label.setFont(this.getFont());
 
-		DefaultListModel<CheckListItem> listModel = new DefaultListModel<CheckListItem>();
+		DefaultListModel listModel = new DefaultListModel();
 
 		for(ONGroup group : net.getGroups()){
 			listModel.addElement(new CheckListItem("Group: " + group.getLabel(), group));
 		}
 
-		groupList = new JList<CheckListItem> (listModel);
+		groupList = new JList (listModel);
 		groupList.setCellRenderer(new CheckListRenderer());
 		groupList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
 
@@ -218,11 +220,11 @@ public class StructureVerifyDialog extends JDialog{
 			public void actionPerformed(ActionEvent e) {
 				seletedGroups.clear();
 				for (int i = 0; i < getList().getModel().getSize(); i++){
-					getList().getModel().getElementAt(i).setSelected(true);
-					seletedGroups.add(getList().getModel().getElementAt(i).getGroup());
+					((CheckListItem) getList().getModel().getElementAt(i)).setSelected(true);
+					seletedGroups.add(((CheckListItem) getList().getModel().getElementAt(i)).getGroup());
 					getList().repaint();
 
-					getList().getModel().getElementAt(i).setGroupColor(Color.GREEN);
+					((CheckListItem) getList().getModel().getElementAt(i)).setGroupColor(Color.GREEN);
 					owner.repaint();
 				}
 			}
@@ -237,10 +239,10 @@ public class StructureVerifyDialog extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (int i = 0; i < getList().getModel().getSize(); i++){
-					getList().getModel().getElementAt(i).setSelected(false);
+					((CheckListItem) getList().getModel().getElementAt(i)).setSelected(false);
 					getList().repaint();
 
-					getList().getModel().getElementAt(i).setGroupColor(Color.BLACK);
+					((CheckListItem) getList().getModel().getElementAt(i)).setGroupColor(Color.BLACK);
 					owner.repaint();
 				}
 				seletedGroups.clear();
@@ -347,7 +349,7 @@ public class StructureVerifyDialog extends JDialog{
 		return this.seletedGroups;
 	}
 
-	public JList<CheckListItem> getList(){
+	public JList getList(){
 		return this.groupList;
 	}
 

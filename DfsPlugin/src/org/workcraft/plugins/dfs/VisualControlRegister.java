@@ -179,6 +179,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		}
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	@Override

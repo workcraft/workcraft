@@ -229,15 +229,30 @@ public class VisualCPOG extends AbstractVisualModel
 		select(group);
 	}
 
+	// TODO: Add safe versions of these methods; see getVertices(Container root).
+	@Deprecated
 	public Collection<VisualScenario> getGroups()
 	{
 		return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
 	}
 
+	@Deprecated
 	public Collection<VisualVariable> getVariables()
 	{
 		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
 	}
+
+	@Deprecated
+	public Collection<VisualVertex> getVertices()
+	{
+		return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
+	}
+
+	public Collection<VisualVertex> getVertices(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualVertex.class);
+	}
+
 
 	@Override
 	public Properties getProperties(Node node) {

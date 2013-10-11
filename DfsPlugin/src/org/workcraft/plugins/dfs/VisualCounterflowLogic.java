@@ -224,6 +224,7 @@ public class VisualCounterflowLogic extends VisualComponent {
 		g.draw(separatorShape);
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	public CounterflowLogic getReferencedCounterflowLogic() {

@@ -36,7 +36,9 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 
 @Hotkey(KeyEvent.VK_R)
@@ -54,7 +56,21 @@ public class VisualRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Marked", "isMarked", "setMarked", boolean.class));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualRegister, Boolean>(
+				this, "Marked",
+				new Getter<VisualRegister, Boolean>() {
+					@Override
+					public Boolean eval(VisualRegister object) {
+						return object.getReferencedRegister().isMarked();
+					}
+				},
+				new Setter<VisualRegister, Boolean>() {
+					@Override
+					public void eval(VisualRegister object, Boolean value) {
+						object.getReferencedRegister().setMarked(value);
+					}
+				},
+				Boolean.class));
 	}
 
 	@Override
@@ -75,7 +91,7 @@ public class VisualRegister extends VisualComponent {
 		Shape innerShape = new Rectangle2D.Double(-w2 + dx, -h2 + dy, w - dx - dx, h - dy - dy);
 		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
-		boolean marked = isMarked();
+		boolean marked = getReferencedRegister().isMarked();
 		boolean excited = false;
 		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof RegisterDecoration) {
@@ -101,14 +117,7 @@ public class VisualRegister extends VisualComponent {
 		}
 
 		drawLabelInLocalSpace(r);
-	}
-
-	public boolean isMarked() {
-		return getReferencedRegister().isMarked();
-	}
-
-	public void setMarked(boolean marked) {
-		getReferencedRegister().setMarked(marked);
+		drawReferenceInLocalSpace(r);
 	}
 
 }

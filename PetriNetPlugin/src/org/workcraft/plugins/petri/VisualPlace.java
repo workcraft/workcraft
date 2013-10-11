@@ -38,10 +38,11 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
@@ -58,9 +59,54 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Capacity", "getCapacity", "setCapacity", int.class));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Integer>(
+				this, "Tokens",
+				new Getter<VisualPlace, Integer>() {
+					@Override
+					public Integer eval(VisualPlace object) {
+						return object.getReferencedPlace().getTokens();
+					}
+				},
+				new Setter<VisualPlace, Integer>() {
+					@Override
+					public void eval(VisualPlace object, Integer value) {
+						object.getReferencedPlace().setTokens(value);
+					}
+				},
+				Integer.class));
+
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Color>(
+				this, "Token color",
+				new Getter<VisualPlace, Color>() {
+					@Override
+					public Color eval(VisualPlace object) {
+						return object.getTokenColor();
+					}
+				},
+				new Setter<VisualPlace, Color>() {
+					@Override
+					public void eval(VisualPlace object, Color value) {
+						object.setTokenColor(value);
+					}
+				},
+				Color.class));
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Integer>(
+				this, "Capacity",
+				new Getter<VisualPlace, Integer>() {
+					@Override
+					public Integer eval(VisualPlace object) {
+						return object.getReferencedPlace().getCapacity();
+					}
+				},
+				new Setter<VisualPlace, Integer>() {
+					@Override
+					public void eval(VisualPlace object, Integer value) {
+						object.getReferencedPlace().setCapacity(value);
+					}
+				},
+				Integer.class));
 	}
 
 	@Override
@@ -145,31 +191,6 @@ public class VisualPlace extends VisualComponent {
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
-	}
-
-
-	public Place getPlace() {
-		return (Place)getReferencedComponent();
-	}
-
-	@NoAutoSerialisation
-	public int getTokens() {
-		return getPlace().getTokens();
-	}
-
-	@NoAutoSerialisation
-	public void setTokens(int tokens) {
-		getPlace().setTokens(tokens);
-	}
-
-	@NoAutoSerialisation
-	public int getCapacity() {
-		return getPlace().getCapacity();
-	}
-
-	@NoAutoSerialisation
-	public void setCapacity(int capacity) {
-		getPlace().setCapacity(capacity);
 	}
 
 	public Place getReferencedPlace() {

@@ -28,7 +28,7 @@ public class BSONStructureTask implements SONStructureVerification{
 
 	private Collection<ONGroup> abstractGroupResult;
 	private Collection<HashSet<SONConnection>> bhvRelationResult;
-	private Collection<Condition> bhvConditionResult;
+	private Collection<Condition> phaseTaskResult1, phaseTaskResult2;
 	private Collection<ArrayList<Node>> cycleResult;
 
 	private boolean hasErr = false;
@@ -57,6 +57,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		logger.info("Group Components = " + components.size());
 
 		//Abstract level structure
+		logger.info("Running model strucuture and components relation check...");
 		logger.info("Running abstract group structure task...");
 		abstractGroupResult = invalidAbstractGroups(groups);
 		if(abstractGroupResult.isEmpty())
@@ -67,10 +68,10 @@ public class BSONStructureTask implements SONStructureVerification{
 			for(ONGroup group : abstractGroupResult)
 				logger.error("ERROR: Invalid abstract group structure(group label = "+group.getLabel() + ").");
 		}
-		logger.info("Abstract group structure checking complete.");
+		logger.info("Abstract group structure task complete.");
 
 		//bhv relation task
-		logger.info("Running behavioural relation checking task...");
+		logger.info("Running behavioural groups structure task...");
 		bhvRelationResult = bhvRelationsTask(groups);
 		if(bhvRelationResult.isEmpty())
 			logger.info("Correct behavioural relation");
@@ -82,55 +83,74 @@ public class BSONStructureTask implements SONStructureVerification{
 				for(SONConnection con : set){
 					conName.add(net.getName(con));
 				}
-				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behaviour ONs)" + conName.toString());
+				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behavioural ONs)" + conName.toString());
 			}
 		}
-		logger.info("Behavioural relation checking complete.");
+		logger.info("Behavioural groups structure task complete.");
 
 		//phase decomposition task
 		logger.info("Running phase decomposition task...");
 		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
 
-		bhvConditionResult = bhvConditionsTask(abstractGroups);
-			if(!bhvConditionResult.isEmpty()){
+		phaseTaskResult1 = phaseTask1(abstractGroups);
+		phaseTaskResult2 = phaseTask2(abstractGroups);
+			if(!phaseTaskResult1.isEmpty()){
 				hasErr = true;
-				errNumber = errNumber + bhvConditionResult.size();
-				for(Condition c : bhvConditionResult)
+				errNumber = errNumber + phaseTaskResult1.size();
+				for(Condition c : phaseTaskResult1)
 					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+			}
+
+			if(!phaseTaskResult2.isEmpty()){
+				hasErr = true;
+				errNumber = errNumber + phaseTaskResult2.size();
+				for(Condition c : phaseTaskResult2)
+					logger.error("ERROR: Invalid Phase (phase not reach initial/final state): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
 			}
 
 			if(!hasErr){
 				String result = "";
 				for(ONGroup group : abstractGroups)
 					for(Condition c : group.getConditions()){
-						result = this.ValidPhaseTask(relation.getPhase(c), c);
+						result = this.phaseTask3(relation.getPhase(c), c);
 							if(result!=""){
 								hasErr = true;
 								errNumber ++;
 								logger.error("ERROR:"+ result + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
-								bhvConditionResult.add(c);
+								phaseTaskResult1.add(c);
 					}
 				}
+			}else{
+				logger.info("WARNING : Relation error exist, cannot run valid phase checking task." );
+				warningNumber++;
 			}
-			if(bhvConditionResult.isEmpty())
+
+			if(phaseTaskResult1.isEmpty())
 				logger.info("Correct phase decomposition");
 
 		logger.info("phase decomposition task complete.");
+		logger.info("Model strucuture and components relation task complete.");
 
 		//BSON cycle task
+		if(!hasErr){
 		logger.info("Running cycle detection...");
 		cycleResult = traverse.cycleTask(components);
 
 		if (cycleResult.isEmpty() )
-			logger.info("Acyclic checking correct");
+			logger.info("Acyclic structure correct");
 		else{
 			hasErr = true;
 			errNumber++;
 			logger.error("ERROR : BSON cycles = "+ cycleResult.size() + ".");
 		}
 
-		logger.info("Cycle detection complete.");
+		logger.info("Cycle detection complete.\n");
+		}else{
+			cycleResult = new HashSet<ArrayList<Node>>();
+			logger.info("WARNING : Relation error exist, cannot run cycle detection task.\n" );
+			warningNumber++;
 		}
+	}
 
 	private Collection<ONGroup> invalidAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -189,15 +209,37 @@ public class BSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	//check: if a phase is in one ON
-	private Collection<Condition> bhvConditionsTask(Collection<ONGroup> abstractGroups){
+	//check: if a phase is in one ON, initial/final phase
+	private Collection<Condition> phaseTask1(Collection<ONGroup> abstractGroups){
 		Collection<Condition> result = new HashSet<Condition>();
 		for(ONGroup group : abstractGroups)
 			for(Condition c : group.getConditions())
-				if(this.getBhvGroups(c).size()>1)
+				if(relation.getBhvGroups(c).size()>1)
 					result.add(c);
 		return result;
 	}
+
+	private Collection<Condition> phaseTask2(Collection<ONGroup> abstractGroups){
+		Collection<Condition> result = new HashSet<Condition>();
+		for(ONGroup group : abstractGroups)
+			for(Condition c : group.getConditions()){;
+				if(relation.getPrePNSet(c).isEmpty()){
+					Collection<Condition> min = relation.getMinimalPhase(relation.getPhase(c));
+					for(Condition c2 : min)
+						if(!relation.isInitial(c2))
+							result.add(c);
+				}
+				if(relation.getPostPNSet(c).isEmpty()){
+					Collection<Condition> max = relation.getMaximalPhase(relation.getPhase(c));
+					for(Condition c2 : max)
+						if(!relation.isFinal(c2))
+							result.add(c);
+				}
+
+			}
+		return result;
+	}
+
 
 	//get valid abstract groups
 	private Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
@@ -217,19 +259,8 @@ public class BSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	//get corresponding low level groups
-	private Collection<ONGroup> getBhvGroups(Condition c){
-		Collection<ONGroup> result = new HashSet<ONGroup>();
-		for(SONConnection con : net.getInputSONConnections(c))
-			if(con.getType()=="BHVLINE")
-				for(ONGroup group : net.getGroups())
-					if(group.getConditions().contains(con.getFirst()))
-						result.add(group);
-		return result;
-	}
-
-	private String ValidPhaseTask(Collection<Condition> phase, Condition c){
-		Collection<Condition> minimal = relation.getMinialPhase(phase);
+	private String phaseTask3(Collection<Condition> phase, Condition c){
+		Collection<Condition> minimal = relation.getMinimalPhase(phase);
 		Collection<Condition> maximal = relation.getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
 		ONPathAlg alg = new ONPathAlg(net);
@@ -305,7 +336,11 @@ public class BSONStructureTask implements SONStructureVerification{
 				con.setColor(SONSettings.getConnectionErrColor());
 		}
 
-		for(Condition c : this.bhvConditionResult){
+		for(Condition c : this.phaseTaskResult1){
+			c.setFillColor(SONSettings.getRelationErrColor());
+		}
+
+		for(Condition c : this.phaseTaskResult2){
 			c.setFillColor(SONSettings.getRelationErrColor());
 		}
 

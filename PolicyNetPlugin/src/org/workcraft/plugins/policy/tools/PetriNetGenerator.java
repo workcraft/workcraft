@@ -51,8 +51,8 @@ public class PetriNetGenerator {
 		for(VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
 			VisualPlace newPlace = petriNet.createPlace(policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace()));
 			newPlace.setPosition(place.getPosition());
-			newPlace.setCapacity(place.getCapacity());
-			newPlace.setTokens(place.getTokens());
+			newPlace.getReferencedPlace().setCapacity(place.getReferencedPlace().getCapacity());
+			newPlace.getReferencedPlace().setTokens(place.getReferencedPlace().getTokens());
 			newPlace.setForegroundColor(place.getForegroundColor());
 			newPlace.setFillColor(place.getFillColor());
 			newPlace.setTokenColor(place.getTokenColor());

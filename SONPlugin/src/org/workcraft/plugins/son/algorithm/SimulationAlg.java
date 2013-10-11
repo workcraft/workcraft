@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -17,6 +19,7 @@ import org.workcraft.plugins.son.elements.Event;
 public class SimulationAlg {
 
 	private SONModel net;
+	private RelationAlg relation;
 
 	private Collection<Event> syncEventSet = new HashSet<Event>();
 	private Collection<Node> checkedEvents = new HashSet<Node>();
@@ -30,11 +33,18 @@ public class SimulationAlg {
 	private Collection<Node> postEventSet = new HashSet<Node>();
 	private Collection<Node> preEventSet = new HashSet<Node>();
 
+	private Collection<ONGroup> abstractGroups;
+	private Collection<ONGroup> bhvGroups;
+
 	public SimulationAlg(SONModel net){
 		this.net = net;
 		history = new ArrayList<Node>();
 		syncCycles= new ArrayList<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
+		relation =  new RelationAlg(net);
+
+		abstractGroups = relation.getAbstractGroups(net.getGroups());
+		bhvGroups = relation.getBhvGroups(net.getGroups());
 	}
 
 	private List<Event> getPreAsynEvents (Event e){
@@ -249,7 +259,6 @@ public class SimulationAlg {
 
 
 	public Collection<ArrayList<Node>> getSyncCycles(Collection<Node> nodes){
-		RelationAlg relation = new RelationAlg(net);
 
 		List<ArrayList<Node>> subResult = new ArrayList<ArrayList<Node>>();
 		Collection<ArrayList<Node>> result = new ArrayList<ArrayList<Node>>();
@@ -344,7 +353,7 @@ public class SimulationAlg {
 		return true;
 	}
 
-	private boolean isSyncEnabled(Event e, Collection<ArrayList<Node>> sync){
+	private boolean isSyncEnabled(Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
 		for(ArrayList<Node> cycle : sync){
@@ -356,11 +365,11 @@ public class SimulationAlg {
 			checkedEvents.addAll(syncEvents);
 			for(Node n : syncEvents)
 				if(n instanceof Event){
-					if(!this.isPNEnabled((Event)n))
+					if(!this.isPNEnabled((Event)n) || !this.isBhvEnabled((Event)n, phases))
 							return false;
 					for(Node pre : this.getPreAsynEvents((Event)n)){
 						if(pre instanceof Event && !syncEvents.contains(pre)){
-							if(!this.isAsynEnabled((Event)n, sync))
+							if(!this.isAsynEnabled((Event)n, sync, phases) || !this.isBhvEnabled((Event)n, phases))
 								return false;
 						}
 					}
@@ -370,14 +379,15 @@ public class SimulationAlg {
 		return true;
 	}
 
-	private boolean isAsynEnabled(Event e, Collection<ArrayList<Node>> sync){
+	private boolean isAsynEnabled(Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
 
 		for (Node n : net.getPreset(e)){
 			if(n instanceof ChannelPlace)
 				if (((ChannelPlace)n).hasToken() == false)
 					for(Node node : net.getPreset(n)){
 						if(node instanceof Event && !checkedEvents.contains(node)){
-							if(!this.isPNEnabled((Event)node) ||!this.isSyncEnabled((Event)node, sync)||!this.isAsynEnabled((Event)node, sync))
+							if(!this.isPNEnabled((Event)node) ||!this.isSyncEnabled((Event)node, sync, phases)
+									||!this.isAsynEnabled((Event)node, sync, phases) ||!this.isBhvEnabled((Event)node, phases))
 								return false;
 						}
 				}
@@ -385,10 +395,37 @@ public class SimulationAlg {
 		return true;
 	}
 
-	final public boolean isEnabled (Event e, Collection<ArrayList<Node>> sync){
-		checkedEvents.clear();
-		if(isPNEnabled(e) && isSyncEnabled(e, sync) && this.isAsynEnabled(e, sync))
+	private boolean isBhvEnabled(Event e, Map<Condition, Collection<Condition>> phases){
+		for(ONGroup group : abstractGroups){
+			if(group.getComponents().contains(e)){
+				for(Node pre : relation.getPrePNSet(e))
+					if(pre instanceof Condition){
+						Collection<Condition> phase = relation.getPhase((Condition)pre);
+						for(Condition max : relation.getMaximalPhase(phase))
+							if(!max.hasToken())
+								return false;
+				}
 			return true;
+			}
+		}
+
+		for(ONGroup group : bhvGroups){
+			if(group.getComponents().contains(e)){
+				for(Condition c : phases.keySet())
+					if(c.hasToken())
+						if(phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))
+							return true;
+			return false;
+				}
+			}
+		return true;
+	}
+
+	final public boolean isEnabled (Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+		checkedEvents.clear();
+		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases) && this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
+			return true;
+		}
 		return false;
 	}
 
@@ -424,14 +461,51 @@ public class SimulationAlg {
 							from.setToken(!((ChannelPlace)from).hasToken());
 				}
 			}
+
+		for(ONGroup group : abstractGroups){
+			if(group.getEvents().contains(e)){
+				Collection<Condition> preMax = new HashSet<Condition>();
+				Collection<Condition> postMin = new HashSet<Condition>();
+				for(Node pre : relation.getPrePNSet(e))
+					preMax.addAll( relation.getMaximalPhase(relation.getPhase((Condition)pre)));
+				for(Node post : relation.getPostPNSet(e))
+					postMin.addAll(relation.getMinimalPhase(relation.getPhase((Condition)post)));
+
+				if(!preMax.containsAll(postMin)){
+					boolean isFinal=true;
+					for(Condition fin : preMax)
+							if(!relation.isFinal(fin))
+								isFinal=false;
+					if(isFinal)
+						for(Condition fin : preMax)
+							if(fin.hasToken())
+								fin.setToken(false);
+							else
+								JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(fin) + " is empty", "Error", JOptionPane.WARNING_MESSAGE);
+
+					boolean isIni = true;
+					for(Condition init : postMin)
+							if(!relation.isInitial(init))
+								isIni=false;
+					if(isIni)
+						for(Condition fin : postMin)
+							if(!fin.hasToken())
+								fin.setToken(true);
+							else
+								JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(fin) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+
+					}
+				}
+			}
 		}
 	}
 
+
 	//reverse simulation
 
-	final public boolean isUnfireEnabled (Event e, Collection<ArrayList<Node>> sync) {
+	final public boolean isUnfireEnabled (Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases) {
 		checkedEvents.clear();
-		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync) && this.isAsynUnEnabled(e, sync))
+		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync, phases) && this.isAsynUnEnabled(e, sync, phases) && isBhvUnEnabled(e, phases))
 			return true;
 		return false;
 	}
@@ -446,7 +520,7 @@ public class SimulationAlg {
 		return true;
 	}
 
-	private boolean isSyncUnEnabled(Event e, Collection<ArrayList<Node>> sync){
+	private boolean isSyncUnEnabled(Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
 		for(ArrayList<Node> cycle : sync){
@@ -458,11 +532,11 @@ public class SimulationAlg {
 			checkedEvents.addAll(syncEvents);
 			for(Node n : syncEvents)
 				if(n instanceof Event){
-					if(!this.isPNUnEnabled((Event)n))
+					if(!this.isPNUnEnabled((Event)n) || !this.isBhvUnEnabled((Event)n, phases))
 							return false;
 					for(Node post : this.getPostAsynEvents((Event)n)){
 						if(post instanceof Event && !syncEvents.contains(post)){
-							if(!this.isAsynUnEnabled((Event)n, sync))
+							if(!this.isAsynUnEnabled((Event)n, sync, phases)||!this.isBhvUnEnabled((Event)n, phases))
 								return false;
 						}
 					}
@@ -471,18 +545,45 @@ public class SimulationAlg {
 		return true;
 	}
 
-	private boolean isAsynUnEnabled(Event e, Collection<ArrayList<Node>> sync){
+	private boolean isAsynUnEnabled(Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
 
 		for (Node n : net.getPostset(e)){
 			if(n instanceof ChannelPlace)
 				if (((ChannelPlace)n).hasToken() == false)
 					for(Node node : net.getPostset(n)){
 						if(node instanceof Event && !checkedEvents.contains(node)){
-							if(!this.isPNUnEnabled((Event)node) ||!this.isSyncUnEnabled((Event)node, sync)||!this.isAsynUnEnabled((Event)node, sync))
+							if(!this.isPNUnEnabled((Event)node) ||!this.isSyncUnEnabled((Event)node, sync, phases)
+									||!this.isAsynUnEnabled((Event)node, sync, phases) ||!this.isBhvUnEnabled((Event)node, phases))
 								return false;
 						}
 				}
 		}
+		return true;
+	}
+
+	private boolean isBhvUnEnabled(Event e, Map<Condition, Collection<Condition>> phases){
+		for(ONGroup group : abstractGroups){
+			if(group.getComponents().contains(e)){
+				for(Node pre : relation.getPostPNSet(e))
+					if(pre instanceof Condition){
+						Collection<Condition> phase = relation.getPhase((Condition)pre);
+						for(Condition min : relation.getMinimalPhase(phase))
+							if(!min.hasToken())
+								return false;
+				}
+			return true;
+			}
+		}
+
+		for(ONGroup group : bhvGroups){
+			if(group.getComponents().contains(e)){
+				for(Condition c : phases.keySet())
+					if(c.hasToken())
+						if(phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e)))
+							return true;
+			return false;
+				}
+			}
 		return true;
 	}
 
@@ -510,6 +611,41 @@ public class SimulationAlg {
 							from.setToken(((ChannelPlace)from).hasToken());
 						else
 							from.setToken(!((ChannelPlace)from).hasToken());
+				}
+			}
+
+			for(ONGroup group : abstractGroups){
+				if(group.getEvents().contains(e)){
+					Collection<Condition> preMax = new HashSet<Condition>();
+					Collection<Condition> postMin = new HashSet<Condition>();
+					for(Node pre : relation.getPrePNSet(e))
+						preMax.addAll( relation.getMaximalPhase(relation.getPhase((Condition)pre)));
+					for(Node post : relation.getPostPNSet(e))
+						postMin.addAll(relation.getMinimalPhase(relation.getPhase((Condition)post)));
+
+					if(!preMax.containsAll(postMin)){
+						boolean isInitial=true;
+						for(Condition ini : postMin)
+								if(!relation.isInitial(ini))
+									isInitial=false;
+						if(isInitial)
+							for(Condition ini : postMin)
+								if(ini.hasToken())
+									ini.setToken(false);
+								else
+									JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is empty", "Error", JOptionPane.WARNING_MESSAGE);
+
+						boolean isFinal = true;
+						for(Condition fin : preMax)
+								if(!relation.isFinal(fin))
+									isFinal=false;
+						if(isFinal)
+							for(Condition ini : preMax)
+								if(!ini.hasToken())
+									ini.setToken(true);
+								else
+									JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
 		}

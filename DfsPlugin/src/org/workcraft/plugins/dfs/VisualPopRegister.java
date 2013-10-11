@@ -123,6 +123,7 @@ public class VisualPopRegister extends VisualBinaryRegister {
 		}
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	public PopRegister getReferencedPopRegister() {

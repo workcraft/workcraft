@@ -84,11 +84,6 @@ public class SelectionTool extends AbstractTool {
 	protected JPanel infoPanel;
 	protected JPanel statusPanel;
 
-	private JButton groupButton, ungroupButton;
-	private JButton levelUpButton, levelDownButton;
-	private JButton flipHorizontalButton, flipVerticalButton;
-	private JButton rotateClockwiseButton, rotateCounterclockwiseButton;
-
 	private int drag = DRAG_NONE;
 	private boolean notClick1 = false;
 	private boolean notClick3 = false;
@@ -101,16 +96,18 @@ public class SelectionTool extends AbstractTool {
 	private Rectangle2D selectionBox = null;
 
 	private boolean cancelInPlaceEdit = false;
-	protected GraphEditor editor;
+	private GraphEditor editor;
 
 	public SelectionTool() {
 		super();
 	}
 
+	@Override
 	public String getLabel() {
 		return "Select";
 	}
 
+	@Override
 	public int getHotKeyCode() {
 		return KeyEvent.VK_S;
 	}
@@ -126,15 +123,9 @@ public class SelectionTool extends AbstractTool {
 		controlPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
 		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
 
-		infoPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
-		interfacePanel.add(infoPanel, BorderLayout.CENTER);
-
-		statusPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
-		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
-
 		JPanel groupPanel = new JPanel(new FlowLayout());
 		controlPanel.add(groupPanel);
-		groupButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
 		groupButton.addActionListener(new ActionListener(){
 			@Override
@@ -143,7 +134,7 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 		groupPanel.add(groupButton);
-		ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
 		ungroupButton.addActionListener(new ActionListener(){
 			@Override
@@ -155,7 +146,7 @@ public class SelectionTool extends AbstractTool {
 
 		JPanel levelPanel = new JPanel(new FlowLayout());
 		controlPanel.add(levelPanel);
-		levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
 		levelUpButton.addActionListener(new ActionListener(){
 			@Override
@@ -164,7 +155,7 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 		levelPanel.add(levelUpButton);
-		levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
 		levelDownButton.addActionListener(new ActionListener(){
 			@Override
@@ -176,7 +167,7 @@ public class SelectionTool extends AbstractTool {
 
 		JPanel flipPanel = new JPanel(new FlowLayout());
 		controlPanel.add(flipPanel);
-		flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (Ctrl+F)");
 		flipHorizontalButton.addActionListener(new ActionListener(){
 			@Override
@@ -185,7 +176,7 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 		flipPanel.add(flipHorizontalButton);
-		flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (Ctrl+Shift+F)");
 		flipVerticalButton.addActionListener(new ActionListener(){
 			@Override
@@ -197,7 +188,7 @@ public class SelectionTool extends AbstractTool {
 
 		JPanel rotatePanel = new JPanel(new FlowLayout());
 		controlPanel.add(rotatePanel);
-		rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (Ctrl+R)");
 		rotateClockwiseButton.addActionListener(new ActionListener(){
 			@Override
@@ -206,7 +197,7 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 		rotatePanel.add(rotateClockwiseButton);
-		rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
+		JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (Ctrl+Shift+R)");
 		rotateCounterclockwiseButton.addActionListener(new ActionListener(){
 			@Override
@@ -232,6 +223,13 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
+	}
+
+	public GraphEditor getEditor() {
+		if (editor == null) {
+			throw new RuntimeException("The editor is undefiend for selection tool!");
+		}
+		return editor;
 	}
 
 	@Override
@@ -330,7 +328,7 @@ public class SelectionTool extends AbstractTool {
 				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
-					editor.getWorkspaceEntry().captureMemento();
+					getEditor().getWorkspaceEntry().captureMemento();
 					if (hitNode != null && !model.getSelection().contains(hitNode)) {
 						e.getModel().select(hitNode);
 					}
@@ -459,7 +457,6 @@ public class SelectionTool extends AbstractTool {
 				break;
 			}
 		}
-		editor.repaint();
 	}
 
 	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
@@ -481,6 +478,7 @@ public class SelectionTool extends AbstractTool {
 		);
 	}
 
+	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
 		if(drag==DRAG_SELECT && selectionBox!=null) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
@@ -498,10 +496,10 @@ public class SelectionTool extends AbstractTool {
 
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node == editor.getModel().getCurrentLevel()) {
+				if(node == getEditor().getModel().getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
-				if(node == editor.getModel().getRoot()) {
+				if(node == getEditor().getModel().getRoot()) {
 					return new Decoration(){
 						@Override
 						public Color getColorisation() {
@@ -533,7 +531,7 @@ public class SelectionTool extends AbstractTool {
 					}
 				}
 
-				if(editor.getModel().getSelection().contains(node)) {
+				if(getEditor().getModel().getSelection().contains(node)) {
 					return selectedDecoration;
 				} else {
 					return null;
@@ -604,79 +602,88 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	protected void selectionGroup() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			model.groupSelection();
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionUngroup() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionLevelDown() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		Collection<Node> selection = model.getSelection();
 		if (selection.size() == 1) {
 			Node node = selection.iterator().next();
 			if(node instanceof Container) {
 				model.setCurrentLevel((Container)node);
+				getEditor().repaint();
 			}
 		}
 	}
 
 	protected void selectionLevelUp() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		Container level = model.getCurrentLevel();
 		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-		if(parent != null) {
+		if (parent != null) {
 			model.setCurrentLevel(parent);
 			model.addToSelection(level);
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionRotateClockwise() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionRotateCounterclockwise() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionFlipHorizontal() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, -1, 1);
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionFlipVertical() {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, 1, -1);
+			getEditor().repaint();
 		}
 	}
 
 	protected void selectionMove(double dx, double dy) {
-		VisualModel model = editor.getModel();
+		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.translateSelection(model, dx, dy);
+			getEditor().repaint();
 		}
 	}
 

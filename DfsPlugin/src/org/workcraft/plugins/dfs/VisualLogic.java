@@ -110,6 +110,7 @@ public class VisualLogic extends VisualComponent {
 		g.draw(shape);
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	public Logic getReferencedLogic() {

@@ -37,8 +37,8 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.BundleTransitionsPropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.TransitionBundlesPropertyDescriptor;
+import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
+import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -254,11 +254,11 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 				properties = Properties.Merge.add(properties,
 						new BundleNamePropertyDescriptor(this, b),
 						new BundleColorPropertyDescriptor(this, b),
-						new BundleTransitionsPropertyDescriptor(this, b));
+						new TransitionsOfBundlePropertyDescriptor(this, b));
 			}
 		} else if (node instanceof BundledTransition) {
 			BundledTransition t = (BundledTransition)node;
-			properties = Properties.Merge.add(properties, new TransitionBundlesPropertyDescriptor(this, t));
+			properties = Properties.Merge.add(properties, new BundlesOfTransitionPropertyDescriptor(this, t));
 		}
 		return properties;
 	}

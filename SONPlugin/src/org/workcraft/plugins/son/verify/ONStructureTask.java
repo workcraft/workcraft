@@ -2,6 +2,7 @@ package org.workcraft.plugins.son.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
@@ -19,11 +20,8 @@ public class ONStructureTask implements SONStructureVerification{
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private Collection<Node> iniStateResult;
-	private Collection<Node> finalStateResult ;
-	private Collection<Node> postConflictResult, preConflictResult;
-	private Collection<ArrayList<Node>> cycleResult;
-	private Collection<ArrayList<Node>> backwardCycleResult;
+	private Collection<Node> errorousNodes = new HashSet<Node>();
+	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
 
 	private ONPathAlg traverse;
 	private RelationAlg relation;
@@ -39,86 +37,112 @@ public class ONStructureTask implements SONStructureVerification{
 
 	}
 
-	public void task(ONGroup group){
+	public void task(Collection<ONGroup> groups){
 
 		logger.info("-------------------------Occurrence Net Verification-------------------------");
 
+		ArrayList<Node> components = new ArrayList<Node>();
+
+		for(ONGroup group : groups){
+			components.addAll(group.getComponents());
+		}
+
+		logger.info("Selected Groups = " +  groups.size());
+		logger.info("Group Components = " + components.size()+"\n");
+
+		for(ONGroup group : groups){
+
+		Collection<Node> iniStateResult;
+		Collection<Node> finalStateResult ;
+		Collection<Node> postConflictResult, preConflictResult;
+		Collection<ArrayList<Node>> cycleResult, backwardCycleResult;
+
 		//group info
-		logger.info("Initialising group components...");
+			logger.info("Initialising group components...");
 
-		hasErr = false;
+			Collection<Node> groupComponents = group.getComponents();
+				if(group.getLabel().isEmpty())
+					logger.info("Group label : empty" );
+				else
+					logger.info("Group label : " + group.getLabel() );
 
-		Collection<Node> groupComponents = group.getComponents();
-			if(group.getLabel().isEmpty())
-				logger.info("Group label : empty" );
-			else
-				logger.info("Group label : " + group.getLabel() );
+			logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
+			logger.info("Running components relation task...");
 
-		logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
-		logger.info("Running group relation check...");
+			if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
+				logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
+				hasErr = true;
+				errNumber ++;
+				return;
+			}
 
-		if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
-			logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
-			hasErr = true;
-			errNumber ++;
-			return;
+			//initial state output
+			iniStateResult = iniStateTask(groupComponents);
+
+			if (iniStateResult.isEmpty())
+				logger.info("Initial states correct.");
+			else{
+				hasErr = true;
+				errNumber = errNumber + iniStateResult.size();
+				for(Node event : iniStateResult){
+					errorousNodes.add(event);
+					logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+				}
+			}
+
+			//final state output
+			finalStateResult = finalStateTask(groupComponents);
+			if (finalStateResult.isEmpty())
+				logger.info("Final states correct.");
+			else{
+				hasErr = true;
+				errNumber = errNumber + finalStateResult.size();
+				for(Node event : finalStateResult){
+					errorousNodes.add(event);
+					logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+				}
+			}
+
+			//conflict output
+			postConflictResult = postConflictTask(groupComponents);
+			preConflictResult = preConflictTask(groupComponents);
+
+			if (postConflictResult.isEmpty() && preConflictResult.isEmpty())
+				logger.info("Condition structure correct.");
+			else{
+				hasErr = true;
+				errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
+				for(Node condition : postConflictResult){
+					errorousNodes.add(condition);
+					logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+					}
+				for(Node condition : preConflictResult){
+					errorousNodes.add(condition);
+					logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+				}
+			}
+			logger.info("Components relation task complete.");
+
+			//cycle detection
+			logger.info("Running cycle detection...");
+
+			cycleResult = traverse.cycleTask(groupComponents);
+
+			backwardCycleResult = new ArrayList<ArrayList<Node>>();
+			backwardCycleResult.addAll(this.traverse.backwardCycleTask(groupComponents));
+
+			cyclePaths.addAll(cycleResult);
+			cyclePaths.addAll(backwardCycleResult);
+
+			if (cycleResult.isEmpty() && backwardCycleResult.isEmpty())
+				logger.info("Acyclic structure correct");
+			else{
+				hasErr = true;
+				errNumber++;
+				logger.error("ERROR : Forward cycles = "+ cycleResult.size()+", " + "Backward cycles = "+backwardCycleResult.size()+".");
+			}
+			logger.info("Cycle detection complete.\n");
 		}
-
-		//initial state output
-		iniStateResult = iniStateTask(groupComponents);
-
-		if (iniStateResult.isEmpty())
-			logger.info("Initial states correct.");
-		else{
-			hasErr = true;
-			errNumber = errNumber + iniStateResult.size();
-			for(Node event : iniStateResult)
-				logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
-		}
-
-		//final state output
-		finalStateResult = finalStateTask(groupComponents);
-		if (finalStateResult.isEmpty())
-			logger.info("Final states correct.");
-		else{
-			hasErr = true;
-			errNumber = errNumber + finalStateResult.size();
-			for(Node event : finalStateResult)
-				logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
-		}
-
-		//conflict output
-		postConflictResult = postConflictTask(groupComponents);
-		preConflictResult = preConflictTask(groupComponents);
-
-		if (postConflictResult.isEmpty() && preConflictResult.isEmpty())
-			logger.info("Condition structure correct.");
-		else{
-			hasErr = true;
-			errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
-			for(Node condition : postConflictResult)
-				logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
-			for(Node condition : preConflictResult)
-				logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
-		}
-		logger.info("Relation checking complete.");
-
-		//cycle detection
-		logger.info("Running cycle detection...");
-
-		cycleResult = traverse.cycleTask(groupComponents);
-
-		backwardCycleResult = new ArrayList<ArrayList<Node>>();
-		backwardCycleResult.addAll(this.traverse.backwardCycleTask(groupComponents));
-
-		if (cycleResult.isEmpty() && backwardCycleResult.isEmpty())
-			logger.info("Acyclic checking correct");
-		else{
-			hasErr = true;
-			errNumber++;
-			logger.error("ERROR : Forward cycles = "+ cycleResult.size()+", " + "Backward cycles = "+backwardCycleResult.size()+".");
-		}
-		logger.info("Cycle detection complete.");
 	}
 
 	private Collection<Node> iniStateTask(Collection<Node> groupNodes){
@@ -158,31 +182,13 @@ public class ONStructureTask implements SONStructureVerification{
 	}
 
 	public void errNodesHighlight(){
-
-		for(Node node : this.iniStateResult){
+		for(Node node : this.errorousNodes){
 			this.net.setFillColor(node, SONSettings.getRelationErrColor());
 		}
 
-		for(Node node : finalStateResult){
-			this.net.setFillColor(node, SONSettings.getRelationErrColor());
-		}
-
-		for(Node node : postConflictResult){
-			this.net.setFillColor(node, SONSettings.getRelationErrColor());
-		}
-
-		for(Node node : preConflictResult){
-			this.net.setFillColor(node, SONSettings.getRelationErrColor());
-		}
-
-		for (ArrayList<Node> list : this.cycleResult)
+		for (ArrayList<Node> list : this.cyclePaths)
 			for (Node node : list)
 				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
-
-		for (ArrayList<Node> list : this.backwardCycleResult)
-			for (Node node : list)
-				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
-
 	}
 
 	public boolean hasErr(){

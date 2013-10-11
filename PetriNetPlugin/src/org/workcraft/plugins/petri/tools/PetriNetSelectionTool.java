@@ -24,13 +24,13 @@ public class PetriNetSelectionTool extends SelectionTool {
 				if(node instanceof VisualPlace)
 				{
 					VisualPlace place = (VisualPlace) node;
-					if (place.getTokens() <= 1) {
+					if (place.getReferencedPlace().getTokens() <= 1) {
 						e.getEditor().getWorkspaceEntry().saveMemento();
 
-						if (place.getTokens()==1)
-							place.setTokens(0);
+						if (place.getReferencedPlace().getTokens()==1)
+							place.getReferencedPlace().setTokens(0);
 						else
-							place.setTokens(1);
+							place.getReferencedPlace().setTokens(1);
 					}
 					processed = true;
 				}

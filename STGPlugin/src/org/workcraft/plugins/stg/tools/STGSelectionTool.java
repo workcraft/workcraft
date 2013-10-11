@@ -38,7 +38,7 @@ public class STGSelectionTool extends SelectionTool
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null) {
 				if (node instanceof VisualPlace) {
-					Place place = ((VisualPlace) node).getPlace();
+					Place place = ((VisualPlace) node).getReferencedPlace();
 					toggleToken(place, e);
 					processed = true;
 				} else if (node instanceof VisualNamedTransition) {

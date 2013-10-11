@@ -165,6 +165,7 @@ public class VisualCounterflowRegister extends VisualComponent {
 		}
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	public CounterflowRegister getReferencedCounterflowRegister() {

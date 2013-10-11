@@ -126,6 +126,7 @@ public class VisualPushRegister extends VisualBinaryRegister {
 		}
 
 		drawLabelInLocalSpace(r);
+		drawReferenceInLocalSpace(r);
 	}
 
 	public PushRegister getReferencedPushRegister() {

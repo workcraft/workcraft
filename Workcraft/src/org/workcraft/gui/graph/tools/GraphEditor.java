@@ -42,4 +42,5 @@ public interface GraphEditor {
 	public Point2D snap(Point2D pos);
 	public void repaint();
 	public boolean hasFocus();
+	public void requestFocus();
 }

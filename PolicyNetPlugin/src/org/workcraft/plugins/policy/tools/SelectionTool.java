@@ -75,12 +75,12 @@ public class SelectionTool extends PetriNetSelectionTool {
 				break;
 			}
 		}
-		editor.repaint();
+		getEditor().repaint();
 	}
 
 	protected Collection<BundledTransition> getSelectedTransitions() {
 		Set<BundledTransition> transitions = new HashSet<BundledTransition>();
-		VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
+		VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
 		for (Node node : visualModel.getSelection()) {
 			if (node instanceof VisualBundledTransition) {
 				transitions.add(((VisualBundledTransition)node).getReferencedTransition());
@@ -92,8 +92,8 @@ public class SelectionTool extends PetriNetSelectionTool {
 	protected void selectionBundle() {
 		Collection<BundledTransition> transitions = getSelectedTransitions();
 		if (!transitions.isEmpty()) {
-			PolicyNet model = (PolicyNet)editor.getModel().getMathModel();
-			editor.getWorkspaceEntry().saveMemento();
+			PolicyNet model = (PolicyNet)getEditor().getModel().getMathModel();
+			getEditor().getWorkspaceEntry().saveMemento();
 			model.bundleTransitions(transitions);
 		}
 	}
@@ -101,8 +101,8 @@ public class SelectionTool extends PetriNetSelectionTool {
 	protected void selectionUnbundle() {
 		Collection<BundledTransition> transitions = getSelectedTransitions();
 		if (!transitions.isEmpty()) {
-			PolicyNet model = (PolicyNet)editor.getModel().getMathModel();
-			editor.getWorkspaceEntry().saveMemento();
+			PolicyNet model = (PolicyNet)getEditor().getModel().getMathModel();
+			getEditor().getWorkspaceEntry().saveMemento();
 			model.unbundleTransitions(transitions);
 		}
 	}

@@ -136,7 +136,6 @@ public class OutputArea extends JFrame {
         int height = screenSize.height;
         setLocation(width/2,height/4);
 
-
     }
 
 }

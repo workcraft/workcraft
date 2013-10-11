@@ -88,11 +88,15 @@ public class STGGenerator {
 		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
 		zeroPlace.setLabel(contactName+"=0");
 
-		if (!contact.getInitOne()) zeroPlace.setTokens(1);
+		if (!contact.getInitOne()) {
+			zeroPlace.getReferencedPlace().setTokens(1);
+		}
 
 		VisualPlace onePlace = stg.createPlace(contactName+"_1");
 		onePlace.setLabel(contactName+"=1");
-		if (contact.getInitOne()) onePlace.setTokens(1);
+		if (contact.getInitOne()) {
+			onePlace.getReferencedPlace().setTokens(1);
+		}
 
 		return new ContactSTG(zeroPlace, onePlace);
 	}

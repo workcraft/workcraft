@@ -1,5 +1,8 @@
 package org.workcraft.dom.visual;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public enum Positioning {
 	TOP("Top", 0, -1),
 	BOTTOM("Bottom", 0, 1),
@@ -18,5 +21,13 @@ public enum Positioning {
 		this.name = name;
 		this.dx = dx;
 		this.dy = dy;
+	}
+
+	static public Map<String, Positioning> getChoice() {
+		LinkedHashMap<String, Positioning> choice = new LinkedHashMap<String, Positioning>();
+		for (Positioning item : Positioning.values()) {
+			choice.put(item.name, item);
+		}
+		return choice;
 	}
 }

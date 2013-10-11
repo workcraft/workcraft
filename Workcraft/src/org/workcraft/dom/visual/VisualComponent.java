@@ -29,11 +29,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -45,8 +47,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	protected double size = CommonVisualSettings.getBaseSize();
 	protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
-	public final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
+	public final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private GlyphVector labelGlyphs = null;
 	private String glyphedLabel = null;
 	private String label = "";
@@ -57,6 +59,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
+
+	private static final Font referenceFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private Positioning referencePositioning = CommonVisualSettings.getTextPositioning();
+	private Color referenceColor = CommonVisualSettings.getBorderColor();
+	private RenderedText referenceText = new RenderedText(referenceFont, "");
 
 	public VisualComponent(MathNode refNode) {
 		super();
@@ -78,24 +85,85 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label",
-				"getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label color",
-				"getLabelColor", "setLabelColor", Color.class));
-		addPropertyDeclaration(new PropertyDeclaration(this,
-				"Foreground color", "getForegroundColor", "setForegroundColor",
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, String>(
+				this, "Label",
+				new Getter<VisualComponent, String>() {
+					@Override
+					public String eval(VisualComponent object) {
+						return object.getLabel();
+					}
+				},
+				new Setter<VisualComponent, String>() {
+					@Override
+					public void eval(VisualComponent object, String value) {
+						object.setLabel(value);
+					}
+				},
+				String.class));
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
+				this, "Label color",
+				new Getter<VisualComponent, Color>() {
+					@Override
+					public Color eval(VisualComponent object) {
+						return object.getLabelColor();
+					}
+				},
+				new Setter<VisualComponent, Color>() {
+					@Override
+					public void eval(VisualComponent object, Color value) {
+						object.setLabelColor(value);
+					}
+				},
 				Color.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Fill color",
-				"getFillColor", "setFillColor", Color.class));
 
-		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
-		for (Positioning lp : Positioning.values())
-			positions.put(lp.name, lp);
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
+				this, "Foreground color",
+				new Getter<VisualComponent, Color>() {
+					@Override
+					public Color eval(VisualComponent object) {
+						return object.getForegroundColor();
+					}
+				},
+				new Setter<VisualComponent, Color>() {
+					@Override
+					public void eval(VisualComponent object, Color value) {
+						object.setForegroundColor(value);
+					}
+				},
+				Color.class));
 
-		addPropertyDeclaration(new PropertyDeclaration(this,
-				"Label positioning", "getLabelPositioning",
-				"setLabelPositioning", Positioning.class, positions));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
+				this, "Fill color",
+				new Getter<VisualComponent, Color>() {
+					@Override
+					public Color eval(VisualComponent object) {
+						return object.getFillColor();
+					}
+				},
+				new Setter<VisualComponent, Color>() {
+					@Override
+					public void eval(VisualComponent object, Color value) {
+						object.setFillColor(value);
+					}
+				},
+				Color.class));
 
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Positioning>(
+				this, "Label positioning",
+				new Getter<VisualComponent, Positioning>() {
+					@Override
+					public Positioning eval(VisualComponent object) {
+						return object.getLabelPositioning();
+					}
+				},
+				new Setter<VisualComponent, Positioning>() {
+					@Override
+					public void eval(VisualComponent object, Positioning value) {
+						object.setLabelPositioning(value);
+					}
+				},
+				Positioning.class, Positioning.getChoice()));
 	}
 
 	public String getLabel() {
@@ -190,9 +258,23 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		g.drawString(label, (float) labelPosition.getX(), (float) labelPosition.getY());
 	}
 
+	protected void drawReferenceInLocalSpace(DrawRequest r) {
+		String str = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		if (str == null || !str.equals(referenceText.text)) {
+			referenceText = new RenderedText(referenceFont, str);
+		}
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
+		g.setColor(Coloriser.colorise(referenceColor, d.getColorisation()));
+		// TODO: Implement proper label and reference visualisation (with code reuse)
+		//referenceText.draw(g);
+	}
+
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		return BoundingBoxHelper.union(bb, labelBoundingBox);
+		bb = BoundingBoxHelper.union(bb, labelBoundingBox);
+		bb = BoundingBoxHelper.union(bb, referenceText.getBoundingBox());
+		return bb;
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {

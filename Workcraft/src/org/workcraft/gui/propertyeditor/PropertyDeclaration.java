@@ -39,7 +39,7 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		return choice;
 	}
 
-	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls) {
+	public PropertyDeclaration(Object object, String name, String getter, String setter, Class<?> cls) {
 		this.object = object;
 		this.name = name;
 		this.getter = getter;
@@ -50,7 +50,7 @@ public class PropertyDeclaration implements PropertyDescriptor {
 		this.choice = false;
 	}
 
-	public PropertyDeclaration (Object object, String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
+	public PropertyDeclaration(Object object, String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
 		this.object = object;
 		this.name = name;
 		this.getter = getter;

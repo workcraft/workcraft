@@ -26,7 +26,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Getter;
+import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
+import org.workcraft.gui.propertyeditor.Setter;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -38,8 +40,37 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "X", "getX", "setX", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Y", "getY", "setY", double.class));
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualTransformableNode, Double>(
+				this, "X",
+				new Getter<VisualTransformableNode, Double>() {
+					@Override
+					public Double eval(VisualTransformableNode object) {
+						return object.getX();
+					}
+				},
+				new Setter<VisualTransformableNode, Double>() {
+					@Override
+					public void eval(VisualTransformableNode object, Double value) {
+						object.setX(value);
+					}
+				},
+				Double.class));
+
+		addPropertyDeclaration(new SafePropertyDeclaration<VisualTransformableNode, Double>(
+				this, "Y",
+				new Getter<VisualTransformableNode, Double>() {
+					@Override
+					public Double eval(VisualTransformableNode object) {
+						return object.getY();
+					}
+				},
+				new Setter<VisualTransformableNode, Double>() {
+					@Override
+					public void eval(VisualTransformableNode object, Double value) {
+						object.setY(value);
+					}
+				},
+				Double.class));
 	}
 
 	public VisualTransformableNode() {

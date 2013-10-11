@@ -27,16 +27,13 @@ import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
@@ -50,16 +47,12 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	public void draw(DrawRequest r) {
-
 		Shape shape = new Ellipse2D.Double(
-				-size/2+strokeWidth/2,
-				-size/2+strokeWidth/2,
-				size-strokeWidth,
-				size-strokeWidth);
+				-size/2+strokeWidth/2, -size/2+strokeWidth/2,
+				size-strokeWidth, size-strokeWidth);
 
 		Graphics2D g = r.getGraphics();
 		g.setStroke(new BasicStroke(strokeWidth));
-
 		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));

@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,7 +52,7 @@ public class ParallelSimDialog  extends JDialog{
 	private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
 	private JButton runButton, cancelButton;
 	protected JScrollPane infoPanel;
-	private JList<EventItem> eventList;
+	private JList eventList;
 
 	private HashSet<Event> selectedEvents = new HashSet<Event>();
 	private Collection<ArrayList<Node>> sync;
@@ -121,7 +122,7 @@ public class ParallelSimDialog  extends JDialog{
 
 		eventPanel = new JPanel();
 
-		DefaultListModel<EventItem> listModel = new DefaultListModel<EventItem>();
+		DefaultListModel listModel = new DefaultListModel();
 
 		for(Event event : this.possibleEvents){
 			EventItem item = new EventItem(net.getName(event)+"  "+event.getLabel(), event, possibleEvents);
@@ -129,7 +130,7 @@ public class ParallelSimDialog  extends JDialog{
 		}
 
 
-		eventList = new JList<EventItem> (listModel);
+		eventList = new JList (listModel);
 		eventList.setCellRenderer(new CheckListRenderer());
 		eventList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
 
@@ -284,7 +285,7 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	public  ParallelSimDialog (Window owner, SONModel net, List<Event> possibleEvents, List<Event> minimalEvents, Event event, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents, boolean reverse){
-		super(owner, "Parallel Execution Setting", ModalityType.APPLICATION_MODAL);
+		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		alg = new SimulationAlg(net);
 
@@ -317,6 +318,19 @@ public class ParallelSimDialog  extends JDialog{
 		  {
 			  getSONModel().refreshColor();
 		  }
+		});
+
+		this.addWindowFocusListener(new WindowFocusListener()
+		{
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+			}
+
+			@Override
+			public void windowLostFocus(WindowEvent e) {
+				if(run==0)
+					setVisible(true);
+			}
 		});
 
 	}

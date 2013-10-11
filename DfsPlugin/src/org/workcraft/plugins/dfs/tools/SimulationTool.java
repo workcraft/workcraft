@@ -175,7 +175,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isComputed() {
-							return (lstg.C0.getTokens() == 0);
+							return (lstg.C0.getReferencedPlace().getTokens() == 0);
 						}
 					};
 				}
@@ -200,7 +200,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isMarked() {
-							return (rstg.M0.getTokens() == 0);
+							return (rstg.M0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
@@ -230,12 +230,12 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isForwardComputed() {
-							return (lstg.fwC0.getTokens() == 0);
+							return (lstg.fwC0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
 						public boolean isBackwardComputed() {
-							return (lstg.bwC0.getTokens() == 0);
+							return (lstg.bwC0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
@@ -280,12 +280,12 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isOrMarked() {
-							return (rstg.orM0.getTokens() == 0);
+							return (rstg.orM0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
 						public boolean isAndMarked() {
-							return (rstg.andM0.getTokens() == 0);
+							return (rstg.andM0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
@@ -330,7 +330,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isTrueMarked() {
-							return (rstg.tM0.getTokens() == 0);
+							return (rstg.tM0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override
@@ -340,7 +340,7 @@ public class SimulationTool extends STGSimulationTool {
 
 						@Override
 						public boolean isFalseMarked() {
-							return (rstg.fM0.getTokens() == 0);
+							return (rstg.fM0.getReferencedPlace().getTokens() == 0);
 						}
 
 						@Override

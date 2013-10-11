@@ -18,33 +18,12 @@
 * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package org.workcraft.plugins.cpog.expressions;
 
-package org.workcraft.gui.propertyeditor.cpog;
+import org.workcraft.plugins.cpog.expressions.CpogFormula;
 
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+public interface CpogWorker {
 
-import org.workcraft.gui.propertyeditor.PropertyClass;
-import org.workcraft.plugins.cpog.Encoding;
-
-public class EncodingProperty implements PropertyClass {
-
-	public Object fromCellEditorValue(Object editorComponentValue)
-	{
-		return editorComponentValue;
-	}
-
-	public TableCellEditor getCellEditor() {
-		return new EncodingCellEditor();
-	}
-
-	public TableCellRenderer getCellRenderer() {
-		return new DefaultTableCellRenderer();
-	}
-
-	public Object toCellRendererValue(Object value)
-	{
-		return (Encoding) value;
-	}
+	CpogFormula overlay(CpogFormula x, CpogFormula y);
+	CpogFormula sequence(CpogFormula x, CpogFormula y);
 }

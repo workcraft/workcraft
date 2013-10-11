@@ -174,7 +174,8 @@ public class VisualSON extends AbstractVisualModel{
 
 	}
 
-	private Collection<Node> getGroupableSelection() {
+	private Collection<Node> getGroupableSelection()
+	{
 		boolean validate = false;
 		HashSet<Node> result = new HashSet<Node>();
 		if (validateSelection ())
@@ -189,7 +190,8 @@ public class VisualSON extends AbstractVisualModel{
 					return result;
 				}
 			}
-		} else	{
+		}else
+			{
 					JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title, JOptionPane.WARNING_MESSAGE);
 					result.removeAll(result);
 					return result;
@@ -278,8 +280,7 @@ public class VisualSON extends AbstractVisualModel{
 		Collection<Node> groupComponents = new HashSet<Node>();
 
 		for(Node node : getOrderedCurrentLevelSelection()){
-			if(node instanceof VisualComponent
-					|| node instanceof VisualSONConnection)
+			if(node instanceof VisualComponent || node instanceof VisualSONConnection)
 				result.add(node);
 			if (node instanceof VisualONGroup){
 				result.add(node);
@@ -342,6 +343,7 @@ public class VisualSON extends AbstractVisualModel{
 	public void superGroupSelection(){
 		Collection<Node> selected = getSuperGroupableSelection();
 		Collection<Node> cons = new HashSet<Node>();
+		Collection<Node> bhv = new HashSet<Node>();
 
 		if (selected.size() < 1) return;
 		VisualGroup vsgroup = new VisualSuperGroup();
@@ -350,15 +352,18 @@ public class VisualSON extends AbstractVisualModel{
 
 		currentLevel.add(vsgroup);
 
-		for(Node n : selected)
+		for(Node n : selected){
 			if(n instanceof VisualSONConnection)
 				cons.add(n);
+			if(n instanceof VisualSONConnection && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
+				bhv.add(n);
+		}
 
 		currentLevel.reparent(selected, vsgroup);
 		// && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE
 
-		vsgroup.reparent(cons, this.getRoot());
-
+		vsgroup.reparent(cons, vsgroup);
+		vsgroup.reparent(bhv, currentLevel);
 
 		select(vsgroup);
 	}

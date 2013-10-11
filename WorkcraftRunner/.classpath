@@ -13,5 +13,18 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PolicyNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SONPlugin"/>
+	<classpathentry kind="lib" path="/ThirdParty/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/flexdock-0.5.1.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/javaparser-1.0.7.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/jedit.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/jga-0.8-lgpl.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/js.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/pcollections-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/substance.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

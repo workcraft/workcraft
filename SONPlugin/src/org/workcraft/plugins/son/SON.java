@@ -16,7 +16,6 @@ import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -83,9 +82,6 @@ public class SON extends AbstractMathModel implements SONModel {
 
 	public void setName(Node node, String name) {
 		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-		if (node instanceof MathNode) {
-			((MathNode)node).sendNotification(new PropertyChangedEvent(node, "name"));
-		}
 	}
 
 	public String getName(Node node) {
@@ -176,12 +172,10 @@ public class SON extends AbstractMathModel implements SONModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
 		if (node != null) {
-			properties = Properties.Mix.from(new NamePropertyDescriptor(this, node));
+			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
 		}
-		return properties;
-
+		return null;
 	}
 
 	final public ChannelPlace createChannelPlace() {
@@ -301,5 +295,4 @@ public class SON extends AbstractMathModel implements SONModel {
 		}
 		return false;
 	}
-
 }

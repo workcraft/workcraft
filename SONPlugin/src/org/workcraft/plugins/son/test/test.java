@@ -58,9 +58,14 @@ public class test implements Task<VerificationResult> {
 			return "";
 		}
 	};
+	public void print(){
+		System.out.println(this.toString());
+	}
 
 	public static void main(String[] arg){
-		System.out.println(SONConnectionType.SYNCLINE.toString());
+		test t = new test();
+		t.print();
+
 	}
 
 
