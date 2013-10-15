@@ -21,6 +21,9 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
@@ -34,7 +37,25 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class Contact extends MathNode implements BooleanVariable {
 
-	public enum IOType { INPUT, OUTPUT};
+	public enum IOType {
+		INPUT("Input"),
+		OUTPUT("Output");
+
+		private final String name;
+
+		private IOType(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, IOType> getChoice() {
+			LinkedHashMap<String, IOType> choice = new LinkedHashMap<String, IOType>();
+			for (IOType item : IOType.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	};
+
 	private IOType ioType = IOType.OUTPUT;
 
 	private String name = "";

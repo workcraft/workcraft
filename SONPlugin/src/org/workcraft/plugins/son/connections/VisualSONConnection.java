@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
@@ -34,13 +35,26 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 public class VisualSONConnection extends VisualConnection
 {
 
-	public enum SONConnectionType
-	{
-		POLYLINE,
-		BEZIER,
-		SYNCLINE,
-		ASYNLINE,
-		BHVLINE;
+	public enum SONConnectionType {
+		POLYLINE("Polyline"),
+		BEZIER("Bezier"),
+		SYNCLINE("Synchronous Communication"),
+		ASYNLINE("Asynchronous Communication"),
+		BHVLINE("Behavioural Abstraction");
+
+		private final String name;
+
+		private SONConnectionType(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, SONConnectionType> getChoice() {
+			LinkedHashMap<String, SONConnectionType> choice = new LinkedHashMap<String, SONConnectionType>();
+			for (SONConnectionType item : SONConnectionType.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	};
 
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
@@ -65,43 +79,64 @@ public class VisualSONConnection extends VisualConnection
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
 	protected void initialise() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Double>(
+				this, "Line width", Double.class) {
+			protected void setter(VisualSONConnection object, Double value) {
+				object.setLineWidth(value);
+			}
+			protected Double getter(VisualSONConnection object) {
+				return object.getLineWidth();
+			}
+		});
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Line width", "getLineWidth", "setLineWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width", "getArrowWidth", "setArrowWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Line Color", "getDrawColor", "setColor", Color.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Double>(
+				this, "Arrow width", Double.class) {
+			protected void setter(VisualSONConnection object, Double value) {
+				object.setArrowWidth(value);
+			}
+			protected Double getter(VisualSONConnection object) {
+				return object.getArrowWidth();
+			}
+		});
 
-		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Double> arrowLengths = new LinkedHashMap<String, Double>();
 		arrowLengths.put("short", 0.2);
 		arrowLengths.put("medium", 0.4);
 		arrowLengths.put("long", 0.8);
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Double>(
+				this, "Arrow length", Double.class, arrowLengths) {
+			protected void setter(VisualSONConnection object, Double value) {
+				object.setArrowLength(value);
+			}
+			protected Double getter(VisualSONConnection object) {
+				return object.getArrowLength();
+			}
+		});
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow length", "getArrowLength", "setArrowLength", double.class, arrowLengths));
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, SONConnectionType>(
+				this, "Connection type", SONConnectionType.class, SONConnectionType.getChoice()) {
+			protected void setter(VisualSONConnection object, SONConnectionType value) {
+				object.setSONConnectionType(value);
+			}
+			protected SONConnectionType getter(VisualSONConnection object) {
+				return object.getSONConnectionType();
+			}
+		});
 
-		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
 
-		hm.put("Polyline", SONConnectionType.POLYLINE);
-		hm.put("Bezier", SONConnectionType.BEZIER);
-		hm.put("Synchronous Communication", SONConnectionType.SYNCLINE);
-		hm.put("Asynchronous Communication", SONConnectionType.ASYNLINE);
-		hm.put("Behavioural Abstraction", SONConnectionType.BHVLINE);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "Connection type", "getSONConnectionType", null, SONConnectionType.class, hm));
-
-		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
-
-		hm2.put("Lock anchors", ScaleMode.NONE);
-		hm2.put("Bind to components", ScaleMode.LOCK_RELATIVELY);
-		hm2.put("Proportional", ScaleMode.SCALE);
-		hm2.put("Stretch", ScaleMode.STRETCH);
-		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "Scale mode", "getScaleMode", "setScaleMode", ScaleMode.class, hm2));
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, ScaleMode>(
+				this, "Scale mode", ScaleMode.class, ScaleMode.getChoice()) {
+			protected void setter(VisualSONConnection object, ScaleMode value) {
+				object.setScaleMode(value);
+			}
+			protected ScaleMode getter(VisualSONConnection object) {
+				return object.getScaleMode();
+			}
+		});
 
 		componentsTransformObserver = new ComponentsTransformObserver(this);
-
 		children.add(componentsTransformObserver);
 		children.add(graphic);
-
 	}
 
 	public VisualSONConnection() {

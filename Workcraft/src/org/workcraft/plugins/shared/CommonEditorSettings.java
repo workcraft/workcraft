@@ -48,17 +48,45 @@ public class CommonEditorSettings implements SettingsPage {
 	public CommonEditorSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration(this, "Background color",
-				"getBackgroundColor", "setBackgroundColor", Color.class));
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
+				this, "Background color", Color.class) {
+			protected void setter(CommonEditorSettings object, Color value) {
+				CommonEditorSettings.setBackgroundColor(value);
+			}
+			protected Color getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getBackgroundColor();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Show grid",
-				"getShowGrid", "setShowGrid", Boolean.class));
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Show grid", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setShowGrid(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getShowGrid();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Show rulers",
-				"getShowRulers", "setShowRulers", Boolean.class));
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Show rulers", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setShowRulers(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getShowRulers();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Icon width (pixels, 8-256)",
-				"getIconSize", "setIconSize", int.class));
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
+				this, "Icon width (pixels, 8-256)", Integer.class) {
+			protected void setter(CommonEditorSettings object, Integer value) {
+				CommonEditorSettings.setIconSize(value);
+			}
+			protected Integer getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getIconSize();
+			}
+		});
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {

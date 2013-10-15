@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.shared;
 import java.awt.Color;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +37,12 @@ public class CommonVisualSettings implements SettingsPage {
 	protected static double strokeWidth = 0.1;
 	protected static Color borderColor = Color.BLACK;
 	protected static Color fillColor = Color.WHITE;
-	private static Positioning textPositioning = Positioning.TOP;
+	private static boolean labelVisibility = true;
+	private static Positioning labelPositioning = Positioning.TOP;
+	private static Color labelColor = Color.BLACK;
+	private static boolean nameVisibility = false;
+	private static Positioning namePositioning = Positioning.BOTTOM;
+	private static Color nameColor = Color.BLUE.darker();
 	private static boolean useEnabledForegroundColor = true;
 	private static Color enabledForegroundColor = new Color(1.0f, 0.5f, 0.0f);
 	private static boolean useEnabledBackgroundColor = false;
@@ -55,36 +59,145 @@ public class CommonVisualSettings implements SettingsPage {
 	public CommonVisualSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration(this, "Base size (cm)",
-				"getBaseSize", "setBaseSize", double.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+				this, "Base size (cm)", Double.class) {
+			protected void setter(CommonVisualSettings object, Double value) {
+				CommonVisualSettings.setBaseSize(value);
+			}
+			protected Double getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getBaseSize();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Stroke width (cm)",
-				"getStrokeWidth", "setStrokeWidth", double.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+				this, "Stroke width (cm)", Double.class) {
+			protected void setter(CommonVisualSettings object, Double value) {
+				CommonVisualSettings.setStrokeWidth(value);
+			}
+			protected Double getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getStrokeWidth();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Border color",
-				"getBorderColor", "setBorderColor", Color.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Border color", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setBorderColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getBorderColor();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Fill color",
-				"getFillColor", "setFillColor", Color.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Fill color", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setFillColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getFillColor();
+			}
+		});
 
-		LinkedHashMap<String, Object> positions = new LinkedHashMap<String, Object>();
-		for(Positioning lp : Positioning.values()) {
-			positions.put(lp.name, lp);
-		}
-		properties.add(new PropertyDeclaration(this, "Default text positioning",
-				"getTextPositioning", "setTextPositioning", Positioning.class, positions));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
+				this, "Show component labels", Boolean.class) {
+			protected void setter(CommonVisualSettings object, Boolean value) {
+				CommonVisualSettings.setLabelVisibility(value);
+			}
+			protected Boolean getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getLabelVisibility();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Use enabled component foreground",
-				"getUseEnabledForegroundColor", "setUseEnabledForegroundColor", Boolean.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
+				this, "Label positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(CommonVisualSettings object, Positioning value) {
+				CommonVisualSettings.setLabelPositioning(value);
+			}
+			protected Positioning getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getLabelPositioning();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Enabled component foreground",
-				"getEnabledForegroundColor", "setEnabledForegroundColor", Color.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Label color", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setLabelColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getLabelColor();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Use enabled component background",
-				"getUseEnabledBackgroundColor", "setUseEnabledBackgroundColor", Boolean.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
+				this, "Show component names", Boolean.class) {
+			protected void setter(CommonVisualSettings object, Boolean value) {
+				CommonVisualSettings.setNameVisibility(value);
+			}
+			protected Boolean getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getNameVisibility();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Enabled component background",
-				"getEnabledBackgroundColor", "setEnabledBackgroundColor", Color.class));
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
+				this, "Name positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(CommonVisualSettings object, Positioning value) {
+				CommonVisualSettings.setNamePositioning(value);
+			}
+			protected Positioning getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getNamePositioning();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Name color", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setNameColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getNameColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
+				this, "Use enabled component foreground", Boolean.class) {
+			protected void setter(CommonVisualSettings object, Boolean value) {
+				CommonVisualSettings.setUseEnabledForegroundColor(value);
+			}
+			protected Boolean getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getUseEnabledForegroundColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Enabled component foreground", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setEnabledForegroundColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getEnabledForegroundColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
+				this, "Use enabled component background", Boolean.class) {
+			protected void setter(CommonVisualSettings object, Boolean value) {
+				CommonVisualSettings.setUseEnabledBackgroundColor(value);
+			}
+			protected Boolean getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getUseEnabledBackgroundColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
+				this, "Enabled component background", Color.class) {
+			protected void setter(CommonVisualSettings object, Color value) {
+				CommonVisualSettings.setEnabledBackgroundColor(value);
+			}
+			protected Color getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getEnabledBackgroundColor();
+			}
+		});
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -96,7 +209,14 @@ public class CommonVisualSettings implements SettingsPage {
 		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
 		borderColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
 		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
-		textPositioning = config.getTextPositioning("CommonVisualSettings.textPositioning", Positioning.TOP);
+
+		labelVisibility = config.getBoolean("CommonVisualSettings.labelVisibility", true);
+		labelPositioning = config.getTextPositioning("CommonVisualSettings.labelPositioning", Positioning.TOP);
+		labelColor = config.getColor("CommonVisualSettings.labelColor", Color.BLACK);
+
+		nameVisibility = config.getBoolean("CommonVisualSettings.nameVisibility", true);
+		namePositioning = config.getTextPositioning("CommonVisualSettings.namePositioning", Positioning.BOTTOM);
+		nameColor = config.getColor("CommonVisualSettings.nameColor", Color.BLUE.darker());
 
 		useEnabledForegroundColor = config.getBoolean("CommonVisualSettings.useEnabledForegroundColor", true);
 		enabledForegroundColor = config.getColor("CommonVisualSettings.enabledForegroundColor", new Color(1.0f, 0.5f, 0.0f));
@@ -110,9 +230,18 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setDouble("CommonVisualSettings.strokeWidth", strokeWidth);
 		config.setColor("CommonVisualSettings.borderColor", borderColor);
 		config.setColor("CommonVisualSettings.fillColor", fillColor);
-		config.setTextPositioning("CommonVisualSettings.textPositioning", getTextPositioning());
+
+		config.setBoolean("CommonVisualSettings.labelVisibility", labelVisibility);
+		config.setColor("CommonVisualSettings.labelColor", labelColor);
+		config.setTextPositioning("CommonVisualSettings.labelPositioning", labelPositioning);
+
+		config.setBoolean("CommonVisualSettings.nameVisibility", nameVisibility);
+		config.setColor("CommonVisualSettings.nameColor", nameColor);
+		config.setTextPositioning("CommonVisualSettings.namePositioning", namePositioning);
+
 		config.setBoolean("CommonVisualSettings.useEnabledForegroundColor", useEnabledForegroundColor);
 		config.setColor("CommonVisualSettings.enabledBackgroundColor", enabledBackgroundColor);
+
 		config.setBoolean("CommonVisualSettings.useEnabledBackgroundColor", useEnabledBackgroundColor);
 		config.setColor("CommonVisualSettings.enabledForegroundColor", enabledForegroundColor);
 	}
@@ -149,12 +278,52 @@ public class CommonVisualSettings implements SettingsPage {
 		CommonVisualSettings.fillColor = value;
 	}
 
-	public static Positioning getTextPositioning() {
-		return textPositioning;
+	public static Boolean getLabelVisibility() {
+		return labelVisibility;
 	}
 
-	public static void setTextPositioning(Positioning value) {
-		CommonVisualSettings.textPositioning = value;
+	public static void setLabelVisibility(Boolean value) {
+		CommonVisualSettings.labelVisibility = value;
+	}
+
+	public static Positioning getLabelPositioning() {
+		return labelPositioning;
+	}
+
+	public static void setLabelPositioning(Positioning value) {
+		CommonVisualSettings.labelPositioning = value;
+	}
+
+	public static Color getLabelColor() {
+		return labelColor;
+	}
+
+	public static void setLabelColor(Color value) {
+		CommonVisualSettings.labelColor = value;
+	}
+
+	public static Boolean getNameVisibility() {
+		return nameVisibility;
+	}
+
+	public static void setNameVisibility(Boolean value) {
+		CommonVisualSettings.nameVisibility = value;
+	}
+
+	public static Positioning getNamePositioning() {
+		return namePositioning;
+	}
+
+	public static void setNamePositioning(Positioning value) {
+		CommonVisualSettings.namePositioning = value;
+	}
+
+	public static Color getNameColor() {
+		return nameColor;
+	}
+
+	public static void setNameColor(Color value) {
+		CommonVisualSettings.nameColor = value;
 	}
 
 	public static void setUseEnabledForegroundColor(Boolean value) {

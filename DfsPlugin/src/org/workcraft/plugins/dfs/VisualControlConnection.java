@@ -2,9 +2,7 @@ package org.workcraft.plugins.dfs;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 public class VisualControlConnection extends VisualConnection {
 
@@ -21,26 +19,20 @@ public class VisualControlConnection extends VisualConnection {
 	@Override
 	protected void initialise() {
 		super.initialise();
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualControlConnection, Boolean>(
-				this, "Inverting",
-				new Getter<VisualControlConnection, Boolean>() {
-					@Override
-					public Boolean eval(VisualControlConnection object) {
-						return object.getReferencedControlConnection().isInverting();
-					}
-				},
-				new Setter<VisualControlConnection, Boolean>() {
-					@Override
-					public void eval(VisualControlConnection object, Boolean value) {
-						ControlConnection ref = getReferencedControlConnection();
-						// check if ref is not null to trick the order of node creation in deserialiser
-						if (ref != null) {
-							ref.setInverting(value);
-						}
-						setBubble(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualControlConnection, Boolean>(
+				this, "Inverting", Boolean.class) {
+			public void setter(VisualControlConnection object, Boolean value) {
+				ControlConnection ref = getReferencedControlConnection();
+				// check if ref is not null to trick the order of node creation in deserialiser
+				if (ref != null) {
+					ref.setInverting(value);
+				}
+				setBubble(value);
+			}
+			public Boolean getter(VisualControlConnection object) {
+				return object.getReferencedControlConnection().isInverting();
+			}
+		});
 	}
 
 	public 	ControlConnection getReferencedControlConnection() {

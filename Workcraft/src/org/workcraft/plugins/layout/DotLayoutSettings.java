@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
@@ -38,8 +37,26 @@ public class DotLayoutSettings implements SettingsPage {
 
 	public DotLayoutSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Dot command", "getDotCommand", "setDotCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Import connections shape from Dot graph (experimental)", "getImportConnectionsShape", "setImportConnectionsShape", Boolean.class));
+
+		properties.add(new PropertyDeclaration<DotLayoutSettings, String>(
+				this, "Dot command", String.class) {
+			protected void setter(DotLayoutSettings object, String value) {
+				DotLayoutSettings.setDotCommand(value);
+			}
+			protected String getter(DotLayoutSettings object) {
+				return DotLayoutSettings.getDotCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
+				this, "Import connections shape from Dot graph (experimental)", Boolean.class) {
+			protected void setter(DotLayoutSettings object, Boolean value) {
+				DotLayoutSettings.setImportConnectionsShape(value);
+			}
+			protected Boolean getter(DotLayoutSettings object) {
+				return DotLayoutSettings.getImportConnectionsShape();
+			}
+		});
 	}
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;

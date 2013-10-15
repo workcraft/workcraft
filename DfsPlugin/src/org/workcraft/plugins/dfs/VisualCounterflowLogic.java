@@ -15,9 +15,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
 
 @Hotkey(KeyEvent.VK_K)
@@ -31,69 +29,46 @@ public class VisualCounterflowLogic extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Forward Computed",
-				new Getter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualCounterflowLogic object) {
-						return object.getReferencedCounterflowLogic().isForwardComputed();
-					}
-				},
-				new Setter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public void eval(VisualCounterflowLogic object, Boolean value) {
-						object.getReferencedCounterflowLogic().setForwardComputed(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
+				this, "Forward Computed", Boolean.class) {
+			public void setter(VisualCounterflowLogic object, Boolean value) {
+				object.getReferencedCounterflowLogic().setForwardComputed(value);
+			}
+			public Boolean getter(VisualCounterflowLogic object) {
+				return object.getReferencedCounterflowLogic().isForwardComputed();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Backward Computed",
-				new Getter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualCounterflowLogic object) {
-						return object.getReferencedCounterflowLogic().isBackwardComputed();
-					}
-				},
-				new Setter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public void eval(VisualCounterflowLogic object, Boolean value) {
-						object.getReferencedCounterflowLogic().setBackwardComputed(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
+				this, "Backward Computed", Boolean.class) {
+			public void setter(VisualCounterflowLogic object, Boolean value) {
+				object.getReferencedCounterflowLogic().setBackwardComputed(value);
+			}
+			public Boolean getter(VisualCounterflowLogic object) {
+				return object.getReferencedCounterflowLogic().isBackwardComputed();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Forward Early Evaluation",
-				new Getter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualCounterflowLogic object) {
-						return object.getReferencedCounterflowLogic().isForwardEarlyEvaluation();
-					}
-				},
-				new Setter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public void eval(VisualCounterflowLogic object, Boolean value) {
-						object.getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
-					}
-				},
-				Boolean.class));
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Backward Early Evaluation",
-				new Getter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualCounterflowLogic object) {
-						return object.getReferencedCounterflowLogic().isBackwardEarlyEvaluation();
-					}
-				},
-				new Setter<VisualCounterflowLogic, Boolean>() {
-					@Override
-					public void eval(VisualCounterflowLogic object, Boolean value) {
-						object.getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
+				this, "Forward Early Evaluation", Boolean.class) {
+			public void setter(VisualCounterflowLogic object, Boolean value) {
+				object.getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
+			}
+			public Boolean getter(VisualCounterflowLogic object) {
+				return object.getReferencedCounterflowLogic().isForwardEarlyEvaluation();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
+				this, "Backward Early Evaluation", Boolean.class) {
+			public void setter(VisualCounterflowLogic object, Boolean value) {
+				object.getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
+			}
+			public Boolean getter(VisualCounterflowLogic object) {
+				return object.getReferencedCounterflowLogic().isBackwardEarlyEvaluation();
+			}
+		});
 	}
 
 	@Override
@@ -224,7 +199,7 @@ public class VisualCounterflowLogic extends VisualComponent {
 		g.draw(separatorShape);
 
 		drawLabelInLocalSpace(r);
-		drawReferenceInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	public CounterflowLogic getReferencedCounterflowLogic() {

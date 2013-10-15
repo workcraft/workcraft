@@ -39,8 +39,26 @@ public class PunfUtilitySettings implements SettingsPage {
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Punf command", "getCommand", "setCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getExtraArgs", "setExtrafArgs", String.class));
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+				this, "punf command", String.class) {
+			protected void setter(PunfUtilitySettings object, String value) {
+				PunfUtilitySettings.setPunfCommand(value);
+			}
+			protected String getter(PunfUtilitySettings object) {
+				return PunfUtilitySettings.getPunfCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+				this, "Additional punf command line arguments", String.class) {
+			protected void setter(PunfUtilitySettings object, String value) {
+				PunfUtilitySettings.setPunfExtraArgs(value);
+			}
+			protected String getter(PunfUtilitySettings object) {
+				return PunfUtilitySettings.getPunfExtraArgs();
+			}
+		});
 	}
 
 	@Override
@@ -70,19 +88,19 @@ public class PunfUtilitySettings implements SettingsPage {
 		return "Punf";
 	}
 
-	public static String getCommand() {
+	public static String getPunfCommand() {
 		return command;
 	}
 
-	public static void setCommand(String value) {
+	public static void setPunfCommand(String value) {
 		PunfUtilitySettings.command = value;
 	}
 
-	public static String getExtraArgs() {
+	public static String getPunfExtraArgs() {
 		return extraArgs;
 	}
 
-	public static void setExtraArgs(String value) {
+	public static void setPunfExtraArgs(String value) {
 		PunfUtilitySettings.extraArgs = value;
 	}
 

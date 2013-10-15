@@ -20,7 +20,6 @@
 */
 
 package org.workcraft.plugins.mpsat;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,15 +42,36 @@ public class MpsatUtilitySettings implements SettingsPage {
 
 	public MpsatUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "MPSat command", "getCommand", "setCommand", String.class));
 
-		LinkedHashMap<String, Object> solutionModes = new LinkedHashMap<String, Object>();
-		solutionModes.put("First", SolutionMode.FIRST);
-		solutionModes.put("Minimal cost", SolutionMode.MINIMUM_COST);
-		solutionModes.put("First 10 solutions", SolutionMode.ALL);
-		properties.add(new PropertyDeclaration(this, "Check mode", "getSolutionMode", "setSolutionMode", SolutionMode.class, solutionModes));
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
+				this, "MPSat command", String.class) {
+			protected void setter(MpsatUtilitySettings object, String value) {
+				MpsatUtilitySettings.setCommand(value);
+			}
+			protected String getter(MpsatUtilitySettings object) {
+				return MpsatUtilitySettings.getCommand();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "MPSat additional arguments", "getExtraArgs", "setExtraArgs", String.class));
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, SolutionMode>(
+				this, "Check mode", SolutionMode.class, SolutionMode.getChoice()) {
+			protected void setter(MpsatUtilitySettings object, SolutionMode value) {
+				MpsatUtilitySettings.setSolutionMode(value);
+			}
+			protected SolutionMode getter(MpsatUtilitySettings object) {
+				return MpsatUtilitySettings.getSolutionMode();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
+				this, "MPSat additional arguments", String.class) {
+			protected void setter(MpsatUtilitySettings object, String value) {
+				MpsatUtilitySettings.setExtraArgs(value);
+			}
+			protected String getter(MpsatUtilitySettings object) {
+				return MpsatUtilitySettings.getExtraArgs();
+			}
+		});
 	}
 
 	@Override

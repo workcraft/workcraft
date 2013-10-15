@@ -38,15 +38,49 @@ public class VisualONGroup extends VisualGroup{
 
 
 	public VisualONGroup(){
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Foreground color", "getForegroundColor", "setForegroundColor",  Color.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, String>(
+				this, "Label", String.class) {
+			public void setter(VisualONGroup object, String value) {
+				object.setLabel(value);
+			}
+			public String getter(VisualONGroup object) {
+				return object.getLabel();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, Color>(
+				this, "Foreground color", Color.class) {
+			public void setter(VisualONGroup object, Color value) {
+				object.setForegroundColor(value);
+			}
+			public Color getter(VisualONGroup object) {
+				return object.getForegroundColor();
+			}
+		});
 	}
 
-	public VisualONGroup(ONGroup mathGroup)
-	{
+	public VisualONGroup(ONGroup mathGroup)	{
 		this.mathGroup = mathGroup;
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Foreground color", "getForegroundColor", "setForegroundColor",  Color.class));
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, String>(
+				this, "Label", String.class) {
+			public void setter(VisualONGroup object, String value) {
+				object.setLabel(value);
+			}
+			public String getter(VisualONGroup object) {
+				return object.getLabel();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, Color>(
+				this, "Foreground color", Color.class) {
+			public void setter(VisualONGroup object, Color value) {
+				object.setForegroundColor(value);
+			}
+			public Color getter(VisualONGroup object) {
+				return object.getForegroundColor();
+			}
+		});
 	}
 
 	@Override

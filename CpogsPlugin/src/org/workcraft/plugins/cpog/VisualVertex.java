@@ -119,8 +119,8 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 		Rectangle2D gbb = result.boundingBox;
 		labelPosition = new Point2D.Double(
-			-gbb.getCenterX() + 0.5 * getLabelPositioning().dx * (1.0 + gbb.getWidth() + 0.2),
-			-gbb.getCenterY() + 0.5 * getLabelPositioning().dy * (1.0 + gbb.getHeight() + 0.2));
+			-gbb.getCenterX() + 0.5 * getLabelPositioning().xOffset * (1.0 + gbb.getWidth() + 0.2),
+			-gbb.getCenterY() + 0.5 * getLabelPositioning().yOffset * (1.0 + gbb.getHeight() + 0.2));
 		labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
 				gbb.getWidth(), gbb.getHeight());
 
@@ -159,8 +159,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public BooleanFormula evaluate() {
 		return getCondition().accept(
-			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
-			{
+			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>()) {
 				@Override
 				public BooleanFormula visit(BooleanVariable node) {
 					switch(((Variable)node).getState())

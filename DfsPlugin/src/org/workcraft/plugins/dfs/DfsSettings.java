@@ -38,12 +38,26 @@ public class DfsSettings implements SettingsPage {
 	public DfsSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration(this, "Computed logic color",
-				"getComputedLogicColor", "setComputedLogicColor", Color.class));
+		properties.add(new PropertyDeclaration<DfsSettings, Color>(
+				this, "Computed logic color", Color.class) {
+			protected void setter(DfsSettings object, Color value) {
+				DfsSettings.setComputedLogicColor(value);
+			}
+			protected Color getter(DfsSettings object) {
+				return DfsSettings.getComputedLogicColor();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Register synchronisation color",
-				"getSynchronisationRegisterColor", "setSynchronisationRegisterColor", Color.class));
-}
+		properties.add(new PropertyDeclaration<DfsSettings, Color>(
+				this, "Register synchronisation color", Color.class) {
+			protected void setter(DfsSettings object, Color value) {
+				DfsSettings.setSynchronisationRegisterColor(value);
+			}
+			protected Color getter(DfsSettings object) {
+				return DfsSettings.getSynchronisationRegisterColor();
+			}
+		});
+	}
 
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
@@ -71,15 +85,15 @@ public class DfsSettings implements SettingsPage {
 		return computedLogicColor;
 	}
 
-	public static void setComputedLogicColor(Color computedLogicColor) {
-		DfsSettings.computedLogicColor = computedLogicColor;
+	public static void setComputedLogicColor(Color value) {
+		DfsSettings.computedLogicColor = value;
 	}
 
 	public static Color getSynchronisationRegisterColor() {
 		return synchronisationRegisterColor;
 	}
 
-	public static void setSynchronisationRegisterColor(Color synchronisationRegisterColor) {
-		DfsSettings.synchronisationRegisterColor = synchronisationRegisterColor;
+	public static void setSynchronisationRegisterColor(Color value) {
+		DfsSettings.synchronisationRegisterColor = value;
 	}
 }

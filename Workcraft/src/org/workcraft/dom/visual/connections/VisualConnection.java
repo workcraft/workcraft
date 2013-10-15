@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Connection;
@@ -59,11 +60,44 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
 	public enum ConnectionType {
-		POLYLINE, BEZIER
+		POLYLINE("Polyline"),
+		BEZIER("Bezier");
+
+		private final String name;
+
+		private ConnectionType(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, ConnectionType> getChoice() {
+			LinkedHashMap<String, ConnectionType> choice = new LinkedHashMap<String, ConnectionType>();
+			for (ConnectionType item : ConnectionType.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	};
 
 	public enum ScaleMode {
-		NONE, LOCK_RELATIVELY, SCALE, STRETCH, ADAPTIVE
+		NONE("Lock anchors"),
+		LOCK_RELATIVELY("Bind to components"),
+		SCALE("Proportional"),
+		STRETCH("Stretch"),
+		ADAPTIVE("Adaptive");
+
+		private final String name;
+
+		private ScaleMode(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, ScaleMode> getChoice() {
+			LinkedHashMap<String, ScaleMode> choice = new LinkedHashMap<String, ScaleMode>();
+			for (ScaleMode item : ScaleMode.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	}
 
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
@@ -111,49 +145,71 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	}
 
 	protected void initialise() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Line width",
-				"getLineWidth", "setLineWidth", double.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow width",
-				"getArrowWidth", "setArrowWidth", double.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
+				this, "Line width", Double.class) {
+			protected void setter(VisualConnection object, Double value) {
+				object.setLineWidth(value);
+			}
+			protected Double getter(VisualConnection object) {
+				return object.getLineWidth();
+			}
+		});
 
-		LinkedHashMap<String, Object> arrowLengths = new LinkedHashMap<String, Object>();
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
+				this, "Arrow width", Double.class) {
+			protected void setter(VisualConnection object, Double value) {
+				object.setArrowWidth(value);
+			}
+			protected Double getter(VisualConnection object) {
+				return object.getArrowWidth();
+			}
+		});
+
+		LinkedHashMap<String, Double> arrowLengths = new LinkedHashMap<String, Double>();
 		arrowLengths.put("short", 0.2);
 		arrowLengths.put("medium", 0.4);
 		arrowLengths.put("long", 0.8);
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
+				this, "Arrow length", Double.class, arrowLengths) {
+			protected void setter(VisualConnection object, Double value) {
+				object.setArrowLength(value);
+			}
+			protected Double getter(VisualConnection object) {
+				return object.getArrowLength();
+			}
+		});
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Arrow length",
-				"getArrowLength", "setArrowLength", double.class, arrowLengths));
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
+				this, "Connection type", ConnectionType.class, ConnectionType.getChoice()) {
+			protected void setter(VisualConnection object, ConnectionType value) {
+				object.setConnectionType(value);
+			}
+			protected ConnectionType getter(VisualConnection object) {
+				return object.getConnectionType();
+			}
+		});
 
-		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
 
-		hm.put("Polyline", ConnectionType.POLYLINE);
-		hm.put("Bezier", ConnectionType.BEZIER);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "Connection type",
-				"getConnectionType", "setConnectionType", ConnectionType.class, hm));
-
-		LinkedHashMap<String, Object> hm2 = new LinkedHashMap<String, Object>();
-
-		hm2.put("Lock anchors", ScaleMode.NONE);
-		hm2.put("Bind to components", ScaleMode.LOCK_RELATIVELY);
-		hm2.put("Proportional", ScaleMode.SCALE);
-		hm2.put("Stretch", ScaleMode.STRETCH);
-		hm2.put("Adaptive", ScaleMode.ADAPTIVE);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "Scale mode",
-				"getScaleMode", "setScaleMode", ScaleMode.class, hm2));
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
+				this, "Scale mode", ScaleMode.class, ScaleMode.getChoice()) {
+			protected void setter(VisualConnection object, ScaleMode value) {
+				object.setScaleMode(value);
+			}
+			protected ScaleMode getter(VisualConnection object) {
+				return object.getScaleMode();
+			}
+		});
 
 		componentsTransformObserver = new ComponentsTransformObserver(this);
-
 		children.add(componentsTransformObserver);
 		children.add(graphic);
-
-		if (refConnection instanceof ObservableState)
-			((ObservableState) refConnection).addObserver(new StateObserver() {
+		if (refConnection instanceof ObservableState) {
+			((ObservableState)refConnection).addObserver(new StateObserver() {
 				public void notify(StateEvent e) {
 					observableStateImpl.sendNotification(e);
 				}
 			});
+		}
 	}
 
 	public void setVisualConnectionDependencies(VisualComponent first,

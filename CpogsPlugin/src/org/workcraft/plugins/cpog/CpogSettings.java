@@ -3,6 +3,7 @@ package org.workcraft.plugins.cpog;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -14,7 +15,22 @@ public class CpogSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
 	public enum SatSolver {
-		MINISAT, CLASP
+		MINISAT("MiniSat"),
+		CLASP("Clasp");
+
+		public final String name;
+
+		private SatSolver(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, SatSolver> getChoice() {
+			LinkedHashMap<String, SatSolver> choice = new LinkedHashMap<String, SatSolver>();
+			for (SatSolver item : SatSolver.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	}
 
 	private static SatSolver satSolver = SatSolver.CLASP;
@@ -31,18 +47,55 @@ public class CpogSettings implements SettingsPage {
 	public CpogSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		LinkedHashMap<String, Object> solvers = new LinkedHashMap<String, Object>();
+		properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
+				this, "SAT solver", SatSolver.class, SatSolver.getChoice()) {
+			protected void setter(CpogSettings object, SatSolver value) {
+				CpogSettings.setSatSolver(value);
+			}
+			protected SatSolver getter(CpogSettings object) {
+				return CpogSettings.getSatSolver();
+			}
+		});
 
-		solvers.put("Clasp", SatSolver.CLASP);
-		solvers.put("MiniSat", SatSolver.MINISAT);
+		properties.add(new PropertyDeclaration<CpogSettings, Integer>(
+				this, "Encoding bit-width", Integer.class) {
+			protected void setter(CpogSettings object, Integer value) {
+				CpogSettings.setEncodingWidth(value);
+			}
+			protected Integer getter(CpogSettings object) {
+				return CpogSettings.getEncodingWidth();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "SAT solver", "getSatSolver", "setSatSolver", SatSolver.class, solvers));
+		properties.add(new PropertyDeclaration<CpogSettings, Integer>(
+				this, "Circuit size in 2-input gates", Integer.class) {
+			protected void setter(CpogSettings object, Integer value) {
+				CpogSettings.setCircuitSize(value);
+			}
+			protected Integer getter(CpogSettings object) {
+				return CpogSettings.getCircuitSize();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Encoding bit-width", "getEncodingWidth", "setEncodingWidth", int.class));
-		properties.add(new PropertyDeclaration(this, "Circuit size in 2-input gates", "getCircuitSize", "setCircuitSize", int.class));
+		properties.add(new PropertyDeclaration<CpogSettings, String>(
+				this, "Clasp solver command", String.class) {
+			protected void setter(CpogSettings object, String value) {
+				CpogSettings.setClaspCommand(value);
+			}
+			protected String getter(CpogSettings object) {
+				return CpogSettings.getClaspCommand();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Clasp solver command", "getClaspCommand", "setClaspCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "MiniSat solver command", "getMinisatCommand", "setMinisatCommand", String.class));
+		properties.add(new PropertyDeclaration<CpogSettings, String>(
+				this, "MiniSat solver command", String.class) {
+			protected void setter(CpogSettings object, String value) {
+				CpogSettings.setMinisatCommand(value);
+			}
+			protected String getter(CpogSettings object) {
+				return CpogSettings.getMinisatCommand();
+			}
+		});
 	}
 
 	@Override

@@ -36,9 +36,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 
 @Hotkey(KeyEvent.VK_R)
@@ -56,21 +54,15 @@ public class VisualRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualRegister, Boolean>(
-				this, "Marked",
-				new Getter<VisualRegister, Boolean>() {
-					@Override
-					public Boolean eval(VisualRegister object) {
-						return object.getReferencedRegister().isMarked();
-					}
-				},
-				new Setter<VisualRegister, Boolean>() {
-					@Override
-					public void eval(VisualRegister object, Boolean value) {
-						object.getReferencedRegister().setMarked(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualRegister, Boolean>(
+				this, "Marked", Boolean.class) {
+			public void setter(VisualRegister object, Boolean value) {
+				object.getReferencedRegister().setMarked(value);
+			}
+			public Boolean getter(VisualRegister object) {
+				return object.getReferencedRegister().isMarked();
+			}
+		});
 	}
 
 	@Override
@@ -117,7 +109,7 @@ public class VisualRegister extends VisualComponent {
 		}
 
 		drawLabelInLocalSpace(r);
-		drawReferenceInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 }

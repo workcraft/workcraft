@@ -21,17 +21,30 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public enum VariableState
 {
-	TRUE('1'),
-	FALSE('0'),
-	UNDEFINED('?');
+	TRUE('1', "[1] true"),
+	FALSE('0', "[0] false"),
+	UNDEFINED('?', "[?] undefined");
 
 	public final char value;
+	private final String name;
 
-	private VariableState(char value)
+	private VariableState(char value, String name)
 	{
 		this.value = value;
+		this.name = name;
+	}
+
+	static public Map<String, VariableState> getChoice() {
+		LinkedHashMap<String, VariableState> choice = new LinkedHashMap<String, VariableState>();
+		for (VariableState item : VariableState.values()) {
+			choice.put(item.name, item);
+		}
+		return choice;
 	}
 
 	@Override

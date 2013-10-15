@@ -31,9 +31,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Place;
@@ -66,37 +64,25 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, "Tokens",
-				new Getter<VisualImplicitPlaceArc, Integer>() {
-					@Override
-					public Integer eval(VisualImplicitPlaceArc object) {
-						return object.getImplicitPlace().getTokens();
-					}
-				},
-				new Setter<VisualImplicitPlaceArc, Integer>() {
-					@Override
-					public void eval(VisualImplicitPlaceArc object, Integer value) {
-						object.getImplicitPlace().setTokens(value);
-					}
-				},
-				Integer.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+				this, "Tokens", Integer.class) {
+			public void setter(VisualImplicitPlaceArc object, Integer value) {
+				object.getImplicitPlace().setTokens(value);
+			}
+			public Integer getter(VisualImplicitPlaceArc object) {
+				return object.getImplicitPlace().getTokens();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, "Capacity",
-				new Getter<VisualImplicitPlaceArc, Integer>() {
-					@Override
-					public Integer eval(VisualImplicitPlaceArc object) {
-						return object.getImplicitPlace().getCapacity();
-					}
-				},
-				new Setter<VisualImplicitPlaceArc, Integer>() {
-					@Override
-					public void eval(VisualImplicitPlaceArc object, Integer value) {
-						object.getImplicitPlace().setCapacity(value);
-					}
-				},
-				Integer.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+				this, "Capacity", Integer.class) {
+			public void setter(VisualImplicitPlaceArc object, Integer value) {
+				object.getImplicitPlace().setCapacity(value);
+			}
+			public Integer getter(VisualImplicitPlaceArc object) {
+				return object.getImplicitPlace().getCapacity();
+			}
+		});
 	}
 
 	private void addPlaceObserver(Place implicitPlace) {

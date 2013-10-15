@@ -38,9 +38,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -59,54 +57,35 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Integer>(
-				this, "Tokens",
-				new Getter<VisualPlace, Integer>() {
-					@Override
-					public Integer eval(VisualPlace object) {
-						return object.getReferencedPlace().getTokens();
-					}
-				},
-				new Setter<VisualPlace, Integer>() {
-					@Override
-					public void eval(VisualPlace object, Integer value) {
-						object.getReferencedPlace().setTokens(value);
-					}
-				},
-				Integer.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
+				this, "Tokens", Integer.class) {
+			public void setter(VisualPlace object, Integer value) {
+				object.getReferencedPlace().setTokens(value);
+			}
+			public Integer getter(VisualPlace object) {
+				return object.getReferencedPlace().getTokens();
+			}
+		});
 
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
+				this, "Token color", Color.class) {
+			public void setter(VisualPlace object, Color value) {
+				object.setTokenColor(value);
+			}
+			public Color getter(VisualPlace object) {
+				return object.getTokenColor();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Color>(
-				this, "Token color",
-				new Getter<VisualPlace, Color>() {
-					@Override
-					public Color eval(VisualPlace object) {
-						return object.getTokenColor();
-					}
-				},
-				new Setter<VisualPlace, Color>() {
-					@Override
-					public void eval(VisualPlace object, Color value) {
-						object.setTokenColor(value);
-					}
-				},
-				Color.class));
-
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualPlace, Integer>(
-				this, "Capacity",
-				new Getter<VisualPlace, Integer>() {
-					@Override
-					public Integer eval(VisualPlace object) {
-						return object.getReferencedPlace().getCapacity();
-					}
-				},
-				new Setter<VisualPlace, Integer>() {
-					@Override
-					public void eval(VisualPlace object, Integer value) {
-						object.getReferencedPlace().setCapacity(value);
-					}
-				},
-				Integer.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
+				this, "Capacity", Integer.class) {
+			public void setter(VisualPlace object, Integer value) {
+				object.getReferencedPlace().setCapacity(value);
+			}
+			public Integer getter(VisualPlace object) {
+				return object.getReferencedPlace().getCapacity();
+			}
+		});
 	}
 
 	@Override
@@ -134,6 +113,7 @@ public class VisualPlace extends VisualComponent {
 		drawCapacity(r, p.getCapacity());
 		drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, size, strokeWidth, getTokenColor());
 		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	public void drawCapacity(DrawRequest r, int capacity) {

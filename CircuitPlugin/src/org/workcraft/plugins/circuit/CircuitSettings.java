@@ -77,14 +77,65 @@ public class CircuitSettings implements SettingsPage {
 	public CircuitSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
 
-		properties.add(new PropertyDeclaration(this, "Show contacts", "getShowContacts", "setShowContacts", boolean.class));
-		properties.add(new PropertyDeclaration(this, "Show arrows", "getShowArrows", "setShowArrows", boolean.class));
+		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+				this, "Show contacts", Boolean.class) {
+			protected void setter(CircuitSettings object, Boolean value) {
+				CircuitSettings.setShowContacts(value);
+			}
+			protected Boolean getter(CircuitSettings object) {
+				return CircuitSettings.getShowContacts();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Active wire", "getActiveWireColor", "setActiveWireColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Inactive wire", "getInactiveWireColor", "setInactiveWireColor", Color.class));
+		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+				this, "Show arrows", Boolean.class) {
+			protected void setter(CircuitSettings object, Boolean value) {
+				CircuitSettings.setShowArrows(value);
+			}
+			protected Boolean getter(CircuitSettings object) {
+				return CircuitSettings.getShowArrows();
+			}
+		});
 
-		properties.add(new PropertyDeclaration(this, "Component width", "getComponentBorderWidth", "setComponentBorderWidth", double.class));
-		properties.add(new PropertyDeclaration(this, "Wire width", "getCircuitWireWidth", "setCircuitWireWidth", double.class));
+		properties.add(new PropertyDeclaration<CircuitSettings, Color>(
+				this, "Active wire", Color.class) {
+			protected void setter(CircuitSettings object, Color value) {
+				CircuitSettings.setActiveWireColor(value);
+			}
+			protected Color getter(CircuitSettings object) {
+				return CircuitSettings.getActiveWireColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, Color>(
+				this, "Inactive wire", Color.class) {
+			protected void setter(CircuitSettings object, Color value) {
+				CircuitSettings.setInactiveWireColor(value);
+			}
+			protected Color getter(CircuitSettings object) {
+				return CircuitSettings.getInactiveWireColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
+				this, "Component width", Double.class) {
+			protected void setter(CircuitSettings object, Double value) {
+				CircuitSettings.setComponentBorderWidth(value);
+			}
+			protected Double getter(CircuitSettings object) {
+				return CircuitSettings.getComponentBorderWidth();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
+				this, "Wire width", Double.class) {
+			protected void setter(CircuitSettings object, Double value) {
+				CircuitSettings.setCircuitWireWidth(value);
+			}
+			protected Double getter(CircuitSettings object) {
+				return CircuitSettings.getCircuitWireWidth();
+			}
+		});
 	}
 
 	@Override

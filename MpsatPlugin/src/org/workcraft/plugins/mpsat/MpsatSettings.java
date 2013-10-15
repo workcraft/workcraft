@@ -6,6 +6,8 @@ package org.workcraft.plugins.mpsat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.workcraft.util.FileUtils;
 
@@ -14,9 +16,23 @@ public class MpsatSettings {
 	public static final int SOLVER_MINISAT = 1;
 
 	public enum SolutionMode {
-		FIRST,
-		ALL,
-		MINIMUM_COST
+		MINIMUM_COST("Minimal cost"),
+		FIRST("First"),
+		ALL("First 10 solutions");
+
+		public final String name;
+
+		private SolutionMode(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, SolutionMode> getChoice() {
+			LinkedHashMap<String, SolutionMode> choice = new LinkedHashMap<String, SolutionMode>();
+			for (SolutionMode item : SolutionMode.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	}
 
 	private MpsatMode mode = MpsatMode.DEADLOCK;

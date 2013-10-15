@@ -14,9 +14,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.LogicDecoration;
 
 @Hotkey(KeyEvent.VK_L)
@@ -30,37 +28,25 @@ public class VisualLogic extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualLogic, Boolean>(
-				this, "Computed",
-				new Getter<VisualLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualLogic object) {
-						return object.getReferencedLogic().isComputed();
-					}
-				},
-				new Setter<VisualLogic, Boolean>() {
-					@Override
-					public void eval(VisualLogic object, Boolean value) {
-						object.getReferencedLogic().setComputed(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
+				this, "Computed", Boolean.class) {
+			public void setter(VisualLogic object, Boolean value) {
+				object.getReferencedLogic().setComputed(value);
+			}
+			public Boolean getter(VisualLogic object) {
+				return object.getReferencedLogic().isComputed();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualLogic, Boolean>(
-				this, "Early Evaluation",
-				new Getter<VisualLogic, Boolean>() {
-					@Override
-					public Boolean eval(VisualLogic object) {
-						return object.getReferencedLogic().isEarlyEvaluation();
-					}
-				},
-				new Setter<VisualLogic, Boolean>() {
-					@Override
-					public void eval(VisualLogic object, Boolean value) {
-						object.getReferencedLogic().setEarlyEvaluation(value);
-					}
-				},
-				Boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
+				this, "Early Evaluation", Boolean.class) {
+			public void setter(VisualLogic object, Boolean value) {
+				object.getReferencedLogic().setEarlyEvaluation(value);
+			}
+			public Boolean getter(VisualLogic object) {
+				return object.getReferencedLogic().isEarlyEvaluation();
+			}
+		});
 	}
 
 	@Override
@@ -110,7 +96,7 @@ public class VisualLogic extends VisualComponent {
 		g.draw(shape);
 
 		drawLabelInLocalSpace(r);
-		drawReferenceInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	public Logic getReferencedLogic() {

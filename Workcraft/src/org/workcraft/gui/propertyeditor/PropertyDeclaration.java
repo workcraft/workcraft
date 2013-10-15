@@ -25,76 +25,61 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PropertyDeclaration implements PropertyDescriptor {
-	public String name;
-	public String getter;
-	public String setter;
-	public Class<?> cls;
-	public Map<String, Object> predefinedValues;
-	public Map<Object, String> valueNames;
-	private boolean choice;
-	private final Object object;
+abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
+	private final O object;
+	private String name;
+	private Class<V> cls;
+	private Map<V, String> valueNames;
+	private boolean combinable;
+	private boolean writable;
 
-	public boolean isChoice() {
-		return choice;
+	public PropertyDeclaration(O object, String name, Class<V> cls) {
+		this(object, name, cls, true, true);
 	}
 
-	public PropertyDeclaration(Object object, String name, String getter, String setter, Class<?> cls) {
-		this.object = object;
-		this.name = name;
-		this.getter = getter;
-		this.setter = setter;
-		this.cls = cls;
-		this.predefinedValues = null;
-		this.valueNames = null;
-		this.choice = false;
+	public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable) {
+		this(object, name, cls, null, writable, combinable);
 	}
 
-	public PropertyDeclaration(Object object, String name, String getter, String setter, Class<?> cls, LinkedHashMap<String, Object> predefinedValues) {
+	public PropertyDeclaration(O object, String name, Class<V> cls, Map<String, V> predefinedValues) {
+		this(object, name, cls, predefinedValues, true, true);
+	}
+
+	public PropertyDeclaration(O object, String name, Class<V> cls, Map<String, V> choiceValues, boolean writable, boolean combinable) {
 		this.object = object;
 		this.name = name;
-		this.getter = getter;
-		this.setter = setter;
 		this.cls = cls;
-		this.predefinedValues = predefinedValues;
-		this.valueNames = new LinkedHashMap<Object, String>();
-		for (String k : predefinedValues.keySet()) {
-			this.valueNames.put(predefinedValues.get(k), k);
+		if (choiceValues != null) {
+			valueNames = new LinkedHashMap<V, String>();
+			for (String k : choiceValues.keySet()) {
+				valueNames.put(choiceValues.get(k), k);
+			}
+		} else {
+			valueNames = null;
 		}
-		this.choice = true;
+		this.writable = writable;
+		this.combinable = combinable;
 	}
+
+	abstract protected void setter(O object, V value);
+
+	abstract protected V getter(O object);
 
 	@Override
-	public Map<Object, String> getChoice() {
+	public Map<? extends Object, String> getChoice() {
 		return valueNames;
 	}
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		try {
-			return object.getClass().getMethod(getter).invoke(object);
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		} catch (SecurityException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
+		return getter(object);
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		try {
-			object.getClass().getMethod(setter, cls).invoke(object, value);
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		} catch (SecurityException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchMethodException e) {
+			setter(object, cls.cast(value));
+		} catch (ClassCastException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -105,18 +90,17 @@ public class PropertyDeclaration implements PropertyDescriptor {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<V> getType() {
 		return cls;
 	}
 
 	@Override
 	public boolean isWritable() {
-		return setter != null;
+		return writable;
 	}
 
 	@Override
 	public boolean isCombinable() {
-		return true;
+		return combinable;
 	}
-
 }

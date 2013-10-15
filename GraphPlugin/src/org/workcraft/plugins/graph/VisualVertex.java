@@ -59,6 +59,7 @@ public class VisualVertex extends VisualComponent {
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {

@@ -32,7 +32,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -73,15 +72,18 @@ public class VisualVariable extends VisualComponent
 	{
 		super(variable);
 
-		LinkedHashMap<String, Object> states = new LinkedHashMap<String, Object>();
-		states.put("[1] true", VariableState.TRUE);
-		states.put("[0] false", VariableState.FALSE);
-		states.put("[?] undefined", VariableState.UNDEFINED);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "State",
-				"getState", "setState", VariableState.class, states));
+		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
+				this, "State", VariableState.class, VariableState.getChoice()) {
+			public void setter(VisualVariable object, VariableState value) {
+				object.setState(value);
+			}
+			public VariableState getter(VisualVariable object) {
+				return object.getState();
+			}
+		});
 	}
 
+	@Override
 	public void draw(DrawRequest r)
 	{
 		Graphics2D g = r.getGraphics();
@@ -135,8 +137,8 @@ public class VisualVariable extends VisualComponent
 		Rectangle2D gbb = result.boundingBox;
 
 		labelPosition = new Point2D.Double(
-				bb.getCenterX() - gbb.getCenterX() + 0.5 * getLabelPositioning().dx * (bb.getWidth() + gbb.getWidth() + 0.2),
-				bb.getCenterY() - gbb.getCenterY() + 0.5 * getLabelPositioning().dy * (bb.getHeight() + gbb.getHeight() + 0.2));
+				bb.getCenterX() - gbb.getCenterX() + 0.5 * getLabelPositioning().xOffset * (bb.getWidth() + gbb.getWidth() + 0.2),
+				bb.getCenterY() - gbb.getCenterY() + 0.5 * getLabelPositioning().yOffset * (bb.getHeight() + gbb.getHeight() + 0.2));
 		labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
 				gbb.getWidth(), gbb.getHeight());
 

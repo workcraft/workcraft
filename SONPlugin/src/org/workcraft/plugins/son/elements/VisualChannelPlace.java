@@ -36,15 +36,20 @@ public class VisualChannelPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Token", "hasToken", "setToken", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualChannelPlace, Boolean>(
+				this, "Token", Boolean.class) {
+			public void setter(VisualChannelPlace object, Boolean value) {
+				object.setToken(value);
+			}
+			public Boolean getter(VisualChannelPlace object) {
+				return object.hasToken();
+			}
+		});
 	}
 
 	@Override
 	public void draw(DrawRequest r){
 		Graphics2D g = r.getGraphics();
-
-		drawLabelInLocalSpace(r);
-
 		double size = CommonVisualSettings.getBaseSize()*1.2;
 		double strokeWidth = CommonVisualSettings.getStrokeWidth()*2.0;
 
@@ -62,7 +67,9 @@ public class VisualChannelPlace extends VisualComponent {
 
 		ChannelPlace c = (ChannelPlace)getReferencedComponent();
 		drawToken(c.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
-		drawName(r);
+		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
+		//drawName(r);
 	}
 
 	public static void drawToken (boolean b, double singleTokenSize, Color tokenColor,	Graphics2D g) {
@@ -94,7 +101,7 @@ public class VisualChannelPlace extends VisualComponent {
 				if(!this.hasToken()) {
 					g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
 				} else {
-					g.drawGlyphVector(glyphVector, -this.getLabelPositioning().dx, -this.getLabelPositioning().dy);
+					g.drawGlyphVector(glyphVector, -(float)this.getLabelPositioning().xOffset, -(float)this.getLabelPositioning().yOffset);
 				}
 			}
 		}

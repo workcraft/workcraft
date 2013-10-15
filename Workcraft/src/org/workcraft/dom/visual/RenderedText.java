@@ -9,28 +9,28 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class RenderedText implements Touchable {
-	final private static double margin = 0.0;
-	final private GlyphVector glyphVector;
-	final private Rectangle2D boundingBox;
-	final public Font font;
 	final public String text;
-	final public float x;
-	final public float y;
+	final public Font font;
+	final private GlyphVector glyphVector;
+	private Rectangle2D boundingBox;
 
-	public RenderedText(Font font, String text) {
-		this.font = font;
+	public RenderedText(String text, Font font) {
 		this.text = text;
-		glyphVector = font.createGlyphVector(new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true), text);
-		Rectangle2D bb = BoundingBoxHelper.expand(glyphVector.getVisualBounds(), margin, margin);
-		x = (float)-bb.getCenterX();
-		y = (float)-bb.getCenterY();
+		this.font = font;
+		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
+		glyphVector = font.createGlyphVector(context, text);
+		final Rectangle2D bb = BoundingBoxHelper.expand(glyphVector.getVisualBounds(), 0, 0);
 		boundingBox = BoundingBoxHelper.move(bb, -bb.getCenterX(), -bb.getCenterY());
 	}
 
 	public void draw (Graphics2D g) {
 		g.setFont(font);
-//!!!		g.drawGlyphVector(glyphVector, (float)boundingBox.getX(), (float)boundingBox.getY());
-		g.drawGlyphVector(glyphVector, x, y);
+		g.drawGlyphVector(glyphVector, (float)boundingBox.getMinX(), (float)boundingBox.getMaxY());
+	}
+
+	public void setCenter(double x, double y) {
+		final Rectangle2D bb = BoundingBoxHelper.expand(glyphVector.getVisualBounds(), 0, 0);
+		boundingBox = BoundingBoxHelper.move(bb, x - bb.getCenterX(), y - bb.getCenterY());
 	}
 
 	@Override

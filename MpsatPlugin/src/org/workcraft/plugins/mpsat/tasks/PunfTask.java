@@ -24,9 +24,9 @@ public class PunfTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PunfUtilitySettings.getCommand());
+		command.add(PunfUtilitySettings.getPunfCommand());
 
-		for (String arg : PunfUtilitySettings.getExtraArgs().split(" "))
+		for (String arg : PunfUtilitySettings.getPunfExtraArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 

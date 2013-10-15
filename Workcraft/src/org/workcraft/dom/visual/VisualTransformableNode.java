@@ -26,9 +26,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -40,37 +38,25 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualTransformableNode, Double>(
-				this, "X",
-				new Getter<VisualTransformableNode, Double>() {
-					@Override
-					public Double eval(VisualTransformableNode object) {
-						return object.getX();
-					}
-				},
-				new Setter<VisualTransformableNode, Double>() {
-					@Override
-					public void eval(VisualTransformableNode object, Double value) {
-						object.setX(value);
-					}
-				},
-				Double.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
+				this, "X", Double.class) {
+			public void setter(VisualTransformableNode object, Double value) {
+				object.setX(value);
+			}
+			public Double getter(VisualTransformableNode object) {
+				return object.getX();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualTransformableNode, Double>(
-				this, "Y",
-				new Getter<VisualTransformableNode, Double>() {
-					@Override
-					public Double eval(VisualTransformableNode object) {
-						return object.getY();
-					}
-				},
-				new Setter<VisualTransformableNode, Double>() {
-					@Override
-					public void eval(VisualTransformableNode object, Double value) {
-						object.setY(value);
-					}
-				},
-				Double.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
+				this, "Y", Double.class) {
+			public void setter(VisualTransformableNode object, Double value) {
+				object.setY(value);
+			}
+			public Double getter(VisualTransformableNode object) {
+				return object.getY();
+			}
+		});
 	}
 
 	public VisualTransformableNode() {

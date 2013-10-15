@@ -37,9 +37,9 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
-	protected static Color defaultColor = Color.BLACK;
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-	protected RenderedText renderedName = new RenderedText(font, "");
+	protected static Color defaultColor = Color.BLACK;
+	protected RenderedText renderedText = new RenderedText("", font);
 
 	public VisualNamedTransition(Transition transition) {
 		super(transition);
@@ -55,20 +55,20 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 		Color background = r.getDecoration().getBackground();
 		if(background!=null) {
 			g.setColor(background);
-			g.fill(renderedName.getBoundingBox());
+			g.fill(renderedText.getBoundingBox());
 		}
 		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
-		renderedName.draw(g);
+		renderedText.draw(g);
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return renderedName.getBoundingBox();
+		return renderedText.getBoundingBox();
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return renderedName.hitTest(pointInLocalSpace);
+		return renderedText.hitTest(pointInLocalSpace);
 	}
 
 	public Color getColor() {
@@ -77,12 +77,12 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	protected void updateRenderedName() {
 		transformChanging();
-		renderedName = new RenderedText(font, getName());
+		renderedText = new RenderedText(getName(), font);
 		transformChanged();
 	}
 
 	public RenderedText getRenderedName() {
-		return renderedName;
+		return renderedText;
 	}
 
 	public NamedTransition getReferencedTransition() {

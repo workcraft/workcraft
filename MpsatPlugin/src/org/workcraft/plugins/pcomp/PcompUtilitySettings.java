@@ -39,8 +39,26 @@ public class PcompUtilitySettings implements SettingsPage {
 
 	public PcompUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "PComp command", "getCommand", "setCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getExtraArgs", "setExtraArgs", String.class));
+
+		properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
+				this, "PComp command", String.class) {
+			protected void setter(PcompUtilitySettings object, String value) {
+				PcompUtilitySettings.setCommand(value);
+			}
+			protected String getter(PcompUtilitySettings object) {
+				return PcompUtilitySettings.getCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
+				this, "Additional command line arguments", String.class) {
+			protected void setter(PcompUtilitySettings object, String value) {
+				PcompUtilitySettings.setExtraArgs(value);
+			}
+			protected String getter(PcompUtilitySettings object) {
+				return PcompUtilitySettings.getExtraArgs();
+			}
+		});
 	}
 
 	@Override

@@ -49,12 +49,66 @@ public class PetrifyUtilitySettings implements SettingsPage {
 
 	public PetrifyUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "petrify command", "getPetrifyCommand", "setPetrifyCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional petrify command line arguments", "getPetrifyArgs", "setPetrifyArgs", String.class));
-		properties.add(new PropertyDeclaration(this, "write_sg command", "getWrite_sgCommand", "setWriteSgCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional write_sg command line arguments", "getWriteSgArgs", "setWriteSgArgs", String.class));
-		properties.add(new PropertyDeclaration(this, "draw_astg command", "getDrawAstgCommand", "setDrawAstgCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional draw_astg command line arguments", "getDrawAstgArgs", "setDrawAstgArgs", String.class));
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "petrify command", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setPetrifyCommand(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getPetrifyCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "Additional petrify command line arguments", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setPetrifyArgs(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getPetrifyArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "write_sg command", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setWriteSgCommand(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getWriteSgCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "Additional write_sg command line arguments", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setWriteSgArgs(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getWriteSgArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "draw_astg command", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setDrawAstgCommand(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getDrawAstgCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "Additional draw_astg command line arguments", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setDrawAstgArgs(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getDrawAstgArgs();
+			}
+		});
 	}
 
 	@Override

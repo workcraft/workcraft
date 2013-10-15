@@ -47,7 +47,15 @@ public class VisualSuperGroup extends VisualGroup{
 	}
 
 	public VisualSuperGroup(){
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(
+				this, "Label", String.class) {
+			public void setter(VisualSuperGroup object, String value) {
+				object.setLabel(value);
+			}
+			public String getter(VisualSuperGroup object) {
+				return object.getLabel();
+			}
+		});
 	}
 
 	private Rectangle2D getContentsBoundingBox(){

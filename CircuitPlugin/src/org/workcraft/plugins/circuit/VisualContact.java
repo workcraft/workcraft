@@ -34,6 +34,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
@@ -50,7 +51,27 @@ import org.workcraft.plugins.stg.SignalTransition;
 
 
 public class VisualContact extends VisualComponent implements StateObserver {
-	public enum Direction {	NORTH, SOUTH, EAST, WEST};
+	public enum Direction {
+		NORTH("North"),
+		SOUTH("South"),
+		EAST("East"),
+		WEST("Weat");
+
+		private final String name;
+
+		private Direction(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, Direction> getChoice() {
+			LinkedHashMap<String, Direction> choice = new LinkedHashMap<String, Direction>();
+			for (Direction item : Direction.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	};
+
 	public static final Color inputColor = Color.RED;
 	public static final Color outputColor = Color.BLUE;
 
@@ -120,8 +141,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 						-size / 2 + CircuitSettings.getCircuitWireWidth(),
 						-size / 2 + CircuitSettings.getCircuitWireWidth(),
 						size - CircuitSettings.getCircuitWireWidth()*2,
-						size - CircuitSettings.getCircuitWireWidth()*2
-						);
+						size - CircuitSettings.getCircuitWireWidth()*2);
 			} else {
 				if (connections!=1) {
 					return VisualJoint.shape;
@@ -155,10 +175,46 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		directions.put("South", VisualContact.Direction.SOUTH);
 		directions.put("West", VisualContact.Direction.WEST);
 
-		addPropertyDeclaration(new PropertyDeclaration(this, "Direction", "getDirection", "setDirection", VisualContact.Direction.class, directions));
-		addPropertyDeclaration(new PropertyDeclaration(this, "I/O type", "getIOType", "setIOType", Contact.IOType.class, types));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Init to one", "getInitOne", "setInitOne", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
+				this, "Direction", Direction.class, Direction.getChoice()) {
+			protected void setter(VisualContact object, Direction value) {
+				object.setDirection(value);
+			}
+			protected Direction getter(VisualContact object) {
+				return object.getDirection();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
+				this, "I/O type", IOType.class, IOType.getChoice()) {
+			protected void setter(VisualContact object, IOType value) {
+				object.setIOType(value);
+			}
+			protected IOType getter(VisualContact object) {
+				return object.getIOType();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualContact, String>(
+				this, "Name", String.class) {
+			protected void setter(VisualContact object, String value) {
+				object.setName(value);
+			}
+			protected String getter(VisualContact object) {
+				return object.getName();
+			}
+		});
+
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
+				this, "Init to one", Boolean.class) {
+			protected void setter(VisualContact object, Boolean value) {
+				object.setInitOne(value);
+			}
+			protected Boolean getter(VisualContact object) {
+				return object.getInitOne();
+			}
+		});
 	}
 
 	public boolean getInitOne() {
@@ -321,16 +377,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return direction;
 	}
 
-	public void setIOType(Contact.IOType type) {
+	public void setIOType(IOType type) {
 		getReferencedContact().setIOType(type);
 		sendNotification(new PropertyChangedEvent(this, "IOtype"));
 		nameGlyph = null;
 	}
 
-	public Contact.IOType getIOType() {
+	public IOType getIOType() {
 		return getReferencedContact().getIOType();
 	}
-
 
 	public String getName() {
 		return getReferencedContact().getName();

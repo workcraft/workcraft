@@ -45,7 +45,6 @@ public class VisualComment extends VisualComponent implements Container {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		updateGlyph(g);
 		Rectangle2D shape = getBoundingBoxInLocalSpace();
 		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
 		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));

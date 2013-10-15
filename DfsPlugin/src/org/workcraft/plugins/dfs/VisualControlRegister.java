@@ -16,9 +16,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
@@ -33,21 +31,15 @@ public class VisualControlRegister extends VisualBinaryRegister {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualControlRegister, SynchronisationType>(
-				this, "Synchronisation type",
-				new Getter<VisualControlRegister, SynchronisationType>() {
-					@Override
-					public SynchronisationType eval(VisualControlRegister object) {
-						return object.getReferencedControlRegister().getSynchronisationType();
-					}
-				},
-				new Setter<VisualControlRegister, SynchronisationType>() {
-					@Override
-					public void eval(VisualControlRegister object, SynchronisationType value) {
-						object.getReferencedControlRegister().setSynchronisationType(value);
-					}
-				},
-				SynchronisationType.class, SynchronisationType.getChoice()));
+		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
+				this, "Synchronisation type", SynchronisationType.class, SynchronisationType.getChoice()) {
+			public void setter(VisualControlRegister object, SynchronisationType value) {
+				object.getReferencedControlRegister().setSynchronisationType(value);
+			}
+			public SynchronisationType getter(VisualControlRegister object) {
+				return object.getReferencedControlRegister().getSynchronisationType();
+			}
+		});
 	}
 
 	@Override
@@ -179,7 +171,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		}
 
 		drawLabelInLocalSpace(r);
-		drawReferenceInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	@Override

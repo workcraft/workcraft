@@ -83,6 +83,7 @@ public class VisualBundledTransition extends VisualTransition {
 		g.setStroke(new BasicStroke((float) strokeWidth));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 }

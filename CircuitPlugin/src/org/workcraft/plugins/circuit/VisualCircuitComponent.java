@@ -33,7 +33,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -87,7 +86,43 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	RenderType renderType = RenderType.BOX;
 
+	public VisualCircuitComponent(CircuitComponent component) {
+		super(component);
+		component.addObserver(this);
+		addPropertyDeclarations();
+	}
 
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, String>(
+				this, "Name", String.class) {
+			protected void setter(VisualCircuitComponent object, String value) {
+				object.getReferencedCircuitComponent().setName(value);
+			}
+			protected String getter(VisualCircuitComponent object) {
+				return object.getReferencedCircuitComponent().getName();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
+				this, "Treat as environment", Boolean.class) {
+			protected void setter(VisualCircuitComponent object, Boolean value) {
+				object.getReferencedCircuitComponent().setIsEnvironment(value);
+			}
+			protected Boolean getter(VisualCircuitComponent object) {
+				return object.getReferencedCircuitComponent().getIsEnvironment();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
+				this, "Render type", RenderType.class, RenderType.getChoice()) {
+			protected void setter(VisualCircuitComponent object, RenderType value) {
+				object.setRenderType(value);
+			}
+			protected RenderType getter(VisualCircuitComponent object) {
+				return object.getRenderType();
+			}
+		});
+	}
 	public void setMainContact(VisualContact contact) {
 		this.mainContact = new WeakReference<VisualContact>(contact);
 	}
@@ -107,6 +142,31 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			}
 		}
 		return ret;
+	}
+
+	public CircuitComponent getReferencedCircuitComponent() {
+		return (CircuitComponent)this.getReferencedComponent();
+	}
+
+	public String getName() {
+		return getReferencedCircuitComponent().getName();
+	}
+
+	public void setName(String value) {
+		getReferencedCircuitComponent().setName(value);
+	}
+
+	public boolean getIsEnvironment() {
+		if (getReferencedCircuitComponent() != null) {
+			return getReferencedCircuitComponent().getIsEnvironment();
+		}
+		return false;
+	}
+
+	public void setIsEnvironment(boolean isEnvironment) {
+		if (getReferencedCircuitComponent() != null) {
+			getReferencedCircuitComponent().setIsEnvironment(isEnvironment);
+		}
 	}
 
 	public RenderType getRenderType() {
@@ -131,13 +191,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
 		updateNameGlyph(r.getGraphics());
-
 		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
-		// g.drawGlyphVector(labelGlyphs, (float)labelPosition.getX(),
-		// (float)labelPosition.getY());
 		r.getGraphics().setFont(nameFont);
-		r.getGraphics().drawString(getName(), (float) namePosition.getX(),
-				(float) namePosition.getY());
+		r.getGraphics().drawString(getName(), (float) namePosition.getX(), (float) namePosition.getY());
 	}
 
 	protected void updateNameGlyph(Graphics2D g) {
@@ -145,7 +201,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			final GlyphVector glyphs = nameFont.createGlyphVector(
 					g.getFontRenderContext(), getName());
 			glyphsForName = getName();
-
 			nameGlyphs = glyphs;
 		}
 	}
@@ -159,38 +214,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		if (contactLabelBB!=null)
 			r.getGraphics().drawString(getName(), (float)(contactLabelBB.getMaxX()-0.2),
 				(float)(contactLabelBB.getMaxY()+0.5));
-	}
-
-	public VisualCircuitComponent(CircuitComponent component) {
-		super(component);
-		component.addObserver(this);
-		addPropertyDeclarations();
-	}
-
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration(this, "Name", "getName", "setName", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Treat as environment", "getIsEnvironment", "setIsEnvironment", boolean.class));
-
-		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
-
-		types.put("Box", RenderType.BOX);
-		types.put("Gate", RenderType.GATE);
-		types.put("C-Element", RenderType.C_ELEMENT);
-
-		addPropertyDeclaration(new PropertyDeclaration(this, "Render type", "getRenderType", "setRenderType", RenderType.class, types));
-
-	}
-
-	public boolean getIsEnvironment() {
-
-		if (getReferencedComponent()!=null)
-			return ((CircuitComponent)getReferencedComponent()).getIsEnvironment();
-		return false;
-	}
-
-	public void setIsEnvironment(boolean isEnvironment) {
-		if (getReferencedComponent()!=null)
-			((CircuitComponent)getReferencedComponent()).setIsEnvironment(isEnvironment);
 	}
 
 	// updates sequential position of the contacts
@@ -269,7 +292,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public void addContact(VisualContact vc) {
 		if (!getChildren().contains(vc)) {
-			((CircuitComponent)this.getReferencedComponent()).add(vc.getReferencedComponent());
+			this.getReferencedCircuitComponent().add(vc.getReferencedComponent());
 			add(vc);
 			contactLabelBB = null;
 			updateSidePosition(vc);
@@ -624,14 +647,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
-	}
-
-	public String getName() {
-		return ((CircuitComponent)getReferencedComponent()).getName();
-	}
-
-	public void setName(String name) {
-		((CircuitComponent)getReferencedComponent()).setName(name);
 	}
 
 }

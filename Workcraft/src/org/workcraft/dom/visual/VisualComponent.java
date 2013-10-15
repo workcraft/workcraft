@@ -24,7 +24,6 @@ package org.workcraft.dom.visual;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -33,9 +32,7 @@ import java.util.Collection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -43,27 +40,23 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
-	private MathNode refNode = null;
+	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font nameFont = new Font("Sans-serif", Font.ITALIC, 1).deriveFont(0.5f);
 
+	private MathNode refNode = null;
 	protected double size = CommonVisualSettings.getBaseSize();
 	protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
-
-	public final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	private GlyphVector labelGlyphs = null;
-	private String glyphedLabel = null;
-	private String label = "";
-	private Positioning labelPositioning = CommonVisualSettings.getTextPositioning();
-	private Point2D labelPosition = null;
-	private Rectangle2D labelBoundingBox = null;
-	private Color labelColor = CommonVisualSettings.getBorderColor();
-
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 
-	private static final Font referenceFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	private Positioning referencePositioning = CommonVisualSettings.getTextPositioning();
-	private Color referenceColor = CommonVisualSettings.getBorderColor();
-	private RenderedText referenceText = new RenderedText(referenceFont, "");
+	private String label = "";
+	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
+	private RenderedText labelRenderedText = new RenderedText("", labelFont);
+	private Color labelColor = CommonVisualSettings.getLabelColor();
+
+	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
+	private RenderedText nameRenderedText = new RenderedText("", nameFont);
+	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
 		super();
@@ -77,93 +70,78 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			});
 
 		addPropertyDeclarations();
-
-		setFillColor(CommonVisualSettings.getFillColor());
-		setForegroundColor(CommonVisualSettings.getBorderColor());
-		setLabelColor(CommonVisualSettings.getBorderColor());
-		setLabelPositioning(CommonVisualSettings.getTextPositioning());
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, String>(
-				this, "Label",
-				new Getter<VisualComponent, String>() {
-					@Override
-					public String eval(VisualComponent object) {
-						return object.getLabel();
-					}
-				},
-				new Setter<VisualComponent, String>() {
-					@Override
-					public void eval(VisualComponent object, String value) {
-						object.setLabel(value);
-					}
-				},
-				String.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
+				this, "Foreground color", Color.class) {
+			protected void setter(VisualComponent object, Color value) {
+				object.setForegroundColor(value);
+			}
+			protected Color getter(VisualComponent object) {
+				return object.getForegroundColor();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
-				this, "Label color",
-				new Getter<VisualComponent, Color>() {
-					@Override
-					public Color eval(VisualComponent object) {
-						return object.getLabelColor();
-					}
-				},
-				new Setter<VisualComponent, Color>() {
-					@Override
-					public void eval(VisualComponent object, Color value) {
-						object.setLabelColor(value);
-					}
-				},
-				Color.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
+				this, "Fill color", Color.class) {
+			protected void setter(VisualComponent object, Color value) {
+				object.setFillColor(value);
+			}
+			protected Color getter(VisualComponent object) {
+				return object.getFillColor();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
-				this, "Foreground color",
-				new Getter<VisualComponent, Color>() {
-					@Override
-					public Color eval(VisualComponent object) {
-						return object.getForegroundColor();
-					}
-				},
-				new Setter<VisualComponent, Color>() {
-					@Override
-					public void eval(VisualComponent object, Color value) {
-						object.setForegroundColor(value);
-					}
-				},
-				Color.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
+				this, "Label", String.class) {
+			protected void setter(VisualComponent object, String value) {
+				object.setLabel(value);
+			}
+			protected String getter(VisualComponent object) {
+				return object.getLabel();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Color>(
-				this, "Fill color",
-				new Getter<VisualComponent, Color>() {
-					@Override
-					public Color eval(VisualComponent object) {
-						return object.getFillColor();
-					}
-				},
-				new Setter<VisualComponent, Color>() {
-					@Override
-					public void eval(VisualComponent object, Color value) {
-						object.setFillColor(value);
-					}
-				},
-				Color.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
+				this, "Label positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(VisualComponent object, Positioning value) {
+				object.setLabelPositioning(value);
+			}
+			protected Positioning getter(VisualComponent object) {
+				return object.getLabelPositioning();
+			}
+		});
 
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualComponent, Positioning>(
-				this, "Label positioning",
-				new Getter<VisualComponent, Positioning>() {
-					@Override
-					public Positioning eval(VisualComponent object) {
-						return object.getLabelPositioning();
-					}
-				},
-				new Setter<VisualComponent, Positioning>() {
-					@Override
-					public void eval(VisualComponent object, Positioning value) {
-						object.setLabelPositioning(value);
-					}
-				},
-				Positioning.class, Positioning.getChoice()));
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
+				this, "Label color", Color.class) {
+			protected void setter(VisualComponent object, Color value) {
+				object.setLabelColor(value);
+			}
+			protected Color getter(VisualComponent object) {
+				return object.getLabelColor();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
+				this, "Name positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(VisualComponent object, Positioning value) {
+				object.setNamePositioning(value);
+			}
+			protected Positioning getter(VisualComponent object) {
+				return object.getNamePositioning();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
+				this, "Name color", Color.class) {
+			protected void setter(VisualComponent object, Color value) {
+				object.setNameColor(value);
+			}
+			protected Color getter(VisualComponent object) {
+				return object.getNameColor();
+			}
+		});
 	}
 
 	public String getLabel() {
@@ -172,8 +150,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabel(String label) {
 		this.label = label;
-		labelGlyphs = null;
-		labelBoundingBox = null;
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
@@ -183,8 +159,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabelPositioning(Positioning labelPositioning) {
 		this.labelPositioning = labelPositioning;
-		labelGlyphs = null;
-		labelBoundingBox = null;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
 
@@ -195,6 +169,24 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public void setLabelColor(Color labelColor) {
 		this.labelColor = labelColor;
 		sendNotification(new PropertyChangedEvent(this, "label color"));
+	}
+
+	public Positioning getNamePositioning() {
+		return namePositioning;
+	}
+
+	public void setNamePositioning(Positioning referencePositioning) {
+		this.namePositioning = referencePositioning;
+		sendNotification(new PropertyChangedEvent(this, "reference positioning"));
+	}
+
+	public Color getNameColor() {
+		return nameColor;
+	}
+
+	public void setNameColor(Color referenceColor) {
+		this.nameColor = referenceColor;
+		sendNotification(new PropertyChangedEvent(this, "reference color"));
 	}
 
 	public Color getForegroundColor() {
@@ -231,54 +223,57 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return new Point2D.Double(0, 0);
 	}
 
-	public void updateGlyph(Graphics2D g) {
-		if (labelBoundingBox == null || labelGlyphs == null || glyphedLabel == null || glyphedLabel != label) {
-			glyphedLabel = label;
-			labelGlyphs = labelFont.createGlyphVector(g.getFontRenderContext(),	getLabel());
-			Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-			Rectangle2D gbb = new Rectangle2D.Double(0, 0, 0, 0);
-			if (!getLabel().isEmpty()) {
-				gbb = labelGlyphs.getLogicalBounds();
-			}
-			labelPosition = new Point2D.Double(
-					bb.getCenterX()	- gbb.getCenterX() + 0.5 * labelPositioning.dx * (bb.getWidth() + gbb.getWidth() + 0.2),
-					bb.getCenterY() - gbb.getCenterY() + 0.5 * labelPositioning.dy * (bb.getHeight() + gbb.getHeight() + 0.2));
-			labelBoundingBox = new Rectangle2D.Double(
-					gbb.getX() + labelPosition.getX(),
-					gbb.getY() + labelPosition.getY(),
-					gbb.getWidth(), gbb.getHeight());
-		}
-	}
-
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		updateGlyph(g);
-		g.setColor(Coloriser.colorise(labelColor, r.getDecoration().getColorisation()));
-		g.setFont(labelFont);
-		g.drawString(label, (float) labelPosition.getX(), (float) labelPosition.getY());
+		if (CommonVisualSettings.getLabelVisibility()) {
+			if (!label.equals(labelRenderedText.text) || labelFont != labelRenderedText.font) {
+				labelRenderedText = new RenderedText(label, labelFont);
+			}
+			double x = 0.5 * labelPositioning.xOffset * size
+					 + 0.5 * labelPositioning.xSign * labelRenderedText.getBoundingBox().getWidth();
+			double y = 0.5 * labelPositioning.yOffset * size
+					 + 0.5 * labelPositioning.ySign * labelRenderedText.getBoundingBox().getHeight();
+			labelRenderedText.setCenter(x, y);
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(labelColor, d.getColorisation()));
+			labelRenderedText.draw(g);
+		}
 	}
 
-	protected void drawReferenceInLocalSpace(DrawRequest r) {
-		String str = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-		if (str == null || !str.equals(referenceText.text)) {
-			referenceText = new RenderedText(referenceFont, str);
+	protected void drawNameInLocalSpace(DrawRequest r) {
+		if (CommonVisualSettings.getNameVisibility()) {
+			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+			if (name == null) {
+				name = "";
+			}
+			if (!name.equals(nameRenderedText.text) || nameFont != nameRenderedText.font) {
+				nameRenderedText = new RenderedText(name, nameFont);
+			}
+			double x = 0.5 * namePositioning.xOffset * size
+					+ 0.5 * namePositioning.xSign * nameRenderedText.getBoundingBox().getWidth();
+			double y = 0.5 * namePositioning.yOffset * size
+					+ 0.5 * namePositioning.ySign * nameRenderedText.getBoundingBox().getHeight();
+			nameRenderedText.setCenter(x, y);
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(nameColor, d.getColorisation()));
+			nameRenderedText.draw(g);
 		}
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		g.setColor(Coloriser.colorise(referenceColor, d.getColorisation()));
-		// TODO: Implement proper label and reference visualisation (with code reuse)
-		//referenceText.draw(g);
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		bb = BoundingBoxHelper.union(bb, labelBoundingBox);
-		bb = BoundingBoxHelper.union(bb, referenceText.getBoundingBox());
+		if (CommonVisualSettings.getLabelVisibility()) {
+			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
+		}
+		if (CommonVisualSettings.getNameVisibility()) {
+			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
+		}
 		return bb;
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2
-				&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
+			&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 }

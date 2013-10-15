@@ -38,7 +38,15 @@ public class VisualCondition extends VisualComponent{
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Token", "hasToken", "setToken", boolean.class));
+		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
+				this, "Token", Boolean.class) {
+			public void setter(VisualCondition object, Boolean value) {
+				object.setToken(value);
+			}
+			public Boolean getter(VisualCondition object) {
+				return object.hasToken();
+			}
+		});
 	}
 
 	@Override
@@ -60,9 +68,10 @@ public class VisualCondition extends VisualComponent{
 
 		Condition p = (Condition)getReferencedComponent();
 		drawToken(p.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
-		drawName(r);
 
 		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
+		//drawName(r);
 	}
 
 	public static void drawToken (boolean b, double singleTokenSize, Color tokenColor,	Graphics2D g) {
@@ -94,7 +103,7 @@ public class VisualCondition extends VisualComponent{
 				if(!this.hasToken()) {
 					g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
 				} else {
-					g.drawGlyphVector(glyphVector, -this.getLabelPositioning().dx, -this.getLabelPositioning().dy);
+					g.drawGlyphVector(glyphVector, -(float)this.getLabelPositioning().xOffset, -(float)this.getLabelPositioning().yOffset);
 				}
 			}
 		}

@@ -2,9 +2,7 @@ package org.workcraft.plugins.dfs;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.propertyeditor.Getter;
-import org.workcraft.gui.propertyeditor.SafePropertyDeclaration;
-import org.workcraft.gui.propertyeditor.Setter;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 
 public class VisualBinaryRegister extends VisualComponent {
@@ -15,21 +13,15 @@ public class VisualBinaryRegister extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new SafePropertyDeclaration<VisualBinaryRegister, Marking>(
-				this, "Marking",
-				new Getter<VisualBinaryRegister, Marking>() {
-					@Override
-					public Marking eval(VisualBinaryRegister object) {
-						return object.getReferencedBinaryRegister().getMarking();
-					}
-				},
-				new Setter<VisualBinaryRegister, Marking>() {
-					@Override
-					public void eval(VisualBinaryRegister object, Marking value) {
-						object.getReferencedBinaryRegister().setMarking(value);
-					}
-				},
-				Marking.class, Marking.getChoice()));
+		addPropertyDeclaration(new PropertyDeclaration<VisualBinaryRegister, Marking>(
+				this, "Marking", Marking.class, Marking.getChoice()) {
+			public void setter(VisualBinaryRegister object, Marking value) {
+				object.getReferencedBinaryRegister().setMarking(value);
+			}
+			public Marking getter(VisualBinaryRegister object) {
+				return object.getReferencedBinaryRegister().getMarking();
+			}
+		});
 	}
 
 	@Override

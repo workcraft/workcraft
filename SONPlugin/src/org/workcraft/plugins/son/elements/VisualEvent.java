@@ -43,9 +43,9 @@ public class VisualEvent extends VisualComponent {
 		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
 		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
 		g.draw(shape);
-		drawName(r);
 		drawLabelInLocalSpace(r);
-
+		drawNameInLocalSpace(r);
+		//drawName(r);
 	}
 
 	public void drawName(DrawRequest r){

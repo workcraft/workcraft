@@ -22,16 +22,51 @@ public class SONSettings implements SettingsPage {
 	}
 
 	public String getSection() {
-		return "Visual";
+		return "Models";
 	}
 
 	public SONSettings(){
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Display node name", "getDisplayName", "setDisplayName", Boolean.class));
 
-		properties.add(new PropertyDeclaration(this, "Erroneous node color(relation)", "getRelationErrColor", "setRelationErrColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Erroneous node color(cycle)", "getCyclePathColor", "setCyclePathColor", Color.class));
-		properties.add(new PropertyDeclaration(this, "Erroneous connection color", "getConnectionErrColor", "setConnectionErrColor", Color.class));
+		properties.add(new PropertyDeclaration<SONSettings, Boolean>(
+				this, "Display node name", Boolean.class) {
+			protected void setter(SONSettings object, Boolean value) {
+				SONSettings.setDisplayName(value);
+			}
+			protected Boolean getter(SONSettings object) {
+				return SONSettings.getDisplayName();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Erroneous node color(relation)", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setRelationErrColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getRelationErrColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Erroneous node color(cycle)", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setCyclePathColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getCyclePathColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Erroneous connection color", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setConnectionErrColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getConnectionErrColor();
+			}
+		});
 	}
 
 	@Override
