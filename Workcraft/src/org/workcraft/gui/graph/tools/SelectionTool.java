@@ -247,8 +247,7 @@ public class SelectionTool extends AbstractTool {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			VisualModel model = e.getEditor().getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
-			if (node != null)
-			{
+			if (node != null) {
 				if (e.getClickCount() > 1) {
 					if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
@@ -322,7 +321,6 @@ public class SelectionTool extends AbstractTool {
 						selected.addAll(model.getSelection());
 					}
 				}
-
 			} else {
 				// hit something
 				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {

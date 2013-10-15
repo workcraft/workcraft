@@ -80,3 +80,6 @@ for i in $core_files
 do
     cp -r $src_dir/$i $distr_dir/
 done
+
+# Copy config
+cp -r $src_dir/WorkcraftRunner/config $distr_dir/
