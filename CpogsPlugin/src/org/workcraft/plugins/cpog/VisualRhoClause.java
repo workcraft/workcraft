@@ -77,6 +77,7 @@ public class VisualRhoClause extends VisualComponent
 	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
 
@@ -92,7 +93,7 @@ public class VisualRhoClause extends VisualComponent
 
 		g.setStroke(new BasicStroke(strokeWidth));
 
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(boudingBox);
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(boudingBox);

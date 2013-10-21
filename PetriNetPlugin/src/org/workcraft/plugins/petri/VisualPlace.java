@@ -97,11 +97,9 @@ public class VisualPlace extends VisualComponent {
 		double wh = size - strokeWidth;
 		Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
 
-		Color borderColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		Color fillColor = Coloriser.colorise(getFillColor(), d.getColorisation());
-		g.setColor(fillColor);
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
-		g.setColor(borderColor);
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 

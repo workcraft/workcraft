@@ -91,7 +91,6 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
 		g.setColor(color);
 
-//		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 

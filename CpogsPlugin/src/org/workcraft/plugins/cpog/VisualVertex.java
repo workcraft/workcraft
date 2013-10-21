@@ -81,13 +81,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		Shape shape = new Ellipse2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
 		BooleanFormula value = evaluate();
 
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(shape);
 
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));

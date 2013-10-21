@@ -262,10 +262,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	@Override
 	public void draw(DrawRequest r) {
 		super.draw(r);
-
 		Graphics2D g = r.getGraphics();
-
-		Color colorisation = r.getDecoration().getColorisation();
+		Color foreground = Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation());
+		Color background = Coloriser.colorise(Color.WHITE, r.getDecoration().getBackground());
 		Node p = getParent();
 		if (p!=null) {
 			if ((getIOType()==IOType.INPUT)^(p instanceof VisualComponent)) {
@@ -279,11 +278,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 					if (!CircuitSettings.getShowContacts()&&(p instanceof VisualComponent)) xOfs = (float)-0.5;
 
 					if (resetResult!=null) {
-						drawFormula(g, 1, xOfs, (float)-0.2, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), resetResult);
-						drawFormula(g, 2, xOfs, (float)0.5, Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
+						drawFormula(g, 1, xOfs, (float)-0.2, foreground, background, resetResult);
+						drawFormula(g, 2, xOfs, (float)0.5, foreground, background, setResult);
 
 					} else {
-						drawFormula(g, 0, xOfs, (resetResult==null?(float)0:(float)0.5), Coloriser.colorise(Color.BLACK, colorisation), Coloriser.colorise(Color.WHITE, colorisation), setResult);
+						drawFormula(g, 0, xOfs, (resetResult==null?(float)0:(float)0.5), foreground, background, setResult);
 					}
 				}
 			}

@@ -30,6 +30,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
@@ -51,13 +52,13 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	public void draw(DrawRequest r) {
 		drawLabelInLocalSpace(r);
 		Graphics2D g = r.getGraphics();
-
-		Color background = r.getDecoration().getBackground();
-		if(background!=null) {
+		Decoration d = r.getDecoration();
+		Color background = d.getBackground();
+		if (background!=null) {
 			g.setColor(background);
 			g.fill(renderedText.getBoundingBox());
 		}
-		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
 		renderedText.draw(g);
 	}
 

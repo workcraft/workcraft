@@ -279,6 +279,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	private Properties getPropertiesMix(Collection<Node> selection) {
 		Mix mix = new Mix();
 		for (Node selected: selection) {
+			mix.add(getModel().getProperties(selected));
 			if (selected instanceof Properties) {
 				mix.add((Properties)selected);
 			}

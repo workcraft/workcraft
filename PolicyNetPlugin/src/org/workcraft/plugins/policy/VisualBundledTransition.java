@@ -22,7 +22,6 @@
 package org.workcraft.plugins.policy;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -34,6 +33,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.petri.VisualTransition;
 
 @Hotkey(KeyEvent.VK_T)
@@ -52,9 +52,8 @@ public class VisualBundledTransition extends VisualTransition {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
 		PolicyNet model = (PolicyNet)r.getModel().getMathModel();
-		Color colorisation = r.getDecoration().getColorisation();
-		Color background = r.getDecoration().getBackground();
 		double w = size - strokeWidth;
 		double h = size - strokeWidth;
 		double w2 = w / 2;
@@ -68,18 +67,18 @@ public class VisualBundledTransition extends VisualTransition {
 		}
 
 		if (bundles.isEmpty()) {
-			g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), background), colorisation));
+			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 			g.fill(shape);
 		} else {
 			double y = -size/2 + strokeWidth + h2;
 			for (Bundle b: bundles) {
 				Shape bundleShape = new Rectangle2D.Double (-w2, y-h2, w, h);
-				g.setColor(Coloriser.colorise(Coloriser.colorise(b.getColor(), background), colorisation));
+				g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
 				g.fill(bundleShape);
 				y += h;
 			}
 		}
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), background), colorisation));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float) strokeWidth));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);

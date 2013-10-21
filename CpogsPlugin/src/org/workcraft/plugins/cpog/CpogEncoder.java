@@ -81,8 +81,20 @@ public class CpogEncoder implements Tool {
 		ArrayList<Point2D> positions = new ArrayList<Point2D>();
 		ArrayList<Integer> count = new ArrayList<Integer>();
 
+		// TODO: remove deprecated method
 		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
+
 		int m = scenarios.size();
+
+		if (m < 2)
+		{
+			JOptionPane.showMessageDialog(null,
+					"At least two scenarios are expected.",
+					"Not enough scenarios",
+					JOptionPane.ERROR_MESSAGE);
+			we.cancelMemento();
+			return;
+		}
 
 		// find all events
 		for(int k = 0; k < m; k++)

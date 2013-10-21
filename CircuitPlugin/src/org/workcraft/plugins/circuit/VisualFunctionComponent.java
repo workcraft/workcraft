@@ -265,9 +265,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		ComponentRenderingResult res = getRenderingResult();
 		Graphics2D g = r.getGraphics();
 
-		Color colorisation = r.getDecoration().getColorisation();
-		Color col1 = Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation);
-		Color col2 = Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation);
+		Color col1 = Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation());
+		Color col2 = Coloriser.colorise(CommonVisualSettings.getFillColor(), r.getDecoration().getBackground());
 
 
 		if (res!=null) {

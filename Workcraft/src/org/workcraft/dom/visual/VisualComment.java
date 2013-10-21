@@ -47,7 +47,7 @@ public class VisualComment extends VisualComponent implements Container {
 		Graphics2D g = r.getGraphics();
 		Rectangle2D shape = getBoundingBoxInLocalSpace();
 		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		float w = (float)strokeWidth;

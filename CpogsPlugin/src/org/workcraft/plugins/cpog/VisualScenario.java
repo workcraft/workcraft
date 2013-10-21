@@ -131,12 +131,13 @@ public class VisualScenario extends VisualGroup
 	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		Rectangle2D bb = getContentsBoundingBox();
 
 		if (bb != null && getParent() != null)
 		{
-			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+			g.setColor(Coloriser.colorise(Color.WHITE, background));
 			g.fill(bb);
 			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 			g.setStroke(new BasicStroke(strokeWidth));

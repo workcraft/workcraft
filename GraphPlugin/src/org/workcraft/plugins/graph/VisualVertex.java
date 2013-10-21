@@ -34,6 +34,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
@@ -47,15 +48,15 @@ public class VisualVertex extends VisualComponent {
 	}
 
 	public void draw(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
 		Shape shape = new Ellipse2D.Double(
 				-size/2+strokeWidth/2, -size/2+strokeWidth/2,
 				size-strokeWidth, size-strokeWidth);
-
-		Graphics2D g = r.getGraphics();
 		g.setStroke(new BasicStroke(strokeWidth));
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);

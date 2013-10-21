@@ -85,11 +85,10 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	}
 
 	public void draw(DrawRequest r) {
-		if (!valid)
+		if (!valid) {
 			update();
-
+		}
 		Graphics2D g = r.getGraphics();
-
 		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
 		g.setColor(color);
 		g.setStroke(connectionInfo.getStroke());

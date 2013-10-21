@@ -88,12 +88,13 @@ public class VisualVariable extends VisualComponent
 	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
 		g.setStroke(new BasicStroke(strokeWidth));
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(shape);

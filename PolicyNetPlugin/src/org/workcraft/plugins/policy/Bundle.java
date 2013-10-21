@@ -11,7 +11,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class Bundle extends MathNode  {
 	private final Set<BundledTransition> transitions = new HashSet<BundledTransition>();
-	private Color color = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+	private Color color = CieColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
+//	private Color color = Color.getHSBColor((float)Math.random(), 0.25f, 0.75f);
 
 	public Bundle() {
 	}

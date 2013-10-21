@@ -461,14 +461,13 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		updateContactLabelBB(g);
 
 		drawNameInLocalSpace(r);
-		Color colorisation = r.getDecoration().getColorisation();
 		drawContactConnections(r);
 
 		Rectangle2D shape = getBestBB();
 
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
+		g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
 
 		if (!getIsEnvironment()) {
 			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
