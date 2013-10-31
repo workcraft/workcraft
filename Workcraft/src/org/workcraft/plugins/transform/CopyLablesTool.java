@@ -33,7 +33,7 @@ public class CopyLablesTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Labeling";
+		return "Names and labels";
 	}
 
 	@Override

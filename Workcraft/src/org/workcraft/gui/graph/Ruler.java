@@ -59,63 +59,58 @@ public class Ruler implements GridListener {
 	 * <li> 10pt SansSerif font to display coordinates.
 	 * </ul>
 	 */
-	public Ruler() {
+	public Ruler(int size) {
 		shape = new Rectangle();
 		horizontalMinorTicks = new int[0];
 		horizontalMajorTicks = new int[0];
 		verticalMinorTicks = new int[0];
 		verticalMajorTicks = new int[0];
-
+		this.size = size;
 		font = new Font(Font.SANS_SERIF, 0, 10);
 	}
 
 	public void draw(Graphics2D g) {
 		g.setStroke(new BasicStroke(1f));
-
-		g.setBackground(background);
-		g.clearRect(shape.x, shape.y, shape.width, size);
-		g.clearRect(shape.x, shape.y + size, size, shape.height - size);
-
 		g.setColor(foreground);
+		g.setBackground(background);
+		g.setFont(font);
+
+		// horizontal ruler
+		g.clearRect(shape.x + size, shape.y, shape.width -  size, size);
 		g.drawLine(shape.x, size, shape.width, size);
-		g.drawLine(size, shape.y, size, shape.height);
-
-
-
 		if (minorTickSize > 0) {
-			for (int t : horizontalMinorTicks)
-				g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y
-						- minorTickSize);
-
-			for (int t : verticalMinorTicks)
-				g.drawLine(shape.x + size, t + shape.y, shape.x + size
-						- minorTickSize, t + shape.y);
+			for (int t : horizontalMinorTicks) {
+				g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y	- minorTickSize);
+			}
 		}
-
 		for (int i = 0; i < horizontalMajorTicks.length; i++) {
 			int t = horizontalMajorTicks[i];
-			g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y
-					- majorTickSize);
-			g.setColor(foreground);
-			g.setFont(font);
-			g.drawString(horizontalMajorCaptions[i], t + shape.x + 2, size
-					+ shape.y - 2);
+			g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y	- majorTickSize);
+			g.drawString(horizontalMajorCaptions[i], t + shape.x + 2, size + shape.y - 2);
 		}
 
+		// vertical ruler
+		g.clearRect(shape.x, shape.y + size, size, shape.height - size);
+		g.drawLine(size, shape.y, size, shape.height);
+		if (minorTickSize > 0) {
+			for (int t : verticalMinorTicks) {
+				g.drawLine(shape.x + size, t + shape.y, shape.x + size - minorTickSize, t + shape.y);
+			}
+		}
 		for (int i = 0; i < verticalMajorTicks.length; i++) {
 			int t = verticalMajorTicks[i];
-			g.drawLine(shape.x + size, t + shape.y, shape.x + size
-					- majorTickSize, t + shape.y);
-			g.setColor(foreground);
-			g.setFont(font);
+			g.drawLine(shape.x + size, t + shape.y, shape.x + size - majorTickSize, t + shape.y);
 			AffineTransform re = g.getTransform();
-
 			g.translate(shape.x + size - 2, shape.y + t - 2);
 			g.rotate(-Math.PI / 2);
 			g.drawString(verticalMajorCaptions[i], 0, 0);
 			g.setTransform(re);
-
 		}
+
+		// corner
+		g.clearRect(shape.x, shape.y,  size, size);
+		g.drawLine(shape.x, shape.y + size,  shape.x + size, shape.y + size);
+		g.drawLine(shape.x + size, shape.y,  shape.x + size, shape.y + size);
 	}
 
 	/**

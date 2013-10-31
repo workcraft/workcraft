@@ -25,8 +25,11 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
@@ -40,6 +43,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
@@ -108,10 +112,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	protected Grid grid;
 	protected Ruler ruler;
 
+	protected JPanel modeSelector;
+	protected JToggleButton gridToggler;
+	protected JToggleButton nameToggler;
+	protected JToggleButton labelToggler;
+	protected JToggleButton rulerToggler;
+	private int size = 15;
 	protected Stroke borderStroke = new BasicStroke(2);
-
 	private Overlay overlay = new Overlay();
-
 	private boolean firstPaint = true;
 
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
@@ -124,9 +132,66 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		view = new Viewport(0, 0, getWidth(), getHeight());
 		grid = new Grid();
 
-		ruler = new Ruler();
+		ruler = new Ruler(size);
 		view.addListener(grid);
 		grid.addListener(ruler);
+
+		modeSelector = new JPanel(new GridLayout(2, 2));
+		modeSelector.setSize(size, size);
+		this.add(modeSelector);
+
+		int size2 = size/2+1;
+		gridToggler = new JToggleButton();
+		gridToggler.setSize(size2, size2);
+		gridToggler.setFocusable(false);
+		gridToggler.setToolTipText("Show/hide grid");
+		gridToggler.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CommonEditorSettings.setShowGrid(!CommonEditorSettings.getShowGrid());
+				repaint();
+			}
+		});
+		modeSelector.add(gridToggler);
+
+		nameToggler = new JToggleButton();
+		nameToggler.setSize(size2, size2);
+		nameToggler.setFocusable(false);
+		nameToggler.setToolTipText("Show/hide node names");
+		nameToggler.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CommonVisualSettings.setNameVisibility(!CommonVisualSettings.getNameVisibility());
+				repaint();
+			}
+		});
+		modeSelector.add(nameToggler);
+
+		labelToggler = new JToggleButton();
+		labelToggler.setSize(size2, size2);
+		labelToggler.setFocusable(false);
+		labelToggler.setToolTipText("Show/hide node labels");
+		labelToggler.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CommonVisualSettings.setLabelVisibility(!CommonVisualSettings.getLabelVisibility());
+				repaint();
+			}
+		});
+		modeSelector.add(labelToggler);
+
+		rulerToggler = new JToggleButton();
+		rulerToggler.setSize(size2, size2);
+		rulerToggler.setFocusable(false);
+		rulerToggler.setToolTipText("Show/hide rulers");
+		rulerToggler.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CommonEditorSettings.setShowRulers(!CommonEditorSettings.getShowRulers());
+				repaint();
+			}
+		});
+		modeSelector.add(rulerToggler);
 
 		toolboxPanel = new ToolboxPanel(this);
 
@@ -152,6 +217,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
+		gridToggler.setSelected(CommonEditorSettings.getShowGrid());
+		nameToggler.setSelected(CommonVisualSettings.getNameVisibility());
+		labelToggler.setSelected(CommonVisualSettings.getLabelVisibility());
+		rulerToggler.setSelected(CommonEditorSettings.getShowRulers());
 
 		AffineTransform screenTransform = (AffineTransform)g2d.getTransform().clone();
 
