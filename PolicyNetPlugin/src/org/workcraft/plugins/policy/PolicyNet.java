@@ -30,15 +30,10 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -60,7 +55,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 			public String eval(Node arg) {
 				String result = null;
 				if (arg instanceof Bundle) {
-					result = "bundle";
+					result = "b";
 				} else if (arg instanceof Locality) {
 					result = "loc";
 				}
@@ -95,16 +90,6 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		return b;
 	}
 
-	public Bundle createBundle(String ref) {
-		Bundle b = createBundle();
-		setName(b, ref);
-		return b;
-	}
-
-	public void deleteBundle(Bundle b) {
-		getRoot().remove(b);
-	}
-
 	public void bundleTransitions(Collection<BundledTransition> transitions) {
 		if (transitions != null && !transitions.isEmpty()) {
 			Bundle bundle = createBundle();
@@ -114,33 +99,12 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		}
 	}
 
-	public void unbundleTransitions(Collection<BundledTransition> transitions) {
-		for (BundledTransition t: transitions) {
-			for (Bundle b: getBundles()) {
-				if (b.contains(t)) {
-					b.remove(t);
-					if (b.isEmpty()) {
-						deleteBundle(b);
-					}
-				}
-			}
-		}
-	}
-
-	public void addToBundles(BundledTransition transition, Collection<Bundle> bundles) {
-		if (transition != null && bundles != null) {
-			for (Bundle b: bundles) {
-				b.add(transition);
-			}
-		}
-	}
-
-	public void removeFromBundles(BundledTransition transition, Collection<Bundle> bundles) {
-		if (transition != null && bundles != null) {
-			for (Bundle b: bundles) {
-				b.remove(transition);
-				if (b.isEmpty()) {
-					deleteBundle(b);
+	public void unbundleTransition(BundledTransition transition) {
+		for (Bundle bundle: getBundles()) {
+			if (bundle.contains(transition)) {
+				bundle.remove(transition);
+				if (bundle.isEmpty()) {
+					getRoot().remove(bundle);
 				}
 			}
 		}
@@ -156,71 +120,27 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 		return result;
 	}
 
-	public String getBundlesOfTransitionAsString(BundledTransition t) {
-		String result = "";
-		for (Bundle b: getBundlesOfTransition(t)) {
-			if (result != "") {
-				result += ", ";
-			}
-			result += getNodeReference(b);
-		}
-		return result;
-	}
-
-	public void setBundlesOfTransitionAsString(BundledTransition t, String s) {
-		for (Bundle b: getBundles()) {
-			b.remove(t);
-		}
-		for (String ref : s.split("\\s*,\\s*")) {
-			Node node = getNodeByReference(ref);
-			if (node == null) {
-				node = createBundle(ref);
-			}
-			if (node instanceof Bundle) {
-				Bundle b = (Bundle)node;
-				b.add(t);
-			}
-		}
-	}
-
-	public String getTransitionsOfBundleAsString(Bundle b) {
-		String result = "";
-		for (BundledTransition t: b.getTransitions()) {
-			if (result != "") {
-				result += ", ";
-			}
-			result += getNodeReference(t);
-		}
-		return result;
-	}
-
-	public void setTransitionsOfBundleAsString(Bundle b, String s) {
-		for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
-			b.remove(t);
-		}
-		for (String ref : s.split("\\s*,\\s*")) {
-			Node node = getNodeByReference(ref);
-			if (node instanceof BundledTransition) {
-				b.add((BundledTransition)node);
-			}
-		}
-	}
-
-	public Locality createLocality(ArrayList<Node> selection, Container currentLevel) {
+	public Locality createLocality(ArrayList<Node> nodes, Container parent) {
 		Locality locality = new Locality();
-		currentLevel.add(locality);
-		currentLevel.reparent(selection, locality);
+		parent.add(locality);
+		parent.reparent(nodes, locality);
 
 		ArrayList<Node> connectionsToLocality = new ArrayList<Node>();
-		for (Connection connection : Hierarchy.getChildrenOfType(currentLevel, Connection.class)) {
+		for (Connection connection : Hierarchy.getChildrenOfType(parent, Connection.class)) {
 			if (Hierarchy.isDescendant(connection.getFirst(), locality)	&& Hierarchy.isDescendant(connection.getSecond(), locality)) {
 				connectionsToLocality.add(connection);
 			}
 		}
-		currentLevel.reparent(connectionsToLocality, locality);
+		parent.reparent(connectionsToLocality, locality);
 
+		splitBundlesByLocalities(nodes);
+
+		return locality;
+	}
+
+	private void splitBundlesByLocalities(ArrayList<Node> nodes) {
 		HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<Bundle, HashSet<BundledTransition>>();
-		for (Node node: selection) {
+		for (Node node: nodes) {
 			if (node instanceof BundledTransition) {
 				BundledTransition t = (BundledTransition)node;
 				for (Bundle b: ((PolicyNet)getMathModel()).getBundlesOfTransition(t)) {
@@ -241,26 +161,6 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
 				b.removeAll(subBundles.get(b));
 			}
 		}
-
-		return locality;
-	}
-
-
-	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
-		if (node == null) {
-			for (Bundle b: getBundles()) {
-				properties = Properties.Merge.add(properties,
-						new BundleNamePropertyDescriptor(this, b),
-						new BundleColorPropertyDescriptor(this, b),
-						new TransitionsOfBundlePropertyDescriptor(this, b));
-			}
-		} else if (node instanceof BundledTransition) {
-			BundledTransition t = (BundledTransition)node;
-			properties = Properties.Merge.add(properties, new BundlesOfTransitionPropertyDescriptor(this, t));
-		}
-		return properties;
 	}
 
 }

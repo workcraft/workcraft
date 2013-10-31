@@ -5,14 +5,15 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.gui.propertyeditor.SettingsPage;
-import org.workcraft.plugins.layout.DotLayout;
 import org.workcraft.plugins.layout.DotLayoutSettings;
-import org.workcraft.plugins.layout.NullLayout;
-import org.workcraft.plugins.layout.RandomLayout;
+import org.workcraft.plugins.layout.DotLayoutTool;
+import org.workcraft.plugins.layout.NullLayoutTool;
 import org.workcraft.plugins.layout.RandomLayoutSettings;
+import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonCommentSettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.transform.CopyLablesTool;
 
 public class BuiltinTools implements Module {
 	@Override
@@ -26,9 +27,11 @@ public class BuiltinTools implements Module {
 		p.registerClass(SettingsPage.class, DotLayoutSettings.class);
 		p.registerClass(SettingsPage.class, RandomLayoutSettings.class);
 
-		p.registerClass(Tool.class, DotLayout.class, framework);
-		p.registerClass(Tool.class, NullLayout.class);
-		p.registerClass(Tool.class, RandomLayout.class);
+		p.registerClass(Tool.class, DotLayoutTool.class, framework);
+		p.registerClass(Tool.class, NullLayoutTool.class);
+		p.registerClass(Tool.class, RandomLayoutTool.class);
+
+		p.registerClass(Tool.class, CopyLablesTool.class);
 	}
 
 	@Override

@@ -87,7 +87,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.DotLayout;
+import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -270,7 +270,7 @@ public class MainWindow extends JFrame {
 
 				modelEntry.setModel(visualModel);
 
-				DotLayout layout = new DotLayout(framework);
+				DotLayoutTool layout = new DotLayoutTool(framework);
 				layout.run(we);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
@@ -1206,6 +1206,24 @@ public class MainWindow extends JFrame {
 	public void delete() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().delete();
+		}
+	}
+
+	public void selectAll() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectAll();
+		}
+	}
+
+	public void selectNone() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectNone();
+		}
+	}
+
+	public void selectInverse() {
+		if (editorInFocus != null) {
+			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectInverse();
 		}
 	}
 

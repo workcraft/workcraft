@@ -14,8 +14,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.tools.PetriNetSelectionTool;
-import org.workcraft.plugins.policy.BundledTransition;
-import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.util.GUI;
@@ -78,32 +76,32 @@ public class SelectionTool extends PetriNetSelectionTool {
 		getEditor().repaint();
 	}
 
-	protected Collection<BundledTransition> getSelectedTransitions() {
-		Set<BundledTransition> transitions = new HashSet<BundledTransition>();
+	protected Collection<VisualBundledTransition> getSelectedTransitions() {
+		Set<VisualBundledTransition> transitions = new HashSet<VisualBundledTransition>();
 		VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
 		for (Node node : visualModel.getSelection()) {
 			if (node instanceof VisualBundledTransition) {
-				transitions.add(((VisualBundledTransition)node).getReferencedTransition());
+				transitions.add((VisualBundledTransition)node);
 			}
 		}
 		return transitions;
 	}
 
 	protected void selectionBundle() {
-		Collection<BundledTransition> transitions = getSelectedTransitions();
+		Collection<VisualBundledTransition> transitions = getSelectedTransitions();
 		if (!transitions.isEmpty()) {
-			PolicyNet model = (PolicyNet)getEditor().getModel().getMathModel();
 			getEditor().getWorkspaceEntry().saveMemento();
-			model.bundleTransitions(transitions);
+			VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
+			visualModel.bundleTransitions(transitions);
 		}
 	}
 
 	protected void selectionUnbundle() {
-		Collection<BundledTransition> transitions = getSelectedTransitions();
+		Collection<VisualBundledTransition> transitions = getSelectedTransitions();
 		if (!transitions.isEmpty()) {
-			PolicyNet model = (PolicyNet)getEditor().getModel().getMathModel();
 			getEditor().getWorkspaceEntry().saveMemento();
-			model.unbundleTransitions(transitions);
+			VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
+			visualModel.unbundleTransitions(transitions);
 		}
 	}
 

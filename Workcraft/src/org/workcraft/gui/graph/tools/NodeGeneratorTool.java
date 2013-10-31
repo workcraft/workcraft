@@ -23,6 +23,7 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 
@@ -31,6 +32,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractTool {
+	static private boolean allowButton2 = false;
 	private NodeGenerator generator;
 	protected int hotKeyCode;
 
@@ -48,8 +50,10 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	public void mousePressed(GraphEditorMouseEvent e) {
 		try {
-			e.getEditor().getWorkspaceEntry().saveMemento();
-			generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
+			if (e.getButton() == MouseEvent.BUTTON1 || (allowButton2 && e.getButton() == MouseEvent.BUTTON2)) {
+				e.getEditor().getWorkspaceEntry().saveMemento();
+				generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
+			}
 		} catch (NodeCreationException e1) {
 			throw new RuntimeException (e1);
 		}

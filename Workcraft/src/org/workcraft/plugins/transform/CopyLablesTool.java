@@ -19,20 +19,21 @@
 *
 */
 
-package org.workcraft.plugins.layout;
+package org.workcraft.plugins.transform;
 
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class NullLayout implements Tool {
+public class CopyLablesTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Layout";
+		return "Labeling";
 	}
 
 	@Override
@@ -42,16 +43,21 @@ public class NullLayout implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		for (Node n : WorkspaceUtils.getAs(we, VisualModel.class).getRoot().getChildren()) {
-			if (n instanceof VisualTransformableNode) {
-				((VisualTransformableNode)n).setX(0);
-				((VisualTransformableNode)n).setY(0);
+		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
+		if (visualModel != null) {
+			MathModel mathModel = (MathModel)visualModel.getMathModel();
+			for (Node node : visualModel.getRoot().getChildren()) {
+				if (node instanceof VisualComponent) {
+					VisualComponent visualComponent = (VisualComponent)node;
+					Node refComponent = ((VisualComponent)node).getReferencedComponent();
+					visualComponent.setLabel(mathModel.getNodeReference(refComponent));
+				}
 			}
 		}
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Reset layout";
+		return "Set component labels from their unique names";
 	}
 }

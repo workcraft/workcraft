@@ -6,14 +6,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.policy.Bundle;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.VisualBundle;
+import org.workcraft.plugins.policy.VisualPolicyNet;
 
 public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
-	private final PolicyNet model;
-	private final Bundle bundle;
+	private final VisualPolicyNet model;
+	private final VisualBundle bundle;
 
-	public BundleColorPropertyDescriptor(PolicyNet model, Bundle bundle) {
+	public BundleColorPropertyDescriptor(VisualPolicyNet model, VisualBundle bundle) {
 		this.model = model;
 		this.bundle = bundle;
 	}
@@ -25,7 +25,7 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return model.getName(bundle) + " color";
+		return model.getPetriNet().getName(bundle.getReferencedBundle()) + " color";
 	}
 
 	@Override

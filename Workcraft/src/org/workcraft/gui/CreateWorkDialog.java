@@ -24,6 +24,8 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -36,6 +38,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,6 +46,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import org.workcraft.Framework;
@@ -190,8 +194,7 @@ public class CreateWorkDialog extends JDialog {
 		okButton.setText("OK");
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				if (okButton.isEnabled())
-					ok();
+				ok();
 			}
 		});
 
@@ -207,31 +210,41 @@ public class CreateWorkDialog extends JDialog {
 		buttonsPane.add(okButton);
 		buttonsPane.add(cancelButton);
 
-
 		contentPane.add(modelScroll, BorderLayout.CENTER);
 		contentPane.add(optionsPane, BorderLayout.WEST);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
 
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				ok();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		txtTitle.addKeyListener(new java.awt.event.KeyAdapter() {
-			@Override
-			public void keyPressed(java.awt.event.KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_ENTER)
-					if (okButton.isEnabled())
-						ok();
-			}
-		});
-
-	}
-
-	private void cancel() {
-		modalResult = 0;
-		setVisible(false);
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				cancel();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	private void ok() {
-		modalResult = 1;
-		setVisible(false);
+		if (okButton.isEnabled()) {
+			modalResult = 1;
+			setVisible(false);
+		}
+	}
+
+	private void cancel() {
+		if (cancelButton.isEnabled()) {
+			modalResult = 0;
+			setVisible(false);
+		}
 	}
 
 	public ModelDescriptor getSelectedModel() {

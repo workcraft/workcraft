@@ -1,6 +1,5 @@
 package org.workcraft.plugins.policy;
 
-import java.awt.Color;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,11 +10,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class Bundle extends MathNode  {
 	private final Set<BundledTransition> transitions = new HashSet<BundledTransition>();
-	private Color color = CieColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
-//	private Color color = Color.getHSBColor((float)Math.random(), 0.25f, 0.75f);
-
-	public Bundle() {
-	}
 
 	public void add(BundledTransition transition) {
 		if (transition != null) {
@@ -49,15 +43,6 @@ public class Bundle extends MathNode  {
 
 	public Collection<BundledTransition> getTransitions() {
 		return Collections.unmodifiableCollection(transitions);
-	}
-
-	public void setColor(Color value) {
-		this.color = value;
-		sendNotification(new PropertyChangedEvent(this, "color"));
-	}
-
-	public Color getColor() {
-		return color;
 	}
 
 }

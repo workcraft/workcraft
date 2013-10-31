@@ -24,7 +24,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool
 					VisualScenario scenario = (VisualScenario) selectedNode;
 					Variable var = scenario.getVariableAt(e.getPosition());
 					if (var == null) {
-						selectionLevelDown();
+						changeLevelDown();
 					} else {
 						Encoding encoding = scenario.getEncoding();
 						encoding.toggleState(var);

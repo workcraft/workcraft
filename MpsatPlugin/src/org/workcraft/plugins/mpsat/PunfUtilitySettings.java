@@ -69,7 +69,7 @@ public class PunfUtilitySettings implements SettingsPage {
 	@Override
 	public void load(Config config) {
 		command = config.getString(commandKey, "punf");
-		extraArgs = config.getString(extraArgsKey, "");
+		extraArgs = config.getString(extraArgsKey, "-r");
 	}
 
 	@Override

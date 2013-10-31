@@ -703,7 +703,7 @@ public class Framework {
 			if (visualResult.model instanceof VisualModel) {
 				VisualModel visualModel = (VisualModel)visualResult.model;
 				loadVisualModelState(bi1, visualModel, visualResult.references1);
-				// move the nodes of model2 into the current level of model2
+				// move the nodes of model2 into the current level of model1
 				Collection<Node> nodes = new HashSet<Node>();
 				for (Object obj: visualResult.references2.getObjects()) {
 					if (obj instanceof Node) {

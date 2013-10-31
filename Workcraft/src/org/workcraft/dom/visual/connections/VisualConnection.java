@@ -212,9 +212,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		}
 	}
 
-	public void setVisualConnectionDependencies(VisualComponent first,
-			VisualComponent second, ConnectionGraphic graphic,
-			MathConnection refConnection) {
+	public void setVisualConnectionDependencies(VisualComponent first,	VisualComponent second,
+			ConnectionGraphic graphic, MathConnection refConnection) {
 		if (first == null)
 			throw new NullPointerException("first");
 		if (second == null)

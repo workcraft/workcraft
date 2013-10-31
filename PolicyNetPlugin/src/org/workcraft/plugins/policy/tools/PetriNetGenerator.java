@@ -15,6 +15,7 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.policy.Bundle;
+import org.workcraft.plugins.policy.VisualBundle;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualLocality;
 import org.workcraft.plugins.policy.VisualPolicyNet;
@@ -27,7 +28,7 @@ public class PetriNetGenerator {
 	private final Map<VisualPlace, VisualPlace> placeMap;
 	private final Map<VisualBundledTransition, VisualTransition> transitionMap;
 	private final Map<VisualLocality, VisualGroup> localityMap;
-	private final Map<Bundle, VisualTransition> bundleMap;
+	private final Map<VisualBundle, VisualTransition> bundleMap;
 
 	public PetriNetGenerator(VisualPolicyNet policyNet) {
 		this.policyNet = policyNet;
@@ -82,22 +83,23 @@ public class PetriNetGenerator {
 		return result;
 	}
 
-	private Map<Bundle, VisualTransition> convertBundles() {
-		Map<Bundle, VisualTransition> result = new HashMap<Bundle, VisualTransition>();
-		for(Bundle bundle : Hierarchy.getDescendantsOfType(policyNet.getPolicyNet().getRoot(), Bundle.class)) {
-			if (!bundle.isEmpty()) {
+	private Map<VisualBundle, VisualTransition> convertBundles() {
+		Map<VisualBundle, VisualTransition> result = new HashMap<VisualBundle, VisualTransition>();
+		for(VisualBundle bundle : policyNet.getVisualBundles()) {
+			if (!bundle.getReferencedBundle().isEmpty()) {
 				double x = 0;
 				double y = 0;
 				int count = 0;
-				for(VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
-					if (bundle.contains(transition.getReferencedTransition())) {
+				for(VisualBundledTransition transition : policyNet.getVisualBundledTransitions()) {
+					if (bundle.getReferencedBundle().contains(transition.getReferencedTransition())) {
 						x += transition.getX();
 						y += transition.getY();
 						count++;
 					}
 				}
 				if (count > 0) {
-					VisualTransition newTransition = petriNet.createTransition(policyNet.getPolicyNet().getNodeReference(bundle));
+					String bundleName = policyNet.getPolicyNet().getNodeReference(bundle.getReferencedBundle());
+					VisualTransition newTransition = petriNet.createTransition(bundleName);
 					newTransition.setFillColor(bundle.getColor());
 					newTransition.setPosition(new Point2D.Double(x / count, y / count));
 					result.put(bundle, newTransition);
@@ -117,7 +119,7 @@ public class PetriNetGenerator {
 					if (t != null) {
 						nodes.add(t);
 					}
-					for (Bundle b: policyNet.getBundlesOfTransition((VisualBundledTransition)node)) {
+					for (VisualBundle b: policyNet.getBundlesOfTransition((VisualBundledTransition)node)) {
 						VisualTransition bt = bundleMap.get(b);
 						if (bt != null) {
 							nodes.add(bt);
@@ -162,7 +164,7 @@ public class PetriNetGenerator {
 	}
 
 	private void connectBundles() throws InvalidConnectionException {
-		for(Bundle bundle : policyNet.getPolicyNet().getBundles()) {
+		for(VisualBundle bundle : policyNet.getVisualBundles()) {
 			VisualTransition newTransition = bundleMap.get(bundle);
 			if (newTransition != null) {
 				for(VisualBundledTransition t: policyNet.getTransitionsOfBundle(bundle)) {
@@ -187,6 +189,10 @@ public class PetriNetGenerator {
 		}
 	}
 
+	public VisualPolicyNet getPolicyNet() {
+		return policyNet;
+	}
+
 	public VisualPetriNet getPetriNet() {
 		return petriNet;
 	}
@@ -201,7 +207,7 @@ public class PetriNetGenerator {
 		if (t != null) {
 			result.add(t);
 		} else {
-			for (Bundle bundle: policyNet.getBundlesOfTransition(node)) {
+			for (VisualBundle bundle: policyNet.getBundlesOfTransition(node)) {
 				VisualTransition bt = bundleMap.get(bundle);
 				if (bt != null) {
 					result.add(bt);

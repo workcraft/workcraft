@@ -151,8 +151,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	}
 
 	@Override
-	public Point2D getCenterInLocalSpace()
-	{
+	public Point2D getCenterInLocalSpace() {
 		return new Point2D.Double(0, 0);
 	}
 

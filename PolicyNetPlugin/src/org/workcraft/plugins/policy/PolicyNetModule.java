@@ -10,7 +10,9 @@ import org.workcraft.plugins.policy.serialisation.BundleDeserialiser;
 import org.workcraft.plugins.policy.serialisation.BundleSerialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalityDeserialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalitySerialiser;
+import org.workcraft.plugins.policy.tools.CheckDeadlockTool;
 import org.workcraft.plugins.policy.tools.PetriNetGeneratorTool;
+import org.workcraft.plugins.policy.tools.TransitionBundlerTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
@@ -24,6 +26,20 @@ public class PolicyNetModule implements Module {
 			@Override
 			public Tool create() {
 				return new PetriNetGeneratorTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new TransitionBundlerTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CheckDeadlockTool(framework);
 			}
 		});
 

@@ -60,11 +60,11 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DotLayout implements Tool {
+public class DotLayoutTool implements Tool {
 
 	private final Framework framework;
 
-	public DotLayout(Framework framework) {
+	public DotLayoutTool(Framework framework) {
 		this.framework = framework;
 	}
 

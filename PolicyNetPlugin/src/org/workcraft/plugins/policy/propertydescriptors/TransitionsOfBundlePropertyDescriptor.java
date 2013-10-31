@@ -5,14 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.policy.Bundle;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.VisualBundle;
+import org.workcraft.plugins.policy.VisualPolicyNet;
 
 public final class TransitionsOfBundlePropertyDescriptor implements PropertyDescriptor {
-	private final PolicyNet model;
-	private final Bundle bundle;
+	private final VisualPolicyNet model;
+	private final VisualBundle bundle;
 
-	public TransitionsOfBundlePropertyDescriptor(PolicyNet model, Bundle bundle) {
+	public TransitionsOfBundlePropertyDescriptor(VisualPolicyNet model, VisualBundle bundle) {
 		this.model = model;
 		this.bundle = bundle;
 	}
@@ -24,7 +24,7 @@ public final class TransitionsOfBundlePropertyDescriptor implements PropertyDesc
 
 	@Override
 	public String getName() {
-		return model.getName(bundle) + " transitions";
+		return model.getPolicyNet().getName(bundle.getReferencedBundle()) + " transitions";
 	}
 
 	@Override

@@ -23,7 +23,6 @@ public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 	{
 		VisualLocality visualLocality = (VisualLocality)instance;
 		visualLocality.setLocality((Locality)externalReferenceResolver.getObject(element.getAttribute("ref")));
-
 	}
 
 	@Override

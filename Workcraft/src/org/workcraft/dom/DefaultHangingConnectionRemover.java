@@ -72,7 +72,6 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 
 	private void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
 		// need only to remove those connections that are not already being deleted
-
 		for (Connection con : nct.getConnections(node))
 			if (hanging.fn(con))
 				hangingConnections.add(con);

@@ -181,6 +181,10 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 		editor.repaint();
 	}
 
+	public void selectDefaultTool() {
+		selectTool(selectedTool);
+	}
+
 	public void addCommonTools() {
 		addTool(selectionTool, true);
 		addTool(labelTool, false);
@@ -200,12 +204,13 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if(provider != null)
+			if(provider != null) {
 				for(GraphEditorTool tool : provider.getTools())
 				{
 					addTool(tool, selected);
 					selected = false;
 				}
+			}
 		}
 		else
 		{

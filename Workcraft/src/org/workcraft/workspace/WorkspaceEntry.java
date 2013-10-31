@@ -258,14 +258,6 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
-	public void delete() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			model.deleteSelection();
-		}
-	}
-
 	public void copy() {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
@@ -306,6 +298,15 @@ public class WorkspaceEntry implements ObservableState {
 			} catch (DeserialisationException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+
+	public void delete() {
+		VisualModel model = modelEntry.getVisualModel();
+		if (model.getSelection().size() > 0) {
+			saveMemento();
+			model.deleteSelection();
 		}
 	}
 

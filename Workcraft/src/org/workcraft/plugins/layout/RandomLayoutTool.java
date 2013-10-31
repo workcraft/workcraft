@@ -30,7 +30,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class RandomLayout implements Tool {
+public class RandomLayoutTool implements Tool {
 	Random r = new Random();
 
 	@Override

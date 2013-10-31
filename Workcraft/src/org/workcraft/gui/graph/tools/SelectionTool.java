@@ -54,6 +54,7 @@ import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
@@ -151,7 +152,7 @@ public class SelectionTool extends AbstractTool {
 		levelUpButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionLevelUp();
+				changeLevelUp();
 			}
 		});
 		levelPanel.add(levelUpButton);
@@ -160,7 +161,7 @@ public class SelectionTool extends AbstractTool {
 		levelDownButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionLevelDown();
+				changeLevelDown();
 			}
 		});
 		levelPanel.add(levelDownButton);
@@ -247,9 +248,24 @@ public class SelectionTool extends AbstractTool {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			VisualModel model = e.getEditor().getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
-			if (node != null) {
+			if (node == null) {
 				if (e.getClickCount() > 1) {
-					if (node instanceof VisualComment) {
+					if (model.getCurrentLevel() instanceof VisualGroup) {
+						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
+						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+							changeLevelUp();
+						}
+					}
+				} else {
+					if (e.getKeyModifiers() == 0) {
+						e.getModel().selectNone();
+					}
+				}
+			} else {
+				if (e.getClickCount() > 1) {
+					if (node instanceof VisualGroup) {
+						changeLevelDown();
+					} else if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
 						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
 					}
@@ -266,9 +282,6 @@ public class SelectionTool extends AbstractTool {
 						break;
 					}
 				}
-			} else {
-				if (e.getKeyModifiers() == 0)
-					e.getModel().selectNone();
 			}
 		}
 		anchorGenerator.mouseClicked(e);
@@ -402,14 +415,14 @@ public class SelectionTool extends AbstractTool {
 				cancelDrag(e.getEditor());
 				notClick1 = true;
 			} else {
-				selectionLevelUp();
+				selectionCancel();
 			}
 			break;
 		case KeyEvent.VK_PAGE_UP:
-			selectionLevelUp();
+			changeLevelUp();
 			break;
 		case KeyEvent.VK_PAGE_DOWN:
-			selectionLevelDown();
+			changeLevelDown();
 			break;
 		}
 
@@ -599,6 +612,37 @@ public class SelectionTool extends AbstractTool {
 		});
 	}
 
+	protected void changeLevelDown() {
+		VisualModel model = getEditor().getModel();
+		Collection<Node> selection = model.getSelection();
+		if (selection.size() == 1) {
+			Node node = selection.iterator().next();
+			if(node instanceof Container) {
+				model.setCurrentLevel((Container)node);
+				getEditor().repaint();
+			}
+		}
+	}
+
+	protected void changeLevelUp() {
+		VisualModel model = getEditor().getModel();
+		Container level = model.getCurrentLevel();
+		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+		if (parent != null) {
+			model.setCurrentLevel(parent);
+			model.addToSelection(level);
+			getEditor().repaint();
+		}
+	}
+
+	protected void selectionCancel() {
+		VisualModel model = getEditor().getModel();
+		if (model.getSelection().size() > 0) {
+			getEditor().getMainWindow().selectNone();
+			getEditor().repaint();
+		}
+	}
+
 	protected void selectionGroup() {
 		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
@@ -613,29 +657,6 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			getEditor().getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
-			getEditor().repaint();
-		}
-	}
-
-	protected void selectionLevelDown() {
-		VisualModel model = getEditor().getModel();
-		Collection<Node> selection = model.getSelection();
-		if (selection.size() == 1) {
-			Node node = selection.iterator().next();
-			if(node instanceof Container) {
-				model.setCurrentLevel((Container)node);
-				getEditor().repaint();
-			}
-		}
-	}
-
-	protected void selectionLevelUp() {
-		VisualModel model = getEditor().getModel();
-		Container level = model.getCurrentLevel();
-		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-		if (parent != null) {
-			model.setCurrentLevel(parent);
-			model.addToSelection(level);
 			getEditor().repaint();
 		}
 	}

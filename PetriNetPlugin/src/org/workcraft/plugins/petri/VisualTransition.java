@@ -22,7 +22,6 @@
 package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -66,8 +65,7 @@ public class VisualTransition extends VisualComponent {
 		drawNameInLocalSpace(r);
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)	{
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 

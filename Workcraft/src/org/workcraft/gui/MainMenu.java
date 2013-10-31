@@ -246,6 +246,20 @@ public class MainMenu extends JMenuBar {
 		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 		miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ActionMenuItem miSelectAll = new ActionMenuItem(MainWindowActions.EDIT_SELECT_ALL_ACTION);
+		miSelectAll.setMnemonic(KeyEvent.VK_A);
+		miSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		miSelectAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miSelectInverse = new ActionMenuItem(MainWindowActions.EDIT_SELECT_INVERSE_ACTION);
+		miSelectInverse.setMnemonic(KeyEvent.VK_V);
+		miSelectInverse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EXCLAMATION_MARK, 0));
+		miSelectInverse.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miSelectNone = new ActionMenuItem(MainWindowActions.EDIT_SELECT_NONE_ACTION);
+		miSelectNone.setMnemonic(KeyEvent.VK_E);
+		miSelectNone.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
 		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
@@ -256,6 +270,10 @@ public class MainMenu extends JMenuBar {
 		mnEdit.add(miCopy);
 		mnEdit.add(miPaste);
 		mnEdit.add(miDelete);
+		mnEdit.addSeparator();
+		mnEdit.add(miSelectAll);
+		mnEdit.add(miSelectInverse);
+		mnEdit.add(miSelectNone);
 		mnEdit.addSeparator();
 		mnEdit.add(miProperties);
 

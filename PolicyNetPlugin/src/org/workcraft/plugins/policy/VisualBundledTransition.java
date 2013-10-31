@@ -53,14 +53,14 @@ public class VisualBundledTransition extends VisualTransition {
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
-		PolicyNet model = (PolicyNet)r.getModel().getMathModel();
+		VisualPolicyNet model = (VisualPolicyNet)r.getModel();
 		double w = size - strokeWidth;
 		double h = size - strokeWidth;
 		double w2 = w / 2;
 		double h2 = h / 2;
 		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
 
-		Collection<Bundle> bundles = model.getBundlesOfTransition(getReferencedTransition());
+		Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
 		if (bundles.size() > 0) {
 			h = (h - strokeWidth) /bundles.size();
 			h2 = h/2;
@@ -71,7 +71,7 @@ public class VisualBundledTransition extends VisualTransition {
 			g.fill(shape);
 		} else {
 			double y = -size/2 + strokeWidth + h2;
-			for (Bundle b: bundles) {
+			for (VisualBundle b: bundles) {
 				Shape bundleShape = new Rectangle2D.Double (-w2, y-h2, w, h);
 				g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
 				g.fill(bundleShape);

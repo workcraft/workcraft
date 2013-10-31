@@ -5,14 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.policy.BundledTransition;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.VisualBundledTransition;
+import org.workcraft.plugins.policy.VisualPolicyNet;
 
 public final class BundlesOfTransitionPropertyDescriptor implements PropertyDescriptor {
-	private final PolicyNet model;
-	private final BundledTransition transition;
+	private final VisualPolicyNet model;
+	private final VisualBundledTransition transition;
 
-	public BundlesOfTransitionPropertyDescriptor(PolicyNet model, BundledTransition transition) {
+	public BundlesOfTransitionPropertyDescriptor(VisualPolicyNet model, VisualBundledTransition transition) {
 		this.model = model;
 		this.transition = transition;
 	}

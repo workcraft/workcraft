@@ -5,14 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.policy.Bundle;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.VisualBundle;
+import org.workcraft.plugins.policy.VisualPolicyNet;
 
 public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
-	private final PolicyNet model;
-	private final Bundle bundle;
+	private final VisualPolicyNet model;
+	private final VisualBundle bundle;
 
-	public BundleNamePropertyDescriptor(PolicyNet model, Bundle bundle) {
+	public BundleNamePropertyDescriptor(VisualPolicyNet model, VisualBundle bundle) {
 		this.model = model;
 		this.bundle = bundle;
 	}
@@ -24,7 +24,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return model.getName(bundle) + " name";
+		return model.getPolicyNet().getName(bundle.getReferencedBundle()) + " name";
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return model.getName(bundle);
+		return model.getPolicyNet().getName(bundle.getReferencedBundle());
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		model.setName(bundle, (String)value);
+		model.getPolicyNet().setName(bundle.getReferencedBundle(), (String)value);
 	}
 
 	@Override

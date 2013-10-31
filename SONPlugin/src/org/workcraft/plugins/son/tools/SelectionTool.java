@@ -73,11 +73,11 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				if(selectedNode instanceof VisualONGroup)
 				{
 					setChannelPlaceToolState(false);
-					selectionLevelDown();
+					changeLevelDown();
 				}
 				if(selectedNode instanceof VisualSuperGroup)
 				{
-					selectionLevelDown();
+					changeLevelDown();
 				}
 				if(selectedNode instanceof VisualCondition){
 					VisualCondition vc = (VisualCondition)selectedNode;

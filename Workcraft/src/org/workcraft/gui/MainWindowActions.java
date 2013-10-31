@@ -174,6 +174,39 @@ public class MainWindowActions {
 		}
 	};
 
+	public static final Action EDIT_SELECT_ALL_ACTION = new Action() {
+		@Override
+		public String getText() {
+			return "Select all";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().selectAll();
+		}
+	};
+
+	public static final Action EDIT_SELECT_INVERSE_ACTION = new Action() {
+		@Override
+		public String getText() {
+			return "Inverse selection";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().selectInverse();
+		}
+	};
+
+	public static final Action EDIT_SELECT_NONE_ACTION = new Action() {
+		@Override
+		public String getText() {
+			return "Deselect";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().selectNone();
+		}
+	};
+
 	public static final Action EDIT_SETTINGS_ACTION = new Action() {
 		@Override
 		public String getText() {

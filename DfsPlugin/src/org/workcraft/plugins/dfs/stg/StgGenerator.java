@@ -833,7 +833,8 @@ public class StgGenerator {
 					BinaryRegisterStg mstg = getControlRegisterSTG(m);
 					if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
 						createReadArc(mstg.M1, rstg.tMRs.get(n));
-					} else {
+					}
+					if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
 						createReadArc(mstg.M1, rstg.fMRs.get(n));
 					}
 				}

@@ -48,10 +48,12 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	}
 
 	public void setParent(Node parent) {
-		if (parent != null && this.parent != null)
-			throw new RuntimeException ("Cannot assign new parent to a node that already has a parent.");
-
-		this.parent = parent;
+		if (parent != this.parent) {
+			if (parent != null && this.parent != null) {
+				throw new RuntimeException ("Cannot assign new parent to a node that already has a parent.");
+			}
+			this.parent = parent;
+		}
 	}
 
 	protected void addInternal(Node node, boolean notify) {
@@ -71,7 +73,7 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 		if (node.getParent() == this)
 			return;
 
-		if (node.getParent() != null)
+		if (node.getParent() != null && node.getParent() != groupRef)
 			throw new RuntimeException("Cannot attach someone else's node. Please detach from the old parent first.");
 
 		if (notify)
