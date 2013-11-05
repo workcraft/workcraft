@@ -52,6 +52,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 		return new GraphEditorMouseEvent(editor, e, startPosition, prevPosition);
 	}
 
+	private boolean isPanCombo(MouseEvent e) {
+		return (e.getButton() == MouseEvent.BUTTON2) || (e.isControlDown() && e.getButton() == MouseEvent.BUTTON3);
+	}
+
 	public void mouseDragged(MouseEvent e) {
 		mouseMoved(e);
 	}
@@ -76,33 +80,36 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		if (!editor.hasFocus())
+		if (!editor.hasFocus()) {
 			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
-
-		if (e.getButton() != MouseEvent.BUTTON2)
+		}
+		if (!isPanCombo(e)) {
 			toolProvider.getTool().mouseClicked(adaptEvent(e));
+		}
 	}
 
 	public void mouseEntered(MouseEvent e) {
 		if (editor.hasFocus()) {
 			GraphEditorTool tool = toolProvider.getTool();
-			if (tool != null)
+			if (tool != null) {
 				tool.mouseEntered(adaptEvent(e));
+			}
 		}
 	}
 
 	public void mouseExited(MouseEvent e) {
-		if (editor.hasFocus())
+		if (editor.hasFocus()) {
 			toolProvider.getTool().mouseExited(adaptEvent(e));
+		}
 	}
 
 	public void mousePressed(MouseEvent e) {
-		if (!editor.hasFocus())
+		if (!editor.hasFocus()) {
 			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
-
-		if (e.getButton() == MouseEvent.BUTTON2)
+		}
+		if (isPanCombo(e)) {
 			panDrag = true;
-		else {
+		} else {
 			GraphEditorTool tool = toolProvider.getTool();
 			if (tool != null) {
 				if(!tool.isDragging())
@@ -116,9 +123,9 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON2)
+		if (isPanCombo(e)) {
 			panDrag = false;
-		else {
+		} else {
 			GraphEditorTool tool = toolProvider.getTool();
 			if (tool != null) {
 				if(tool.isDragging())

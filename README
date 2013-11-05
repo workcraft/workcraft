@@ -16,15 +16,15 @@ Tips and tricks
     - Outline a selection area _from-right-to-left_ for adding fully covered objects, and _from-left-to-right_ for adding any touched objects.
     - Use _left mouse button_ or _arrow keys_ to move selected components.
     - Selected components can be removed by pressing Delete key.
+    - Press _Ctrl+A_ to select all objects or _Esc_ to reset selection.
 * Clipboard and History
     - Clipboard operations are allowed between the models of the same type: _Ctrl+C_ to copy, _Ctrl+X_ to cut and _Ctrl+V_ to insert.
     - History of modifications can be browsed: _Ctrl+Z_ to undo and _Ctrl+Shift+Z_ to redo.
 * Navigation and Grouping
     - _Ctrl+G_ combines selected objects into a group and _Ctrl+Shift+G_ ungroups them. 
-    - _PageDown_ enters a group and _PageUp_ leaves it.
-    - Scroll the mouse wheel _forward_ to zooms in and _backward_ to zoom out. 
-    - Alternatively press _+_ to zoom in and _-_ to zoom out.
-    - Use the middle mouse button or _Ctrl+arrow keys_ to pan the view.
+    - Press _PageDown_ or double-click a group to enter it. Press _PageUp_ or double-clock outside a group to leave it.
+    - Scroll the mouse wheel _forward_ to zooms in and _backward_ to zoom out. Alternatively press _+_ to zoom in and _-_ to zoom out.
+    - Use the _middle mouse button_ or _Ctrl+right mouse button_ or _Ctrl+arrow keys_ to pan the view.
 * Simulation
     - Use _[_ and _]_ keys to navigate through the simulation trace.
     - In Signal-State table the values of excited signals are depicted in bold font.

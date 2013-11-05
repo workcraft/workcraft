@@ -241,15 +241,15 @@ public class MainWindowActions {
 					"<li>Outline a selection area <i>from-right-to-left</i> for adding fully covered objects, and <i>from-left-to-right</i> for adding any touched objects.</li>" +
 					"<li>Use <i>left mouse button</i> or <i>arrow keys</i> to move selected components.</li>" +
 					"<li>Selected components can be removed by pressing <i>Delete</i> key.</li>" +
+					"<li>Press _Ctrl+A_ to select all objects or _Esc_ to reset selection.</li>" +
 				"</ul><li><b>Clipboard and History</b></li><ul>" +
 					"<li>Clipboard operations are allowed between the models of the same type: <i>Ctrl+C</i> to copy, <i>Ctrl+X</i> to cut and <i>Ctrl+V</i> to insert.</li>" +
 					"<li>History of modifications can be browsed: <i>Ctrl+Z</i> to undo and <i>Ctrl+Shift+Z</i> to redo.</li>" +
 				"</ul><li><b>Navigation and Grouping</b></li><ul>" +
-					"<li><i>Ctrl+G</i> combines selected objects into a group and <i>Ctrl+Shift+U</i> ungroups them.</li>" +
-					"<li><i>PageDown</i> enters a group and <i>PageUp</i> leaves it.</li>" +
-					"<li>Scroll mouse wheel <i>forward</i> to zooms in and <i>backward</i> to zoom out.</li>" +
-					"<li>Alternatively press <i>'+'</i> to zoom in and <i>'-'</i> to zoom out.</li>" +
-					"<li>Use <i>middle mouse button</i> or <i>Ctrl+arrow keys</i> to pan the view.</li>" +
+					"<li><i>Ctrl+G</i> combines selected objects into a group and <i>Ctrl+Shift+G</i> ungroups them.</li>" +
+					"<li>Press <i>PageDown,/i> or double-click a group to enter it. Press <i>PageUp</i> or double-clock outside a group to leave it.</li>" +
+					"<li>Scroll mouse wheel <i>forward</i> to zooms in and <i>backward</i> to zoom out. Alternatively press <i>'+'</i> to zoom in and <i>'-'</i> to zoom out.</li>" +
+					"<li>Use <i>middle mouse button</i> or <i>Ctrl+right mouse button</i> or <i>Ctrl+arrow keys</i> to pan the view.</li>" +
 				"</ul><li><b>Simulation</b></li><ul>" +
 					"<li>Use <i>[</i> and <i>]</i> keys to navigate through the simulation trace.</li>" +
 					"<li>In Signal-State table the values of excited signals are depicted in bold font.</li>" +
