@@ -21,13 +21,13 @@ public class VisualCircuitConnection extends VisualConnection {
 		super(con, c1, c2);
 	}
 
-	public void setReferencedZeroPlace(Place referencedPlace) {
-		this.referencedZeroPlace = referencedPlace;
-	}
-
 	@Override
 	public double getLineWidth() {
 		return CircuitSettings.getCircuitWireWidth();
+	}
+
+	public void setReferencedZeroPlace(Place referencedPlace) {
+		this.referencedZeroPlace = referencedPlace;
 	}
 
 	public Place getReferencedZeroPlace() {

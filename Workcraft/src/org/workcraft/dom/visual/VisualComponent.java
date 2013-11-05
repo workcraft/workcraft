@@ -261,6 +261,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		}
 	}
 
+	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
 		if (CommonVisualSettings.getLabelVisibility()) {
@@ -272,6 +273,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return bb;
 	}
 
+	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2
 			&& Math.abs(pointInLocalSpace.getY()) <= size / 2;

@@ -121,6 +121,7 @@ public class CreateWorkDialog extends JDialog {
 		modelList = new JList(listModel);
 		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
+		modelList.setVisibleRowCount(0);
 
 		modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 			public void valueChanged(javax.swing.event.ListSelectionEvent e) {

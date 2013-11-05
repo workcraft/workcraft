@@ -165,16 +165,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	private void addPropertyDeclarations() {
-		LinkedHashMap<String, Object> types = new LinkedHashMap<String, Object>();
-		types.put("Input", Contact.IOType.INPUT);
-		types.put("Output", Contact.IOType.OUTPUT);
-
-		LinkedHashMap<String, Object> directions = new LinkedHashMap<String, Object>();
-		directions.put("North", VisualContact.Direction.NORTH);
-		directions.put("East", VisualContact.Direction.EAST);
-		directions.put("South", VisualContact.Direction.SOUTH);
-		directions.put("West", VisualContact.Direction.WEST);
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
 				this, "Direction", Direction.class, Direction.getChoice()) {
 			protected void setter(VisualContact object, Direction value) {
