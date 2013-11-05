@@ -171,17 +171,17 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		String message;
-
-		if (warningMessage != null)
-			message = warningMessage;
-		else
-			if (first == null)
+		if (warningMessage != null) {
+			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
+		} else {
+			String message;
+			if (first == null) {
 				message = "Click on the first component";
-			else
+			} else {
 				message = "Click on the second component (control+click to connect continuously)";
-
-		GUI.drawEditorMessage(editor, g, warningMessage!=null ? Color.RED : Color.BLACK, message);
+			}
+			GUI.drawEditorMessage(editor, g, Color.BLACK, message);
+		}
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 	}
 
 	@Override
-	public void generate(VisualModel model, Point2D where) throws NodeCreationException {
+	public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
 		MathNode mn = createMathNode();
 		model.getMathModel().add(mn);
 
@@ -57,6 +57,7 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 			transform.transform(where, transformed);
 			MovableHelper.translate((Movable)vc, transformed.getX(), transformed.getY());
 		}
+		return vc;
 	}
 
 	@Override
