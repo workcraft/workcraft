@@ -13,6 +13,6 @@ public class GraphModule implements Module {
 
 	@Override
 	public String getDescription() {
-		return "Graph";
+		return "Directed Graph";
 	}
 }

@@ -27,10 +27,8 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import javax.swing.Icon;
 
@@ -45,116 +43,140 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class ConnectionTool extends AbstractTool {
-	private VisualNode mouseOverObject = null;
-	private VisualNode first = null;
+	static private final Color incompleteConnectionColor = Color.GREEN;
+	static private final Color validConnectionColor = Color.BLUE;
+	static private final Color invalidConnectionColor = Color.RED;
+
 	private boolean forbidConnectingArcs = true;
-	private boolean requireMouseExitForSelfLoop = true;
-	private boolean mouseLeftFirst = false;
-	private Point2D lastMouseCoords = new Point2D.Double();
+	private boolean forbidSelfLoops = true;
+
+	private Point2D mousePosition = null;
+	private VisualNode firstNode = null;
+	private VisualNode currentNode = null;
 	private String warningMessage = null;
+	private boolean mouseLeftFirstNode = false;
 
 	private static Color highlightColor = new Color(99, 130, 191).brighter();
 
 	public ConnectionTool () {
 
 	}
-	public ConnectionTool (boolean forbidConnectingArcs, boolean requireMouseExitForSelfLoop) {
+	public ConnectionTool (boolean forbidConnectingArcs, boolean forbidSelfLoops) {
 		this.forbidConnectingArcs = forbidConnectingArcs;
-		this.requireMouseExitForSelfLoop = requireMouseExitForSelfLoop;
-	}
-
-	public Ellipse2D getBoundingCircle(Rectangle2D boundingRect) {
-
-		double w_2 = boundingRect.getWidth()/2;
-		double h_2 = boundingRect.getHeight()/2;
-		double r = Math.sqrt(w_2 * w_2 + h_2 * h_2);
-
-		return new Ellipse2D.Double(boundingRect.getCenterX() - r, boundingRect.getCenterY() - r, r*2, r*2);
+		this.forbidSelfLoops = forbidSelfLoops;
 	}
 
 	@Override
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
-
-		if (first != null) {
-			warningMessage = null;
-			if (mouseOverObject != null) {
-				try {
-					editor.getModel().validateConnection(first, mouseOverObject);
-					drawConnectingLine(g, Color.GREEN);
-				} catch (InvalidConnectionException e) {
-					warningMessage = e.getMessage();
-					drawConnectingLine(g, Color.RED);
-				}
-			} else {
-				drawConnectingLine(g, Color.BLUE);
-			}
-		}
+	public Icon getIcon() {
+		return GUI.createIconFromSVG("images/icons/svg/connect.svg");
 	}
 
-	private void drawConnectingLine(Graphics2D g, Color color) {
-		g.setColor(color);
-
-		Point2D center = TransformHelper.transform(first, TransformHelper.getTransformToRoot(first)).getCenter();
-
-		Line2D line = new Line2D.Double(center.getX(), center.getY(), lastMouseCoords.getX(), lastMouseCoords.getY());
-		g.draw(line);
-	}
-
+	@Override
 	public String getLabel() {
 		return "Connect";
 	}
 
-	private void updateMouseOverObject(GraphEditorMouseEvent e) {
-		VisualNode node = (VisualNode) HitMan.hitTestForConnection(e.getPosition(), e.getModel());
+	@Override
+	public int getHotKeyCode() {
+		return KeyEvent.VK_C;
+	}
+
+	private void resetState(GraphEditor editor) {
+		mousePosition = null;
+		firstNode = null;
+		currentNode = null;
+		warningMessage = null;
+		mouseLeftFirstNode = false;
+		editor.getModel().selectNone();
+		editor.getWorkspaceEntry().setCanModify(true);
+	}
+
+	private void updateState(GraphEditorMouseEvent e) {
+		mousePosition = e.getPosition();
+		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, e.getModel());
 		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
-			mouseOverObject = node;
-			if (!mouseLeftFirst && requireMouseExitForSelfLoop) {
-				if (mouseOverObject == first)
-					mouseOverObject = null;
-				else
-					mouseLeftFirst = true;
+			currentNode = node;
+			if (currentNode != firstNode) {
+				mouseLeftFirstNode = true;
+				warningMessage = null;
+			}
+		}
+	}
+
+	@Override
+	public void activated(GraphEditor editor) {
+		super.activated(editor);
+		resetState(editor);
+	}
+
+
+	@Override
+	public void deactivated(GraphEditor editor) {
+		super.deactivated(editor);
+		resetState(editor);
+	}
+
+	@Override
+	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+		if (firstNode != null && mousePosition != null) {
+			g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
+			Point2D center = TransformHelper.transform(firstNode, TransformHelper.getTransformToRoot(firstNode)).getCenter();
+			Line2D line = new Line2D.Double(center.getX(), center.getY(), mousePosition.getX(), mousePosition.getY());
+			if (currentNode == null) {
+				g.setColor(incompleteConnectionColor);
+				g.draw(line);
+			} else {
+				try {
+					editor.getModel().validateConnection(firstNode, currentNode);
+					g.setColor(validConnectionColor);
+					g.draw(line);
+				} catch (InvalidConnectionException e) {
+					warningMessage = e.getMessage();
+					g.setColor(invalidConnectionColor);
+					g.draw(line);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		lastMouseCoords = e.getPosition();
-		updateMouseOverObject(e);
+		updateState(e);
 		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			updateMouseOverObject(e);
-			if (mouseOverObject != null) {
-				if (first == null) {
-					first = mouseOverObject;
-					mouseLeftFirst = false;
-					mouseOverObject = null;
-					e.getEditor().getWorkspaceEntry().setCanModify(false);
-				} else {
-					try {
-						e.getEditor().getWorkspaceEntry().saveMemento();
-						e.getModel().connect(first, mouseOverObject);
-						if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-							first = mouseOverObject;
-							mouseOverObject = null;
-						} else {
-							first = null;
-							e.getEditor().getWorkspaceEntry().setCanModify(true);
-						}
-					} catch (InvalidConnectionException e1) {
-						Toolkit.getDefaultToolkit().beep();
+		updateState(e);
+		if ((e.getButton() == MouseEvent.BUTTON1) && (currentNode != null)) {
+			if (firstNode == null) {
+				firstNode = currentNode;
+				warningMessage = null;
+				mouseLeftFirstNode = false;
+				e.getEditor().getWorkspaceEntry().setCanModify(false);
+			} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
+				if (forbidSelfLoops) {
+					warningMessage = "Self-loops are not allowed";
+				} else if (!mouseLeftFirstNode) {
+					warningMessage = "Move the mouse outside this node before creating a self-loop";
+				}
+			} else {
+				try {
+					e.getEditor().getWorkspaceEntry().saveMemento();
+					e.getModel().connect(firstNode, currentNode);
+					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+						firstNode = currentNode;
+						currentNode = null;
+						mouseLeftFirstNode = false;
+					} else {
+						resetState(e.getEditor());
 					}
+				} catch (InvalidConnectionException exeption) {
+					Toolkit.getDefaultToolkit().beep();
 				}
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			first = null;
-			warningMessage = null;
-			e.getEditor().getWorkspaceEntry().setCanModify(true);
+			resetState(e.getEditor());
 		}
 		e.getEditor().repaint();
 	}
@@ -162,11 +184,9 @@ public class ConnectionTool extends AbstractTool {
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			first = null;
-			warningMessage = null;
-			e.getEditor().getWorkspaceEntry().setCanModify(true);
+			resetState(e.getEditor());
+			e.getEditor().repaint();
 		}
-		e.getEditor().repaint();
 	}
 
 	@Override
@@ -175,7 +195,7 @@ public class ConnectionTool extends AbstractTool {
 			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
 		} else {
 			String message;
-			if (first == null) {
+			if (firstNode == null) {
 				message = "Click on the first component";
 			} else {
 				message = "Click on the second component (control+click to connect continuously)";
@@ -185,54 +205,25 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	@Override
-	public int getHotKeyCode() {
-		return KeyEvent.VK_C;
-	}
-
-	@Override
-	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/connect.svg");
-	}
-
-	@Override
-	public void activated(GraphEditor editor) {
-		super.activated(editor);
-		editor.getModel().selectNone();
-		editor.getWorkspaceEntry().setCanModify(true);
-		first = null;
-		mouseOverObject = null;
-	}
-
-
-	@Override
-	public void deactivated(GraphEditor editor) {
-		super.deactivated(editor);
-		first = null;
-		mouseOverObject = null;
-	}
-
-	@Override
 	public Decorator getDecorator() {
 		return new Decorator() {
-
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node == mouseOverObject)
+				if(node == currentNode) {
 					return new Decoration(){
-
 						@Override
 						public Color getColorisation() {
 							return highlightColor;
 						}
-
 						@Override
 						public Color getBackground() {
 							return null;
 						}
-				};
+					};
+				}
 				return null;
 			}
-
 		};
 	}
+
 }

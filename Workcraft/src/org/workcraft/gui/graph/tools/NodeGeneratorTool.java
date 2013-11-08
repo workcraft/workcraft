@@ -33,31 +33,66 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractTool {
-	static private boolean allowButton2 = false;
-	private NodeGenerator generator;
-	protected int hotKeyCode;
+	private final NodeGenerator generator;
 	private VisualNode lastGeneratedNode = null;
-	private String warninMessage = null;
+	private String warningMessage = null;
 
 	public NodeGeneratorTool (NodeGenerator generator) {
 		this.generator = generator;
 	}
 
+	@Override
 	public Icon getIcon() {
 		return generator.getIcon();
 	}
 
+	@Override
 	public String getLabel() {
 		return generator.getLabel();
 	}
 
+	@Override
+	public int getHotKeyCode() {
+		return generator.getHotKeyCode();
+	}
+
+	private void resetState(GraphEditor editor) {
+		lastGeneratedNode = null;
+		warningMessage = null;
+		editor.getModel().selectNone();
+}
+
+	@Override
+	public void activated(GraphEditor editor) {
+		super.activated(editor);
+		resetState(editor);
+	}
+
+
+	@Override
+	public void deactivated(GraphEditor editor) {
+		super.deactivated(editor);
+		resetState(editor);
+	}
+
+	@Override
+	public void mouseMoved(GraphEditorMouseEvent e) {
+		if (lastGeneratedNode != null) {
+			if (!lastGeneratedNode.hitTest(e.getPosition())) {
+				resetState(e.getEditor());
+				e.getEditor().repaint();
+			}
+		}
+	}
+
+	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 		if (lastGeneratedNode != null) {
-			warninMessage = "Move the mouse before creating a new node.";
+			warningMessage = "Move the mouse outside this node before creating a new node";
 			e.getEditor().repaint();
 		} else {
 			try {
-				if (e.getButton() == MouseEvent.BUTTON1 || (allowButton2 && e.getButton() == MouseEvent.BUTTON2)) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
 					e.getEditor().getWorkspaceEntry().saveMemento();
 					lastGeneratedNode = generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
 				}
@@ -67,26 +102,13 @@ public class NodeGeneratorTool extends AbstractTool {
 		}
 	}
 
-	public void mouseMoved(GraphEditorMouseEvent e) {
-		if (lastGeneratedNode != null) {
-			if (!lastGeneratedNode.hitTest(e.getPosition())) {
-				lastGeneratedNode = null;
-				warninMessage = null;
-				e.getEditor().repaint();
-			}
-		}
-	}
-
+	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		if (warninMessage != null) {
-			GUI.drawEditorMessage(editor, g, Color.RED, warninMessage);
+		if (warningMessage != null) {
+			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
 		} else {
 			GUI.drawEditorMessage(editor, g, Color.BLACK, generator.getText());
 		}
-	}
-
-	public int getHotKeyCode() {
-		return generator.getHotKeyCode();
 	}
 
 	@Override

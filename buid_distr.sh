@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 
 unsupported_plugin_dirs="BalsaPluginBase BalsaWrapperGenerator DesiJPlugi"
-model_plugin_dirs="CircuitPlugin CpogsPlugin DfsPlugin GatesPlugin GraphPlugin PetriNetPlugin PolicyNetPlugin SONPlugin STGPlugin"
+model_plugin_dirs="
+    CircuitPlugin 
+    CpogsPlugin 
+    DfsPlugin 
+    GatesPlugin 
+    GraphPlugin 
+    PetriNetPlugin 
+    PolicyNetPlugin 
+    SONPlugin 
+    STGPlugin 
+    XmasPlugin"
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
 core_dirs="Workcraft Workflow"

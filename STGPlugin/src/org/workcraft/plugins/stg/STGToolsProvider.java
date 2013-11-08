@@ -20,7 +20,7 @@ public class STGToolsProvider implements CustomToolsProvider {
 
 		result.add(new STGSelectionTool());
 		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool(false, false));
+		result.add(new ConnectionTool(false, true));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(STGPlace.class)));
 		result.add(new STGSignalTransitionGeneratorTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(DummyTransition.class)));
