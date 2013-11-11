@@ -30,7 +30,6 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.UniqueNameReferenceManager;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -63,13 +62,13 @@ public class Dfs extends AbstractMathModel {
 		}));
 	}
 
-	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public MathConnection connect(Node first, Node second) {
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
 	}
 
-	public ControlConnection controlConnect(Node first, Node second) throws InvalidConnectionException {
+	public ControlConnection controlConnect(Node first, Node second) {
 		ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;

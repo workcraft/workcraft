@@ -10,7 +10,9 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
+import org.workcraft.plugins.dfs.tools.ComponentCollapserTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
+import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
 
 public class DfsModule implements Module {
 
@@ -22,6 +24,68 @@ public class DfsModule implements Module {
 			@Override
 			public Tool create() {
 				return new StgGeneratorTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new WaggingGeneratorTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "2-way wagging";
+					}
+					@Override
+					public int getWayCount() {
+						return 2;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new WaggingGeneratorTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "3-way wagging";
+					}
+					@Override
+					public int getWayCount() {
+						return 3;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new WaggingGeneratorTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "4-way wagging";
+					}
+					@Override
+					public int getWayCount() {
+						return 4;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new WaggingGeneratorTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new ComponentCollapserTool(framework);
 			}
 		});
 
