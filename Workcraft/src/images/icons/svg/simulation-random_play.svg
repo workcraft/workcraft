@@ -23,6 +23,18 @@
    version="1.1">
   <defs
      id="defs1309">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3796">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3798" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3800" />
+    </linearGradient>
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
        inkscape:vp_x="0 : 24 : 1"
@@ -117,6 +129,15 @@
        y1="101.74152"
        x2="70.951942"
        y2="88.923729" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3796"
+       id="linearGradient3802"
+       x1="7.7817178"
+       y1="24.302238"
+       x2="40.680155"
+       y2="24.302238"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -126,7 +147,7 @@
      inkscape:pageopacity="0.0000000"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
-     inkscape:cx="45.078976"
+     inkscape:cx="-15.555431"
      inkscape:cy="-22.589848"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -319,15 +340,16 @@
        sodipodi:nodetypes="cccc" />
     <text
        xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="18.522182"
-       y="0.48457193"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#8e8e8e;font-family:Sans;stroke-opacity:1;stroke-width:0.90000000000000002;stroke-miterlimit:4;stroke-dasharray:none"
+       x="6.2114053"
+       y="30.13427"
        id="text3026"
        sodipodi:linespacing="125%"
-       transform="matrix(0.87215696,0.48922616,-0.48922616,0.87215696,0,0)"><tspan
+       transform="matrix(0.99992316,-0.0123962,0.0123962,0.99992316,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3028"
-         x="18.522182"
-         y="0.48457193">RND</tspan></text>
+         x="6.2114053"
+         y="30.13427"
+         style="fill-opacity:1;fill:#000000;stroke:#8e8e8e;stroke-opacity:1;stroke-width:0.90000000000000002;stroke-miterlimit:4;stroke-dasharray:none">RND</tspan></text>
   </g>
 </svg>

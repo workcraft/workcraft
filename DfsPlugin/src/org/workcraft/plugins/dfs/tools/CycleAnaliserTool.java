@@ -94,7 +94,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					cycleCount = Integer.parseInt(cycleCountText.getText());
-					cycleTable.tableChanged(null);
+					resetSelectedCycle();
 				}
 				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cycleCountText.setText(new Integer(cycleCount).toString());
@@ -117,7 +117,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				cycleCount = Integer.parseInt(cycleCountText.getText());
-				cycleTable.tableChanged(null);
+				resetSelectedCycle();
 			}
 		});
 
@@ -259,6 +259,12 @@ public class CycleAnaliserTool extends AbstractTool {
 		return result;
 	}
 
+	private void resetSelectedCycle() {
+		selectedCycle = null;
+		cycleTable.tableChanged(null);
+		editor.repaint();
+	}
+
 	@SuppressWarnings("serial")
 	private final class CycleTableModel extends AbstractTableModel {
 		@Override
@@ -328,15 +334,18 @@ public class CycleAnaliserTool extends AbstractTool {
 	private final class CycleTableMouseListenerImplementation implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			Cycle curCycle = cycles.get(cycleTable.getSelectedRow());
-			if (selectedCycle != curCycle) {
-				selectedCycle = curCycle;
-			} else {
-				selectedCycle = null;
-				cycleTable.clearSelection();
+			int selectedRow = cycleTable.getSelectedRow();
+			if (cycles != null && selectedRow >= 0 && selectedRow < cycles.size()) {
+				Cycle curCycle = cycles.get(selectedRow);
+				if (selectedCycle != curCycle) {
+					selectedCycle = curCycle;
+				} else {
+					selectedCycle = null;
+					cycleTable.clearSelection();
+				}
+				editor.repaint();
+				editor.requestFocus();
 			}
-			editor.repaint();
-			editor.requestFocus();
 		}
 		@Override
 		public void mouseEntered(MouseEvent arg0) {
