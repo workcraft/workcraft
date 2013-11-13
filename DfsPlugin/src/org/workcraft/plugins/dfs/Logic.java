@@ -22,11 +22,10 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualLogic.class)
-public class Logic extends MathNode {
+public class Logic extends MathDelayNode {
 	private boolean computed = false;
 	private boolean earlyEvaluation = false;
 
@@ -47,4 +46,5 @@ public class Logic extends MathNode {
 		this.earlyEvaluation = value;
 		sendNotification(new PropertyChangedEvent(this, "early evaluation"));
 	}
+
 }

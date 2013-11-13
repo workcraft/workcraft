@@ -11,7 +11,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -20,7 +19,7 @@ import org.workcraft.plugins.dfs.decorations.LogicDecoration;
 @Hotkey(KeyEvent.VK_L)
 @DisplayName ("Logic")
 @SVGIcon("images/icons/svg/dfs-logic.svg")
-public class VisualLogic extends VisualComponent {
+public class VisualLogic extends VisualDelayComponent {
 
 	public VisualLogic(Logic logic) {
 		super(logic);

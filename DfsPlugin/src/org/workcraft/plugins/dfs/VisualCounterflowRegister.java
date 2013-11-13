@@ -12,7 +12,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -21,7 +20,7 @@ import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName ("Counterflow register")
 @SVGIcon("images/icons/svg/dfs-counterflow_register.svg")
-public class VisualCounterflowRegister extends VisualComponent {
+public class VisualCounterflowRegister extends VisualDelayComponent {
 
 	public VisualCounterflowRegister(CounterflowRegister register) {
 		super(register);

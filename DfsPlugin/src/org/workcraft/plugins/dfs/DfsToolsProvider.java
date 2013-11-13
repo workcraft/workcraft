@@ -9,6 +9,7 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.dfs.tools.CycleAnaliserTool;
 import org.workcraft.plugins.dfs.tools.SimulationTool;
 
 public class DfsToolsProvider implements CustomToolsProvider {
@@ -27,6 +28,7 @@ public class DfsToolsProvider implements CustomToolsProvider {
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(PopRegister.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowLogic.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowRegister.class)));
+		result.add(new CycleAnaliserTool());
 		result.add(new SimulationTool());
 		return result;
 	}

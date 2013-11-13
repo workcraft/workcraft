@@ -1,11 +1,10 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualCounterflowRegister.class)
-public class CounterflowRegister extends MathNode {
+public class CounterflowRegister extends MathDelayNode {
 	private boolean orMarked = false;
 	private boolean andMarked = false;
 

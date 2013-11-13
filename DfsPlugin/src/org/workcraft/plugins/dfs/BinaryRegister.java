@@ -3,10 +3,9 @@ package org.workcraft.plugins.dfs;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-public class BinaryRegister extends MathNode {
+public class BinaryRegister extends MathDelayNode {
 
 	public enum Marking {
 		EMPTY("empty"),

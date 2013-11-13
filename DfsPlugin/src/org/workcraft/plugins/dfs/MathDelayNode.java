@@ -20,20 +20,18 @@
 */
 
 package org.workcraft.plugins.dfs;
-import org.workcraft.annotations.VisualClass;
-import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.dfs.VisualRegister.class)
-public class Register extends MathDelayNode {
-	private boolean marked = false;
+import org.workcraft.dom.math.MathNode;
 
-	public boolean isMarked() {
-		return marked;
+public class MathDelayNode extends MathNode {
+	private double delay = 1.0;
+
+	public double getDelay() {
+		return delay;
 	}
 
-	public void setMarked(boolean marked) {
-		this.marked = marked;
-		sendNotification(new PropertyChangedEvent(this, "marked"));
+	public void setDelay(double value) {
+		this.delay = value;
 	}
 
 }

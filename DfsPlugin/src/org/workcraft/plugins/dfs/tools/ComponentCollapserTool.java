@@ -1,7 +1,5 @@
 package org.workcraft.plugins.dfs.tools;
 
-import java.util.HashSet;
-
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
@@ -42,38 +40,20 @@ public class ComponentCollapserTool implements Tool {
 		}
 	}
 
-
 	private void collapseSelection(VisualDfs dfs) {
-		HashSet<Node> selectedComponents = new HashSet<Node>();
-		for (Node node: dfs.getSelection()) {
-			if (node instanceof VisualComponent) {
-				selectedComponents.add(node);
-			}
-		}
-		HashSet<Node> preset = new HashSet<Node>();
-		HashSet<Node> postset = new HashSet<Node>();
-		for (Node cur: selectedComponents) {
-			for (Node pred: dfs.getPreset(cur)) {
-				if (!selectedComponents.contains(pred)) {
-					preset.add(pred);
-				}
-			}
-			for (Node succ: dfs.getPostset(cur)) {
-				if (!selectedComponents.contains(succ)) {
-					postset.add(succ);
+		for (Node cur: dfs.getSelection()) {
+			if (cur instanceof VisualComponent) {
+				for (Node pred: dfs.getPreset(cur)) {
+					for (Node succ: dfs.getPostset(cur)) {
+						try {
+							dfs.connect(pred, succ);
+						} catch (InvalidConnectionException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			}
 		}
-		for (Node pred: preset) {
-			for (Node succ: postset) {
-				try {
-					dfs.connect(pred, succ);
-				} catch (InvalidConnectionException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		dfs.select(selectedComponents);
 		dfs.deleteSelection();
 	}
 

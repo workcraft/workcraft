@@ -59,24 +59,29 @@ public class DfsSettings implements SettingsPage {
 		});
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
 		setComputedLogicColor(config.getColor("DfsSettings.computedLogicColor", new Color (153, 153, 153)));
 		setSynchronisationRegisterColor(config.getColor("DfsSettings.synchronisationRegisterColor", new Color (153, 153, 153)));
 	}
 
+	@Override
 	public void save(Config config) {
 		config.setColor("DfsSettings.computedLogicColor", getComputedLogicColor());
 		config.setColor("DfsSettings.synchronisationRegisterColor", getSynchronisationRegisterColor());
 	}
 
+	@Override
 	public String getSection() {
 		return "Models";
 	}
 
+	@Override
 	public String getName() {
 		return "Dataflow Structure";
 	}
@@ -96,4 +101,5 @@ public class DfsSettings implements SettingsPage {
 	public static void setSynchronisationRegisterColor(Color value) {
 		DfsSettings.synchronisationRegisterColor = value;
 	}
+
 }

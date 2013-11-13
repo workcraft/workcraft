@@ -33,7 +33,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -42,7 +41,7 @@ import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
 @SVGIcon("images/icons/svg/dfs-register.svg")
-public class VisualRegister extends VisualComponent {
+public class VisualRegister extends VisualDelayComponent {
 
 	public VisualRegister(Register register) {
 		super(register);

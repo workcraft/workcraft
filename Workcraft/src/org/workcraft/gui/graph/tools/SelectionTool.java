@@ -293,7 +293,7 @@ public class SelectionTool extends AbstractTool {
 		if(drag==DRAG_MOVE) {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			offsetSelection(e, p2.getX()-p1.getX(), p2.getY()-p1.getY());
+			selectionOffset(p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		} else if(drag==DRAG_SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
@@ -346,7 +346,7 @@ public class SelectionTool extends AbstractTool {
 					Movable node = (Movable) hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
 					Point2D pSnap = e.getEditor().snap(pos);
-					offsetSelection(e, pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
+					selectionOffset(pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
 					snapOffset = new Point2D.Double(pSnap.getX()-e.getStartPosition().getX(), pSnap.getY()-e.getStartPosition().getY());
 				} else {
 					// do nothing if pressed on a node with modifiers
@@ -429,16 +429,16 @@ public class SelectionTool extends AbstractTool {
 		if (!e.isCtrlDown() && !e.isShiftDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
-				selectionMove(-1, 0);
+				selectionOffset(-1, 0);
 				break;
 			case KeyEvent.VK_RIGHT:
-				selectionMove(1, 0);
+				selectionOffset(1, 0);
 				break;
 			case KeyEvent.VK_UP:
-				selectionMove(0, -1);
+				selectionOffset(0, -1);
 				break;
 			case KeyEvent.VK_DOWN:
-				selectionMove(0, 1);
+				selectionOffset(0, 1);
 				break;
 			}
 		}
@@ -468,25 +468,6 @@ public class SelectionTool extends AbstractTool {
 				break;
 			}
 		}
-	}
-
-	private void offsetSelection(GraphEditorMouseEvent e, double dx, double dy) {
-		VisualModel model = e.getEditor().getModel();
-		for(Node node : model.getSelection()){
-			if(node instanceof Movable) {
-				Movable mv = (Movable) node;
-				MovableHelper.translate(mv, dx, dy);
-			}
-		}
-	}
-
-	private Rectangle2D selectionRect(Point2D startPosition, Point2D currentPosition) {
-		return new Rectangle2D.Double(
-				Math.min(startPosition.getX(), currentPosition.getX()),
-				Math.min(startPosition.getY(), currentPosition.getY()),
-				Math.abs(startPosition.getX()-currentPosition.getX()),
-				Math.abs(startPosition.getY()-currentPosition.getY())
-		);
 	}
 
 	@Override
@@ -635,6 +616,28 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
+	private Rectangle2D selectionRect(Point2D startPosition, Point2D currentPosition) {
+		return new Rectangle2D.Double(
+				Math.min(startPosition.getX(), currentPosition.getX()),
+				Math.min(startPosition.getY(), currentPosition.getY()),
+				Math.abs(startPosition.getX()-currentPosition.getX()),
+				Math.abs(startPosition.getY()-currentPosition.getY())
+		);
+	}
+
+	private void selectionOffset(double dx, double dy) {
+		VisualModel model = getEditor().getModel();
+		if (model.getSelection().size() > 0) {
+			getEditor().getWorkspaceEntry().saveMemento();
+			for(Node node : model.getSelection()){
+				if(node instanceof Movable) {
+					Movable mv = (Movable) node;
+					MovableHelper.translate(mv, dx, dy);
+				}
+			}
+		}
+	}
+
 	protected void selectionCancel() {
 		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
@@ -693,15 +696,6 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			getEditor().getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, 1, -1);
-			getEditor().repaint();
-		}
-	}
-
-	protected void selectionMove(double dx, double dy) {
-		VisualModel model = getEditor().getModel();
-		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
-			VisualModelTransformer.translateSelection(model, dx, dy);
 			getEditor().repaint();
 		}
 	}

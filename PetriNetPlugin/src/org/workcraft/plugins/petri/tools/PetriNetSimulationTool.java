@@ -41,6 +41,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Trace;
+import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
@@ -90,7 +92,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	protected JTable traceTable;
 
 	private JSlider speedSlider;
-	private JButton playButton, stopButton, backwardButton, forwardButton;
+	private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
 	private JButton saveMarkingButton, loadMarkingButton, copyTraceButton, pasteTracedButton;
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
@@ -125,8 +127,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 	}
 
-	protected void update()
-	{
+	protected void update() {
 		if (timer == null) {
 			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
 		} else {
@@ -139,7 +140,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				timer.setDelay(getAnimationDelay());
 			}
 		}
-
 		playButton.setEnabled(trace != null && traceStep < trace.size());
 		stopButton.setEnabled(trace != null || branchTrace != null);
 		backwardButton.setEnabled(traceStep > 0 || branchStep > 0);
@@ -181,6 +181,19 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		boolean ret = quietStepBack();
 		update();
 		return ret;
+	}
+
+	private boolean randomStep() {
+		ArrayList<Transition> enabledTransitions = new ArrayList<Transition>();
+		for (Transition transition: net.getTransitions()) {
+			if (net.isEnabled(transition)) {
+				enabledTransitions.add(transition);
+			}
+		}
+		int randomIndex = (int)(Math.random() * enabledTransitions.size());
+		Transition transition = enabledTransitions.get(randomIndex);
+		net.fire(transition);
+		return true;
 	}
 
 	private boolean quietStep() {
@@ -419,6 +432,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	};
 
 	private void createInterface() {
+		randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random.svg"), "Random simulation");
 		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
 		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
@@ -438,6 +452,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		simulationControl.setLayout(new FlowLayout());
 		simulationControl.setPreferredSize(panelSize);
 		simulationControl.setMaximumSize(panelSize);
+		simulationControl.add(randomButton);
 		simulationControl.add(playButton);
 		simulationControl.add(stopButton);
 		simulationControl.add(backwardButton);
@@ -485,6 +500,25 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					timer.setInitialDelay(getAnimationDelay());
 					timer.setDelay(getAnimationDelay());
 					timer.start();
+				}
+				update();
+			}
+		});
+
+		randomButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (timer == null) {
+					timer = new Timer(getAnimationDelay(), new ActionListener()	{
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							randomStep();
+						}
+					});
+					timer.start();
+				} else {
+					timer.stop();
+					timer = null;
 				}
 				update();
 			}
@@ -675,7 +709,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	@Override
 	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/start-green.svg");
+		return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
 	}
 
 	@Override

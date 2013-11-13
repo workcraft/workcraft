@@ -943,7 +943,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	@Override
 	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/start-green.svg");
+		return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
 	}
 
 	@Override

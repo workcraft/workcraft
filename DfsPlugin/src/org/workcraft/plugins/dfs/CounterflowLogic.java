@@ -1,11 +1,10 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualCounterflowLogic.class)
-public class CounterflowLogic extends MathNode {
+public class CounterflowLogic extends MathDelayNode {
 	private boolean forwardComputed = false;
 	private boolean backwardComputed = false;
 	private boolean forwardEarlyEvaluation = false;
