@@ -62,7 +62,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Trace;
-import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
@@ -110,14 +109,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	protected int traceStep = 0;
 
 	private Timer timer = null;
+	private boolean random = false;
 
 	public PetriNetSimulationTool() {
 		super();
 		createInterface();
 	}
 
-	private void applyMarking(Map<Place, Integer> marking)
-	{
+	private void applyMarking(Map<Place, Integer> marking) {
 		for (Place p: marking.keySet()) {
 			if (net.getPlaces().contains(p)) {
 				p.setTokens(marking.get(p));
@@ -130,13 +129,15 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	protected void update() {
 		if (timer == null) {
 			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+			randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
 		} else {
-			if (trace == null || traceStep == trace.size()) {
+			if (!random && (trace == null || traceStep == trace.size())) {
 				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
 				timer.stop();
 				timer = null;
 			} else {
 				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"));
+				randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_pause.svg"));
 				timer.setDelay(getAnimationDelay());
 			}
 		}
@@ -150,35 +151,66 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean quietStepBack() {
-		if (branchTrace!=null&&branchStep>0) {
+		if (branchTrace != null && branchStep > 0) {
 			String transitionId = branchTrace.get(branchStep-1);
-
 			final Node transition = net.getNodeByReference(transitionId);
-			if (transition==null||!(transition instanceof Transition)) return false;
-			if (!net.isUnfireEnabled((Transition)transition)) return false;
+			if (transition==null || !(transition instanceof Transition) || !net.isUnfireEnabled((Transition)transition)) {
+				return false;
+			}
 			branchStep--;
-
 			net.unFire((Transition)transition);
-			if (branchStep==0&&trace!=null) branchTrace=null;
+			if (branchStep==0 && trace!=null) {
+				branchTrace=null;
+			}
 			return true;
+		} else {
+			if (trace == null || traceStep == 0) {
+				return false;
+			}
+			String transitionId = trace.get(traceStep-1);
+			final Node transition = net.getNodeByReference(transitionId);
+			if (transition == null || !(transition instanceof Transition) || !net.isUnfireEnabled((Transition)transition)) {
+				return false;
+			}
+			traceStep--;
+			net.unFire((Transition)transition);
 		}
-
-		if (trace==null) return false;
-		if (traceStep==0) return false;
-
-		String transitionId = trace.get(traceStep-1);
-
-		final Node transition = net.getNodeByReference(transitionId);
-		if (transition==null||!(transition instanceof Transition)) return false;
-		if (!net.isUnfireEnabled((Transition)transition)) return false;
-		traceStep--;
-
-		net.unFire((Transition)transition);
 		return true;
 	}
 
 	private boolean stepBack() {
 		boolean ret = quietStepBack();
+		update();
+		return ret;
+	}
+
+	private boolean quietStep() {
+		if (branchTrace != null && branchStep < branchTrace.size()) {
+			String transitionId = branchTrace.get(branchStep);
+			final Node transition = net.getNodeByReference(transitionId);
+			if (transition == null || !(transition instanceof Transition) || !net.isEnabled((Transition)transition)) {
+				return false;
+			}
+			net.fire((Transition)transition);
+			branchStep++;
+			return true;
+		} else {
+			if (trace == null || traceStep >= trace.size()) {
+				return false;
+			}
+			String transitionId = trace.get(traceStep);
+			final Node transition = net.getNodeByReference(transitionId);
+			if (transition == null || !(transition instanceof Transition) || !net.isEnabled((Transition)transition)) {
+				return false;
+			}
+			net.fire((Transition)transition);
+			traceStep++;
+		}
+		return true;
+	}
+
+	private boolean step() {
+		boolean ret = quietStep();
 		update();
 		return ret;
 	}
@@ -190,43 +222,13 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				enabledTransitions.add(transition);
 			}
 		}
+		if (enabledTransitions.size() == 0) {
+			return false;
+		}
 		int randomIndex = (int)(Math.random() * enabledTransitions.size());
 		Transition transition = enabledTransitions.get(randomIndex);
-		net.fire(transition);
+		executeTransition(transition);
 		return true;
-	}
-
-	private boolean quietStep() {
-		if (branchTrace!=null&&branchStep<branchTrace.size()) {
-			String transitionId = branchTrace.get(branchStep);
-			final Node transition = net.getNodeByReference(transitionId);
-
-			if (transition==null||!(transition instanceof Transition)) return false;
-			if (!net.isEnabled((Transition)transition)) return false;
-
-			net.fire((Transition)transition);
-			branchStep++;
-
-			return true;
-		}
-
-		if (trace==null) return false;
-		if (traceStep>=trace.size()) return false;
-
-		String transitionId = trace.get(traceStep);
-		final Node transition = net.getNodeByReference(transitionId);
-		if (transition==null||!(transition instanceof Transition)) return false;
-		if (!net.isEnabled((Transition)transition)) return false;
-
-		net.fire((Transition)transition);
-		traceStep++;
-		return true;
-	}
-
-	private boolean step() {
-		boolean ret = quietStep();
-		update();
-		return ret;
 	}
 
 	private void reset() {
@@ -235,14 +237,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			traceStep = 0;
 		} else {
 			applyMarking(initialMarking);
-
 			traceStep = 0;
 			branchStep=0;
 			branchTrace=null;
 		}
-
-		if(timer!=null)
-		{
+		if(timer!=null) 	{
 			timer.stop();
 			timer = null;
 		}
@@ -269,7 +268,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 
 		int i=0;
-
 		trace = new Trace();
 		branchTrace = null;
 		traceStep = 0;
@@ -299,8 +297,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		clip.setContents(stringSelection, this);
 	}
 
-	private int getAnimationDelay()
-	{
+	private int getAnimationDelay() {
 		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
 	}
 
@@ -334,7 +331,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		@Override
 		public void mouseEntered(MouseEvent arg0) {
-
 		}
 
 		@Override
@@ -432,13 +428,15 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	};
 
 	private void createInterface() {
-		randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random.svg"), "Random simulation");
 		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
 		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
+		randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Random playback");
+
 		speedSlider = new JSlider(-1000, 1000, 0);
 		speedSlider.setToolTipText("Simulation playback speed");
+
 		loadMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-load.svg"), "Load marking from memory");
 		saveMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save marking to memory");
 		copyTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
@@ -452,11 +450,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		simulationControl.setLayout(new FlowLayout());
 		simulationControl.setPreferredSize(panelSize);
 		simulationControl.setMaximumSize(panelSize);
-		simulationControl.add(randomButton);
 		simulationControl.add(playButton);
 		simulationControl.add(stopButton);
 		simulationControl.add(backwardButton);
 		simulationControl.add(forwardButton);
+		simulationControl.add(randomButton);
 
 		JPanel speedControl = new JPanel();
 		speedControl.setLayout(new BorderLayout());
@@ -509,6 +507,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (timer == null) {
+					random = true;
 					timer = new Timer(getAnimationDelay(), new ActionListener()	{
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -519,6 +518,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				} else {
 					timer.stop();
 					timer = null;
+					random = false;
 				}
 				update();
 			}
@@ -528,6 +528,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (timer == null) {
+					random = false;
 					timer = new Timer(getAnimationDelay(), new ActionListener()	{
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -538,6 +539,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				} else {
 					timer.stop();
 					timer = null;
+					random = false;
 				}
 				update();
 			}
@@ -650,10 +652,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		if (t == null) return;
 
 		// if clicked on the trace event, do the step forward
-		if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
+		if (branchTrace == null && trace != null && traceStep<trace.size()) {
 			String transitionId = trace.get(traceStep);
 			Node transition = net.getNodeByReference(transitionId);
-			if (transition!=null&&transition==t) {
+			if (transition != null && transition == t) {
 				step();
 				return;
 			}
@@ -668,11 +670,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		}
 
-		if (branchTrace==null) branchTrace = new Trace();
-
-		while (branchStep<branchTrace.size())
+		if (branchTrace==null) {
+			branchTrace = new Trace();
+		}
+		while (branchStep < branchTrace.size()) {
 			branchTrace.remove(branchStep);
-
+		}
 		branchTrace.add(net.getNodeReference(t));
 		step();
 		update();
@@ -690,8 +693,9 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				}
 			});
 
-		if (node instanceof VisualTransition)
+		if (node instanceof VisualTransition) {
 			executeTransition(((VisualTransition)node).getReferencedTransition());
+		}
 	}
 
 	@Override
