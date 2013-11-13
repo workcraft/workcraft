@@ -2,10 +2,16 @@ package org.workcraft.plugins.dfs.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,11 +20,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.NumberFormatter;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
@@ -44,6 +53,7 @@ public class CycleAnaliserTool extends AbstractTool {
 	private double minDelay;
 	private double maxDelay;
 	protected Cycle selectedCycle = null;
+	private int cycleCount = 10;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -70,6 +80,54 @@ public class CycleAnaliserTool extends AbstractTool {
 		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
 		interfacePanel.add(infoPanel, BorderLayout.CENTER);
 		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+
+		NumberFormat format = NumberFormat.getIntegerInstance();
+		NumberFormatter formatter = new NumberFormatter(format);
+		formatter.setAllowsInvalid(false);
+		formatter.setMinimum(1);
+		formatter.setMaximum(1000);
+		final JFormattedTextField cycleCountText = new JFormattedTextField(formatter);
+		cycleCountText.setPreferredSize(new Dimension(100, 24));
+		cycleCountText.setText(new Integer(cycleCount).toString());
+		cycleCountText.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					cycleCount = Integer.parseInt(cycleCountText.getText());
+					cycleTable.tableChanged(null);
+				}
+				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					cycleCountText.setText(new Integer(cycleCount).toString());
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+		});
+
+		cycleCountText.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				cycleCountText.setText(new Integer(cycleCount).toString());
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				cycleCount = Integer.parseInt(cycleCountText.getText());
+				cycleTable.tableChanged(null);
+			}
+		});
+
+		JLabel cycleCountLabel = new JLabel();
+		cycleCountLabel.setText("Cycle count:");
+		cycleCountLabel.setLabelFor(cycleCountText);
+
+		controlPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		controlPanel.add(cycleCountLabel);
+		controlPanel.add(cycleCountText);
 	}
 
 	@Override
@@ -233,7 +291,7 @@ public class CycleAnaliserTool extends AbstractTool {
 
 		@Override
 		public int getRowCount() {
-			return cycles.size();
+			return Math.min(cycleCount, cycles.size());
 		}
 
 		@Override
