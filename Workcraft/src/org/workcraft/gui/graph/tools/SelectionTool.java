@@ -628,7 +628,7 @@ public class SelectionTool extends AbstractTool {
 	private void selectionOffset(double dx, double dy) {
 		VisualModel model = getEditor().getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			// Note that no memento should be saved until the drug action is complete
 			for(Node node : model.getSelection()){
 				if(node instanceof Movable) {
 					Movable mv = (Movable) node;
