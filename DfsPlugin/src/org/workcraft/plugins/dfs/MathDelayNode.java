@@ -24,7 +24,7 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.dom.math.MathNode;
 
 public class MathDelayNode extends MathNode {
-	private double delay = 1.0;
+	private double delay = 0.0;
 
 	public double getDelay() {
 		return delay;

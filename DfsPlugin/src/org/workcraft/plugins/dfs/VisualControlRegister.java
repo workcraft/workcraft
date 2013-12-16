@@ -31,6 +31,16 @@ public class VisualControlRegister extends VisualBinaryRegister {
 	}
 
 	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, Double>(
+				this, "Probability", Double.class) {
+			public void setter(VisualControlRegister object, Double value) {
+				object.getReferencedControlRegister().setProbability(value);
+			}
+			public Double getter(VisualControlRegister object) {
+				return object.getReferencedControlRegister().getProbability();
+			}
+		});
+
 		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
 				this, "Synchronisation type", SynchronisationType.class, SynchronisationType.getChoice()) {
 			public void setter(VisualControlRegister object, SynchronisationType value) {

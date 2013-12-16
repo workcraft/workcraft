@@ -285,8 +285,8 @@ public class VisualSONConnection extends VisualConnection
 	public void setArrowWidth(double arrowWidth) {
 		if (arrowWidth > 1)
 			arrowWidth = 1;
-		if (arrowWidth < 0.1)
-			arrowWidth = 0.1;
+		if (arrowWidth < 0.0)
+			arrowWidth = 0.0;
 		this.arrowWidth = arrowWidth;
 
 		invalidate();
@@ -304,8 +304,8 @@ public class VisualSONConnection extends VisualConnection
 	public void setArrowLength(double arrowLength) {
 		if (arrowLength > 1)
 			arrowLength = 1;
-		if (arrowLength < 0.1)
-			arrowLength = 0.1;
+		if (arrowLength < 0.0)
+			arrowLength = 0.0;
 		this.arrowLength = arrowLength;
 
 		invalidate();

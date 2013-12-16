@@ -175,29 +175,6 @@ public class VisualDfs extends AbstractVisualModel {
 		return result;
 	}
 
-	public <R> Set<R> getRPreset(Node node, Class<R> rType) {
-		Set<R> result = new HashSet<R>();
-		Set<Node> visited = new HashSet<Node>();
-		Queue<Node> queue = new LinkedList<Node>();
-		queue.add(node);
-		while (!queue.isEmpty()) {
-			Node cur = queue.remove();
-			if (visited.contains(cur)) continue;
-			visited.add(cur);
-			for (Node pred: getPreset(cur)) {
-				if ( !(pred instanceof VisualComponent) ) continue;
-				try {
-					result.add(rType.cast(pred));
-				} catch (ClassCastException e) {
-					if ((pred instanceof VisualLogic) || (pred instanceof VisualCounterflowLogic)) {
-						queue.add(pred);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
 	public <R> Set<R> getRPostset(Node node, Class<R> rType) {
 		Set<R> result = new HashSet<R>();
 		Set<Node> visited = new HashSet<Node>();
@@ -214,6 +191,29 @@ public class VisualDfs extends AbstractVisualModel {
 				} catch (ClassCastException e) {
 					if ((succ instanceof VisualLogic) || (succ instanceof VisualCounterflowLogic)) {
 						queue.add(succ);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public <R> Set<R> getRPreset(Node node, Class<R> rType) {
+		Set<R> result = new HashSet<R>();
+		Set<Node> visited = new HashSet<Node>();
+		Queue<Node> queue = new LinkedList<Node>();
+		queue.add(node);
+		while (!queue.isEmpty()) {
+			Node cur = queue.remove();
+			if (visited.contains(cur)) continue;
+			visited.add(cur);
+			for (Node pred: getPreset(cur)) {
+				if ( !(pred instanceof VisualComponent) ) continue;
+				try {
+					result.add(rType.cast(pred));
+				} catch (ClassCastException e) {
+					if ((pred instanceof VisualLogic) || (pred instanceof VisualCounterflowLogic)) {
+						queue.add(pred);
 					}
 				}
 			}

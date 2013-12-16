@@ -171,8 +171,8 @@ public class CycleAnaliserTool extends AbstractTool {
 			@Override
 			public Decoration getDecoration(Node node) {
 				if (node instanceof VisualDelayComponent) {
-					double delay = ((VisualDelayComponent)node).getReferencedDelayComponent().getDelay();
 					if (selectedCycle == null) {
+						double delay = ((VisualDelayComponent)node).getReferencedDelayComponent().getDelay();
 						double range = (maxDelay - minDelay);
 						double offset = (delay - minDelay);
 						final Color fgColor = ((range > 0 &&  offset > 0.8 * range) ? Color.RED : null);
@@ -187,6 +187,7 @@ public class CycleAnaliserTool extends AbstractTool {
 							}
 						};
 					} else if (selectedCycle.components.contains(node)) {
+						double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent)node);
 						double range = (selectedCycle.maxDelay - selectedCycle.minDelay);
 						double offset = (delay - selectedCycle.minDelay);
 						int bgIintencity = 150;
@@ -252,7 +253,7 @@ public class CycleAnaliserTool extends AbstractTool {
 				toString += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
 				components.add(component);
 			}
-			Cycle cycle = new Cycle(components, toString);
+			Cycle cycle = new Cycle(dfs, components);
 			result.add(cycle);
 		}
 		Collections.sort(result);

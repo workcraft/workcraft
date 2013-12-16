@@ -9,10 +9,10 @@ public enum Positioning {
 	LEFT("Left", -1.3, 0.0),
 	RIGHT("Right", 1.3, 0.0),
 	CENTER("Center", 0.0, 0.0),
-	TOP_LEFT("Top-Left", -1.1, -1.1),
-	TOP_RIGHT("Top-Right", 1.1, -1.1),
-	BOTTOM_LEFT("Bottom-Left", -1.1, 1.1),
-	BOTTOM_RIGHT("Bottom-Right", 1.1, 1.1);
+	TOP_LEFT("Top-Left", -1.1, -1.3),
+	TOP_RIGHT("Top-Right", 1.1, -1.3),
+	BOTTOM_LEFT("Bottom-Left", -1.1, 1.3),
+	BOTTOM_RIGHT("Bottom-Right", 1.1, 1.3);
 
 	public final String name;
 	public final double xOffset;

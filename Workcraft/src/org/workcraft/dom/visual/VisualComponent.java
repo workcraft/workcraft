@@ -51,6 +51,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
+	private boolean labelOffset = true;
 	private RenderedText labelRenderedText = new RenderedText("", labelFont);
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
@@ -113,6 +114,16 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			}
 		});
 
+		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Boolean>(
+				this, "Label offset", Boolean.class) {
+			protected void setter(VisualComponent object, Boolean value) {
+				object.setLabelOffset(value);
+			}
+			protected Boolean getter(VisualComponent object) {
+				return object.getLabelOffset();
+			}
+		});
+
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
 				this, "Label color", Color.class) {
 			protected void setter(VisualComponent object, Color value) {
@@ -160,6 +171,15 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public void setLabelPositioning(Positioning labelPositioning) {
 		this.labelPositioning = labelPositioning;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
+	}
+
+	public boolean getLabelOffset() {
+		return labelOffset;
+	}
+
+	public void setLabelOffset(boolean labelOffset) {
+		this.labelOffset = labelOffset;
+		sendNotification(new PropertyChangedEvent(this, "label offset"));
 	}
 
 	public Color getLabelColor() {
@@ -228,9 +248,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			if (!label.equals(labelRenderedText.text) || labelFont != labelRenderedText.font) {
 				labelRenderedText = new RenderedText(label, labelFont);
 			}
-			double x = 0.5 * labelPositioning.xOffset * size
+			double x = (labelOffset ? 0.5 * labelPositioning.xOffset * size : 0.0)
 					 + 0.5 * labelPositioning.xSign * labelRenderedText.getBoundingBox().getWidth();
-			double y = 0.5 * labelPositioning.yOffset * size
+			double y = (labelOffset ? 0.5 * labelPositioning.yOffset * size : 0.0)
 					 + 0.5 * labelPositioning.ySign * labelRenderedText.getBoundingBox().getHeight();
 			labelRenderedText.setCenter(x, y);
 			Graphics2D g = r.getGraphics();
@@ -278,4 +298,5 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2
 			&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
+
 }

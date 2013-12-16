@@ -10,7 +10,7 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
-import org.workcraft.plugins.dfs.tools.ComponentCollapserTool;
+import org.workcraft.plugins.dfs.tools.ContractorTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
 import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
 
@@ -85,7 +85,7 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new ComponentCollapserTool(framework);
+				return new ContractorTool(framework);
 			}
 		});
 

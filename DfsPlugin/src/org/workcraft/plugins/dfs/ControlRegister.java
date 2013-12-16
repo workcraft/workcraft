@@ -9,6 +9,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.dfs.VisualControlRegister.class)
 public class ControlRegister extends BinaryRegister {
 
+	private SynchronisationType synchronisationType = SynchronisationType.PLAIN;
+	private double probability = 1.0;
+
 	public enum SynchronisationType {
 		PLAIN("plain"),
 		AND("and"),
@@ -29,8 +32,6 @@ public class ControlRegister extends BinaryRegister {
 		}
 	}
 
-	private SynchronisationType synchronisationType = SynchronisationType.PLAIN;
-
 	public SynchronisationType getSynchronisationType() {
 		return synchronisationType;
 	}
@@ -38,6 +39,15 @@ public class ControlRegister extends BinaryRegister {
 	public void setSynchronisationType(SynchronisationType value) {
 		this.synchronisationType = value;
 		sendNotification(new PropertyChangedEvent(this, "synchronisation type"));
+	}
+
+	public double getProbability() {
+		return probability;
+	}
+
+	public void setProbability(double value) {
+		this.probability = value;
+		sendNotification(new PropertyChangedEvent(this, "probability"));
 	}
 
 }

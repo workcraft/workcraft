@@ -9,16 +9,16 @@ import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ComponentCollapserTool implements Tool {
+public class ContractorTool implements Tool {
 	private final Framework framework;
 
-	public ComponentCollapserTool(Framework framework) {
+	public ContractorTool(Framework framework) {
 		this.framework = framework;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Collapse selected conmonents";
+		return "Contract selected conmonents";
 	}
 
 	@Override
@@ -36,11 +36,11 @@ public class ComponentCollapserTool implements Tool {
 		final VisualDfs dfs = (VisualDfs)we.getModelEntry().getVisualModel();
 		if (dfs.getSelection().size() > 0) {
 			we.saveMemento();
-			collapseSelection(dfs);
+			contractSelection(dfs);
 		}
 	}
 
-	private void collapseSelection(VisualDfs dfs) {
+	private void contractSelection(VisualDfs dfs) {
 		for (Node cur: dfs.getSelection()) {
 			if (cur instanceof VisualComponent) {
 				for (Node pred: dfs.getPreset(cur)) {

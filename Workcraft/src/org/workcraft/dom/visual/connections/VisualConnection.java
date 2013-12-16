@@ -166,6 +166,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		});
 
 		LinkedHashMap<String, Double> arrowLengths = new LinkedHashMap<String, Double>();
+		arrowLengths.put("none", 0.0);
 		arrowLengths.put("short", 0.2);
 		arrowLengths.put("medium", 0.4);
 		arrowLengths.put("long", 0.8);
@@ -342,7 +343,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setArrowWidth(double value) {
 		if (value > 1)	value = 1;
-		if (value < 0.1) value = 0.1;
+		if (value < 0.0) value = 0.0;
 		this.arrowWidth = value;
 
 		invalidate();
@@ -357,7 +358,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setArrowLength(double value) {
 		if (value > 1) value = 1;
-		if (value < 0.1) value = 0.1;
+		if (value < 0.0) value = 0.0;
 		this.arrowLength = value;
 		invalidate();
 	}
