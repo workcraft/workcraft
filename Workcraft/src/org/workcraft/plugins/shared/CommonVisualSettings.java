@@ -47,6 +47,7 @@ public class CommonVisualSettings implements SettingsPage {
 	private static Color enabledForegroundColor = new Color(1.0f, 0.5f, 0.0f);
 	private static boolean useEnabledBackgroundColor = false;
 	private static Color enabledBackgroundColor = new Color(0.0f, 0.0f, 0.0f);
+	private static Integer redrawInterval = 20;
 
 	public String getSection() {
 		return "Common";
@@ -198,6 +199,16 @@ public class CommonVisualSettings implements SettingsPage {
 				return CommonVisualSettings.getEnabledBackgroundColor();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Integer>(
+				this, "Minimal redraw interval (ms)", Integer.class) {
+			protected void setter(CommonVisualSettings object, Integer value) {
+				CommonVisualSettings.setRedrawInterval(value);
+			}
+			protected Integer getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getRedrawInterval();
+			}
+		});
 	}
 
 	public List<PropertyDescriptor> getDescriptors() {
@@ -223,6 +234,8 @@ public class CommonVisualSettings implements SettingsPage {
 
 		useEnabledBackgroundColor = config.getBoolean("CommonVisualSettings.useEnabledBackgroundColor", false);
 		enabledBackgroundColor = config.getColor("CommonVisualSettings.enabledBackgroundColor", new Color(1.0f, 0.5f, 0.0f));
+
+		redrawInterval = config.getInt("CommonVisualSettings.redrawInterval", 20);
 	}
 
 	public void save(Config config) {
@@ -244,6 +257,8 @@ public class CommonVisualSettings implements SettingsPage {
 
 		config.setBoolean("CommonVisualSettings.useEnabledBackgroundColor", useEnabledBackgroundColor);
 		config.setColor("CommonVisualSettings.enabledForegroundColor", enabledForegroundColor);
+
+		config.setInt("CommonVisualSettings.redrawInterval", redrawInterval);
 	}
 
 	public static double getBaseSize() {
@@ -251,7 +266,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setBaseSize(double value) {
-		CommonVisualSettings.baseSize = value;
+		baseSize = value;
 	}
 
 	public static double getStrokeWidth() {
@@ -259,7 +274,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setStrokeWidth(double value) {
-		CommonVisualSettings.strokeWidth = value;
+		strokeWidth = value;
 	}
 
 	public static Color getBorderColor() {
@@ -267,7 +282,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setBorderColor(Color value) {
-		CommonVisualSettings.borderColor = value;
+		borderColor = value;
 	}
 
 	public static Color getFillColor() {
@@ -275,7 +290,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setFillColor(Color value) {
-		CommonVisualSettings.fillColor = value;
+		fillColor = value;
 	}
 
 	public static Boolean getLabelVisibility() {
@@ -283,7 +298,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setLabelVisibility(Boolean value) {
-		CommonVisualSettings.labelVisibility = value;
+		labelVisibility = value;
 	}
 
 	public static Positioning getLabelPositioning() {
@@ -291,7 +306,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setLabelPositioning(Positioning value) {
-		CommonVisualSettings.labelPositioning = value;
+		labelPositioning = value;
 	}
 
 	public static Color getLabelColor() {
@@ -299,7 +314,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setLabelColor(Color value) {
-		CommonVisualSettings.labelColor = value;
+		labelColor = value;
 	}
 
 	public static Boolean getNameVisibility() {
@@ -307,7 +322,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setNameVisibility(Boolean value) {
-		CommonVisualSettings.nameVisibility = value;
+		nameVisibility = value;
 	}
 
 	public static Positioning getNamePositioning() {
@@ -315,7 +330,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setNamePositioning(Positioning value) {
-		CommonVisualSettings.namePositioning = value;
+		namePositioning = value;
 	}
 
 	public static Color getNameColor() {
@@ -323,11 +338,11 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setNameColor(Color value) {
-		CommonVisualSettings.nameColor = value;
+		nameColor = value;
 	}
 
 	public static void setUseEnabledForegroundColor(Boolean value) {
-		CommonVisualSettings.useEnabledForegroundColor = value;
+		useEnabledForegroundColor = value;
 	}
 
 	public static Boolean getUseEnabledForegroundColor() {
@@ -335,7 +350,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setEnabledForegroundColor(Color value) {
-		CommonVisualSettings.enabledForegroundColor = value;
+		enabledForegroundColor = value;
 	}
 
 	public static Color getEnabledForegroundColor() {
@@ -343,7 +358,7 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setUseEnabledBackgroundColor(Boolean value) {
-		CommonVisualSettings.useEnabledBackgroundColor = value;
+		useEnabledBackgroundColor = value;
 	}
 
 	public static Boolean getUseEnabledBackgroundColor() {
@@ -351,11 +366,19 @@ public class CommonVisualSettings implements SettingsPage {
 	}
 
 	public static void setEnabledBackgroundColor(Color value) {
-		CommonVisualSettings.enabledBackgroundColor = value;
+		enabledBackgroundColor = value;
 	}
 
 	public static Color getEnabledBackgroundColor() {
 		return useEnabledBackgroundColor ? enabledBackgroundColor : null;
+	}
+
+	public static void setRedrawInterval(Integer value) {
+		redrawInterval = value;
+	}
+
+	public static Integer getRedrawInterval() {
+		return redrawInterval;
 	}
 
 }

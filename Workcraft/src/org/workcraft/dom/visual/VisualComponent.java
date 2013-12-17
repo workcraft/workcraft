@@ -243,16 +243,20 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return new Point2D.Double(0, 0);
 	}
 
+	private void cacheLabelRenderedText(DrawRequest r) {
+		if (!label.equals(labelRenderedText.text) || labelFont != labelRenderedText.font) {
+			labelRenderedText = new RenderedText(label, labelFont);
+			double x = (labelOffset ? 0.5 * labelPositioning.xOffset * size : 0.0)
+					+ 0.5 * labelPositioning.xSign * labelRenderedText.getBoundingBox().getWidth();
+			double y = (labelOffset ? 0.5 * labelPositioning.yOffset * size : 0.0)
+					+ 0.5 * labelPositioning.ySign * labelRenderedText.getBoundingBox().getHeight();
+			labelRenderedText.setCenter(x, y);
+		}
+	}
+
 	protected void drawLabelInLocalSpace(DrawRequest r) {
 		if (CommonVisualSettings.getLabelVisibility()) {
-			if (!label.equals(labelRenderedText.text) || labelFont != labelRenderedText.font) {
-				labelRenderedText = new RenderedText(label, labelFont);
-			}
-			double x = (labelOffset ? 0.5 * labelPositioning.xOffset * size : 0.0)
-					 + 0.5 * labelPositioning.xSign * labelRenderedText.getBoundingBox().getWidth();
-			double y = (labelOffset ? 0.5 * labelPositioning.yOffset * size : 0.0)
-					 + 0.5 * labelPositioning.ySign * labelRenderedText.getBoundingBox().getHeight();
-			labelRenderedText.setCenter(x, y);
+			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			g.setColor(Coloriser.colorise(labelColor, d.getColorisation()));
@@ -260,25 +264,36 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		}
 	}
 
-	protected void drawNameInLocalSpace(DrawRequest r) {
-		if (CommonVisualSettings.getNameVisibility()) {
-			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-			if (name == null) {
-				name = "";
-			}
-			if (!name.equals(nameRenderedText.text) || nameFont != nameRenderedText.font) {
-				nameRenderedText = new RenderedText(name, nameFont);
-			}
+	private void cacheNameRenderedText(DrawRequest r) {
+		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		if (name == null) {
+			name = "";
+		}
+		if (!name.equals(nameRenderedText.text) || nameFont != nameRenderedText.font) {
+			nameRenderedText = new RenderedText(name, nameFont);
 			double x = 0.5 * namePositioning.xOffset * size
 					+ 0.5 * namePositioning.xSign * nameRenderedText.getBoundingBox().getWidth();
 			double y = 0.5 * namePositioning.yOffset * size
 					+ 0.5 * namePositioning.ySign * nameRenderedText.getBoundingBox().getHeight();
 			nameRenderedText.setCenter(x, y);
+		}
+	}
+
+	protected void drawNameInLocalSpace(DrawRequest r) {
+		if (CommonVisualSettings.getNameVisibility()) {
+			cacheNameRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			g.setColor(Coloriser.colorise(nameColor, d.getColorisation()));
 			nameRenderedText.draw(g);
 		}
+	}
+
+	// This method is needed for VisualGroup to update the rendered text of its children
+	// before they were drawn, which is necessary for computing their bounding boxes
+	public void cacheRenderedText(DrawRequest r) {
+		cacheLabelRenderedText(r);
+		cacheNameRenderedText(r);
 	}
 
 	@Override

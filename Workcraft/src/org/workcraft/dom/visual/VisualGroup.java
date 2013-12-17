@@ -47,7 +47,13 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
+	@Override
 	public void draw(DrawRequest r) {
+		// This is to update the rendered text for names (and labels) of group children,
+		// which is necessary to calculate the bounding box before children have been drawn
+		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
+			component.cacheRenderedText(r);
+		}
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 		if (bb != null && getParent() != null) {
 			bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
@@ -59,6 +65,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		}
 	}
 
+	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
 	}

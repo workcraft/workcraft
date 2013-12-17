@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 
@@ -87,6 +88,11 @@ class DrawMan
 		graphics.setTransform(oldTransform);
 
 		for (Node n : node.getChildren())
-			draw(decoration, n);
+			if (!(n instanceof VisualConnection)) // this will break at some point
+				draw(decoration, n);
+
+		for (Node n : node.getChildren())
+			if (n instanceof VisualConnection)
+				draw(decoration, n);
 	}
 }

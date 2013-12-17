@@ -44,6 +44,8 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
@@ -121,6 +123,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	protected Stroke borderStroke = new BasicStroke(2);
 	private Overlay overlay = new Overlay();
 	private boolean firstPaint = true;
+	private boolean repaintRequested = true;
 
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
 		super (new BorderLayout());
@@ -207,6 +210,22 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		addKeyListener(keyListener);
 
 		add(overlay, BorderLayout.CENTER);
+
+		// FIXME: needs to be stopped at some point
+		Timer timer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (repaintRequested)
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							doRepaint();
+						}
+					});
+			}
+		});
+
+		timer.start();
 	}
 
 	private void reshape() {
@@ -389,8 +408,18 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		}
 	}
 
-	public void notify(StateEvent e) {
+	private void doRepaint() {
 		updatePropertyView();
+		super.repaint();
+		repaintRequested = false;
+	}
+
+	@Override
+	public void repaint() {
+		repaintRequested = true;
+	}
+
+	public void notify(StateEvent e) {
 		repaint();
 	}
 
