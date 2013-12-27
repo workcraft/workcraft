@@ -52,5 +52,5 @@ CLASSPATH="$WORKCRAFT_HOME/Workcraft/bin:"\
 "$WORKCRAFT_HOME/XmasPlugin/bin:"\
 
 pushd $WORKCRAFT_HOME
-java -Dfile.encoding=Cp1252 -classpath $CLASSPATH org.workcraft.Console
+java -classpath $CLASSPATH org.workcraft.Console
 popd

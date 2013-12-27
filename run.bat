@@ -51,5 +51,5 @@ set CLASSPATH=.\Workcraft\bin;^
 ;
 
 pushd %WORKCRAFT_HOME%
-javaw.exe -Dfile.encoding=Cp1252 -classpath %CLASSPATH% org.workcraft.Console
+javaw.exe -classpath %CLASSPATH% org.workcraft.Console
 popd
