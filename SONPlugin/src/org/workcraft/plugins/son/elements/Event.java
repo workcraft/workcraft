@@ -13,6 +13,7 @@ public class Event extends MathNode {
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label="";
+	private Boolean faulty = false;
 
 	public void setLabel(String label){
 		this.label=label;
@@ -25,6 +26,15 @@ public class Event extends MathNode {
 
 	public Color getForegroundColor() {
 		return foregroundColor;
+	}
+
+	public void setFaulty(boolean fault){
+		this.faulty = fault;
+		sendNotification( new PropertyChangedEvent(this, "fault") );
+	}
+
+	public boolean isFaulty(){
+		return faulty;
 	}
 
 	public void setForegroundColor(Color foregroundColor) {

@@ -58,8 +58,7 @@ public class SON extends AbstractMathModel implements SONModel {
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-		System.out.print("no-implement");
-		return null;
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 
 	public SONConnection connect(Node first, Node second, String conType) throws InvalidConnectionException {
@@ -168,6 +167,18 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		for (SONConnection con : this.getSONConnections())
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
+	}
+
+	public void resetErrStates(){
+		for(Condition con : this.getConditions())
+			con.setErrors(0);
+		for(Event event : this.getEvents())
+			event.setFaulty(false);
+	}
+
+	public void resetConditionErrStates(){
+		for(Condition con : this.getConditions())
+			con.setErrors(0);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class VisualChannelPlace extends VisualComponent {
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
-	private boolean displayName = false;
+	//private boolean displayName = false;
 
 	public VisualChannelPlace(ChannelPlace cplace) {
 		super(cplace);
@@ -84,7 +84,7 @@ public class VisualChannelPlace extends VisualComponent {
 			g.fill(shape);
 		}
 	}
-
+	/*
 	public void drawName(DrawRequest r){
 		if (SONSettings.getDisplayName()) {
 			Graphics2D g = r.getGraphics();
@@ -114,7 +114,7 @@ public class VisualChannelPlace extends VisualComponent {
 	public boolean isDisplayName(){
 		return displayName;
 	}
-
+	*/
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;

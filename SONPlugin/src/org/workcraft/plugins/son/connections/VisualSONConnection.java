@@ -50,9 +50,18 @@ public class VisualSONConnection extends VisualConnection
 
 		static public Map<String, SONConnectionType> getChoice() {
 			LinkedHashMap<String, SONConnectionType> choice = new LinkedHashMap<String, SONConnectionType>();
-			for (SONConnectionType item : SONConnectionType.values()) {
-				choice.put(item.name, item);
-			}
+			choice.put(SONConnectionType.POLYLINE.name, SONConnectionType.POLYLINE);
+			choice.put(SONConnectionType.BEZIER.name, SONConnectionType.BEZIER);
+
+			return choice;
+		}
+
+		static public Map<String, SONConnectionType> getSONTypes() {
+			LinkedHashMap<String, SONConnectionType> choice = new LinkedHashMap<String, SONConnectionType>();
+			choice.put(SONConnectionType.SYNCLINE.name, SONConnectionType.SYNCLINE);
+			choice.put(SONConnectionType.ASYNLINE.name, SONConnectionType.ASYNLINE);
+			choice.put(SONConnectionType.BHVLINE.name, SONConnectionType.BHVLINE);
+
 			return choice;
 		}
 	};
@@ -116,13 +125,24 @@ public class VisualSONConnection extends VisualConnection
 		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, SONConnectionType>(
 				this, "Connection type", SONConnectionType.class, SONConnectionType.getChoice()) {
 			protected void setter(VisualSONConnection object, SONConnectionType value) {
-				object.setSONConnectionType(value);
+				if(object.getSONConnectionType()==VisualSONConnection.SONConnectionType.POLYLINE
+						|| object.getSONConnectionType()==VisualSONConnection.SONConnectionType.BEZIER)
+					object.setSONConnectionType(value);
 			}
 			protected SONConnectionType getter(VisualSONConnection object) {
 				return object.getSONConnectionType();
 			}
 		});
 
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, SONConnectionType>(
+				this, "SON Connection type", SONConnectionType.class, SONConnectionType.getSONTypes()) {
+			protected void setter(VisualSONConnection object, SONConnectionType value) {
+
+			}
+			protected SONConnectionType getter(VisualSONConnection object) {
+				return object.getSONConnectionType();
+			}
+		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, ScaleMode>(
 				this, "Scale mode", ScaleMode.class, ScaleMode.getChoice()) {
@@ -285,8 +305,8 @@ public class VisualSONConnection extends VisualConnection
 	public void setArrowWidth(double arrowWidth) {
 		if (arrowWidth > 1)
 			arrowWidth = 1;
-		if (arrowWidth < 0.0)
-			arrowWidth = 0.0;
+		if (arrowWidth < 0.1)
+			arrowWidth = 0.1;
 		this.arrowWidth = arrowWidth;
 
 		invalidate();
@@ -304,8 +324,8 @@ public class VisualSONConnection extends VisualConnection
 	public void setArrowLength(double arrowLength) {
 		if (arrowLength > 1)
 			arrowLength = 1;
-		if (arrowLength < 0.0)
-			arrowLength = 0.0;
+		if (arrowLength < 0.1)
+			arrowLength = 0.1;
 		this.arrowLength = arrowLength;
 
 		invalidate();
@@ -429,6 +449,5 @@ public class VisualSONConnection extends VisualConnection
 	{
 		return new BasicStroke((float)getLineWidth());
 	}
-
 
 }

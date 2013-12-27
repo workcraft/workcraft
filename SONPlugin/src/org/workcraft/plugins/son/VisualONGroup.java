@@ -161,8 +161,8 @@ public class VisualONGroup extends VisualGroup{
 
 		if (bb != null && getParent() != null)
 		{
-			g.setColor(Coloriser.colorise(fillColor, colorisation));
-			g.fill(bb);
+//			g.setColor(Coloriser.colorise(fillColor, colorisation));
+//			g.fill(bb);
 			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 			g.setStroke(new BasicStroke( 2 * strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
 					3.0f, new float[]{ 2 * strokeWidth , 5 * strokeWidth,}, 0f));

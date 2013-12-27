@@ -12,7 +12,10 @@ import org.workcraft.plugins.son.serialisation.VisualONGroupSerialiser;
 import org.workcraft.plugins.son.serialisation.VisualSONConnectionDeserialiser;
 import org.workcraft.plugins.son.serialisation.VisualSONConnectionSerialiser;
 import org.workcraft.plugins.son.tools.ColorRefreshTool;
+import org.workcraft.plugins.son.tools.ErrTracingDisable;
+import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
+import org.workcraft.plugins.son.tools.TokenRefreshTool;
 //import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -24,8 +27,14 @@ public class SONModule implements Module{
 		framework.getPluginManager().registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		framework.getPluginManager().registerClass(SettingsPage.class, SONSettings.class);
 	//	framework.getPluginManager().registerClass(Tool.class, TestTool.class, framework);
+		//structural verification
 		framework.getPluginManager().registerClass(Tool.class, StructurePropertyChecker.class, framework);
+		//Custom tools
 		framework.getPluginManager().registerClass(Tool.class, ColorRefreshTool.class);
+		framework.getPluginManager().registerClass(Tool.class, TokenRefreshTool.class);
+		//error tracing
+		framework.getPluginManager().registerClass(Tool.class, ErrTracingReset.class);
+		framework.getPluginManager().registerClass(Tool.class, ErrTracingDisable.class);
 
 		framework.getPluginManager().registerClass(XMLSerialiser.class, SONConnectionSerialiser.class);
 		framework.getPluginManager().registerClass(XMLSerialiser.class, VisualSONConnectionSerialiser.class);

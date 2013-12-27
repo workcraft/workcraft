@@ -96,12 +96,12 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 
 		buttonGroup = new ButtonGroup();
 		this.buttonGroup.add(polyButton);
-		this.buttonGroup.add(asynButton);
+	//	this.buttonGroup.add(asynButton);
 		//this.buttonGroup.add(synButton);
 		this.buttonGroup.add(bhvButton);
 
 		interfacePanel.add(polyButton);
-		interfacePanel.add(asynButton);
+		//interfacePanel.add(asynButton);
 		//interfacePanel.add(synButton);
 		interfacePanel.add(bhvButton);
 

@@ -56,6 +56,9 @@ public interface SONModel extends Model{
 	public String getName(Node n);
 	public void setName(Node n, String name);
 
+	public void resetErrStates();
+	public void resetConditionErrStates();
+
 	//connection
 
 	public Collection<SONConnection> getSONConnections();

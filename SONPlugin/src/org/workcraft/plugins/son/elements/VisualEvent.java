@@ -14,20 +14,36 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.tools.ErrTracingDisable;
+
 
 @Hotkey(KeyEvent.VK_E)
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")
 
 public class VisualEvent extends VisualComponent {
-	private boolean displayName = false;
+	//private boolean displayName = false;
 
 	public VisualEvent(Event event) {
 		super(event);
+		addPropertyDeclarations();
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Boolean>(
+				this, "Fault", Boolean.class) {
+			public void setter(VisualEvent object, Boolean value) {
+				((Event)getReferencedComponent()).setFaulty(value);
+			}
+			public Boolean getter(VisualEvent object) {
+				return 	((Event)getReferencedComponent()).isFaulty();
+			}
+		});
 	}
 
 	@Override
@@ -45,24 +61,25 @@ public class VisualEvent extends VisualComponent {
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-		//drawName(r);
+		drawFault(r);
 	}
 
-	public void drawName(DrawRequest r){
-		if (SONSettings.getDisplayName()) {
+	public void drawFault(DrawRequest r){
+		if (ErrTracingDisable.showErrorTracing()) {
 			Graphics2D g = r.getGraphics();
 			GlyphVector glyphVector=null;
 			Rectangle2D labelBB=null;
 
-			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.4f);
-			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-			if (name != null) {
-				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), name);
+			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
-				labelBB = glyphVector.getVisualBounds();
-				Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-				g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
-			}
+			if (isFaulty())
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "1");
+			else
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "0");
+
+			labelBB = glyphVector.getVisualBounds();
+			Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
+			g.drawGlyphVector(glyphVector, -(float)bitPosition.getX(), -(float)bitPosition.getY());
 		}
 	}
 
@@ -70,14 +87,6 @@ public class VisualEvent extends VisualComponent {
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
-	}
-
-	public void setDisplayName(boolean showName){
-		this.displayName = showName;
-	}
-
-	public boolean isDisplayName(){
-		return displayName;
 	}
 
 	public Event getReferencedEvent() {
@@ -92,6 +101,14 @@ public class VisualEvent extends VisualComponent {
 	public String getLabel(){
 		super.getLabel();
 		return ((Event)getReferencedComponent()).getLabel();
+	}
+
+	public void setFaulty(Boolean fault){
+		((Event)getReferencedComponent()).setFaulty(fault);
+	}
+
+	public boolean isFaulty(){
+		return ((Event)getReferencedComponent()).isFaulty();
 	}
 
 	public Color getForegroundColor() {

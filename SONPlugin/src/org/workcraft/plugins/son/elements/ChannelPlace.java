@@ -14,6 +14,7 @@ public class ChannelPlace extends MathNode {
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	protected boolean token=false;
+	private int errors = 0;
 
 	public void setLabel(String label){
 		this.label=label;
@@ -28,7 +29,15 @@ public class ChannelPlace extends MathNode {
 		return token;
 	}
 
-		public void setToken(boolean token) {
+	public void setErrors(int errors){
+		this.errors = errors;
+	}
+
+	public int getErrors(){
+		return errors;
+	}
+
+	public void setToken(boolean token) {
 		this.token=token;
 		sendNotification( new PropertyChangedEvent(this, "token") );
 	}

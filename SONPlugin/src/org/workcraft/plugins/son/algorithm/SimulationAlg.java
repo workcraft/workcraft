@@ -47,7 +47,7 @@ public class SimulationAlg {
 		bhvGroups = relation.getBhvGroups(net.getGroups());
 	}
 
-	private List<Event> getPreAsynEvents (Event e){
+	protected List<Event> getPreAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPreset(e)){
 			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
@@ -59,7 +59,7 @@ public class SimulationAlg {
 		return result;
 	}
 
-	private List<Event> getPostAsynEvents (Event e){
+	protected List<Event> getPostAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPostset(e) )
 			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
@@ -332,7 +332,7 @@ public class SimulationAlg {
 		return syncCycles;
 	}
 
-	private boolean hasCommonElements(ArrayList<Node> cycle1, ArrayList<Node> cycle2){
+	private boolean hasCommonElements(Collection<Node> cycle1, Collection<Node> cycle2){
 		for(Node n : cycle1)
 			if(cycle2.contains(n))
 				return true;
@@ -347,7 +347,7 @@ public class SimulationAlg {
 		// gather number of connections for each pre-place
 		for (Node n : net.getPreset(e)){
 			if(n instanceof Condition)
-				if (!((Condition)n).hasToken())
+				if (!((Condition)n).isMarked())
 					return false;
 			}
 		return true;
@@ -400,9 +400,9 @@ public class SimulationAlg {
 			if(group.getComponents().contains(e)){
 				for(Node pre : relation.getPrePNSet(e))
 					if(pre instanceof Condition){
-						Collection<Condition> phase = relation.getPhase((Condition)pre);
+						Collection<Condition> phase = phases.get((Condition)pre);
 						for(Condition max : relation.getMaximalPhase(phase))
-							if(!max.hasToken())
+							if(!max.isMarked())
 								return false;
 				}
 			return true;
@@ -411,11 +411,15 @@ public class SimulationAlg {
 
 		for(ONGroup group : bhvGroups){
 			if(group.getComponents().contains(e)){
-				for(Condition c : phases.keySet())
-					if(c.hasToken())
-						if(phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))
-							return true;
-			return false;
+				for(Condition c : phases.keySet()){
+					if(c.isMarked())
+						if((!phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))||
+								(!phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e))))
+							return false;
+					if(!c.isMarked())
+						if(phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e)))
+							return false;
+					}
 				}
 			}
 		return true;
@@ -434,13 +438,13 @@ public class SimulationAlg {
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
-					if(to.hasToken())
+					if(to.isMarked())
 						JOptionPane.showMessageDialog(null, "Token setting error: the number of token in "+net.getName(to) + " > 1", "Error", JOptionPane.WARNING_MESSAGE);
-					to.setToken(true);
+					to.setMarked(true);
 				}
 				if (c.getType() == "POLYLINE" && e==c.getSecond()) {
 					Condition from = (Condition)c.getFirst();
-					from.setToken(false);
+					from.setMarked(false);
 
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getFirst()){
@@ -476,24 +480,41 @@ public class SimulationAlg {
 					for(Condition fin : preMax)
 							if(!relation.isFinal(fin))
 								isFinal=false;
-					if(isFinal)
-						for(Condition fin : preMax)
-							if(fin.hasToken())
-								fin.setToken(false);
-							else
-								JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(fin) + " is empty", "Error", JOptionPane.WARNING_MESSAGE);
-
+					if(isFinal){
+						for(Condition fin : preMax){
+							//structure such that condition fin has more than one high-level states
+							int tokens = 0;
+							for(Node post : net.getPostset(fin)){
+								if(post instanceof Condition && net.getSONConnectionTypes(post, fin).contains("BHVLINE"))
+									if(((Condition)post).isMarked())
+										tokens++;
+							}
+							//if preMax has token and there is no high-level states has token, then token -> false;
+							if(fin.isMarked() && tokens == 0)
+								fin.setMarked(false);
+						}
+					}
 					boolean isIni = true;
 					for(Condition init : postMin)
 							if(!relation.isInitial(init))
 								isIni=false;
 					if(isIni)
-						for(Condition fin : postMin)
-							if(!fin.hasToken())
-								fin.setToken(true);
-							else
-								JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(fin) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+						for(Condition ini : postMin){
+							//structure such that condition ini has more than one high-level states
+							int tokens = 0;
+							int size = 0;
+							for(Node post : net.getPostset(ini)){
+								if(post instanceof Condition && net.getSONConnectionTypes(post, ini).contains("BHVLINE")){
+									size++;
+									if(((Condition)post).isMarked())
+										tokens++;
+									}
+							}
 
+							if(!ini.isMarked() && tokens == size)
+								ini.setMarked(true);
+							//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				}
 			}
@@ -514,7 +535,7 @@ public class SimulationAlg {
 	private boolean isPNUnEnabled (Event e) {
 		for (Node n : net.getPostset(e)){
 			if(n instanceof Condition)
-				if (!((Condition)n).hasToken())
+				if (!((Condition)n).isMarked())
 					return false;
 			}
 		return true;
@@ -568,7 +589,7 @@ public class SimulationAlg {
 					if(pre instanceof Condition){
 						Collection<Condition> phase = relation.getPhase((Condition)pre);
 						for(Condition min : relation.getMinimalPhase(phase))
-							if(!min.hasToken())
+							if(!min.isMarked())
 								return false;
 				}
 			return true;
@@ -577,11 +598,15 @@ public class SimulationAlg {
 
 		for(ONGroup group : bhvGroups){
 			if(group.getComponents().contains(e)){
-				for(Condition c : phases.keySet())
-					if(c.hasToken())
+				for(Condition c : phases.keySet()){
+					if(c.isMarked())
+						if((!phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))||
+								(!phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e))))
+							return false;
+					if(!c.isMarked())
 						if(phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e)))
-							return true;
-			return false;
+							return false;
+					}
 				}
 			}
 		return true;
@@ -592,11 +617,11 @@ public class SimulationAlg {
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getType() == "POLYLINE" && e==c.getSecond()) {
 					Condition to = (Condition)c.getFirst();
-					to.setToken(true);
+					to.setMarked(true);
 				}
 				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
 					Condition from = (Condition)c.getSecond();
-					from.setToken(false);
+					from.setMarked(false);
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getSecond()){
 						ChannelPlace to = (ChannelPlace)c.getFirst();
@@ -628,23 +653,42 @@ public class SimulationAlg {
 						for(Condition ini : postMin)
 								if(!relation.isInitial(ini))
 									isInitial=false;
-						if(isInitial)
-							for(Condition ini : postMin)
-								if(ini.hasToken())
-									ini.setToken(false);
-								else
-									JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is empty", "Error", JOptionPane.WARNING_MESSAGE);
+						if(isInitial){
+								for(Condition ini : postMin){
+									//structure such that condition fin has more than one high-level states
+									int tokens = 0;
+									for(Node post : net.getPostset(ini)){
+										if(post instanceof Condition && net.getSONConnectionTypes(post, ini).contains("BHVLINE"))
+											if(((Condition)post).isMarked())
+												tokens++;
+									}
+									//if preMax has token and there is no high-level states has token, then token -> false;
+									if(ini.isMarked() && tokens == 0)
+										ini.setMarked(false);
+								}
+							}
 
 						boolean isFinal = true;
 						for(Condition fin : preMax)
 								if(!relation.isFinal(fin))
 									isFinal=false;
 						if(isFinal)
-							for(Condition ini : preMax)
-								if(!ini.hasToken())
-									ini.setToken(true);
-								else
-									JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+							for(Condition fin : preMax){
+								//structure such that condition ini has more than one high-level states
+								int tokens = 0;
+								int size = 0;
+								for(Node post : net.getPostset(fin)){
+									if(post instanceof Condition && net.getSONConnectionTypes(post, fin).contains("BHVLINE")){
+										size++;
+										if(((Condition)post).isMarked())
+											tokens++;
+										}
+								}
+
+								if(!fin.isMarked() && tokens == size)
+									fin.setMarked(true);
+								//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+							}
 					}
 				}
 			}
@@ -750,5 +794,11 @@ public class SimulationAlg {
 				result.add((Event)n);
 
 		return result;
+	}
+
+	//others
+
+	public Collection<ONGroup> getAbstractGroups(){
+		return this.abstractGroups;
 	}
 }

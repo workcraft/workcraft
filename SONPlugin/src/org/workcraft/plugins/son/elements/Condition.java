@@ -13,16 +13,26 @@ public class Condition extends MathNode {
 
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
-	private String label="";
-	protected boolean token=false;
+	private String label = "";
+	private int errors = 0;
+	private boolean marked = false;
 
-	public boolean hasToken() {
-		return token;
+	public void setMarked(boolean token) {
+		this.marked=token;
+		sendNotification( new PropertyChangedEvent(this, "marked") );
 	}
 
-	public void setToken(boolean token) {
-		this.token=token;
-		sendNotification( new PropertyChangedEvent(this, "token") );
+	public boolean isMarked() {
+		return marked;
+	}
+
+	public void setErrors(int errors){
+		this.errors = errors;
+		sendNotification( new PropertyChangedEvent(this, "errors") );
+	}
+
+	public int getErrors(){
+		return errors;
 	}
 
 	public Color getForegroundColor() {

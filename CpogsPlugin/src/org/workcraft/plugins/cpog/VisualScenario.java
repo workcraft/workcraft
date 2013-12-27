@@ -137,8 +137,8 @@ public class VisualScenario extends VisualGroup
 
 		if (bb != null && getParent() != null)
 		{
-			g.setColor(Coloriser.colorise(Color.WHITE, background));
-			g.fill(bb);
+//			g.setColor(Coloriser.colorise(Color.WHITE, background));
+//			g.fill(bb);
 			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 			g.setStroke(new BasicStroke(strokeWidth));
 			g.draw(bb);

@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -19,10 +20,10 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.VisualSuperGroup;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.GUI;
 
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
@@ -58,7 +59,6 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
 	{
-		super.mouseClicked(e);
 		VisualModel model = e.getEditor().getModel();
 
 		if (e.getClickCount() > 1)
@@ -66,28 +66,38 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 			Collection<Node> selection = e.getModel().getSelection();
 
+			if (model.getCurrentLevel() instanceof VisualGroup) {
+				VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
+				if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+					setChannelPlaceToolState(true);
+				}
+			}
+
 			if(selection.size() == 1)
 			{
 				Node selectedNode = selection.iterator().next();
+				selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
-				if(selectedNode instanceof VisualONGroup)
-				{
+				if (selectedNode instanceof VisualONGroup) {
 					setChannelPlaceToolState(false);
-					changeLevelDown();
 				}
-				if(selectedNode instanceof VisualSuperGroup)
-				{
-					changeLevelDown();
-				}
-				if(selectedNode instanceof VisualCondition){
-					VisualCondition vc = (VisualCondition)selectedNode;
-					if (vc.hasToken()==false)
-							vc.setToken(true);
-					else if (vc.hasToken()==true)
-							vc.setToken(false);
+				if (selectedNode instanceof VisualCondition) {
+					VisualCondition vc = (VisualCondition) selectedNode;
+					if (vc.hasToken() == false)
+						vc.setToken(true);
+					else if (vc.hasToken() == true)
+						vc.setToken(false);
 				}
 
-				if(selectedNode instanceof VisualChannelPlace){
+				if (selectedNode instanceof VisualEvent) {
+					VisualEvent ve = (VisualEvent) selectedNode;
+					if (ve.isFaulty() == false)
+						ve.setFaulty(true);
+					else if (ve.isFaulty() == true)
+						ve.setFaulty(false);
+				}
+
+				if(selectedNode instanceof VisualChannelPlace) {
 					VisualChannelPlace cPlace = (VisualChannelPlace) node;
 					for (Connection con : model.getConnections(cPlace)){
 						if (((VisualSONConnection) con).getSONConnectionType() == VisualSONConnection.SONConnectionType.ASYNLINE)
@@ -116,17 +126,13 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				}
 			}
 		}
+		super.mouseClicked(e);
 	}
 
 	@Override
 	public void keyPressed(GraphEditorKeyEvent e)
 	{
 		super.keyPressed(e);
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			setChannelPlaceToolState(true);
-			// Note: level-up is handled in the parent
-			// selectionLevelUp();
-		}
 		if (!e.isCtrlDown())
 		{
 			if (!e.isShiftDown()) {

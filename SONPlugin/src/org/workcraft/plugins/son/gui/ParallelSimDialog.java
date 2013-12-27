@@ -34,6 +34,7 @@ import javax.swing.table.TableColumn;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.Event;

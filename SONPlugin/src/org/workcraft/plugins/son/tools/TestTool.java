@@ -70,7 +70,9 @@ public class TestTool implements Tool{
 		RelationAlg alg = new RelationAlg(net);
 		BSONStructureTask task = new BSONStructureTask(net);
 
+		System.out.println(net.getSONConnectionTypes(net.getComponents()));
 
+		/*
 		Collection<Condition[]> before = new ArrayList<Condition[]>();
 		for(Event e : net.getEvents()){
 			before =  alg.before(e);
@@ -104,8 +106,6 @@ public class TestTool implements Tool{
 		System.out.println();
 
 
-
-		/*
 		SimulationAlg alg = new SimulationAlg(net);
 		for(Event e : net.getEvents()){
 			System.out.println("start   " + net.getName(e) +  "  test");

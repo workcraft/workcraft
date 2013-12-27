@@ -169,7 +169,6 @@ public class VisualSON extends AbstractVisualModel{
 			con.setType("ASYNLINE");
 		}
 
-
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
 
 	}

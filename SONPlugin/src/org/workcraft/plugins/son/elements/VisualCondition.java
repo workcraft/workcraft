@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.font.GlyphVector;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -14,12 +13,19 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.tools.ConditionDecoration;
+import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 
 
@@ -28,9 +34,13 @@ import org.workcraft.plugins.son.SONSettings;
 @SVGIcon("images/icons/svg/place_empty.svg")
 public class VisualCondition extends VisualComponent{
 
+	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	private RenderedText errorRenderedText = new RenderedText("", errorFont);
+	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
+	private Color errLabelColor = SONSettings.getErrLabelColor();
+
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
-	private boolean displayName = false;
 
 	public VisualCondition(Condition condition){
 		super(condition);
@@ -41,10 +51,30 @@ public class VisualCondition extends VisualComponent{
 		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
 				this, "Token", Boolean.class) {
 			public void setter(VisualCondition object, Boolean value) {
-				object.setToken(value);
+				((Condition)getReferencedComponent()).setMarked(value);
 			}
 			public Boolean getter(VisualCondition object) {
-				return object.hasToken();
+				return ((Condition)getReferencedComponent()).isMarked();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Positioning>(
+				this, "Error Positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(VisualCondition object, Positioning value) {
+				object.setErrLabelPositioning(value);
+			}
+			protected Positioning getter(VisualCondition object) {
+				return object.getErrLabelPositioning();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Color>(
+				this, "Error color", Color.class) {
+			protected void setter(VisualCondition object, Color value) {
+				object.setErrLabelColor(value);
+			}
+			protected Color getter(VisualCondition object) {
+				return object.getErrLabelColor();
 			}
 		});
 	}
@@ -53,6 +83,7 @@ public class VisualCondition extends VisualComponent{
 	public void draw(DrawRequest r)
 	{
 		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
 
 		Shape shape = new Ellipse2D.Double(
 				-size / 2 + strokeWidth / 2,
@@ -67,14 +98,20 @@ public class VisualCondition extends VisualComponent{
 		g.draw(shape);
 
 		Condition p = (Condition)getReferencedComponent();
-		drawToken(p.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
+		boolean token = p.isMarked();
+		if (d instanceof ConditionDecoration) {
+			token = ((ConditionDecoration)d).hasToken();
+		}
+		drawToken(r, token, singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()));
 
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-		//drawName(r);
+		drawErrorInLocalSpace(r);
 	}
 
-	public static void drawToken (boolean b, double singleTokenSize, Color tokenColor,	Graphics2D g) {
+	public static void drawToken (DrawRequest r, boolean b, double singleTokenSize, Color tokenColor) {
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
 		if(b){
 		Shape shape;
 			shape = new Ellipse2D.Double(
@@ -82,39 +119,37 @@ public class VisualCondition extends VisualComponent{
 					-singleTokenSize / 2,
 					singleTokenSize,
 					singleTokenSize);
-			g.setColor(tokenColor);
+			g.setColor(Coloriser.colorise(tokenColor, d.getColorisation()));
 			g.fill(shape);
 		}
 	}
 
-	public void drawName(DrawRequest r) {
-		if (SONSettings.getDisplayName()) {
-			Graphics2D g = r.getGraphics();
-			GlyphVector glyphVector=null;
-			Rectangle2D labelBB=null;
-
-			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.4f);
-			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-			if (name != null) {
-				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), name);
-
-				labelBB = glyphVector.getVisualBounds();
-				Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-				if(!this.hasToken()) {
-					g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
-				} else {
-					g.drawGlyphVector(glyphVector, -(float)this.getLabelPositioning().xOffset, -(float)this.getLabelPositioning().yOffset);
-				}
+	protected void drawErrorInLocalSpace(DrawRequest r) {
+		if (ErrTracingDisable.showErrorTracing()) {
+			String error = "Err = "+((Integer)this.getErrors()).toString();
+			if (!error.equals(errorRenderedText.text) || errorFont != errorRenderedText.font) {
+				errorRenderedText = new RenderedText(error, labelFont);
 			}
+			double x = 0.8 * errLabelPositioning.xOffset * size
+					 + 0.8 * errLabelPositioning.xSign * errorRenderedText.getBoundingBox().getWidth();
+			double y = 0.8 * errLabelPositioning.yOffset * size
+					 + 0.8 * errLabelPositioning.ySign * errorRenderedText.getBoundingBox().getHeight();
+			errorRenderedText.setCenter(x, y);
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
+			errorRenderedText.draw(g);
 		}
 	}
 
-	public void setDisplayName(boolean showName){
-		this.displayName = showName;
-	}
-
-	public boolean isDisplayName(){
-		return displayName;
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
+		if (ErrTracingDisable.showErrorTracing()){
+			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
+		}
+		super.getBoundingBoxInLocalSpace();
+		return bb;
 	}
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
@@ -123,11 +158,19 @@ public class VisualCondition extends VisualComponent{
 	}
 
 	public boolean hasToken() {
-		return ((Condition)getReferencedComponent()).hasToken();
+		return ((Condition)getReferencedComponent()).isMarked();
 	}
 
 	public void setToken(boolean b) {
-		((Condition)getReferencedComponent()).setToken(b);
+		((Condition)getReferencedComponent()).setMarked(b);
+	}
+
+	public int getErrors(){
+		return ((Condition)getReferencedComponent()).getErrors();
+	}
+
+	public void setErrors(int errors){
+		((Condition)getReferencedComponent()).setErrors(errors);
 	}
 
 	public Color getTokenColor() {
@@ -164,4 +207,20 @@ public class VisualCondition extends VisualComponent{
 		return ((Condition)getReferencedComponent()).getLabel();
 	}
 
+	public Positioning getErrLabelPositioning() {
+		return errLabelPositioning;
+	}
+
+	public void setErrLabelPositioning(Positioning errorPositioning) {
+		this.errLabelPositioning = errorPositioning;
+		sendNotification(new PropertyChangedEvent(this, "Error positioning"));
+	}
+
+	public Color getErrLabelColor(){
+		return this.errLabelColor;
+	}
+
+	public void setErrLabelColor(Color errLabelColor){
+		this.errLabelColor = errLabelColor;
+	}
 }

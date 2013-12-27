@@ -93,21 +93,22 @@ public class BSONStructureTask implements SONStructureVerification{
 		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
 
 		phaseTaskResult1 = phaseTask1(abstractGroups);
-		phaseTaskResult2 = phaseTask2(abstractGroups);
+		phaseTaskResult2 = new HashSet<Condition>();
+
 			if(!phaseTaskResult1.isEmpty()){
 				hasErr = true;
 				errNumber = errNumber + phaseTaskResult1.size();
 				for(Condition c : phaseTaskResult1)
 					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+			}else{
+				phaseTaskResult2.addAll(phaseTask2(abstractGroups));
+				if(!phaseTaskResult2.isEmpty()){
+					hasErr = true;
+					errNumber = errNumber + phaseTaskResult2.size();
+					for(Condition c : phaseTaskResult2)
+						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+				}
 			}
-
-			if(!phaseTaskResult2.isEmpty()){
-				hasErr = true;
-				errNumber = errNumber + phaseTaskResult2.size();
-				for(Condition c : phaseTaskResult2)
-					logger.error("ERROR: Invalid Phase (phase not reach initial/final state): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
-			}
-
 			if(!hasErr){
 				String result = "";
 				for(ONGroup group : abstractGroups)
@@ -209,7 +210,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	//check: if a phase is in one ON, initial/final phase
+	//task1: if a phase is in one ON.
 	private Collection<Condition> phaseTask1(Collection<ONGroup> abstractGroups){
 		Collection<Condition> result = new HashSet<Condition>();
 		for(ONGroup group : abstractGroups)
@@ -219,6 +220,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
+	//task2: if initial/final states involve in a phase
 	private Collection<Condition> phaseTask2(Collection<ONGroup> abstractGroups){
 		Collection<Condition> result = new HashSet<Condition>();
 		for(ONGroup group : abstractGroups)
@@ -259,6 +261,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
+	//task3: if min/max phase is a cut
 	private String phaseTask3(Collection<Condition> phase, Condition c){
 		Collection<Condition> minimal = relation.getMinimalPhase(phase);
 		Collection<Condition> maximal = relation.getMaximalPhase(phase);

@@ -5,16 +5,18 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class SONSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
-	private static boolean displayName = false;
 	private static Color relationErrColor = new Color(255, 204, 204);
 	private static Color cyclePathColor = new Color(255, 102, 102);
 	private static Color connectionErrColor = new  Color(255, 102, 102);
+	private static Positioning errLabelPositioning = Positioning.BOTTOM;
+	private static Color errLabelColor = Color.GREEN.darker();
 
 	@Override
 	public String getName() {
@@ -27,16 +29,6 @@ public class SONSettings implements SettingsPage {
 
 	public SONSettings(){
 		properties = new LinkedList<PropertyDescriptor>();
-
-		properties.add(new PropertyDeclaration<SONSettings, Boolean>(
-				this, "Display node name", Boolean.class) {
-			protected void setter(SONSettings object, Boolean value) {
-				SONSettings.setDisplayName(value);
-			}
-			protected Boolean getter(SONSettings object) {
-				return SONSettings.getDisplayName();
-			}
-		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
 				this, "Erroneous node color(relation)", Color.class) {
@@ -67,6 +59,26 @@ public class SONSettings implements SettingsPage {
 				return SONSettings.getConnectionErrColor();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Positioning>(
+				this, "Error label positioning", Positioning.class, Positioning.getChoice()) {
+			protected void setter(SONSettings object, Positioning value) {
+				SONSettings.setErrLabelPositioning(value);
+			}
+			protected Positioning getter(SONSettings object) {
+				return SONSettings.getErrLabelPositioning();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Error label color", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setErrLabelColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getErrLabelColor();
+			}
+		});
 	}
 
 	@Override
@@ -76,28 +88,22 @@ public class SONSettings implements SettingsPage {
 
 	@Override
 	public void save(Config config) {
-		config.setBoolean("SONSettings.displayName", displayName);
-
 		config.setColor("SONSettings.relationErrColor", relationErrColor);
 		config.setColor("SONSettings.cyclePathColor", cyclePathColor);
 		config.setColor("SONSettings.connectionErrColor", connectionErrColor);
+
+		config.setTextPositioning("SONSettings.errLabelPositioning", errLabelPositioning);
+		config.setColor("SONSettings.errLabelColor", errLabelColor);
 	}
 
 	@Override
 	public void load(Config config) {
-		displayName = config.getBoolean("SONSettings.displayName", false);
-
 		relationErrColor = config.getColor("SONSettings.relationErrColor", new Color(255, 204, 204));
 		cyclePathColor = config.getColor("SONSettings.cyclePathColor", new Color(255, 102, 102));
 		connectionErrColor = config.getColor("SONSettings.connectionErrColor", new Color(255, 102, 102));
-	}
 
-	public static void setDisplayName(Boolean displayName){
-		SONSettings.displayName = displayName;
-	}
-
-	public static boolean getDisplayName(){
-		return displayName;
+		errLabelPositioning = config.getTextPositioning("SONSettings.errorPositioning", Positioning.BOTTOM);
+		errLabelColor = config.getColor("SONSettings.errLabelColor", Color.GREEN.darker());
 	}
 
 	public static void setRelationErrColor(Color color){
@@ -122,5 +128,21 @@ public class SONSettings implements SettingsPage {
 
 	public static Color getConnectionErrColor(){
 		return connectionErrColor;
+	}
+
+	public static Positioning getErrLabelPositioning() {
+		return errLabelPositioning;
+	}
+
+	public static void setErrLabelPositioning(Positioning value) {
+		SONSettings.errLabelPositioning = value;
+	}
+
+	public static Color getErrLabelColor() {
+		return errLabelColor;
+	}
+
+	public static void setErrLabelColor(Color value) {
+		SONSettings.errLabelColor = value;
 	}
 }

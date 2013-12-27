@@ -55,6 +55,7 @@ import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -70,11 +71,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected VisualModel visualNet;
 	private Framework framework;
 	private RelationAlg relationAlg;
-	protected SimulationAlg alg;
-
+	private SimulationAlg alg;
+	private ErrorTracingAlg	errAlg;
 	private SONModel net;
-	private Collection<ArrayList<Node>> sync;
+
+	private Collection<ArrayList<Node>> syncSet;
 	private Map<Condition, Collection<Condition>> phases;
+	private Collection<ONGroup> abstractGroups;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -89,7 +92,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected JComboBox typeCombo;
 
 	protected Map<Node, Boolean>initialMarking = null;
-	Map<Node, Boolean> savedMarking = null;
+	protected Map<Node, Boolean> savedMarking = null;
 	int savedStep = 0;
 	protected List<Trace> savedBranchTrace;
 	protected int savedBranchStep = 0;
@@ -130,7 +133,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		for (Node c: marking.keySet()) {
 			if(c instanceof Condition)
 				if (net.getConditions().contains(c)) {
-					((Condition)c).setToken(marking.get((Condition)c));
+					((Condition)c).setMarked(marking.get((Condition)c));
 				} else {
 					//ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
 				}
@@ -178,18 +181,22 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private boolean quietStep() {
 		if(branchTrace!=null && branchStep < branchTrace.size()){
-			List<Event> syncList = new ArrayList<Event>();
+			List<Event> runList = new ArrayList<Event>();
 
 			Trace step = branchTrace.get(branchStep);
 			for(int i =0; i<step.size(); i++){
 				final Node event = net.getNodeByReference(step.get(i));
 				if(event instanceof Event)
-					syncList.add((Event)event);
+					runList.add((Event)event);
 			}
-			if(!reverse)
-				alg.fire(syncList);
-			else
-				alg.unFire(syncList);
+			if(!reverse){
+				alg.fire(runList);
+				this.setErrNum(runList, reverse);
+			}
+			else{
+				alg.unFire(runList);
+				this.setErrNum(runList, reverse);
+			}
 			branchStep++;
 			return true;
 		}
@@ -197,21 +204,26 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		if (trace==null) return false;
 		if (traceStep>=trace.size()) return false;
 
-		List<Event> syncList = new ArrayList<Event>();
+		List<Event> runList = new ArrayList<Event>();
 
 		Trace step = branchTrace.get(branchStep);
 		for(int i =0; i<step.size(); i++){
 			final Node event = net.getNodeByReference(step.get(i));
 			if(event instanceof Event)
-				syncList.add((Event)event);
+				runList.add((Event)event);
 		}
 
-		if (syncList.isEmpty()) return false;
+		if (runList.isEmpty()) return false;
 
-		if(!reverse)
-			alg.fire(syncList);
-		else
-			alg.unFire(syncList);
+		if(!reverse){
+			alg.fire(runList);
+			this.setErrNum(runList, reverse);
+		}
+		else{
+			alg.unFire(runList);
+			this.setErrNum(runList, reverse);
+		}
+
 		traceStep++;
 		return true;
 	}
@@ -225,21 +237,27 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private boolean quietStepBack() {
 		if (branchTrace!=null&&branchStep>0) {
-			List<Event> syncList = new ArrayList<Event>();
+			List<Event> runList = new ArrayList<Event>();
 			Trace step = branchTrace.get(branchStep-1);
 
 			for(int i =0; i<step.size(); i++){
 				final Node event = net.getNodeByReference(step.get(i));
 				if(event instanceof Event)
-					syncList.add((Event)event);
+					runList.add((Event)event);
 			}
 
-			if (syncList.isEmpty()) return false;
+			if (runList.isEmpty()) return false;
 			branchStep--;
-			if(!reverse)
-				alg.unFire(syncList);
-			else
-				alg.fire(syncList);
+
+			if(!reverse){
+				alg.unFire(runList);
+				this.setErrNum(runList, !reverse);
+			}
+			else{
+				alg.fire(runList);
+				this.setErrNum(runList, !reverse);
+			}
+
 			if (branchStep==0&&trace!=null) branchTrace=null;
 			return true;
 		}
@@ -247,22 +265,26 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		if (trace==null) return false;
 		if (traceStep==0) return false;
 
-		List<Event> syncList = new ArrayList<Event>();
+		List<Event> runList = new ArrayList<Event>();
 		Trace step = branchTrace.get(branchStep-1);
 
 		for(int i =0; i<step.size(); i++){
 			final Node event = net.getNodeByReference(step.get(i));
 			if(event instanceof Event)
-				syncList.add((Event)event);
+				runList.add((Event)event);
 		}
 
-		if (syncList.isEmpty()) return false;
+		if (runList.isEmpty()) return false;
 		branchStep--;
 
-		if(!reverse)
-			alg.unFire(syncList);
-		else
-			alg.fire(syncList);
+		if(!reverse){
+			alg.unFire(runList);
+			this.setErrNum(runList, !reverse);
+		}
+		else{
+			alg.fire(runList);
+			this.setErrNum(runList, !reverse);
+		}
 		return true;
 	}
 
@@ -295,7 +317,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected Map<Node, Boolean> readMarking() {
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 		for (Condition c : net.getConditions()) {
-			result.put(c, c.hasToken());
+			result.put(c, c.isMarked());
 		}
 		for(ChannelPlace cp : net.getChannelPlace()){
 			result.put(cp, cp.hasToken());
@@ -308,7 +330,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 
 		for (Condition c : net.getConditions()) {
-			c.setToken(false);
+			c.setMarked(false);
 			result.put(c, false);
 		}
 		for(ChannelPlace cp : net.getChannelPlace()){
@@ -320,7 +342,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
 				if(c instanceof Condition){
 					result.put(c, true);
-					((Condition) c).setToken(true);
+					((Condition) c).setMarked(true);
 					Collection<ONGroup> bhvGroup = relationAlg.getBhvGroups((Condition) c);
 					if(bhvGroup.size() != 1)
 						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
@@ -331,7 +353,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 							if(relationAlg.getPhase((Condition)c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(group.getComponents())){
 									result.put(c1, true);
-									((Condition) c1).setToken(true);}
+									((Condition) c1).setMarked(true);}
 							else
 								JOptionPane.showMessageDialog(null, "Incorrect BSON structure (minimal phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
 						}
@@ -355,19 +377,18 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				for(Node c : relationAlg.getInitial(group.getComponents())){
 					if(c instanceof Condition){
 						result.put(c, true);
-						((Condition)c).setToken(true);}
+						((Condition)c).setMarked(true);}
 				}
 			}
 		}
-
 		return result;
 	}
-
+	/*
 	protected Map<Node, Boolean> autoInitalReverseMarking(){
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 
 		for (Condition c : net.getConditions()) {
-			c.setToken(false);
+			c.setMarked(false);
 			result.put(c, false);
 		}
 		for(ChannelPlace cp : net.getChannelPlace()){
@@ -379,7 +400,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			for(Node c : relationAlg.getFinal(abstractGroup.getComponents())){
 				if(c instanceof Condition){
 					result.put(c, true);
-					((Condition) c).setToken(true);
+					((Condition) c).setMarked(true);
 					Collection<ONGroup> bhvGroup = relationAlg.getBhvGroups((Condition) c);
 					if(bhvGroup.size() != 1)
 						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
@@ -390,7 +411,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 							if(relationAlg.getPhase((Condition)c).containsAll(fin))
 								for(Node c1 : relationAlg.getFinal(group.getComponents())){
 									result.put(c1, true);
-									((Condition) c1).setToken(true);}
+									((Condition) c1).setMarked(true);}
 							else
 								JOptionPane.showMessageDialog(null, "Incorrect BSON structure (minimal phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
 						}
@@ -414,14 +435,14 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				for(Node c : relationAlg.getFinal(group.getComponents())){
 					if(c instanceof Condition){
 						result.put(c, true);
-						((Condition)c).setToken(true);}
+						((Condition)c).setMarked(true);}
 				}
 			}
 		}
 
 		return result;
 	}
-
+*/
 	private final class TraceTableMouseListenerImplementation implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -573,7 +594,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		speedSlider.setToolTipText("Simulation playback speed");
 		loadMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-load.svg"), "Load marking from memory");
 		saveMarkingButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save marking to memory");
-		createSimuControalPanel();
+		//createSimuControalPanel();
 
 		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
@@ -583,7 +604,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		simulationControl.setLayout(new FlowLayout());
 		simulationControl.setPreferredSize(panelSize);
 		simulationControl.setMaximumSize(panelSize);
-	//	simulationControl.add(Box.createRigidArea(new Dimension(10, 0)));
 		simulationControl.add(playButton);
 		simulationControl.add(stopButton);
 		simulationControl.add(backwardButton);
@@ -682,16 +702,17 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		reverseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
+				 Map<Node, Boolean> currentMarking = readMarking();
 					setReverse(!reverse);
 					if(savedBranchTrace!=null)
 						savedBranchTrace.clear();
 					savedBranchStep = 0;
 					savedStep = 0;
-					reset();
 					if(!reverse)
-						initialMarking = autoInitalMarking();
+						initialMarking = currentMarking;
 					else
-						initialMarking = autoInitalReverseMarking();
+						initialMarking = currentMarking;
+					reset();
 					update();
 			}
 		});
@@ -763,13 +784,16 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		branchTrace = null;
 		branchStep = 0;
 
-		sync = getSyncCycles();
-		Collection<ONGroup> abstractGroups = relationAlg.getAbstractGroups(net.getGroups());
+		syncSet = getSyncCycles();
+		errAlg = new ErrorTracingAlg(net);
+		abstractGroups = relationAlg.getAbstractGroups(net.getGroups());
 		phases = new HashMap<Condition, Collection<Condition>>();
 		for(ONGroup group : abstractGroups){
 			for(Condition c : group.getConditions())
 				phases.put(c, relationAlg.getPhase(c));
 		}
+		if (ErrTracingDisable.showErrorTracing())
+			net.resetConditionErrStates();
 
 		update();
 	}
@@ -777,22 +801,40 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	@Override
 	public void deactivated(GraphEditor editor)
 	{
-		editor.getWorkspaceEntry().cancelMemento();
+		//editor.getWorkspaceEntry().cancelMemento();
+		if (traceStep==0&&branchTrace==null) {
+			applyMarking(readMarking());
+			trace = null;
+			traceStep = 0;
+		} else {
+			applyMarking(readMarking());
+			traceStep = 0;
+			branchStep=0;
+			branchTrace=null;
+		}
+
+		if(timer!=null)
+		{
+			timer.stop();
+			timer = null;
+		}
+		update();
 	}
+
 
 	public void executeEvent(List<Event> syncList) {
 		// otherwise form/use the branch trace
 		if (branchTrace!=null&&branchStep<branchTrace.size()) {
-			List<Event> list = new ArrayList<Event>();
+			List<Event> runList = new ArrayList<Event>();
 
 			Trace step = branchTrace.get(branchStep);
 			for(int i =0; i<step.size(); i++){
 				final Node event = net.getNodeByReference(step.get(i));
 				if(event instanceof Event)
-					list.add((Event)event);
+					runList.add((Event)event);
 			}
 
-			if (!list.isEmpty()&&syncList.containsAll(list)) {
+			if (!runList.isEmpty()&&syncList.containsAll(runList)) {
 				step();
 				return;
 			}
@@ -827,10 +869,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				@Override
 				public Boolean eval(Node node) {
 
-					if(node instanceof VisualEvent && alg.isEnabled(((VisualEvent)node).getReferencedEvent(), sync, phases) && !reverse){
+					if(node instanceof VisualEvent && alg.isEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && !reverse){
 						return true;
 					}
-					if(node instanceof VisualEvent && alg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), sync, phases) && reverse){
+					if(node instanceof VisualEvent && alg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && reverse){
 						return true;
 					}
 					return false;
@@ -844,17 +886,17 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 			if(reverse){
 				for(Event enable : net.getEvents())
-					if(alg.isUnfireEnabled(enable, sync, phases))
+					if(alg.isUnfireEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
 				}
 			else{
 				for(Event enable : net.getEvents())
-					if(alg.isEnabled(enable, sync, phases))
+					if(alg.isEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
 				}
 
-			List<Event> minimalEvents = alg.getMinimalExeResult(event, sync, enabledEvents);
-			List<Event> minimalReverseEvents = alg.getMinimalReverseExeResult(event, sync, enabledEvents);
+			List<Event> minimalEvents = alg.getMinimalExeResult(event, syncSet, enabledEvents);
+			List<Event> minimalReverseEvents = alg.getMinimalReverseExeResult(event, syncSet, enabledEvents);
 
 			if(!reverse){
 				List<Event> possibleEvents = new ArrayList<Event>();
@@ -864,32 +906,36 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 				minimalEvents.remove(event);
 
-				List<Event> syncList = new ArrayList<Event>();
+				List<Event> runList = new ArrayList<Event>();
 
 				if(possibleEvents.isEmpty() && minimalEvents.isEmpty()){
-					syncList.add(event);
-					executeEvent(syncList);
-					alg.clearEventSet();
+					runList.add(event);
+					executeEvent(runList);
+
 				}else{
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalEvents, event, sync, enabledEvents, reverse);
+					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalEvents, event, syncSet, enabledEvents, reverse);
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
-					syncList.addAll(minimalEvents);
-					syncList.add(event);
+					runList.addAll(minimalEvents);
+					runList.add(event);
 
 					if (dialog.getRun() == 1){
-						syncList.addAll(dialog.getSelectedEvent());
-						executeEvent(syncList);
-						alg.clearEventSet();
+						runList.addAll(dialog.getSelectedEvent());
+						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
-						alg.clearEventSet();
 						return;
 						}
 					}
+				//Error tracing
+			//	setErrNum(runList, reverse);
+				alg.clearEventSet();
+
 			}else{
+				//reverse simulation
+
 				List<Event> possibleEvents = new ArrayList<Event>();
 				for(Event psbE : enabledEvents)
 					if(!minimalReverseEvents.contains(psbE))
@@ -897,25 +943,25 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 						minimalReverseEvents.remove(event);
 
-				List<Event> syncList = new ArrayList<Event>();
+				List<Event> runList = new ArrayList<Event>();
 
 				if(possibleEvents.isEmpty() && minimalReverseEvents.isEmpty()){
-					syncList.add(event);
-					executeEvent(syncList);
+					runList.add(event);
+					executeEvent(runList);
 					alg.clearEventSet();
 				} else {
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, sync, enabledEvents, reverse);
+					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, syncSet, enabledEvents, reverse);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
-					syncList.addAll(minimalReverseEvents);
-					syncList.add(event);
+					runList.addAll(minimalReverseEvents);
+					runList.add(event);
 
 					if (dialog.getRun() == 1){
-						syncList.addAll(dialog.getSelectedEvent());
-						executeEvent(syncList);
+						runList.addAll(dialog.getSelectedEvent());
+						executeEvent(runList);
 						alg.clearEventSet();
 					}
 					if(dialog.getRun()==2){
@@ -923,8 +969,36 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						return;
 					}
 				}
+				//Reverse error tracing
+				//setErrNum(runList, reverse);
+				alg.clearEventSet();
 			}
 		}
+	}
+
+	private void setErrNum(List<Event> runList, boolean reverse){
+		if (ErrTracingDisable.showErrorTracing()){
+			Collection<Event> abstractEvents = new ArrayList<Event>();
+			//get high level events
+			for(Event absEvent : runList){
+				for(ONGroup group : abstractGroups){
+					if(group.getEvents().contains(absEvent))
+						abstractEvents.add(absEvent);
+				}
+			}
+			//get low level events
+			runList.removeAll(abstractEvents);
+			if(!reverse){
+				errAlg.setErrNum(abstractEvents, syncSet, false);
+				errAlg.setErrNum(runList, syncSet, true);
+			}
+			else{
+				errAlg.setReverseErrNum(abstractEvents, syncSet, false);
+				errAlg.setReverseErrNum(runList, syncSet, true);
+			}
+
+		}
+
 	}
 
 	@Override
@@ -985,7 +1059,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 					}
 
-					if (alg.isEnabled(event, sync, phases)&& !reverse)
+					if (alg.isEnabled(event, syncSet, phases)&& !reverse)
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -997,7 +1071,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 								return CommonVisualSettings.getEnabledBackgroundColor();
 							}
 						};
-					if (alg.isUnfireEnabled(event, sync, phases)&& reverse)
+					if (alg.isUnfireEnabled(event, syncSet, phases)&& reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {

@@ -61,10 +61,20 @@ public class BSONPathAlg extends ONPathAlg{
 
 	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> result){
 		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
-		for(ArrayList<Node> cycle : result)
+		for(ArrayList<Node> cycle : result){
+			int outputBhvLine = 0;
+			int inputBhvLine = 0;
 			if(!net.getSONConnectionTypes(cycle).contains("POLYLINE"))
 				delList.add(cycle);
-
+			for(Node n : cycle){
+				if(net.getOutputSONConnections(n).contains("BHVLINE"))
+					outputBhvLine ++;
+				if(net.getInputSONConnections(n).contains("BHVLINE"))
+					inputBhvLine ++;
+			if(inputBhvLine==0 || outputBhvLine==0)
+				delList.add(cycle);
+			}
+		}
 		result.removeAll(delList);
 		return result;
 	}
