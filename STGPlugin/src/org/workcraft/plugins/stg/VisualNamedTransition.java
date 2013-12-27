@@ -28,6 +28,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -40,7 +41,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
 	protected static Color defaultColor = Color.BLACK;
-	protected RenderedText renderedText = new RenderedText("", font);
+	protected RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, 0.0);
 
 	public VisualNamedTransition(Transition transition) {
 		super(transition);
@@ -78,7 +79,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	protected void updateRenderedName() {
 		transformChanging();
-		renderedText = new RenderedText(getName(), font);
+		renderedText = new RenderedText(getName(), font, Positioning.CENTER, 0.0);
 		transformChanged();
 	}
 

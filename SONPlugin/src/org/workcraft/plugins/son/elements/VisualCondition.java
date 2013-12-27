@@ -35,8 +35,8 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 public class VisualCondition extends VisualComponent{
 
 	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
-	private RenderedText errorRenderedText = new RenderedText("", errorFont);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
+	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, 0.0);
 	private Color errLabelColor = SONSettings.getErrLabelColor();
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
@@ -124,22 +124,28 @@ public class VisualCondition extends VisualComponent{
 		}
 	}
 
+	private void cahceErrorRenderedText(DrawRequest r) {
+		String error = "Err = "+((Integer)this.getErrors()).toString();
+		double offset = 0.8 * size;
+		if (errorRenderedText.isDifferent(error, labelFont, errLabelPositioning, offset)) {
+			errorRenderedText = new RenderedText(error, labelFont, errLabelPositioning, offset);
+		}
+	}
+
 	protected void drawErrorInLocalSpace(DrawRequest r) {
 		if (ErrTracingDisable.showErrorTracing()) {
-			String error = "Err = "+((Integer)this.getErrors()).toString();
-			if (!error.equals(errorRenderedText.text) || errorFont != errorRenderedText.font) {
-				errorRenderedText = new RenderedText(error, labelFont);
-			}
-			double x = 0.8 * errLabelPositioning.xOffset * size
-					 + 0.8 * errLabelPositioning.xSign * errorRenderedText.getBoundingBox().getWidth();
-			double y = 0.8 * errLabelPositioning.yOffset * size
-					 + 0.8 * errLabelPositioning.ySign * errorRenderedText.getBoundingBox().getHeight();
-			errorRenderedText.setCenter(x, y);
+			cahceErrorRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
 			errorRenderedText.draw(g);
 		}
+	}
+
+	@Override
+	public void cacheRenderedText(DrawRequest r) {
+		super.cacheRenderedText(r);
+		cahceErrorRenderedText(r);
 	}
 
 	@Override

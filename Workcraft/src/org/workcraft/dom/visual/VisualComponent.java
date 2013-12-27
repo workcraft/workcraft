@@ -52,11 +52,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
 	private boolean labelOffset = true;
-	private RenderedText labelRenderedText = new RenderedText("", labelFont);
+	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, 0.5*size);
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	private RenderedText nameRenderedText = new RenderedText("", nameFont);
+	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, 0.5*size);
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -244,13 +244,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	private void cacheLabelRenderedText(DrawRequest r) {
-		if (!label.equals(labelRenderedText.text) || labelFont != labelRenderedText.font) {
-			labelRenderedText = new RenderedText(label, labelFont);
-			double x = (labelOffset ? 0.5 * labelPositioning.xOffset * size : 0.0)
-					+ 0.5 * labelPositioning.xSign * labelRenderedText.getBoundingBox().getWidth();
-			double y = (labelOffset ? 0.5 * labelPositioning.yOffset * size : 0.0)
-					+ 0.5 * labelPositioning.ySign * labelRenderedText.getBoundingBox().getHeight();
-			labelRenderedText.setCenter(x, y);
+		double offset = (labelOffset ? 0.5 * size : 0.0);
+		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, offset)) {
+			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, offset);
 		}
 	}
 
@@ -269,13 +265,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		if (name == null) {
 			name = "";
 		}
-		if (!name.equals(nameRenderedText.text) || nameFont != nameRenderedText.font) {
-			nameRenderedText = new RenderedText(name, nameFont);
-			double x = 0.5 * namePositioning.xOffset * size
-					+ 0.5 * namePositioning.xSign * nameRenderedText.getBoundingBox().getWidth();
-			double y = 0.5 * namePositioning.yOffset * size
-					+ 0.5 * namePositioning.ySign * nameRenderedText.getBoundingBox().getHeight();
-			nameRenderedText.setCenter(x, y);
+		double offset = 0.5 * size;
+		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
+			nameRenderedText = new RenderedText(name, nameFont, namePositioning, offset);
 		}
 	}
 
