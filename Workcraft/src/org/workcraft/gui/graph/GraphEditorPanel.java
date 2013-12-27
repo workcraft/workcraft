@@ -123,7 +123,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	protected Stroke borderStroke = new BasicStroke(2);
 	private Overlay overlay = new Overlay();
 	private boolean firstPaint = true;
-	private boolean repaintRequested = true;
+	private boolean updateEditorPanelRequested = true;
+	private boolean updatePropertyViewRequested = true;
 
 	public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
 		super (new BorderLayout());
@@ -211,21 +212,35 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		add(overlay, BorderLayout.CENTER);
 
-		// FIXME: needs to be stopped at some point
-		Timer timer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
+		// FIXME: timers need to be stopped at some point
+		Timer updateEditorPanelTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (repaintRequested)
+				if (updateEditorPanelRequested)
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							doRepaint();
+							updateEditor();
 						}
 					});
 			}
 		});
 
-		timer.start();
+		Timer updatePropertyTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (updatePropertyViewRequested)
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							updatePropertyView();
+						}
+					});
+			}
+		});
+
+		updateEditorPanelTimer.start();
+		updatePropertyTimer.start();
 	}
 
 	private void reshape() {
@@ -406,21 +421,23 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		} else {
 			propertyWindow.setObject(propertiesWrapper(properties));
 		}
+		updatePropertyViewRequested = false;
 	}
 
-	private void doRepaint() {
-		updatePropertyView();
+	private void updateEditor() {
 		super.repaint();
-		repaintRequested = false;
+		updateEditorPanelRequested = false;
 	}
 
 	@Override
 	public void repaint() {
-		repaintRequested = true;
+		updateEditorPanelRequested = true;
 	}
 
+	@Override
 	public void notify(StateEvent e) {
-		repaint();
+		updatePropertyViewRequested = true;
+		updateEditorPanelRequested = true;
 	}
 
 	@Override
