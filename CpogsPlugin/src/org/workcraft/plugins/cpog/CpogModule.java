@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.Framework;
+import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -15,12 +16,13 @@ import org.workcraft.plugins.cpog.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
+import org.workcraft.plugins.cpog.tools.GraphPrinterTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CpogModule implements Module {
 	@Override
-	public void init(Framework framework) {
+	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();
 
 		p.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
@@ -38,8 +40,14 @@ public class CpogModule implements Module {
 		p.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
 		p.registerClass(SettingsPage.class, CpogSettings.class);
 
-
 		p.registerClass(Tool.class, CpogEncoder.class);
+
+		p.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new GraphPrinterTool(framework);
+			}
+		});
 	}
 
 	@Override

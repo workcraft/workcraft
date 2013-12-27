@@ -253,6 +253,15 @@ public class VisualCPOG extends AbstractVisualModel
 		return Hierarchy.getChildrenOfType(root, VisualVertex.class);
 	}
 
+	public Collection<VisualVariable> getVariables(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualVariable.class);
+	}
+
+	public Collection<VisualArc> getArcs(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualArc.class);
+	}
 
 	@Override
 	public Properties getProperties(Node node) {
