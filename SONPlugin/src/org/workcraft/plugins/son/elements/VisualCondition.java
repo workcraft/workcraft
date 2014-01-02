@@ -103,10 +103,9 @@ public class VisualCondition extends VisualComponent{
 			token = ((ConditionDecoration)d).hasToken();
 		}
 		drawToken(r, token, singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()));
-
+		drawErrorInLocalSpace(r);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-		drawErrorInLocalSpace(r);
 	}
 
 	public static void drawToken (DrawRequest r, boolean b, double singleTokenSize, Color tokenColor) {

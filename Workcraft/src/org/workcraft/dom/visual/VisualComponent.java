@@ -51,12 +51,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
-	private boolean labelOffset = true;
-	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, 0.5*size);
+	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, getLabelOffset());
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, 0.5*size);
+	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -113,7 +112,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				return object.getLabelPositioning();
 			}
 		});
-
+/*
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Boolean>(
 				this, "Label offset", Boolean.class) {
 			protected void setter(VisualComponent object, Boolean value) {
@@ -123,7 +122,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				return object.getLabelOffset();
 			}
 		});
-
+*/
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
 				this, "Label color", Color.class) {
 			protected void setter(VisualComponent object, Color value) {
@@ -172,7 +171,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		this.labelPositioning = labelPositioning;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
-
+/*
 	public boolean getLabelOffset() {
 		return labelOffset;
 	}
@@ -181,7 +180,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		this.labelOffset = labelOffset;
 		sendNotification(new PropertyChangedEvent(this, "label offset"));
 	}
-
+*/
 	public Color getLabelColor() {
 		return labelColor;
 	}
@@ -243,15 +242,22 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return new Point2D.Double(0, 0);
 	}
 
+	public boolean getLabelVisibility() {
+		return CommonVisualSettings.getLabelVisibility();
+	}
+
+	public double getLabelOffset() {
+		return 0.5 * size;
+	}
+
 	private void cacheLabelRenderedText(DrawRequest r) {
-		double offset = (labelOffset ? 0.5 * size : 0.0);
-		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, offset)) {
-			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, offset);
+		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, getLabelOffset())) {
+			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, getLabelOffset());
 		}
 	}
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (CommonVisualSettings.getLabelVisibility()) {
+		if (getLabelVisibility()) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -260,19 +266,26 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		}
 	}
 
+	public boolean getNameVisibility() {
+		return CommonVisualSettings.getNameVisibility();
+	}
+
+	public double getNameOffset() {
+		return 0.5 * size;
+	}
+
 	private void cacheNameRenderedText(DrawRequest r) {
 		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
 		if (name == null) {
 			name = "";
 		}
-		double offset = 0.5 * size;
-		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
-			nameRenderedText = new RenderedText(name, nameFont, namePositioning, offset);
+		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, getNameOffset())) {
+			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
 		}
 	}
 
 	protected void drawNameInLocalSpace(DrawRequest r) {
-		if (CommonVisualSettings.getNameVisibility()) {
+		if (getNameVisibility()) {
 			cacheNameRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -291,10 +304,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		if (CommonVisualSettings.getLabelVisibility()) {
+		if (getLabelVisibility()) {
 			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
 		}
-		if (CommonVisualSettings.getNameVisibility()) {
+		if (getNameVisibility()) {
 			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
 		}
 		return bb;

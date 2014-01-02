@@ -537,8 +537,8 @@ public class SelectionTool extends AbstractTool {
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
 		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
 		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
-		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width*2, bbScreen.height);
-		text.setFont(VisualComponent.labelFont.deriveFont((float)bbScreen.getHeight()/VisualComponent.labelFont.getSize()/3.0f));
+		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+		text.setFont(VisualComponent.labelFont.deriveFont(0.46f * (float)bbScreen.getHeight()/VisualComponent.labelFont.getSize()));
 		text.selectAll();
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();

@@ -2,14 +2,10 @@ package org.workcraft.plugins.son.elements;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-//import java.awt.event.KeyEvent;
-import java.awt.font.GlyphVector;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 //import org.workcraft.annotations.Hotkey;
@@ -19,7 +15,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.SONSettings;
+//import java.awt.event.KeyEvent;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
@@ -69,7 +65,6 @@ public class VisualChannelPlace extends VisualComponent {
 		drawToken(c.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-		//drawName(r);
 	}
 
 	public static void drawToken (boolean b, double singleTokenSize, Color tokenColor,	Graphics2D g) {

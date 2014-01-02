@@ -261,7 +261,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	@Override
 	public void draw(DrawRequest r) {
-		super.draw(r);
 		Graphics2D g = r.getGraphics();
 		Color foreground = Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation());
 		Color background = Coloriser.colorise(Color.WHITE, r.getDecoration().getBackground());
@@ -287,7 +286,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 				}
 			}
 		}
-
+		super.draw(r);
 	}
 
 

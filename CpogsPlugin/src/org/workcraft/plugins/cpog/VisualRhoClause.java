@@ -68,13 +68,11 @@ public class VisualRhoClause extends VisualComponent
 		}
 	}
 
-	public VisualRhoClause(RhoClause rhoClause)
-	{
+	public VisualRhoClause(RhoClause rhoClause) {
 		super(rhoClause);
 	}
 
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();

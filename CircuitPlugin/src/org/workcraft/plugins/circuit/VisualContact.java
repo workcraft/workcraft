@@ -217,9 +217,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void draw(DrawRequest r) {
-
-		connections = r.getModel().getConnections(this).size();
-
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color fillColor = r.getDecoration().getBackground();
@@ -247,6 +244,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 
 		Shape shape = getShape();
+		connections = r.getModel().getConnections(this).size();
 		if (connections>1&&(getParent() instanceof VisualCircuitComponent)&&!CircuitSettings.getShowContacts()) {
 
 			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
@@ -287,9 +285,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				xx = (float)0.5;
 			}
 			g.drawGlyphVector(gv, xx, -0.5f);
-
 		}
-
 	}
 
 	@Override

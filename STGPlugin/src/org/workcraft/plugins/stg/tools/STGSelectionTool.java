@@ -70,9 +70,8 @@ public class STGSelectionTool extends SelectionTool
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
 		Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
 		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
-		int dyScreen = Math.max((int)Math.round(bbScreen.height*0.25), 5);
-		text.setBounds(bbScreen.x, bbScreen.y-dyScreen, bbScreen.width*2, bbScreen.height+2*dyScreen);
-		text.setFont(VisualNamedTransition.font.deriveFont((float)bbScreen.getHeight()/VisualNamedTransition.font.getSize()));
+		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+		text.setFont(VisualNamedTransition.font.deriveFont(0.80f * (float)bbScreen.getHeight()/VisualNamedTransition.font.getSize()));
 		text.selectAll();
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();

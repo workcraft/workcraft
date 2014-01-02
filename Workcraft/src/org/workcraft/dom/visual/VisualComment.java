@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -34,19 +35,42 @@ public class VisualComment extends VisualComponent implements Container {
 	}
 
 	private void modifyPropertyDeclarations() {
-		for (PropertyDescriptor declaration: getDescriptors()) {
-			if (declaration.getName() == "Label positioning") {
+		for (PropertyDescriptor declaration:  new LinkedList<PropertyDescriptor>(getDescriptors())) {
+			if (declaration.getName() == "Label positioning"
+			 || declaration.getName() == "Name color"
+			 || declaration.getName() == "Name positioning") {
 				removePropertyDeclaration(declaration);
-				break;
 			}
 		}
 	}
 
 	@Override
+	public boolean getLabelVisibility() {
+		return true;
+	}
+
+	@Override
+	public double getLabelOffset() {
+		return 0.0;
+	}
+
+	@Override
+	public boolean getNameVisibility() {
+		return false;
+	}
+
+	@Override
+	public double getNameOffset() {
+		return 0.0;
+	}
+
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
+		cacheRenderedText(r); // needed to better estimate the bounding box
 		Rectangle2D shape = getBoundingBoxInLocalSpace();
-		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
+//		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
+		shape.setRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
 		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
@@ -58,7 +82,7 @@ public class VisualComment extends VisualComponent implements Container {
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.6, 0.0);
+		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.4, 0.1);
 	}
 
 	@Override

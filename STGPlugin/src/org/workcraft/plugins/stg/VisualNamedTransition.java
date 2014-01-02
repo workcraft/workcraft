@@ -27,6 +27,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
@@ -50,14 +51,34 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	@Override
+	public boolean getLabelVisibility() {
+		return false;
+	}
+
+	@Override
+	public double getLabelOffset() {
+		return 0.0;
+	}
+
+	@Override
+	public boolean getNameVisibility() {
+		return false;
+	}
+
+	@Override
+	public double getNameOffset() {
+		return 0.0;
+	}
+
+	@Override
 	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 		Color background = d.getBackground();
-		if (background!=null) {
+		if (background != null) {
+			Rectangle2D shape = getBoundingBoxInLocalSpace();
 			g.setColor(background);
-			g.fill(renderedText.getBoundingBox());
+			g.fill(shape);
 		}
 		g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
 		renderedText.draw(g);
@@ -65,12 +86,12 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return renderedText.getBoundingBox();
+		return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.4, 0.4);
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return renderedText.hitTest(pointInLocalSpace);
+		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
 	public Color getColor() {

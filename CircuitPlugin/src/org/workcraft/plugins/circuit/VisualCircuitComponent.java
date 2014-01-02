@@ -23,7 +23,6 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
@@ -69,11 +68,6 @@ import org.workcraft.util.Hierarchy;
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
-
-	protected static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	private GlyphVector nameGlyphs = null;
-	private String glyphsForName = null;
-	private Point2D namePosition = null;
 
 	double marginSize = 0.2;
 	double contactLength = 1;
@@ -178,42 +172,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		contactLabelBB = null;
 		updateStepPositions();
 		updateTotalBB();
-	}
-
-	public GlyphVector getNameGlyphs(Graphics2D g) {
-		updateNameGlyph(g);
-		return nameGlyphs;
-	}
-
-	public Rectangle2D getNameBB(Graphics2D g) {
-		return getNameGlyphs(g).getVisualBounds();
-	}
-
-	protected void drawLabelInLocalSpace(DrawRequest r) {
-		updateNameGlyph(r.getGraphics());
-		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
-		r.getGraphics().setFont(nameFont);
-		r.getGraphics().drawString(getName(), (float) namePosition.getX(), (float) namePosition.getY());
-	}
-
-	protected void updateNameGlyph(Graphics2D g) {
-		if (nameGlyphs == null || !getName().equals(glyphsForName)) {
-			final GlyphVector glyphs = nameFont.createGlyphVector(
-					g.getFontRenderContext(), getName());
-			glyphsForName = getName();
-			nameGlyphs = glyphs;
-		}
-	}
-
-	protected void drawNameInLocalSpace(DrawRequest r) {
-		updateNameGlyph(r.getGraphics());
-
-		r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
-
-		r.getGraphics().setFont(nameFont);
-		if (contactLabelBB!=null)
-			r.getGraphics().drawString(getName(), (float)(contactLabelBB.getMaxX()-0.2),
-				(float)(contactLabelBB.getMaxY()+0.5));
 	}
 
 	// updates sequential position of the contacts
@@ -458,13 +416,12 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		updateContactLabelBB(g);
 
-		drawNameInLocalSpace(r);
+		cacheRenderedText(r); // needed to better estimate the bounding box
+		updateContactLabelBB(g);
 		drawContactConnections(r);
 
 		Rectangle2D shape = getBestBB();
-
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
@@ -473,14 +430,13 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
 		} else {
 			float dash[] = {0.25f, 0.25f};
-			g.setStroke(new BasicStroke(
-						(float)CircuitSettings.getComponentBorderWidth(),
-						BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f)	);
+			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth(),
+				BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 		}
 		g.draw(shape);
-
 		drawContacts(r);
-
+		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
 	@Override

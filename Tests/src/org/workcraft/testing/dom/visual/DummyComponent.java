@@ -69,5 +69,6 @@ class SquareNode extends VisualComponent
 	@Override
 	public void draw(DrawRequest r) {
 	}
+
 }
 

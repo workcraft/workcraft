@@ -1,10 +1,9 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 
-public class VisualBinaryRegister extends VisualDelayComponent {
+public abstract class VisualBinaryRegister extends VisualDelayComponent {
 
 	public VisualBinaryRegister(BinaryRegister register) {
 		super(register);
@@ -21,11 +20,6 @@ public class VisualBinaryRegister extends VisualDelayComponent {
 				return object.getReferencedBinaryRegister().getMarking();
 			}
 		});
-	}
-
-	@Override
-	public void draw(DrawRequest r) {
-
 	}
 
 	public BinaryRegister getReferencedBinaryRegister() {

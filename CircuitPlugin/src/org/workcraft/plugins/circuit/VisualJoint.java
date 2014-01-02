@@ -70,16 +70,11 @@ public class VisualJoint extends VisualComponent {
 
 	public VisualJoint(Joint joint) {
 		super(joint);
-
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
-//		drawLabelInLocalSpace(g);
 		Graphics2D g = r.getGraphics();
-
-
-
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		g.fill(shape);
 	}

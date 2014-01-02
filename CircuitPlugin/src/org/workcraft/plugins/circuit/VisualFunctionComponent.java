@@ -261,47 +261,26 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public void draw(DrawRequest r) {
-
-		ComponentRenderingResult res = getRenderingResult();
 		Graphics2D g = r.getGraphics();
-
 		Color col1 = Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation());
 		Color col2 = Coloriser.colorise(CommonVisualSettings.getFillColor(), r.getDecoration().getBackground());
 
-
-		if (res!=null) {
+		ComponentRenderingResult res = getRenderingResult();
+		if (res != null) {
 
 			if (!getIsEnvironment()) {
 				g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
 			} else {
 				float dash[] = {0.05f, 0.05f};
-
-				g.setStroke(
-						new BasicStroke(
-							(float)CircuitSettings.getComponentBorderWidth(),
-							BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,
-							dash, 0.0f)
-							);
+				g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth(),
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 			}
 
-
 			Point2D mp=null, lp=null, pp=null;
-
-			// draw component label
-			updateNameGlyph(r.getGraphics());
-
-			r.getGraphics().setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
-
-			r.getGraphics().setFont(nameFont);
-			Rectangle2D rec = getResBB();
-
-			r.getGraphics().drawString(getName(), (float)(rec.getMaxX()-0.2),
-					(float)(rec.getMaxY()+0.5));
 
 			// draw the rest
 			GateRenderer.foreground = col1;
 			GateRenderer.background = col2;
-
 
 			VisualContact v = getMainContact();
 			AffineTransform at = new AffineTransform();
@@ -353,11 +332,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			for (Node n: this.getChildren()) {
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-
 					if (vc.getIOType() == IOType.OUTPUT) {
-						line = new Line2D.Double(
-								res.boundingBox().getMaxX(), 0,
-								snapP5(res.boundingBox().getMaxX()+GateRenderer.contactMargin), 0);
+						line = new Line2D.Double(res.boundingBox().getMaxX(), 0,
+							snapP5(res.boundingBox().getMaxX()+GateRenderer.contactMargin), 0);
 						g.draw(line);
 						continue;
 					}
@@ -365,47 +342,31 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 					if (vc.getIOType() != IOType.INPUT) continue;
 
 					Point2D position = res.contactPositions().get(vc.getName());
-
-					if (position != null)
-					{
+					if (position != null) {
 						line = new Line2D.Double(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin),
-											position.getY(), position.getX(), position.getY());
-
+							position.getY(), position.getX(), position.getY());
 						g.draw(line);
 					}
 				}
 			}
 
 			g.transform(bt);
-
 			g.setStroke(s);
 
 			// for C element draw letter C
 			if (lp!=null) {
-//				Line2D l = new Line2D.Double(lp.getX(),lp.getY(),lp.getX()+0.01,lp.getY()+0.01);
-//				g.draw(l);
-
-				r.getGraphics().drawString("C",(float)lp.getX()-(float)0.2,
-							(float)lp.getY()+(float)0.2);
+				r.getGraphics().drawString("C",(float)lp.getX()-(float)0.2, (float)lp.getY()+(float)0.2);
 			}
 
 			if (pp!=null) {
-//				Line2D l = new Line2D.Double(pp.getX(),pp.getY(),pp.getX()+0.01,pp.getY()+0.01);
-//				g.draw(l);
 				r.getGraphics().drawString("+",(float)pp.getX()-(float)0.15,
 				(float)pp.getY()+(float)0.15);
 			}
 
-
 			if (mp!=null) {
-//				Line2D l = new Line2D.Double(mp.getX(),mp.getY(),mp.getX()+0.01,mp.getY()+0.01);
-//				g.draw(l);
 				r.getGraphics().drawString("-",(float)mp.getX()-(float)0.15,
 				(float)mp.getY()+(float)0.15);
 			}
-
-
-
 		} else {
 			super.draw(r);
 		}
