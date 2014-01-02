@@ -166,7 +166,6 @@ public class MainWindow extends JFrame {
 	public MainWindow(final Framework framework) {
 		super();
 		this.framework = framework;
-
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override

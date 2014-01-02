@@ -26,5 +26,7 @@
 	<classpathentry kind="lib" path="/ThirdParty/substance.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/XmasPlugin"/>
+	<classpathentry kind="lib" path="/ThirdParty/jackson-core-asl-1.8.10.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/jackson-mapper-asl-1.8.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
