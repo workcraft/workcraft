@@ -173,7 +173,6 @@ public class MainWindow extends JFrame {
 				framework.shutdown();
 			}
 		});
-
 	}
 
 	public void setLAF(String laf) throws OperationCancelledException {

@@ -100,7 +100,7 @@ public class VisualCPOG extends AbstractVisualModel
 
 		@Override
 		public boolean isCombinable() {
-			return false;
+			return true;
 		}
 	}
 
