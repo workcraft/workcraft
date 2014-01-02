@@ -3,6 +3,7 @@ set WORKCRAFT_HOME=%~dp0
 set PATH=%PATH%;%WORKCRAFT_HOME%\tools
 
 set CLASSPATH=.\Workcraft\bin;^
+%WORKCRAFT_HOME%\ThirdParty;^
 %WORKCRAFT_HOME%\ThirdParty\batik\batik-anim.jar;^
 %WORKCRAFT_HOME%\ThirdParty\batik\batik-awt-util.jar;^
 %WORKCRAFT_HOME%\ThirdParty\batik\batik-bridge.jar;^

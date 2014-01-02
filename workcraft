@@ -5,6 +5,7 @@ WORKCRAFT_HOME=`readlink -m \`dirname $0\``
 export PATH=$PATH:$WORKCRAFT_HOME/tools
 
 CLASSPATH="$WORKCRAFT_HOME/Workcraft/bin:"\
+"$WORKCRAFT_HOME/ThirdParty:"\
 "$WORKCRAFT_HOME/ThirdParty/batik/batik-anim.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/batik/batik-awt-util.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/batik/batik-bridge.jar:"\
@@ -35,6 +36,7 @@ CLASSPATH="$WORKCRAFT_HOME/Workcraft/bin:"\
 "$WORKCRAFT_HOME/ThirdParty/js.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/junit-4.5.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/log4j-1.2.8.jar:"\
+"$WORKCRAFT_HOME/ThirdParty/log4j.properties:"\
 "$WORKCRAFT_HOME/ThirdParty/pcollections-1.0.0.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/substance.jar:"\
 "$WORKCRAFT_HOME/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar:"\
