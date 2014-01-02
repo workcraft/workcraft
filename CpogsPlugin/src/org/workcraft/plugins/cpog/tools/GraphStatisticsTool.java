@@ -44,19 +44,19 @@ public class GraphStatisticsTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualCPOG cpog = (VisualCPOG)we.getModelEntry().getVisualModel();
 
-		ArrayList<Container> scenarious = new ArrayList<Container>();
+		ArrayList<Container> scenarios = new ArrayList<Container>();
 		for (Node cur: cpog.getSelection()) {
 			if (cur instanceof VisualScenario) {
-				scenarious.add((VisualScenario)cur);
+				scenarios.add((VisualScenario)cur);
 			}
 		}
-		if (scenarious.isEmpty()) {
-			scenarious.add(cpog.getCurrentLevel());
+		if (scenarios.isEmpty()) {
+			scenarios.add(cpog.getCurrentLevel());
 			printHeaderCurrent();
 		} else {
 			printHeaderSelected();
 		}
-		printStatistics(cpog, scenarious);
+		printStatistics(cpog, scenarios);
 	}
 
 	private void printHeaderCurrent() {
@@ -66,17 +66,17 @@ public class GraphStatisticsTool implements Tool {
 	}
 
 	private void printHeaderSelected() {
-		System.out.println("===================================");
-		System.out.println("Statistics for selected scenarious:");
-		System.out.println("===================================");
+		System.out.println("==================================");
+		System.out.println("Statistics for selected scenarios:");
+		System.out.println("==================================");
 	}
 
-	private void printStatistics(VisualCPOG cpog, Collection<Container> scenarious) {
+	private void printStatistics(VisualCPOG cpog, Collection<Container> scenarios) {
 		HashSet<String> conditions = new HashSet<String>();
 		int allVertices = 0, simpleVertices = 0;
 		int allArcs = 0, simpleArcs = 0;
 		int allVariables = 0;
-		for (Container scenario: scenarious) {
+		for (Container scenario: scenarios) {
 			allVertices += cpog.getVertices(scenario).size();
 			for(VisualVertex v : cpog.getVertices(scenario)) {
 				if (v.getCondition() == One.instance() || v.getCondition() == Zero.instance()) {

@@ -2,12 +2,11 @@ package org.workcraft.plugins.son.test;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.OutputRedirect;
-import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
 import org.workcraft.plugins.son.verify.VerificationResult;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 
 public class test implements Task<VerificationResult> {
 
@@ -25,9 +24,7 @@ public class test implements Task<VerificationResult> {
 	}
 
 	public void output() throws Exception{
-
 		OutputRedirect.Redirect();
-
 
 		int i = 0;
         while (i < 10)

@@ -50,6 +50,6 @@ set CLASSPATH=.\Workcraft\bin;^
 %WORKCRAFT_HOME%\XmasPlugin\bin;^
 ;
 
-pushd %WORKCRAFT_HOME%
-javaw.exe -classpath %CLASSPATH% org.workcraft.Console
+pushd "%WORKCRAFT_HOME%"
+javaw.exe -classpath "%CLASSPATH%" org.workcraft.Console
 popd
