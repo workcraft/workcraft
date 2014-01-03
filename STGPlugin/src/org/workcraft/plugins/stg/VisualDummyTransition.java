@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.stg;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import org.workcraft.annotations.DisplayName;
@@ -53,4 +54,10 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
 	public void setText(String name) {
 		getReferencedTransition().setName(name);
 	}
+
+	@Override
+	public Color getColor() {
+		return STGSettings.getDummyColor();
+	}
+
 }

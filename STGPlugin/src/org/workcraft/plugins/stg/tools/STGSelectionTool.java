@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
@@ -69,9 +70,11 @@ public class STGSelectionTool extends SelectionTool
 		final JTextField text = new JTextField(initialText);
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
 		Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
-		Rectangle bbScreen = editor.getViewport().userToScreen(bbRoot);
+		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
+		float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+		text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
 		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-		text.setFont(VisualNamedTransition.font.deriveFont(0.80f * (float)bbScreen.getHeight()/VisualNamedTransition.font.getSize()));
+		text.setHorizontalAlignment(JTextField.CENTER);
 		text.selectAll();
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();
@@ -82,10 +85,12 @@ public class STGSelectionTool extends SelectionTool
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					cancelInPlaceEdit = false;
 					text.getParent().remove(text);
+					editor.requestFocus();
 				}
 				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cancelInPlaceEdit = true;
 					text.getParent().remove(text);
+					editor.requestFocus();
 				}
 			}
 

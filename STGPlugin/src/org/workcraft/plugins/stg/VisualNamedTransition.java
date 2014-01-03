@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
@@ -33,6 +34,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
@@ -48,6 +50,21 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 		super(transition);
 		transition.addObserver(this);
 		updateRenderedName();
+		modifyPropertyDeclarations();
+	}
+
+	private void modifyPropertyDeclarations() {
+		for (PropertyDescriptor declaration:  new LinkedList<PropertyDescriptor>(getDescriptors())) {
+			if (declaration.getName() == "Foreground color"
+			 || declaration.getName() == "Fill color"
+			 || declaration.getName() == "Label"
+			 || declaration.getName() == "Label positioning"
+			 || declaration.getName() == "Label color"
+			 || declaration.getName() == "Name positioning"
+			 || declaration.getName() == "Name color") {
+				removePropertyDeclaration(declaration);
+			}
+		}
 	}
 
 	@Override
@@ -86,7 +103,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.4, 0.4);
+		return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.2, 0.2);
 	}
 
 	@Override
@@ -99,9 +116,11 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	protected void updateRenderedName() {
-		transformChanging();
-		renderedText = new RenderedText(getName(), font, Positioning.CENTER, 0.0);
-		transformChanged();
+		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, 0.0)) {
+			transformChanging();
+			renderedText = new RenderedText(getName(), font, Positioning.CENTER, 0.0);
+			transformChanged();
+		}
 	}
 
 	public RenderedText getRenderedName() {

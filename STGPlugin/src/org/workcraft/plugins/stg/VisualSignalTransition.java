@@ -35,9 +35,6 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @DisplayName("Signal Transition")
 @SVGIcon("images/icons/svg/signal-transition.svg")
 public class VisualSignalTransition extends VisualNamedTransition implements StateObserver {
-	protected static Color inputsColor = Color.RED.darker();
-	protected static Color outputsColor = Color.BLUE.darker();
-	protected static Color internalsColor = Color.GREEN.darker();
 
 	public VisualSignalTransition(Transition transition) {
 		super(transition);
@@ -56,14 +53,12 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
 	@Override
 	public Color getColor() {
-		Color result;
 		switch (getType()) {
-			case INTERNAL:	result = internalsColor; break;
-			case INPUT:		result = inputsColor; break;
-			case OUTPUT:	result = outputsColor; break;
-			default:		result = defaultColor; break;
+			case INPUT:		return STGSettings.getInputColor();
+			case OUTPUT:	return STGSettings.getOutputColor();
+			case INTERNAL:	return STGSettings.getInternalColor();
+			default:		return STGSettings.getDummyColor();
 		}
-		return result;
 	}
 
 	@NoAutoSerialisation

@@ -69,20 +69,21 @@ public class VisualComment extends VisualComponent implements Container {
 		Graphics2D g = r.getGraphics();
 		cacheRenderedText(r); // needed to better estimate the bounding box
 		Rectangle2D shape = getBoundingBoxInLocalSpace();
-//		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
-		shape.setRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
+		//shape.setRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
+		shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
 		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 		float w = (float)strokeWidth;
-		g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{10*w, 10*w}, 0.0f));
+		float[] pattern = {10.0f * w, 10.0f * w};
+		g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.4, 0.1);
+		return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.2, 0.0);
 	}
 
 	@Override

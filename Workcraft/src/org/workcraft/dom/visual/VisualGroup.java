@@ -60,7 +60,8 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 			Graphics2D g = r.getGraphics();
 
 			g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{0.2f, 0.2f}, 0.0f));
+			float[] pattern = {0.2f, 0.2f};
+			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 			g.draw(bb);
 		}
 	}
