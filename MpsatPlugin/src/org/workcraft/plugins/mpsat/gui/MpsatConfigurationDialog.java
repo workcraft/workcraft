@@ -9,12 +9,14 @@ import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +24,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
@@ -41,7 +44,7 @@ public class MpsatConfigurationDialog extends JDialog {
 	private JLabel numberOfSolutionsLabel;
 	private JScrollPane optionsPanel;
 	private JComboBox modeCombo, satCombo, verbosityCombo;
-	private JButton runButton, cancelButton;
+	private JButton runButton, cancelButton, helpButton;
 	private JTextField solutionLimitText;
 	private JTextArea reachText;
 	private JRadioButton allSolutionsButton, firstSolutionButton, cheapestSolutionButton;
@@ -49,6 +52,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	private TableLayout layout;
 	private int modalResult = 0;
+	private Window parent;
 
 	class IntMode {
 		public int value;
@@ -240,6 +244,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	public MpsatConfigurationDialog(Window owner, PresetManager<MpsatSettings> presetManager) {
 		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
+		this.parent = owner;
 		this.presetManager = presetManager;
 
 
@@ -268,6 +273,16 @@ public class MpsatConfigurationDialog extends JDialog {
 		setContentPane(content);
 
 		presetPanel.selectFirst();
+
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		modalResult = 0;
+	    		setVisible(false);
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	public MpsatSettings getSettings() {
@@ -295,8 +310,20 @@ public class MpsatConfigurationDialog extends JDialog {
 			}
 		});
 
-		buttonsPanel.add(cancelButton);
+		helpButton = new JButton ("Help");
+		helpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MpsatHelpPage helpPage = new MpsatHelpPage(parent, "ReachHelp.html");
+				GUI.centerAndSizeToParent(helpPage, parent);
+				setModal(false);
+				helpPage.setVisible(true);
+			}
+		});
+
 		buttonsPanel.add(runButton);
+		buttonsPanel.add(cancelButton);
+		buttonsPanel.add(helpButton);
 	}
 
 	private MpsatSettings getSettingsFromControls() {

@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-WORKCRAFT_HOME=`readlink -m \`dirname $0\``
+WORKCRAFT_DIR=`dirname "$0"`
+WORKCRAFT_HOME=`readlink -m "$WORKCRAFT_DIR"`
 
 export PATH=$PATH:$WORKCRAFT_HOME/tools
 

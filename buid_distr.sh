@@ -15,7 +15,7 @@ model_plugin_dirs="
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
 core_dirs="Workcraft Workflow"
-core_files="LICENSE README run.bat run.sh"
+core_files="LICENSE README ReachHelp.html workcraft workcraft.bat"
 
 src_dir="."
 distr_dir="../workcraft2"
