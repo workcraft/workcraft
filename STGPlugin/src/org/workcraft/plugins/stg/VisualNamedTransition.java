@@ -26,7 +26,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
@@ -34,7 +33,6 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Transition;
@@ -43,28 +41,12 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-	protected static Color defaultColor = Color.BLACK;
-	protected RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, 0.0);
+	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, 0.0);
 
 	public VisualNamedTransition(Transition transition) {
-		super(transition);
+		super(transition, false, false, false);
 		transition.addObserver(this);
-		updateRenderedName();
-		modifyPropertyDeclarations();
-	}
-
-	private void modifyPropertyDeclarations() {
-		for (PropertyDescriptor declaration:  new LinkedList<PropertyDescriptor>(getDescriptors())) {
-			if (declaration.getName() == "Foreground color"
-			 || declaration.getName() == "Fill color"
-			 || declaration.getName() == "Label"
-			 || declaration.getName() == "Label positioning"
-			 || declaration.getName() == "Label color"
-			 || declaration.getName() == "Name positioning"
-			 || declaration.getName() == "Name color") {
-				removePropertyDeclaration(declaration);
-			}
-		}
+		updateRenderedText();
 	}
 
 	@Override
@@ -112,14 +94,14 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	public Color getColor() {
-		return defaultColor;
+		return Color.BLACK;
 	}
 
-	protected void updateRenderedName() {
+	protected void updateRenderedText() {
 		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, 0.0)) {
-			transformChanging();
+			transformChanging(true);
 			renderedText = new RenderedText(getName(), font, Positioning.CENTER, 0.0);
-			transformChanged();
+			transformChanged(true);
 		}
 	}
 
@@ -138,7 +120,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	@Override
 	public void notify(StateEvent e) {
-		updateRenderedName();
+		updateRenderedText();
 	}
 
 }

@@ -61,11 +61,9 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/circuit-port.svg")
-
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
 	private static Font font;
-
 	static {
 		try {
 			font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
@@ -80,6 +78,14 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 	private FormulaRenderingResult renderedSetFormula = null;
 	private FormulaRenderingResult renderedResetFormula = null;
+
+	public VisualFunctionContact(FunctionContact contact) {
+		super(contact);
+	}
+
+	public VisualFunctionContact(Contact contact, Direction dir, String label) {
+		super(contact, dir, label);
+	}
 
 	public void resetRenderedFormula() {
 		renderedSetFormula = null;
@@ -102,23 +108,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		return renderedResetFormula;
 	}
 
-	private FunctionContact function=null;
-
-	public VisualFunctionContact(FunctionContact component) {
-		super(component);
-		function = component;
-	}
-
-	public VisualFunctionContact(FunctionContact component, VisualContact.Direction dir, String label) {
-		super(component);
-		function = component;
-
-		component.addObserver(this);
-		setName(label);
-		setDirection(dir);
-
-	}
-
 	@NoAutoSerialisation
 	public String getResetFunction() {
 		return FormulaToString.toString(getFunction().getResetFunction());
@@ -135,10 +124,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
 			p.resetRenderingResult();
 		}
-
 		renderedResetFormula = null;
 		getFunction().setResetFunction(resetFunction);
-
 		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
 	}
 
@@ -150,7 +137,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		}
 		renderedSetFormula = null;
 		getFunction().setSetFunction(setFunction);
-
 		sendNotification(new PropertyChangedEvent(this, "setFunction"));
 	}
 
@@ -165,24 +151,18 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 					worker.or(getFunction().getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(getFunction().getResetFunction())))
 					));
 
-		if (getFunction().getSetFunction()!=null&&
-			getFunction().getResetFunction()==null)
-
-			getFunction().setCombinedFunction(
-					DnfGenerator.generate(getFunction().getSetFunction()));
+		if (getFunction().getSetFunction()!=null && getFunction().getResetFunction()==null) {
+			getFunction().setCombinedFunction(DnfGenerator.generate(getFunction().getSetFunction()));
+		}
 	}
 
 
 	private void drawFormula(Graphics2D g, int arrowType, float xOffset, float yOffset, Color foreground, Color background, FormulaRenderingResult result) {
-
 		Rectangle2D textBB = result.boundingBox;
-
 		float textX = 0;
 		float textY = (float)-textBB.getCenterY()-(float)0.5-yOffset;
-
 		float arrX = 0;
 		float arrY = (float)-textBB.getCenterY()-(float)0.5-yOffset;
-
 
 		AffineTransform transform = g.getTransform();
 		AffineTransform at = new AffineTransform();
@@ -229,7 +209,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 			g.setColor(foreground);
 			g.fill(path);
-//			g.draw(path);
 			g.draw(line);
 		} else if (arrowType==1) {
 
@@ -246,15 +225,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 			g.setColor(foreground);
 			g.fill(path);
-//			g.draw(path);
 			g.draw(line);
 		}
-
 		g.translate(textX, textY);
-
-
 		result.draw(g, foreground);
-
 		g.setTransform(transform);
 	}
 
@@ -262,20 +236,18 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Color foreground = Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation());
-		Color background = Coloriser.colorise(Color.WHITE, r.getDecoration().getBackground());
+		Color foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
+		Color background = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 		Node p = getParent();
 		if (p!=null) {
 			if ((getIOType()==IOType.INPUT)^(p instanceof VisualComponent)) {
 				if (!(p instanceof VisualCircuitComponent)||
 						((VisualCircuitComponent)p).getRenderType()==RenderType.BOX) {
-
 					FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
 					FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
 					float xOfs = (float)0.5;
 
 					if (!CircuitSettings.getShowContacts()&&(p instanceof VisualComponent)) xOfs = (float)-0.5;
-
 					if (resetResult!=null) {
 						drawFormula(g, 1, xOfs, (float)-0.2, foreground, background, resetResult);
 						drawFormula(g, 2, xOfs, (float)0.5, foreground, background, setResult);
@@ -296,7 +268,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	public FunctionContact getFunction() {
-		return function;
+		return (FunctionContact)getReferencedContact();
 	}
 
 }

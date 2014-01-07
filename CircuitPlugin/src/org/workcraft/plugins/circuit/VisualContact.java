@@ -55,7 +55,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		NORTH("North"),
 		SOUTH("South"),
 		EAST("East"),
-		WEST("Weat");
+		WEST("West");
 
 		private final String name;
 
@@ -76,16 +76,25 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public static final Color outputColor = Color.BLUE;
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-
 	private double size = 0.5;
-
 	private GlyphVector nameGlyph = null;
-
 	private Direction direction = Direction.WEST;
 
 	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
 	private Place referencedZeroPlace=null;
 	private Place referencedOnePlace=null;
+
+	public VisualContact(Contact contact) {
+		this(contact, Direction.WEST, "");
+	}
+
+	public VisualContact(Contact contact, Direction dir, String label) {
+		super(contact, true, false, false);
+		contact.addObserver(this);
+		addPropertyDeclarations();
+		setName(label);
+		setDirection(dir);
+	}
 
 	public void resetNameGlyph() {
 		nameGlyph = null;
@@ -110,23 +119,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 		}
 		return at;
-	}
-
-	public VisualContact(Contact contact) {
-		super(contact);
-
-		contact.addObserver(this);
-		addPropertyDeclarations();
-	}
-
-	public VisualContact(Contact component, VisualContact.Direction dir, String label) {
-		super(component);
-
-		component.addObserver(this);
-		addPropertyDeclarations();
-
-		setName(label);
-		setDirection(dir);
 	}
 
 	private int connections = 0;
@@ -223,7 +215,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (fillColor==null) fillColor=getFillColor();
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
-
 			AffineTransform at = new AffineTransform();
 			switch (getDirection()) {
 			case NORTH:
@@ -239,14 +230,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				at.setToIdentity();
 				break;
 			}
-
 			g.transform(at);
 		}
 
 		Shape shape = getShape();
 		connections = r.getModel().getConnections(this).size();
 		if (connections>1&&(getParent() instanceof VisualCircuitComponent)&&!CircuitSettings.getShowContacts()) {
-
 			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 			g.fill(shape);
 
@@ -269,8 +258,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			case EAST:
 				at.quadrantRotate(2);
 				break;
+			default:
 			}
-
 			g.transform(at);
 
 			GlyphVector gv = getNameGlyphs(g);
@@ -352,7 +341,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public void setDirection(VisualContact.Direction dir) {
 		if (dir != direction) {
-			this.direction=dir;
+			this.direction = dir;
 			nameGlyph = null;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
@@ -378,17 +367,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public void setName(String name) {
-/*		if (name==null||name.equals("")&&((Contact)getReferencedComponent()).getIOType()==IOType.INPUT)
-			name=getNewName(
-					((Contact)getReferencedComponent()).getParent(),
-					"input");
-		if (name==null||name.equals("")&&((Contact)getReferencedComponent()).getIOType()==IOType.OUTPUT)
-			name=getNewName(
-				((Contact)getReferencedComponent()).getParent(),
-					"output");*/
-
 		getReferencedContact().setName(name);
-
 		sendNotification(new PropertyChangedEvent(this, "name"));
 		nameGlyph = null;
 	}

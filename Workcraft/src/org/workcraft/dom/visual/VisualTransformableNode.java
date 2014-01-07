@@ -82,24 +82,34 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public void setX(double x) {
-		transformChanging();
+	public void setX(double x, boolean notify) {
+		transformChanging(notify);
 		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
-		transformChanged();
+		transformChanged(notify);
+	}
+
+	@NoAutoSerialisation
+	public void setX(double x) {
+		setX(x, true);
+	}
+
+	@NoAutoSerialisation
+	public void setY(double y, boolean notify) {
+		transformChanging(notify);
+		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
+		transformChanged(notify);
 	}
 
 	@NoAutoSerialisation
 	public void setY(double y) {
-		transformChanging();
-		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
-		transformChanged();
+		setY(y, true);
 	}
 
 	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
-		transformChanging();
+		transformChanging(true);
 		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
-		transformChanged();
+		transformChanged(true);
 	}
 
 	@NoAutoSerialisation
@@ -107,14 +117,17 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return new Point2D.Double(getX(), getY());
 	}
 
-	protected void transformChanged() {
+	protected void transformChanged(boolean notify) {
 		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
-
-		sendNotification(new TransformChangedEvent(this));
+		if (notify) {
+			sendNotification(new TransformChangedEvent(this));
+		}
 	}
 
-	protected void transformChanging() {
-		sendNotification(new TransformChangingEvent(this));
+	protected void transformChanging(boolean notify) {
+		if (notify) {
+			sendNotification(new TransformChangingEvent(this));
+		}
 	}
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
@@ -164,9 +177,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	public void applyTransform(AffineTransform transform)
 	{
-		transformChanging();
+		transformChanging(true);
 		localToParentTransform.preConcatenate(transform);
-		transformChanged();
+		transformChanged(true);
 	}
 
 	@NoAutoSerialisation
@@ -205,8 +218,13 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	public void setTransform(AffineTransform transform) {
-		transformChanging();
-		localToParentTransform.setTransform(transform);
-		transformChanged();
+		setTransform(transform, true);
 	}
+
+	public void setTransform(AffineTransform transform, boolean notify) {
+		transformChanging(notify);
+		localToParentTransform.setTransform(transform);
+		transformChanged(notify);
+	}
+
 }

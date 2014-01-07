@@ -24,7 +24,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Pair;
 
-public class CElementRenderer {
+public class CElementRenderer extends GateRenderer {
 
 	static boolean doNegate = false;
 	static boolean isNegated = false;
@@ -167,15 +167,10 @@ public class CElementRenderer {
 			private Point2D labelPosition = null;
 
 			@Override
-			public Rectangle2D boundingBox()
-			{
-
-				if (cachedBB == null)
-				{
-
+			public Rectangle2D boundingBox() {
+				if (cachedBB == null) {
 					double h = bothVars.size()*0.5;
 					double x = h * GateRenderer.ANDGateAspectRatio;
-
 					maxX = 0;
 					if (isGlobalNegation) gX = GateRenderer.bubbleSize;
 
@@ -186,20 +181,12 @@ public class CElementRenderer {
 					for (Pair<String, Boolean> p3: bothVars)
 						if (p3.getSecond()^(gX!=0)) maxX = GateRenderer.bubbleSize;
 
-
-
 					if (svs>0) plusPosition = new Point2D.Double(maxX/2-gX/2,-bvs*0.5/2-0.25);
 					if (rvs>0) minusPosition = new Point2D.Double(maxX/2-gX/2,+bvs*0.5/2+0.25);
-
 					labelPosition = new Point2D.Double(maxX/2-gX/2,0);
-
-
 					x += maxX + gX;
-
 					cachedBB = new Rectangle2D.Double(-x/2,-svs*0.5-bvs*0.5/2,x,sumY);
-
 				}
-
 				return cachedBB;
 			}
 

@@ -69,7 +69,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 	@NoAutoSerialisation
 	public void setType(SignalTransition.Type type) {
 		getReferencedTransition().setSignalType(type);
-		updateRenderedName();
+		updateRenderedText();
 	}
 
 	@NoAutoSerialisation
@@ -80,7 +80,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 	@NoAutoSerialisation
 	public void setDirection(SignalTransition.Direction direction) {
 		getReferencedTransition().setDirection(direction);
-		updateRenderedName();
+		updateRenderedText();
 	}
 
 	@NoAutoSerialisation
@@ -91,7 +91,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 	@NoAutoSerialisation
 	public void setSignalName(String name) {
 		getReferencedTransition().setSignalName(name);
-		updateRenderedName();
+		updateRenderedText();
 	}
 
 	@NoAutoSerialisation

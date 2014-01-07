@@ -50,7 +50,7 @@ public class BufferRenderer extends GateRenderer {
 						path.lineTo(0.5, 0);
 						path.closePath();
 
-						g.setColor(foreground);
+						g.setColor(background);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -80,7 +80,7 @@ public class BufferRenderer extends GateRenderer {
 						g.translate(-bubbleSize/2, 0);
 						result.draw(g);
 						g.translate(w/2, 0);
-						g.setColor(foreground);
+						g.setColor(background);
 						g.fill(bubbleShape);
 						g.setColor(foreground);
 						g.draw(bubbleShape);
@@ -197,7 +197,7 @@ public class BufferRenderer extends GateRenderer {
 						path.lineTo(x, y + h);
 						path.closePath();
 
-						g.setColor(foreground);
+						g.setColor(background);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -289,7 +289,7 @@ public class BufferRenderer extends GateRenderer {
 						path.quadTo(x + h / 3, y + h / 2, x, y);
 						path.closePath();
 
-						g.setColor(foreground);
+						g.setColor(background);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);
@@ -396,7 +396,7 @@ public class BufferRenderer extends GateRenderer {
 						path.quadTo(x + h / 3, y + h / 2, x, y);
 						path.closePath();
 
-						g.setColor(foreground);
+						g.setColor(background);
 						g.fill(path);
 						g.setColor(foreground);
 						g.draw(path);

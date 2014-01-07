@@ -42,7 +42,11 @@ import org.workcraft.gui.graph.tools.Decoration;
 public class VisualTransition extends VisualComponent {
 
 	public VisualTransition(Transition transition) {
-		super(transition);
+		this(transition, true, true, true);
+	}
+
+	public VisualTransition(Transition transition, boolean hasColorProperties, boolean hasLabelProperties, boolean hasNameProperties) {
+		super(transition, hasColorProperties, hasLabelProperties, hasNameProperties);
 	}
 
 	public Transition getReferencedTransition() {

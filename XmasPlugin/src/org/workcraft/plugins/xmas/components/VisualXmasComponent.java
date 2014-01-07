@@ -103,10 +103,10 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
     public void setOrientation(VisualXmasComponent.Orientation orientation) {
 		if (this.orientation != orientation) {
-			transformChanging();
+			transformChanging(true);
 			localToParentTransform.quadrantRotate(orientation.quadrant - this.orientation.quadrant);
 			this.orientation = orientation;
-			transformChanged();
+			transformChanged(true);
 		}
 	}
 

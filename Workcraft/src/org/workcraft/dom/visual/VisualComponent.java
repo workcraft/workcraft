@@ -59,20 +59,33 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
+		this(refNode, true, true, true);
+	}
+
+	public VisualComponent(MathNode refNode, boolean hasColorProperties, boolean hasLabelProperties, boolean hasNameProperties) {
 		super();
 		this.refNode = refNode;
 
-		if (refNode instanceof ObservableState)
+		if (refNode instanceof ObservableState) {
 			((ObservableState) refNode).addObserver(new StateObserver() {
 				public void notify(StateEvent e) {
 					observableStateImpl.sendNotification(e);
 				}
 			});
+		}
+		if (hasColorProperties) {
+			addColorPropertyDeclarations();
+		}
+		if (hasLabelProperties) {
+			addLabelPropertyDeclarations();
+		}
+		if (hasNameProperties) {
+			addNamePropertyDeclarations();
+		}
 
-		addPropertyDeclarations();
 	}
 
-	private void addPropertyDeclarations() {
+	private void addColorPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
 				this, "Foreground color", Color.class) {
 			protected void setter(VisualComponent object, Color value) {
@@ -92,7 +105,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				return object.getFillColor();
 			}
 		});
+	}
 
+	private void addLabelPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
 				this, "Label", String.class) {
 			protected void setter(VisualComponent object, String value) {
@@ -112,17 +127,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				return object.getLabelPositioning();
 			}
 		});
-/*
-		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Boolean>(
-				this, "Label offset", Boolean.class) {
-			protected void setter(VisualComponent object, Boolean value) {
-				object.setLabelOffset(value);
-			}
-			protected Boolean getter(VisualComponent object) {
-				return object.getLabelOffset();
-			}
-		});
-*/
+
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
 				this, "Label color", Color.class) {
 			protected void setter(VisualComponent object, Color value) {
@@ -132,7 +137,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 				return object.getLabelColor();
 			}
 		});
+	}
 
+	private void addNamePropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
 				this, "Name positioning", Positioning.class, Positioning.getChoice()) {
 			protected void setter(VisualComponent object, Positioning value) {
@@ -171,16 +178,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		this.labelPositioning = labelPositioning;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
-/*
-	public boolean getLabelOffset() {
-		return labelOffset;
-	}
 
-	public void setLabelOffset(boolean labelOffset) {
-		this.labelOffset = labelOffset;
-		sendNotification(new PropertyChangedEvent(this, "label offset"));
-	}
-*/
 	public Color getLabelColor() {
 		return labelColor;
 	}

@@ -64,7 +64,6 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/icons/svg/circuit-component.svg")
-
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
@@ -81,7 +80,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	RenderType renderType = RenderType.BOX;
 
 	public VisualCircuitComponent(CircuitComponent component) {
-		super(component);
+		super(component, true, true, false);
 		component.addObserver(this);
 		addPropertyDeclarations();
 	}
@@ -117,6 +116,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			}
 		});
 	}
+
 	public void setMainContact(VisualContact contact) {
 		this.mainContact = new WeakReference<VisualContact>(contact);
 	}
@@ -267,8 +267,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public Rectangle2D getBestBB() {
 		Rectangle2D result = contactLabelBB;
-		if (result==null) {
-			result = new Rectangle2D.Double(-0.5, -0.5, 1, 1);
+		if (result == null) {
+			result = new Rectangle2D.Double(-size/2, -size/2, size, size);
 		}
 		return result;
 	}
@@ -414,6 +414,29 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	@Override
+	public double getLabelOffset() {
+		double result = size / 2;
+		if (totalBB != null) {
+			switch (getLabelPositioning()) {
+			case CENTER:
+				result = 0.0;
+				break;
+			case TOP:
+			case BOTTOM:
+				result = totalBB.getHeight() / 2;
+				break;
+			case LEFT:
+			case RIGHT:
+				result = totalBB.getWidth() / 2;
+				break;
+			default:
+				result = Math.min(totalBB.getHeight(), totalBB.getWidth()) / 2;
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 
@@ -422,9 +445,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		drawContactConnections(r);
 
 		Rectangle2D shape = getBestBB();
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getFillColor(), r.getDecoration().getBackground()));
+		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 
 		if (!getIsEnvironment()) {
 			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
@@ -434,9 +457,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 		}
 		g.draw(shape);
-		drawContacts(r);
 		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
+		drawContacts(r);
 	}
 
 	@Override
@@ -444,13 +466,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		if (totalBB==null) {
 			updateTotalBB();
 		}
-
 		if (totalBB!=null) return totalBB;
-
-		double size = CommonVisualSettings.getBaseSize();
 		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
-
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
@@ -574,14 +592,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	public VisualContact addInput(String name, VisualContact.Direction dir) {
-
 		if (dir==null) dir=VisualContact.Direction.WEST;
-
 		Contact c = new Contact(IOType.INPUT);
-
 		VisualContact vc = new VisualContact(c, dir, name);
 		addContact(vc);
-
 		return vc;
 	}
 
