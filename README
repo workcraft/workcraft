@@ -1,6 +1,6 @@
 Start
 -----
-In Windows start run.bat script, in Linux - run.sh. The script will set up the 
+In Windows start workcraft.bat script, in Linux - workcraft shell script. The script will set up the 
 required search path for external tools and class paths for Workcraft plugins.
 
 Tutorial
@@ -9,7 +9,7 @@ To familiarise yourself with the Workcraft framework please look through the
 practical material in the tutorial directory.
 
 
-Tips and tricks
+Tips and Tricks
 ---------------
 * Selection
     - Hold _Shift_ to include objects into a selection and _Ctrl_ to exclude objects from a selection.
@@ -22,7 +22,7 @@ Tips and tricks
     - History of modifications can be browsed: _Ctrl+Z_ to undo and _Ctrl+Shift+Z_ to redo.
 * Navigation and Grouping
     - _Ctrl+G_ combines selected objects into a group and _Ctrl+Shift+G_ ungroups them. 
-    - Press _PageDown_ or double-click a group to enter it. Press _PageUp_ or double-clock outside a group to leave it.
+    - Press _PageDown_ or double-click a group to enter it. Press _PageUp_ or double-click outside a group to leave it.
     - Scroll the mouse wheel _forward_ to zooms in and _backward_ to zoom out. Alternatively press _+_ to zoom in and _-_ to zoom out.
     - Use the _middle mouse button_ or _Ctrl+right mouse button_ or _Ctrl+arrow keys_ to pan the view.
 * Simulation
