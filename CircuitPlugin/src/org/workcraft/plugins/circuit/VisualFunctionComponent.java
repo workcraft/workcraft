@@ -143,7 +143,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			bb.setRect(res.boundingBox());
 			Point2D p1 = new Point2D.Double(bb.getMinX(), bb.getMinY());
 			Point2D p2 = new Point2D.Double(bb.getMaxX(), bb.getMaxY());
-			AffineTransform at = VisualContact.getDirectionTransform(getMainContact().getDirection());
+			AffineTransform at = VisualContact.Direction.getDirectionTransform(getMainContact().getDirection());
 			at.transform(p1, p1);
 			at.transform(p2, p2);
 			double x1 = Math.min(p1.getX(), p2.getX());
@@ -169,7 +169,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			AffineTransform bt = new AffineTransform();
 			VisualContact v = getMainContact();
 			if (v != null) {
-				at = VisualContact.getDirectionTransform(v.getDirection());
+				at = VisualContact.Direction.getDirectionTransform(v.getDirection());
 			}
 			for (Node n: this.getChildren()) {
 				bt.setTransform(at);
@@ -177,14 +177,24 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
 					if (vc.getIOType() == IOType.OUTPUT) {
 						bt.translate(snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin), 0);
-						vc.setTransform(bt, !firstUpdate); // suppress notifications at first recalculation of contact coordinates
+
+						// here we only need to change position, do not do the rotation
+						AffineTransform ct = new AffineTransform();
+						ct.translate(bt.getTranslateX(), bt.getTranslateY());
+
+						vc.setTransform(ct, !firstUpdate); // suppress notifications at first recalculation of contact coordinates
 						continue;
 					}
 					if (vc.getIOType() != IOType.INPUT) continue;
 					Point2D position = res.contactPositions().get(vc.getName());
 					if (position != null) {
 						bt.translate(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin), position.getY());
-						vc.setTransform(bt, !firstUpdate); // suppress notifications at first recalculation of contact coordinates
+
+						// here we only need to change position, do not do the rotation
+						AffineTransform ct = new AffineTransform();
+						ct.translate(bt.getTranslateX(), bt.getTranslateY());
+
+						vc.setTransform(ct, !firstUpdate); // suppress notifications at first recalculation of contact coordinates
 					}
 				}
 			}

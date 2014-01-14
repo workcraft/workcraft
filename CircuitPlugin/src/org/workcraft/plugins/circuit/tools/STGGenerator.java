@@ -235,7 +235,7 @@ public class STGGenerator {
 		VisualContact.Direction dir = contact.getDirection();
 
 		if (contact.getIOType()==IOType.INPUT) {
-			dir = VisualContact.flipDirection(dir);
+			dir = VisualContact.Direction.flipDirection(dir);
 		}
 
 		switch(dir) {

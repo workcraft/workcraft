@@ -169,7 +169,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		Direction dir = getDirection();
 
 		if (!(getParent() instanceof VisualFunctionComponent)) {
-			dir = flipDirection(dir);
+			dir = Direction.flipDirection(dir);
 		}
 
 		switch (dir) {
