@@ -64,6 +64,36 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			this.name = name;
 		}
 
+		public static Direction flipDirection(Direction direction) {
+			if (direction==Direction.EAST) return Direction.WEST;
+			if (direction==Direction.WEST) return Direction.EAST;
+			if (direction==Direction.SOUTH) return Direction.NORTH;
+			if (direction==Direction.NORTH) return Direction.SOUTH;
+			return null;
+		}
+
+
+		static public AffineTransform getDirectionTransform(Direction dir) {
+			AffineTransform at = new AffineTransform();
+			if (dir!=null) {
+				switch (dir) {
+				case NORTH:
+					at.quadrantRotate(3);
+					break;
+				case SOUTH:
+					at.quadrantRotate(1);
+					break;
+				case WEST:
+					at.quadrantRotate(2);
+					break;
+				case EAST:
+					at.setToIdentity();
+					break;
+				}
+			}
+			return at;
+		}
+
 		static public Map<String, Direction> getChoice() {
 			LinkedHashMap<String, Direction> choice = new LinkedHashMap<String, Direction>();
 			for (Direction item : Direction.values()) {
@@ -87,6 +117,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public VisualContact(Contact contact) {
 		super(contact, true, false, false);
+		setDirection(contact.getIOType()==IOType.INPUT ? Direction.WEST : Direction.EAST);
 		contact.addObserver(this);
 		addPropertyDeclarations();
 	}
@@ -95,26 +126,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		nameGlyph = null;
 	}
 
-	static public AffineTransform getDirectionTransform(Direction dir) {
-		AffineTransform at = new AffineTransform();
-		if (dir!=null) {
-			switch (dir) {
-			case NORTH:
-				at.quadrantRotate(3);
-				break;
-			case SOUTH:
-				at.quadrantRotate(1);
-				break;
-			case WEST:
-				at.quadrantRotate(2);
-				break;
-			case EAST:
-				at.setToIdentity();
-				break;
-			}
-		}
-		return at;
-	}
 
 	private int connections = 0;
 
@@ -209,24 +220,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		Color fillColor = r.getDecoration().getBackground();
 		if (fillColor==null) fillColor=getFillColor();
 
-		if (!(getParent() instanceof VisualCircuitComponent)) {
-			AffineTransform at = new AffineTransform();
-			switch (getDirection()) {
-			case NORTH:
-				at.quadrantRotate(-1);
-				break;
-			case SOUTH:
-				at.quadrantRotate(1);
-				break;
-			case EAST:
-				at.quadrantRotate(2);
-				break;
-			case WEST:
-				at.setToIdentity();
-				break;
-			}
-			g.transform(at);
-		}
+		AffineTransform oldTransform = g.getTransform();
+		AffineTransform at = Direction.getDirectionTransform(getDirection());
+		if (getIOType()==IOType.INPUT) at.quadrantRotate(2);
+		g.transform(at);
 
 		Shape shape = getShape();
 		connections = r.getModel().getConnections(this).size();
@@ -244,14 +241,16 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 		}
 
+		g.setTransform(oldTransform);
+
 		if (!(getParent() instanceof VisualCircuitComponent)) {
-			AffineTransform at = new AffineTransform();
+
+
+			at.setToIdentity();
 			switch (getDirection()) {
+			case NORTH:
 			case SOUTH:
-				at.quadrantRotate(2);
-				break;
-			case EAST:
-				at.quadrantRotate(2);
+				at.quadrantRotate(-1);
 				break;
 			default:
 			}
@@ -261,13 +260,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
-			float xx = 0;
-
-			if (getIOType()==IOType.INPUT) {
+			float xx = (float)0.5;
+			if (getDirection()==Direction.SOUTH || getDirection() == Direction.WEST)
 				xx = (float)(-cur.getWidth()-0.5);
-			} else {
-				xx = (float)0.5;
-			}
+
 			g.drawGlyphVector(gv, xx, -0.5f);
 		}
 	}
@@ -292,24 +288,30 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		p2.setLocation(pointInLocalSpace);
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
+
 			AffineTransform at = new AffineTransform();
 
+			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
 			case NORTH:
 				at.quadrantRotate(1);
 				break;
 			case SOUTH:
-				at.quadrantRotate(-1);
-				break;
-			case EAST:
-				at.quadrantRotate(2);
+				at.quadrantRotate(3);
 				break;
 			case WEST:
+				at.quadrantRotate(2);
+				break;
+			case EAST:
 				at.setToIdentity();
 				break;
 			}
+			if (getIOType()==IOType.INPUT) at.quadrantRotate(2);
+
 			at.transform(pointInLocalSpace, p2);
 		}
+
+
 
 		Shape shape = getShape();
 		if (shape!=null) return shape.contains(p2);
@@ -376,13 +378,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return (((VisualContact)contact).getIOType() == IOType.OUTPUT) == (((VisualContact)contact).getParent() instanceof VisualComponent);
 	}
 
-	public static Direction flipDirection(Direction direction) {
-		if (direction==Direction.EAST) return Direction.WEST;
-		if (direction==Direction.WEST) return Direction.EAST;
-		if (direction==Direction.SOUTH) return Direction.NORTH;
-		if (direction==Direction.NORTH) return Direction.SOUTH;
-		return null;
-	}
 
 	public HashSet<SignalTransition> getReferencedTransitions() {
 		return referencedTransitions;
