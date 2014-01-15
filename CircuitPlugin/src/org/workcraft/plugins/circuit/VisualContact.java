@@ -29,6 +29,7 @@ import java.awt.Shape;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -292,25 +293,31 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		p2.setLocation(pointInLocalSpace);
 
 		if (!(getParent() instanceof VisualCircuitComponent)) {
+
 			AffineTransform at = new AffineTransform();
 
+			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
 			case NORTH:
 				at.quadrantRotate(1);
 				break;
 			case SOUTH:
-				at.quadrantRotate(-1);
-				break;
-			case EAST:
-				at.quadrantRotate(2);
+				at.quadrantRotate(3);
 				break;
 			case WEST:
+				at.quadrantRotate(2);
+				break;
+			case EAST:
 				at.setToIdentity();
 				break;
 			}
 
+			if (getIOType()==IOType.INPUT) at.quadrantRotate(2);
+
 			at.transform(pointInLocalSpace, p2);
 		}
+
+
 
 		Shape shape = getShape();
 		if (shape!=null) return shape.contains(p2);
