@@ -101,9 +101,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 	}
 
-	public VisualFunctionContact addFunction(String name, IOType ioType, boolean allowShort) {
-		name = Contact.getNewName(this.getReferencedComponent(), name, null, allowShort);
-
+	public VisualFunctionContact addFunction(String prefix, IOType ioType, boolean allowShort) {
 		VisualContact.Direction dir=null;
 		if (ioType==null) ioType = IOType.OUTPUT;
 
@@ -112,7 +110,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			dir=VisualContact.Direction.EAST;
 		}
 		FunctionContact c = new FunctionContact(ioType);
-		VisualFunctionContact vc = new VisualFunctionContact(c, dir, name);
+		VisualFunctionContact vc = new VisualFunctionContact(c);
+		vc.setDirection(dir);
+		vc.setName(Contact.getNewName(this.getReferencedComponent(), prefix, null, allowShort));
 		addContact(vc);
 		return vc;
 	}

@@ -45,6 +45,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -85,15 +86,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	private Place referencedOnePlace=null;
 
 	public VisualContact(Contact contact) {
-		this(contact, Direction.WEST, "");
-	}
-
-	public VisualContact(Contact contact, Direction dir, String label) {
 		super(contact, true, false, false);
 		contact.addObserver(this);
 		addPropertyDeclarations();
-		setName(label);
-		setDirection(dir);
 	}
 
 	public void resetNameGlyph() {
@@ -313,7 +308,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				at.setToIdentity();
 				break;
 			}
-
 			at.transform(pointInLocalSpace, p2);
 		}
 
@@ -331,7 +325,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), getName());
 		}
-
 		return nameGlyph;
 	}
 
@@ -341,8 +334,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public void setDirection(VisualContact.Direction dir) {
 		if (dir != direction) {
+			sendNotification(new TransformChangingEvent(this));
+			resetNameGlyph();
 			this.direction = dir;
-			nameGlyph = null;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
 		}
@@ -353,9 +347,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public void setIOType(IOType type) {
+		resetNameGlyph();
 		getReferencedContact().setIOType(type);
 		sendNotification(new PropertyChangedEvent(this, "IOtype"));
-		nameGlyph = null;
 	}
 
 	public IOType getIOType() {
@@ -367,9 +361,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public void setName(String name) {
+		resetNameGlyph();
 		getReferencedContact().setName(name);
 		sendNotification(new PropertyChangedEvent(this, "name"));
-		nameGlyph = null;
 	}
 
 	public Contact getReferencedContact() {

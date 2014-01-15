@@ -77,56 +77,50 @@ public class Contact extends MathNode implements BooleanVariable {
 
 	public Contact(IOType iot) {
 		super();
-
 		setIOType(iot);
 	}
 
 
-	static public String getNewName(Node n, String start, Node curNode, boolean allowShort) {
+	static public String getNewName(Node paren, String prefix, Node node, boolean allowShort) {
 		// iterate through all contacts, check that the name doesn't exist
-		int num=0;
-		boolean found = true;
-
-		while (found) {
-			num++;
-			found=false;
-
-			if (allowShort) {
-
-				for (Node vn : n.getChildren()) {
-					if (vn instanceof Contact&& vn!=curNode) {
-						if (((Contact)vn).getName().equals(start)) {
-							found=true;
-							break;
-						}
-					}
-				}
-				if (found==false) return start;
-				allowShort=false;
-			}
-
-			for (Node vn : n.getChildren()) {
-				if (vn instanceof Contact&& vn!=curNode) {
-					if (((Contact)vn).getName().equals(start+num)) {
-						found=true;
+		int index=0;
+		boolean found = false;
+		if (allowShort) {
+			for (Node n : paren.getChildren()) {
+				if (n instanceof Contact && n != node) {
+					if (((Contact)n).getName().equals(prefix)) {
+						found = true;
 						break;
 					}
 				}
 			}
+			if (!found) return prefix;
 		}
-		return start+num;
+		do {
+			found = false;
+			index++;
+			for (Node n : paren.getChildren()) {
+				if (n instanceof Contact && n != node) {
+					if (((Contact)n).getName().equals(prefix + index)) {
+						found = true;
+						break;
+					}
+				}
+			}
+		} while (found);
+		return (prefix + index);
 	}
 
 	public void checkName(Node parent) {
-		if (parent==null) return;
-		String start=getName();
-		if (start==null||start=="") {
+		if (parent == null) return;
+		String prefix = getName();
+		if (prefix == null || prefix == "") {
 			if (getIOType()==IOType.INPUT) {
-				start="input";
+				prefix="input";
 			} else {
-				start="output";
+				prefix="output";
 			}
-			setName(getNewName(parent, start, this, false));
+			setName(getNewName(parent, prefix, this, false));
 		}
 	}
 
@@ -136,15 +130,13 @@ public class Contact extends MathNode implements BooleanVariable {
 		checkName(parent);
 	}
 
-
 	public void setIOType(IOType t) {
 		this.ioType = t;
-		if (getName().startsWith("input")&&getIOType()==IOType.OUTPUT) {
+		if (getName().startsWith("input") && getIOType()==IOType.OUTPUT) {
 			setName(getNewName(getParent(), "output", this, false));
-		} else if (getName().startsWith("output")&&getIOType()==IOType.INPUT) {
+		} else if (getName().startsWith("output") && getIOType()==IOType.INPUT) {
 			setName(getNewName(getParent(), "input", this, false));
 		}
-
 		sendNotification(new PropertyChangedEvent(this, "ioType"));
 	}
 

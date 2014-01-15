@@ -592,18 +592,23 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	public VisualContact addInput(String name, VisualContact.Direction dir) {
-		if (dir==null) dir=VisualContact.Direction.WEST;
-		Contact c = new Contact(IOType.INPUT);
-		VisualContact vc = new VisualContact(c, dir, name);
+		VisualContact vc = new VisualContact(new Contact(IOType.INPUT));
+		if (dir==null) {
+			dir=VisualContact.Direction.WEST;
+		}
+		vc.setDirection(dir);
+		vc.setName(name);
 		addContact(vc);
 		return vc;
 	}
 
 	public VisualContact addOutput(String name, VisualContact.Direction dir) {
-		if (dir==null) dir=VisualContact.Direction.EAST;
-
-		Contact c = new Contact(IOType.OUTPUT);
-		VisualContact vc = new VisualContact(c, dir, name);
+		VisualContact vc = new VisualContact(new Contact(IOType.OUTPUT));
+		if (dir==null) {
+			dir=VisualContact.Direction.EAST;
+		}
+		vc.setDirection(dir);
+		vc.setName(name);
 		addContact(vc);
 		return vc;
 	}

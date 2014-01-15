@@ -83,10 +83,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		super(contact);
 	}
 
-	public VisualFunctionContact(Contact contact, Direction dir, String label) {
-		super(contact, dir, label);
-	}
-
 	public void resetRenderedFormula() {
 		renderedSetFormula = null;
 		renderedResetFormula = null;
