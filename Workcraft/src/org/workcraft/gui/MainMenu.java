@@ -331,7 +331,7 @@ public class MainMenu extends JMenuBar {
 		mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
-		ActionMenuItem miHints = new ActionMenuItem(MainWindowActions.HINTS_ACTION);
+		ActionMenuItem miHints = new ActionMenuItem(MainWindowActions.HELP_ACTION);
 		miHints.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		miHints.addScriptedActionListener(mainWindow.getDefaultActionListener());
 

@@ -14,8 +14,9 @@ model_plugin_dirs="
     XmasPlugin"
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
+doc_dirs="help"
 core_dirs="Workcraft Workflow"
-core_files="LICENSE README ReachHelp.html workcraft workcraft.bat"
+core_files="LICENSE README workcraft workcraft.bat"
 
 src_dir="."
 distr_dir="../workcraft2"
@@ -73,7 +74,7 @@ then
     cp -r $template_dir/*  $distr_dir/
 fi
 
-# Copy core and plugin classes, third-party libraries, misc files
+# Copy core and plugin classes, third-party libraries, documentation and misc files
 for i in $core_dirs $tool_plugin_dirs $model_plugin_dirs
 do
     mkdir $distr_dir/$i
@@ -81,6 +82,12 @@ do
 done
 
 for i in $third_party_dirs
+do
+    mkdir $distr_dir/$i
+    cp -r $src_dir/$i/* $distr_dir/$i/
+done
+
+for i in $doc_dirs
 do
     mkdir $distr_dir/$i
     cp -r $src_dir/$i/* $distr_dir/$i/
