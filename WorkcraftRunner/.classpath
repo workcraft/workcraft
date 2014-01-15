@@ -28,5 +28,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/XmasPlugin"/>
 	<classpathentry kind="lib" path="/ThirdParty/jackson-core-asl-1.8.10.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/jackson-mapper-asl-1.8.10.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

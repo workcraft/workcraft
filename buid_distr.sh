@@ -16,7 +16,7 @@ tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
 doc_dirs="help"
 core_dirs="Workcraft Workflow"
-core_files="LICENSE README workcraft workcraft.bat"
+core_files="LICENSE README workcraft.sh workcraft.bat"
 
 src_dir="."
 distr_dir="../workcraft2"
@@ -99,4 +99,7 @@ do
 done
 
 # Copy config
-cp -r $src_dir/WorkcraftRunner/config $distr_dir/
+if [ -e $src_dir/config ]
+then
+    cp -r $src_dir/config $distr_dir/
+fi

@@ -1,34 +1,7 @@
-Start
------
-In Windows start workcraft.bat script, in Linux - workcraft shell script. The script will set up the 
-required search path for external tools and class paths for Workcraft plugins.
+In Windows start workcraft.bat script, in Linux - workcraft shell script. 
+These scripts set up the required search path for external tools and 
+Java classpath for Workcraft plugins.
 
-Tutorial
---------
-To familiarise yourself with the Workcraft framework please look through the 
-practical material in the tutorial directory.
-
-
-Tips and Tricks
----------------
-* Selection
-    - Hold _Shift_ to include objects into a selection and _Ctrl_ to exclude objects from a selection.
-    - Outline a selection area _from-right-to-left_ for adding fully covered objects, and _from-left-to-right_ for adding any touched objects.
-    - Use _left mouse button_ or _arrow keys_ to move selected components.
-    - Selected components can be removed by pressing Delete key.
-    - Press _Ctrl+A_ to select all objects or _Esc_ to reset selection.
-* Clipboard and History
-    - Clipboard operations are allowed between the models of the same type: _Ctrl+C_ to copy, _Ctrl+X_ to cut and _Ctrl+V_ to insert.
-    - History of modifications can be browsed: _Ctrl+Z_ to undo and _Ctrl+Shift+Z_ to redo.
-* Navigation and Grouping
-    - _Ctrl+G_ combines selected objects into a group and _Ctrl+Shift+G_ ungroups them. 
-    - Press _PageDown_ or double-click a group to enter it. Press _PageUp_ or double-click outside a group to leave it.
-    - Scroll the mouse wheel _forward_ to zooms in and _backward_ to zoom out. Alternatively press _+_ to zoom in and _-_ to zoom out.
-    - Use the _middle mouse button_ or _Ctrl+right mouse button_ or _Ctrl+arrow keys_ to pan the view.
-* Simulation
-    - Use _[_ and _]_ keys to navigate through the simulation trace.
-    - In Signal-State table the values of excited signals are depicted in bold font.
-* Settings
-    - Use punf with -r option to replicate Petri net places sensed by read-arcs and speed up the unfolding.
-    - Use petrify with -nosi option to allow synthesis of non-speed-independent specifications.
-    - Add "-lib tools/petrify.lib" to the petrify options to enable technology mapping into this library.
+To familiarise yourself with the Workcraft framework please read the 
+practical material in the tutorial directory. Also look through a
+collection of tips and tricks in help/tips.html.

@@ -1,9 +1,9 @@
 package org.workcraft.gui;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -237,15 +237,14 @@ public class MainWindowActions {
 	public static final Action HELP_ACTION = new Action() {
 		@Override
 		public void run(Framework f) {
-			final String help = "file://" + System.getProperty("user.dir") + "/help/index.html";
+			URI uri = new File("help/index.html").toURI();
 			try {
-				Desktop.getDesktop().browse(new URI(help));
+				Desktop.getDesktop().browse(uri);
 			} catch(IOException e1) {
 				System.out.println(e1);
-			} catch (URISyntaxException e2) {
-				System.out.println(e2);
 			}
 		}
+
 		public String getText() {
 			return "Help";
 		};

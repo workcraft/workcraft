@@ -11,9 +11,9 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -56,7 +56,6 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	private TableLayout layout;
 	private int modalResult = 0;
-	private Window parent;
 
 	class IntMode {
 		public int value;
@@ -248,7 +247,6 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	public MpsatConfigurationDialog(Window owner, PresetManager<MpsatSettings> presetManager) {
 		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
-		this.parent = owner;
 		this.presetManager = presetManager;
 
 
@@ -318,13 +316,11 @@ public class MpsatConfigurationDialog extends JDialog {
 		helpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final String help = "file://" + System.getProperty("user.dir") + "/help/reach.html";
+				URI uri = new File("help/reach.html").toURI();
 				try {
-					Desktop.getDesktop().browse(new URI(help));
+					Desktop.getDesktop().browse(uri);
 				} catch(IOException e1) {
 					System.out.println(e1);
-				} catch (URISyntaxException e2) {
-					System.out.println(e2);
 				}
 			}
 		});
