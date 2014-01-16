@@ -14,7 +14,7 @@ public class XmasModule implements Module {
 
 	@Override
 	public String getDescription() {
-		return "Gate-level circuit model";
+		return "xMAS circuit model";
 	}
 
 	@Override
@@ -27,4 +27,5 @@ public class XmasModule implements Module {
 		pm.registerClass(ModelDescriptor.class, XmasModelDescriptor.class);
 		pm.registerClass(SettingsPage.class, XmasSettings.class);
 	}
+
 }

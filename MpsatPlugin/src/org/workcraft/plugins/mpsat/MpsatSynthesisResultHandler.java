@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat;
 import java.io.File;
 
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.gates.GateLevelModelDescriptor;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.tasks.Result;
@@ -29,7 +28,10 @@ public class MpsatSynthesisResultHandler implements Runnable {
 		final String mpsatOutput = new String(result.getReturnValue().getMpsatResult().getReturnValue().getOutput());
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String name = FileUtils.getFileNameWithoutExtension(new File(we.getWorkspacePath().getNode()));
-		final ModelEntry me = new ModelEntry(new GateLevelModelDescriptor(), new MpsatEqnParser().parse(mpsatOutput));
+		final ModelEntry me = null;//
+		// TODO: implement boolean function parsing into a digital circuit (beware of cyclic dependences)
+		System.out.println("Parsing of Mpsat synthesis results is not implemented yet.");
+		//final ModelEntry me = new ModelEntry(new CircuitModelDescriptor(), new MpsatEqnParser().parse(mpsatOutput));
 		workspace.add(directory, name, me, true, false);
 	}
 }

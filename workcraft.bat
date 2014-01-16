@@ -2,7 +2,17 @@ set WORKCRAFT_HOME=%~dp0
 
 set PATH=%PATH%;%WORKCRAFT_HOME%\tools
 
-set CLASSPATH=.\Workcraft\bin;^
+set CLASSPATH=^
+%WORKCRAFT_HOME%\CircuitPlugin\bin;^
+%WORKCRAFT_HOME%\CpogsPlugin\bin;^
+%WORKCRAFT_HOME%\DfsPlugin\bin;^
+%WORKCRAFT_HOME%\GraphPlugin\bin;^
+%WORKCRAFT_HOME%\MpsatPlugin\bin;^
+%WORKCRAFT_HOME%\PetriNetPlugin\bin;^
+%WORKCRAFT_HOME%\PetrifyPlugin\bin;^
+%WORKCRAFT_HOME%\PolicyNetPlugin\bin;^
+%WORKCRAFT_HOME%\SONPlugin\bin;^
+%WORKCRAFT_HOME%\STGPlugin\bin;^
 %WORKCRAFT_HOME%\ThirdParty;^
 %WORKCRAFT_HOME%\ThirdParty\batik\batik-anim.jar;^
 %WORKCRAFT_HOME%\ThirdParty\batik\batik-awt-util.jar;^
@@ -37,17 +47,7 @@ set CLASSPATH=.\Workcraft\bin;^
 %WORKCRAFT_HOME%\ThirdParty\pcollections-1.0.0.jar;^
 %WORKCRAFT_HOME%\ThirdParty\substance.jar;^
 %WORKCRAFT_HOME%\ThirdParty\TableLayout-bin-jdk1.5-2009-08-26.jar;^
-%WORKCRAFT_HOME%\CircuitPlugin\bin;^
-%WORKCRAFT_HOME%\CpogsPlugin\bin;^
-%WORKCRAFT_HOME%\DfsPlugin\bin;^
-%WORKCRAFT_HOME%\GatesPlugin\bin;^
-%WORKCRAFT_HOME%\GraphPlugin\bin;^
-%WORKCRAFT_HOME%\MpsatPlugin\bin;^
-%WORKCRAFT_HOME%\PetrifyPlugin\bin;^
-%WORKCRAFT_HOME%\PetriNetPlugin\bin;^
-%WORKCRAFT_HOME%\PolicyNetPlugin\bin;^
-%WORKCRAFT_HOME%\SONPlugin\bin;^
-%WORKCRAFT_HOME%\STGPlugin\bin;^
+%WORKCRAFT_HOME%\WorkcraftCore\bin;^
 %WORKCRAFT_HOME%\XmasPlugin\bin;^
 ;
 

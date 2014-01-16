@@ -5,7 +5,6 @@ model_plugin_dirs="
     CircuitPlugin 
     CpogsPlugin 
     DfsPlugin 
-    GatesPlugin 
     GraphPlugin 
     PetriNetPlugin 
     PolicyNetPlugin 
@@ -15,8 +14,8 @@ model_plugin_dirs="
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
 doc_dirs="help"
-core_dirs="Workcraft Workflow"
-core_files="LICENSE README workcraft.sh workcraft.bat"
+core_dirs="WorkcraftCore"
+core_files="LICENSE README workcraft workcraft.bat"
 
 src_dir="."
 distr_dir="../workcraft2"
