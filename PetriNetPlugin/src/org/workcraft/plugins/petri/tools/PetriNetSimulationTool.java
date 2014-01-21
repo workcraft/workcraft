@@ -351,31 +351,34 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean quietStepBack() {
+		boolean result = false;
+		String transitionId = null;
+		int traceDec = 0;
+		int branchDec = 0;
 		if (branchTrace != null && branchStep > 0) {
-			String transitionId = branchTrace.get(branchStep-1);
-			final Node transition = net.getNodeByReference(transitionId);
-			if (transition==null || !(transition instanceof Transition) || !net.isUnfireEnabled((Transition)transition)) {
-				return false;
+			transitionId = branchTrace.get(branchStep-1);
+			branchDec = 1;
+		} else if (trace != null && traceStep > 0) {
+			transitionId = trace.get(traceStep-1);
+			traceDec = 1;
+		}
+		Transition transition = null;
+		if (transitionId != null) {
+			final Node node = net.getNodeByReference(transitionId);
+			if (node != null && (node instanceof Transition)) {
+				transition = (Transition)node;
 			}
-			branchStep--;
-			net.unFire((Transition)transition);
-			if (branchStep==0 && trace!=null) {
+		}
+		if (transition != null && net.isUnfireEnabled(transition)) {
+			net.unFire(transition);
+			traceStep -= traceDec;
+			branchStep -= branchDec;
+			if (branchStep == 0 && trace != null) {
 				branchTrace=null;
 			}
-			return true;
-		} else {
-			if (trace == null || traceStep == 0) {
-				return false;
-			}
-			String transitionId = trace.get(traceStep-1);
-			final Node transition = net.getNodeByReference(transitionId);
-			if (transition == null || !(transition instanceof Transition) || !net.isUnfireEnabled((Transition)transition)) {
-				return false;
-			}
-			traceStep--;
-			net.unFire((Transition)transition);
+			result = true;
 		}
-		return true;
+		return result;
 	}
 
 	private boolean stepBack() {
@@ -385,28 +388,31 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean quietStep() {
+		boolean result = false;
+		String transitionId = null;
+		int traceInc = 0;
+		int branchInc = 0;
 		if (branchTrace != null && branchStep < branchTrace.size()) {
-			String transitionId = branchTrace.get(branchStep);
-			final Node transition = net.getNodeByReference(transitionId);
-			if (transition == null || !(transition instanceof Transition) || !net.isEnabled((Transition)transition)) {
-				return false;
-			}
-			net.fire((Transition)transition);
-			branchStep++;
-			return true;
-		} else {
-			if (trace == null || traceStep >= trace.size()) {
-				return false;
-			}
-			String transitionId = trace.get(traceStep);
-			final Node transition = net.getNodeByReference(transitionId);
-			if (transition == null || !(transition instanceof Transition) || !net.isEnabled((Transition)transition)) {
-				return false;
-			}
-			net.fire((Transition)transition);
-			traceStep++;
+			transitionId = branchTrace.get(branchStep);
+			branchInc = 1;
+		} else if (trace != null && traceStep < trace.size()) {
+			transitionId = trace.get(traceStep);
+			traceInc = 1;
 		}
-		return true;
+		Transition transition = null;
+		if (transitionId != null) {
+			final Node node = net.getNodeByReference(transitionId);
+			if (node != null && (node instanceof Transition)) {
+				transition = (Transition)node;
+			}
+		}
+		if (transition != null && net.isEnabled(transition)) {
+			net.fire(transition);
+			traceStep += traceInc;
+			branchStep += branchInc;
+			result = true;
+		}
+		return result;
 	}
 
 	private boolean step() {
@@ -432,16 +438,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private void reset() {
-		if (traceStep==0&&branchTrace==null) {
+		if (traceStep == 0 && branchTrace == null) {
 			trace = null;
 			traceStep = 0;
+			branchStep=0;
 		} else {
 			applyMarking(initialMarking);
 			traceStep = 0;
 			branchStep=0;
 			branchTrace=null;
 		}
-		if(timer!=null) 	{
+		if (timer != null) 	{
 			timer.stop();
 			timer = null;
 		}
