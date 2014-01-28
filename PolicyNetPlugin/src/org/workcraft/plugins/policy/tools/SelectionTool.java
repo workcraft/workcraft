@@ -20,17 +20,10 @@ import org.workcraft.util.GUI;
 
 public class SelectionTool extends PetriNetSelectionTool {
 
-	public SelectionTool() {
-		super();
-	}
-
 	@Override
-	public void activated(GraphEditor editor) {
-		super.activated(editor);
-		createInterface();
-	}
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
 
-	private void createInterface() {
 		JPanel bundlePanel = new JPanel();
 		controlPanel.add(bundlePanel);
 		JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -38,7 +31,7 @@ public class SelectionTool extends PetriNetSelectionTool {
 		bundleButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionBundle();
+				selectionBundle(editor);
 			}
 		});
 		bundlePanel.add(bundleButton);
@@ -47,7 +40,7 @@ public class SelectionTool extends PetriNetSelectionTool {
 		unbundleButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionUnbundle();
+				selectionUnbundle(editor);
 			}
 		});
 		bundlePanel.add(unbundleButton);
@@ -66,19 +59,19 @@ public class SelectionTool extends PetriNetSelectionTool {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_B:
 				if (e.isShiftDown()) {
-					selectionUnbundle();
+					selectionUnbundle(e.getEditor());
 				} else {
-					selectionBundle();
+					selectionBundle(e.getEditor());
 				}
 				break;
 			}
 		}
-		getEditor().repaint();
+		e.getEditor().repaint();
 	}
 
-	protected Collection<VisualBundledTransition> getSelectedTransitions() {
+	protected Collection<VisualBundledTransition> getSelectedTransitions(final GraphEditor editor) {
 		Set<VisualBundledTransition> transitions = new HashSet<VisualBundledTransition>();
-		VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
+		VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
 		for (Node node : visualModel.getSelection()) {
 			if (node instanceof VisualBundledTransition) {
 				transitions.add((VisualBundledTransition)node);
@@ -87,20 +80,20 @@ public class SelectionTool extends PetriNetSelectionTool {
 		return transitions;
 	}
 
-	protected void selectionBundle() {
-		Collection<VisualBundledTransition> transitions = getSelectedTransitions();
+	protected void selectionBundle(final GraphEditor editor) {
+		Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
 		if (!transitions.isEmpty()) {
-			getEditor().getWorkspaceEntry().saveMemento();
-			VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
+			editor.getWorkspaceEntry().saveMemento();
+			VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
 			visualModel.bundleTransitions(transitions);
 		}
 	}
 
-	protected void selectionUnbundle() {
-		Collection<VisualBundledTransition> transitions = getSelectedTransitions();
+	protected void selectionUnbundle(final GraphEditor editor) {
+		Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
 		if (!transitions.isEmpty()) {
-			getEditor().getWorkspaceEntry().saveMemento();
-			VisualPolicyNet visualModel = (VisualPolicyNet)getEditor().getModel();
+			editor.getWorkspaceEntry().saveMemento();
+			VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
 			visualModel.unbundleTransitions(transitions);
 		}
 	}

@@ -98,7 +98,6 @@ public class SelectionTool extends AbstractTool {
 	private Rectangle2D selectionBox = null;
 
 	private boolean cancelInPlaceEdit = false;
-	private GraphEditor editor;
 
 	public SelectionTool() {
 		super();
@@ -119,7 +118,15 @@ public class SelectionTool extends AbstractTool {
 		return GUI.createIconFromSVG("images/icons/svg/select.svg");
 	}
 
-	private void createInterface() {
+	@Override
+	public JPanel getInterfacePanel() {
+		return interfacePanel;
+	}
+
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
+
 		interfacePanel = new JPanel(new BorderLayout());
 
 		controlPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
@@ -132,7 +139,7 @@ public class SelectionTool extends AbstractTool {
 		groupButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionGroup();
+				selectionGroup(editor);
 			}
 		});
 		groupPanel.add(groupButton);
@@ -141,7 +148,7 @@ public class SelectionTool extends AbstractTool {
 		ungroupButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionUngroup();
+				selectionUngroup(editor);
 			}
 		});
 		groupPanel.add(ungroupButton);
@@ -153,7 +160,7 @@ public class SelectionTool extends AbstractTool {
 		levelUpButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeLevelUp();
+				changeLevelUp(editor);
 			}
 		});
 		levelPanel.add(levelUpButton);
@@ -162,7 +169,7 @@ public class SelectionTool extends AbstractTool {
 		levelDownButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeLevelDown();
+				changeLevelDown(editor);
 			}
 		});
 		levelPanel.add(levelDownButton);
@@ -174,7 +181,7 @@ public class SelectionTool extends AbstractTool {
 		flipHorizontalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionFlipHorizontal();
+				selectionFlipHorizontal(editor);
 			}
 		});
 		flipPanel.add(flipHorizontalButton);
@@ -183,7 +190,7 @@ public class SelectionTool extends AbstractTool {
 		flipVerticalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionFlipVertical();
+				selectionFlipVertical(editor);
 			}
 		});
 		flipPanel.add(flipVerticalButton);
@@ -195,7 +202,7 @@ public class SelectionTool extends AbstractTool {
 		rotateClockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionRotateClockwise();
+				selectionRotateClockwise(editor);
 			}
 		});
 		rotatePanel.add(rotateClockwiseButton);
@@ -204,34 +211,21 @@ public class SelectionTool extends AbstractTool {
 		rotateCounterclockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionRotateCounterclockwise();
+				selectionRotateCounterclockwise(editor);
 			}
 		});
 		rotatePanel.add(rotateCounterclockwiseButton);
 	}
 
 	@Override
-	public JPanel getInterfacePanel() {
-		return interfacePanel;
-	}
-
-	@Override
-	public void activated(GraphEditor editor) {
-		this.editor = editor;
+	public void activated(final GraphEditor editor) {
+		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
-		createInterface();
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
-	}
-
-	public GraphEditor getEditor() {
-		if (editor == null) {
-			throw new RuntimeException("The editor is undefiend for selection tool!");
-		}
-		return editor;
 	}
 
 	@Override
@@ -254,7 +248,7 @@ public class SelectionTool extends AbstractTool {
 					if (model.getCurrentLevel() instanceof VisualGroup) {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
 						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
-							changeLevelUp();
+							changeLevelUp(e.getEditor());
 						}
 					}
 				} else {
@@ -265,7 +259,7 @@ public class SelectionTool extends AbstractTool {
 			} else {
 				if (e.getClickCount() > 1) {
 					if (node instanceof VisualGroup) {
-						changeLevelDown();
+						changeLevelDown(e.getEditor());
 					} else if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
 						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
@@ -294,7 +288,7 @@ public class SelectionTool extends AbstractTool {
 		if(drag==DRAG_MOVE) {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			selectionOffset(p2.getX()-p1.getX(), p2.getY()-p1.getY());
+			selectionOffset(e.getEditor(), p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		} else if(drag==DRAG_SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
@@ -340,14 +334,14 @@ public class SelectionTool extends AbstractTool {
 				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
 					drag = DRAG_MOVE;
-					getEditor().getWorkspaceEntry().captureMemento();
+					e.getEditor().getWorkspaceEntry().captureMemento();
 					if (hitNode != null && !model.getSelection().contains(hitNode)) {
 						e.getModel().select(hitNode);
 					}
 					Movable node = (Movable) hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
 					Point2D pSnap = e.getEditor().snap(pos);
-					selectionOffset(pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
+					selectionOffset(e.getEditor(), pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
 					snapOffset = new Point2D.Double(pSnap.getX()-e.getStartPosition().getX(), pSnap.getY()-e.getStartPosition().getY());
 				} else {
 					// do nothing if pressed on a node with modifiers
@@ -416,30 +410,30 @@ public class SelectionTool extends AbstractTool {
 				cancelDrag(e.getEditor());
 				notClick1 = true;
 			} else {
-				selectionCancel();
+				selectionCancel(e.getEditor());
 			}
 			break;
 		case KeyEvent.VK_PAGE_UP:
-			changeLevelUp();
+			changeLevelUp(e.getEditor());
 			break;
 		case KeyEvent.VK_PAGE_DOWN:
-			changeLevelDown();
+			changeLevelDown(e.getEditor());
 			break;
 		}
 
 		if (!e.isCtrlDown() && !e.isShiftDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
-				selectionOffset(-1, 0);
+				selectionOffset(e.getEditor(), -1, 0);
 				break;
 			case KeyEvent.VK_RIGHT:
-				selectionOffset(1, 0);
+				selectionOffset(e.getEditor(), 1, 0);
 				break;
 			case KeyEvent.VK_UP:
-				selectionOffset(0, -1);
+				selectionOffset(e.getEditor(), 0, -1);
 				break;
 			case KeyEvent.VK_DOWN:
-				selectionOffset(0, 1);
+				selectionOffset(e.getEditor(), 0, 1);
 				break;
 			}
 		}
@@ -448,23 +442,23 @@ public class SelectionTool extends AbstractTool {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
 				if (e.isShiftDown()) {
-					selectionUngroup();
+					selectionUngroup(e.getEditor());
 				} else {
-					selectionGroup();
+					selectionGroup(e.getEditor());
 				}
 				break;
 			case KeyEvent.VK_F:
 				if (e.isShiftDown()) {
-					selectionFlipVertical();
+					selectionFlipVertical(e.getEditor());
 				} else {
-					selectionFlipHorizontal();
+					selectionFlipHorizontal(e.getEditor());
 				}
 				break;
 			case KeyEvent.VK_R:
 				if (e.isShiftDown()) {
-					selectionRotateCounterclockwise();
+					selectionRotateCounterclockwise(e.getEditor());
 				} else {
-					selectionRotateClockwise();
+					selectionRotateClockwise(e.getEditor());
 				}
 				break;
 			}
@@ -484,15 +478,15 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator(){
 
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node == getEditor().getModel().getCurrentLevel()) {
+				if(node == editor.getModel().getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
-				if(node == getEditor().getModel().getRoot()) {
+				if(node == editor.getModel().getRoot()) {
 					return new Decoration(){
 						@Override
 						public Color getColorisation() {
@@ -524,7 +518,7 @@ public class SelectionTool extends AbstractTool {
 					}
 				}
 
-				if(getEditor().getModel().getSelection().contains(node)) {
+				if(editor.getModel().getSelection().contains(node)) {
 					return selectedDecoration;
 				} else {
 					return null;
@@ -598,26 +592,26 @@ public class SelectionTool extends AbstractTool {
 		});
 	}
 
-	protected void changeLevelDown() {
-		VisualModel model = getEditor().getModel();
+	protected void changeLevelDown(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		Collection<Node> selection = model.getSelection();
 		if (selection.size() == 1) {
 			Node node = selection.iterator().next();
 			if(node instanceof Container) {
 				model.setCurrentLevel((Container)node);
-				getEditor().repaint();
+				editor.repaint();
 			}
 		}
 	}
 
-	protected void changeLevelUp() {
-		VisualModel model = getEditor().getModel();
+	protected void changeLevelUp(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		Container level = model.getCurrentLevel();
 		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
 		if (parent != null) {
 			model.setCurrentLevel(parent);
 			model.addToSelection(level);
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
@@ -630,8 +624,8 @@ public class SelectionTool extends AbstractTool {
 		);
 	}
 
-	private void selectionOffset(double dx, double dy) {
-		VisualModel model = getEditor().getModel();
+	private void selectionOffset(final GraphEditor editor, double dx, double dy) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
 			// Note that no memento should be saved until the drug action is complete
 			for(Node node : model.getSelection()){
@@ -643,65 +637,65 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	protected void selectionCancel() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionCancel(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getMainWindow().selectNone();
-			getEditor().repaint();
+			editor.getMainWindow().selectNone();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionGroup() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionGroup(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			model.groupSelection();
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionUngroup() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionUngroup(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionRotateClockwise() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionRotateClockwise(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionRotateCounterclockwise() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionRotateCounterclockwise(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionFlipHorizontal() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionFlipHorizontal(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, -1, 1);
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 
-	protected void selectionFlipVertical() {
-		VisualModel model = getEditor().getModel();
+	protected void selectionFlipVertical(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
-			getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, 1, -1);
-			getEditor().repaint();
+			editor.repaint();
 		}
 	}
 

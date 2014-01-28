@@ -22,6 +22,7 @@
 package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -35,11 +36,13 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.util.ColorGenerator;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualTransition extends VisualComponent {
+	private ColorGenerator tokenColorGenerator = null;
 
 	public VisualTransition(Transition transition) {
 		this(transition, true, true, true);
@@ -71,6 +74,14 @@ public class VisualTransition extends VisualComponent {
 
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)	{
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
+	}
+
+	public ColorGenerator getTokenColorGenerator() {
+		return this.tokenColorGenerator;
+	}
+
+	public void setTokenColorGenerator(ColorGenerator value) {
+		this.tokenColorGenerator = value;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 @SuppressWarnings("serial")
@@ -19,12 +20,16 @@ public class ToolInterfaceWindow extends JPanel {
 		add(content, BorderLayout.CENTER);
 	}
 
-	public void setTool(GraphEditorTool tool) {
-		if (tool==null || tool.getInterfacePanel() == null)
-			content.setViewportView(new DisabledPanel());
-		else
-			content.setViewportView(tool.getInterfacePanel());
-
+	public void setTool(GraphEditorTool tool, GraphEditor editor) {
+		JPanel interfacePanel = null;
+		if (tool != null) {
+			tool.createInterfacePanel(editor);
+			interfacePanel = tool.getInterfacePanel();
+		}
+		if (interfacePanel == null) {
+			interfacePanel = new DisabledPanel();
+		}
+		content.setViewportView(interfacePanel);
 		content.revalidate();
 	}
 }

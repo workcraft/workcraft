@@ -59,8 +59,8 @@ public class ConnectionTool extends AbstractTool {
 	private static Color highlightColor = new Color(99, 130, 191).brighter();
 
 	public ConnectionTool () {
-
 	}
+
 	public ConnectionTool (boolean forbidConnectingArcs, boolean forbidSelfLoops) {
 		this.forbidConnectingArcs = forbidConnectingArcs;
 		this.forbidSelfLoops = forbidSelfLoops;
@@ -91,9 +91,8 @@ public class ConnectionTool extends AbstractTool {
 		editor.getWorkspaceEntry().setCanModify(true);
 	}
 
-	private void updateState(GraphEditorMouseEvent e) {
-		mousePosition = e.getPosition();
-		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, e.getModel());
+	private void updateState(GraphEditor editor) {
+		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, editor.getModel());
 		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
 			currentNode = node;
 			if (currentNode != firstNode) {
@@ -104,14 +103,14 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	@Override
-	public void activated(GraphEditor editor) {
+	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
 	}
 
 
 	@Override
-	public void deactivated(GraphEditor editor) {
+	public void deactivated(final GraphEditor editor) {
 		super.deactivated(editor);
 		resetState(editor);
 	}
@@ -141,13 +140,15 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		updateState(e);
+		mousePosition = e.getPosition();
+		updateState(e.getEditor());
 		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		updateState(e);
+		mousePosition = e.getPosition();
+		updateState(e.getEditor());
 		if ((e.getButton() == MouseEvent.BUTTON1) && (currentNode != null)) {
 			if (firstNode == null) {
 				firstNode = currentNode;
@@ -205,7 +206,7 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {

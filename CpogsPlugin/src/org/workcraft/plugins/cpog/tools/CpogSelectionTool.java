@@ -33,17 +33,9 @@ public class CpogSelectionTool extends SelectionTool {
 
 	private JTextArea expressionText;
 
-	public CpogSelectionTool () {
-		super();
-	}
-
 	@Override
-	public void activated(GraphEditor editor) {
-		super.activated(editor);
-		createInterface();
-	}
-
-	private void createInterface() {
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
 		expressionText = new JTextArea();
 		expressionText.setLineWrap(false);
 		expressionText.setEditable(true);
@@ -56,7 +48,7 @@ public class CpogSelectionTool extends SelectionTool {
 		btnInsert.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				insertExpression(expressionText.getText(), true);
+				insertExpression(editor, expressionText.getText(), true);
 			}
 		});
 		buttonPanel.add(btnInsert);
@@ -65,7 +57,7 @@ public class CpogSelectionTool extends SelectionTool {
 		btnOverlay.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				insertExpression(expressionText.getText(), false);
+				insertExpression(editor, expressionText.getText(), false);
 			}
 		});
 		buttonPanel.add(btnOverlay);
@@ -74,8 +66,8 @@ public class CpogSelectionTool extends SelectionTool {
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	private void insertExpression(final String text, final boolean createDuplicates) {
-		WorkspaceEntry we = getEditor().getWorkspaceEntry();
+	private void insertExpression(final GraphEditor editor, final String text, final boolean createDuplicates) {
+		WorkspaceEntry we = editor.getWorkspaceEntry();
 		final VisualCPOG visualCpog = (VisualCPOG)we.getModelEntry().getVisualModel();
 		we.captureMemento();
 
@@ -127,7 +119,7 @@ public class CpogSelectionTool extends SelectionTool {
 		}
 		CpogConnector cc = new CpogConnector(visualCpog);
 		f.accept(cc);
-		getEditor().requestFocus();
+		editor.requestFocus();
 
 		// TODO: fix the bug after exception; find out if the line below is needed
 		//       I think it is  fixed now (by not keeping a reference to the visualModel in the activated method)

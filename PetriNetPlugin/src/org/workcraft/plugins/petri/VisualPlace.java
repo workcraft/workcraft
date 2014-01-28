@@ -39,6 +39,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -46,10 +47,10 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
-
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
+
 
 	public VisualPlace(Place place) {
 		super(place);
@@ -103,13 +104,16 @@ public class VisualPlace extends VisualComponent {
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
-		Place p = (Place)getReferencedComponent();
-		int tokens = p.getTokens();
+		Place place = (Place)getReferencedComponent();
+		int tokenCount = place.getTokens();
+		Color tokenColor = getTokenColor();
 		if (d instanceof PlaceDecoration) {
-			tokens = ((PlaceDecoration)d).getTokens();
+			tokenCount = ((PlaceDecoration)d).getTokens();
+			tokenColor = ((PlaceDecoration)d).getTokenColor();
 		}
-		drawCapacity(r, p.getCapacity());
-		drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, size, strokeWidth, getTokenColor());
+		drawCapacity(r, place.getCapacity());
+		drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, size, strokeWidth, tokenColor);
+
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
 	}
@@ -127,23 +131,23 @@ public class VisualPlace extends VisualComponent {
 		}
 	}
 
-	public static void drawTokens(DrawRequest r, int tokens, double size, double separation,
+	public static void drawTokens(DrawRequest r, int count, double size, double separation,
 			double diameter, double borderWidth, Color color) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 		Shape shape;
-		if (tokens == 1) {
+		if (count == 1) {
 			shape = new Ellipse2D.Double(-size / 2, -size / 2,	size, size);
 			g.setColor(Coloriser.colorise(color, d.getColorisation()));
 			g.fill(shape);
 		} else {
-			if (tokens > 1 && tokens < 8) {
-				double alpha = Math.PI / tokens;
-				if (tokens == 7) alpha = Math.PI / 6;
+			if (count > 1 && count < 8) {
+				double alpha = Math.PI / count;
+				if (count == 7) alpha = Math.PI / 6;
 				double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
 				double step = radius / Math.sin(alpha);
 				radius -= separation;
-				for(int i = 0; i < tokens; i++) 	{
+				for(int i = 0; i < count; i++) 	{
 					if (i == 6) {
 						shape = new Ellipse2D.Double( -radius, -radius, radius * 2, radius * 2);
 					} else {
@@ -155,8 +159,8 @@ public class VisualPlace extends VisualComponent {
 					g.setColor(Coloriser.colorise(color, d.getColorisation()));
 					g.fill(shape);
 				}
-			} else if (tokens > 7)	{
-				String tokenString = Integer.toString(tokens);
+			} else if (count > 7)	{
+				String tokenString = Integer.toString(count);
 				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
 				Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
 				g.setFont(superFont);
@@ -181,5 +185,7 @@ public class VisualPlace extends VisualComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, "token color"));
 	}
+
 }

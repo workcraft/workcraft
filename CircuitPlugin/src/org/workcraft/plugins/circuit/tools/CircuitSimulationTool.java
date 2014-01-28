@@ -8,6 +8,7 @@ import javax.swing.JButton;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -18,7 +19,6 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -27,30 +27,29 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitSimulationTool extends STGSimulationTool {
-	VisualCircuit circuit;
-	GraphEditor editor;
 	JButton copyInitButton;
 
 	@Override
-	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanModify(false);
-		editor.getWorkspaceEntry().captureMemento();
-		circuit = (VisualCircuit) editor.getModel();
-		visualNet = STGGenerator.generate(circuit);
-		net = (PetriNetModel) visualNet.getMathModel();
-		initialMarking = readMarking();
-		traceStep = 0;
-		branchTrace = null;
-		branchStep = 0;
-		this.editor = editor;
-		initialiseStateMap();
-		update();
+	public VisualModel getUnderlyingModel(VisualModel model) {
+		return STGGenerator.generate((VisualCircuit)model);
 	}
 
 	@Override
-	public void update() {
-		super.update();
-		editor.repaint();
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
+		copyInitButton = new JButton("Copy init");
+		copyInitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (VisualContact vc : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
+					Contact c = (Contact) vc.getReferencedComponent();
+					if (!vc.getReferencedTransitions().isEmpty()) {
+						c.setInitOne(vc.getReferencedOnePlace().getTokens() == 1);
+					}
+				}
+			}
+		});
+		controlPanel.add(copyInitButton);
 	}
 
 	// return first enabled transition
@@ -80,33 +79,6 @@ public class CircuitSimulationTool extends STGSimulationTool {
 		return st;
 	}
 
-	public CircuitSimulationTool() {
-		super();
-		createInterface();
-
-	}
-
-	private void createInterface() {
-		copyInitButton = new JButton("Copy init");
-		copyInitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				copyInit();
-			}
-		});
-		controlPanel.add(copyInitButton);
-	}
-
-	private void copyInit() {
-		for (VisualContact vc : Hierarchy.getDescendantsOfType(
-				circuit.getRoot(), VisualContact.class)) {
-			Contact c = (Contact) vc.getReferencedComponent();
-			if (!vc.getReferencedTransitions().isEmpty()) {
-				c.setInitOne(vc.getReferencedOnePlace().getTokens() == 1);
-			}
-		}
-	}
-
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
@@ -121,13 +93,12 @@ public class CircuitSimulationTool extends STGSimulationTool {
 			return;
 		SignalTransition st = isContactExcited((VisualContact) node);
 		if (st != null) {
-			executeTransition(st);
-			update();
+			executeTransition(e.getEditor(), st);
 		}
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {

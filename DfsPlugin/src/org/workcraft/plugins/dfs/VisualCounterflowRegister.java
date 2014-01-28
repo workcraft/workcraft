@@ -20,7 +20,7 @@ import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName ("Counterflow register")
 @SVGIcon("images/icons/svg/dfs-counterflow_register.svg")
-public class VisualCounterflowRegister extends VisualDelayComponent {
+public class VisualCounterflowRegister extends VisualAbstractRegister {
 
 	public VisualCounterflowRegister(CounterflowRegister register) {
 		super(register);
@@ -84,6 +84,8 @@ public class VisualCounterflowRegister extends VisualDelayComponent {
 		orTokenShape.lineTo(-dt, -dt);
 		orTokenShape.closePath();
 
+		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+		Color tokenColor = getTokenColor();
 		boolean forwardExcited = false;
 		boolean backwardExcited = false;
 		boolean orMarked = getReferencedCounterflowRegister().isOrMarked();
@@ -91,17 +93,14 @@ public class VisualCounterflowRegister extends VisualDelayComponent {
 		boolean andMarked = getReferencedCounterflowRegister().isAndMarked();
 		boolean andMarkedExcited = false;
 		if (d instanceof CounterflowRegisterDecoration) {
+			defaultColor = getForegroundColor();
+			tokenColor = ((CounterflowRegisterDecoration)d).getTokenColor();
 			forwardExcited = ((CounterflowRegisterDecoration)d).isForwardExcited();
 			backwardExcited = ((CounterflowRegisterDecoration)d).isBackwardExcited();
 			orMarked = ((CounterflowRegisterDecoration)d).isOrMarked();
-			orMarkedExcited = ((CounterflowRegisterDecoration)d).isOrMarkedExcited();
+			orMarkedExcited = ((CounterflowRegisterDecoration)d).isOrExcited();
 			andMarked = ((CounterflowRegisterDecoration)d).isAndMarked();
-			andMarkedExcited = ((CounterflowRegisterDecoration)d).isAndMarkedExcited();
-		}
-
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		if (d instanceof CounterflowRegisterDecoration) {
-			defaultColor = getForegroundColor();
+			andMarkedExcited = ((CounterflowRegisterDecoration)d).isAndExcited();
 		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -132,20 +131,12 @@ public class VisualCounterflowRegister extends VisualDelayComponent {
 		g.draw(shape);
 
 		if (orMarked) {
-			if (orMarkedExcited) {
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			} else {
-				g.setColor(defaultColor);
-			}
+			g.setColor(tokenColor);
 			g.fill(orTokenShape);
 		}
 
 		if (andMarked) {
-			if (andMarkedExcited) {
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			} else {
-				g.setColor(defaultColor);
-			}
+			g.setColor(tokenColor);
 			g.fill(andTokenShape);
 		}
 

@@ -43,6 +43,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.CieColorUtils;
 import org.workcraft.util.Pair;
 
 @DisplayName ("Bundle")

@@ -186,6 +186,10 @@ public class WorkspaceEntry implements ObservableState {
 		updateActionState();
 	}
 
+	public boolean getCanModify() {
+		return canModify;
+	}
+
 	public void captureMemento() {
 		capturedMemento = framework.save(modelEntry);
 		if (changed == false) {

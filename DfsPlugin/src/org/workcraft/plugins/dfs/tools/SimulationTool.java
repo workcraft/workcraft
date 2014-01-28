@@ -9,6 +9,7 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -33,7 +34,6 @@ import org.workcraft.plugins.dfs.stg.CounterflowRegisterStg;
 import org.workcraft.plugins.dfs.stg.LogicStg;
 import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -41,37 +41,24 @@ import org.workcraft.plugins.stg.tools.STGSimulationTool;
 import org.workcraft.util.Func;
 
 public class SimulationTool extends STGSimulationTool {
-	private VisualDfs dfs;
-	private GraphEditor editor;
 	private StgGenerator generator;
 
 	@Override
 	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanModify(false);
-		// editor.getWorkspaceEntry().captureMemento(); // saving-restoring memento not needed in this tool
-		dfs = (VisualDfs)editor.getModel();
-		generator = new StgGenerator(dfs);
-		visualNet = generator.getSTG();
-		net = (PetriNetModel)visualNet.getMathModel();
-		initialMarking = readMarking();
-		traceStep = 0;
-		branchTrace = null;
-		branchStep = 0;
-		this.editor = editor;
-		initialiseStateMap();
+		super.activated(editor);
 		statusPanel.setVisible(false);
-		update();
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
-		// editor.getWorkspaceEntry().cancelMemento(); // saving-restoring memento not needed in this tool
+		super.deactivated(editor);
+		this.generator = null;
 	}
 
 	@Override
-	public void update() {
-		super.update();
-		editor.repaint();
+	public VisualModel getUnderlyingModel(VisualModel model) {
+		generator = new StgGenerator((VisualDfs)model);
+		return generator.getSTG();
 	}
 
 	@Override
@@ -133,12 +120,12 @@ public class SimulationTool extends STGSimulationTool {
 		}
 
 		if (transition != null) {
-			executeTransition(transition);
+			executeTransition(e.getEditor(), transition);
 		}
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
@@ -206,6 +193,11 @@ public class SimulationTool extends STGSimulationTool {
 						@Override
 						public boolean isExcited() {
 							return (getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF)) != null);
+						}
+
+						@Override
+						public Color getTokenColor() {
+							return rstg.M1.getTokenColor();
 						}
 					};
 				}
@@ -289,13 +281,18 @@ public class SimulationTool extends STGSimulationTool {
 						}
 
 						@Override
-						public boolean isOrMarkedExcited() {
+						public boolean isOrExcited() {
 							return (getExcitedTransitionOfCollection(rstg.getOrTransitions()) != null);
 						}
 
 						@Override
-						public boolean isAndMarkedExcited() {
+						public boolean isAndExcited() {
 							return (getExcitedTransitionOfCollection(rstg.getAndTransitions()) != null);
+						}
+
+						@Override
+						public Color getTokenColor() {
+							return rstg.orM1.getTokenColor();
 						}
 					};
 				}
@@ -346,6 +343,11 @@ public class SimulationTool extends STGSimulationTool {
 						@Override
 						public boolean isFalseExcited() {
 							return (getExcitedTransitionOfCollection(rstg.getFalseTransitions()) != null);
+						}
+
+						@Override
+						public Color getTokenColor() {
+							return rstg.M1.getTokenColor();
 						}
 					};
 				}

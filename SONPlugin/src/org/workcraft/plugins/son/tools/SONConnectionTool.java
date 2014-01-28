@@ -58,13 +58,16 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 
 	private static Color highlightColor = new Color(99, 130, 191).brighter();
 
-	public SONConnectionTool (){
+	@Override
+	public void activated(final GraphEditor editor) {
+		super.activated(editor);
 		lastMouseCoords = new Point2D.Double();
-		createInterface();
 	}
 
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
 
-	private void createInterface(){
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
 
@@ -252,7 +255,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 
 			@Override

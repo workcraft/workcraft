@@ -41,7 +41,7 @@ import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
 @SVGIcon("images/icons/svg/dfs-register.svg")
-public class VisualRegister extends VisualDelayComponent {
+public class VisualRegister extends VisualAbstractRegister {
 
 	public VisualRegister(Register register) {
 		super(register);
@@ -82,18 +82,19 @@ public class VisualRegister extends VisualDelayComponent {
 		Shape innerShape = new Rectangle2D.Double(-w2 + dx, -h2 + dy, w - dx - dx, h - dy - dy);
 		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
+		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+		Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
 		boolean marked = getReferencedRegister().isMarked();
 		boolean excited = false;
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof RegisterDecoration) {
+			defaultColor = getForegroundColor();
+			tokenColor = ((RegisterDecoration)d).getTokenColor();
 			marked = ((RegisterDecoration)d).isMarked();
 			excited = ((RegisterDecoration)d).isExcited();
-			defaultColor = getForegroundColor();
 		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
-
 		if (excited) {
 			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		} else {
@@ -104,6 +105,7 @@ public class VisualRegister extends VisualDelayComponent {
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
 		if (marked) {
+			g.setColor(tokenColor);
 			g.fill(tokenShape);
 		}
 

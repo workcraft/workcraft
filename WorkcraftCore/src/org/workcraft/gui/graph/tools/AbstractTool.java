@@ -26,68 +26,99 @@ import java.awt.Graphics2D;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 
 public abstract class AbstractTool implements GraphEditorTool {
-	public void activated (GraphEditor editor) {
+
+	@Override
+	public void activated(final GraphEditor editor) {
 	}
 
-	public void deactivated (GraphEditor editor) {
+	@Override
+	public void deactivated(final GraphEditor editor) {
 	}
 
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+	@Override
+	public VisualModel getUnderlyingModel(VisualModel model) {
+		return model;
 	}
 
-	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
 	}
 
+	@Override
+	public JPanel getInterfacePanel() {
+		return null;
+	}
+
+	@Override
+	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
+	}
+
+	@Override
+	public void drawInUserSpace(final GraphEditor editor, Graphics2D g) {
+	}
+
+	@Override
 	public void keyPressed(GraphEditorKeyEvent event) {
 	}
 
+	@Override
 	public void keyReleased(GraphEditorKeyEvent event) {
 	}
 
+	@Override
 	public void keyTyped(GraphEditorKeyEvent event) {
 	}
 
+	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void mouseEntered(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void mouseExited(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void mouseReleased(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void startDrag(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public void finishDrag(GraphEditorMouseEvent e) {
 	}
 
+	@Override
 	public boolean isDragging() {
 		return false;
 	}
 
+	@Override
 	public int getHotKeyCode() {
 		return -1; // undefined hotkey
 	}
 
+	@Override
 	public Icon getIcon() {
 		return null;
 	}
 
-	public JPanel getInterfacePanel() {
-		return null;
-	}
 }

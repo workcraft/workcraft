@@ -32,10 +32,12 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualImplicitPlaceArc extends VisualConnection {
@@ -43,10 +45,19 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	private MathConnection refCon1;
 	private MathConnection refCon2;
 
+	private static Color[] TokenColors = {
+		Color.RED, Color.GREEN, Color.BLUE,
+		Color.RED.brighter(), Color.GREEN.brighter(), Color.BLUE.brighter(),
+		Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker() };
+
 	private static double tokenSpaceSize = 0.8;
 	private static double singleTokenSize = tokenSpaceSize / 1.9;
 	private static double multipleTokenSeparation = 0.0125;
-	private static Color tokenColor = Color.BLACK;
+
+	protected Color tokenColor = CommonVisualSettings.getBorderColor();
+	private boolean isTokenColorGenerator = false;
+	private int tokenColorIndex = 0;
+
 
 	public VisualImplicitPlaceArc () {
 		super();
@@ -81,6 +92,16 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 			}
 			public Integer getter(VisualImplicitPlaceArc object) {
 				return object.getImplicitPlace().getCapacity();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
+				this, "Token color", Color.class) {
+			public void setter(VisualImplicitPlaceArc object, Color value) {
+				object.setTokenColor(value);
+			}
+			public Color getter(VisualImplicitPlaceArc object) {
+				return object.getTokenColor();
 			}
 		});
 	}
@@ -130,6 +151,36 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		ret.add(refCon1);
 		ret.add(refCon2);
 		return ret;
+	}
+
+	public boolean isTokenColorGenerator() {
+		return this.isTokenColorGenerator;
+	}
+
+	public void setTokenColorGenerator(boolean value) {
+		this.isTokenColorGenerator = value;
+	}
+
+	public void renewTokenColor(boolean random) {
+		int nextTokenColorIndex = 0;
+		if (!random) {
+			nextTokenColorIndex = (tokenColorIndex+1) % TokenColors.length;
+		} else {
+			do {
+				nextTokenColorIndex = (int)(Math.random() * TokenColors.length);
+			} while (nextTokenColorIndex == tokenColorIndex);
+		}
+		tokenColorIndex = nextTokenColorIndex;
+		setTokenColor(TokenColors[tokenColorIndex]);
+	}
+
+	public Color getTokenColor() {
+		return tokenColor;
+	}
+
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, "token color"));
 	}
 
 }

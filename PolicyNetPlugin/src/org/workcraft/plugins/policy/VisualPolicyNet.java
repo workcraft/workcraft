@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.policy;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,17 +40,18 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
+import org.workcraft.util.CieColorUtils;
+import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Policy Net")
 @CustomTools ( PolicyNetToolProvider.class )
 public class VisualPolicyNet extends VisualPetriNet {
-	private int bundleColorIndex = 0;
+	private final ColorGenerator bundleColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(5, 5, 5, 0.5f, 1.0f));
 
 	public VisualPolicyNet(PolicyNet model) throws VisualModelInstantiationException {
 		this(model, null);
@@ -141,10 +141,6 @@ public class VisualPolicyNet extends VisualPetriNet {
 		}
 	}
 
-	public Collection<VisualPlace> getVisualPlaces() {
-		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
-	}
-
 	public Collection<VisualBundledTransition> getVisualBundledTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualBundledTransition.class);
 	}
@@ -157,24 +153,11 @@ public class VisualPolicyNet extends VisualPetriNet {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualLocality.class);
 	}
 
-	private Color getNextBundleColor() {
-		bundleColorIndex++;
-		int ka = 10;
-		int kb = 10;
-		float dL = 1.0f / 10;
-		float da = 1.0f / ka;
-		float db = 1.0f / kb;
-		float L = 1.0f - dL * (bundleColorIndex / ka / kb);
-		float a = da * (bundleColorIndex % ka);
-		float b = db * (bundleColorIndex / ka % kb);
-		return CieColorUtils.getLabColor(L, a, b);
-	}
-
 	public VisualBundle createVisualBundle() {
 		Bundle bundle = getPolicyNet().createBundle();
 		VisualBundle visualBundle = new VisualBundle(bundle);
 		getRoot().add(visualBundle);
-		visualBundle.setColor(getNextBundleColor());
+		visualBundle.setColor(bundleColorGenerator.updateColor());
 		return visualBundle;
 	}
 

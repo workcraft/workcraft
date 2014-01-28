@@ -31,16 +31,16 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class STGSettings implements SettingsPage {
-	private final static String keySettings = "StgSettings";
-	private final static String keyInputColor = "inputColor";
-	private final static String keyOutputColor = "outputColor";
-	private final static String keyInternalColor = "internalColor";
-	private final static String keyDummyColor = "dummyColor";
+	private static final String prefix = "StgSettings";
+	private static final String keyInputColor = prefix + ".inputColor";
+	private static final String keyOutputColor = prefix + ".outputColor";
+	private static final String keyInternalColor = prefix + ".internalColor";
+	private static final String keyDummyColor = prefix + ".dummyColor";
 
-	private final static Color defaultInputColor = Color.RED.darker();
-	private final static Color defaultOutputColor = Color.BLUE.darker();
-	private final static Color defaultInternalColor = Color.GREEN.darker();
-	private final static Color defaultDummyColor = Color.BLACK.darker();
+	private static final Color defaultInputColor = Color.RED.darker();
+	private static final Color defaultOutputColor = Color.BLUE.darker();
+	private static final Color defaultInternalColor = Color.GREEN.darker();
+	private static final Color defaultDummyColor = Color.BLACK.darker();
 
 	private static LinkedList<PropertyDescriptor> properties;
 	private static Color inputColor = defaultInputColor;
@@ -99,18 +99,18 @@ public class STGSettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		setInputColor(config.getColor(keySettings + "." + keyInputColor, defaultInputColor));
-		setOutputColor(config.getColor(keySettings + "." + keyOutputColor, defaultOutputColor));
-		setInternalColor(config.getColor(keySettings + "." + keyInternalColor, defaultInternalColor));
-		setDummyColor(config.getColor(keySettings + "." + keyDummyColor, defaultDummyColor));
+		setInputColor(config.getColor(keyInputColor, defaultInputColor));
+		setOutputColor(config.getColor(keyOutputColor, defaultOutputColor));
+		setInternalColor(config.getColor(keyInternalColor, defaultInternalColor));
+		setDummyColor(config.getColor(keyDummyColor, defaultDummyColor));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.setColor(keySettings + "." + keyInputColor, getInputColor());
-		config.setColor(keySettings + "." + keyOutputColor, getOutputColor());
-		config.setColor(keySettings + "." + keyInternalColor, getInternalColor());
-		config.setColor(keySettings + "." + keyDummyColor, getDummyColor());
+		config.setColor(keyInputColor, getInputColor());
+		config.setColor(keyOutputColor, getOutputColor());
+		config.setColor(keyInternalColor, getInternalColor());
+		config.setColor(keyDummyColor, getDummyColor());
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class STGSettings implements SettingsPage {
 	}
 
 	public static void setInputColor(Color value) {
-		STGSettings.inputColor = value;
+		inputColor = value;
 	}
 
 	public static Color getInputColor() {
@@ -132,7 +132,7 @@ public class STGSettings implements SettingsPage {
 	}
 
 	public static void setOutputColor(Color value) {
-		STGSettings.outputColor = value;
+		outputColor = value;
 	}
 
 	public static Color getOutputColor() {
@@ -140,7 +140,7 @@ public class STGSettings implements SettingsPage {
 	}
 
 	public static void setInternalColor(Color value) {
-		STGSettings.internalColor = value;
+		internalColor = value;
 	}
 
 	public static Color getInternalColor() {
@@ -148,7 +148,7 @@ public class STGSettings implements SettingsPage {
 	}
 
 	public static void setDummyColor(Color value) {
-		STGSettings.dummyColor = value;
+		dummyColor = value;
 	}
 
 	public static Color getDummyColor() {
