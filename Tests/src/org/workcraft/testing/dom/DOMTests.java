@@ -36,11 +36,13 @@ public class DOMTests {
 	public void Test1 () throws InvalidConnectionException {
 		PetriNet pn = new PetriNet();
 
-		Place p1 = pn.createPlace();
-		Place p2 = pn.createPlace();
+		Place p1 = new Place();
+		Place p2 = new Place();
+		Transition t1 = new Transition();
 
-		Transition t1 = pn.createTransition();
-
+		pn.add(p1);
+		pn.add(p2);
+		pn.add(t1);
 		Connection con1 = pn.connect(p1, t1);
 		Connection con2 = pn.connect(t1, p2);
 

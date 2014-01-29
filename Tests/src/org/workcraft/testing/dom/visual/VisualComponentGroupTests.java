@@ -270,7 +270,6 @@ public class VisualComponentGroupTests {
 
 		@Override
 		public Collection<MathNode> getMathReferences() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 

@@ -23,7 +23,7 @@ package org.workcraft.testing.serialisation.xml;
 
 import org.junit.Test;
 import org.workcraft.PluginProvider;
-import org.workcraft.plugins.layout.RandomLayout;
+import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.STGModelDescriptor;
@@ -42,7 +42,7 @@ public class STGSerialisationTests {
 
 		VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 
-		RandomLayout layout = new RandomLayout();
+		RandomLayoutTool layout = new RandomLayoutTool();
 		WorkspaceEntry we = new WorkspaceEntry(null);
 		we.setModelEntry(new ModelEntry(new STGModelDescriptor(), stg));
 		layout.run(we);
@@ -65,8 +65,8 @@ public class STGSerialisationTests {
 		// deserialise
 		XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);
 
-		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null);
-		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.referenceResolver);
+		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null, null);
+		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.references, mathResult.model);
 
 		SerialisationTestingUtils.compareNodes(stg.getRoot(), visualResult.model.getRoot());
 	}

@@ -25,7 +25,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Or extends BinaryBooleanFormula
 {
-	Or(BooleanFormula x, BooleanFormula y) {
+	public Or(BooleanFormula x, BooleanFormula y) {
 		super(x,y);
 	}
 

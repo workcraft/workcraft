@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
 
@@ -19,7 +18,7 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public boolean isWritable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -29,8 +28,8 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		throw new NotSupportedException();
-		//stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
+		//throw new NotSupportedException();
+		stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
 	}
 
 	@Override
@@ -46,5 +45,10 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public Class<?> getType() {
 		return int.class;
+	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
 	}
 }

@@ -5,24 +5,24 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainTask implements Task<MpsatChainResult> {
 	private final WorkspaceEntry we;
 	private final MpsatSettings settings;
 	private final Framework framework;
-	private STGModel model;
+	private PetriNetModel model;
 
 	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings, Framework framework) {
 		this.we = we;
@@ -31,7 +31,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		this.model = null;
 	}
 
-	public MpsatChainTask(STGModel model, MpsatSettings settings, Framework framework) {
+	public MpsatChainTask(PetriNetModel model, MpsatSettings settings, Framework framework) {
 		this.we = null;
 		this.model = model;
 		this.settings = settings;
@@ -42,7 +42,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		try {
 			if(model == null)
-				model = WorkspaceUtils.getAs(getWorkspaceEntry(), STGModel.class);
+				model = WorkspaceUtils.getAs(getWorkspaceEntry(), PetriNetModel.class);
 
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 
@@ -50,7 +50,10 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
 
 			File netFile = File.createTempFile("net", exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
+
+			ExportTask exportTask;
+
+			exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
 
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 

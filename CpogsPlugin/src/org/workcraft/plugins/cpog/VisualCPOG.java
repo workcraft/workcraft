@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.workcraft.Plugin;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
@@ -51,12 +50,10 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( CustomToolsProvider.class )
 public class VisualCPOG extends AbstractVisualModel
 {
-	private final class BooleanFormulaPropertyDescriptor implements
-			PropertyDescriptor {
+	private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
 		private final Node node;
 
-		private BooleanFormulaPropertyDescriptor(Node node)
-		{
+		private BooleanFormulaPropertyDescriptor(Node node) {
 			this.node = node;
 		}
 
@@ -66,8 +63,7 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 
 		@Override
-		public String getName()
-		{
+		public String getName() {
 			if (node instanceof VisualRhoClause) return "Function";
 			return "Condition";
 		}
@@ -78,22 +74,15 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 
 		@Override
-		public Object getValue() throws InvocationTargetException
-		{
+		public Object getValue() throws InvocationTargetException {
 			if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
 			if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
 			return FormulaToString.toString(((VisualArc)node).getCondition());
 		}
 
 		@Override
-		public boolean isWritable() {
-			return true;
-		}
-
-		@Override
 		public void setValue(Object value) throws InvocationTargetException {
-			try
-			{
+			try {
 				if (node instanceof VisualRhoClause) ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
 				else
 				if (node instanceof VisualArc) ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
@@ -102,6 +91,16 @@ public class VisualCPOG extends AbstractVisualModel
 			} catch (ParseException e) {
 				throw new InvocationTargetException(e);
 			}
+		}
+
+		@Override
+		public boolean isWritable() {
+			return true;
+		}
+
+		@Override
+		public boolean isCombinable() {
+			return true;
 		}
 	}
 
@@ -158,8 +157,7 @@ public class VisualCPOG extends AbstractVisualModel
 			VisualVertex v = (VisualVertex) first;
 			VisualVertex u = (VisualVertex) second;
 
-			Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
-			Hierarchy.getNearestContainer(v, u).add(new VisualArc(con, v, u));
+			connect(v, u);
 		}
 		else
 		{
@@ -182,7 +180,15 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 	}
 
-	private Collection<Node> getGroupableSelection()
+	public VisualArc connect(VisualVertex v, VisualVertex u)
+	{
+		Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
+		VisualArc arc = new VisualArc(con, v, u);
+		Hierarchy.getNearestContainer(v, u).add(arc);
+		return arc;
+	}
+
+	public Collection<Node> getGroupableSelection()
 	{
 		HashSet<Node> result = new HashSet<Node>();
 
@@ -223,14 +229,38 @@ public class VisualCPOG extends AbstractVisualModel
 		select(group);
 	}
 
+	// TODO: Add safe versions of these methods; see getVertices(Container root).
+	@Deprecated
 	public Collection<VisualScenario> getGroups()
 	{
 		return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
 	}
 
+	@Deprecated
 	public Collection<VisualVariable> getVariables()
 	{
 		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
+	}
+
+	@Deprecated
+	public Collection<VisualVertex> getVertices()
+	{
+		return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
+	}
+
+	public Collection<VisualVertex> getVertices(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualVertex.class);
+	}
+
+	public Collection<VisualVariable> getVariables(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualVariable.class);
+	}
+
+	public Collection<VisualArc> getArcs(Container root)
+	{
+		return Hierarchy.getChildrenOfType(root, VisualArc.class);
 	}
 
 	@Override
@@ -242,4 +272,38 @@ public class VisualCPOG extends AbstractVisualModel
 
 		return properties;
 	}
+
+	public VisualVertex createVisualVertex(Container container)
+	{
+		Vertex mathVertex = new Vertex();
+		mathModel.add(mathVertex);
+
+		VisualVertex vertex = new VisualVertex(mathVertex);
+
+		container.add(vertex);
+
+		return vertex;
+	}
+
+	public VisualVariable createVisualVariable()
+	{
+		Variable mathVariable = new Variable();
+		mathModel.add(mathVariable);
+
+		VisualVariable variable = new VisualVariable(mathVariable);
+
+		getRoot().add(variable);
+
+		return variable;
+	}
+
+	public VisualScenario createVisualScenario()
+	{
+		VisualScenario scenario = new VisualScenario();
+
+		getRoot().add(scenario);
+
+		return scenario;
+	}
+
 }

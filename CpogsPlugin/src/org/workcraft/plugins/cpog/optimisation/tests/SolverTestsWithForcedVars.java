@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
@@ -356,12 +356,12 @@ public class SolverTestsWithForcedVars
 			assertNull(solution);
 	}
 
-	private CpogSolver createSolver(int[] levels) {
-		return new DefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider(), levels), new CleverCnfGenerator());
+	private LegacyCpogSolver createSolver(int[] levels) {
+		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider(), levels), new CleverCnfGenerator());
 	}
 
-	private CpogSolver createSolver() {
-		return new DefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new CleverCnfGenerator());
+	private LegacyCpogSolver createSolver() {
+		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new CleverCnfGenerator());
 	}
 
 	private void printSolution(CpogEncoding solution) {

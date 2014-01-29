@@ -57,7 +57,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
 		//noNegate1 = ZERO;
 		//noNegate1 = ZERO;
-		if(funcId == 0)
+		/*if(funcId == 0)
 		{
 			var1 = arg1[0];
 			var2 = arg2[1];
@@ -83,7 +83,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 			var2 = arg2[0];
 			//noNegate1 = ZERO;
 		}
-		/*if(funcId == 4)
+		if(funcId == 4)
 		{
 			var1 = arg1[2];
 			var2 = arg2[0];
@@ -119,13 +119,18 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		this.numberProvider = numberProvider;
 	}
 
+	/**
+	 * @param levels
+	 * Specifies the number of gates to be found on each depth level. Null means no limit.
+	 */
 	public Optimiser(NumberProvider<BooleanNumber> numberProvider, int [] levels)
 	{
 		this(numberProvider);
 		this.levels = levels;
 	}
 
-	public CpogOptimisationTask<BooleanFormula> getFormula(String [] scenarios, int freeVarsCount, int derivedVariables)
+	@Override
+	public CpogOptimisationTask<BooleanFormula> getFormula(String [] scenarios, BooleanVariable [] variables, int derivedVariables)
 	{
 		Map<Character, BooleanVariable> forcedVariables = new HashMap<Character, BooleanVariable>();
 
@@ -176,7 +181,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		}
 
 
-		CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), freeVarsCount, derivedVariables);
+		CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), variables, derivedVariables);
 
 		BooleanFormula[][] vars = preResult.getEncodingVars();
 		BooleanFormula[] funcs = preResult.getFunctionVars();
@@ -203,21 +208,23 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		return BooleanReplacer.replace(where, Arrays.asList(new BooleanVariable[]{what}), Arrays.asList(new BooleanFormula[]{with}));
 	}
 
-	public CpogOptimisationTask<BooleanFormula> getFormula(BooleanFormula [][] scenarios, List<? extends BooleanFormula> forcedParams, int freeVarsCount, int derivedVariables)
+	/**
+	 * Produces the SAT problem for finding the optimal CPOG encoding given the scenarios.
+	 * @param scenarios
+	 * @param forcedParams
+	 * List of forced input signals.
+	 * @param variables
+	 * Number of input signals used to encode scenarios
+	 * @param derivedVariables
+	 * Number of gates in the decoder. Ignored if levels!=null. :(
+	 * @return
+	 * Boolean formula to satisfy along with the formulas for all output signals.
+	 */
+	public CpogOptimisationTask<BooleanFormula> getFormula(BooleanFormula [][] scenarios, List<? extends BooleanFormula> forcedParams, BooleanVariable[] variables, int derivedVariables)
 	{
 		// Generate function parameters
-		List<BooleanVariable> freeVariables = new ArrayList<BooleanVariable>();
-		char nextVar = 'x';
-		for(int i=0;i<freeVarsCount;i++)
-		{
-			freeVariables.add(new FreeVariable(""+(nextVar++)));
-			if(nextVar>'z')
-				nextVar = 'p';
-			if(nextVar == 'x')
-				nextVar = 'a';
-		}
 
-		List<BooleanFormula> parameters = new ArrayList<BooleanFormula>(freeVariables);
+		List<BooleanFormula> parameters = new ArrayList<BooleanFormula>(Arrays.asList(variables));
 		parameters.addAll(forcedParams);
 
 		// Generate functions
@@ -243,16 +250,16 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		BooleanFormula [][] encodings = new BooleanFormula [scenarios.length][];
 		for(int i=0;i<scenarios.length;i++)
 		{
-			encodings[i] = new BooleanFormula[freeVarsCount];
+			encodings[i] = new BooleanFormula[variables.length];
 			if(i == 0)
 			{
-				for(int j=0;j<freeVarsCount;j++)
+				for(int j=0;j<variables.length;j++)
 					encodings[i][j] = ZERO;
-				for(int j=0;j<0 && j<freeVarsCount;j++)
+				for(int j=0;j<0 && j<variables.length;j++)
 					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
 			}
 			else
-				for(int j=0;j<freeVarsCount;j++)
+				for(int j=0;j<variables.length;j++)
 					encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
 		}
 
@@ -262,7 +269,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 			BooleanFormula value = cpogFunctions[i];
 			for(int j=0;j<scenarios.length;j++)
 			{
-				BooleanFormula substituted = BooleanReplacer.replace(value, freeVariables, Arrays.asList(encodings[j]));
+				BooleanFormula substituted = BooleanReplacer.replace(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
 
 				BooleanFormula required = scenarios[j][i];
 				if(required != null)
@@ -275,6 +282,13 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 		return new CpogOptimisationTask<BooleanFormula>(cpogFunctions, encodings, and(tableConditions));
 	}
 
+	/**
+	 *
+	 * @param parameters
+	 * @param functionCount
+	 * Specifies the number of gates to look for. Ignored if levels != null. Bad design, sure.
+	 * @return
+	 */
 	private List<BooleanFormula> generateFunctions(List<BooleanFormula> parameters, int functionCount)
 	{
 		List<BooleanFormula> allVariables = new ArrayList<BooleanFormula>(parameters);

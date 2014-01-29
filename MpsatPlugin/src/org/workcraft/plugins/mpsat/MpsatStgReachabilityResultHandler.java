@@ -14,33 +14,31 @@ import org.workcraft.util.GUI;
 
 final class MpsatStgReachabilityResultHandler implements Runnable {
 
-	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Result<? extends MpsatChainResult> result;
 	private final MpsatChainTask task;
 
-	MpsatStgReachabilityResultHandler(
-			MpsatChainTask task,
-			Result<? extends MpsatChainResult> mpsatChainResult) {
+	MpsatStgReachabilityResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 		this.task = task;
-		this.mpsatChainResult = mpsatChainResult;
+		this.result = result;
 	}
 
 
 	@Override
 	public void run() {
-		MpsatResultParser mdp = new MpsatResultParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
-
+		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Trace> solutions = mdp.getSolutions();
-
 		if (!solutions.isEmpty()) {
 			String message = "The system has a non-persistent output.\n";
-
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-
 			GUI.centerAndSizeToParent(solutionsDialog, task.getFramework().getMainWindow());
-
 			solutionsDialog.setVisible(true);
-		} else
-			JOptionPane.showMessageDialog(null, "All system outputs are persistent.");
+		} else {
+			String message = result.getReturnValue().getMessage();
+			if (message == null) {
+				message = "All system outputs are persistent.";
+			}
+			JOptionPane.showMessageDialog(null, message);
+		}
 	}
 
 }

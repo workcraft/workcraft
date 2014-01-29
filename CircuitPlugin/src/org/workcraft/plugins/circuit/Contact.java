@@ -21,6 +21,9 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
@@ -30,75 +33,94 @@ import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @DisplayName("Contact")
-@VisualClass("org.workcraft.plugins.circuit.VisualContact")
+@VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 
 public class Contact extends MathNode implements BooleanVariable {
 
-	public enum IOType { INPUT, OUTPUT};
+	public enum IOType {
+		INPUT("Input"),
+		OUTPUT("Output");
+
+		private final String name;
+
+		private IOType(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, IOType> getChoice() {
+			LinkedHashMap<String, IOType> choice = new LinkedHashMap<String, IOType>();
+			for (IOType item : IOType.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	};
+
 	private IOType ioType = IOType.OUTPUT;
 
 	private String name = "";
+	private boolean initOne = false;
 
 
 	//private boolean invertSignal = false;
+
+	public boolean getInitOne() {
+		return initOne;
+	}
+
+	public void setInitOne(boolean initOne) {
+		this.initOne = initOne;
+	}
 
 	public Contact() {
 	}
 
 	public Contact(IOType iot) {
 		super();
-
 		setIOType(iot);
 	}
 
 
-	static public String getNewName(Node n, String start, Node curNode, boolean allowShort) {
+	static public String getNewName(Node paren, String prefix, Node node, boolean allowShort) {
 		// iterate through all contacts, check that the name doesn't exist
-		int num=0;
-		boolean found = true;
-
-		while (found) {
-			num++;
-			found=false;
-
-			if (allowShort) {
-
-				for (Node vn : n.getChildren()) {
-					if (vn instanceof Contact&& vn!=curNode) {
-						if (((Contact)vn).getName().equals(start)) {
-							found=true;
-							break;
-						}
-					}
-				}
-				if (found==false) return start;
-				allowShort=false;
-			}
-
-			for (Node vn : n.getChildren()) {
-				if (vn instanceof Contact&& vn!=curNode) {
-					if (((Contact)vn).getName().equals(start+num)) {
-						found=true;
+		int index=0;
+		boolean found = false;
+		if (allowShort) {
+			for (Node n : paren.getChildren()) {
+				if (n instanceof Contact && n != node) {
+					if (((Contact)n).getName().equals(prefix)) {
+						found = true;
 						break;
 					}
 				}
 			}
+			if (!found) return prefix;
 		}
-
-
-		return start+num;
+		do {
+			found = false;
+			index++;
+			for (Node n : paren.getChildren()) {
+				if (n instanceof Contact && n != node) {
+					if (((Contact)n).getName().equals(prefix + index)) {
+						found = true;
+						break;
+					}
+				}
+			}
+		} while (found);
+		return (prefix + index);
 	}
 
 	public void checkName(Node parent) {
-		if (parent==null) return;
-		String start=getName();
-		if (start==null||start=="") {
+		if (parent == null) return;
+		String prefix = getName();
+		if (prefix == null || prefix == "") {
 			if (getIOType()==IOType.INPUT) {
-				start="input";
+				prefix="input";
 			} else {
-				start="output";
+				prefix="output";
 			}
-			setName(getNewName(parent, start, this, false));
+			setName(getNewName(parent, prefix, this, false));
 		}
 	}
 
@@ -108,15 +130,13 @@ public class Contact extends MathNode implements BooleanVariable {
 		checkName(parent);
 	}
 
-
 	public void setIOType(IOType t) {
 		this.ioType = t;
-		if (getName().startsWith("input")&&getIOType()==IOType.OUTPUT) {
+		if (getName().startsWith("input") && getIOType()==IOType.OUTPUT) {
 			setName(getNewName(getParent(), "output", this, false));
-		} else if (getName().startsWith("output")&&getIOType()==IOType.INPUT) {
+		} else if (getName().startsWith("output") && getIOType()==IOType.INPUT) {
 			setName(getNewName(getParent(), "input", this, false));
 		}
-
 		sendNotification(new PropertyChangedEvent(this, "ioType"));
 	}
 

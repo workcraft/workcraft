@@ -64,10 +64,26 @@ public class VisualScenario extends VisualGroup
 	}
 
 
-	public VisualScenario()
-	{
-		addPropertyDeclaration(new PropertyDeclaration(this, "Label", "getLabel", "setLabel", String.class));
-		addPropertyDeclaration(new PropertyDeclaration(this, "Encoding", "getEncoding", "setEncoding", Encoding.class));
+	public VisualScenario() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
+				this, "Label", String.class) {
+			public void setter(VisualScenario object, String value) {
+				object.setLabel(value);
+			}
+			public String getter(VisualScenario object) {
+				return object.getLabel();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
+				this, "Encoding", Encoding.class) {
+			public void setter(VisualScenario object, Encoding value) {
+				object.setEncoding(value);
+			}
+			public Encoding getter(VisualScenario object) {
+				return object.getEncoding();
+			}
+		});
 	}
 
 	@Override
@@ -115,13 +131,14 @@ public class VisualScenario extends VisualGroup
 	{
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		Rectangle2D bb = getContentsBoundingBox();
 
 		if (bb != null && getParent() != null)
 		{
-			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
-			g.fill(bb);
+//			g.setColor(Coloriser.colorise(Color.WHITE, background));
+//			g.fill(bb);
 			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
 			g.setStroke(new BasicStroke(strokeWidth));
 			g.draw(bb);

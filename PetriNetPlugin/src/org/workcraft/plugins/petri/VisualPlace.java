@@ -37,75 +37,20 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
-	/*static public class AddTokenAction extends ScriptedAction {
-		private int placeID;
-		public AddTokenAction(Place place) {
-			super();
-			this.placeID = place.getID();
-		}
-		public String getScript() {
-			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
-		}
-		public String getUndoScript() {
-			return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()-1);\n";
-		}
-		public String getRedoScript() {
-			return getScript();
-		}
-		public String getText() {
-			return "Add token";
-		}
-	}
-
-	static public class RemoveTokenAction extends ScriptedAction {
-		private int placeID;
-
-		public RemoveTokenAction(Place place) {
-			super();
-			this.placeID = place.getID();
-				if (place.getTokens() < 1)
-					setEnabled(false);
-		}
-		public String getScript() {
-				return "p=model.getComponentByID("+placeID+");p.setTokens(p.getTokens()-1);\nmodel.fireNodePropertyChanged(\"Tokens\", p);";
-		}
-		public String getUndoScript() {
-				return "p=model.getComponentByID("+placeID+");\np.setTokens(p.getTokens()+1);\n";
-		}
-		public String getRedoScript() {
-			return getScript();
-		}
-		public String getText() {
-			return "Remove token";
-		}
-	}	*/
-
-	protected static double singleTokenSize = CommonVisualSettings.getSize() / 1.9;
+	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
+	protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
-	private Color tokenColor = CommonVisualSettings.getForegroundColor();
-
-	public Place getPlace() {
-		return (Place)getReferencedComponent();
-	}
-
-	@NoAutoSerialisation
-	public int getTokens() {
-		return getPlace().getTokens();
-	}
-
-	@NoAutoSerialisation
-	public void setTokens(int tokens) {
-		getPlace().setTokens(tokens);
-	}
 
 	public VisualPlace(Place place) {
 		super(place);
@@ -113,115 +58,121 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration (this, "Tokens", "getTokens", "setTokens", int.class));
-		addPropertyDeclaration(new PropertyDeclaration (this, "Token color", "getTokenColor", "setTokenColor", Color.class));
-
-	/*	addPopupMenuSegment(new PopupMenuBuilder.PopupMenuSegment() {
-			public void addItems(JPopupMenu menu,
-					ScriptedActionListener actionListener) {
-				ScriptedActionMenuItem addToken = new ScriptedActionMenuItem(new AddTokenAction(getReferencedPlace()));
-				addToken.addScriptedActionListener(actionListener);
-
-				ScriptedActionMenuItem removeToken = new ScriptedActionMenuItem(new RemoveTokenAction(getReferencedPlace()));
-				removeToken.addScriptedActionListener(actionListener);
-
-				menu.add(new JLabel ("Place"));
-				menu.addSeparator();
-				menu.add(addToken);
-				menu.add(removeToken);
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
+				this, "Tokens", Integer.class) {
+			public void setter(VisualPlace object, Integer value) {
+				object.getReferencedPlace().setTokens(value);
 			}
-		});*/
-	}
-
-	public static void drawTokens(int tokens, double singleTokenSize, double multipleTokenSeparation,
-			double diameter, double borderWidth, Color tokenColor,	Graphics2D g) {
-		Shape shape;
-		if (tokens == 1)
-		{
-			shape = new Ellipse2D.Double(
-					-singleTokenSize / 2,
-					-singleTokenSize / 2,
-					singleTokenSize,
-					singleTokenSize);
-
-			g.setColor(tokenColor);
-			g.fill(shape);
-		}
-		else
-			if (tokens > 1 && tokens < 8)
-			{
-				double al = Math.PI / tokens;
-				if (tokens == 7) al = Math.PI / 6;
-
-				double r = (diameter / 2 - borderWidth - multipleTokenSeparation) / (1 + 1 / Math.sin(al));
-				double R = r / Math.sin(al);
-
-				r -= multipleTokenSeparation;
-
-				for(int i = 0; i < tokens; i++)
-				{
-					if (i == 6)
-						shape = new Ellipse2D.Double( -r, -r, r * 2, r * 2);
-					else
-						shape = new Ellipse2D.Double(
-								-R * Math.sin(i * al * 2) - r,
-								-R * Math.cos(i * al * 2) - r,
-								r * 2,
-								r * 2);
-
-					g.setColor(tokenColor);
-					g.fill(shape);
-				}
+			public Integer getter(VisualPlace object) {
+				return object.getReferencedPlace().getTokens();
 			}
-			else if (tokens > 7)
-			{
-				String out = Integer.toString(tokens);
-				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getSize()/2);
+		});
 
-				Rectangle2D rect = superFont.getStringBounds(out, g.getFontRenderContext());
-				g.setFont(superFont);
-				g.setColor(tokenColor);
-				g.drawString(Integer.toString(tokens), (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
+				this, "Token color", Color.class) {
+			public void setter(VisualPlace object, Color value) {
+				object.setTokenColor(value);
 			}
+			public Color getter(VisualPlace object) {
+				return object.getTokenColor();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
+				this, "Capacity", Integer.class) {
+			public void setter(VisualPlace object, Integer value) {
+				object.getReferencedPlace().setCapacity(value);
+			}
+			public Integer getter(VisualPlace object) {
+				return object.getReferencedPlace().getCapacity();
+			}
+		});
 	}
 
 	@Override
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r)	{
 		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
 
-		drawLabelInLocalSpace(r);
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
 
-		double size = CommonVisualSettings.getSize();
-		double strokeWidth = CommonVisualSettings.getStrokeWidth();
-
-		Shape shape = new Ellipse2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.draw(shape);
 
-		Place p = (Place)getReferencedComponent();
+		Place place = (Place)getReferencedComponent();
+		int tokenCount = place.getTokens();
+		Color tokenColor = getTokenColor();
+		if (d instanceof PlaceDecoration) {
+			tokenCount = ((PlaceDecoration)d).getTokens();
+			tokenColor = ((PlaceDecoration)d).getTokenColor();
+		}
+		drawCapacity(r, place.getCapacity());
+		drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, size, strokeWidth, tokenColor);
 
-		drawTokens(p.getTokens(), singleTokenSize, multipleTokenSeparation, size, strokeWidth, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
+		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
+	public void drawCapacity(DrawRequest r, int capacity) {
+		if (capacity != 1) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			String capacityString = Integer.toString(capacity);
+			Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+			Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
+			g.setFont(superFont);
+			g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
+			g.drawString(capacityString, (float)(size/3), (float)(size/3 + rect.getHeight()));
 		}
+	}
 
+	public static void drawTokens(DrawRequest r, int count, double size, double separation,
+			double diameter, double borderWidth, Color color) {
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
+		Shape shape;
+		if (count == 1) {
+			shape = new Ellipse2D.Double(-size / 2, -size / 2,	size, size);
+			g.setColor(Coloriser.colorise(color, d.getColorisation()));
+			g.fill(shape);
+		} else {
+			if (count > 1 && count < 8) {
+				double alpha = Math.PI / count;
+				if (count == 7) alpha = Math.PI / 6;
+				double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
+				double step = radius / Math.sin(alpha);
+				radius -= separation;
+				for(int i = 0; i < count; i++) 	{
+					if (i == 6) {
+						shape = new Ellipse2D.Double( -radius, -radius, radius * 2, radius * 2);
+					} else {
+						shape = new Ellipse2D.Double(
+								-step * Math.sin(i * alpha * 2) - radius,
+								-step * Math.cos(i * alpha * 2) - radius,
+								radius * 2,	radius * 2);
+					}
+					g.setColor(Coloriser.colorise(color, d.getColorisation()));
+					g.fill(shape);
+				}
+			} else if (count > 7)	{
+				String tokenString = Integer.toString(count);
+				Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+				Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
+				g.setFont(superFont);
+				g.setColor(Coloriser.colorise(color, d.getColorisation()));
+				g.drawString(tokenString, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+			}
+		}
+	}
 
+	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		double size = CommonVisualSettings.getSize();
-
-		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
 	public Place getReferencedPlace() {
@@ -234,5 +185,7 @@ public class VisualPlace extends VisualComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, "token color"));
 	}
+
 }

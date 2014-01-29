@@ -28,9 +28,9 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(MpsatUtilitySettings.getMpsatCommand());
+		command.add(MpsatUtilitySettings.getCommand());
 
-		for (String arg : MpsatUtilitySettings.getMpsatArgs().split(" "))
+		for (String arg : MpsatUtilitySettings.getExtraArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 

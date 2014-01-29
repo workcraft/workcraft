@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.interop.DotGExporter;
@@ -19,17 +20,17 @@ public class STGModule implements Module {
 
 	@Override
 	public void init(Framework framework) {
-		final PluginManager p = framework.getPluginManager();
-		p.registerClass(ModelDescriptor.class, STGModelDescriptor.class);
+		final PluginManager pm = framework.getPluginManager();
+		pm.registerClass(ModelDescriptor.class, STGModelDescriptor.class);
 
-		p.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
-		p.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
+		pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
+		pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
 
-		p.registerClass(Exporter.class, DotGExporter.class);
-		p.registerClass(Importer.class, DotGImporter.class);
+		pm.registerClass(Exporter.class, DotGExporter.class);
+		pm.registerClass(Importer.class, DotGImporter.class);
 
-		p.registerClass(ModelSerialiser.class, DotGSerialiser.class);
-
+		pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
+		pm.registerClass(SettingsPage.class, STGSettings.class);
 	}
 
 	@Override

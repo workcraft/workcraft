@@ -22,62 +22,22 @@
 package org.workcraft.plugins.stg;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_D)
 @DisplayName("Dummy Transition")
 @SVGIcon("images/icons/svg/transition.svg")
-public class VisualDummyTransition extends VisualTransition implements StateObserver {
-	private static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
+public class VisualDummyTransition extends VisualNamedTransition implements StateObserver {
 
-	private Label label = new Label(font, "");
-
-	public VisualDummyTransition(DummyTransition transition) {
+	public VisualDummyTransition(Transition transition) {
 		super(transition);
-
-		transition.addObserver(this);
-
-		updateText();
-	}
-
-	@Override
-	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
-
-		Graphics2D g = r.getGraphics();
-
-		Color background = r.getDecoration().getBackground();
-		if(background!=null)
-		{
-			g.setColor(background);
-			g.fill(getBoundingBoxInLocalSpace());
-		}
-
-		g.setColor(Coloriser.colorise(getColor(), r.getDecoration().getColorisation()));
-
-		label.draw(g);
-	}
-
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return label.getBoundingBox();
-	}
-
-	private Color getColor() {
-		return Color.BLACK;
 	}
 
 	@NoAutoSerialisation
@@ -85,25 +45,19 @@ public class VisualDummyTransition extends VisualTransition implements StateObse
 		return (DummyTransition)getReferencedComponent();
 	}
 
-	private void updateText()
-	{
-		transformChanging();
-		label.setText(getReferencedTransition().getName());
-		transformChanged();
-	}
-
 	@NoAutoSerialisation
-	public String getName() {
+	public String getText() {
 		return getReferencedTransition().getName();
 	}
 
 	@NoAutoSerialisation
-	public void setName(String name) {
+	public void setText(String name) {
 		getReferencedTransition().setName(name);
 	}
 
 	@Override
-	public void notify(StateEvent e) {
-		updateText();
+	public Color getColor() {
+		return STGSettings.getDummyColor();
 	}
+
 }

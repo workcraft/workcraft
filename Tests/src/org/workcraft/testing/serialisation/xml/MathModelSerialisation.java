@@ -60,7 +60,7 @@ public class MathModelSerialisation {
 			// deserialise
 			XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);
 
-			STG stg2 = (STG)deserisaliser.deserialise(accum.getInputStream(), null).model;
+			STG stg2 = (STG)deserisaliser.deserialise(accum.getInputStream(), null, null).model;
 
 			compareMathModels(stg, stg2);
 		} catch (SerialisationException e) {

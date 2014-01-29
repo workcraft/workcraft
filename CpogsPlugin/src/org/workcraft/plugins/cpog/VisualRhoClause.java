@@ -68,15 +68,14 @@ public class VisualRhoClause extends VisualComponent
 		}
 	}
 
-	public VisualRhoClause(RhoClause rhoClause)
-	{
+	public VisualRhoClause(RhoClause rhoClause) {
 		super(rhoClause);
 	}
 
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
+		Color background = r.getDecoration().getBackground();
 
 		FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
 
@@ -92,7 +91,7 @@ public class VisualRhoClause extends VisualComponent
 
 		g.setStroke(new BasicStroke(strokeWidth));
 
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(boudingBox);
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(boudingBox);

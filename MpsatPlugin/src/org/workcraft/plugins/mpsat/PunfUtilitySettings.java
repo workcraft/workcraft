@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.Plugin;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
@@ -32,54 +31,77 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class PunfUtilitySettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static String punfCommand = "punf";
-	private static String punfArgs = "";
+	private static final String commandKey = "Tools.punf.command";
+	private static final String extraArgsKey = "Tools.punf.args";
 
-	private static final String punfCommandKey = "Tools.punf.command";
-	private static final String punfArgsKey = "Tools.punf.args";
+	private static String command = "punf";
+	private static String extraArgs = "-r";
 
 	public PunfUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
-		properties.add(new PropertyDeclaration(this, "Punf command", "getPunfCommand", "setPunfCommand", String.class));
-		properties.add(new PropertyDeclaration(this, "Additional command line arguments", "getPunfArgs", "setPunfArgs", String.class));
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+				this, "punf command", String.class) {
+			protected void setter(PunfUtilitySettings object, String value) {
+				PunfUtilitySettings.setPunfCommand(value);
+			}
+			protected String getter(PunfUtilitySettings object) {
+				return PunfUtilitySettings.getPunfCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+				this, "Additional punf command line arguments", String.class) {
+			protected void setter(PunfUtilitySettings object, String value) {
+				PunfUtilitySettings.setPunfExtraArgs(value);
+			}
+			protected String getter(PunfUtilitySettings object) {
+				return PunfUtilitySettings.getPunfExtraArgs();
+			}
+		});
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		punfCommand = config.getString(punfCommandKey, "punf");
-		punfArgs = config.getString(punfArgsKey, "");
+		command = config.getString(commandKey, "punf");
+		extraArgs = config.getString(extraArgsKey, "-r");
 	}
 
+	@Override
 	public void save(Config config) {
-		config.set(punfCommandKey, punfCommand);
-		config.set(punfArgsKey, punfArgs);
+		config.set(commandKey, command);
+		config.set(extraArgsKey, extraArgs);
 	}
 
+	@Override
 	public String getSection() {
 		return "External tools";
 	}
 
-	public static String getPunfCommand() {
-		return punfCommand;
-	}
-
-	public static void setPunfCommand(String punfCommand) {
-		PunfUtilitySettings.punfCommand = punfCommand;
-	}
-
-	public static String getPunfArgs() {
-		return punfArgs;
-	}
-
-	public static void setPunfArgs(String punfArgs) {
-		PunfUtilitySettings.punfArgs = punfArgs;
-	}
-
 	@Override
 	public String getName() {
-		return "punf";
+		return "Punf";
 	}
+
+	public static String getPunfCommand() {
+		return command;
+	}
+
+	public static void setPunfCommand(String value) {
+		PunfUtilitySettings.command = value;
+	}
+
+	public static String getPunfExtraArgs() {
+		return extraArgs;
+	}
+
+	public static void setPunfExtraArgs(String value) {
+		PunfUtilitySettings.extraArgs = value;
+	}
+
 }

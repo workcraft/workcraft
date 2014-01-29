@@ -273,6 +273,7 @@ public class FormulaToString implements BooleanVisitor<String>
 	}
 
 	public static String toString(BooleanFormula f, boolean unicodeAllowed) {
+		if (f==null) return "";
 		DelegatingPrinter printer = getPrinter(unicodeAllowed);
 		f.accept(printer);
 		return printer.builder.toString();

@@ -24,7 +24,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 import static org.junit.Assert.*;
@@ -177,8 +177,8 @@ public abstract class SolverTests
 		"11110111",
 	};
 
-	protected abstract CpogSolver createSolver();
-	protected CpogSolver createSolver(int[] levels){
+	protected abstract LegacyCpogSolver createSolver();
+	protected LegacyCpogSolver createSolver(int[] levels){
 		return null;
 	}
 

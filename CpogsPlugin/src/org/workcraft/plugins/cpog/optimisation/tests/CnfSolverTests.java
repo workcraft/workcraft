@@ -22,8 +22,8 @@ package org.workcraft.plugins.cpog.optimisation.tests;
 
 import org.workcraft.plugins.cpog.optimisation.Cnf;
 import org.workcraft.plugins.cpog.optimisation.CnfGeneratingOptimiser;
-import org.workcraft.plugins.cpog.optimisation.CpogSolver;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
+import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.SimpleCnfTaskProvider;
 
 public class CnfSolverTests extends SolverTests {
@@ -31,8 +31,8 @@ public class CnfSolverTests extends SolverTests {
 	{
 	}
 
-	protected CpogSolver createSolver()
+	protected LegacyCpogSolver createSolver()
 	{
-		return new DefaultCpogSolver<Cnf>(new CnfGeneratingOptimiser(), new SimpleCnfTaskProvider());
+		return new LegacyDefaultCpogSolver<Cnf>(new CnfGeneratingOptimiser(), new SimpleCnfTaskProvider());
 	}
 }

@@ -27,9 +27,9 @@ public class WriteSgTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PetrifyUtilitySettings.getWrite_sgCommand());
+		command.add(PetrifyUtilitySettings.getWriteSgCommand());
 
-		for (String arg : PetrifyUtilitySettings.getWrite_sgArgs().split(" "))
+		for (String arg : PetrifyUtilitySettings.getWriteSgArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 

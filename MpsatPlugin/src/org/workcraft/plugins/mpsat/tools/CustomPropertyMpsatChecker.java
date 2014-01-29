@@ -9,8 +9,8 @@ import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatConfigurationDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.presets.PresetManager;
-import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,7 +30,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
+		return WorkspaceUtils.canHas(we, PetriNetModel.class);
 	}
 
 	@Override
@@ -39,8 +39,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
 		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
-		if (dialog.getModalResult() == 1)
-		{
+		if (dialog.getModalResult() == 1) {
 			final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings(), framework);
 			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
 					new MpsatChainResultHandler(mpsatTask));

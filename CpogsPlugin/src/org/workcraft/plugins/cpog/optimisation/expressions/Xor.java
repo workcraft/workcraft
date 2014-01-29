@@ -25,7 +25,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Xor extends BinaryBooleanFormula
 {
-	Xor(BooleanFormula x, BooleanFormula y) {
+	public Xor(BooleanFormula x, BooleanFormula y) {
 		super(x,y);
 	}
 

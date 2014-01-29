@@ -21,8 +21,9 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.geom.Point2D;
+
 import org.workcraft.annotations.CustomTools;
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
@@ -30,24 +31,27 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.util.Hierarchy;
 
 
-@DisplayName("Visual Circuit")
+@DisplayName("Digital Circuit")
 @CustomTools ( CircuitToolsProvider.class )
-@DefaultCreateButtons ( { Joint.class, CircuitComponent.class, FunctionComponent.class } )
-
 public class VisualCircuit extends AbstractVisualModel {
 
 	private Circuit circuit;
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first instanceof VisualConnection || second instanceof VisualConnection) {
+		if (first==second) {
+			throw new InvalidConnectionException ("Connections are only valid between different objects");
+		}
+
+		if (first instanceof VisualCircuitConnection || second instanceof VisualCircuitConnection) {
 			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
 		}
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
@@ -106,14 +110,46 @@ public class VisualCircuit extends AbstractVisualModel {
 		validateConnection(first, second);
 
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
-
 			VisualComponent c1 = (VisualComponent) first;
 			VisualComponent c2 = (VisualComponent) second;
 			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			VisualConnection ret = new VisualConnection(con, c1, c2);
-			Hierarchy.getNearestContainer(c1, c2).add(ret);
+			VisualCircuitConnection connection = new VisualCircuitConnection(con, c1, c2);
+			Node parent = Hierarchy.getCommonParent(c1, c2);
+			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
+			nearestAncestor.add(connection);
+		}
+	}
+
+	@Override
+	public Properties getProperties(Node node) {
+		if(node instanceof VisualFunctionContact) {
+			VisualFunctionContact contact = (VisualFunctionContact)node;
+			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
+			return Properties.Merge.add(super.getProperties(node),
+					props.getSetProperty(contact),
+					props.getResetProperty(contact));
+		} else {
+			return super.getProperties(node);
+		}
+	}
+
+	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {
+
+		for(VisualFunctionContact c : Hierarchy.filterNodesByType(getRoot().getChildren(), VisualFunctionContact.class)) {
+			if(c.getName().equals(name)) return c;
 		}
 
+		FunctionContact fc = new FunctionContact(IOType.OUTPUT);
+		VisualFunctionContact vc = new VisualFunctionContact(fc);
+		Point2D p2d = new Point2D.Double();
+		p2d.setLocation(x,y);
+		vc.setPosition(p2d);
+		circuit.add(fc);
+		this.add(vc);
+
+		vc.setName(name);
+
+		return vc;
 	}
 
 }

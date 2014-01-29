@@ -29,7 +29,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
 @DisplayName("RhoClause")
-@VisualClass("org.workcraft.plugins.cpog.VisualRhoClause")
+@VisualClass(org.workcraft.plugins.cpog.VisualRhoClause.class)
 public class RhoClause extends MathNode
 {
 	private BooleanFormula formula = BooleanOperations.ONE;

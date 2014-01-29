@@ -23,19 +23,41 @@ package org.workcraft.plugins.petri;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass("org.workcraft.plugins.petri.VisualPlace")
+@VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
 	protected int tokens = 0;
+	protected int capacity = 1;
 
 	public int getTokens() {
 		return tokens;
 	}
 
 	public void setTokens(int tokens) {
+		if (tokens < 0) {
+			throw new ArgumentException("The number of tokens cannot be negative.");
+		}
+		if (tokens > capacity) {
+			capacity = tokens;
+		}
 		this.tokens = tokens;
-
 		sendNotification( new PropertyChangedEvent(this, "tokens") );
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		if (capacity < 1) {
+			throw new ArgumentException("Negative or zero capacity is not allowed.");
+		}
+		if (tokens > capacity) {
+			throw new ArgumentException("The place capacity "+ capacity + " is too small for the current number of tokens " + tokens + " .");
+		}
+		this.capacity = capacity;
+		sendNotification ( new PropertyChangedEvent (this, "capacity"));
 	}
 }

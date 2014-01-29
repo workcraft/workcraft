@@ -24,38 +24,23 @@ package org.workcraft.plugins.stg;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
-@VisualClass("org.workcraft.plugins.stg.VisualDummyTransition")
-public class DummyTransition extends Transition implements StgTransition {
+@VisualClass(org.workcraft.plugins.stg.VisualDummyTransition.class)
+public class DummyTransition extends NamedTransition {
 	private String name;
-
-	@NoAutoSerialisation
-	public String getName() {
-		return name;
-	}
 
 	@NoAutoSerialisation
 	public void setName(String name) {
 		this.name = name;
-
 		sendNotification(new PropertyChangedEvent(this, "name"));
 	}
 
+	@NoAutoSerialisation
 	@Override
-	public DummyTransition asDummy() {
-		return this;
+	public String getName() {
+		return name;
 	}
 
-	@Override
-	public SignalTransition asSignal() {
-		return null;
-	}
-
-	@Override
-	public Transition getTransition() {
-		return this;
-	}
 }

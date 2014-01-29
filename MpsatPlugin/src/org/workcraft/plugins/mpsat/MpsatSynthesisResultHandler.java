@@ -1,30 +1,28 @@
 package org.workcraft.plugins.mpsat;
 
-import java.io.File;
-
-import org.workcraft.plugins.gates.GateLevelModelDescriptor;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.tasks.Result;
-import org.workcraft.util.FileUtils;
-import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatSynthesisResultHandler implements Runnable {
 
 	private final MpsatChainTask task;
-	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Result<? extends MpsatChainResult> result;
 
-	public MpsatSynthesisResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> mpsatChainResult) {
+	public MpsatSynthesisResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 		this.task = task;
-		this.mpsatChainResult = mpsatChainResult;
+		this.result = result;
 	}
 
 	@Override
 	public void run() {
-		final WorkspaceEntry we = task.getWorkspaceEntry();
-		final String desiredName = FileUtils.getFileNameWithoutExtension(new File(we.getWorkspacePath().getNode()));
-		final String mpsatOutput = new String(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue().getOutput());
-		task.getFramework().getWorkspace().add(we.getWorkspacePath().getParent(), desiredName, new ModelEntry(new GateLevelModelDescriptor(), new MpsatEqnParser().parse(mpsatOutput)), true);
+		final String mpsatOutput = new String(result.getReturnValue().getMpsatResult().getReturnValue().getOutput());
+		System.out.println(mpsatOutput);
+		// TODO: implement boolean function parsing into a digital circuit (beware of cyclic dependences)
+		//final WorkspaceEntry we = task.getWorkspaceEntry();
+		//final Path<String> directory = we.getWorkspacePath().getParent();
+		//final String name = FileUtils.getFileNameWithoutExtension(new File(we.getWorkspacePath().getNode()));
+		//final ModelEntry me = new ModelEntry(new CircuitModelDescriptor(), new MpsatEqnParser().parse(mpsatOutput));
+		//workspace.add(directory, name, me, true, false);
 	}
 }

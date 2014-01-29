@@ -61,7 +61,7 @@ public class CPOG extends AbstractMathModel
 		referenceManager.setName(vertex, name);
 	}
 
-	public Arc connect(Vertex first, Vertex second) throws InvalidConnectionException
+	public Arc connect(Vertex first, Vertex second)
 	{
 		Arc con = new Arc(first, second);
 		getRoot().add(con);

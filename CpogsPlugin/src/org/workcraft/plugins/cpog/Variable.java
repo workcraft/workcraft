@@ -29,7 +29,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @DisplayName("Variable")
-@VisualClass("org.workcraft.plugins.cpog.VisualVariable")
+@VisualClass(org.workcraft.plugins.cpog.VisualVariable.class)
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable
 {
 	private VariableState state = VariableState.UNDEFINED;

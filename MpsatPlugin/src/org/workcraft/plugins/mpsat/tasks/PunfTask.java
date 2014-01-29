@@ -26,7 +26,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PunfUtilitySettings.getPunfCommand());
 
-		for (String arg : PunfUtilitySettings.getPunfArgs().split(" "))
+		for (String arg : PunfUtilitySettings.getPunfExtraArgs().split(" "))
 			if (!arg.isEmpty())
 				command.add(arg);
 

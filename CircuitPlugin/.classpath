@@ -2,10 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Workcraft"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/WorkcraftCore"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CpogsPlugin"/>
 	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MpsatPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

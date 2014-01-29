@@ -17,7 +17,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.petri.tools.SimulationTool;
+import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
@@ -63,7 +63,7 @@ public class SolutionPanel extends JPanel {
 					}
 				}
 				final ToolboxPanel toolbox = currentEditor.getToolBox();
-				final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
+				final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
 				tool.setTrace(t);
 				toolbox.selectTool(tool);
 				closeAction.actionPerformed(null);

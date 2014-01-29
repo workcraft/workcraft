@@ -37,13 +37,21 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Component")
-@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
+@VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 
 public class CircuitComponent extends MathNode implements Container, ObservableHierarchy {
 
-
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
+	private boolean isEnvironment;
+
+	public boolean getIsEnvironment() {
+		return isEnvironment;
+	}
+
+	public void setIsEnvironment(boolean isEnvironment) {
+		this.isEnvironment = isEnvironment;
+	}
 
 	public Node getParent() {
 		return groupImpl.getParent();
@@ -148,7 +156,5 @@ public class CircuitComponent extends MathNode implements Container, ObservableH
 	public String getName() {
 		return name;
 	}
-
-
 
 }

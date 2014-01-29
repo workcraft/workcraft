@@ -6,6 +6,8 @@ package org.workcraft.plugins.mpsat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.workcraft.util.FileUtils;
 
@@ -14,9 +16,23 @@ public class MpsatSettings {
 	public static final int SOLVER_MINISAT = 1;
 
 	public enum SolutionMode {
-		FIRST,
-		ALL,
-		MINIMUM_COST
+		MINIMUM_COST("Minimal cost"),
+		FIRST("First"),
+		ALL("First 10 solutions");
+
+		public final String name;
+
+		private SolutionMode(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, SolutionMode> getChoice() {
+			LinkedHashMap<String, SolutionMode> choice = new LinkedHashMap<String, SolutionMode>();
+			for (SolutionMode item : SolutionMode.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
 	}
 
 	private MpsatMode mode = MpsatMode.DEADLOCK;
@@ -25,6 +41,20 @@ public class MpsatSettings {
 	private SolutionMode solutionMode = SolutionMode.FIRST;
 	private int solutionNumberLimit = 0;
 	private String reach = "";
+
+	// setup for searching semimodularity
+	public static final String propertySemimodularity =
+		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
+		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
+		"	  @t1 &\n"+
+		"	  exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
+		"	    @t2 &\n"+
+		"	    forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
+		"	       exists p in pre t3 \\ post t2 { ~$p }\n"+
+		"	    }\n"+
+		"	  }\n"+
+		"	}\n";
+
 
 	public MpsatSettings(MpsatMode mode, int verbosity, int satSolver,
 			SolutionMode solutionMode, int solutionNumberLimit, String reach) {

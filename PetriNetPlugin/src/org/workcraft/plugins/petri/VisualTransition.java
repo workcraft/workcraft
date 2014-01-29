@@ -22,6 +22,7 @@
 package org.workcraft.plugins.petri;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -34,15 +35,21 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.util.ColorGenerator;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualTransition extends VisualComponent {
+	private ColorGenerator tokenColorGenerator = null;
 
 	public VisualTransition(Transition transition) {
-		super(transition);
+		this(transition, true, true, true);
+	}
+
+	public VisualTransition(Transition transition, boolean hasColorProperties, boolean hasLabelProperties, boolean hasNameProperties) {
+		super(transition, hasColorProperties, hasLabelProperties, hasNameProperties);
 	}
 
 	public Transition getReferencedTransition() {
@@ -51,30 +58,30 @@ public class VisualTransition extends VisualComponent {
 
 	@Override
 	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
-
 		Graphics2D g = r.getGraphics();
-
-		double size = CommonVisualSettings.getSize();
-		double strokeWidth = CommonVisualSettings.getStrokeWidth();
-
-		Shape shape = new Rectangle2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
+		Decoration d = r.getDecoration();
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+		g.setStroke(new BasicStroke((float) strokeWidth));
 		g.draw(shape);
+		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		double size = CommonVisualSettings.getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);	}
-
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)	{
+		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
+
+	public ColorGenerator getTokenColorGenerator() {
+		return this.tokenColorGenerator;
+	}
+
+	public void setTokenColorGenerator(ColorGenerator value) {
+		this.tokenColorGenerator = value;
+	}
+
 }

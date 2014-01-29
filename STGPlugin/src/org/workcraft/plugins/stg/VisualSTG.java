@@ -26,34 +26,56 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.CustomToolButtons;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.plugins.petri.tools.SimulationTool;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
-@CustomTools ( STGToolsProvider.class )
-@DefaultCreateButtons ( { STGPlace.class,  SignalTransition.class, DummyTransition.class } )
-@CustomToolButtons ( { SimulationTool.class } )
+@CustomTools(STGToolsProvider.class)
 public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 
+	public VisualSTG(STG model) {
+		this (model, null);
+	}
+
+	public VisualSTG(STG model, VisualGroup root) {
+		super(model, root);
+
+		if (root == null)
+			try {
+				createDefaultFlatStructure();
+			} catch (NodeCreationException e) {
+				throw new RuntimeException(e);
+			}
+
+			this.stg = model;
+
+			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
+			for(VisualPlace place : places)
+				maybeMakeImplicit(place);
+	}
+
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+		if (first==second) {
+			throw new InvalidConnectionException ("Connections are only valid between different objects");
+		}
+
 		if (first instanceof VisualPlace) {
 			if (second instanceof VisualPlace)
 				throw new InvalidConnectionException ("Arcs between places are not allowed");
@@ -82,7 +104,7 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first,	Node second) throws InvalidConnectionException {
+	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		if (first instanceof VisualTransition) {
@@ -123,8 +145,7 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	private void createSimpleConnection(final VisualComponent firstComponent,
-			final VisualComponent secondComponent)
-	throws InvalidConnectionException {
+			final VisualComponent secondComponent)	throws InvalidConnectionException {
 		ConnectionResult result = stg.connect( firstComponent.getReferencedComponent(),
 				secondComponent.getReferencedComponent());
 
@@ -187,44 +208,40 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	public VisualSTG(STG model) {
-		this (model, null);
-	}
-
-	public VisualSTG(STG model, VisualGroup root) {
-		super(model, root);
-
-		if (root == null)
-			try {
-				createDefaultFlatStructure();
-			} catch (NodeCreationException e) {
-				throw new RuntimeException(e);
-			}
-
-			this.stg = model;
-
-			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
-			for(VisualPlace place : places)
-				maybeMakeImplicit(place);
-	}
-
-	public VisualPlace createPlace() {
-		return createPlace(null);
-	}
-
 	public VisualPlace createPlace(String name) {
-		VisualPlace place = new VisualPlace(stg.createPlace(name));
+		return createPlace(stg.createPlace(name));
+	}
+
+	public VisualPlace createPlace(Place p) {
+		VisualPlace place = new VisualPlace(p);
 		add(place);
 		return place;
 	}
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction) {
 		SignalTransition transition = stg.createSignalTransition(signalName);
+		stg.setName(transition, signalName + direction.toString());
 		transition.setSignalType(type);
-		transition.setDirection(direction);
 		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
 		add(visualTransition);
 		return visualTransition;
+	}
+
+	public Collection<VisualPlace> getVisualPlaces() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
+	}
+
+	public Collection<VisualTransition> getVisualTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
+	}
+
+	public VisualTransition getVisualTransition(Transition transition) {
+		for (VisualTransition vt: getVisualTransitions()) {
+			if (vt.getReferencedTransition() == transition) {
+				return vt;
+			}
+		}
+		return null;
 	}
 
 }

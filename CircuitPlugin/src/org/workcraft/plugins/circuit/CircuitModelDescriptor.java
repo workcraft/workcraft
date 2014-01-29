@@ -4,7 +4,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 
@@ -32,7 +31,13 @@ public class CircuitModelDescriptor implements ModelDescriptor {
 
 			@Override
 			public Iterable<GraphEditorTool> createTools() {
-				throw new NotImplementedException();
+				try {
+					throw new VisualModelInstantiationException();
+				} catch (VisualModelInstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
 			}
 		};
 	}

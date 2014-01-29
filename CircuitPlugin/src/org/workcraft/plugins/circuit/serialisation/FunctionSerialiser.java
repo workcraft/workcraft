@@ -22,7 +22,6 @@
 package org.workcraft.plugins.circuit.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.Plugin;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.cpog.serialisation.BooleanFormulaSerialiser;

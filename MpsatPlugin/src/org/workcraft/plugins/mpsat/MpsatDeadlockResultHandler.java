@@ -15,31 +15,31 @@ import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 
 final class MpsatDeadlockResultHandler implements Runnable {
-	private final Result<? extends MpsatChainResult> mpsatChainResult;
+	private final Result<? extends MpsatChainResult> result;
 	private final MpsatChainTask task;
 
-	MpsatDeadlockResultHandler(
-			MpsatChainTask task,
-			Result<? extends MpsatChainResult> mpsatChainResult) {
+	MpsatDeadlockResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 		this.task = task;
-		this.mpsatChainResult = mpsatChainResult;
+		this.result = result;
 	}
 
 	@Override
 	public void run() {
-		MpsatResultParser mdp = new MpsatResultParser(mpsatChainResult.getReturnValue().getMpsatResult().getReturnValue());
+		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 
 		List<Trace> solutions = mdp.getSolutions();
 
 		if (!solutions.isEmpty()) {
 			String message = "The system has a deadlock.\n";
-
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-
 			GUI.centerAndSizeToParent(solutionsDialog, task.getFramework().getMainWindow());
-
 			solutionsDialog.setVisible(true);
-		} else
-			JOptionPane.showMessageDialog(null, "The system is deadlock-free.");
+		} else {
+			String message = result.getReturnValue().getMessage();
+			if (message == null) {
+				message = "The system is deadlock-free.";
+			}
+			JOptionPane.showMessageDialog(null, message);
+		}
 	}
 }

@@ -16,5 +16,5 @@ public interface STGModel extends PetriNetModel {
 	public Collection<Transition> getDummies();
 
 	public Set<String> getDummyNames();
-	public Set<String> getSignalNames (Type type);
+	public Set<String> getSignalNames(Type type);
 }

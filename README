@@ -1,0 +1,7 @@
+In Windows start workcraft.bat script, in Linux - workcraft shell script. 
+These scripts set up the required search path for external tools and 
+Java classpath for Workcraft plugins.
+
+To familiarise yourself with the Workcraft framework please read the 
+practical material in the tutorial directory. Also look through a
+collection of tips and tricks in help/tips.html.

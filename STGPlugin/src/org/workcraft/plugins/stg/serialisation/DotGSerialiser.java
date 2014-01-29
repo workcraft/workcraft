@@ -88,23 +88,25 @@ public class DotGSerialiser implements ModelSerialiser {
 			if (((STGPlace)node).isImplicit())
 				return;
 
-		out.write(model.getNodeReference(node));
+		if (model.getPostset(node).size()>0) {
+			out.write(model.getNodeReference(node));
 
-		for (Node n : sortNodes (model.getPostset(node), model)  ) {
-			if (n instanceof STGPlace) {
-				if (((STGPlace)n).isImplicit()) {
-					Collection<Node> postset = model.getPostset(n);
-					if (postset.size() > 1)
-						throw new FormatException("Implicit place cannot have more than one node in postset");
-					out.write(" " + model.getNodeReference(postset.iterator().next()));
-				} else
+			for (Node n : sortNodes (model.getPostset(node), model)  ) {
+				if (n instanceof STGPlace) {
+					if (((STGPlace)n).isImplicit()) {
+						Collection<Node> postset = model.getPostset(n);
+						if (postset.size() > 1)
+							throw new FormatException("Implicit place cannot have more than one node in postset");
+						out.write(" " + model.getNodeReference(postset.iterator().next()));
+					} else
+						out.write(" " + model.getNodeReference(n));
+				} else {
 					out.write(" " + model.getNodeReference(n));
-			} else {
-				out.write(" " + model.getNodeReference(n));
+				}
 			}
-		}
 
-		out.write("\n");
+			out.write("\n");
+		}
 	}
 
 	public ReferenceProducer serialise(Model model, OutputStream outStream, ReferenceProducer inRef) {

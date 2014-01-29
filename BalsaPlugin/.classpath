@@ -8,11 +8,12 @@
 	<classpathentry kind="lib" path="/ThirdParty/junit-4.5.jar"/>
 	<classpathentry kind="src" path="/BalsaPluginBase"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/GatesPlugin"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/BalsaWrapperGenerator"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/CircuitPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DesiJPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GatesPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MpsatPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>

@@ -45,6 +45,12 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 	}
 
 	public static void writeFormulaAttribute(Element element, final ReferenceProducer internalReferences, BooleanFormula formula, String attributeName) {
+
+		if (formula==null) {
+			element.setAttribute(attributeName, "");
+			return;
+		}
+
 		PrinterSuite printers = new FormulaToString.PrinterSuite();
 		printers.vars = new FormulaToString.VariablePrinter(){
 			@Override

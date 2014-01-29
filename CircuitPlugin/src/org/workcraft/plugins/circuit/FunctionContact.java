@@ -24,17 +24,16 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("FunctionContact")
-@VisualClass("org.workcraft.plugins.circuit.VisualFunctionContact")
+@VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 
 public class FunctionContact extends Contact {
 	private BooleanFormula setFunction=Zero.instance();
-	private BooleanFormula resetFunction=One.instance();
-	private BooleanFormula combinedFunction=Zero.instance();
+	private BooleanFormula resetFunction=null;
+	private BooleanFormula combinedFunction=null;
 
 	public FunctionContact(IOType ioType) {
 		super(ioType);

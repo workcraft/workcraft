@@ -52,8 +52,6 @@ public class ConnectionRemoverTest {
 
 		VisualSTG vstg = new VisualSTG(stg);
 
-		//System.out.println ("Created VSTG");
-
 		LinkedList<Node> toDelete = new LinkedList<Node>();
 		LinkedList<Node> toDeleteThen = new LinkedList<Node>();
 
@@ -67,8 +65,6 @@ public class ConnectionRemoverTest {
 
 		vstg.select(toDelete);
 		vstg.deleteSelection();
-
-		//System.out.println ("O_O");
 
 		vstg.select(toDeleteThen);
 		vstg.deleteSelection();

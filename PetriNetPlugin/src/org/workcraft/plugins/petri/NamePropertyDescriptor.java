@@ -8,16 +8,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
 final class NamePropertyDescriptor implements PropertyDescriptor {
+	private final PetriNet model;
+	private final Node node;
 
-	private final PetriNet petriNet;
-
-	public NamePropertyDescriptor(PetriNet petriNet, Node node)
-	{
-		this.petriNet = petriNet;
+	public NamePropertyDescriptor(PetriNet model, Node node) {
+		this.model = model;
 		this.node = node;
 	}
-
-	private final Node node;
 
 	@Override
 	public Map<Object, String> getChoice() {
@@ -36,7 +33,7 @@ final class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return this.petriNet.getName(node);
+		return model.getName(node);
 	}
 
 	@Override
@@ -46,6 +43,11 @@ final class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		this.petriNet.setName(node, (String)value);
+		model.setName(node, (String)value);
+	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
 	}
 }

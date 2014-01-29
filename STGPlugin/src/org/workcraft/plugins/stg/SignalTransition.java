@@ -26,12 +26,11 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
-@VisualClass("org.workcraft.plugins.stg.VisualSignalTransition")
-public class SignalTransition extends Transition implements StgTransition
+@VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
+public class SignalTransition extends NamedTransition
 {
 	public enum Type {
 		INPUT,
@@ -56,8 +55,8 @@ public class SignalTransition extends Transition implements StgTransition
 			throw new ArgumentException ("Unexpected string: " + s);
 		}
 
-
-		@Override public String toString() {
+		@Override
+		public String toString() {
 			switch(this)
 			{
 			case PLUS:
@@ -81,9 +80,10 @@ public class SignalTransition extends Transition implements StgTransition
 	}
 
 	public void setSignalType(Type type) {
-		this.type = type;
-
-		sendNotification(new PropertyChangedEvent(this, "signalType"));
+		if (this.type != type) {
+			this.type = type;
+			sendNotification(new PropertyChangedEvent(this, "signalType"));
+		}
 	}
 
 	public Direction getDirection() {
@@ -91,9 +91,10 @@ public class SignalTransition extends Transition implements StgTransition
 	}
 
 	public void setDirection(Direction direction) {
-		this.direction = direction;
-
-		sendNotification(new PropertyChangedEvent(this, "direction"));
+		if (this.direction != direction) {
+			this.direction = direction;
+			sendNotification(new PropertyChangedEvent(this, "direction"));
+		}
 	}
 
 	@NoAutoSerialisation
@@ -104,22 +105,25 @@ public class SignalTransition extends Transition implements StgTransition
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
 		this.signalName = signalName;
-
 		sendNotification(new PropertyChangedEvent(this, "signalName"));
 	}
 
+	@NoAutoSerialisation
 	@Override
-	public DummyTransition asDummy() {
-		return null;
+	public String getName() {
+		final StringBuffer result = new StringBuffer(signalName);
+		switch (direction) {
+		case PLUS:
+			result.append("+");
+			break;
+		case MINUS:
+			result.append("-");
+			break;
+		case TOGGLE:
+			result.append("~");
+			break;
+		}
+		return result.toString();
 	}
 
-	@Override
-	public SignalTransition asSignal() {
-		return this;
-	}
-
-	@Override
-	public Transition getTransition() {
-		return this;
-	}
 }

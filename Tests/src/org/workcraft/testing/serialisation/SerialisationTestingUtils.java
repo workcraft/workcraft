@@ -33,11 +33,13 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.ComponentsTransformObserver;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -122,6 +124,12 @@ public class SerialisationTestingUtils {
 		compareTransitions (t1.getReferencedTransition(), t2.getReferencedTransition());
 	}
 
+	public static void compareVisualDummyTransitions (VisualDummyTransition t1, VisualDummyTransition t2) {
+		//assertEquals(t1.getID(), t2.getID());
+		assertEquals(t1.getTransform(), t2.getTransform());
+		assertEquals(t1.getName(), t2.getName());
+	}
+
 	public static void compareVisualConnections (VisualConnection vc1, VisualConnection vc2) {
 		compareNodes (vc1.getFirst(), vc2.getFirst());
 		compareNodes (vc1.getSecond(), vc2.getSecond());
@@ -160,8 +168,7 @@ public class SerialisationTestingUtils {
 			comparePreAndPostSets( (MathNode) node1, (MathNode) node2 );
 		else if (node1 instanceof VisualComponent)
 			comparePreAndPostSets( (VisualComponent) node1, (VisualComponent) node2 );
-
-		if (node1 instanceof Place)
+		else if (node1 instanceof Place)
 			comparePlaces ((Place)node1, (Place)node2);
 		else if (node1 instanceof MathConnection)
 			compareConnections ( (MathConnection)node1, (MathConnection)node2 );
@@ -171,6 +178,8 @@ public class SerialisationTestingUtils {
 			compareVisualPlaces ( (VisualPlace)node1, (VisualPlace)node2 );
 		else if (node1 instanceof VisualSignalTransition)
 			compareVisualSignalTransitions ( (VisualSignalTransition)node1, (VisualSignalTransition)node2 );
+		else if (node1 instanceof VisualDummyTransition)
+			compareVisualDummyTransitions ( (VisualDummyTransition)node1, (VisualDummyTransition)node2 );
 		else if (node1 instanceof VisualImplicitPlaceArc)
 			compareImplicitPlaceArcs ( (VisualImplicitPlaceArc)node1, (VisualImplicitPlaceArc)node2 );
 		else if (node1 instanceof VisualConnection)
@@ -179,8 +188,8 @@ public class SerialisationTestingUtils {
 			comparePolylines((Polyline)node1, (Polyline)node2);
 		else if (node1 instanceof MathGroup);
 		else if (node1 instanceof VisualGroup);
-		else
-			fail("Unexpected class " + node1.getClass().getName());
+		else if (node1 instanceof ComponentsTransformObserver);
+		else fail("Unexpected class " + node1.getClass().getName());
 
 		Collection<Node> ch1 = node1.getChildren();
 		Collection<Node> ch2 = node2.getChildren();
@@ -197,6 +206,4 @@ public class SerialisationTestingUtils {
 			compareNodes (n1, n2);
 		}
 	}
-
-	//public
 }

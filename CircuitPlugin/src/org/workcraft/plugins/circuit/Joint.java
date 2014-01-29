@@ -27,10 +27,9 @@ import org.workcraft.dom.math.MathNode;
 
 
 @DisplayName("Joint")
-@VisualClass("org.workcraft.plugins.circuit.VisualJoint")
+@VisualClass(org.workcraft.plugins.circuit.VisualJoint.class)
 
 public class Joint extends MathNode {
-
 
 	public Joint() {
 
