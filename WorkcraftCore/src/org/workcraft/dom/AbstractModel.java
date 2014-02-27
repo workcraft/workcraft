@@ -21,14 +21,20 @@
 
 package org.workcraft.dom;
 
+import japa.parser.ast.Comment;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.util.Func;
 
 /**
  * A base class for all interpreted graph models.
@@ -47,7 +53,22 @@ public abstract class AbstractModel implements Model {
 
 	public AbstractModel(Container root, ReferenceManager referenceManager) {
 		this.root = root;
-		this.referenceManager = (referenceManager == null) ? new DefaultReferenceManager() : referenceManager;
+		this.referenceManager = referenceManager;
+
+		if (this.referenceManager==null) {
+//			this.referenceManager = new DefaultReferenceManager();
+			this.referenceManager =
+					new UniqueNameReferenceManager(null, new Func<Node, String>() {
+						@Override
+						public String eval(Node arg) {
+							if (arg instanceof PageNode) return "page";
+							if (arg instanceof Comment) return "comment";
+
+							return "node";
+						}
+					});
+		}
+
 		nodeContextTracker.attach(root);
 		this.referenceManager.attach(root);
 	}
@@ -125,10 +146,25 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public Properties getProperties(Node node) {
+		if (node != null) {
+			if (node instanceof PageNode)
+				return Properties.Mix.from(new DefaultNamePropertyDescriptor(this, node));
+		}
 		return null;
 	}
 
 	protected ReferenceManager getReferenceManager() {
 		return referenceManager;
 	}
+
+
+	public String getName(Node node) {
+		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
+//		return null;
+	}
+
+	public void setName(Node node, String name) {
+		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
+	}
+
 }

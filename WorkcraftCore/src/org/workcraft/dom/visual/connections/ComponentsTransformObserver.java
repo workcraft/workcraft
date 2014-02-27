@@ -26,9 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Collapsible;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.observation.TransformEvent;
@@ -89,8 +92,36 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 	}
 
 	private void update() {
-		firstShape = TransformHelper.transform(connection.getFirst(), TransformHelper.getTransform(connection.getFirst(), connection));
-		secondShape = TransformHelper.transform(connection.getSecond(), TransformHelper.getTransform(connection.getSecond(), connection));
+
+
+		VisualNode firstComponent = connection.getFirst();
+
+		VisualNode cur = firstComponent;
+		while (cur.getParent()!=null) {
+			boolean isCollapsed = cur instanceof Collapsible&&((Collapsible)cur).getIsCollapsed()&&!((Collapsible)cur).isCurrentLevelInside();
+
+			if (isCollapsed) {
+				firstComponent = cur;
+			}
+
+			cur = (VisualNode)cur.getParent();
+		}
+
+
+		VisualNode secondComponent = connection.getSecond();
+		cur = secondComponent;
+		while (cur.getParent()!=null) {
+			boolean isCollapsed = cur instanceof Collapsible&&((Collapsible)cur).getIsCollapsed()&&!((Collapsible)cur).isCurrentLevelInside();
+
+			if (isCollapsed) {
+				secondComponent = cur;
+			}
+			cur = (VisualNode)cur.getParent();
+		}
+
+
+		firstShape = TransformHelper.transform(firstComponent, TransformHelper.getTransform(firstComponent, connection));
+		secondShape = TransformHelper.transform(secondComponent, TransformHelper.getTransform(secondComponent, connection));
 
 		firstCenter = firstShape.getCenter();
 		secondCenter = secondShape.getCenter();

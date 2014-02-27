@@ -44,6 +44,7 @@ public class Dfs extends AbstractMathModel {
 	}
 
 	public Dfs(Container root, References refs) {
+
 		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {

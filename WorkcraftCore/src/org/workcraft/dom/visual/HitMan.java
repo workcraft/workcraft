@@ -230,12 +230,21 @@ public class HitMan
 	}
 
 	public static Node hitTestForConnection(Point2D point, Node node) {
+
 		Node nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
-				if ( (n instanceof Movable) && !(n instanceof Container) ) {
-					if (n instanceof Hidable) {
-						return !((Hidable)n).isHidden();
-					}
+				if ( (n instanceof Movable) ) {
+
+					boolean isContainer = (n instanceof Container);
+
+					boolean isHidden = false;
+					if (n instanceof Hidable)
+						isHidden = ((Hidable)n).isHidden();
+					boolean isCollapsed = false;
+					if (n instanceof Collapsible) isCollapsed = ((Collapsible)n).getIsCollapsed();
+
+					return !isHidden&&(!isContainer||isCollapsed);
+
 				}
 				return false;
 			}

@@ -21,11 +21,15 @@
 
 package org.workcraft.dom.visual;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 
@@ -70,29 +74,48 @@ class DrawMan
 	private void simpleDraw(final Decoration decoration, Node node)
 	{
 		AffineTransform oldTransform = graphics.getTransform();
-		if (node instanceof Drawable)
-			((Drawable)node).draw(new DrawRequest(){
-				@Override
-				public Decoration getDecoration() {
-					return decoration;
-				}
-				@Override
-				public Graphics2D getGraphics() {
-					return graphics;
-				}
-				@Override
-				public VisualModel getModel() {
-					return model;
-				}
-			});
+
+		boolean isCollapsed = node instanceof Collapsible&&((Collapsible)node).getIsCollapsed();
+		boolean isInsideCollapsed = isCollapsed&&((Collapsible)node).isCurrentLevelInside();
+
+		if (node instanceof Drawable) {
+
+				((Drawable)node).draw(new DrawRequest(){
+					@Override
+					public Decoration getDecoration() {
+						return decoration;
+					}
+					@Override
+					public Graphics2D getGraphics() {
+						return graphics;
+					}
+					@Override
+					public VisualModel getModel() {
+						return model;
+					}
+				});
+
+
+		}
 		graphics.setTransform(oldTransform);
 
-		for (Node n : node.getChildren())
-			if (!(n instanceof VisualConnection)) // this will break at some point
-				draw(decoration, n);
+		// a collapsed node does not draw its contents, unless we are inside this node
+		if (!isCollapsed || isInsideCollapsed) {
 
-		for (Node n : node.getChildren())
-			if (n instanceof VisualConnection)
+			// draw nodes
+			for (Node n : node.getChildren()) {
+				if (n instanceof VisualConnection) continue; // this will break at some point
+
 				draw(decoration, n);
+			}
+
+			// draw connections
+			for (Node n : node.getChildren()) {
+				if (!(n instanceof VisualConnection)) continue;
+
+				draw(decoration, n);
+			}
+		}
+
 	}
 }

@@ -54,8 +54,12 @@ public interface VisualModel extends Model, ObservableState {
 	public void removeFromSelection (Node node);
 	public void removeFromSelection (Collection<Node> nodes);
 	public void deleteSelection();
+
 	public void groupSelection();
 	public void ungroupSelection();
+
+	public void groupPageSelection();
+	public void ungroupPageSelection();
 
 	public void setCurrentLevel (Container group);
 
