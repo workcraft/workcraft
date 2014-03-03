@@ -76,17 +76,19 @@ public class VisualPopRegister extends VisualBinaryRegister {
 
 		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
+		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+		Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
 		boolean trueMarked = getReferencedPopRegister().isTrueMarked();
 		boolean trueExcited = false;
 		boolean falseMarked = getReferencedPopRegister().isFalseMarked();
 		boolean falseExcited = false;
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof BinaryRegisterDecoration) {
+			defaultColor = getForegroundColor();
+			tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
 			trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
 			trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
 			falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
 			falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
-			defaultColor = getForegroundColor();
 		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -114,6 +116,7 @@ public class VisualPopRegister extends VisualBinaryRegister {
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
 
+		g.setColor(tokenColor);
 		g.setStroke(new BasicStroke(strokeWidth2));
 		if (trueMarked) {
 			g.fill(tokenShape);

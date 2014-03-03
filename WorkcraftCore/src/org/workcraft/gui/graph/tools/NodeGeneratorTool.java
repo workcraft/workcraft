@@ -112,7 +112,7 @@ public class NodeGeneratorTool extends AbstractTool {
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return Decorator.Empty.INSTANCE;
 	}
 

@@ -38,6 +38,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -103,7 +104,7 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first,	Node second) throws InvalidConnectionException {
+	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		if (first instanceof VisualTransition) {
@@ -219,12 +220,28 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction) {
 		SignalTransition transition = stg.createSignalTransition(signalName);
-
 		stg.setName(transition, signalName + direction.toString());
 		transition.setSignalType(type);
 		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
 		add(visualTransition);
 		return visualTransition;
+	}
+
+	public Collection<VisualPlace> getVisualPlaces() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
+	}
+
+	public Collection<VisualTransition> getVisualTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
+	}
+
+	public VisualTransition getVisualTransition(Transition transition) {
+		for (VisualTransition vt: getVisualTransitions()) {
+			if (vt.getReferencedTransition() == transition) {
+				return vt;
+			}
+		}
+		return null;
 	}
 
 }

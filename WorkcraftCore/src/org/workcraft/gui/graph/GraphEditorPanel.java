@@ -279,7 +279,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 //		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-		getModel().draw(g2d, toolboxPanel.getTool().getDecorator());
+		getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
 
 		if (hasFocus()) {
 			toolboxPanel.getTool().drawInUserSpace(this, g2d);

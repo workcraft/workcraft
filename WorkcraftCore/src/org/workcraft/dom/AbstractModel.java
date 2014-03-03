@@ -44,7 +44,7 @@ import org.workcraft.util.Func;
 public abstract class AbstractModel implements Model {
 	final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 	private ReferenceManager referenceManager;
-	private String title = "";
+	private String title = "Untitled";
 	private Container root;
 
 	public AbstractModel (Container root) {

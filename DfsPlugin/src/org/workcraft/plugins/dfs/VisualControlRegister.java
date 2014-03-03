@@ -108,17 +108,19 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
 		Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 
+		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+		Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
 		boolean trueMarked = getReferencedControlRegister().isTrueMarked();
 		boolean trueExcited = false;
 		boolean falseMarked = getReferencedControlRegister().isFalseMarked();
 		boolean falseExcited = false;
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
 		if (d instanceof BinaryRegisterDecoration) {
+			defaultColor = getForegroundColor();
+			tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
 			trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
 			trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
 			falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
 			falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
-			defaultColor = getForegroundColor();
 		}
 
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -171,12 +173,12 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		g.setStroke(new BasicStroke(strokeWidth1));
 		g.draw(shape);
 
+		g.setColor(tokenColor);
+		g.setStroke(new BasicStroke(strokeWidth2));
 		if (trueMarked) {
-			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(trueTokenShape);
 		}
 		if (falseMarked) {
-			g.setStroke(new BasicStroke(strokeWidth2));
 			g.draw(falseTokenShape);
 		}
 

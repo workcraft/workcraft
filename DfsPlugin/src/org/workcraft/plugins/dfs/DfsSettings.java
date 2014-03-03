@@ -22,8 +22,10 @@
 package org.workcraft.plugins.dfs;
 
 import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -32,8 +34,41 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class DfsSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
-	private static Color computedLogicColor  = new Color (153, 153, 153);
-	private static Color synchronisationRegisterColor = new Color (153, 153, 153);
+	private static final String prefix = "DfsSettings";
+	private static final String keyComputedLogicColor  = prefix + ".computedLogicColor";
+	private static final String keySynchronisationRegisterColor = prefix + "synchronisationRegisterColor";
+	private static final String keyTokenPalette = prefix + "tokenPalette";
+
+	private static final Color defaultComputedLogicColor  = new Color (153, 153, 153);
+	private static final Color defaultSynchronisationRegisterColor = new Color (153, 153, 153);
+	private static final Palette defaultTokenPalette = Palette.RGB;
+
+	private static Color computedLogicColor  = defaultComputedLogicColor;
+	private static Color synchronisationRegisterColor = defaultSynchronisationRegisterColor;
+	private static Palette tokenPalette = defaultTokenPalette;
+
+	public enum Palette {
+		RGBYMC("6-color palette (RGBYMC)", new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA, Color.CYAN}),
+		RGB("3-color palette (RGB)", new Color[]{Color.RED, Color.GREEN, Color.BLUE}),
+		NONE("Empty palette", new Color[]{Color.BLACK}),
+		RANDOM("Large Lab palette", null);
+
+		public final String name;
+		public final Color[] colors;
+
+		private Palette(String name, Color[] colors) {
+			this.name = name;
+			this.colors = colors;
+		}
+
+		static public Map<String, Palette> getChoice() {
+			LinkedHashMap<String, Palette> choice = new LinkedHashMap<String, Palette>();
+			for (Palette item : Palette.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	}
 
 	public DfsSettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -41,22 +76,33 @@ public class DfsSettings implements SettingsPage {
 		properties.add(new PropertyDeclaration<DfsSettings, Color>(
 				this, "Computed logic color", Color.class) {
 			protected void setter(DfsSettings object, Color value) {
-				DfsSettings.setComputedLogicColor(value);
+				setComputedLogicColor(value);
 			}
 			protected Color getter(DfsSettings object) {
-				return DfsSettings.getComputedLogicColor();
+				return getComputedLogicColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<DfsSettings, Color>(
 				this, "Register synchronisation color", Color.class) {
 			protected void setter(DfsSettings object, Color value) {
-				DfsSettings.setSynchronisationRegisterColor(value);
+				setSynchronisationRegisterColor(value);
 			}
 			protected Color getter(DfsSettings object) {
-				return DfsSettings.getSynchronisationRegisterColor();
+				return getSynchronisationRegisterColor();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<DfsSettings, Palette>(
+				this, "Token palette", Palette.class, Palette.getChoice()) {
+			protected void setter(DfsSettings object, Palette value) {
+				setTokenPalette(value);
+			}
+			protected Palette getter(DfsSettings object) {
+				return getTokenPalette();
+			}
+		});
+
 	}
 
 	@Override
@@ -66,14 +112,16 @@ public class DfsSettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		setComputedLogicColor(config.getColor("DfsSettings.computedLogicColor", new Color (153, 153, 153)));
-		setSynchronisationRegisterColor(config.getColor("DfsSettings.synchronisationRegisterColor", new Color (153, 153, 153)));
+		setComputedLogicColor(config.getColor(keyComputedLogicColor, defaultComputedLogicColor));
+		setSynchronisationRegisterColor(config.getColor(keySynchronisationRegisterColor, defaultSynchronisationRegisterColor));
+		setTokenPalette(config.getEnum(keyTokenPalette, Palette.class, defaultTokenPalette));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.setColor("DfsSettings.computedLogicColor", getComputedLogicColor());
-		config.setColor("DfsSettings.synchronisationRegisterColor", getSynchronisationRegisterColor());
+		config.setColor(keyComputedLogicColor, getComputedLogicColor());
+		config.setColor(keySynchronisationRegisterColor, getSynchronisationRegisterColor());
+		config.setEnum(keyTokenPalette, Palette.class, getTokenPalette());
 	}
 
 	@Override
@@ -91,7 +139,7 @@ public class DfsSettings implements SettingsPage {
 	}
 
 	public static void setComputedLogicColor(Color value) {
-		DfsSettings.computedLogicColor = value;
+		computedLogicColor = value;
 	}
 
 	public static Color getSynchronisationRegisterColor() {
@@ -99,7 +147,15 @@ public class DfsSettings implements SettingsPage {
 	}
 
 	public static void setSynchronisationRegisterColor(Color value) {
-		DfsSettings.synchronisationRegisterColor = value;
+		synchronisationRegisterColor = value;
+	}
+
+	public static Palette getTokenPalette() {
+		return tokenPalette;
+	}
+
+	public static void setTokenPalette(Palette value) {
+		tokenPalette = value;
 	}
 
 }

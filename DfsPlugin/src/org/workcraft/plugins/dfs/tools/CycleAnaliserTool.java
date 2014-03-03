@@ -48,7 +48,6 @@ public class CycleAnaliserTool extends AbstractTool {
 	final private int COLUMN_CYCLE = 3;
 
 	private VisualDfs dfs;
-	private GraphEditor editor;
 	private ArrayList<Cycle> cycles;
 	private double minDelay;
 	private double maxDelay;
@@ -61,17 +60,44 @@ public class CycleAnaliserTool extends AbstractTool {
 	protected JPanel statusPanel;
 	protected JTable cycleTable;
 
-	public CycleAnaliserTool() {
-		super();
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
 		controlPanel = new JPanel();
 		cycleTable = new JTable(new CycleTableModel());
-		cycleTable.addMouseListener(new CycleTableMouseListenerImplementation());
 		cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		cycleTable.getColumnModel().getColumn(COLUMN_THROUGHPUT).setPreferredWidth(50);
 		cycleTable.getColumnModel().getColumn(COLUMN_TOKEN).setPreferredWidth(30);
 		cycleTable.getColumnModel().getColumn(COLUMN_DELAY).setPreferredWidth(30);
 		cycleTable.getColumnModel().getColumn(COLUMN_CYCLE).setPreferredWidth(300);
 		cycleTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		cycleTable.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				int selectedRow = cycleTable.getSelectedRow();
+				if (cycles != null && selectedRow >= 0 && selectedRow < cycles.size()) {
+					Cycle curCycle = cycles.get(selectedRow);
+					if (selectedCycle != curCycle) {
+						selectedCycle = curCycle;
+					} else {
+						selectedCycle = null;
+						cycleTable.clearSelection();
+					}
+					editor.repaint();
+					editor.requestFocus();
+				}
+			}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+		});
 		infoPanel = new JScrollPane(cycleTable);
 		statusPanel = new JPanel();
 
@@ -94,7 +120,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					cycleCount = Integer.parseInt(cycleCountText.getText());
-					resetSelectedCycle();
+					resetSelectedCycle(editor);
 				}
 				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cycleCountText.setText(new Integer(cycleCount).toString());
@@ -117,7 +143,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				cycleCount = Integer.parseInt(cycleCountText.getText());
-				resetSelectedCycle();
+				resetSelectedCycle(editor);
 			}
 		});
 
@@ -131,17 +157,26 @@ public class CycleAnaliserTool extends AbstractTool {
 	}
 
 	@Override
-	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanModify(false);
-		this.dfs = (VisualDfs)editor.getModel();
-		this.editor = editor;
-		cycleTable.clearSelection();
-		selectedCycle = null;
-		this.cycles = findCycles();
+	public JPanel getInterfacePanel() {
+		return interfacePanel;
 	}
 
 	@Override
-	public void deactivated(GraphEditor editor) {
+	public void activated(final GraphEditor editor) {
+		super.activated(editor);
+		editor.getWorkspaceEntry().setCanModify(false);
+		dfs = (VisualDfs)editor.getModel();
+		cycleTable.clearSelection();
+		selectedCycle = null;
+		cycles = findCycles();
+	}
+
+	@Override
+	public void deactivated(final GraphEditor editor) {
+		cycles = null;
+		selectedCycle = null;
+		dfs = null;
+		cycleTable.clearSelection();
 		editor.getWorkspaceEntry().setCanModify(true);
 	}
 
@@ -161,12 +196,7 @@ public class CycleAnaliserTool extends AbstractTool {
 	}
 
 	@Override
-	public JPanel getInterfacePanel() {
-		return interfacePanel;
-	}
-
-	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
@@ -260,7 +290,7 @@ public class CycleAnaliserTool extends AbstractTool {
 		return result;
 	}
 
-	private void resetSelectedCycle() {
+	private void resetSelectedCycle(final GraphEditor editor) {
 		selectedCycle = null;
 		cycleTable.tableChanged(null);
 		editor.repaint();
@@ -329,36 +359,6 @@ public class CycleAnaliserTool extends AbstractTool {
 				}
 			}
 			return result;
-		}
-	}
-
-	private final class CycleTableMouseListenerImplementation implements MouseListener {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			int selectedRow = cycleTable.getSelectedRow();
-			if (cycles != null && selectedRow >= 0 && selectedRow < cycles.size()) {
-				Cycle curCycle = cycles.get(selectedRow);
-				if (selectedCycle != curCycle) {
-					selectedCycle = curCycle;
-				} else {
-					selectedCycle = null;
-					cycleTable.clearSelection();
-				}
-				editor.repaint();
-				editor.requestFocus();
-			}
-		}
-		@Override
-		public void mouseEntered(MouseEvent arg0) {
-		}
-		@Override
-		public void mouseExited(MouseEvent arg0) {
-		}
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-		}
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
 		}
 	}
 

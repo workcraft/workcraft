@@ -14,5 +14,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

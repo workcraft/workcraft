@@ -37,12 +37,8 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 	}
 
 	@Override
-	public void activated(GraphEditor editor) {
-		super.activated(editor);
-		createInterface();
-	}
-
-	private void createInterface() {
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
 		JPanel sonPanel = new JPanel();
 		controlPanel.add(sonPanel);
 		JButton supergroupButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -50,7 +46,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		supergroupButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectionSupergroup();
+				selectionSupergroup(editor);
 			}
 		});
 		sonPanel.add(supergroupButton);
@@ -69,7 +65,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			if (model.getCurrentLevel() instanceof VisualGroup) {
 				VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
 				if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
-					setChannelPlaceToolState(true);
+					setChannelPlaceToolState(e.getEditor(), true);
 				}
 			}
 
@@ -79,7 +75,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
 				if (selectedNode instanceof VisualONGroup) {
-					setChannelPlaceToolState(false);
+					setChannelPlaceToolState(e.getEditor(), false);
 				}
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
@@ -138,12 +134,12 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			if (!e.isShiftDown()) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_PAGE_UP:
-					setChannelPlaceToolState(true);
+					setChannelPlaceToolState(e.getEditor(), true);
 					// Note: level-up is handled in the parent
 					// selectionLevelUp();
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
-					setChannelPlaceToolState(false);
+					setChannelPlaceToolState(e.getEditor(), false);
 					// Note: level-down is handled in the parent
 					// selectionLevelDown();
 					break;
@@ -154,19 +150,19 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		if(e.isCtrlDown()){
 			switch (e.getKeyCode()){
 			case KeyEvent.VK_B:
-				selectionSupergroup();
+				selectionSupergroup(e.getEditor());
 				break;
 			}
 		}
 	}
 
-	private void selectionSupergroup() {
-		((VisualSON)getEditor().getModel()).superGroupSelection();
-		getEditor().repaint();
+	private void selectionSupergroup(final GraphEditor editor) {
+		((VisualSON)editor.getModel()).superGroupSelection();
+		editor.repaint();
 	}
 
-	private void setChannelPlaceToolState(boolean state) {
-		getEditor().getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
+	private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
+		editor.getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
 	}
 
 }

@@ -22,6 +22,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.workspace.WorkspaceEntry;
 
 /**
  * @author Dominic Wist
@@ -37,14 +38,16 @@ public class DesiJTask implements Task<DesiJResult> {
 
 	private DesiJSettings desiJSettings = null; // is not always set
 	private String[] desiJArgs; // parameters to call desiJMain(desijArgs);
+	private final WorkspaceEntry we;
 
 
 	/*
 	 * Constructors
 	 */
-	public DesiJTask(STGModel model, Framework framework, String[] desiJParameters) {
+	public DesiJTask(STGModel model, WorkspaceEntry we, Framework framework, String[] desiJParameters) {
 
 		this.specModel = model;
+		this.we = we;
 		desiJArgs = new String[desiJParameters.length+1];
 
 		// copy content from desiJParameters to desiJArgs
@@ -60,8 +63,8 @@ public class DesiJTask implements Task<DesiJResult> {
 		}
 	}
 
-	public DesiJTask(STGModel model, Framework framework, DesiJSettings settings) {
-		this(model, framework, generateCommandLineParameters(settings));
+	public DesiJTask(STGModel model, WorkspaceEntry we, Framework framework, DesiJSettings settings) {
+		this(model, we, framework, generateCommandLineParameters(settings));
 		this.desiJSettings = settings;
 	}
 
@@ -364,6 +367,10 @@ public class DesiJTask implements Task<DesiJResult> {
 		}
 
 		return result;
+	}
+
+	public WorkspaceEntry getWorkspaceEntry() {
+		return we;
 	}
 
 }

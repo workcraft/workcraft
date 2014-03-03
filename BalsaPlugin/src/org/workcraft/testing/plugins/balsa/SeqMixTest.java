@@ -252,7 +252,8 @@ public class SeqMixTest {
 					long ts = System.currentTimeMillis();
 
 					System.setOut(desiJOut);
-					Result<? extends DesiJResult> result = f.getTaskManager().execute(new DesiJTask(model, f, desiJSettings), "desij");
+					//FIXME: not null!
+					Result<? extends DesiJResult> result = f.getTaskManager().execute(new DesiJTask(model, null, f, desiJSettings), "desij");
 
 					long dt = System.currentTimeMillis() - ts;
 

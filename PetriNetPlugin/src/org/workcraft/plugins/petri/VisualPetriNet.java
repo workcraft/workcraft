@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.petri;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
@@ -97,6 +99,23 @@ public class VisualPetriNet extends AbstractVisualModel {
 		VisualConnection ret = new VisualConnection(con, c1, c2);
 
 		Hierarchy.getNearestContainer(c1, c2).add(ret);
+	}
+
+	public Collection<VisualPlace> getVisualPlaces() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
+	}
+
+	public Collection<VisualTransition> getVisualTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
+	}
+
+	public VisualTransition getVisualTransition(Transition transition) {
+		for (VisualTransition vt: getVisualTransitions()) {
+			if (vt.getReferencedTransition() == transition) {
+				return vt;
+			}
+		}
+		return null;
 	}
 
 }

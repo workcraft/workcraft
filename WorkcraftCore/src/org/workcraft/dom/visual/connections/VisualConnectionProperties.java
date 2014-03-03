@@ -45,4 +45,6 @@ public interface VisualConnectionProperties {
 	public Point2D getSecondCenter();
 	public Touchable getSecondShape();
 	public ScaleMode getScaleMode();
+
+	public boolean isTokenColorPropagator();
 }

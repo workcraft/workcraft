@@ -6,12 +6,12 @@ import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -23,34 +23,18 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Func;
 
 public class SimulationTool extends PetriNetSimulationTool {
-	private VisualPolicyNet policy;
-	private GraphEditor editor;
 	private PetriNetGenerator generator;
 
 	@Override
-	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanModify(false);
-		policy = (VisualPolicyNet)editor.getModel();
-		generator = new PetriNetGenerator(policy);
-		visualNet = generator.getPetriNet();
-		net = (PetriNetModel)visualNet.getMathModel();
-		initialMarking = readMarking();
-		traceStep = 0;
-		branchTrace = null;
-		branchStep = 0;
-		this.editor = editor;
+	public void activated(final GraphEditor editor) {
+		super.activated(editor);
 		statusPanel.setVisible(false);
-		update();
 	}
 
 	@Override
-	public void deactivated(GraphEditor editor) {
-	}
-
-	@Override
-	public void update() {
-		super.update();
-		editor.repaint();
+	public VisualModel getUnderlyingModel(VisualModel model) {
+		generator = new PetriNetGenerator((VisualPolicyNet)model);
+		return generator.getPetriNet();
 	}
 
 	@Override
@@ -73,12 +57,12 @@ public class SimulationTool extends PetriNetSimulationTool {
 		}
 
 		if (transition != null) {
-			executeTransition(transition);
+			executeTransition(e.getEditor(), transition);
 		}
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
@@ -127,6 +111,10 @@ public class SimulationTool extends PetriNetSimulationTool {
 						@Override
 						public int getTokens() {
 							return (p == null ? 0 : p.getReferencedPlace().getTokens());
+						}
+						@Override
+						public Color getTokenColor() {
+							return p.getTokenColor();
 						}
 					};
 				}

@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 
-public abstract class VisualBinaryRegister extends VisualDelayComponent {
+public abstract class VisualBinaryRegister extends VisualAbstractRegister {
 
 	public VisualBinaryRegister(BinaryRegister register) {
 		super(register);

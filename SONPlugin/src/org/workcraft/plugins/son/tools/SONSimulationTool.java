@@ -108,11 +108,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	protected Timer timer = null;
 
-	public SONSimulationTool(){
-		super();
-		createInterface();
-	}
-
 	class typeMode {
 		public int value;
 		public String description;
@@ -126,7 +121,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			return description;
 		}
 	}
-
 
 	private void applyMarking(Map<Node, Boolean> marking)
 	{
@@ -144,7 +138,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 	}
 
-	protected void update()
+	protected void updateState()
 	{
 		if (timer == null) {
 			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
@@ -231,7 +225,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private boolean step() {
 		boolean ret = quietStep();
-		update();
+		updateState();
 		return ret;
 	}
 
@@ -290,7 +284,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private boolean stepBack() {
 		boolean ret = quietStepBack();
-		update();
+		updateState();
 		return ret;
 	}
 
@@ -311,7 +305,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			timer.stop();
 			timer = null;
 		}
-		update();
+		updateState();
 	}
 
 	protected Map<Node, Boolean> readMarking() {
@@ -458,7 +452,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					while (traceStep>row&&work) work=quietStepBack();
 					while (traceStep<row&&work) work=quietStep();
 
-					update();
+					updateState();
 				}
 			} else {
 				if (branchTrace!=null&&row>=traceStep&&row<traceStep+branchTrace.size()) {
@@ -466,7 +460,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					boolean work=true;
 					while (traceStep+branchStep>row&&work) work=quietStepBack();
 					while (traceStep+branchStep<row&&work) work=quietStep();
-					update();
+					updateState();
 				}
 			}
 		}
@@ -584,7 +578,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	}
 
-	private void createInterface(){
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
+
 		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
 		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
@@ -654,7 +651,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					timer.setDelay(getAnimationDelay());
 					timer.start();
 				}
-				update();
+				updateState();
 			}
 		});
 
@@ -674,7 +671,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					timer.stop();
 					timer = null;
 				}
-				update();
+				updateState();
 			}
 		});
 
@@ -713,7 +710,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					else
 						initialMarking = currentMarking;
 					reset();
-					update();
+					updateState();
 			}
 		});
 
@@ -732,7 +729,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					branchStep = 0;
 					branchTrace = null;
 				}
-				update();
+				updateState();
 			}
 		});
 
@@ -749,7 +746,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					}
 					savedBranchStep = branchStep;
 				}
-				update();
+				updateState();
 			}
 		});
 		traceTable.getColumn("Trace").setMaxWidth(0);
@@ -768,8 +765,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	}
 
 	@Override
-	public void activated(GraphEditor editor)
-	{
+	public void activated(GraphEditor editor) {
 		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().captureMemento();
 		visualNet = editor.getModel();
@@ -792,16 +788,15 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			for(Condition c : group.getConditions())
 				phases.put(c, relationAlg.getPhase(c));
 		}
-		if (ErrTracingDisable.showErrorTracing())
+		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
-
-		update();
+		}
+		updateState();
 	}
 
 	@Override
-	public void deactivated(GraphEditor editor)
-	{
-		//editor.getWorkspaceEntry().cancelMemento();
+	public void deactivated(GraphEditor editor)	{
+		editor.getWorkspaceEntry().cancelMemento();
 		if (traceStep==0&&branchTrace==null) {
 			applyMarking(readMarking());
 			trace = null;
@@ -818,7 +813,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			timer.stop();
 			timer = null;
 		}
-		update();
+		updateState();
 	}
 
 
@@ -852,7 +847,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		branchTrace.add(step);
 
 		step();
-		update();
+		updateState();
 		return;
 	}
 
@@ -1026,7 +1021,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	}
 
 	@Override
-	public Decorator getDecorator() {
+	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
@@ -1110,7 +1105,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	public void setReverse(boolean reverse){
 		this.reverse = reverse;
-		update();
+		updateState();
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private static double defaultLineWidth = 0.02;
 	private static double defaultArrowWidth = 0.15;
 	private static double defaultArrowLength = 0.4;
-	private static double defaultBubbleSize = 0.15;
+	private static double defaultBubbleSize = 0.2;
 	public static double HIT_THRESHOLD = 0.2;
 	private static Color defaultColor = Color.BLACK;
 
@@ -127,6 +127,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	private boolean hasBubble = false;
 	private double bubbleSize = defaultBubbleSize;
+
+	private boolean isTokenColorPropagator = false;
 
 	private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
@@ -389,6 +391,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		if (value < 0.1) value = 0.1;
 		this.bubbleSize = value;
 		invalidate();
+	}
+
+	@Override
+	public boolean isTokenColorPropagator() {
+		return isTokenColorPropagator;
+	}
+
+	public void setTokenColorPropagator(boolean value) {
+		isTokenColorPropagator = value;
 	}
 
 	public Point2D getPointOnConnection(double t) {

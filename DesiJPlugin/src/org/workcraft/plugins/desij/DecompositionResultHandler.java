@@ -1,7 +1,9 @@
 package org.workcraft.plugins.desij;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,22 +12,32 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.desij.tasks.DesiJResult;
+import org.workcraft.plugins.desij.tasks.DesiJTask;
+import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.FileUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult> {
 
 	private Framework framework;
 	private boolean logFileOutput;
+	private final DesiJTask task;
 
-	public DecompositionResultHandler(Framework framework, boolean logFileOutput) {
+	public DecompositionResultHandler(Framework framework, boolean logFileOutput, DesiJTask task) {
 		this.framework = framework;
 		this.logFileOutput = logFileOutput;
+		this.task = task;
 	}
 
 	@Override
@@ -98,18 +110,35 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 					});*/
 				}
 			if (desijResult.getModifiedSpecResult() != null) {
-				String resultPath = desijResult.getSpecificationModel().getTitle() + "_modifiedResult.g";
-
 				try {
-					workspace.delete(Path.fromString(resultPath));
-				} catch (OperationCancelledException e) {
-					return;
+					STGModel stg = new DotGImporter().importSTG(new FileInputStream(desijResult.getModifiedSpecResult()));
+
+					final WorkspaceEntry we = task.getWorkspaceEntry();
+					final Path<String> path = we.getWorkspacePath();
+
+					final String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+
+					final WorkspaceEntry resultWe = framework.getWorkspace().add(path.getParent(), fileName + "_contracted", new ModelEntry(new STGModelDescriptor() , stg), true);
+					framework.getMainWindow().createEditorWindow(resultWe);
+
+					workspace.fireWorkspaceChanged(); // update of workspace window
+
+				} catch (final FileNotFoundException e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					});
+				} catch (final DeserialisationException e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(null,
+									e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					});
 				}
-
-				File modifiedSpecification = workspace.getFile(Path.fromString(resultPath));
-				desijResult.getModifiedSpecResult().renameTo(modifiedSpecification);
-
-				workspace.fireWorkspaceChanged(); // update of workspace window
 
 			/*	// pop up MessageBox
 				final String successMessage = "DesiJ operation succeeded.";
@@ -136,6 +165,10 @@ public class DecompositionResultHandler extends DummyProgressMonitor<DesiJResult
 				}
 			});
 		}
+	}
+
+	public DesiJTask getTask() {
+		return task;
 	}
 
 	private String getComponentSuffix(File componentFile) {

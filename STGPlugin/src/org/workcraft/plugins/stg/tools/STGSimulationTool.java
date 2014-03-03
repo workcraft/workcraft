@@ -16,12 +16,20 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
+import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.util.ColorGenerator;
 
 public class STGSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
@@ -169,12 +177,9 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	public STGSimulationTool() {
-		super();
-		createInterface();
-	}
-
-	private void createInterface() {
+	@Override
+	public void createInterfacePanel(final GraphEditor editor) {
+		super.createInterfacePanel(editor);
 		stateMap = new HashMap<String, SignalState>();
 		stateTable = new JTable(new StateTableModel());
 		statusPanel.setLayout(new BorderLayout());
@@ -187,8 +192,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 	}
 
 	@Override
-	protected void update() {
-		super.update();
+	public void updateState(final GraphEditor editor) {
+		super.updateState(editor);
 		ArrayList<String> combinedTrace = new ArrayList<String>();
 		if (trace != null) {
 			combinedTrace.addAll(trace.subList(0, traceStep));
@@ -243,17 +248,9 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 	}
 
 	@Override
-	public void activated(GraphEditor editor) {
-		editor.getWorkspaceEntry().setCanModify(false);
-		editor.getWorkspaceEntry().captureMemento();
-		visualNet = editor.getModel();
-		net = (PetriNetModel)visualNet.getMathModel();
-		initialMarking = readMarking();
-		traceStep = 0;
-		branchTrace = null;
-		branchStep = 0;
+	public void activated(final GraphEditor editor) {
+		super.activated(editor);
 		initialiseStateMap();
-		update();
 	}
 
 	protected void initialiseStateMap() {
@@ -279,6 +276,50 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 						break;
 					}
 					stateMap.put(signalState.name, signalState);
+				}
+			}
+		}
+	}
+
+
+	@Override
+	protected void coloriseTokens(Transition t) {
+		VisualTransition vt = ((VisualSTG)visualNet).getVisualTransition(t);
+		if (vt == null) return;
+		Color tokenColor = Color.black;
+		ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
+		if (tokenColorGenerator != null) {
+			// generate token colour
+			tokenColor = tokenColorGenerator.updateColor();
+		} else {
+			// combine preset token colours
+			for (Connection c: visualNet.getConnections(vt)) {
+				if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
+					VisualConnection vc = (VisualConnection)c;
+					if (vc.isTokenColorPropagator()) {
+						if (vc.getFirst() instanceof VisualPlace) {
+							VisualPlace vp = (VisualPlace)c.getFirst();
+							tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
+						} else if (vc instanceof VisualImplicitPlaceArc) {
+							VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc)vc;
+							tokenColor = Coloriser.colorise(tokenColor, vipa.getTokenColor());
+						}
+					}
+				}
+			}
+		}
+		// propagate the colour to postset tokens
+		for (Connection c: visualNet.getConnections(vt)) {
+			if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
+				VisualConnection vc = (VisualConnection)c;
+				if (vc.isTokenColorPropagator()) {
+					if (vc.getSecond() instanceof VisualPlace) {
+						VisualPlace vp = (VisualPlace)c.getSecond();
+						vp.setTokenColor(tokenColor);
+					} else if (vc instanceof VisualImplicitPlaceArc) {
+						VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc)vc;
+						vipa.setTokenColor(tokenColor);
+					}
 				}
 			}
 		}
