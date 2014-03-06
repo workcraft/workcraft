@@ -16,7 +16,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
+import org.workcraft.dom.visual.TouchableRenderedText;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -36,7 +36,7 @@ public class VisualCondition extends VisualComponent{
 
 	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
-	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, 0.0);
+	private TouchableRenderedText errorRenderedText = new TouchableRenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
@@ -125,9 +125,17 @@ public class VisualCondition extends VisualComponent{
 
 	private void cahceErrorRenderedText(DrawRequest r) {
 		String error = "Err = "+((Integer)this.getErrors()).toString();
-		double offset = 0.8 * size;
+		//double o = 0.8 * size;
+
+		Point2D offset = getNameOffset(errLabelPositioning);
+		if (errLabelPositioning.ySign<0) {
+			offset.setLocation(offset.getX(), offset.getY()-0.4);
+		} else {
+			offset.setLocation(offset.getX(), offset.getY()+0.4);
+		}
+
 		if (errorRenderedText.isDifferent(error, labelFont, errLabelPositioning, offset)) {
-			errorRenderedText = new RenderedText(error, labelFont, errLabelPositioning, offset);
+			errorRenderedText = new TouchableRenderedText(error, labelFont, errLabelPositioning, offset);
 		}
 	}
 

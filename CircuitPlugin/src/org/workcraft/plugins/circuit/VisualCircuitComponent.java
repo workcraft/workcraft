@@ -413,7 +413,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
-	@Override
+	// TODO: still need to improve this label positioning
 	public double getLabelOffset() {
 		double result = size / 2;
 		if (totalBB != null) {
@@ -435,6 +435,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 		return result;
 	}
+
 
 	@Override
 	public void draw(DrawRequest r) {

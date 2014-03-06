@@ -17,11 +17,13 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 
@@ -71,14 +73,12 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		return isInside;
 	}
 
+	private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+
 	public VisualPage(MathNode refNode) {
 		super(refNode);
 		addPropertyDeclarations();
 	}
-
-
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-
 
 	public List<Node> unGroup() {
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
@@ -156,13 +156,25 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	}
 
 	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
+
 		if (getIsCollapsed()&&!isCurrentLevelInside()) {
-			Rectangle2D sb = new Rectangle2D.Double();
-			sb.setRect(-0.5, -0.5, 1, 1);
-			return sb;
+			return super.getInternalBoundingBoxInLocalSpace();
 		} else {
-			Rectangle2D ret = super.getBoundingBoxInLocalSpace();
+			return BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+		}
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
+
+		Rectangle2D ret = super.getBoundingBoxInLocalSpace();
+
+		if (getIsCollapsed()&&!isCurrentLevelInside()) {
+			return ret;
+		} else {
 			ret = BoundingBoxHelper.union(ret, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
 			return ret;
 		}
@@ -177,7 +189,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			component.cacheRenderedText(r);
 		}
 
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
 
 		if (bb != null && getParent() != null) {
@@ -191,6 +203,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 				g.draw(bb);
+
 				drawNameInLocalSpace(r);
 				drawLabelInLocalSpace(r);
 

@@ -38,6 +38,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Hierarchy;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
@@ -51,11 +52,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
-	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, getLabelOffset());
+	private TouchableRenderedText labelRenderedText = new TouchableRenderedText("", labelFont, labelPositioning, getLabelOffset(labelPositioning));
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
+	private TouchableRenderedText nameRenderedText = new TouchableRenderedText("", nameFont, namePositioning, getNameOffset(namePositioning));
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -244,13 +245,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return CommonVisualSettings.getLabelVisibility();
 	}
 
-	public double getLabelOffset() {
-		return 0.5 * size;
-	}
-
 	private void cacheLabelRenderedText(DrawRequest r) {
-		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, getLabelOffset())) {
-			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, getLabelOffset());
+
+		Point2D offset = getLabelOffset(labelPositioning);
+
+		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, offset)) {
+			labelRenderedText = new TouchableRenderedText(label, labelFont, labelPositioning, getLabelOffset(labelPositioning));
 		}
 	}
 
@@ -268,17 +268,42 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return CommonVisualSettings.getNameVisibility();
 	}
 
-	public double getNameOffset() {
-		return 0.5 * size;
+
+	public Point2D getLabelOffset(Positioning positioning) {
+		return getNameOffset(positioning);
 	}
+
+	public Point2D getNameOffset(Positioning positioning) {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		double xOffset = 0.0;
+		double yOffset = 0.0;
+
+		xOffset = (positioning.xSign<0)?bb.getMinX():((positioning.xSign>0)?bb.getMaxX():bb.getCenterX());
+		yOffset = (positioning.ySign<0)?bb.getMinY():((positioning.ySign>0)?bb.getMaxY():bb.getCenterY());
+
+
+		return new Point2D.Double(xOffset, yOffset);
+	}
+
+	/*
+	 * The internal bounding box does not include the related label and name of the node
+	 */
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
+		return bb;
+	}
+
 
 	private void cacheNameRenderedText(DrawRequest r) {
 		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
 		if (name == null) {
 			name = "";
 		}
-		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, getNameOffset())) {
-			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
+
+		Point2D offset = getNameOffset(namePositioning);
+
+		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
+			nameRenderedText = new TouchableRenderedText(name, nameFont, namePositioning, getNameOffset(namePositioning));
 		}
 	}
 
@@ -301,11 +326,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
+
 		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		if (getLabelVisibility()) {
+		if (getLabelVisibility()&&labelRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
 		}
-		if (getNameVisibility()) {
+		if (getNameVisibility()&&nameRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
 		}
 		return bb;
