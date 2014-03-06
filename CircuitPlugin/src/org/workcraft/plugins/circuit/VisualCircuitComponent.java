@@ -259,7 +259,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	protected void updateTotalBB() {
+
 		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
+
 		if (contactLabelBB != null && totalBB != null) {
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 		}
@@ -413,27 +415,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
-	// TODO: still need to improve this label positioning
-	public double getLabelOffset() {
-		double result = size / 2;
-		if (totalBB != null) {
-			switch (getLabelPositioning()) {
-			case CENTER:
-				result = 0.0;
-				break;
-			case TOP:
-			case BOTTOM:
-				result = totalBB.getHeight() / 2;
-				break;
-			case LEFT:
-			case RIGHT:
-				result = totalBB.getWidth() / 2;
-				break;
-			default:
-				result = Math.min(totalBB.getHeight(), totalBB.getWidth()) / 2;
-			}
-		}
-		return result;
+
+	@Override
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
+		return BoundingBoxHelper.union(totalBB, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
 	}
 
 
