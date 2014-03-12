@@ -46,6 +46,18 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	}
 
 
+	String referencedModel = "";
+	public void setReferencedModel(String model) {
+		sendNotification(new TransformChangingEvent(this));
+		this.referencedModel = model;
+		sendNotification(new TransformChangedEvent(this));
+	}
+
+	public String getReferencedModel() {
+		return referencedModel;
+	}
+
+
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
 				this, "Is collapsed", Boolean.class) {
@@ -59,7 +71,22 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				return object.getIsCollapsed();
 			}
 		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualPage, String>(
+				this, "Referenced model", String.class) {
+
+			@Override
+			protected void setter(VisualPage object, String value) {
+				object.setReferencedModel(value);
+			}
+			@Override
+			protected String getter(VisualPage object) {
+				return object.getReferencedModel();
+			}
+		});
 	}
+
+
 
 	private boolean isInside = false;
 	@Override

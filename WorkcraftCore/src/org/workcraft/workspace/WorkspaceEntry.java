@@ -21,8 +21,13 @@
 
 package org.workcraft.workspace;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
@@ -38,6 +43,8 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
@@ -266,22 +273,37 @@ public class WorkspaceEntry implements ObservableState {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
 			captureMemento();
-			// copy selected nodes inside a group as if it was the root
-			while (model.getCurrentLevel() != model.getRoot()) {
-				Collection<Node> nodes = new HashSet<Node>(model.getSelection());
-				Container level = model.getCurrentLevel();
-				Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-				if (parent != null) {
-					model.setCurrentLevel(parent);
-					model.addToSelection(level);
+
+			try {
+
+				// copy selected nodes inside a group as if it was the root
+				while (model.getCurrentLevel() != model.getRoot()) {
+					Collection<Node> nodes = new HashSet<Node>(model.getSelection());
+					Container level = model.getCurrentLevel();
+					Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+					if (parent != null) {
+						model.setCurrentLevel(parent);
+						model.addToSelection(level);
+					}
+					model.ungroupSelection();
+					model.select(nodes);
 				}
-				model.ungroupSelection();
-				model.select(nodes);
+				model.selectInverse();
+				model.deleteSelection();
+				framework.clipboard = framework.save(modelEntry);
+
+				if (CommonEditorSettings.getDebugClipboard()) {
+					String smodel = framework.saveToString(modelEntry);
+
+					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+					clipboard.setContents(new StringSelection(smodel), null);
+				}
+
+			} finally {
+
+				cancelMemento();
 			}
-			model.selectInverse();
-			model.deleteSelection();
-			framework.clipboard = framework.save(modelEntry);
-			cancelMemento();
+
 		}
 	}
 

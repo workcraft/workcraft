@@ -61,10 +61,13 @@ public abstract class AbstractModel implements Model {
 					new UniqueNameReferenceManager(null, new Func<Node, String>() {
 						@Override
 						public String eval(Node arg) {
-							if (arg instanceof PageNode) return "page";
+							if (arg instanceof Connection) return "c";
+							if (arg instanceof PageNode) return "pg";
 							if (arg instanceof Comment) return "comment";
 
-							return "node";
+							if (arg instanceof Container) return "";
+
+							return "v";
 						}
 					});
 		}
