@@ -21,9 +21,17 @@
 
 package org.workcraft.workspace;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -38,6 +46,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
@@ -217,6 +226,7 @@ public class WorkspaceEntry implements ObservableState {
 		updateActionState();
 	}
 
+
 	public void undo() {
 		if (history.canUndo()) {
 			Memento undoMemento = history.pullUndo();
@@ -262,26 +272,57 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
+	public String getClipboardAsString() {
+		String result = "";
+		try {
+			ZipInputStream zis = new ZipInputStream(framework.clipboard.getStream());
+			ZipEntry ze;
+			while ((ze = zis.getNextEntry()) != null)	{
+		        StringBuilder isb = new StringBuilder();
+		        BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+		        String line = "=== " + ze.getName() + " ===";
+		        while (line != null) {
+		            isb.append(line);
+		            isb.append('\n');
+		            line = br.readLine();
+		        }
+		        result += isb.toString();
+				zis.closeEntry();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public void copy() {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
 			captureMemento();
-			// copy selected nodes inside a group as if it was the root
-			while (model.getCurrentLevel() != model.getRoot()) {
-				Collection<Node> nodes = new HashSet<Node>(model.getSelection());
-				Container level = model.getCurrentLevel();
-				Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-				if (parent != null) {
-					model.setCurrentLevel(parent);
-					model.addToSelection(level);
+			try {
+				// copy selected nodes inside a group as if it was the root
+				while (model.getCurrentLevel() != model.getRoot()) {
+					Collection<Node> nodes = new HashSet<Node>(model.getSelection());
+					Container level = model.getCurrentLevel();
+					Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+					if (parent != null) {
+						model.setCurrentLevel(parent);
+						model.addToSelection(level);
+					}
+					model.ungroupSelection();
+					model.select(nodes);
 				}
-				model.ungroupSelection();
-				model.select(nodes);
+				model.selectInverse();
+				model.deleteSelection();
+				framework.clipboard = framework.save(modelEntry);
+				if (CommonEditorSettings.getDebugClipboard()) {
+					// copy the memento clipboard into the system-wide clipboard as a string
+					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+					clipboard.setContents(new StringSelection(getClipboardAsString()), null);
+				}
+			} finally {
+				cancelMemento();
 			}
-			model.selectInverse();
-			model.deleteSelection();
-			framework.clipboard = framework.save(modelEntry);
-			cancelMemento();
 		}
 	}
 

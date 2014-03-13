@@ -534,7 +534,7 @@ public class Framework {
 		}
 	}
 
-	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
+	static public InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
 		ZipInputStream zis = new ZipInputStream(zippedData);
 		ZipEntry ze;
 
@@ -746,7 +746,7 @@ public class Framework {
 		}
 	}
 
-	private void saveSelectionState(VisualModel visualModel, ZipOutputStream zos, ReferenceProducer visualRefs)
+	private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
 			throws ParserConfigurationException, IOException {
 		Document stateDoc = XmlUtil.createDocument();
 		Element stateRoot = stateDoc.createElement("workcraft-state");
@@ -763,7 +763,7 @@ public class Framework {
 			selectionElement.appendChild(nodeElement);
 		}
 		stateRoot.appendChild(selectionElement);
-		XmlUtil.writeDocument(stateDoc, zos);
+		XmlUtil.writeDocument(stateDoc, os);
 	}
 
 	public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
