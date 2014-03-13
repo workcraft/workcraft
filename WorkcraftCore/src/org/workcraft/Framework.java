@@ -33,9 +33,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -746,7 +748,7 @@ public class Framework {
 		}
 	}
 
-	private void saveSelectionState(VisualModel visualModel, ZipOutputStream zos, ReferenceProducer visualRefs)
+	private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
 			throws ParserConfigurationException, IOException {
 		Document stateDoc = XmlUtil.createDocument();
 		Element stateRoot = stateDoc.createElement("workcraft-state");
@@ -763,8 +765,104 @@ public class Framework {
 			selectionElement.appendChild(nodeElement);
 		}
 		stateRoot.appendChild(selectionElement);
-		XmlUtil.writeDocument(stateDoc, zos);
+		XmlUtil.writeDocument(stateDoc, os);
 	}
+
+
+public HashMap<String, String> saveToText(ModelEntry modelEntry) throws SerialisationException, IOException, ParserConfigurationException {
+
+		HashMap<String, String> ret = new HashMap<String, String>();
+
+		Model model = modelEntry.getModel();
+		VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
+		Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
+
+		ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
+		// serialise math model
+		String mathEntryName = "model" + mathSerialiser.getExtension();
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, os, null);
+		ret.put(mathEntryName, os.toString());
+		os.close();
+
+		// serialise visual model
+		String visualEntryName = null;
+		ModelSerialiser visualSerialiser = null;
+		if (visualModel != null) {
+			visualSerialiser = new XMLModelSerialiser(getPluginManager());
+
+			visualEntryName = "visualModel" + visualSerialiser.getExtension();
+
+			os = new ByteArrayOutputStream();
+			ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, os, refResolver);
+			ret.put(visualEntryName, os.toString());
+			os.close();
+
+			// serialise visual model selection state
+			os = new ByteArrayOutputStream();
+
+			saveSelectionState(visualModel, os, visualRefs);
+			ret.put("state.xml", os.toString());
+
+		}
+
+		// serialise meta data
+		os = new ByteArrayOutputStream();
+
+		Document metaDoc = XmlUtil.createDocument();
+		Element metaRoot = metaDoc.createElement("workcraft-meta");
+		metaDoc.appendChild(metaRoot);
+
+		Element metaDescriptor = metaDoc.createElement("descriptor");
+		metaDescriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
+		metaRoot.appendChild(metaDescriptor);
+
+		Element mathElement = metaDoc.createElement("math");
+		mathElement.setAttribute("entry-name", mathEntryName);
+		mathElement.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
+		metaRoot.appendChild(mathElement);
+
+		if (visualModel != null) {
+			Element visualElement = metaDoc.createElement("visual");
+			visualElement.setAttribute("entry-name", visualEntryName);
+			visualElement.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
+			metaRoot.appendChild(visualElement);
+		}
+
+
+		XmlUtil.writeDocument(metaDoc, os);
+		ret.put("meta", os.toString());
+		os.close();
+
+		return ret;
+	}
+
+	/*
+	 * converting a given model to a string for debug purposes
+	 */
+	public String saveToString(ModelEntry modelEntry) {
+		try {
+			HashMap<String, String> mod = saveToText(modelEntry);
+			StringBuilder sb = new StringBuilder();
+
+			for (Entry<String, String> en: mod.entrySet()) {
+				sb.append("=="+en.getKey()+"\n");
+				sb.append(en.getValue());
+				sb.append("\n");
+			}
+
+			return sb.toString();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (SerialisationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 
 	public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
 		Model model = modelEntry.getModel();
