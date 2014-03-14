@@ -24,11 +24,15 @@ package org.workcraft.workspace;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -224,6 +228,7 @@ public class WorkspaceEntry implements ObservableState {
 		updateActionState();
 	}
 
+
 	public void undo() {
 		if (history.canUndo()) {
 			Memento undoMemento = history.pullUndo();
@@ -269,11 +274,33 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
+	public String getClipboardAsString() {
+		String result = "";
+		try {
+			ZipInputStream zis = new ZipInputStream(framework.clipboard.getStream());
+			ZipEntry ze;
+			while ((ze = zis.getNextEntry()) != null)	{
+		        StringBuilder isb = new StringBuilder();
+		        BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+		        String line = "=== " + ze.getName() + " ===";
+		        while (line != null) {
+		            isb.append(line);
+		            isb.append('\n');
+		            line = br.readLine();
+		        }
+		        result += isb.toString();
+				zis.closeEntry();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public void copy() {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
 			captureMemento();
-
 			try {
 
 				// copy selected nodes inside a group as if it was the root
@@ -291,16 +318,12 @@ public class WorkspaceEntry implements ObservableState {
 				model.selectInverse();
 				model.deleteSelection();
 				framework.clipboard = framework.save(modelEntry);
-
 				if (CommonEditorSettings.getDebugClipboard()) {
-					String smodel = framework.saveToString(modelEntry);
-
+					// copy the memento clipboard into the system-wide clipboard as a string
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					clipboard.setContents(new StringSelection(smodel), null);
+					clipboard.setContents(new StringSelection(getClipboardAsString()), null);
 				}
-
 			} finally {
-
 				cancelMemento();
 			}
 

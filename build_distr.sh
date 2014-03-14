@@ -18,8 +18,8 @@ core_dirs="WorkcraftCore"
 core_files="LICENSE README workcraft workcraft.bat"
 
 src_dir="."
-distr_dir="../workcraft2"
-template_dir="../distr-template"
+distr_dir="../../workcraft2"
+template_dir="../../distr-template"
 
 description_msg="`basename $0`: creates a distribution for Workcraft"
 usage_msg="Usage: `basename $0` [-s SRC_DIR] [-d DISTR_DIR] [-t TEMPLATE_DIR] [-h | --help]"
@@ -43,33 +43,27 @@ do
   esac
 done
 
-# Check directory existance
+# Check source directory existance
 if [[ ! -a $src_dir ]] || [[ ! -d $src_dir ]] 
 then
     $echo_command "Error: Source directory not found: $src_dir"
     exit 1
 fi
 
-if [[ ! -a $template_dir ]] || [[ ! -d $template_dir ]] 
-then
-    $echo_command "Error: Template directory not found: $template_dir"
-    exit 1
-fi
-
+# Create distr directory
 if [ -e $distr_dir ] 
 then
     $echo_command "Error: Distribution directory already exists: $distr_dir"
     exit 1
-fi
-
-# Create distr directory and copy the template content there
-if [ ! -e $distr_dir ]
-then
+else
     mkdir $distr_dir
 fi
 
-if [ -e $template_dir ]
+# Copy the template content
+if [[ ! -a $template_dir ]] || [[ ! -d $template_dir ]] 
 then
+    $echo_command "Warning: Template directory not found: $template_dir"
+else
     cp -r $template_dir/*  $distr_dir/
 fi
 

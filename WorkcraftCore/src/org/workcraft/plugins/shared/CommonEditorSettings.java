@@ -90,7 +90,6 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 		});
 
-
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
 				this, "Debug clipboard", Boolean.class) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
