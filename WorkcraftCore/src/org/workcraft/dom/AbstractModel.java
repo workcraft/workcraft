@@ -21,13 +21,13 @@
 
 package org.workcraft.dom;
 
-import japa.parser.ast.Comment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
@@ -63,7 +63,7 @@ public abstract class AbstractModel implements Model {
 						public String eval(Node arg) {
 							if (arg instanceof Connection) return "c";
 							if (arg instanceof PageNode) return "pg";
-							if (arg instanceof Comment) return "comment";
+							if (arg instanceof CommentNode) return "comment";
 
 							if (arg instanceof Container) return "";
 
