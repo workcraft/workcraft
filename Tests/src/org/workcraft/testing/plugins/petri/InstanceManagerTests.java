@@ -85,7 +85,6 @@ public class InstanceManagerTests
 		expectedRequests.put(o3, "qwe");
 		expectedRequests.put(o4, "abc");
 		final InstanceManager<Object> mgr = make(expectedRequests);
-		mgr.setForbidInstanceChange(false);
 		mgr.assign(o1);
 		mgr.assign(o2);
 		mgr.assign(o3);
@@ -135,7 +134,6 @@ public class InstanceManagerTests
 		Object o1 = new Object();
 		expectedRequests.put(o1, "abc");
 		final InstanceManager<Object> mgr = make(expectedRequests);
-		mgr.setForbidInstanceChange(false);
 		mgr.assign(o1, 8);
 		assertEquals(Pair.of("abc",8), mgr.getInstance(o1));
 	}
@@ -149,7 +147,6 @@ public class InstanceManagerTests
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
 		final InstanceManager<Object> mgr = make(expectedRequests);
-		mgr.setForbidInstanceChange(false);
 		mgr.assign(o1, 8);
 		mgr.assign(o2, 8);
 	}

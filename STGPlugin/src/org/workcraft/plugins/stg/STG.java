@@ -220,7 +220,11 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public void setName(Node node, String name) {
-		referenceManager.setName(node, name);
+		this.setName(node, name, false);
+	}
+
+	public void setName(Node node, String name, boolean forceInstance) {
+		referenceManager.setName(node, name, forceInstance);
 	}
 
 	@Override
@@ -307,10 +311,6 @@ public class STG extends AbstractMathModel implements STGModel {
 	public void makeExplicit(STGPlace implicitPlace) {
 		implicitPlace.setImplicit(false);
 		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
-	}
-
-	public void setForbidInstanceChange(boolean value) {
-		referenceManager.setForbidInstanceChange(value);
 	}
 
 }

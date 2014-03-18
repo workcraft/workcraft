@@ -241,43 +241,37 @@ public class MainWindow extends JFrame {
 	}
 
 	public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
-		if (we.getModelEntry() == null)
-			throw new RuntimeException(
-					"Cannot open editor: the selected entry is not a Workcraft model.");
+		if (we.getModelEntry() == null) {
+			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
+		}
 
 		ModelEntry modelEntry = we.getModelEntry();
-
 		ModelDescriptor descriptor = modelEntry.getDescriptor();
-
-		VisualModel visualModel = (modelEntry.getModel() instanceof VisualModel) ? (VisualModel) modelEntry
-				.getModel() : null;
+		VisualModel visualModel = null;
+		if (modelEntry.getModel() instanceof VisualModel) {
+			visualModel = (VisualModel)modelEntry.getModel();
+		}
 
 		if (visualModel == null) {
 			try {
-				VisualModelDescriptor vmd = descriptor
-						.getVisualModelDescriptor();
-
-				if (vmd == null)
+				VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
+				if (vmd == null) {
 					JOptionPane.showMessageDialog(MainWindow.this,
 							"A visual model could not be created for the selected model.\n"
-									+ "Model \"" + descriptor.getDisplayName()
-									+ "\" does not have visual model support.",
+							+ "Model \"" + descriptor.getDisplayName() + "\" does not have visual model support.",
 							"Error", JOptionPane.ERROR_MESSAGE);
-
+				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
-
 				modelEntry.setModel(visualModel);
-
 				DotLayoutTool layout = new DotLayoutTool(framework);
 				layout.run(we);
+				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
-				JOptionPane
-						.showMessageDialog(
-								MainWindow.this,
-								"A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
-								"Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
+						"Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 				return null;
 			}
@@ -289,28 +283,20 @@ public class MainWindow extends JFrame {
 		final DockableWindow editorWindow;
 
 		if (editorWindows.isEmpty()) {
-			editorWindow = createDockableWindow(editor, title,
-					documentPlaceholder,
-					DockableWindowContentPanel.CLOSE_BUTTON
-							| DockableWindowContentPanel.MAXIMIZE_BUTTON,
-					DockingConstants.CENTER_REGION,
-					"Document" + we.getWorkspacePath());
-
+			editorWindow = createDockableWindow(editor, title, documentPlaceholder,
+					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
+					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
 			DockingManager.close(documentPlaceholder);
 			DockingManager.unregisterDockable(documentPlaceholder);
 			utilityWindows.remove(documentPlaceholder);
 		} else {
-			DockableWindow firstEditorWindow = editorWindows.values()
-					.iterator().next().iterator().next();
-			editorWindow = createDockableWindow(editor, title,
-					firstEditorWindow, DockableWindowContentPanel.CLOSE_BUTTON
-							| DockableWindowContentPanel.MAXIMIZE_BUTTON,
-					DockingConstants.CENTER_REGION,
-					"Document" + we.getWorkspacePath());
+			DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
+			editorWindow = createDockableWindow(editor, title, firstEditorWindow,
+					DockableWindowContentPanel.CLOSE_BUTTON	| DockableWindowContentPanel.MAXIMIZE_BUTTON,
+					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
 		}
 
 		editorWindow.addTabListener(new DockableWindowTabListener() {
-
 			@Override
 			public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
 				requestFocus(editor);
@@ -335,12 +321,9 @@ public class MainWindow extends JFrame {
 		});
 
 		editorWindow.setTabEventsEnabled(true);
-
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
-
 		enableWorkActions();
-
 		return editor;
 	}
 
