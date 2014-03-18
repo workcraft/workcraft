@@ -39,16 +39,12 @@ public class DotGParser {
 	}
 	
 	private Node getOrCreate (String name) {
-
 		Type t = signals.get (name);
-		
 		Node existing = stg.getNodeByReference(name);
-		
-		if (existing == null)
-			existing = stg.getNodeByReference(name+"/0");
+		if (existing == null) {			existing = stg.getNodeByReference(name+"/0");
+		}			
 			
-		if (existing == null)
-		{
+		if (existing == null) {
 			if (t==null)
 				existing = stg.createPlace(name);
 			else if (t.equals(Type.DUMMY))
@@ -57,26 +53,22 @@ public class DotGParser {
 				return getOrCreate(Triple.of(name, Direction.TOGGLE, 0));
 				//throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
 		}
-		
+
 		return existing;
 	}
 	
-	private Node getOrCreate (Pair<String, Integer> ref)
-	{
-		String reference = stg.makeReference(ref);
+	private Node getOrCreate (Pair<String, Integer> ref) {		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
 		Node existing = stg.getNodeByReference(reference);
 		
-		if (existing == null)
-		{
+		if (existing == null) {
 			Type t = signals.get (name);
-			if (t == null || !t.equals(Type.DUMMY))
+			if (t == null || !t.equals(Type.DUMMY))	{			  
 				return getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
 				//throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
-			else
-			{
+			} else {
 				DummyTransition dt = stg.createDummyTransition(null);
-				stg.setName(dt, reference);
+				stg.setName(dt, reference, true);
 				dt.setName(name);
 				existing = dt;
 			}
@@ -90,15 +82,13 @@ public class DotGParser {
 		String name = ref.getFirst(); 
 		Node existing = stg.getNodeByReference (reference);
 		
-		if (existing == null)
-		{
-		
+		if (existing == null) {
 			SignalTransition st = stg.createSignalTransition();
-			stg.setName (st, reference);
+			stg.setName (st, reference, true);
 			Type t = signals.get(name);
-			if (t==null)
-				throw new FormatException ("Undeclared signal encountered: " + name + 
-				" ("+reference+"). Possibly malformed header.");
+			if (t==null) {				throw new FormatException ("Undeclared signal encountered: "
+						+ name + " ("+reference+"). Possibly malformed header.");
+			}
 			st.setSignalType(t);
 			existing = st;
 		}
@@ -107,7 +97,6 @@ public class DotGParser {
 	}
 	
 	private void createArc (Node first, Node second) {
-
 		try {
 			ConnectionResult result = stg.connect(first, second);
 			STGPlace implicitPlace = result.getImplicitPlace();
@@ -115,8 +104,7 @@ public class DotGParser {
 			if (implicitPlace != null)
 				implicitPlaces.put (Pair.of (first, second), implicitPlace);
 				
-		} catch (InvalidConnectionException e)
-		{
+		} catch (InvalidConnectionException e) {
 			throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
 			 " to " + stg.getNodeReference(second) + ".", e);
 		}
@@ -124,14 +112,12 @@ public class DotGParser {
 	
 	private void setSignalsType (List<String> list, Type type) {
 		for (String signal : list) {
-			if (signals.containsKey(signal))
-			{
+			if (signals.containsKey(signal)) {
 				Type prevType = signals.get(signal);
-				if (prevType != null && prevType.equals(type))
-					throw new FormatException (type + " signal \"" + signal + "\" was already listed as " + prevType);
+				if (prevType != null && prevType.equals(type)) {					throw new FormatException (type + " signal \"" + signal + "\" was already listed as " + prevType);
+				}
+			} else {				signals.put(signal, type);
 			}
-			else
-				signals.put(signal, type);
 		}
 	}
 }
@@ -176,13 +162,12 @@ TOKEN :
 STG parse() : { }
 {
 	{ init(); }
-	 ( header() <LINEBREAK> )*
-	 graph()
-	 ( footer() <LINEBREAK> )*
-	 <END> (<ANY>)*
-	 <EOF>
-	 { return stg;}
-}
+	( header() <LINEBREAK> )*
+	graph()
+	( footer() <LINEBREAK> )*
+	<END> (<ANY>)*
+	<EOF>
+	{ return stg; }}
 
 void header() : { List<String> list; }
 {

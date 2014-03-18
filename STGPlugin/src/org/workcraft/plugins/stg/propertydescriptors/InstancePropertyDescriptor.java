@@ -28,7 +28,6 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		//throw new NotSupportedException();
 		stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
 	}
 

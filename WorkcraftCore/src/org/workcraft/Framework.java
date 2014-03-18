@@ -534,7 +534,7 @@ public class Framework {
 		}
 	}
 
-	static public InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
+	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
 		ZipInputStream zis = new ZipInputStream(zippedData);
 		ZipEntry ze;
 
