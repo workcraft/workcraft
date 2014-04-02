@@ -257,10 +257,8 @@ public class HitMan
 	}
 
 	public static Node hitTestForConnection (Point2D point, VisualModel model) {
-		AffineTransform t = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
-		Point2D pt = new Point2D.Double();
-		t.transform(point, pt);
-		return hitTestForConnection(pt, model.getCurrentLevel());
+		Point2D pt = transformToChildSpace(point, model.getRoot());
+		return hitTestForConnection(pt, model.getRoot());
 	}
 
 	public static Node hitTestForSelection (Point2D point, VisualModel model) {
