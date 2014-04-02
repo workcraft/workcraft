@@ -67,26 +67,20 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
 public class SelectionTool extends AbstractTool {
-	private static final int DRAG_NONE = 0;
-	private static final int DRAG_MOVE = 1;
-	private static final int DRAG_SELECT = 2;
+	private enum DrugState {NONE, MOVE, SELECT};
+	private enum SelectionMode {NONE, ADD, REMOVE, REPLACE};
 
-	private static final int SELECTION_NONE = 0;
-	private static final int SELECTION_ADD = 1;
-	private static final int SELECTION_REMOVE = 2;
-	private static final int SELECTION_REPLACE = 3;
-	protected static Color selectionColor = new Color(99, 130, 191).brighter();
-
-	protected Color selectionBorderColor = new Color(200, 200, 200);
-	protected Color selectionFillColor = new Color(99, 130, 191, 32);
-	protected Color grayOutColor = Color.LIGHT_GRAY;
+	static private final Color selectionColor = new Color(99, 130, 191).brighter();
+	static private final Color selectionBorderColor = new Color(200, 200, 200);
+	static private final Color selectionFillColor = new Color(99, 130, 191, 32);
+	static private final Color grayOutColor = Color.LIGHT_GRAY;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
 	protected JPanel infoPanel;
 	protected JPanel statusPanel;
 
-	private int drag = DRAG_NONE;
+	private DrugState dragState = DrugState.NONE;
 	private boolean notClick1 = false;
 	private boolean notClick3 = false;
 
@@ -94,7 +88,7 @@ public class SelectionTool extends AbstractTool {
 	private DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
-	private int selectionMode;
+	private SelectionMode selectionMode = SelectionMode.NONE;
 	private Rectangle2D selectionBox = null;
 
 	private boolean cancelInPlaceEdit = false;
@@ -230,7 +224,7 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public boolean isDragging() {
-		return drag != DRAG_NONE;
+		return dragState != DrugState.NONE;
 	}
 
 	@Override
@@ -285,11 +279,11 @@ public class SelectionTool extends AbstractTool {
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		VisualModel model = e.getEditor().getModel();
-		if(drag==DRAG_MOVE) {
+		if (dragState == DrugState.MOVE) {
 			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
 			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
 			selectionOffset(e.getEditor(), p2.getX()-p1.getX(), p2.getY()-p1.getY());
-		} else if(drag==DRAG_SELECT) {
+		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
@@ -307,23 +301,23 @@ public class SelectionTool extends AbstractTool {
 				// hit nothing, so start select-drag
 				switch (e.getKeyModifiers()) {
 				case 0:
-					selectionMode = SELECTION_REPLACE;
+					selectionMode = SelectionMode.REPLACE;
 					break;
 				case MouseEvent.CTRL_DOWN_MASK:
-					selectionMode = SELECTION_REMOVE;
+					selectionMode = SelectionMode.REMOVE;
 					break;
 				case MouseEvent.SHIFT_DOWN_MASK:
-					selectionMode = SELECTION_ADD;
+					selectionMode = SelectionMode.ADD;
 					break;
 				default:
-					selectionMode = SELECTION_NONE;
+					selectionMode = SelectionMode.NONE;
 				}
 
-				if (selectionMode != SELECTION_NONE) {
+				if (selectionMode != SelectionMode.NONE) {
 					// selection will not actually be changed until drag completes
-					drag = DRAG_SELECT;
+					dragState = DrugState.SELECT;
 					selected.clear();
-					if (selectionMode == SELECTION_REPLACE) {
+					if (selectionMode == SelectionMode.REPLACE) {
 						model.selectNone();
 					} else {
 						selected.addAll(model.getSelection());
@@ -333,7 +327,7 @@ public class SelectionTool extends AbstractTool {
 				// hit something
 				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {
 					// mouse down without modifiers, begin move-drag
-					drag = DRAG_MOVE;
+					dragState = DrugState.MOVE;
 					e.getEditor().getWorkspaceEntry().captureMemento();
 					if (hitNode != null && !model.getSelection().contains(hitNode)) {
 						e.getModel().select(hitNode);
@@ -370,31 +364,31 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void finishDrag(GraphEditorMouseEvent e) {
-		if (drag == DRAG_MOVE) {
+		if (dragState == DrugState.MOVE) {
 			e.getEditor().getWorkspaceEntry().saveMemento();
-		} else if (drag == DRAG_SELECT) {
-			if (selectionMode == SELECTION_REPLACE)
+		} else if (dragState == DrugState.SELECT) {
+			if (selectionMode == SelectionMode.REPLACE)
 				e.getModel().select(selected);
-			else if (selectionMode == SELECTION_ADD)
+			else if (selectionMode == SelectionMode.ADD)
 				e.getModel().addToSelection(selected);
-			else if (selectionMode == SELECTION_REMOVE)
+			else if (selectionMode == SelectionMode.REMOVE)
 				e.getModel().removeFromSelection(selected);
 			selectionBox = null;
 		}
-		drag = DRAG_NONE;
+		dragState = DrugState.NONE;
 		selected.clear();
 		e.getEditor().repaint();
 	}
 
 
 	private void cancelDrag(GraphEditor editor) {
-		if(drag==DRAG_MOVE) {
+		if(dragState == DrugState.MOVE) {
 			editor.getWorkspaceEntry().cancelMemento();
-		} else if(drag == DRAG_SELECT) {
+		} else if(dragState == DrugState.SELECT) {
 			selected.clear();
 			selectionBox = null;
 		}
-		drag = DRAG_NONE;
+		dragState = DrugState.NONE;
 	}
 
 	@Override
@@ -467,7 +461,7 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		if(drag==DRAG_SELECT && selectionBox!=null) {
+		if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
 			g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
 
 			g.setColor(selectionFillColor);
@@ -486,6 +480,7 @@ public class SelectionTool extends AbstractTool {
 				if(node == editor.getModel().getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
+
 				if(node == editor.getModel().getRoot()) {
 					return new Decoration(){
 						@Override
@@ -498,31 +493,28 @@ public class SelectionTool extends AbstractTool {
 						}
 					};
 				}
-
-				Decoration selectedDecoration = new Decoration() {
-					@Override
-					public Color getColorisation() {
-						return selectionColor;
-					}
-					@Override
-					public Color getBackground() {
-						return null;
-					}
-				};
-
-				if(selected.contains(node)) {
-					if (selectionMode == SELECTION_REMOVE) {
-						return null;
-					} else {
-						return selectedDecoration;
-					}
+				/*
+				 * r & !c & s | !r & (c | s) <=> (!r & c) | (!c & s)
+				 * where
+				 *   r = (selectionMode == SelectionState.REMOVE)
+				 *   c = selected.contains(node)
+				 *   s = editor.getModel().getSelection().contains(node)
+				 */
+				if ( ((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
+					|| (!selected.contains(node) && editor.getModel().getSelection().contains(node)) ) {
+					return new Decoration() {
+						@Override
+						public Color getColorisation() {
+							return selectionColor;
+						}
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+					};
 				}
 
-				if(editor.getModel().getSelection().contains(node)) {
-					return selectedDecoration;
-				} else {
-					return null;
-				}
+				return null;
 			}
 		};
 	}

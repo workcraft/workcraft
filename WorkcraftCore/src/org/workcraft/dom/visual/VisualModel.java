@@ -36,6 +36,7 @@ import org.workcraft.observation.ObservableState;
 public interface VisualModel extends Model, ObservableState {
 	public void draw (Graphics2D g, Decorator decorator);
 
+	public void setCurrentLevel(Container group);
 	public Container getCurrentLevel();
 	public MathModel getMathModel();
 
@@ -56,8 +57,6 @@ public interface VisualModel extends Model, ObservableState {
 	public void deleteSelection();
 	public void groupSelection();
 	public void ungroupSelection();
-
-	public void setCurrentLevel (Container group);
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 }
