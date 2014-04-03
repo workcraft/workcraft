@@ -100,7 +100,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	final public DummyTransition createDummyTransition(String name) {
 		DummyTransition newTransition = new DummyTransition();
-		if (name!=null) {
+		if (name != null) {
 			setName(newTransition, name);
 		}
 		getRoot().add(newTransition);
@@ -271,27 +271,28 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-		if(node instanceof STGPlace)
-		{
+		if(node instanceof STGPlace) {
 			if(((STGPlace) node).isImplicit()) {
 				Set<Node> preset = getPreset(node);
 				Set<Node> postset = getPostset(node);
 
-				if (!(preset.size()==1 && postset.size()==1))
+				if (!(preset.size()==1 && postset.size()==1)) {
 					throw new RuntimeException ("An implicit place cannot have more that one transition in its preset or postset.");
-
+				}
 				return "<"+referenceManager.getNodeReference(provider, preset.iterator().next())
 							+ "," + referenceManager.getNodeReference(provider, postset.iterator().next()) + ">";
-			} else
+			} else {
 				return referenceManager.getNodeReference(provider, node);
-		} else
-			return referenceManager.getNodeReference(provider, node);
+			}
+		} else {
+		return referenceManager.getNodeReference(provider, node);
+
+		}
 	}
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions!=null) {
-
 			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
 

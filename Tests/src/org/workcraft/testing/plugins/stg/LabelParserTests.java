@@ -8,7 +8,6 @@ import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Triple;
 
-
 public class LabelParserTests {
 
 	@Test

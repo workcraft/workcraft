@@ -55,19 +55,18 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public VisualSTG(STG model, VisualGroup root) {
 		super(model, root);
-
-		if (root == null)
+		if (root == null) {
 			try {
 				createDefaultFlatStructure();
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
-
-			this.stg = model;
-
-			Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
-			for(VisualPlace place : places)
-				maybeMakeImplicit(place);
+		}
+		this.stg = model;
+		Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
+		for(VisualPlace place : places) {
+			maybeMakeImplicit(place);
+		}
 	}
 
 	@Override
