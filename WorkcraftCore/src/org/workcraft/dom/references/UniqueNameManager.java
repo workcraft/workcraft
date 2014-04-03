@@ -10,19 +10,19 @@ import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
 
 public class UniqueNameManager<T> {
-	private Func<T, String> defaultName;
-	private Map<String, Integer> defaultNameCounters = new HashMap<String, Integer>();
+	private Func<T, String> nodePrefix;
+	private Map<String, Integer> prefixCount = new HashMap<String, Integer>();
 	private TwoWayMap<String, T> Ts = new TwoWayMap<String, T>();
 
 	public UniqueNameManager() {
 		this(null);
 	}
 
-	public UniqueNameManager(Func<T, String> defaultName) {
-		if (defaultName != null)
-			this.defaultName = defaultName;
+	public UniqueNameManager(Func<T, String> nodePrefix) {
+		if (nodePrefix != null)
+			this.nodePrefix = nodePrefix;
 		else
-			this.defaultName = new Func<T, String>() {
+			this.nodePrefix = new Func<T, String>() {
 			@Override
 			public String eval(T arg) {
 				return "unnamed";
@@ -30,10 +30,27 @@ public class UniqueNameManager<T> {
 		};
 	}
 
+	public String getNodePrefix(T t) {
+		return nodePrefix.eval(t);
+	}
+
+	public Integer getPrefixCount(String prefix) {
+		if (prefixCount.containsKey(prefix)) {
+			return prefixCount.get(prefix);
+		} else {
+			return 0;
+		}
+	}
+
+	public Integer setPrefixCount(String prefix, Integer count) {
+		return prefixCount.put(prefix, count);
+	}
+
 	public String getName(T t) {
 		String name = Ts.getKey(t);
-		if (name == null)
+		if (name == null) {
 			throw new NotFoundException("Object \"" + t.toString() + "\" was not issued a name");
+		}
 		return name;
 	}
 
@@ -54,24 +71,17 @@ public class UniqueNameManager<T> {
 	}
 
 	public void setDefaultNameIfUnnamed(T t) {
-		if (Ts.containsValue(t))
+		if (Ts.containsValue(t)) {
 			return;
-
-		String candidate;
-
-		final String name = defaultName.eval(t);
-		Integer counter = defaultNameCounters.get(name);
-
-		if (counter == null)
-			counter = 0;
-
+		}
+		final String prefix = getNodePrefix(t);
+		Integer count = getPrefixCount(prefix);
+		String name;
 		do	{
-			candidate = name + counter++;
-		} while (Ts.containsKey(candidate));
-
-		defaultNameCounters.put(name, counter);
-
-		Ts.put(candidate, t);
+			name = prefix + count++;
+		} while (Ts.containsKey(name));
+		setPrefixCount(prefix, count);
+		Ts.put(name, t);
 	}
 
 	public T get (String name) {

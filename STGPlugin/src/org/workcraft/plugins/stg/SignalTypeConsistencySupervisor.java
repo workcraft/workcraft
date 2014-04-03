@@ -43,23 +43,18 @@ class SignalTypeConsistencySupervisor extends StateSupervisor {
 			PropertyChangedEvent pce = (PropertyChangedEvent)e;
 			if (pce.getPropertyName().equals("signalType")) {
 				SignalTransition t = (SignalTransition)e.getSender();
-
 				String signalName = t.getSignalName();
 				SignalTransition.Type signalType = t.getSignalType();
-
-
-				for (SignalTransition tt : stg.getSignalTransitions(signalName))
-					if (!signalType.equals(tt.getSignalType()))
-						tt.setSignalType(signalType);
-
+				for (SignalTransition tt : stg.getSignalTransitions(signalName)) {
+					tt.setSignalType(signalType);
+				}
 			} else if (pce.getPropertyName().equals("signalName")) {
 				SignalTransition t = (SignalTransition)e.getSender();
-
 				String signalName = t.getSignalName();
-
 				final Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalName);
-				if (!signalTransitions.isEmpty())
+				if (!signalTransitions.isEmpty()) {
 					t.setSignalType(signalTransitions.iterator().next().getSignalType());
+				}
 			}
 		}
 	}

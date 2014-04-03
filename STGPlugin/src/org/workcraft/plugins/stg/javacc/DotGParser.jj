@@ -12,10 +12,10 @@ options {
 PARSER_BEGIN(DotGParser)
 package org.workcraft.plugins.stg.javacc.generated;
 
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -28,72 +28,59 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
 public class DotGParser {
-	private Map<String, Type> signals;
-	private Map<Pair<Node, Node>, STGPlace> implicitPlaces;
+	private HashMap<String, Type> signals;
+	private HashSet<String> dummies;
+	private HashMap<Pair<Node, Node>, STGPlace> implicitPlaces;
 	private STG stg;
 
 	private void init() {
 		signals = new HashMap<String, Type>();
+		dummies = new HashSet<String>();
 		stg = new STG();
 		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
 	}
 	
 	private Node getOrCreate (String name) {
-		Type t = signals.get (name);
-		Node existing = stg.getNodeByReference(name);
-		if (existing == null) {			existing = stg.getNodeByReference(name+"/0");
-		}			
-			
-		if (existing == null) {
-			if (t==null)
-				existing = stg.createPlace(name);
-			else if (t.equals(Type.DUMMY))
-				existing = stg.createDummyTransition(name);
-			else
-				return getOrCreate(Triple.of(name, Direction.TOGGLE, 0));
-				//throw new FormatException (name + " was declared as " + t + ", but is referenced as DUMMY. Transition direction tag (+,-,~) expected.");
+		Node node = stg.getNodeByReference(name);
+		if (node == null) {
+			node = stg.getNodeByReference(name + "/0");		}			
+		if (node == null) {
+		  	if (dummies.contains(name)) {				node = stg.createDummyTransition(name);
+			} else if (signals.containsKey(name)) {				node = getOrCreate(Triple.of(name, Direction.TOGGLE, 0));			} else {
+				node = stg.createPlace(name);			}
 		}
-
-		return existing;
+		return node;
 	}
 	
 	private Node getOrCreate (Pair<String, Integer> ref) {		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
-		Node existing = stg.getNodeByReference(reference);
-		
-		if (existing == null) {
-			Type t = signals.get (name);
-			if (t == null || !t.equals(Type.DUMMY))	{			  
-				return getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
-				//throw new FormatException (name + " is referenced as DUMMY but was not declared as such.");
-			} else {
+		Node node = stg.getNodeByReference(reference);
+		if (node == null) {
+		  	if (dummies.contains(name)) {
 				DummyTransition dt = stg.createDummyTransition(null);
 				stg.setName(dt, reference, true);
 				dt.setName(name);
-				existing = dt;
+				node = dt;
+		  	} else if (signals.containsKey(name)) {				node = getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
 			}
 		}
-		
-		return existing;
+		return node;
 	}
 	
 	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst(); 
-		Node existing = stg.getNodeByReference (reference);
-		
-		if (existing == null) {
+		Node node = stg.getNodeByReference (reference);
+		if (node == null) {
 			SignalTransition st = stg.createSignalTransition();
 			stg.setName (st, reference, true);
-			Type t = signals.get(name);
-			if (t==null) {				throw new FormatException ("Undeclared signal encountered: "
-						+ name + " ("+reference+"). Possibly malformed header.");
+			if (signals.containsKey(name)) {				st.setSignalType(signals.get(name));
+				node = st;
+			} else {				throw new FormatException ("Undeclared signal encountered: "
+					+ name + " ("+reference+"). Possibly malformed header.");
 			}
-			st.setSignalType(t);
-			existing = st;
 		}
-		
-		return existing;
+		return node;
 	}
 	
 	private void createArc (Node first, Node second) {
@@ -110,13 +97,28 @@ public class DotGParser {
 		}
 	}
 	
-	private void setSignalsType (List<String> list, Type type) {
-		for (String signal : list) {
-			if (signals.containsKey(signal)) {
-				Type prevType = signals.get(signal);
-				if (prevType != null && prevType.equals(type)) {					throw new FormatException (type + " signal \"" + signal + "\" was already listed as " + prevType);
+	private void addSignals (List<String> list, Type type) {
+		for (String name : list) {
+			if (signals.containsKey(name)) {
+				Type prevType = signals.get(name);
+				if (!prevType.equals(type)) {
+					throw new FormatException ("The " + type + " signal \"" + name + "\" was already listed as an " + prevType + " signal.");
 				}
-			} else {				signals.put(signal, type);
+			} else if (dummies.contains(name)) {
+				throw new FormatException ("The " + type + " \"" + name + "\" was already listed as a dummy.");
+			} else {
+				signals.put(name, type);
+			}
+		}
+	}
+	
+	private void addDummies (List<String> list) {
+		for (String name : list) {
+			if (signals.containsKey(name)) {
+				Type type = signals.get(name);
+				throw new FormatException ("The dummy \"" + name + "\" was already listed as an " + type + " signal.");
+			} else {
+				dummies.add(name);
 			}
 		}
 	}
@@ -173,15 +175,15 @@ void header() : { List<String> list; }
 {
   	(<LINEBREAK>)?
 	(
-	  	<INPUT_HEADER> list = signalList() { setSignalsType (list, Type.INPUT); }
-		|<OUTPUT_HEADER> list = signalList() { setSignalsType (list, Type.OUTPUT); }
-		|<INTERNAL_HEADER> list = signalList() { setSignalsType (list, Type.INTERNAL); }
-		|<DUMMY_HEADER> list = signalList() { setSignalsType (list, Type.DUMMY); }
+	  	<INPUT_HEADER> list = stringList() { addSignals (list, Type.INPUT); }
+		|<OUTPUT_HEADER> list = stringList() { addSignals (list, Type.OUTPUT); }
+		|<INTERNAL_HEADER> list = stringList() { addSignals (list, Type.INTERNAL); }
+		|<DUMMY_HEADER> list = stringList() { addDummies (list); }
 		|<UNSUPPORTED_HEADER> <REST>
 	)
 }
 
-List<String> signalList() : { Token t; List<String> list = new LinkedList<String>(); }
+List<String> stringList() : { Token t; List<String> list = new LinkedList<String>(); }
 {
 	( t = <NAME> { list.add (t.image); } ) * 
 	{return list;}

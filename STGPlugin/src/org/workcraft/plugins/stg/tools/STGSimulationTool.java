@@ -35,7 +35,6 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
 	private static Color outputsColor = Color.BLUE.darker();
 	private static Color internalsColor = Color.GREEN.darker();
-	private static Color dummyColor = Color.BLACK.darker();
 
 	protected Map<String, SignalState> stateMap;
 	protected JTable stateTable;
@@ -157,9 +156,6 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 				case INTERNAL:
 					label.setForeground(internalsColor);
 					break;
-				case DUMMY:
-					label.setForeground(dummyColor);
-					break;
 				}
 			}
 
@@ -270,9 +266,6 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 						break;
 					case INTERNAL:
 						signalState.color = internalsColor;
-						break;
-					case DUMMY:
-						signalState.color = dummyColor;
 						break;
 					}
 					stateMap.put(signalState.name, signalState);
