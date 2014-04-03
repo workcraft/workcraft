@@ -21,15 +21,21 @@
 
 package org.workcraft.dom.math;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.util.Hierarchy;
 
-public class MathGroup extends MathNode implements ObservableHierarchy, Container {
+public class MathGroup extends MathNode implements NamespaceProvider, ObservableHierarchy, Container {
 	private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	@Override
@@ -85,6 +91,27 @@ public class MathGroup extends MathNode implements ObservableHierarchy, Containe
 	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
+	}
+
+	public ArrayList<Node> unGroup(ReferenceManager manager) {
+		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
+
+		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
+
+
+		if (manager instanceof HierarchicalUniqueNameReferenceManager) {
+			HierarchicalUniqueNameReferenceManager man = (HierarchicalUniqueNameReferenceManager)manager;
+
+			for (Node node : nodesToReparent) {
+				man.setNamespaceProvider(node, man.getNamespaceProvider(newParent));
+			}
+
+		}
+
+		groupImpl.reparent(nodesToReparent, newParent);
+
+
+		return nodesToReparent;
 	}
 
 }

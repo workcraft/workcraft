@@ -22,9 +22,6 @@
 package org.workcraft.dom.math;
 
 import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
 
 public interface MathModel extends Model {
-
 }

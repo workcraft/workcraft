@@ -27,9 +27,10 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
@@ -53,24 +54,33 @@ public abstract class AbstractModel implements Model {
 
 	public AbstractModel(Container root, ReferenceManager referenceManager) {
 		this.root = root;
+
 		this.referenceManager = referenceManager;
 
 		if (this.referenceManager==null) {
-//			this.referenceManager = new DefaultReferenceManager();
-			this.referenceManager =
-					new UniqueNameReferenceManager(null, new Func<Node, String>() {
-						@Override
-						public String eval(Node arg) {
-							if (arg instanceof Connection) return "c";
-							if (arg instanceof PageNode) return "pg";
-							if (arg instanceof CommentNode) return "comment";
 
-							if (arg instanceof Container) return "";
+			if (root instanceof NamespaceProvider) {
 
-							return "v";
-						}
-					});
+				this.referenceManager =
+						new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, null, new Func<Node, String>() {
+							@Override
+							public String eval(Node arg) {
+								if (arg instanceof Connection) return "c";
+								if (arg instanceof PageNode) return "pg";
+								if (arg instanceof CommentNode) return "comment";
+
+								if (arg instanceof Container) return "";
+
+								return "v";
+							}
+						});
+
+			} else {
+
+				this.referenceManager = new DefaultReferenceManager();
+			}
 		}
+
 
 		nodeContextTracker.attach(root);
 		this.referenceManager.attach(root);
@@ -137,14 +147,26 @@ public abstract class AbstractModel implements Model {
 		return nodeContextTracker.getPreset(component);
 	}
 
+
+
 	@Override
 	public Node getNodeByReference(String reference) {
-		return referenceManager.getNodeByReference(reference);
+		return referenceManager.getNodeByReference(null, reference);
 	}
 
 	@Override
 	public String getNodeReference(Node node) {
-		return referenceManager.getNodeReference(node);
+		return referenceManager.getNodeReference(null, node);
+	}
+
+	@Override
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
+		return referenceManager.getNodeByReference(provider, reference);
+	}
+
+	@Override
+	public String getNodeReference(NamespaceProvider provider, Node node) {
+		return referenceManager.getNodeReference(provider, node);
 	}
 
 	@Override
@@ -156,18 +178,23 @@ public abstract class AbstractModel implements Model {
 		return null;
 	}
 
-	protected ReferenceManager getReferenceManager() {
+	public ReferenceManager getReferenceManager() {
 		return referenceManager;
 	}
 
 
 	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
-//		return null;
+
+		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
+			return ((HierarchicalUniqueNameReferenceManager)referenceManager).getName(node);
+
+		return referenceManager.getNodeReference(null, node);
 	}
 
 	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
 
+		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
+			((HierarchicalUniqueNameReferenceManager)referenceManager).setName(node, name);
+
+	}
 }

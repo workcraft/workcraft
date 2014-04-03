@@ -29,6 +29,7 @@ import java.util.Set;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
@@ -265,7 +266,7 @@ public class STG extends AbstractMathModel implements STGModel {
 		}
 	}
 
-	public String getNodeReference(Node node) {
+	public String getNodeReference(NamespaceProvider provider, Node node) {
 		if(node instanceof STGPlace)
 		{
 			if(((STGPlace) node).isImplicit()) {
@@ -275,20 +276,20 @@ public class STG extends AbstractMathModel implements STGModel {
 				if (!(preset.size()==1 && postset.size()==1))
 					throw new RuntimeException ("An implicit place cannot have more that one transition in its preset or postset.");
 
-				return "<"+referenceManager.getNodeReference(preset.iterator().next())
-							+ "," + referenceManager.getNodeReference(postset.iterator().next()) + ">";
+				return "<"+referenceManager.getNodeReference(provider, preset.iterator().next())
+							+ "," + referenceManager.getNodeReference(provider, postset.iterator().next()) + ">";
 			} else
-				return referenceManager.getNodeReference(node);
+				return referenceManager.getNodeReference(provider, node);
 		} else
-			return referenceManager.getNodeReference(node);
+			return referenceManager.getNodeReference(provider, node);
 	}
 
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions!=null) {
 
-			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
-			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
+			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
+			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
@@ -301,7 +302,7 @@ public class STG extends AbstractMathModel implements STGModel {
 			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
 					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
 		}	else
-		return referenceManager.getNodeByReference(reference);
+		return referenceManager.getNodeByReference(provider, reference);
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {

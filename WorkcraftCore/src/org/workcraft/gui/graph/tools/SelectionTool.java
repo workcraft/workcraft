@@ -61,7 +61,6 @@ import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;

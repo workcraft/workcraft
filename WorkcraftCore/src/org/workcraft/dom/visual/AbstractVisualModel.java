@@ -39,10 +39,13 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -424,8 +427,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void groupPageSelection() {
 		ArrayList<Node> selected = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualTransformableNode) {
+		for (Node node : getOrderedCurrentLevelSelection()) {
+			if (node instanceof VisualTransformableNode) {
 				selected.add((VisualTransformableNode)node);
 			}
 		}
@@ -448,6 +451,37 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			}
 			currentLevel.reparent(connectionsToGroup, page);
 
+			// reparenting for the math model nodes
+			ArrayList<Node> selectedMath = new ArrayList<Node>();
+			for (Node node:selected) {
+				if (node instanceof VisualComponent) {
+					selectedMath.add(((VisualComponent)node).getReferencedComponent());
+				}
+			}
+			for (Node node:connectionsToGroup) {
+				if (node instanceof VisualConnection) {
+					selectedMath.add(((VisualConnection)node).getReferencedConnection());
+				}
+			}
+
+			for (Node node: selectedMath) {
+				Container parent = (Container)node.getParent();
+				ArrayList<Node> re = new ArrayList<Node>();
+				re.add(node);
+
+
+				// reparenting at the level of the reference manager
+				ReferenceManager refMan = getMathModel().getReferenceManager();
+				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
+					manager.setNamespaceProvider(node, pageNode);
+				}
+				parent.reparent(re, pageNode);
+
+			}
+
+
+			// final touch on visual part
 			if (page != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				page.setPosition(groupCenter);
@@ -477,7 +511,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			} else if(node instanceof VisualPage) {
 
 				VisualPage page = (VisualPage)node;
-				for(Node subNode : page.unGroup()) {
+
+				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
 					toSelect.add(subNode);
 				}
 				currentLevel.remove(page);

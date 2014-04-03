@@ -23,6 +23,8 @@ package org.workcraft.dom;
 
 import java.util.Collection;
 
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.Properties;
 
 
@@ -36,6 +38,9 @@ public interface Model extends NodeContext {
 	 * is missing, taken from the name of the model class.
 	 */
 	public String getDisplayName();
+	public ReferenceManager getReferenceManager();
+	public Node getNodeByReference(NamespaceProvider provider, String reference);
+	public String getNodeReference(NamespaceProvider provider, Node node);
 
 	public Node getNodeByReference(String reference);
 	public String getNodeReference(Node node);

@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
@@ -94,7 +95,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, Integer> instancedName = LabelParser.parse(reference);
 		if (instancedName != null)	{
 			if (instancedName.getSecond() == null) {
@@ -109,7 +110,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	}
 
 	@Override
-	public String getNodeReference(Node node) {
+	public String getNodeReference(NamespaceProvider provider, Node node) {
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
 			final Integer instance = instancedNameManager.getInstance(st).getSecond();

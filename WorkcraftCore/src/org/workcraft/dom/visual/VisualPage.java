@@ -16,14 +16,14 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 
@@ -32,7 +32,10 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
 
-	boolean isCollapsed = false;
+
+
+
+	private boolean isCollapsed = false;
 	@Override
 	public void setIsCollapsed(boolean isCollapsed) {
 		sendNotification(new TransformChangingEvent(this));
@@ -46,7 +49,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	}
 
 
-	String referencedModel = "";
+	private String referencedModel = "";
 	public void setReferencedModel(String model) {
 		sendNotification(new TransformChangingEvent(this));
 		this.referencedModel = model;
@@ -104,18 +107,27 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	public VisualPage(MathNode refNode) {
 		super(refNode);
+
+
+
 		addPropertyDeclarations();
 	}
 
-	public List<Node> unGroup() {
+	public List<Node> unGroup(ReferenceManager mathManager) {
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
 
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 
 		groupImpl.reparent(nodesToReparent, newParent);
 
+
 		for (Node node : nodesToReparent)
 			TransformHelper.applyTransform(node, localToParentTransform);
+
+
+		PageNode page = (PageNode)getReferencedComponent();
+
+		page.unGroup(mathManager);
 
 		return nodesToReparent;
 	}
@@ -189,7 +201,10 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		if (getIsCollapsed()&&!isCurrentLevelInside()) {
 			return super.getInternalBoundingBoxInLocalSpace();
 		} else {
-			return BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+			Rectangle2D ret = BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+			if (ret==null)
+				ret = super.getInternalBoundingBoxInLocalSpace();
+			return ret;
 		}
 	}
 
@@ -250,12 +265,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 			}
 
-
-//			// draw the collapse button
-//			Rectangle2D sb = new Rectangle2D.Double();
-//			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
-//			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f));
-//			g.draw(sb);
 		}
 	}
 

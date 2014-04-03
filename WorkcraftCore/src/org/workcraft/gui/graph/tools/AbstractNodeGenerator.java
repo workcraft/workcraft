@@ -27,12 +27,17 @@ import java.awt.geom.Point2D;
 import javax.swing.Icon;
 
 import org.workcraft.NodeFactory;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.NodeCreationException;
 
 public abstract class AbstractNodeGenerator implements NodeGenerator {
@@ -45,11 +50,27 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 
 	@Override
 	public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
+		Container visualContainer = model.getCurrentLevel();
+		Container mathContainer = model.getMathModel().getRoot();
+
+		Container visualNamespace = visualContainer;
+
+		while (visualNamespace instanceof VisualGroup) {
+			visualNamespace = (Container)visualNamespace.getParent();
+		}
+
+		//TODO: this will brake at some point
+		if (visualNamespace!=null) {
+			mathContainer = (Container)((VisualComponent)visualNamespace).getReferencedComponent();
+		}
+
+
 		MathNode mn = createMathNode();
-		model.getMathModel().add(mn);
+		mathContainer.add(mn);
 
 		VisualNode vc = NodeFactory.createVisualComponent(mn);
-		model.getCurrentLevel().add(vc);
+
+		visualContainer.add(vc);
 
 		if (vc instanceof Movable) {
 			AffineTransform transform = TransformHelper.getTransform(model.getRoot(), vc);

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="true" nesting-relationships="true">  
+  <interface id="1" language="java" name="org.workcraft.observation.HierarchyObserver" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/observation/HierarchyObserver.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1124" y="3137"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="2" language="java" name="org.workcraft.observation.HierarchySupervisor" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/observation/HierarchySupervisor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1385" y="2808"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="org.workcraft.dom.visual.connections.Polyline" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/visual/connections/Polyline.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1124" y="2659"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="org.workcraft.dom.AbstractGroup" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/AbstractGroup.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="280" y="1849"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="org.workcraft.dom.math.MathGroup" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/math/MathGroup.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="184" y="2745"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="org.workcraft.dom.visual.VisualGroup" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualGroup.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="545" width="254" x="754" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="org.workcraft.dom.visual.VisualPage" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualPage.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="491" width="277" x="334" y="2350"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="org.workcraft.dom.visual.connections.VisualConnection" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/visual/connections/VisualConnection.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="905" width="571" x="754" y="622"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="9" language="java" name="org.workcraft.observation.ObservableHierarchy" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/observation/ObservableHierarchy.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="637" y="3141"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="10" language="java" name="org.workcraft.observation.ObservableHierarchyImpl" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/observation/ObservableHierarchyImpl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="817" y="2535"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="org.workcraft.plugins.son.connections.VisualSONConnection" project="SONPlugin" 
+    file="/SONPlugin/src/org/workcraft/plugins/son/connections/VisualSONConnection.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="743" width="570" x="754" y="1567"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <dependency id="12">    
+    <bendpoint x="533" y="2989"/>    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="13">    
+    <bendpoint x="759" y="2940"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <realization id="14">    
+    <bendpoint x="1335" y="3010"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="1"/>  
+  </realization>  
+  <realization id="15">    
+    <bendpoint x="683" y="1567"/>    
+    <bendpoint x="683" y="2350"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <dependency id="16">    
+    <bendpoint x="1501" y="1567"/>    
+    <bendpoint x="1501" y="2350"/>    
+    <bendpoint x="1501" y="2989"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <association id="17">    
+    <bendpoint x="723" y="1567"/>    
+    <bendpoint x="727" y="2304"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="18" name="observableHierarchyImpl">        
+        <position height="16" width="127" x="877" y="2406"/>      
+      </attribute>      
+      <multiplicity id="19" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="20">    
+    <bendpoint x="641" y="2350"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <association id="21">    
+    <bendpoint x="921" y="2958"/>    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="22" name="observers"/>      
+      <multiplicity id="23" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="24">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="25" name="observableHierarchyImpl">        
+        <position height="16" width="127" x="683" y="2426"/>      
+      </attribute>      
+      <multiplicity id="26" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="27">    
+    <bendpoint x="1354" y="1567"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="28">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="29">    
+    <bendpoint x="31" y="2350"/>    
+    <bendpoint x="31" y="2989"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="30">    
+    <bendpoint x="1248" y="2350"/>    
+    <bendpoint x="1248" y="2989"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <association id="32">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="33" name="observableHierarchyImpl">        
+        <position height="16" width="127" x="672" y="2408"/>      
+      </attribute>      
+      <multiplicity id="34" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="35">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <realization id="36">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <generalization id="37">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="8"/>  
+  </generalization>  
+  <dependency id="38">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="39">    
+    <bendpoint x="1522" y="622"/>    
+    <bendpoint x="1522" y="1567"/>    
+    <bendpoint x="1522" y="2350"/>    
+    <bendpoint x="1522" y="2989"/>    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="40">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <realization id="41">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <realization id="42">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </realization>  
+  <realization id="43">    
+    <bendpoint x="662" y="622"/>    
+    <bendpoint x="662" y="1567"/>    
+    <bendpoint x="662" y="2350"/>    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="false" static="true"/>    
+    <operations public="true" package="true" protected="true" private="false" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
