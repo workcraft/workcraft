@@ -157,6 +157,10 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	}
 
 	public void setName(Node node, String s) {
+		setName(node, s, false);
+	}
+
+	public void setName(Node node, String s, boolean forceInstance) {
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
 
@@ -165,8 +169,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
 				}
-
-				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()));
+				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()), forceInstance);
 
 				transitions.remove(st.getSignalName(), st);
 				transitions.put(r.getFirst(), st);
@@ -194,7 +197,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 				if (r==null)
 					throw new ArgumentException (s + " is not a valid transition label");
 				if (r.getSecond() != null)
-					instancedNameManager.assign(dt, r);
+					instancedNameManager.assign(dt, r, forceInstance);
 				else
 					instancedNameManager.assign(dt, r.getFirst());
 				dt.setName(r.getFirst());
@@ -276,10 +279,6 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 			instancedNameManager.remove(dt);
 		} else
 			defaultNameManager.remove(node);
-	}
-
-	public void setForbidInstanceChange(boolean value) {
-		instancedNameManager.setForbidInstanceChange(value);
 	}
 
 }
