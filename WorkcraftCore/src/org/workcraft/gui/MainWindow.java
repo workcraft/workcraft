@@ -784,11 +784,6 @@ public class MainWindow extends JFrame {
 				framework.getJavaScriptGlobalScope(), true);
 	}
 
-// TODO: commented out Public Morozov, remove completely?
-//	public SimpleContainer getToolboxWindow() {
-//		return toolboxWindow;
-//	}
-
 	private void printCause(Throwable e) {
 		e.printStackTrace();
 		System.err.println("-------------" + e);

@@ -158,14 +158,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 */
 	@Override
 	public void selectAll() {
-		if(selection.size()==getRoot().getChildren().size())
+		if(selection.size()==getRoot().getChildren().size()) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
-
 		selection.clear();
 		selection.addAll(getRoot().getChildren());
-
 		notifySelectionChanged(s);
 	}
 
@@ -176,9 +174,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void selectNone() {
 		if (!selection.isEmpty()) {
 			Collection<Node> s = saveSelection();
-
 			selection.clear();
-
 			notifySelectionChanged(s);
 		}
 	}
@@ -199,8 +195,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	private void validateSelection (Node node) {
-		if (!Hierarchy.isDescendant(node, getCurrentLevel()))
-			throw new RuntimeException ("Cannot select a node that is not in the current editing level (" + node + "), parent (" + node.getParent() +")");
+		if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
+			throw new RuntimeException (
+				"Cannot select a node that is not in the current editing level ("
+				+ node + "), parent (" + node.getParent() +")");
+		}
 	}
 
 	private void validateSelection (Collection<Node> nodes) {
@@ -217,40 +216,33 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			selectNone();
 			return;
 		}
-
 		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
-
 		selection.clear();
 		selection.addAll(nodes);
-
 		notifySelectionChanged(s);
 	}
 
 	@Override
 	public void select(Node node) {
-		if (selection.size() == 1 && selection.contains(node))
+		if (selection.size() == 1 && selection.contains(node)) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
 		validateSelection(node);
-
 		selection.clear();
 		selection.add(node);
-
 		notifySelectionChanged(s);
 	}
 
 	@Override
 	public void addToSelection(Node node) {
-		if (selection.contains(node))
+		if (selection.contains(node)) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
 		validateSelection(node);
-
 		selection.add(node);
-
 		notifySelectionChanged(s);
 	}
 
@@ -258,20 +250,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void addToSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
-
 		selection.addAll(nodes);
-
-		if (s.size() != selection.size())
+		if (s.size() != selection.size()) {
 			notifySelectionChanged(s);
+		}
 	}
 
 	@Override
 	public void removeFromSelection(Node node) {
 		if (selection.contains(node)) {
 			Collection<Node> s = saveSelection();
-
 			selection.remove(node);
-
 			notifySelectionChanged(s);
 		}
 	}
@@ -279,11 +268,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void removeFromSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
-
 		selection.removeAll(nodes);
-
-		if (s.size() != selection.size())
+		if (s.size() != selection.size()) {
 			notifySelectionChanged(s);
+		}
 	}
 
 	@Override
@@ -431,4 +419,5 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Properties getProperties(Node node) {
 		return null;
 	}
+
 }

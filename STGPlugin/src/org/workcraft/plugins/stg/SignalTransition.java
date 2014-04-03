@@ -35,8 +35,22 @@ public class SignalTransition extends NamedTransition
 	public enum Type {
 		INPUT,
 		OUTPUT,
-		INTERNAL,
-		DUMMY
+		INTERNAL;
+
+		@Override
+		public String toString() {
+			switch(this)
+			{
+			case INPUT:
+				return "input";
+			case OUTPUT:
+				return "output";
+			case INTERNAL:
+				return "internal";
+			default:
+				throw new NotSupportedException();
+			}
+		}
 	}
 
 	public enum Direction {
@@ -73,7 +87,7 @@ public class SignalTransition extends NamedTransition
 
 	private Type type = Type.INTERNAL;
 	private Direction direction = Direction.TOGGLE;
-	private String signalName;
+	private String signalName = null;
 
 	public Type getSignalType() {
 		return type;
