@@ -194,12 +194,12 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Direction getDirection (Node t) {
 		String name = referenceManager.getName(t);
-		return LabelParser.parseFull(name).getSecond();
+		return LabelParser.parseSignalTransition(name).getSecond();
 	}
 
 	public void setDirectionWithAutoInstance (Node t, Direction direction) {
 		String name = referenceManager.getName(t);
-		Triple<String, Direction, Integer> old = LabelParser.parseFull(name);
+		Triple<String, Direction, Integer> old = LabelParser.parseSignalTransition(name);
 		referenceManager.setName(t, old.getFirst() + direction.toString());
 	}
 

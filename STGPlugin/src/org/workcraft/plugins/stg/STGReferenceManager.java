@@ -109,14 +109,14 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 
 	@Override
 	public Node getNodeByReference(String reference) {
-		Pair<String, Integer> instancedName = LabelParser.parse(reference);
+		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(reference);
 		if (instancedName != null)	{
 			if (instancedName.getSecond() == null) {
 				instancedName = Pair.of(instancedName.getFirst(), 0);
 			}
-			Node n = instancedNameManager.getObject(instancedName);
-			if (n!=null) {
-				return n;
+			Node node = instancedNameManager.getObject(instancedName);
+			if (node != null) {
+				return node;
 			}
 		}
 		return defaultNameManager.get(reference);
@@ -181,7 +181,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
 			try {
-				final Triple<String, Direction, Integer> r = LabelParser.parseFull(s);
+				final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(s);
 				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
 				}
@@ -205,7 +205,7 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		} else if (node instanceof DummyTransition) {
 			final DummyTransition dt = (DummyTransition)node;
 			try {
-				final Pair<String,Integer> r = LabelParser.parse(s);
+				final Pair<String,Integer> r = LabelParser.parseDummyTransition(s);
 				if (r==null) {
 					throw new ArgumentException (s + " is not a valid transition label");
 				}
