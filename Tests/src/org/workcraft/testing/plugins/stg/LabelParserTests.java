@@ -12,7 +12,7 @@ public class LabelParserTests {
 
 	@Test
 	public void testNoInstance() {
-		Triple<String, Direction, Integer> result = LabelParser.parseFull("a+");
+		Triple<String, Direction, Integer> result = LabelParser.parseSignalTransition("a+");
 
 		assertEquals("a", result.getFirst());
 		assertEquals(Direction.PLUS, result.getSecond());
@@ -22,7 +22,7 @@ public class LabelParserTests {
 
 	@Test
 	public void testInstance() {
-		Triple<String, Direction, Integer> result = LabelParser.parseFull("a+/4");
+		Triple<String, Direction, Integer> result = LabelParser.parseSignalTransition("a+/4");
 
 		assertEquals("a", result.getFirst());
 		assertEquals(Direction.PLUS, result.getSecond());
@@ -32,17 +32,17 @@ public class LabelParserTests {
 
 	@Test(expected = ArgumentException.class)
 	public void testWrongFormat1() {
-		LabelParser.parseFull("x/");
+		LabelParser.parseSignalTransition("x/");
 	}
 
 	@Test(expected = ArgumentException.class)
 	public void testWrongFormat2() {
-		LabelParser.parseFull("x@/3");
+		LabelParser.parseSignalTransition("x@/3");
 	}
 
 	@Test(expected = ArgumentException.class)
 	public void testWrongFormat3() {
-		LabelParser.parseFull("x-/fifty");
+		LabelParser.parseSignalTransition("x-/fifty");
 	}
 
 }
