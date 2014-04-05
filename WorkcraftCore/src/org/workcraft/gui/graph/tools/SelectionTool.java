@@ -571,7 +571,7 @@ public class SelectionTool extends AbstractTool {
 				}
 
 
-				if (node==mouseOverNode) return selectedDecoration;
+				//if (node==mouseOverNode) return selectedDecoration;
 
 				return null;
 			}
