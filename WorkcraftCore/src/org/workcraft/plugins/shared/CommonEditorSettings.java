@@ -38,6 +38,15 @@ public class CommonEditorSettings implements SettingsPage {
 	protected static int iconSize = 24;
 
 	private static boolean debugClipboard = false;
+	private static boolean showAbsolutePaths = false;
+
+	public static boolean getShowAbsolutePaths() {
+		return showAbsolutePaths;
+	}
+
+	public static void setShowAbsolutePaths(boolean showAbsolutePaths) {
+		CommonEditorSettings.showAbsolutePaths = showAbsolutePaths;
+	}
 
 	public String getSection() {
 		return "Common";
@@ -100,6 +109,15 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 		});
 
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Names shown with absolute paths", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setShowAbsolutePaths(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getShowAbsolutePaths();
+			}
+		});
 	}
 
 	public static Boolean getDebugClipboard() {
@@ -120,6 +138,7 @@ public class CommonEditorSettings implements SettingsPage {
 		showRulers = config.getBoolean("CommonEditorSettings.showRullers", true);
 		iconSize = config.getInt("CommonEditorSettings.iconSize", 24);
 		debugClipboard = config.getBoolean("CommonEditorSettings.debugClipboard", false);
+		showAbsolutePaths = config.getBoolean("CommonEditorSettings.showAbsolutePaths", false);
 	}
 
 	public void save(Config config) {
@@ -128,6 +147,7 @@ public class CommonEditorSettings implements SettingsPage {
 		config.setBoolean("CommonEditorSettings.showRullers", showRulers);
 		config.setInt("CommonEditorSettings.iconSize", iconSize);
 		config.setBoolean("CommonEditorSettings.debugClipboard", debugClipboard);
+		config.setBoolean("CommonEditorSettings.showAbsolutePaths", showAbsolutePaths);
 	}
 
 	public static Color getBackgroundColor() {
