@@ -36,8 +36,7 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-		if (e instanceof NodesAddedEvent)
-		{
+		if (e instanceof NodesAddedEvent) {
 			for (Node n : e.getAffectedNodes()) {
 				nodeAdded(n);
 			}
@@ -50,17 +49,17 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 
 	private void nodeRemoved(Node n) {
 		nodes.removeValue(n);
-
-		for (Node nn: n.getChildren())
+		for (Node nn: n.getChildren()) {
 			nodeRemoved(nn);
+		}
 	}
 
 	private void nodeAdded(Node n) {
 		String id = Integer.toString(idGenerator.getNextID());
 		nodes.put(id, n);
-
-		for (Node nn : n.getChildren())
+		for (Node nn : n.getChildren()) {
 			nodeAdded(nn);
+		}
 	}
 
 	@Override
@@ -72,4 +71,5 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 	public String getNodeReference(Node node) {
 		return nodes.getKey(node);
 	}
+
 }

@@ -83,11 +83,13 @@ public class VisualCPOG extends AbstractVisualModel
 		@Override
 		public void setValue(Object value) throws InvocationTargetException {
 			try {
-				if (node instanceof VisualRhoClause) ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
-				else
-				if (node instanceof VisualArc) ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
-				else
-				if (node instanceof VisualVertex) ((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+				if (node instanceof VisualRhoClause) {
+					((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+				} else if (node instanceof VisualArc) {
+					((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+				} else if (node instanceof VisualVertex) {
+					((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+				}
 			} catch (ParseException e) {
 				throw new InvocationTargetException(e);
 			}
@@ -106,35 +108,26 @@ public class VisualCPOG extends AbstractVisualModel
 
 	private CPOG mathModel;
 
-	public VisualCPOG(CPOG model) throws VisualModelInstantiationException
-	{
+	public VisualCPOG(CPOG model) throws VisualModelInstantiationException {
 		this(model, null);
 	}
 
-	public VisualCPOG(CPOG model, VisualGroup root)
-	{
+	public VisualCPOG(CPOG model, VisualGroup root) {
 		super(model, root);
-
 		this.mathModel = model;
 
-		if (root == null)
-		{
-			try
-			{
+		if (root == null) {
+			try {
 				createDefaultFlatStructure();
-			}
-			catch (NodeCreationException e)
-			{
+			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
 		}
-
 		new ConsistencyEnforcer(this).attach(getRoot());
 	}
 
 	@Override
-	public void validateConnection(Node first, Node second) throws InvalidConnectionException
-	{
+	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first == second) throw new InvalidConnectionException("Self loops are not allowed");
 
 		if (first instanceof VisualVariable && !getPreset(first).isEmpty()) throw new InvalidConnectionException("Variables do not support multiple connections");
@@ -148,8 +141,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException
-	{
+	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		if (first instanceof VisualVertex && second instanceof VisualVertex)
