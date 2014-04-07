@@ -99,17 +99,19 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 
 
-		if (manager instanceof HierarchicalUniqueNameReferenceManager) {
-			HierarchicalUniqueNameReferenceManager man = (HierarchicalUniqueNameReferenceManager)manager;
+		if (manager!=null) {
 
-			for (Node node : nodesToReparent) {
-				man.setNamespaceProvider(node, man.getNamespaceProvider(newParent));
+			if (manager instanceof HierarchicalUniqueNameReferenceManager) {
+
+				HierarchicalUniqueNameReferenceManager man = (HierarchicalUniqueNameReferenceManager)manager;
+
+				for (Node node : nodesToReparent) {
+					man.setNamespaceProvider(node, man.getNamespaceProvider(newParent));
+				}
 			}
-
 		}
 
 		groupImpl.reparent(nodesToReparent, newParent);
-
 
 		return nodesToReparent;
 	}

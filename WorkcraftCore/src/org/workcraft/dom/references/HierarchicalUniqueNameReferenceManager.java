@@ -78,10 +78,17 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 			String name = getName(node);
 			UniqueNameManager<Node> oldMan = getNameManager(oldProvider);
+			UniqueNameManager<Node> newMan = getNameManager(provider);
 			oldMan.remove(node);
 
 			node2namespace.put(node,  provider);
-			setName(node, name);
+
+			Node checkNode = newMan.get(name);
+			// we must assign some name in any case, be it an old or a new one
+			if (checkNode == null)
+				setName(node, name);
+			else
+				newMan.setDefaultNameIfUnnamed(node);
 		}
 
 

@@ -23,6 +23,7 @@ package org.workcraft.dom;
 
 import java.util.Collection;
 
+
 public interface Container extends Node {
 	public void add(Node node);
 	public void add(Collection<Node> nodes);
