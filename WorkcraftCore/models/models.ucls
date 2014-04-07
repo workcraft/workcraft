@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <interface id="1" language="java" name="org.workcraft.dom.Model" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/Model.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="178" y="172"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="2" language="java" name="org.workcraft.dom.NodeContext" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/NodeContext.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="604" y="88"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" name="org.workcraft.dom.NodeContextTracker" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/NodeContextTracker.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1040" y="133"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="org.workcraft.dom.AbstractModel" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/AbstractModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="607" y="423"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="5" language="java" name="org.workcraft.dom.math.MathModel" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/math/MathModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="92" y="408"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="6" language="java" name="org.workcraft.dom.visual.VisualModel" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="299" y="606"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="false" private="false" static="true"/>    
+    </display>  
+  </interface>  
+  <generalization id="7">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="2"/>  
+  </generalization>  
+  <association id="8">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="9" name="nodeContextTracker"/>      
+      <multiplicity id="10" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="11">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <realization id="12">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </realization>  
+  <generalization id="13">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="14">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="false" private="false" static="true"/>    
+    <operations public="true" package="true" protected="false" private="false" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
