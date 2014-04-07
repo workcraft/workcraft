@@ -36,30 +36,25 @@ public class Variable extends MathNode implements Comparable<Variable>, BooleanV
 
 	private String label = "";
 
-	public void setState(VariableState state)
-	{
+	public void setState(VariableState state) {
 		this.state = state;
 		sendNotification(new PropertyChangedEvent(this, "state"));
 	}
 
-	public VariableState getState()
-	{
+	public VariableState getState() {
 		return state;
 	}
 
 	@Override
-	public int compareTo(Variable o)
-	{
+	public int compareTo(Variable o) {
 		return label.compareTo(o.label);
 	}
 
-	public void setLabel(String label)
-	{
+	public void setLabel(String label) {
 		this.label = label;
 	}
 
-	public String getLabel()
-	{
+	public String getLabel() {
 		return label;
 	}
 
@@ -67,4 +62,5 @@ public class Variable extends MathNode implements Comparable<Variable>, BooleanV
 	public <T> T accept(BooleanVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
+
 }

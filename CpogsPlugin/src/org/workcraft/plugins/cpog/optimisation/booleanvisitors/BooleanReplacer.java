@@ -20,6 +20,7 @@
 */
 package org.workcraft.plugins.cpog.optimisation.booleanvisitors;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,10 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 
 	public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> params, List<? extends BooleanFormula> values) {
 		return formula.accept(new BooleanReplacer(params, values));
+	}
+
+	public static BooleanFormula replace(BooleanFormula formula, BooleanVariable param, BooleanFormula value) {
+		return replace(formula, Arrays.asList(param), Arrays.asList(value));
 	}
 
 	@Override
