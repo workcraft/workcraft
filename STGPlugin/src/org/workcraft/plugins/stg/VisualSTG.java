@@ -71,34 +71,38 @@ public class VisualSTG extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first==second) {
+		if (first == second) {
 			throw new InvalidConnectionException ("Connections are only valid between different objects");
 		}
 
 		if (first instanceof VisualPlace) {
-			if (second instanceof VisualPlace)
+			if (second instanceof VisualPlace) {
 				throw new InvalidConnectionException ("Arcs between places are not allowed");
-			if (second instanceof VisualConnection)
+			}
+			if (second instanceof VisualConnection) {
 				throw new InvalidConnectionException ("Arcs between places and implicit places are not allowed");
+			}
 		}
 
 		if (first instanceof VisualTransition) {
-			if (second instanceof VisualConnection)
-				if (! (second  instanceof VisualImplicitPlaceArc))
-					throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
+			if ((second instanceof VisualConnection) && !(second  instanceof VisualImplicitPlaceArc)) {
+				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
+			}
+			if ((second instanceof VisualTransition) && (getConnection(first, second) != null)) {
+				throw new InvalidConnectionException ("This arc with implicit place already exisits");
+			}
 		}
 
 		if (first instanceof VisualConnection) {
-			if (!(first instanceof VisualImplicitPlaceArc))
+			if (!(first instanceof VisualImplicitPlaceArc)) {
 				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
-			if (second instanceof VisualConnection)
+			}
+			if (second instanceof VisualConnection) {
 				throw new InvalidConnectionException ("Arcs between places are not allowed");
-			if (second instanceof VisualPlace)
+			}
+			if (second instanceof VisualPlace) {
 				throw new InvalidConnectionException ("Arcs between places are not allowed");
-
-			VisualImplicitPlaceArc con = (VisualImplicitPlaceArc) first;
-			if (con.getFirst() == second || con.getSecond() == second)
-				throw new InvalidConnectionException ("Arc already exists");
+			}
 		}
 	}
 
@@ -182,26 +186,19 @@ public class VisualSTG extends AbstractVisualModel {
 	private void maybeMakeImplicit (VisualPlace place) {
 		final STGPlace stgPlace = (STGPlace)place.getReferencedPlace();
 		if ( stgPlace.isImplicit() ) {
-
 			MathConnection refCon1 = null, refCon2 = null;
-
 			VisualComponent first = (VisualComponent) getPreset(place).iterator().next();
 			VisualComponent second = (VisualComponent) getPostset(place).iterator().next();
-
 			Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
-			for (Connection con: connections)
-				if (con.getFirst() == place)
+			for (Connection con: connections) {
+				if (con.getFirst() == place) {
 					refCon2 = ((VisualConnection)con).getReferencedConnection();
-				else if (con.getSecond() == place)
+				} else if (con.getSecond() == place) {
 					refCon1 = ((VisualConnection)con).getReferencedConnection();
-
-
+				}
+			}
 			VisualImplicitPlaceArc con = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace)place.getReferencedPlace());
-
-			Hierarchy.getNearestAncestor(
-					Hierarchy.getCommonParent(first, second), Container.class)
-					.add(con);
-
+			Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class)	.add(con);
 			remove(place);
 			// connections will get removed automatically by the hanging connection remover
 		}
@@ -239,6 +236,14 @@ public class VisualSTG extends AbstractVisualModel {
 			if (vt.getReferencedTransition() == transition) {
 				return vt;
 			}
+		}
+		return null;
+	}
+
+
+	public Connection getConnection(Node first, Node second) {
+		for(Connection connection : getConnections(first)) {
+			if (connection.getSecond() == second) return connection;
 		}
 		return null;
 	}
