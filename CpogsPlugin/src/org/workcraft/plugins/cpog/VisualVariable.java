@@ -104,7 +104,11 @@ public class VisualVariable extends VisualComponent
 		Rectangle2D textBB = result.boundingBox;
 
 		float textX = (float)-textBB.getCenterX();
-		float textY = (float)-textBB.getCenterY() + 0.08f;
+		float textY = (float)-textBB.getCenterY() + 0.1f;
+		if (getState() == VariableState.UNDEFINED) {
+			// FIXMI: A hack to draw "?" symbol a bit higher, otherwise it shows too low, not sure why)
+			textY -= 0.3f;
+		}
 
 		AffineTransform transform = g.getTransform();
 		g.translate(textX, textY);
