@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 
@@ -13,9 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
 import org.workcraft.plugins.cpog.expressions.CpogFormula;
@@ -124,6 +130,28 @@ public class CpogSelectionTool extends SelectionTool {
 		// TODO: fix the bug after exception; find out if the line below is needed
 		//       I think it is  fixed now (by not keeping a reference to the visualModel in the activated method)
 		we.saveMemento();
+	}
+
+	@Override
+	public void mouseClicked(GraphEditorMouseEvent e) {
+		boolean processed = false;
+
+		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
+			VisualModel model = e.getEditor().getModel();
+			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+			if (node != null) {
+				if(node instanceof VisualVariable) {
+					VisualVariable var = (VisualVariable) node;
+					var.toggle();
+					processed = true;
+				}
+			}
+		}
+
+		if (!processed) {
+			super.mouseClicked(e);
+
+		}
 	}
 
 }
