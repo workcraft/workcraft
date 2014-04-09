@@ -50,8 +50,8 @@ public class VisualComment extends VisualComponent implements Container {
 	}
 
 	@Override
-	public double getLabelOffset() {
-		return 0.0;
+	public Point2D getLabelOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class VisualComment extends VisualComponent implements Container {
 	}
 
 	@Override
-	public double getNameOffset() {
-		return 0.0;
+	public Point2D getNameOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override

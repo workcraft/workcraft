@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.optimisation.booleanvisitors;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Line2D;
@@ -39,10 +38,8 @@ public class FormulaRenderingResult
 		visualTop = Math.min(visualTop, summand.visualTop);
 	}
 
-	public void draw(Graphics2D g, Color color)
+	public void draw(Graphics2D g)
 	{
-		g.setColor(color);
-
 		int k = 0;
 		for(GlyphVector glyph : glyphs)
 		{

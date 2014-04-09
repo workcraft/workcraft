@@ -12,26 +12,31 @@ public class RenderedText implements Touchable {
 	final public String text;
 	final public Font font;
 	final public Positioning positioning;
-	final public double offset;
+	final public double xOffset;
+	final public double yOffset;
 	final private GlyphVector glyphVector;
 	private Rectangle2D boundingBox;
 
-	public RenderedText(String text, Font font, Positioning positioning, double offset) {
+	public RenderedText(String text, Font font, Positioning positioning, Point2D offset) {
 		this.text = text;
 		this.font = font;
 		this.positioning = positioning;
-		this.offset = offset;
+		this.xOffset = offset.getX();
+		this.yOffset = offset.getY();
 		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
 		glyphVector = font.createGlyphVector(context, text);
-		final Rectangle2D bb = BoundingBoxHelper.expand(glyphVector.getVisualBounds(), 0, 0);
-		boundingBox = BoundingBoxHelper.move(bb, -bb.getCenterX(), -bb.getCenterY());
-		double x = offset * positioning.xOffset + 0.5 * positioning.xSign * boundingBox.getWidth();
-		double y = offset * positioning.yOffset + 0.5 * positioning.ySign * boundingBox.getHeight();
+		final Rectangle2D bb = glyphVector.getVisualBounds();
+		double x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * bb.getWidth();
+		double y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * bb.getHeight();
 		boundingBox = BoundingBoxHelper.move(bb, x - bb.getCenterX(), y - bb.getCenterY());
 	}
 
-	public boolean isDifferent(String text, Font font, Positioning positioning, double offset) {
-		return (!text.equals(this.text) || font != this.font || positioning != this.positioning || offset != this.offset);
+	public boolean isDifferent(String text, Font font, Positioning positioning, Point2D offset) {
+		if (text == null) {
+			text = "";
+		}
+		return (!text.equals(this.text) || !font.equals(this.font) || positioning != this.positioning
+				|| offset.getX() != this.xOffset || offset.getY() != this.yOffset);
 	}
 
 	public void draw (Graphics2D g) {

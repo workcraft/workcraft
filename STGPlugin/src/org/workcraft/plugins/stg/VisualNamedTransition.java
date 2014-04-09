@@ -41,12 +41,16 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, 0.0);
+	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
 	public VisualNamedTransition(Transition transition) {
 		super(transition, false, false, false);
 		transition.addObserver(this);
 		updateRenderedText();
+	}
+
+	public Point2D getRenderedTextOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override
@@ -55,8 +59,8 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	@Override
-	public double getLabelOffset() {
-		return 0.0;
+	public Point2D getLabelOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override
@@ -65,8 +69,8 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	@Override
-	public double getNameOffset() {
-		return 0.0;
+	public Point2D getNameOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override
@@ -98,9 +102,10 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	protected void updateRenderedText() {
-		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, 0.0)) {
+		Point2D offset = getRenderedTextOffset();
+		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
 			transformChanging(true);
-			renderedText = new RenderedText(getName(), font, Positioning.CENTER, 0.0);
+			renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
 			transformChanged(true);
 		}
 	}
