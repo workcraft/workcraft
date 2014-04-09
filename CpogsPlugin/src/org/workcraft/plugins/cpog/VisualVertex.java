@@ -28,9 +28,7 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,31 +39,26 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.expressions.CpogVisitor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 @Hotkey(KeyEvent.VK_V)
 @SVGIcon("images/icons/svg/vertex.svg")
-public class VisualVertex extends VisualComponent implements CpogFormulaVariable
-{
-	private final static double size = 1;
-	private final static float strokeWidth = 0.1f;
-	private static Font labelFont;
-	private Point2D labelPosition = null;
-	private Rectangle2D labelBoundingBox = null;
+public class VisualVertex extends VisualComponent implements CpogFormulaVariable {
+	public static Font conditionFont;
+	private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.instance(), conditionFont, getLabelPositioning(), getLabelOffset());
 
 	static {
 		try {
 			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
-			labelFont = font.deriveFont(0.5f);
+			conditionFont = font.deriveFont(0.5f);
 		} catch (FontFormatException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -77,83 +70,71 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 		super(vertex);
 	}
 
-	public void draw(DrawRequest r)
-	{
+
+
+	@Override
+	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();
-
-		Shape shape = new Ellipse2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
+		Shape shape = new Ellipse2D.Double(
+				-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
 		BooleanFormula value = evaluate();
-
 		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(shape);
-
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		if (value == Zero.instance())
-		{
-			g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT,
+		if (value == Zero.instance()) {
+			g.setStroke(new BasicStroke((float)strokeWidth, BasicStroke.CAP_BUTT,
 			        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
-		}
-		else
-		{
-			g.setStroke(new BasicStroke(strokeWidth));
+		} else {
+			g.setStroke(new BasicStroke((float)strokeWidth));
 			if (value != One.instance())
 				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
 		}
-
 		g.draw(shape);
-		drawLabelInLocalSpace(r);
+		drawConditionInLocalSpace(r);
 	}
 
-	protected void drawLabelInLocalSpace(DrawRequest r)
-	{
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-
+	protected void cacheConditionRenderedFormula(DrawRequest r) {
 		String text = getLabel();
-		if (getCondition() != One.instance()) text += ": ";
-		FormulaRenderingResult result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
-		if (getCondition() != One.instance()) result.add(FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont));
-
-		Rectangle2D gbb = result.boundingBox;
-		labelPosition = new Point2D.Double(
-			-gbb.getCenterX() + 0.5 * getLabelPositioning().xOffset * (1.0 + gbb.getWidth() + 0.2),
-			-gbb.getCenterY() + 0.5 * getLabelPositioning().yOffset * (1.0 + gbb.getHeight() + 0.2));
-		labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
-				gbb.getWidth(), gbb.getHeight());
-
-		AffineTransform oldTransform = g.getTransform();
-		g.translate(labelPosition.getX(), labelPosition.getY());
-		result.draw(g, Coloriser.colorise(getLabelColor(), colorisation));
-		g.setTransform(oldTransform);
+		if (getCondition() != One.instance()) {
+			text += ": ";
+		}
+		if (conditionRenderedFormula.isDifferent(text, getCondition(), conditionFont, getLabelPositioning(), getLabelOffset())) {
+			conditionRenderedFormula = new RenderedFormula(text, getCondition(), conditionFont, getLabelPositioning(), getLabelOffset());
+		}
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace()
-	{
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-		return BoundingBoxHelper.union(bb, labelBoundingBox);
+	protected void drawConditionInLocalSpace(DrawRequest r) {
+		if (getLabelVisibility()) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			cacheConditionRenderedFormula(r);
+			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+			conditionRenderedFormula.draw(g);
+		}
 	}
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		if (getLabelVisibility()) {
+			bb = BoundingBoxHelper.union(bb, conditionRenderedFormula.getBoundingBox());
+		}
+		return bb;
 	}
 
-	public Vertex getMathVertex()
-	{
+	public Vertex getMathVertex() {
 		return (Vertex) getReferencedComponent();
 	}
 
-	public BooleanFormula getCondition()
-	{
+	public BooleanFormula getCondition() {
 		return getMathVertex().getCondition();
 	}
 
-	public void setCondition(BooleanFormula condition)
-	{
+	public void setCondition(BooleanFormula condition) {
 		getMathVertex().setCondition(condition);
 		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
@@ -181,4 +162,5 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	public <T> T accept(CpogVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
+
 }

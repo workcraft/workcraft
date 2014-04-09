@@ -32,11 +32,11 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/icons/svg/place_empty.svg")
-public class VisualCondition extends VisualComponent{
+public class VisualCondition extends VisualComponent {
 
 	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
-	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, 0.0);
+	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, getErrLabelOffset());
 	private Color errLabelColor = SONSettings.getErrLabelColor();
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
@@ -123,9 +123,19 @@ public class VisualCondition extends VisualComponent{
 		}
 	}
 
+	private Point2D getErrLabelOffset() {
+        Point2D result = getOffset(errLabelPositioning);
+        if (errLabelPositioning.ySign < 0) {
+        	result.setLocation(result.getX(), result.getY() - 0.4);
+        } else {
+        	result.setLocation(result.getX(), result.getY() + 0.4);
+        }
+        return result;
+	}
+
 	private void cahceErrorRenderedText(DrawRequest r) {
 		String error = "Err = "+((Integer)this.getErrors()).toString();
-		double offset = 0.8 * size;
+		Point2D offset = getErrLabelOffset();
 		if (errorRenderedText.isDifferent(error, labelFont, errLabelPositioning, offset)) {
 			errorRenderedText = new RenderedText(error, labelFont, errLabelPositioning, offset);
 		}

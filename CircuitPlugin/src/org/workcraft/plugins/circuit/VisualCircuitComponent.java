@@ -414,26 +414,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	@Override
-	public double getLabelOffset() {
-		double result = size / 2;
-		if (totalBB != null) {
-			switch (getLabelPositioning()) {
-			case CENTER:
-				result = 0.0;
-				break;
-			case TOP:
-			case BOTTOM:
-				result = totalBB.getHeight() / 2;
-				break;
-			case LEFT:
-			case RIGHT:
-				result = totalBB.getWidth() / 2;
-				break;
-			default:
-				result = Math.min(totalBB.getHeight(), totalBB.getWidth()) / 2;
-			}
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		if (groupImpl == null) {
+			return super.getInternalBoundingBoxInLocalSpace();
 		}
-		return result;
+		return BoundingBoxHelper.union(totalBB, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
 	}
 
 	@Override

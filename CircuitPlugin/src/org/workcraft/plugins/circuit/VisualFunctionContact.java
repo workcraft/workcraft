@@ -224,10 +224,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 			g.draw(line);
 		}
 		g.translate(textX, textY);
-		result.draw(g, foreground);
+		g.setColor(foreground);
+		result.draw(g);
 		g.setTransform(transform);
 	}
-
 
 	@Override
 	public void draw(DrawRequest r) {
@@ -256,7 +256,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		}
 		super.draw(r);
 	}
-
 
 	@Override
 	public void notify(StateEvent e) {

@@ -98,8 +98,8 @@ public class VisualRhoClause extends VisualComponent
 
 		AffineTransform transform = g.getTransform();
 		g.translate(textX, textY);
-
-		result.draw(g, Coloriser.colorise(getColor(), colorisation));
+		g.setColor(Coloriser.colorise(getColor(), colorisation));
+		result.draw(g);
 
 		g.setTransform(transform);
 	}
