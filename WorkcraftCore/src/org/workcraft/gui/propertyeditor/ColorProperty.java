@@ -26,19 +26,24 @@ import javax.swing.table.TableCellRenderer;
 
 public class ColorProperty implements PropertyClass {
 
-	public Object fromCellEditorValue(Object editorComponentValue) {
-		return editorComponentValue;
-	}
-
+	@Override
 	public TableCellEditor getCellEditor() {
 		return new ColorCellEditor();
 	}
 
+	@Override
 	public TableCellRenderer getCellRenderer() {
-		return new ColorCellRenderer(true);
+		return new ColorCellRenderer();
 	}
 
+	@Override
+	public Object fromCellEditorValue(Object value) {
+		return value;
+	}
+
+	@Override
 	public Object toCellRendererValue(Object value) {
 		return value;
 	}
+
 }

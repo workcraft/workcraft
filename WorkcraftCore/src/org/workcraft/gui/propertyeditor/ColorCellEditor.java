@@ -45,11 +45,11 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 		}
 	}
 
-	Color currentColor;
+	Color color;
 	JButton button;
 
 	static Approximator approx = new Approximator();
-	static JColorChooser colorChooser = null;
+	static JColorChooser chooser = null;
 	static JDialog dialog = null;
 
 	protected static final String EDIT = "edit";
@@ -62,49 +62,44 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 		button.setBorderPainted(false);
 		button.setFocusable(false);
 
-//		Set up the dialog that the button brings up.
-
-		if (colorChooser == null)
-			colorChooser = new JColorChooser();
+		// Set up the dialog that the button brings up.
+		if (chooser == null) {
+			chooser = new JColorChooser();
+		}
 		if (dialog == null) {
 			dialog = JColorChooser.createDialog(null,
 					"Pick a Color",
 					true,  //modal
-					colorChooser,
+					chooser,
 					approx,  //OK button handler
 					null); //no CANCEL button handler
 		}
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (EDIT.equals(e.getActionCommand())) {
-//			The user has clicked the cell, so
-//			bring up the dialog.
-
+			// The user has clicked the cell, so bring up the dialog.
 			approx.target = this;
-			button.setBackground(currentColor);
-			colorChooser.setColor(currentColor);
+			button.setBackground(color);
+			chooser.setColor(color);
 			dialog.setVisible(true);
-
 			fireEditingStopped(); //Make the renderer reappear.
-
-		} else { //User pressed dialog's "OK" button.
-			currentColor = colorChooser.getColor();
+		} else {
+			//User pressed dialog's "OK" button.
+			color = chooser.getColor();
 		}
 	}
 
-//	Implement the one CellEditor method that AbstractCellEditor doesn't.
+	@Override
 	public Object getCellEditorValue() {
-		return currentColor;
+		return color;
 	}
 
-//	Implement the one method defined by TableCellEditor.
+	@Override
 	public Component getTableCellEditorComponent(JTable table,
-			Object value,
-			boolean isSelected,
-			int row,
-			int column) {
-		currentColor = (Color)value;
+			Object value, boolean isSelected, int row, int column) {
+		color = (Color)value;
 		return button;
 	}
 }
