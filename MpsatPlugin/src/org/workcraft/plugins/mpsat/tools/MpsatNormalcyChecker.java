@@ -6,22 +6,22 @@ import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 
-public class MpsatConsistencyChecker extends AbstractMpsatChecker implements Tool {
+public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 
-	public MpsatConsistencyChecker(Framework framework) {
+	public MpsatNormalcyChecker(Framework framework) {
 		super(framework);
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Check for consistency [MPSat]";
+		return "Check for normalcy [MPSat]";
 	}
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Consistency", MpsatMode.STG_REACHABILITY, 0,
+		return new MpsatSettings("CSC", MpsatMode.NORMALCY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachConsistency);
+				null);
 	}
 
 }

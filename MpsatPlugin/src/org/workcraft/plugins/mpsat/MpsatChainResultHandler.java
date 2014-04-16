@@ -26,6 +26,12 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 		if (result.getOutcome() == Outcome.FINISHED) {
 			final MpsatMode mpsatMode = result.getReturnValue().getMpsatSettings().getMode();
 			switch (mpsatMode) {
+			case STG_REACHABILITY:
+			case CSC_CONFLICT_DETECTION:
+			case USC_CONFLICT_DETECTION:
+			case NORMALCY:
+				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, result));
+				break;
 			case DEADLOCK:
 				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(task, result));
 				break;
@@ -34,9 +40,6 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				break;
 			case COMPLEX_GATE_IMPLEMENTATION:
 				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, result));
-				break;
-			case STG_REACHABILITY:
-				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, result));
 				break;
 
 			default:

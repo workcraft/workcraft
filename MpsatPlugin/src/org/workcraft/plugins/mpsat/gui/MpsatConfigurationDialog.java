@@ -44,11 +44,11 @@ import org.workcraft.util.GUI;
 public class MpsatConfigurationDialog extends JDialog {
 	private JPanel content, optionsPanel, buttonsPanel;
 	private PresetManagerPanel<MpsatSettings> presetPanel;
-	private JLabel numberOfSolutionsLabel;
 	private JScrollPane reachPanel;
 	private JComboBox modeCombo, verbosityCombo;
 	private JButton runButton, cancelButton, helpButton;
-	private JTextField solutionLimitText;
+	private JLabel numberOfSolutionsLabel;
+	private JTextField solutionLimitText, propertyNameText;
 	private JTextArea reachText;
 	private JRadioButton allSolutionsButton, firstSolutionButton, cheapestSolutionButton;
 	private PresetManager<MpsatSettings> presetManager;
@@ -76,7 +76,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER);
 		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
 		builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
-		builtInPresets.add(MpsatBuiltinPresets.PERSISTENCY_CHECKER);
+		builtInPresets.add(MpsatBuiltinPresets.PERSISTENCE_CHECKER);
 
 		presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, new SettingsToControlsMapper<MpsatSettings>() {
 			@Override
@@ -92,7 +92,7 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createOptionsPanel() {
-		setMinimumSize(new Dimension(600, 450));
+		setMinimumSize(new Dimension(600, 400));
 		optionsPanel = new JPanel(new SimpleFlowLayout());
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("MPSat settings"));
 
@@ -139,11 +139,17 @@ public class MpsatConfigurationDialog extends JDialog {
 		optionsPanel.add(numberOfSolutionsPanel);
 		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
 
+		JPanel verbosityAndNamePanel =  new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
 		verbosityCombo = new JComboBox();
 		for (int i=0; i<=9; i++) {
 			verbosityCombo.addItem(new IntMode(i, "level " + i));
 		}
-		optionsPanel.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity:"));
+		verbosityAndNamePanel.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity:"));
+
+		propertyNameText = new JTextField();
+		propertyNameText.setPreferredSize(new Dimension(250, preferredSize.height));
+		verbosityAndNamePanel.add(GUI.createLabeledComponent(propertyNameText, "Property name:"));
+		optionsPanel.add(verbosityAndNamePanel);
 		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
 	}
 
@@ -197,7 +203,6 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	private void applySettingsToControls(MpsatSettings settings) {
 		modeCombo.setSelectedItem(settings.getMode());
-		verbosityCombo.setSelectedIndex(settings.getVerbosity());
 		switch (settings.getSolutionMode()) {
 		case ALL:
 			allSolutionsButton.setSelected(true);
@@ -219,6 +224,12 @@ public class MpsatConfigurationDialog extends JDialog {
 		} else {
 			solutionLimitText.setText("");
 		}
+		verbosityCombo.setSelectedIndex(settings.getVerbosity());
+		String propertyName = settings.getName();
+		if (propertyName == null) {
+			propertyName = "";
+		}
+		propertyNameText.setText(propertyName);
 		reachText.setText(settings.getReach());
 	}
 
@@ -327,8 +338,9 @@ public class MpsatConfigurationDialog extends JDialog {
 		if (n<0)
 			n=0;
 
-		MpsatSettings settings = new MpsatSettings((MpsatMode)modeCombo.getSelectedItem(),
+		MpsatSettings settings = new MpsatSettings(propertyNameText.getText(), (MpsatMode)modeCombo.getSelectedItem(),
 				verbosityCombo.getSelectedIndex(), m, n, reachText.getText());
+
 		return settings;
 	}
 

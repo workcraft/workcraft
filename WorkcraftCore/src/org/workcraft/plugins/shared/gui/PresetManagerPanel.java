@@ -44,9 +44,9 @@ public class PresetManagerPanel<T> extends JPanel {
 		presetManager.sort();
 
 		presetCombo = new JComboBox();
-		for (Preset<T> p : presetManager.list())
+		for (Preset<T> p : presetManager.list()) {
 			presetCombo.addItem(p);
-
+		}
 		presetCombo.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -79,11 +79,11 @@ public class PresetManagerPanel<T> extends JPanel {
 						haveCustomPresets = true;
 						break;
 					}
-				if (haveCustomPresets)
+				if (haveCustomPresets) {
 					managePresets();
-				else
+				} else {
 					JOptionPane.showMessageDialog(PresetManagerPanel.this, "There are no custom presets to manage.");
-
+				}
 			}
 		});
 

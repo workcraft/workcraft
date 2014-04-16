@@ -97,4 +97,5 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	public WorkspaceEntry getWorkspaceEntry() {
 		return we;
 	}
+
 }
