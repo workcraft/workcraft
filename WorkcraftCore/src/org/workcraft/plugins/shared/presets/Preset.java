@@ -14,10 +14,6 @@ public class Preset <T> {
 		this.builtIn = builtIn;
 	}
 
-	public Preset(String description, T settings) {
-		this (description, settings, false);
-	}
-
 	public Preset(Element e, SettingsSerialiser<T> serialiser) {
 		this.description = XmlUtil.readStringAttr(e, "description");
 		this.settings = serialiser.fromXML(XmlUtil.getChildElement("settings", e));

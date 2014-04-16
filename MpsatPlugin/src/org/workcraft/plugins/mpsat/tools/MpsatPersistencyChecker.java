@@ -14,12 +14,12 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public String getDisplayName() {
-		return "Check for output persistency (without dummies) [MPSat]";
+		return "Check for output persistence (without dummies) [MPSat]";
 	}
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings(MpsatMode.STG_REACHABILITY, 0,
+		return new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
 				MpsatSettings.reachSemimodularity);
 

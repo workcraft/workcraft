@@ -19,9 +19,9 @@ public class MpsatCscChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings(MpsatMode.STG_REACHABILITY, 0,
+		return new MpsatSettings("CSC", MpsatMode.CSC_CONFLICT_DETECTION, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachCsc);
+				null);
 	}
 
 }

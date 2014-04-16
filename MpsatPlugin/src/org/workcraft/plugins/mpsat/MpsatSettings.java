@@ -14,8 +14,8 @@ import org.workcraft.util.FileUtils;
 public class MpsatSettings {
 
 	public enum SolutionMode {
-		MINIMUM_COST("Minimal cost"),
-		FIRST("First"),
+		MINIMUM_COST("Minimal cost solution"),
+		FIRST("First solution"),
 		ALL("First 10 solutions");
 
 		public final String name;
@@ -33,6 +33,7 @@ public class MpsatSettings {
 		}
 	}
 
+	private String name = null;
 	private MpsatMode mode = MpsatMode.DEADLOCK;
 	private int verbosity = 0;
 	private SolutionMode solutionMode = SolutionMode.FIRST;
@@ -62,33 +63,18 @@ public class MpsatSettings {
 		"    }\n"+
 		"  }\n";
 
-	// Reach expression for CSC
-	public static final String reachCsc =
-		"forall s in SIGNALS \\ DUMMY { $s <-> $$s } &\n" +
-		"exists s in LOCAL { @s^@@s }\n";
-
-	// Reach expression for USC
-	public static final String reachUsc =
-		"forall s in SIGNALS { $s <-> $$s } &\n" +
-		"exists p in PLACES { $p^$$p }\n";
-
-	// Reach expression for normalcy
-	public static final String reachNormalcy =
-		"exists s in LOCAL {\n" +
-	    "  let pos = exists e in ev s, f in trig e { is_plus f <-> is_plus e },\n" +
-	    "      neg = exists e in ev s, f in trig e { is_plus f ^ is_plus e } {\n" +
-	    "    pos & neg | pos & s' & ~s'' | neg & ~s' & s''\n" +
-	    "  }\n" +
-	    "} &\n" +
-	    "forall ss in SIGNALS { $ss -> $$ss }\n";
-
-	public MpsatSettings(MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
 		super();
+		this.name = name;
 		this.mode = mode;
 		this.verbosity = verbosity;
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public MpsatMode getMode() {

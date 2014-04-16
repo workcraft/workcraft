@@ -8,6 +8,7 @@ import org.workcraft.util.XmlUtil;
 public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings> {
 
 	public MpsatSettings fromXML (Element element) {
+		String name = XmlUtil.readStringAttr(element, "name");
 		MpsatMode mode = MpsatMode.getMode(element.getAttribute("mode"));
 		int verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
 		int solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
@@ -16,11 +17,12 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
 		Element re = XmlUtil.getChildElement("reach", element);
 		String reach = re.getTextContent();
 
-		return new MpsatSettings(mode, verbosity, solutionMode, solutionNumberLimit, reach);
+		return new MpsatSettings(name, mode, verbosity, solutionMode, solutionNumberLimit, reach);
 	}
 
 	public void toXML(MpsatSettings settings, Element parent) {
 		Element e = parent.getOwnerDocument().createElement("settings");
+		e.setAttribute("name", settings.getName());
 		e.setAttribute("mode", settings.getMode().getArgument());
 		e.setAttribute("verbosity", Integer.toString(settings.getVerbosity()));
 		e.setAttribute("solutionMode", settings.getSolutionMode().name());

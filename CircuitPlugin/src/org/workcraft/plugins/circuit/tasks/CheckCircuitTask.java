@@ -37,10 +37,10 @@ public class CheckCircuitTask extends MpsatChainTask {
 		this.we = we;
 		this.framework = framework;
 
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0,
+		this.deadlockSettings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 
-		this.hazardSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0,
+		this.hazardSettings = new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
 				MpsatSettings.reachSemimodularity);
 	}
