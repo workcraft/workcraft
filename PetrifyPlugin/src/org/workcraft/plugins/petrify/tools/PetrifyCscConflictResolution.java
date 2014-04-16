@@ -27,7 +27,7 @@ public class PetrifyCscConflictResolution implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Resolve CSC conflicts (Petrify)";
+		return "Resolve CSC conflicts [Petrify]";
 	}
 
 	@Override

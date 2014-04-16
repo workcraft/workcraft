@@ -11,20 +11,18 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
 		MpsatMode mode = MpsatMode.getMode(element.getAttribute("mode"));
 		int verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
 		int solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
-		int satSolver = XmlUtil.readIntAttr(element, "satSolver", 0);
 		SolutionMode solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));
 
 		Element re = XmlUtil.getChildElement("reach", element);
 		String reach = re.getTextContent();
 
-		return new MpsatSettings(mode, verbosity, satSolver, solutionMode, solutionNumberLimit, reach);
+		return new MpsatSettings(mode, verbosity, solutionMode, solutionNumberLimit, reach);
 	}
 
 	public void toXML(MpsatSettings settings, Element parent) {
 		Element e = parent.getOwnerDocument().createElement("settings");
 		e.setAttribute("mode", settings.getMode().getArgument());
 		e.setAttribute("verbosity", Integer.toString(settings.getVerbosity()));
-		e.setAttribute("satSolver", Integer.toString(settings.getSatSolver()));
 		e.setAttribute("solutionMode", settings.getSolutionMode().name());
 		e.setAttribute("solutionNumberLimit", Integer.toString(settings.getSolutionNumberLimit()));
 

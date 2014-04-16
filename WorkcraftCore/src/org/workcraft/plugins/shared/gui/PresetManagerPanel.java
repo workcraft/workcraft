@@ -97,7 +97,7 @@ public class PresetManagerPanel<T> extends JPanel {
 			}
 		});
 
-		saveAsNewButton = new JButton ("Save settings as new preset...");
+		saveAsNewButton = new JButton ("Save as new preset...");
 		saveAsNewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
