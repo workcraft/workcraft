@@ -17,6 +17,6 @@ public class PetrifyGeneralizedCelementSynthesis extends PetrifySynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Generalized C-element synthesis (Petrify)";
+		return "Generalized C-element synthesis [Petrify]";
 	}
 }

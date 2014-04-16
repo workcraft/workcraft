@@ -72,7 +72,7 @@ public class PetrifySynthesis implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Default synthesis (Petrify)";
+		return "Default synthesis [Petrify]";
 	}
 
 }

@@ -51,6 +51,6 @@ public class PcompTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Parallel composition (PComp)";
+		return "Parallel composition [PComp]";
 	}
 }

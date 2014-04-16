@@ -28,14 +28,14 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Trace> solutions = mdp.getSolutions();
 		if (!solutions.isEmpty()) {
-			String message = "The system has a non-persistent output.\n";
+			String message = "The property is violated with the following trace:\n";
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
 			GUI.centerAndSizeToParent(solutionsDialog, task.getFramework().getMainWindow());
 			solutionsDialog.setVisible(true);
 		} else {
 			String message = result.getReturnValue().getMessage();
 			if (message == null) {
-				message = "All system outputs are persistent.";
+				message = "The property is satisfied.";
 			}
 			JOptionPane.showMessageDialog(null, message);
 		}

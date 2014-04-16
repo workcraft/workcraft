@@ -35,9 +35,9 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-		this.settings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
+		this.settings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.propertySemimodularity);
+				MpsatSettings.reachSemimodularity);
 }
 
 	@Override
@@ -81,7 +81,7 @@ public class CheckCircuitHazardTask extends MpsatChainTask {
 			monitor.progressUpdate(0.70);
 
 			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking (mpsat)", mon);
+			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
