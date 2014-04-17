@@ -84,12 +84,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public STGPlace createPlace(String name) {
-		return createPlace (name, false);
-	}
-
-	final public STGPlace createPlace(String name, boolean markAsImplicit) {
 		STGPlace newPlace = new STGPlace();
-		newPlace.setImplicit(markAsImplicit);
 		if (name!=null) {
 			setName(newPlace, name);
 		}
@@ -247,6 +242,15 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Collection<SignalTransition> getSignalTransitions(String signalName) {
 		return referenceManager.getSignalTransitions(signalName);
+	}
+
+	public void setSignalType(String signalName, Type signalType) {
+		for (SignalTransition transition: getSignalTransitions(signalName)) {
+			transition.setSignalType(signalType);
+			// It is sufficient to change the type of a single transition
+			// - all the others will be notified.
+			break;
+		}
 	}
 
 	public ConnectionResult connect(Node first, Node second) throws InvalidConnectionException {

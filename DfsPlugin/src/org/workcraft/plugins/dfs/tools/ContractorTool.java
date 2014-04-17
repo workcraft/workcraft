@@ -23,7 +23,7 @@ public class ContractorTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformstions";
+		return "Transformations";
 	}
 
 	@Override
