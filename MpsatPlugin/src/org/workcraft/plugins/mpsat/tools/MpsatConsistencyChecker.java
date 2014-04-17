@@ -6,22 +6,22 @@ import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 
-public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
+public class MpsatConsistencyChecker extends AbstractMpsatChecker implements Tool {
 
-	public MpsatDeadlockChecker(Framework framework) {
+	public MpsatConsistencyChecker(Framework framework) {
 		super(framework);
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Check for deadlocks [MPSat]";
+		return "Check for consistency [MPSat]";
 	}
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
+		return new MpsatSettings("Consistency", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				null);
+				MpsatSettings.reachConsistency);
 	}
 
 }

@@ -57,8 +57,7 @@ public class SolutionPanel extends JPanel {
 					if(editors.size()>0) {
 						currentEditor = editors.get(0);
 						mainWindow.requestFocus(currentEditor);
-					}
-					else {
+					} else {
 						currentEditor = mainWindow.createEditorWindow(we);
 					}
 				}
@@ -77,4 +76,5 @@ public class SolutionPanel extends JPanel {
 		add(scrollPane, "0 0");
 		add(buttonsPanel, "1 0");
 	}
+
 }

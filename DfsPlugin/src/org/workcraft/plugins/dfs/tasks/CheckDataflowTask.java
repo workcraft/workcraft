@@ -37,12 +37,12 @@ public class CheckDataflowTask extends MpsatChainTask {
 		this.we = we;
 		this.framework = framework;
 
-		this.deadlockSettings = new MpsatSettings(MpsatMode.DEADLOCK, 0, MpsatSettings.SOLVER_MINISAT,
+		this.deadlockSettings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 
-		this.hazardSettings = new MpsatSettings(MpsatMode.STG_REACHABILITY, 0, MpsatSettings.SOLVER_MINISAT,
+		this.hazardSettings = new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.propertySemimodularity);
+				MpsatSettings.reachSemimodularity);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.40);
 
 			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running deadlock checking (mpsat)", mon);
+			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running deadlock checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -104,7 +104,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.70);
 
 			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), mciFile.getCanonicalPath());
-			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking (mpsat)", mon);
+			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);

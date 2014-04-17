@@ -27,7 +27,7 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Dummy contraction (Petrify)";
+		return "Dummy contraction [Petrify]";
 	}
 
 	@Override

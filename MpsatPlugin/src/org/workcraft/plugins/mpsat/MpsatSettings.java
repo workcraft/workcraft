@@ -12,12 +12,10 @@ import java.util.Map;
 import org.workcraft.util.FileUtils;
 
 public class MpsatSettings {
-	public static final int SOLVER_ZCHAFF = 0;
-	public static final int SOLVER_MINISAT = 1;
 
 	public enum SolutionMode {
-		MINIMUM_COST("Minimal cost"),
-		FIRST("First"),
+		MINIMUM_COST("Minimal cost solution"),
+		FIRST("First solution"),
 		ALL("First 10 solutions");
 
 		public final String name;
@@ -35,36 +33,48 @@ public class MpsatSettings {
 		}
 	}
 
+	private String name = null;
 	private MpsatMode mode = MpsatMode.DEADLOCK;
 	private int verbosity = 0;
-	private int satSolver = 0;
 	private SolutionMode solutionMode = SolutionMode.FIRST;
 	private int solutionNumberLimit = 0;
 	private String reach = "";
 
-	// setup for searching semimodularity
-	public static final String propertySemimodularity =
+	// Reach expression for checking signal consistency
+	public static final String reachConsistency =
+		"exists s in SIGNALS \\ DUMMY {\n" +
+		"  let Es = ev s {\n" +
+		"    $s & exists e in Es s.t. is_plus e { @e }\n" +
+		"    |\n" +
+		"    ~$s & exists e in Es s.t. is_minus e { @e }\n" +
+		"  }\n" +
+		"}\n";
+
+	// Reach expression for checking semimodularity (output persistency)
+	public static final String reachSemimodularity =
 		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
-		"	exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
-		"	  @t1 &\n"+
-		"	  exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
-		"	    @t2 &\n"+
-		"	    forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
-		"	       exists p in pre t3 \\ post t2 { ~$p }\n"+
-		"	    }\n"+
-		"	  }\n"+
-		"	}\n";
+		"  exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
+		"    @t1 &\n"+
+		"    exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
+		"      @t2 &\n"+
+		"      forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
+		"        exists p in pre t3 \\ post t2 { ~$p }\n"+
+		"      }\n"+
+		"    }\n"+
+		"  }\n";
 
-
-	public MpsatSettings(MpsatMode mode, int verbosity, int satSolver,
-			SolutionMode solutionMode, int solutionNumberLimit, String reach) {
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
 		super();
+		this.name = name;
 		this.mode = mode;
 		this.verbosity = verbosity;
-		this.satSolver = satSolver;
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public MpsatMode getMode() {
@@ -73,10 +83,6 @@ public class MpsatSettings {
 
 	public int getVerbosity() {
 		return verbosity;
-	}
-
-	public int getSatSolver() {
-		return satSolver;
 	}
 
 	public String getReach() {
@@ -107,7 +113,6 @@ public class MpsatSettings {
 			}
 
 		args.add(String.format("-v%d", getVerbosity()));
-		args.add(String.format("-$%d", getSatSolver()));
 
 		switch (getSolutionMode()) {
 		case FIRST:
