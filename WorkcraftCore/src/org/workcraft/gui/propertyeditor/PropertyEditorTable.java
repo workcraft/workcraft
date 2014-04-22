@@ -22,6 +22,7 @@
 package org.workcraft.gui.propertyeditor;
 
 import java.awt.Color;
+import java.net.URI;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -61,6 +62,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(boolean.class, new BooleanProperty());
 		propertyClasses.put(Boolean.class, new BooleanProperty());
 		propertyClasses.put(Color.class, new ColorProperty());
+		propertyClasses.put(URI.class, new FileProperty());
 
 		for(PluginInfo<? extends PropertyClassProvider> plugin : framework.getPluginManager().getPlugins(PropertyClassProvider.class)) {
 			PropertyClassProvider instance = plugin.newInstance();

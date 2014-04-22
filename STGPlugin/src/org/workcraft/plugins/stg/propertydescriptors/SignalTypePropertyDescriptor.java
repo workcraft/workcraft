@@ -6,16 +6,15 @@ import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
-public class TypePropertyDescriptor implements PropertyDescriptor  {
+public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 	private final STG stg;
-	private final SignalTransition transition;
+	private final String signal;
 
-	public TypePropertyDescriptor(STG stg, SignalTransition transition) {
+	public SignalTypePropertyDescriptor(STG stg, String signal) {
 		this.stg = stg;
-		this.transition = transition;
+		this.signal = signal;
 	}
 
 	@Override
@@ -25,12 +24,12 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return transition.getSignalType();
+		return stg.getSignalType(signal);
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		transition.setSignalType((Type)value);
+		stg.setSignalType(signal, (Type)value);
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public String getName() {
-		return "Signal type";
+		return signal + " type";
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public boolean isCombinable() {
-		return true;
+		return false;
 	}
 
 }
