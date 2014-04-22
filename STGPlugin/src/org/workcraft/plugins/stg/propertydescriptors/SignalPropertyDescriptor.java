@@ -4,16 +4,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition;
 
-public class DummyNamePropertyDescriptor implements PropertyDescriptor {
+public class SignalPropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
-	private final DummyTransition node;
+	private final String signal;
 
-	public DummyNamePropertyDescriptor(STG stg, DummyTransition node) {
+	public SignalPropertyDescriptor(STG stg, String signal) {
 		this.stg = stg;
-		this.node = node;
+		this.signal = signal;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class DummyNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Dummy name";
+		return signal + " name";
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DummyNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return node.getName();
+		return signal;
 	}
 
 	@Override
@@ -43,11 +43,15 @@ public class DummyNamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		stg.setName(node, (String)value);
+		for (SignalTransition transition : stg.getSignalTransitions(signal)) {
+			transition.setSignalName((String)value);
+			stg.setName(transition, (String)value);
+		}
 	}
 
 	@Override
 	public boolean isCombinable() {
 		return false;
 	}
+
 }

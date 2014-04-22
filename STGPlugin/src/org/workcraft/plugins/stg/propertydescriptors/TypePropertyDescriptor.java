@@ -12,11 +12,17 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class TypePropertyDescriptor implements PropertyDescriptor  {
 	private final STG stg;
-	private final Node st;
+	private final Node node;
+	private final String name;
 
-	public TypePropertyDescriptor(STG stg, Node st) {
+	public TypePropertyDescriptor(STG stg, Node node, String name) {
 		this.stg = stg;
-		this.st = st;
+		this.node = node;
+		this.name = name;
+	}
+
+	public TypePropertyDescriptor(STG stg, Node node) {
+		this(stg, node, "Signal type");
 	}
 
 	@Override
@@ -26,12 +32,12 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return ((SignalTransition)st).getSignalType();
+		return ((SignalTransition)node).getSignalType();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		((SignalTransition)st).setSignalType((Type)value);
+		((SignalTransition)node).setSignalType((Type)value);
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public String getName() {
-		return "Signal type";
+		return name;
 	}
 
 	@Override
