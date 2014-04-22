@@ -7,13 +7,13 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 
-public class SignalPropertyDescriptor implements PropertyDescriptor {
+public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
-	private final SignalTransition transition;
+	private final String signal;
 
-	public SignalPropertyDescriptor(STG stg, SignalTransition transition) {
+	public SignalNamePropertyDescriptor(STG stg, String signal) {
 		this.stg = stg;
-		this.transition = transition;
+		this.signal = signal;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Signal name";
+		return signal + " name";
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return transition.getSignalName();
+		return signal;
 	}
 
 	@Override
@@ -43,13 +43,17 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		transition.setSignalName((String)value);
-		stg.setName(transition, (String)value);
+		if ( !signal.equals(value) ) {
+			for (SignalTransition transition : stg.getSignalTransitions(signal)) {
+				transition.setSignalName((String)value);
+				stg.setName(transition, (String)value);
+			}
+		}
 	}
 
 	@Override
 	public boolean isCombinable() {
-		return true;
+		return false;
 	}
 
 }

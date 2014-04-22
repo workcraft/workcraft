@@ -43,7 +43,9 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.NamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalPropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -232,20 +234,10 @@ public class STG extends AbstractMathModel implements STGModel {
 		if (node == null) {
 			for (Type type : Type.values()) {
 				for (final String signal : getSignalNames(type)) {
-					System.out.println(signal);
-					Collection<SignalTransition> transitions = getSignalTransitions(signal);
-					System.out.println(transitions.size());
-					if (transitions.isEmpty()) continue;
-					SignalTransition transition = transitions.iterator().next();
+					if (getSignalTransitions(signal).isEmpty() ) continue;
 					properties = Properties.Merge.add(properties,
-							new SignalPropertyDescriptor(this, signal),
-							new TypePropertyDescriptor(this, transition) {
-								@Override
-								public String getName() {
-									return signal + " type";
-								}
-							}
-					);
+							new SignalNamePropertyDescriptor(this, signal),
+							new SignalTypePropertyDescriptor(this, signal));
 				}
 			}
 			System.out.println("===");
@@ -256,25 +248,14 @@ public class STG extends AbstractMathModel implements STGModel {
 					properties = Properties.Merge.add(properties,
 							new NamePropertyDescriptor(this, place));
 				}
-			}
-			if (node instanceof SignalTransition) {
+			} else if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;
 				properties = Properties.Merge.add(properties,
 						new TypePropertyDescriptor(this, transition),
-						new NamePropertyDescriptor(this, transition) {
-							@Override
-							public String getName() {
-								return "Signal name";
-							}
-							@Override
-							public boolean isCombinable() {
-								return true;
-							}
-						},
+						new SignalPropertyDescriptor(this, transition),
 						new DirectionPropertyDescriptor(this, transition),
 						new InstancePropertyDescriptor(this, transition));
-			}
-			if (node instanceof DummyTransition) {
+			} else if (node instanceof DummyTransition) {
 				DummyTransition dummy = (DummyTransition) node;
 				properties = Properties.Merge.add(properties,
 						new NamePropertyDescriptor(this, dummy),
@@ -286,6 +267,15 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Collection<SignalTransition> getSignalTransitions(String signalName) {
 		return referenceManager.getSignalTransitions(signalName);
+	}
+
+	public Type getSignalType(String signalName) {
+		Type type = null;
+		Collection<SignalTransition> transitions = getSignalTransitions(signalName);
+		if ( !transitions.isEmpty() ) {
+			type = transitions.iterator().next().getSignalType();
+		}
+		return type;
 	}
 
 	public void setSignalType(String signalName, Type signalType) {
