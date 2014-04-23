@@ -48,6 +48,8 @@ public abstract class AbstractModel implements Model {
 	private String title = "Untitled";
 	private Container root;
 
+
+
 	public AbstractModel (Container root) {
 		this (root, null);
 	}
@@ -195,6 +197,9 @@ public abstract class AbstractModel implements Model {
 
 		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
 			((HierarchicalUniqueNameReferenceManager)referenceManager).setName(node, name);
+	}
 
+	public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {
+		// reparent for the general model undefined?
 	}
 }

@@ -50,6 +50,8 @@ public interface Model extends NodeContext {
 	public String getName(Node node);
 	public void setName(Node node, String name);
 
+	//
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot);
 
 	public Container getRoot();
 

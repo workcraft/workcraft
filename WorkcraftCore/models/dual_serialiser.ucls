@@ -4,7 +4,7 @@
   <interface id="1" language="java" name="org.workcraft.serialisation.DualModelDeserialiser" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/DualModelDeserialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="684" y="264"/>    
+    <position height="-1" width="-1" x="709" y="503"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -13,7 +13,7 @@
   </interface>  
   <interface id="2" language="java" name="org.workcraft.serialisation.SerialFormat" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/SerialFormat.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="230" y="261"/>    
+    <position height="-1" width="-1" x="313" y="337"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -23,7 +23,7 @@
   <class id="3" language="java" name="org.workcraft.serialisation.DualDeserialisationResult" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/DualDeserialisationResult.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="212" y="410"/>    
+    <position height="-1" width="-1" x="237" y="649"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -33,7 +33,7 @@
   <class id="4" language="java" name="org.workcraft.serialisation.xml.XMLDualDeserialiserState" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLDualDeserialiserState.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="640" y="549"/>    
+    <position height="-1" width="-1" x="755" y="789"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -42,7 +42,7 @@
   </class>  
   <interface id="5" language="java" name="org.workcraft.serialisation.References" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/References.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="198" y="621"/>    
+    <position height="-1" width="-1" x="223" y="860"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -51,7 +51,7 @@
   </interface>  
   <interface id="6" language="java" name="org.workcraft.serialisation.ModelDeserialiser" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/ModelDeserialiser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="233" y="90"/>    
+    <position height="-1" width="-1" x="719" y="329"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -60,7 +60,7 @@
   </interface>  
   <interface id="7" language="java" name="org.workcraft.serialisation.ModelSerialiser" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/ModelSerialiser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="679" y="100"/>    
+    <position height="-1" width="-1" x="218" y="487"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -70,7 +70,7 @@
   <class id="8" language="java" name="org.workcraft.plugins.serialisation.XMLDualModelDeserialiser" 
     project="WorkcraftCore" file="/WorkcraftCore/src/org/workcraft/plugins/serialisation/XMLDualModelDeserialiser.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1335" y="259"/>    
+    <position height="-1" width="-1" x="1360" y="498"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -80,91 +80,107 @@
   <class id="9" language="java" name="org.workcraft.serialisation.xml.XMLDeserialisationManager" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLDeserialisationManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1342" y="568"/>    
+    <position height="-1" width="-1" x="1367" y="807"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <association id="10">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="11" name="references1"/>      
-      <multiplicity id="12" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="13">    
-    <bendpoint x="248" y="499"/>    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="14" name="references1">        
-        <position height="16" width="70" x="186" y="525"/>      
-      </attribute>      
-      <multiplicity id="15" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization id="16">    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="1"/>  
-  </realization>  
-  <association id="17">    
-    <end type="SOURCE" refId="4" navigable="false">      
-      <attribute id="18" name="references2"/>      
-      <multiplicity id="19" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="20">    
+  <class id="10" language="java" name="org.workcraft.plugins.serialisation.XMLModelDeserialiser" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/plugins/serialisation/XMLModelDeserialiser.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="711" y="152"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <association id="11">    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="21" name="deserialisation2"/>      
-      <multiplicity id="22" minimum="0" maximum="1"/>    
+      <attribute id="12" name="deserialisation1"/>      
+      <multiplicity id="13" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="9" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="23">    
+  <association id="14">    
+    <bendpoint x="273" y="738"/>    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="15" name="references1">        
+        <position height="16" width="70" x="211" y="764"/>      
+      </attribute>      
+      <multiplicity id="16" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="17">    
     <end type="SOURCE" refId="6"/>    
     <end type="TARGET" refId="2"/>  
   </generalization>  
-  <association id="24">    
-    <bendpoint x="168" y="507"/>    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="25" name="references2">        
-        <position height="16" width="70" x="81" y="531"/>      
-      </attribute>      
-      <multiplicity id="26" minimum="0" maximum="1"/>    
+  <association id="18">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="19" name="references1"/>      
+      <multiplicity id="20" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="27">    
+  <realization id="21">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="6"/>  
+  </realization>  
+  <realization id="22">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </realization>  
+  <association id="23">    
+    <bendpoint x="193" y="746"/>    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="24" name="references2">        
+        <position height="16" width="70" x="106" y="770"/>      
+      </attribute>      
+      <multiplicity id="25" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="26">    
     <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="2"/>  
   </generalization>  
-  <generalization id="28">    
+  <association id="27">    
+    <bendpoint x="481" y="928"/>    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="28" name="references2"/>      
+      <multiplicity id="29" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="30">    
     <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="2"/>  
-  </generalization>  
-  <realization id="29">    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <realization id="31">    
+    <bendpoint x="479" y="760"/>    
     <end type="SOURCE" refId="4"/>    
     <end type="TARGET" refId="5"/>  
   </realization>  
-  <association id="30">    
+  <generalization id="32">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="2"/>  
+  </generalization>  
+  <association id="33">    
     <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="31" name="deserialisation1"/>      
-      <multiplicity id="32" minimum="0" maximum="1"/>    
+      <attribute id="34" name="deserialisation2"/>      
+      <multiplicity id="35" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="9" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="33">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="3"/>  
-  </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

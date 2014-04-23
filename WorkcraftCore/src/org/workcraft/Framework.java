@@ -663,75 +663,99 @@ public class Framework {
 	}
 
 	public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-		try {
-			// load meta data
-			byte[] bi1 = DataAccumulator.loadStream(is1);
-			Document metaDoc1 = loadMetaDoc(bi1);
-			ModelDescriptor descriptor1 = loadMetaDescriptor(metaDoc1);
 
-			byte[] bi2 = DataAccumulator.loadStream(is2);
-			Document metaDoc2 = loadMetaDoc(bi2);
-			ModelDescriptor descriptor2 = loadMetaDescriptor(metaDoc2);
+			ModelEntry me1 = load(is1);
+			ModelEntry me2 = load(is2);
 
-			// load math models
-			InputStream mathData1 = getMathData(bi1, metaDoc1);
-			InputStream mathData2 = getMathData(bi2, metaDoc2);
-			if (!descriptor1.getDisplayName().equals(descriptor2.getDisplayName()) ) {
-				// math models cannot be merged
+			VisualModel vmodel1 = me1.getVisualModel();
+			VisualModel vmodel2 = me2.getVisualModel();
+
+			if (!me1.getDescriptor().getDisplayName().equals(
+					me2.getDescriptor().getDisplayName())) {
 				throw new DeserialisationException("incompatible models cannot be merged");
 			}
-			XMLDualModelDeserialiser mathDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
-			DualDeserialisationResult mathResult = mathDeserialiser.deserialise(mathData1, mathData2, null, null, null);
-			mathData1.close();
-			mathData2.close();
 
-			// load visual models (if present)
-			InputStream visualData1 = getVisualData(bi1, metaDoc1);
-			InputStream visualData2 = getVisualData(bi2, metaDoc2);
-			if (visualData1 == null && visualData2 == null) {
-				return new ModelEntry(descriptor1, mathResult.model);
-			}
-			if (visualData1 == null || visualData2 == null) {
-				// visual models cannot be merged
-				throw new DeserialisationException("incompatible models cannot be merged");
-			}
-			XMLDualModelDeserialiser visualDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
-			DualDeserialisationResult visualResult = visualDeserialiser.deserialise(visualData1, visualData2,
-					mathResult.references1, mathResult.references2, mathResult.model);
+			vmodel1.selectNone();
+			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot());
 
-			// load current level and selection
-			if (visualResult.model instanceof VisualModel) {
-				VisualModel visualModel = (VisualModel)visualResult.model;
-				loadVisualModelState(bi1, visualModel, visualResult.references1);
-				// move the nodes of model2 into the current level of model1
-				Collection<Node> nodes = new HashSet<Node>();
-				for (Object obj: visualResult.references2.getObjects()) {
-					if (obj instanceof Node) {
-						Node node = (Node)obj;
-						if (node.getParent() == visualModel.getRoot()) {
-							nodes.add(node);
-						}
-					}
-				}
-				visualModel.getRoot().reparent(nodes, visualModel.getCurrentLevel());
-				// select the nodes of model2
-				visualModel.select(nodes);
-			}
-			return new ModelEntry(descriptor1, visualResult.model);
-		} catch (IOException e) {
-			throw new DeserialisationException(e);
-		} catch (ParserConfigurationException e) {
-			throw new DeserialisationException(e);
-		} catch (SAXException e) {
-			throw new DeserialisationException(e);
-		} catch (InstantiationException e) {
-			throw new DeserialisationException(e);
-		} catch (IllegalAccessException e) {
-			throw new DeserialisationException(e);
-		} catch (ClassNotFoundException e) {
-			throw new DeserialisationException(e);
-		}
+			return me1;
+
+
 	}
+
+//  old implementation for reference
+//	public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
+//		try {
+//			// load meta data
+//			byte[] bi1 = DataAccumulator.loadStream(is1);
+//			Document metaDoc1 = loadMetaDoc(bi1);
+//			ModelDescriptor descriptor1 = loadMetaDescriptor(metaDoc1);
+//
+//			byte[] bi2 = DataAccumulator.loadStream(is2);
+//			Document metaDoc2 = loadMetaDoc(bi2);
+//			ModelDescriptor descriptor2 = loadMetaDescriptor(metaDoc2);
+//
+//			// load math models
+//			InputStream mathData1 = getMathData(bi1, metaDoc1);
+//			InputStream mathData2 = getMathData(bi2, metaDoc2);
+//			if (!descriptor1.getDisplayName().equals(descriptor2.getDisplayName()) ) {
+//				// math models cannot be merged
+//				throw new DeserialisationException("incompatible models cannot be merged");
+//			}
+//
+//			XMLDualModelDeserialiser mathDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
+//			DualDeserialisationResult mathResult = mathDeserialiser.deserialise(mathData1, mathData2, null, null, null);
+//			mathData1.close();
+//			mathData2.close();
+//
+//			// load visual models (if present)
+//			InputStream visualData1 = getVisualData(bi1, metaDoc1);
+//			InputStream visualData2 = getVisualData(bi2, metaDoc2);
+//
+//			if (visualData1 == null && visualData2 == null) {
+//				return new ModelEntry(descriptor1, mathResult.model);
+//			}
+//			if (visualData1 == null || visualData2 == null) {
+//				// visual models cannot be merged
+//				throw new DeserialisationException("incompatible models cannot be merged");
+//			}
+//			XMLDualModelDeserialiser visualDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
+//			DualDeserialisationResult visualResult = visualDeserialiser.deserialise(visualData1, visualData2,
+//					mathResult.references1, mathResult.references2, mathResult.model);
+//
+//			// load current level and selection
+//			if (visualResult.model instanceof VisualModel) {
+//				VisualModel visualModel = (VisualModel)visualResult.model;
+//				loadVisualModelState(bi1, visualModel, visualResult.references1);
+//				// move the nodes of model2 into the current level of model1
+//				Collection<Node> nodes = new HashSet<Node>();
+//				for (Object obj: visualResult.references2.getObjects()) {
+//					if (obj instanceof Node) {
+//						Node node = (Node)obj;
+//						if (node.getParent() == visualModel.getRoot()) {
+//							nodes.add(node);
+//						}
+//					}
+//				}
+//				visualModel.getRoot().reparent(nodes, visualModel.getCurrentLevel());
+//				// select the nodes of model2
+//				visualModel.select(nodes);
+//			}
+//			return new ModelEntry(descriptor1, visualResult.model);
+//		} catch (IOException e) {
+//			throw new DeserialisationException(e);
+//		} catch (ParserConfigurationException e) {
+//			throw new DeserialisationException(e);
+//		} catch (SAXException e) {
+//			throw new DeserialisationException(e);
+//		} catch (InstantiationException e) {
+//			throw new DeserialisationException(e);
+//		} catch (IllegalAccessException e) {
+//			throw new DeserialisationException(e);
+//		} catch (ClassNotFoundException e) {
+//			throw new DeserialisationException(e);
+//		}
+//	}
 
 	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);

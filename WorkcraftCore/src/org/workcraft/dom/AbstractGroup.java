@@ -135,6 +135,7 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 		observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, nodesToRemove));
 	}
 
+
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		observableHierarchyImpl.sendNotification(new NodesReparentingEvent(groupRef, newParent, nodes));
@@ -150,7 +151,7 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	@Override
 	public void reparent (Collection<Node> nodes) {
 		for (Node node : nodes) {
-			addInternal(node, false);
+			addInternal(node, true);
 		}
 	}
 

@@ -38,6 +38,7 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
@@ -136,6 +137,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void draw (Graphics2D g, Decorator decorator) {
+
 		DrawMan.draw(this, g, decorator, getRoot());
 	}
 
@@ -571,6 +573,45 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public Properties getProperties(Node node) {
 		return null;
+	}
+
+
+	private static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
+		MathModel mmodel = sourceModel.getMathModel();
+
+		// find the closest container that has a referenced math node
+		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		if (visualContainer instanceof VisualComponent) vis = (VisualComponent)visualContainer;
+
+		// get appropriate math container, it will be the target container for the math model
+		Container mathTargetContainer;
+		mathTargetContainer = mmodel.getRoot();
+
+		if (vis!=null)
+			mathTargetContainer = (Container)vis.getReferencedComponent();
+
+		return mathTargetContainer;
+	}
+
+	@Override
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot) {
+
+		if (sourceModel == null) sourceModel = this;
+		MathModel mmodel = getMathModel();
+
+		mmodel.reparent(getMathContainer(this, targetContainer),
+				((VisualModel)sourceModel).getMathModel(),
+				getMathContainer((VisualModel)sourceModel, sourceRoot));
+
+		//while (!(targetContainer instanceof VisualComponent))
+		Container newParent = getCurrentLevel();
+		Collection<Node> children = new HashSet<Node>();
+		children.addAll(sourceRoot.getChildren());
+
+		// reparenting between different models
+		sourceRoot.reparent(children, newParent);
+
+		select(children);
 	}
 
 }
