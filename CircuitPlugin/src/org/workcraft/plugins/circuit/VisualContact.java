@@ -375,7 +375,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public static boolean isDriver(Node contact) {
 		if (!(contact instanceof VisualContact)) return false;
 
-		return (((VisualContact)contact).getIOType() == IOType.OUTPUT) == (((VisualContact)contact).getParent() instanceof VisualComponent);
+		return (((VisualContact)contact).getIOType() == IOType.OUTPUT)
+				== (((VisualContact)contact).getParent() instanceof VisualComponent);
 	}
 
 

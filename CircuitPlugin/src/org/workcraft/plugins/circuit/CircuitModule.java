@@ -12,6 +12,7 @@ import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.CheckCircuitDeadlockTool;
 import org.workcraft.plugins.circuit.tools.CheckCircuitHazardTool;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
+import org.workcraft.plugins.circuit.tools.CheckConformanceTool;
 import org.workcraft.plugins.circuit.tools.STGGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -53,6 +54,13 @@ public class CircuitModule implements Module {
 			@Override
 			public Tool create() {
 				return new CheckCircuitTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CheckConformanceTool(framework);
 			}
 		});
 
