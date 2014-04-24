@@ -22,6 +22,7 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -44,6 +45,7 @@ import org.workcraft.util.Hierarchy;
 public class VisualCircuit extends AbstractVisualModel {
 
 	private Circuit circuit;
+	private File environmentFile;
 
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
@@ -122,15 +124,18 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		if(node instanceof VisualFunctionContact) {
+		Properties properties = super.getProperties(node);
+		if (node == null) {
+			properties = Properties.Merge.add(properties,
+					new EnvironmentFilePropertyDescriptor(this));
+		} else if(node instanceof VisualFunctionContact) {
 			VisualFunctionContact contact = (VisualFunctionContact)node;
 			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
-			return Properties.Merge.add(super.getProperties(node),
+			properties = Properties.Merge.add(properties,
 					props.getSetProperty(contact),
 					props.getResetProperty(contact));
-		} else {
-			return super.getProperties(node);
 		}
+		return properties;
 	}
 
 	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {
@@ -150,6 +155,14 @@ public class VisualCircuit extends AbstractVisualModel {
 		vc.setName(name);
 
 		return vc;
+	}
+
+	public File getEnvironmentFile() {
+		return environmentFile;
+	}
+
+	public void setEnvironmentFile(File value) {
+		this.environmentFile = value;
 	}
 
 }

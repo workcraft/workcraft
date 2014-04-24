@@ -6,20 +6,20 @@ import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 
-public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
+public class MpsatCscChecker extends AbstractMpsatChecker implements Tool {
 
-	public MpsatDeadlockChecker(Framework framework) {
+	public MpsatCscChecker(Framework framework) {
 		super(framework);
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Check for deadlocks [MPSat]";
+		return "Check for CSC [MPSat]";
 	}
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
+		return new MpsatSettings("CSC", MpsatMode.CSC_CONFLICT_DETECTION, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
 				null);
 	}

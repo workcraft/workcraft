@@ -86,6 +86,6 @@ public class ShowSg implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Show state graph (write_sg/draw_stg)";
+		return "Show state graph [Petrify]";
 	}
 }

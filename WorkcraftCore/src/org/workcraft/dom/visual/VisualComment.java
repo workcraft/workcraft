@@ -50,12 +50,17 @@ public class VisualComment extends VisualComponent implements Container {
 	}
 
 	@Override
+	public Point2D getLabelOffset() {
+		return new Point2D.Double(0.0, 0.0);
+	}
+
+	@Override
 	public boolean getNameVisibility() {
 		return false;
 	}
 
 	@Override
-	public Point2D getNameOffset(Positioning positioning) {
+	public Point2D getNameOffset() {
 		return new Point2D.Double(0.0, 0.0);
 	}
 

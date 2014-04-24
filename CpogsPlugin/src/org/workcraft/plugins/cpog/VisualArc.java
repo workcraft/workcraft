@@ -172,7 +172,8 @@ public class VisualArc extends VisualConnection
 		transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
 		g.transform(transform);
-		result.draw(g, Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+		result.draw(g);
 		g.setTransform(oldTransform);
 
 		labelBB = BoundingBoxHelper.transform(labelBB, transform);

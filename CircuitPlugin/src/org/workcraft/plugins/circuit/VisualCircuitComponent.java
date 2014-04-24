@@ -418,7 +418,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
+		if (groupImpl == null) {
+			return super.getInternalBoundingBoxInLocalSpace();
+		}
 		return BoundingBoxHelper.union(totalBB, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
 	}
 

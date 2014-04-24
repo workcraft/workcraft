@@ -30,7 +30,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.TouchableRenderedText;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
@@ -41,12 +41,16 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
-	private TouchableRenderedText renderedText = new TouchableRenderedText("", font, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
 	public VisualNamedTransition(Transition transition) {
 		super(transition, false, false, false);
 		transition.addObserver(this);
 		updateRenderedText();
+	}
+
+	public Point2D getRenderedTextOffset() {
+		return new Point2D.Double(0.0, 0.0);
 	}
 
 	@Override
@@ -55,7 +59,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	@Override
-	public Point2D getLabelOffset(Positioning positioning) {
+	public Point2D getLabelOffset() {
 		return new Point2D.Double(0.0,0.0);
 	}
 
@@ -65,7 +69,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	@Override
-	public Point2D getNameOffset(Positioning positioning) {
+	public Point2D getNameOffset() {
 		return new Point2D.Double(0.0,0.0);
 	}
 
@@ -98,15 +102,15 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	}
 
 	protected void updateRenderedText() {
-		Point2D ofs = new Point2D.Double(0.0,0.0);
-		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, ofs)) {
+		Point2D offset = getRenderedTextOffset();
+		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
 			transformChanging(true);
-			renderedText = new TouchableRenderedText(getName(), font, Positioning.CENTER, ofs);
+			renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
 			transformChanged(true);
 		}
 	}
 
-	public TouchableRenderedText getRenderedName() {
+	public RenderedText getRenderedName() {
 		return renderedText;
 	}
 

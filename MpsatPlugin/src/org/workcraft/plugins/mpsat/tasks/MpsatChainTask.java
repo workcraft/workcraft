@@ -31,45 +31,30 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		this.model = null;
 	}
 
-	public MpsatChainTask(PetriNetModel model, MpsatSettings settings, Framework framework) {
-		this.we = null;
-		this.model = model;
-		this.settings = settings;
-		this.framework = framework;
-	}
-
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		try {
-			if(model == null)
+			if(model == null) {
 				model = WorkspaceUtils.getAs(getWorkspaceEntry(), PetriNetModel.class);
-
+			}
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
-
-			if (exporter == null)
+			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
-
+			}
 			File netFile = File.createTempFile("net", exporter.getExtenstion());
-
 			ExportTask exportTask;
-
 			exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
-
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g", mon);
-
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, settings));
 			}
-
 			monitor.progressUpdate(0.33);
 
 			File mciFile = File.createTempFile("unfolding", ".mci");
-
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
 			netFile.delete();
@@ -112,4 +97,5 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 	public WorkspaceEntry getWorkspaceEntry() {
 		return we;
 	}
+
 }
