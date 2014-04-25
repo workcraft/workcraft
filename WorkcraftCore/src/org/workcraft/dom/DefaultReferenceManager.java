@@ -21,6 +21,7 @@
 
 package org.workcraft.dom;
 
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
@@ -36,8 +37,7 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-		if (e instanceof NodesAddedEvent)
-		{
+		if (e instanceof NodesAddedEvent) {
 			for (Node n : e.getAffectedNodes()) {
 				nodeAdded(n);
 			}
@@ -50,26 +50,27 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 
 	private void nodeRemoved(Node n) {
 		nodes.removeValue(n);
-
-		for (Node nn: n.getChildren())
+		for (Node nn: n.getChildren()) {
 			nodeRemoved(nn);
+		}
 	}
 
 	private void nodeAdded(Node n) {
 		String id = Integer.toString(idGenerator.getNextID());
 		nodes.put(id, n);
-
-		for (Node nn : n.getChildren())
+		for (Node nn : n.getChildren()) {
 			nodeAdded(nn);
+		}
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		return nodes.getValue(reference);
 	}
 
 	@Override
-	public String getNodeReference(Node node) {
+	public String getNodeReference(NamespaceProvider provider, Node node) {
 		return nodes.getKey(node);
 	}
+
 }

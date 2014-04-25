@@ -111,13 +111,14 @@ public class STGSelectionTool extends SelectionTool
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if (text.getParent() != null)
+				if (text.getParent() != null) {
 					text.getParent().remove(text);
+				}
 				final String newName = text.getText();
 				if (!cancelInPlaceEdit) {
 					editor.getWorkspaceEntry().captureMemento();
 					try {
-						model.setName(transition.getReferencedComponent(), newName);
+						model.setName(transition.getReferencedComponent(), newName, true);
 						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());

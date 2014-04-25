@@ -16,11 +16,14 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -32,7 +35,11 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
 
-	boolean isCollapsed = false;
+	protected final double margin = 0.05;
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
+
+
+	private boolean isCollapsed = false;
 	@Override
 	public void setIsCollapsed(boolean isCollapsed) {
 		sendNotification(new TransformChangingEvent(this));
@@ -43,6 +50,30 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	@Override
 	public boolean getIsCollapsed() {
 		return isCollapsed;
+	}
+
+
+	private String referencedModel = "";
+	public void setReferencedModel(String model) {
+		sendNotification(new TransformChangingEvent(this));
+		this.referencedModel = model;
+		sendNotification(new TransformChangedEvent(this));
+	}
+
+	public String getReferencedModel() {
+		return referencedModel;
+	}
+
+	public Collection<VisualComponent> getComponents(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
+
+	}
+
+	public Collection<VisualConnection> getConnections(){
+
+		return Hierarchy.getDescendantsOfType(this, VisualConnection.class);
+
 	}
 
 
@@ -59,7 +90,32 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				return object.getIsCollapsed();
 			}
 		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualPage, String>(
+				this, "Referenced model", String.class) {
+
+			@Override
+			protected void setter(VisualPage object, String value) {
+				object.setReferencedModel(value);
+			}
+			@Override
+			protected String getter(VisualPage object) {
+				return object.getReferencedModel();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Color>(
+				this, "Foreground color", Color.class) {
+			public void setter(VisualPage object, Color value) {
+				object.setForegroundColor(value);
+			}
+			public Color getter(VisualPage object) {
+				return object.getForegroundColor();
+			}
+		});
 	}
+
+
 
 	private boolean isInside = false;
 	@Override
@@ -77,18 +133,27 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	public VisualPage(MathNode refNode) {
 		super(refNode);
+
+
+
 		addPropertyDeclarations();
 	}
 
-	public List<Node> unGroup() {
+	public List<Node> unGroup(ReferenceManager mathManager) {
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
 
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 
 		groupImpl.reparent(nodesToReparent, newParent);
 
+
 		for (Node node : nodesToReparent)
 			TransformHelper.applyTransform(node, localToParentTransform);
+
+
+		PageNode page = (PageNode)getReferencedComponent();
+
+		page.unGroup(mathManager);
 
 		return nodesToReparent;
 	}
@@ -162,7 +227,10 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		if (getIsCollapsed()&&!isCurrentLevelInside()) {
 			return super.getInternalBoundingBoxInLocalSpace();
 		} else {
-			return BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+			Rectangle2D ret = BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+			if (ret==null)
+				ret = super.getInternalBoundingBoxInLocalSpace();
+			return ret;
 		}
 	}
 
@@ -199,7 +267,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
 				Graphics2D g = r.getGraphics();
 
-				g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 				g.draw(bb);
@@ -209,11 +277,11 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 			} else {
 
-				bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
+				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
 				Graphics2D g = r.getGraphics();
 
 //				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-				g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 
@@ -223,13 +291,18 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 			}
 
-
-//			// draw the collapse button
-//			Rectangle2D sb = new Rectangle2D.Double();
-//			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
-//			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f));
-//			g.draw(sb);
 		}
+	}
+
+
+
+	public Color getForegroundColor() {
+		return foregroundColor;
+	}
+
+	public void setForegroundColor(Color foregroundColor) {
+		this.foregroundColor = foregroundColor;
+		sendNotification(new PropertyChangedEvent(this, "foreground color"));
 	}
 
 }

@@ -7,10 +7,10 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.components.ChannelPlace;
+import org.workcraft.plugins.son.components.Condition;
+import org.workcraft.plugins.son.components.Event;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
 
 public class RelationAlg{
 

@@ -38,11 +38,15 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -133,6 +137,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void draw (Graphics2D g, Decorator decorator) {
+
 		DrawMan.draw(this, g, decorator, getRoot());
 	}
 
@@ -159,14 +164,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 */
 	@Override
 	public void selectAll() {
-		if(selection.size()==getRoot().getChildren().size())
+		if(selection.size()==getRoot().getChildren().size()) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
-
 		selection.clear();
 		selection.addAll(getRoot().getChildren());
-
 		notifySelectionChanged(s);
 	}
 
@@ -177,9 +180,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void selectNone() {
 		if (!selection.isEmpty()) {
 			Collection<Node> s = saveSelection();
-
 			selection.clear();
-
 			notifySelectionChanged(s);
 		}
 	}
@@ -200,8 +201,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	private void validateSelection (Node node) {
-		if (!Hierarchy.isDescendant(node, getCurrentLevel()))
-			throw new RuntimeException ("Cannot select a node that is not in the current editing level (" + node + "), parent (" + node.getParent() +")");
+		if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
+			throw new RuntimeException (
+				"Cannot select a node that is not in the current editing level ("
+				+ node + "), parent (" + node.getParent() +")");
+		}
 	}
 
 	private void validateSelection (Collection<Node> nodes) {
@@ -218,40 +222,33 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			selectNone();
 			return;
 		}
-
 		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
-
 		selection.clear();
 		selection.addAll(nodes);
-
 		notifySelectionChanged(s);
 	}
 
 	@Override
 	public void select(Node node) {
-		if (selection.size() == 1 && selection.contains(node))
+		if (selection.size() == 1 && selection.contains(node)) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
 		validateSelection(node);
-
 		selection.clear();
 		selection.add(node);
-
 		notifySelectionChanged(s);
 	}
 
 	@Override
 	public void addToSelection(Node node) {
-		if (selection.contains(node))
+		if (selection.contains(node)) {
 			return;
-
+		}
 		Collection<Node> s = saveSelection();
 		validateSelection(node);
-
 		selection.add(node);
-
 		notifySelectionChanged(s);
 	}
 
@@ -259,20 +256,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void addToSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
 		validateSelection(nodes);
-
 		selection.addAll(nodes);
-
-		if (s.size() != selection.size())
+		if (s.size() != selection.size()) {
 			notifySelectionChanged(s);
+		}
 	}
 
 	@Override
 	public void removeFromSelection(Node node) {
 		if (selection.contains(node)) {
 			Collection<Node> s = saveSelection();
-
 			selection.remove(node);
-
 			notifySelectionChanged(s);
 		}
 	}
@@ -280,11 +274,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void removeFromSelection(Collection<Node> nodes) {
 		Collection<Node> s = saveSelection();
-
 		selection.removeAll(nodes);
-
-		if (s.size() != selection.size())
+		if (s.size() != selection.size()) {
 			notifySelectionChanged(s);
+		}
 	}
 
 	@Override
@@ -421,11 +414,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 
+
+
 	@Override
 	public void groupPageSelection() {
 		ArrayList<Node> selected = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualTransformableNode) {
+		for (Node node : getOrderedCurrentLevelSelection()) {
+			if (node instanceof VisualTransformableNode) {
 				selected.add((VisualTransformableNode)node);
 			}
 		}
@@ -433,11 +428,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		if (selected.size() > 1) {
 
 			PageNode pageNode = new PageNode();
-			getMathModel().add(pageNode);
 			VisualPage page = new VisualPage(pageNode);
 
 			currentLevel.add(page);
 			currentLevel.reparent(selected, page);
+
+
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
+
+			Container currentMathLevel;
+			if(visualContainer==null)
+				currentMathLevel = getMathModel().getRoot();
+			else
+				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			currentMathLevel.add(pageNode);
+
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
 			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
@@ -448,6 +453,37 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			}
 			currentLevel.reparent(connectionsToGroup, page);
 
+			// reparenting for the math model nodes
+			ArrayList<Node> selectedMath = new ArrayList<Node>();
+			for (Node node:selected) {
+				if (node instanceof VisualComponent) {
+					selectedMath.add(((VisualComponent)node).getReferencedComponent());
+				}
+			}
+			for (Node node:connectionsToGroup) {
+				if (node instanceof VisualConnection) {
+					selectedMath.add(((VisualConnection)node).getReferencedConnection());
+				}
+			}
+
+			for (Node node: selectedMath) {
+				Container parent = (Container)node.getParent();
+				ArrayList<Node> re = new ArrayList<Node>();
+				re.add(node);
+
+
+				// reparenting at the level of the reference manager
+				ReferenceManager refMan = getMathModel().getReferenceManager();
+				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
+					manager.setNamespaceProvider(node, pageNode);
+				}
+				parent.reparent(re, pageNode);
+
+			}
+
+
+			// final touch on visual part
 			if (page != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				page.setPosition(groupCenter);
@@ -477,7 +513,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			} else if(node instanceof VisualPage) {
 
 				VisualPage page = (VisualPage)node;
-				for(Node subNode : page.unGroup()) {
+
+				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
 					toSelect.add(subNode);
 				}
 				currentLevel.remove(page);
@@ -549,4 +586,44 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Properties getProperties(Node node) {
 		return null;
 	}
+
+
+	private static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
+		MathModel mmodel = sourceModel.getMathModel();
+
+		// find the closest container that has a referenced math node
+		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		if (visualContainer instanceof VisualComponent) vis = (VisualComponent)visualContainer;
+
+		// get appropriate math container, it will be the target container for the math model
+		Container mathTargetContainer;
+		mathTargetContainer = mmodel.getRoot();
+
+		if (vis!=null)
+			mathTargetContainer = (Container)vis.getReferencedComponent();
+
+		return mathTargetContainer;
+	}
+
+	@Override
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot) {
+
+		if (sourceModel == null) sourceModel = this;
+		MathModel mmodel = getMathModel();
+
+		mmodel.reparent(getMathContainer(this, targetContainer),
+				((VisualModel)sourceModel).getMathModel(),
+				getMathContainer((VisualModel)sourceModel, sourceRoot));
+
+		//while (!(targetContainer instanceof VisualComponent))
+		Container newParent = getCurrentLevel();
+		Collection<Node> children = new HashSet<Node>();
+		children.addAll(sourceRoot.getChildren());
+
+		// reparenting between different models
+		sourceRoot.reparent(children, newParent);
+
+		select(children);
+	}
+
 }

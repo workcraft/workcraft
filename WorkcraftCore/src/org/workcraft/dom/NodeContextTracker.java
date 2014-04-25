@@ -30,11 +30,12 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentingEvent;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
-	HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<Node, LinkedHashSet<Node>>();
-	HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<Node, LinkedHashSet<Node>>();
-	HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<Node, LinkedHashSet<Connection>>();
+	private HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<Node, LinkedHashSet<Node>>();
+	private HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<Node, LinkedHashSet<Node>>();
+	private HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<Node, LinkedHashSet<Connection>>();
 
 	private void initHashes (Node n) {
 		LinkedHashSet<Node> set = presets.get(n);
@@ -123,12 +124,21 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 	}
 
 	public Set<Connection> getConnections(Node node) {
-		return Collections.unmodifiableSet(connections.get(node));
+		Set<Connection> ret = connections.get(node);
+
+		if (ret==null)
+			System.out.println("Node "+node+" is not inside NodeContextTracker");
+		return Collections.unmodifiableSet(ret);
 	}
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-		if (e instanceof NodesAddedEvent) {
+
+
+		if (e instanceof NodesReparentingEvent) {
+			for (Node n : e.getAffectedNodes())
+				nodeAdded(n);
+		} else if (e instanceof NodesAddedEvent ) {
 			for (Node n : e.getAffectedNodes())
 				nodeAdded(n);
 		} else if (e instanceof NodesDeletedEvent) {

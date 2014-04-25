@@ -21,8 +21,7 @@ public class STGSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 		super(new DefaultNodeGenerator(SignalTransition.class)
 		{
 			@Override
-			protected MathNode createMathNode()
-					throws NodeCreationException {
+			protected MathNode createMathNode() throws NodeCreationException {
 				MathNode node = super.createMathNode();
 				SignalTransition t = (SignalTransition)node;
 				t.setSignalType(shiftPressed ? SignalTransition.Type.INPUT : SignalTransition.Type.OUTPUT);
@@ -41,7 +40,8 @@ public class STGSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a rising (or falling with Control) transition of an output (or input with Shift) signal");
+		GUI.drawEditorMessage(editor, g, Color.BLACK,
+				"Click to create a rising (or falling with Control) transition of an output (or input with Shift) signal");
 	}
 }
 

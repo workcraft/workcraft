@@ -29,6 +29,7 @@ import java.util.Set;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
@@ -99,7 +100,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	final public DummyTransition createDummyTransition(String name) {
 		DummyTransition newTransition = new DummyTransition();
-		if (name!=null) {
+		if (name != null) {
 			setName(newTransition, name);
 		}
 		getRoot().add(newTransition);
@@ -194,12 +195,12 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Direction getDirection (Node t) {
 		String name = referenceManager.getName(t);
-		return LabelParser.parseFull(name).getSecond();
+		return LabelParser.parseSignalTransition(name).getSecond();
 	}
 
 	public void setDirectionWithAutoInstance (Node t, Direction direction) {
 		String name = referenceManager.getName(t);
-		Triple<String, Direction, Integer> old = LabelParser.parseFull(name);
+		Triple<String, Direction, Integer> old = LabelParser.parseSignalTransition(name);
 		referenceManager.setName(t, old.getFirst() + direction.toString());
 	}
 
@@ -220,7 +221,11 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public void setName(Node node, String name) {
-		referenceManager.setName(node, name);
+		this.setName(node, name, false);
+	}
+
+	public void setName(Node node, String name, boolean forceInstance) {
+		referenceManager.setName(node, name, forceInstance);
 	}
 
 	@Override
@@ -265,30 +270,31 @@ public class STG extends AbstractMathModel implements STGModel {
 		}
 	}
 
-	public String getNodeReference(Node node) {
-		if(node instanceof STGPlace)
-		{
+	public String getNodeReference(NamespaceProvider provider, Node node) {
+		if(node instanceof STGPlace) {
 			if(((STGPlace) node).isImplicit()) {
 				Set<Node> preset = getPreset(node);
 				Set<Node> postset = getPostset(node);
 
-				if (!(preset.size()==1 && postset.size()==1))
+				if (!(preset.size()==1 && postset.size()==1)) {
 					throw new RuntimeException ("An implicit place cannot have more that one transition in its preset or postset.");
+				}
+				return "<"+referenceManager.getNodeReference(provider, preset.iterator().next())
+							+ "," + referenceManager.getNodeReference(provider, postset.iterator().next()) + ">";
+			} else {
+				return referenceManager.getNodeReference(provider, node);
+			}
+		} else {
+		return referenceManager.getNodeReference(provider, node);
 
-				return "<"+referenceManager.getNodeReference(preset.iterator().next())
-							+ "," + referenceManager.getNodeReference(postset.iterator().next()) + ">";
-			} else
-				return referenceManager.getNodeReference(node);
-		} else
-			return referenceManager.getNodeReference(node);
+		}
 	}
 
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions!=null) {
-
-			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
-			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
+			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
+			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
@@ -301,16 +307,12 @@ public class STG extends AbstractMathModel implements STGModel {
 			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
 					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
 		}	else
-		return referenceManager.getNodeByReference(reference);
+		return referenceManager.getNodeByReference(provider, reference);
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {
 		implicitPlace.setImplicit(false);
 		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
-	}
-
-	public void setForbidInstanceChange(boolean value) {
-		referenceManager.setForbidInstanceChange(value);
 	}
 
 }

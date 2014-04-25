@@ -34,14 +34,13 @@ public class Vertex extends MathNode
 {
 	private BooleanFormula condition = One.instance();
 
-	public void setCondition(BooleanFormula condition)
-	{
+	public void setCondition(BooleanFormula condition) {
 		this.condition = condition;
 		sendNotification(new PropertyChangedEvent(this, "condition"));
 	}
 
-	public BooleanFormula getCondition()
-	{
+	public BooleanFormula getCondition() {
 		return condition;
 	}
+
 }

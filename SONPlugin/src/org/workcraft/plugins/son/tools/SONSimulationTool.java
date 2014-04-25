@@ -58,10 +58,10 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.plugins.son.components.ChannelPlace;
+import org.workcraft.plugins.son.components.Condition;
+import org.workcraft.plugins.son.components.Event;
+import org.workcraft.plugins.son.components.VisualEvent;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -921,6 +921,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
+						alg.clearEventSet();
 						return;
 						}
 					}
@@ -957,7 +958,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					if (dialog.getRun() == 1){
 						runList.addAll(dialog.getSelectedEvent());
 						executeEvent(runList);
-						alg.clearEventSet();
 					}
 					if(dialog.getRun()==2){
 						alg.clearEventSet();

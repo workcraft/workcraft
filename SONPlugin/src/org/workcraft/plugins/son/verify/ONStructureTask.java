@@ -11,8 +11,8 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.components.Condition;
+import org.workcraft.plugins.son.components.Event;
 
 
 public class ONStructureTask implements SONStructureVerification{
@@ -86,7 +86,7 @@ public class ONStructureTask implements SONStructureVerification{
 				errNumber = errNumber + iniStateResult.size();
 				for(Node event : iniStateResult){
 					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+					logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getComponentLabel(event) + ")  ");
 				}
 			}
 
@@ -99,7 +99,7 @@ public class ONStructureTask implements SONStructureVerification{
 				errNumber = errNumber + finalStateResult.size();
 				for(Node event : finalStateResult){
 					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+					logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getComponentLabel(event) + ")  ");
 				}
 			}
 
@@ -114,11 +114,11 @@ public class ONStructureTask implements SONStructureVerification{
 				errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
 				for(Node condition : postConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+					logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 					}
 				for(Node condition : preConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+					logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 				}
 			}
 			logger.info("Components relation task complete.");

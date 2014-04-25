@@ -3,7 +3,7 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.components.Condition;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 

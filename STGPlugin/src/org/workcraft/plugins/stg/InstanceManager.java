@@ -23,7 +23,6 @@ public class InstanceManager<T> {
 
 	private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
 	private final Func<T, String> labelGetter;
-	private boolean forbidInstanceChange = true;
 
 	public InstanceManager (Func<T, String> labelGetter) {
 		if(labelGetter == null) {
@@ -52,8 +51,10 @@ public class InstanceManager<T> {
 	public void assign (T t) {
 		final Pair<String, Integer> assigned = instances.getValue(t);
 		final Integer instance;
-		if (assigned != null)
-			throw new ArgumentException ("Instance already assigned to \"" + labelGetter.eval(t) + "/" + assigned.getSecond() +"\"");
+		if (assigned != null) {
+			throw new ArgumentException ("Instance already assigned to \""
+					+ labelGetter.eval(t) + "/" + assigned.getSecond() +"\"");
+		}
 		final String label = labelGetter.eval(t);
 		instance = getGenerator(label).getNextID();
 		instances.put(t, new Pair<String, Integer>(label, instance));
@@ -63,24 +64,25 @@ public class InstanceManager<T> {
 	 * Manually assign a new name to <i>t</i>, auto-generating instance number.
 	 */
 	public void assign (T t, String name) {
-		assign (t, Pair.of(name, (Integer)null));
+		assign (t, Pair.of(name, (Integer)null), false);
 	}
 
 	/**
 	 * Manually assign an instance number to <i>t</i>.
 	 */
 	public void assign (T t, int instance) {
-		assign (t, Pair.of(labelGetter.eval(t), instance));
+		assign (t, Pair.of(labelGetter.eval(t), instance), true);
 	}
 
 	/**
-	 * Manually assign a full reference to <i>t</i>, forcing instance number.
+	 * Manually assign a full reference to <i>t</i>, either auto-generating (<i>forceInstance = false</i>)
+	 * or forcing (<i>forceInstance = true</i>) the instance number.
 	 */
-	public void assign (T t, Pair<String, Integer> reference) {
+	public void assign (T t, Pair<String, Integer> reference, boolean forceInstance) {
 		final Pair<String, Integer> assigned = instances.getValue(t);
-		if (reference.getSecond() == null || forbidInstanceChange) {
+		if (reference.getSecond() == null || !forceInstance) {
 			if (assigned != null) {
-				if (assigned.getFirst().equals(reference.getFirst())){
+				if (assigned.getFirst().equals(reference.getFirst())) {
 					// already registered with same name, just return
 					return;
 				} else {
@@ -88,7 +90,8 @@ public class InstanceManager<T> {
 					remove(t);
 				}
 			}
-			instances.put(t, Pair.of(reference.getFirst(), getGenerator(reference.getFirst()).getNextID()));
+			instances.put(t, Pair.of(reference.getFirst(),
+					getGenerator(reference.getFirst()).getNextID()));
 		} else {
 			// check if desired instance is already taken
 			final T refHolder = instances.getKey(reference);
@@ -117,13 +120,11 @@ public class InstanceManager<T> {
 
 	public void remove(T T) {
 		final Pair<String, Integer> assignment = instances.getValue(T);
-		if(assignment == null)
+		if(assignment == null) {
 			throw new NotFoundException("Instance not assigned");
+		}
 		generators.get(assignment.getFirst()).releaseID(assignment.getSecond());
 		instances.removeKey(T);
 	}
 
-	public void setForbidInstanceChange(boolean value) {
-		this.forbidInstanceChange = value;
-	}
 }

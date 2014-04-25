@@ -37,6 +37,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
@@ -281,7 +282,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		xOffset = (positioning.xSign<0)?bb.getMinX():((positioning.xSign>0)?bb.getMaxX():bb.getCenterX());
 		yOffset = (positioning.ySign<0)?bb.getMinY():((positioning.ySign>0)?bb.getMaxY():bb.getCenterY());
 
-
 		return new Point2D.Double(xOffset, yOffset);
 	}
 
@@ -295,7 +295,14 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 
 	private void cacheNameRenderedText(DrawRequest r) {
-		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+
+		String name = null;
+		if (CommonEditorSettings.getShowAbsolutePaths()) {
+			name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		} else {
+			name = r.getModel().getMathModel().getName(getReferencedComponent());
+		}
+
 		if (name == null) {
 			name = "";
 		}
