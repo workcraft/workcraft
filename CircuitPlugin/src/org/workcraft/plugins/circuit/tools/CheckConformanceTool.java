@@ -15,7 +15,7 @@ public class CheckConformanceTool implements Tool {
 	}
 
 	public String getDisplayName() {
-		return "Check circuit for conformance to its environement";
+		return "Check circuit for speed-independence (interface conformance, deadlocks and hazards)";
 	}
 
 

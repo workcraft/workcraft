@@ -62,7 +62,7 @@ public class CheckCircuitDeadlockTask extends MpsatChainTask {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, null, settings));
+						new MpsatChainResult(exportResult, null, null, null, settings));
 			}
 			monitor.progressUpdate(0.20);
 
@@ -76,7 +76,7 @@ public class CheckCircuitDeadlockTask extends MpsatChainTask {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, punfResult, null, settings));
+						new MpsatChainResult(exportResult, null, punfResult, null, settings));
 			}
 			monitor.progressUpdate(0.70);
 
@@ -87,7 +87,7 @@ public class CheckCircuitDeadlockTask extends MpsatChainTask {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings ));
+						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings ));
 			}
 			monitor.progressUpdate(0.90);
 
@@ -95,13 +95,13 @@ public class CheckCircuitDeadlockTask extends MpsatChainTask {
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
-						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit has a deadlock"));
+						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Circuit has a deadlock"));
 			}
 			monitor.progressUpdate(1.0);
 
 			mciFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Circuit is deadlock-free"));
+					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Circuit is deadlock-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);

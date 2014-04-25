@@ -52,16 +52,31 @@ public class MpsatSettings {
 
 	// Reach expression for checking semimodularity (output persistency)
 	public static final String reachSemimodularity =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n"+
-		"  exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n"+
-		"    @t1 &\n"+
-		"    exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n"+
-		"      @t2 &\n"+
-		"      forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n"+
-		"        exists p in pre t3 \\ post t2 { ~$p }\n"+
-		"      }\n"+
-		"    }\n"+
+		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
+		"  exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
+		"    @t1 &\n" +
+		"    exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +
+		"      @t2 &\n" +
+		"      forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n" +
+		"        exists p in pre t3 \\ post t2 { ~$p }\n" +
+		"      }\n" +
+		"    }\n" +
 		"  }\n";
+
+	// Reach expression for checking conformation
+	public static final String reachConformation =
+		"let CPnames = {\"in1_0\", \"in1_1\", \"in0_0\", \"in0_1\", \"out0_0\", \"out0_1\"},\n" +
+		"CP=gather n in CPnames { P n } {\n" +
+		"	exists s in SIGNALS \\ DUMMY {\n" +
+		"		exists t in tran s {\n" +
+		"			forall p in pre t * CP { $p }\n" +
+		"		}\n" +
+		"		&\n" +
+		"		forall t in tran s {\n" +
+		"			exists p in pre t \\ CP { ~$p }\n" +
+		"		}\n" +
+		"	}\n" +
+		"}\n";
 
 	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
 		super();
