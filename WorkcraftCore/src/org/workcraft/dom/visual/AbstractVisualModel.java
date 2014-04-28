@@ -414,6 +414,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 
+
+
 	@Override
 	public void groupPageSelection() {
 		ArrayList<Node> selected = new ArrayList<Node>();
@@ -426,11 +428,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		if (selected.size() > 1) {
 
 			PageNode pageNode = new PageNode();
-			getMathModel().add(pageNode);
 			VisualPage page = new VisualPage(pageNode);
 
 			currentLevel.add(page);
 			currentLevel.reparent(selected, page);
+
+
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
+
+			Container currentMathLevel;
+			if(visualContainer==null)
+				currentMathLevel = getMathModel().getRoot();
+			else
+				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			currentMathLevel.add(pageNode);
+
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
 			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {

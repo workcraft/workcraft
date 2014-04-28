@@ -13,9 +13,9 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.components.ChannelPlace;
+import org.workcraft.plugins.son.components.Condition;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Condition;
 
 public class BSONStructureTask implements SONStructureVerification{
 
@@ -99,14 +99,14 @@ public class BSONStructureTask implements SONStructureVerification{
 				hasErr = true;
 				errNumber = errNumber + phaseTaskResult1.size();
 				for(Condition c : phaseTaskResult1)
-					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
 			}else{
 				phaseTaskResult2.addAll(phaseTask2(abstractGroups));
 				if(!phaseTaskResult2.isEmpty()){
 					hasErr = true;
 					errNumber = errNumber + phaseTaskResult2.size();
 					for(Condition c : phaseTaskResult2)
-						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
 				}
 			}
 			if(!hasErr){
@@ -117,7 +117,7 @@ public class BSONStructureTask implements SONStructureVerification{
 							if(result!=""){
 								hasErr = true;
 								errNumber ++;
-								logger.error("ERROR:"+ result + net.getName(c)+ "(" + net.getNodeLabel(c) + ")  ");
+								logger.error("ERROR:"+ result + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
 								phaseTaskResult1.add(c);
 					}
 				}

@@ -37,7 +37,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.components.Event;
 
 public class ParallelSimDialog  extends JDialog{
 

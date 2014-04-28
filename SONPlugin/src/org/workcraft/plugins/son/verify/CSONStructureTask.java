@@ -15,8 +15,8 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.components.ChannelPlace;
+import org.workcraft.plugins.son.components.Event;
 
 public class CSONStructureTask implements SONStructureVerification{
 
@@ -71,10 +71,10 @@ public class CSONStructureTask implements SONStructureVerification{
 			hasErr = true;
 			errNumber = errNumber + cPlaceResult.size() + cPlaceConTypeResult.size();
 			for(ChannelPlace cPlace : cPlaceResult)
-				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  ");
 
 			for(ChannelPlace cPlace : cPlaceConTypeResult)
-				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  ");
 		}
 
 		//channel place structure
@@ -87,7 +87,7 @@ public class CSONStructureTask implements SONStructureVerification{
 			for (List<ChannelPlace> list : cPlaceStructureResult){
 				ArrayList<String> cpName = new ArrayList<String>();
 				for(ChannelPlace cPlace : list){
-					cpName.add(net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")");
+					cpName.add(net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")");
 				}
 				logger.error("ERROR : Incorrect communication structure:" + cpName.toString());
 			}

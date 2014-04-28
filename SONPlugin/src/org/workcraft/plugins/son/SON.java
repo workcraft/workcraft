@@ -12,15 +12,16 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.components.ChannelPlace;
+import org.workcraft.plugins.son.components.Condition;
+import org.workcraft.plugins.son.components.Event;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -112,7 +113,7 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public String getNodeLabel(Node n){
+	public String getComponentLabel(Node n){
 		if(n instanceof Condition)
 			return ((Condition)n).getLabel();
 
@@ -294,6 +295,14 @@ public class SON extends AbstractMathModel implements SONModel {
 	}
 
 	//Group Methods
+
+	public Collection<Block> getBlocks(){
+		return Hierarchy.getChildrenOfType(getRoot(), Block.class);
+	}
+
+	public Collection<PageNode> getPageNodes(){
+		return Hierarchy.getChildrenOfType(getRoot(), PageNode.class);
+	}
 
 	public Collection<ONGroup> getGroups(){
 		return Hierarchy.getChildrenOfType(getRoot(), ONGroup.class);

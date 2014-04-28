@@ -14,7 +14,9 @@ import org.workcraft.Tool;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
@@ -27,12 +29,12 @@ import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
+import org.workcraft.plugins.son.components.Condition;
+import org.workcraft.plugins.son.components.Event;
+import org.workcraft.plugins.son.components.VisualChannelPlace;
 import org.workcraft.plugins.son.connections.AsynLine;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.test.test;
 import org.workcraft.plugins.son.verify.BSONStructureTask;
 import org.workcraft.util.WorkspaceUtils;
@@ -67,10 +69,8 @@ public class TestTool implements Tool{
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		RelationAlg alg = new RelationAlg(net);
-		BSONStructureTask task = new BSONStructureTask(net);
+		mathLevelTest(net, vnet);
 
-		System.out.println(net.getSONConnectionTypes(net.getComponents()));
 
 		/*
 		Collection<Condition[]> before = new ArrayList<Condition[]>();
@@ -208,8 +208,34 @@ public class TestTool implements Tool{
 		}
 
 		 */
+	}
 
+	private void mathLevelTest(SONModel net, VisualSON vnet){
+		for(ONGroup group: net.getGroups()){
+			System.out.println(group.toString());
+			System.out.println("Page size = " + group.getPageNodes().size());
+			System.out.println("block size = " + group.getBlock().size());
+			System.out.println("Condition size = " + group.getConditions().size());
+			System.out.println("Event size = " + group.getEvents().size());
+			System.out.println("Connection size = " + group.getSONConnections().size());
+			System.out.println();
+		}
 
+		for(PageNode page : net.getPageNodes()){
+			System.out.println("page parent  "+ page.getParent().toString());
+		}
+
+		for(VisualONGroup vgroup: vnet.getVisualONGroups()){
+			System.out.println(vgroup.toString());
+			System.out.println("Page size = " + vgroup.getVisualPages().size());
+			System.out.println("block size = " + vgroup.getVisualBlocks().size());
+
+		}
+
+		for(VisualPage page : vnet.getVisualPages()){
+			System.out.println();
+			System.out.println("visual page parent  "+ page.getParent().toString());
+		}
 	}
 }
 

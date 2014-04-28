@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.elements;
+package org.workcraft.plugins.son.components;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

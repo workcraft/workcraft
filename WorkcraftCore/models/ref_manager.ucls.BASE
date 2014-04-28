@@ -1,63 +1,3 @@
-<<<<<<< TREE
-<?xml version="1.0" encoding="UTF-8"?>
-<class-diagram version="1.1.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
-  associations="true" dependencies="true" nesting-relationships="true">  
-  <class id="1" language="java" name="org.workcraft.dom.math.MathGroup" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/math/MathGroup.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1069" y="1125"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <interface id="2" language="java" name="org.workcraft.dom.hierarchy.NamespaceProvider" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/hierarchy/NamespaceProvider.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="901" y="850"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </interface>  
-  <class id="3" language="java" name="org.workcraft.dom.AbstractGroup" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/AbstractGroup.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="755" y="1496"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="4" language="java" name="org.workcraft.dom.visual.VisualGroup" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualGroup.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1170" y="1633"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="5" language="java" name="org.workcraft.dom.visual.VisualPage" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualPage.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="398" y="1349"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <realization id="6">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="2"/>  
-  </realization>  
-  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-    accessors="true" visibility="true">    
-    <attributes public="true" package="true" protected="false" private="false" static="true"/>    
-    <operations public="true" package="true" protected="false" private="false" static="true"/>  
-  </classifier-display>  
-  <association-display labels="true" multiplicity="true"/>
-=======
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
@@ -118,7 +58,7 @@
   </interface>  
   <class id="7" language="java" name="org.workcraft.dom.AbstractModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/AbstractModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="523" y="419"/>    
+    <position height="-1" width="-1" x="518" y="381"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -190,7 +130,7 @@
   </class>  
   <class id="15" language="java" name="org.workcraft.dom.visual.VisualPage" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualPage.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="544" y="1184"/>    
+    <position height="-1" width="-1" x="543" y="1095"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -217,7 +157,7 @@
   </interface>  
   <interface id="18" language="java" name="org.workcraft.dom.Container" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/Container.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="542" y="808"/>    
+    <position height="-1" width="-1" x="547" y="740"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -260,123 +200,132 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <association id="23">    
+  <generalization id="23">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <generalization id="24">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="20"/>  
+  </generalization>  
+  <generalization id="25">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="17"/>  
+  </generalization>  
+  <generalization id="26">    
+    <bendpoint x="1281" y="473"/>    
+    <bendpoint x="1281" y="372"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <association id="27">    
     <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="24" name="currentLevel"/>      
-      <multiplicity id="25" minimum="0" maximum="1"/>    
+      <attribute id="28" name="currentLevel"/>      
+      <multiplicity id="29" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="18" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="26">    
+  <association id="30">    
     <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="27" name="manager"/>      
-      <multiplicity id="28" minimum="0" maximum="1"/>    
+      <attribute id="31" name="existing"/>      
+      <multiplicity id="32" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="33">    
+    <bendpoint x="1281" y="319"/>    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <dependency id="34">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="15"/>  
+  </dependency>  
+  <realization id="35">    
+    <bendpoint x="958" y="497"/>    
+    <bendpoint x="958" y="187"/>    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="17"/>  
+  </realization>  
+  <association id="36">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="37" name="defaultNameManager"/>      
+      <multiplicity id="38" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="29">    
+  <association id="39">    
     <bendpoint x="674" y="211"/>    
     <bendpoint x="996" y="211"/>    
     <bendpoint x="997" y="150"/>    
     <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="30" name="referenceManager"/>      
-      <multiplicity id="31" minimum="0" maximum="1"/>    
+      <attribute id="40" name="referenceManager"/>      
+      <multiplicity id="41" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="4" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="32">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="11"/>  
+  <realization id="42">    
+    <bendpoint x="1265" y="489"/>    
+    <bendpoint x="1264" y="283"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="4"/>  
   </realization>  
-  <generalization id="33">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="5"/>  
+  <generalization id="43">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
-  <generalization id="34">    
+  <generalization id="44">    
     <bendpoint x="1139" y="513"/>    
     <bendpoint x="1230" y="511"/>    
     <end type="SOURCE" refId="16"/>    
     <end type="TARGET" refId="5"/>  
   </generalization>  
-  <realization id="35">    
-    <end type="SOURCE" refId="15"/>    
-    <end type="TARGET" refId="18"/>  
-  </realization>  
-  <realization id="36">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="4"/>  
-  </realization>  
-  <realization id="37">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="13"/>  
-  </realization>  
-  <realization id="38">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="4"/>  
-  </realization>  
-  <generalization id="39">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="19"/>  
-  </generalization>  
-  <association id="40">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="41" name="root"/>      
-      <multiplicity id="42" minimum="0" maximum="1"/>    
+  <association id="45">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="46" name="manager"/>      
+      <multiplicity id="47" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="18" navigable="true"/>    
+    <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="43">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="15"/>  
+  <dependency id="48">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="14"/>  
   </dependency>  
-  <realization id="44">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="12"/>  
-  </realization>  
-  <realization id="45">    
-    <end type="SOURCE" refId="21"/>    
-    <end type="TARGET" refId="18"/>  
-  </realization>  
-  <dependency id="46">    
+  <dependency id="49">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <generalization id="50">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <dependency id="51">    
     <bendpoint x="1041" y="776"/>    
     <bendpoint x="718" y="775"/>    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="18"/>  
   </dependency>  
-  <generalization id="47">    
-    <end type="SOURCE" refId="22"/>    
+  <realization id="52">    
+    <end type="SOURCE" refId="21"/>    
     <end type="TARGET" refId="18"/>  
-  </generalization>  
-  <association id="48">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="49" name="existing"/>      
-      <multiplicity id="50" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="51">    
-    <bendpoint x="1301" y="449"/>    
-    <bendpoint x="1459" y="204"/>    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="52" name="existingReferences"/>      
-      <multiplicity id="53" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="54">    
+  </realization>  
+  <dependency id="53">    
     <end type="SOURCE" refId="12"/>    
     <end type="TARGET" refId="18"/>  
   </dependency>  
-  <dependency id="55">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="18"/>  
-  </dependency>  
+  <realization id="54">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </realization>  
+  <realization id="55">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="4"/>  
+  </realization>  
   <association id="56">    
     <end type="SOURCE" refId="7" navigable="false">      
       <attribute id="57" name="nodeContextTracker">        
@@ -387,7 +336,70 @@
     <end type="TARGET" refId="16" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="59">    
+  <generalization id="59">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <realization id="60">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="18"/>  
+  </realization>  
+  <generalization id="61">    
+    <bendpoint x="394" y="604"/>    
+    <bendpoint x="689" y="605"/>    
+    <bendpoint x="689" y="472"/>    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <dependency id="62">    
+    <bendpoint x="705" y="33"/>    
+    <bendpoint x="983" y="32"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <realization id="63">    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="22"/>  
+  </realization>  
+  <realization id="64">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="4"/>  
+  </realization>  
+  <generalization id="65">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <generalization id="66">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <dependency id="67">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="18"/>  
+  </dependency>  
+  <dependency id="68">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="15"/>  
+  </dependency>  
+  <association id="69">    
+    <bendpoint x="1301" y="449"/>    
+    <bendpoint x="1459" y="204"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="70" name="existingReferences"/>      
+      <multiplicity id="71" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="72">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="73" name="root"/>      
+      <multiplicity id="74" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="75">    
     <bendpoint x="782" y="907"/>    
     <bendpoint x="1127" y="908"/>    
     <bendpoint x="1124" y="534"/>    
@@ -398,97 +410,24 @@
     <end type="SOURCE" refId="15"/>    
     <end type="TARGET" refId="13"/>  
   </dependency>  
-  <dependency id="60">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="15"/>  
-  </dependency>  
-  <realization id="61">    
-    <bendpoint x="1265" y="489"/>    
-    <bendpoint x="1264" y="283"/>    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="4"/>  
+  <realization id="76">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="13"/>  
   </realization>  
-  <generalization id="62">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="20"/>  
-  </generalization>  
-  <dependency id="63">    
+  <realization id="77">    
     <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <dependency id="64">    
-    <end type="SOURCE" refId="15"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <generalization id="65">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="17"/>  
-  </generalization>  
-  <dependency id="66">    
+    <end type="TARGET" refId="11"/>  
+  </realization>  
+  <dependency id="78">    
     <bendpoint x="346" y="159"/>    
     <bendpoint x="346" y="638"/>    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="18"/>  
   </dependency>  
-  <dependency id="67">    
-    <bendpoint x="705" y="33"/>    
-    <bendpoint x="983" y="32"/>    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="4"/>  
-  </dependency>  
-  <generalization id="68">    
-    <bendpoint x="394" y="604"/>    
-    <bendpoint x="689" y="605"/>    
-    <bendpoint x="689" y="472"/>    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="11"/>  
-  </generalization>  
-  <generalization id="69">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="21"/>  
-  </generalization>  
-  <association id="70">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="71" name="defaultNameManager"/>      
-      <multiplicity id="72" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization id="73">    
-    <bendpoint x="958" y="497"/>    
-    <bendpoint x="958" y="187"/>    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="17"/>  
-  </realization>  
-  <realization id="74">    
-    <end type="SOURCE" refId="21"/>    
-    <end type="TARGET" refId="22"/>  
-  </realization>  
-  <generalization id="75">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="7"/>  
-  </generalization>  
-  <generalization id="76">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="7"/>  
-  </generalization>  
-  <generalization id="77">    
-    <bendpoint x="1281" y="319"/>    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="5"/>  
-  </generalization>  
-  <generalization id="78">    
-    <bendpoint x="1281" y="473"/>    
-    <bendpoint x="1281" y="372"/>    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="5"/>  
-  </generalization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="false" private="false" static="true"/>    
     <operations public="true" package="true" protected="false" private="false" static="true"/>  
   </classifier-display>  
   <association-display labels="true" multiplicity="true"/>
->>>>>>> MERGE-SOURCE
 </class-diagram>

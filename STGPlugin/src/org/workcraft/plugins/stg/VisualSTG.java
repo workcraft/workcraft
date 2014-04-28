@@ -247,6 +247,7 @@ public class VisualSTG extends AbstractVisualModel {
 		return null;
 	}
 
+
 	public Connection getConnection(Node first, Node second) {
 		for(Connection connection : getConnections(first)) {
 			if (connection.getSecond() == second) return connection;

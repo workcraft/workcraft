@@ -281,9 +281,23 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return getOffset(namePositioning);
 	}
 
-	protected void cacheNameRenderedText(DrawRequest r) {
-		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, getNameOffset())) {
+
+	private void cacheNameRenderedText(DrawRequest r) {
+
+		String name = null;
+		if (CommonEditorSettings.getShowAbsolutePaths()) {
+			name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		} else {
+			name = r.getModel().getMathModel().getName(getReferencedComponent());
+		}
+
+		if (name == null) {
+			name = "";
+		}
+
+		Point2D offset = getNameOffset();
+
+		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
 			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
 		}
 	}

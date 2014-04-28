@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.elements;
+package org.workcraft.plugins.son.components;
 
 import java.awt.Color;
 
@@ -7,14 +7,13 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-@VisualClass (org.workcraft.plugins.son.elements.VisualChannelPlace.class)
-public class ChannelPlace extends MathNode {
+@VisualClass (org.workcraft.plugins.son.components.VisualEvent.class)
+public class Event extends MathNode {
 
-	private String label="";
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
-	protected boolean token=false;
-	private int errors = 0;
+	private String label="";
+	private Boolean faulty = false;
 
 	public void setLabel(String label){
 		this.label=label;
@@ -25,25 +24,17 @@ public class ChannelPlace extends MathNode {
 		return label;
 	}
 
-	public boolean hasToken() {
-		return token;
-	}
-
-	public void setErrors(int errors){
-		this.errors = errors;
-	}
-
-	public int getErrors(){
-		return errors;
-	}
-
-	public void setToken(boolean token) {
-		this.token=token;
-		sendNotification( new PropertyChangedEvent(this, "token") );
-	}
-
 	public Color getForegroundColor() {
 		return foregroundColor;
+	}
+
+	public void setFaulty(boolean fault){
+		this.faulty = fault;
+		sendNotification( new PropertyChangedEvent(this, "fault") );
+	}
+
+	public boolean isFaulty(){
+		return faulty;
 	}
 
 	public void setForegroundColor(Color foregroundColor) {

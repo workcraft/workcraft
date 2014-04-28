@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.elements;
+package org.workcraft.plugins.son.components;
 
 import java.awt.Color;
 
@@ -7,32 +7,39 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
+@VisualClass (org.workcraft.plugins.son.components.VisualChannelPlace.class)
+public class ChannelPlace extends MathNode {
 
-@VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
-public class Condition extends MathNode {
-
+	private String label="";
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
-	private String label = "";
+	protected boolean token=false;
 	private int errors = 0;
-	private boolean marked = false;
 
-	public void setMarked(boolean token) {
-		this.marked=token;
-		sendNotification( new PropertyChangedEvent(this, "marked") );
+	public void setLabel(String label){
+		this.label=label;
+		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
-	public boolean isMarked() {
-		return marked;
+	public String getLabel(){
+		return label;
+	}
+
+	public boolean hasToken() {
+		return token;
 	}
 
 	public void setErrors(int errors){
 		this.errors = errors;
-		sendNotification( new PropertyChangedEvent(this, "errors") );
 	}
 
 	public int getErrors(){
 		return errors;
+	}
+
+	public void setToken(boolean token) {
+		this.token=token;
+		sendNotification( new PropertyChangedEvent(this, "token") );
 	}
 
 	public Color getForegroundColor() {
@@ -51,15 +58,6 @@ public class Condition extends MathNode {
 
 	public Color getFillColor() {
 		return fillColor;
-	}
-
-	public void setLabel(String label){
-		this.label=label;
-		sendNotification(new PropertyChangedEvent(this, "label"));
-	}
-
-	public String getLabel(){
-		return label;
 	}
 
 }

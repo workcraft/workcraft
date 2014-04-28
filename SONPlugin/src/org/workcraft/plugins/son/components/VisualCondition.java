@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.elements;
+package org.workcraft.plugins.son.components;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,11 +32,11 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/icons/svg/place_empty.svg")
-public class VisualCondition extends VisualComponent {
+public class VisualCondition extends VisualComponent{
 
 	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
-	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, getErrLabelOffset());
+	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
@@ -123,19 +123,16 @@ public class VisualCondition extends VisualComponent {
 		}
 	}
 
-	private Point2D getErrLabelOffset() {
-        Point2D result = getOffset(errLabelPositioning);
-        if (errLabelPositioning.ySign < 0) {
-        	result.setLocation(result.getX(), result.getY() - 0.4);
-        } else {
-        	result.setLocation(result.getX(), result.getY() + 0.4);
-        }
-        return result;
-	}
-
 	private void cahceErrorRenderedText(DrawRequest r) {
 		String error = "Err = "+((Integer)this.getErrors()).toString();
-		Point2D offset = getErrLabelOffset();
+		//double o = 0.8 * size;
+
+		Point2D offset = getOffset(errLabelPositioning);
+		if (errLabelPositioning.ySign<0) {
+			offset.setLocation(offset.getX(), offset.getY()-0.4);
+		} else {
+			offset.setLocation(offset.getX(), offset.getY()+0.4);
+		}
 
 		if (errorRenderedText.isDifferent(error, labelFont, errLabelPositioning, offset)) {
 			errorRenderedText = new RenderedText(error, labelFont, errLabelPositioning, offset);
@@ -160,11 +157,17 @@ public class VisualCondition extends VisualComponent {
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		if (ErrTracingDisable.showErrorTracing()){
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+
+//		if (ErrTracingDisable.showErrorTracing()){
+//			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
+//		}
+
+		if (ErrTracingDisable.showErrorTracing()&&errorRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
 		}
-		super.getBoundingBoxInLocalSpace();
+
+		//super.getBoundingBoxInLocalSpace();
 		return bb;
 	}
 

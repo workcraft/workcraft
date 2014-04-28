@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -14,9 +13,7 @@ import org.workcraft.plugins.son.components.Event;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
-public class ONGroup extends PageNode{
-
+public class Block extends PageNode{
 	private String label="";
 	private Color color = CommonVisualSettings.getBorderColor();
 
@@ -25,21 +22,6 @@ public class ONGroup extends PageNode{
 		result.addAll(getConditions());
 		result.addAll(getEvents());
 		return result;
-	}
-
-	public boolean contains (Node node){
-		if (this.getComponents().contains(node))
-			return true;
-		else
-			return false;
-	}
-
-	public boolean containsAll(Collection<Node> nodes){
-		for(Node node: nodes){
-			if(!this.contains(node))
-				return false;
-			}
-		return true;
 	}
 
 	public Collection<Condition> getConditions(){
