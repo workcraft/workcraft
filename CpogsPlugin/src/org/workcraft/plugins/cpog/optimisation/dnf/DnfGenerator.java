@@ -20,6 +20,9 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 public class DnfGenerator {
 	public static Dnf generate(BooleanFormula formula)
 	{
+		if (formula == null) {
+			formula = One.instance();
+		}
 		return formula.accept(new BooleanVisitor<Dnf>()
 				{
 					boolean negation = false;
@@ -217,7 +220,6 @@ public class DnfGenerator {
 			}
 
 		}
-
 
 		return simplifyDnf(result);
 	}

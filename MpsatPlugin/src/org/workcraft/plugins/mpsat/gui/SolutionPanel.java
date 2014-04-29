@@ -43,7 +43,7 @@ public class SolutionPanel extends JPanel {
 
 		JButton saveButton = new JButton("Save");
 
-		JButton playButton = new JButton("Play trace");
+		JButton playButton = new JButton("Play");
 		playButton.addActionListener(new ActionListener()
 		{
 			@Override

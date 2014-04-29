@@ -320,12 +320,8 @@ public class STG extends AbstractMathModel implements STGModel {
 					throw new RuntimeException(
 							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
-				return "<"
-						+ referenceManager.getNodeReference(preset.iterator()
-								.next())
-						+ ","
-						+ referenceManager.getNodeReference(postset.iterator()
-								.next()) + ">";
+				return "<" + referenceManager.getNodeReference(preset.iterator().next()) + ","
+						+ referenceManager.getNodeReference(postset.iterator().next()) + ">";
 			} else {
 				return referenceManager.getNodeReference(node);
 			}
@@ -335,8 +331,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public Node getNodeByReference(String reference) {
-		Pair<String, String> implicitPlaceTransitions = LabelParser
-				.parseImplicitPlaceReference(reference);
+		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager
 					.getNodeByReference(implicitPlaceTransitions.getFirst());
