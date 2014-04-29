@@ -23,27 +23,29 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 	}
 
 	private String getPropertyName() {
-		String result;
+		String propertyName;
 		MpsatSettings settings = task.getSettings();
 		if (settings != null && settings.getName() != null) {
-			result = settings.getName();
+			propertyName = settings.getName();
 		} else {
-			result = "The property";
+			propertyName = "The property";
 		}
-		return result;
+		return propertyName;
 	}
 
 	@Override
 	public void run() {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Trace> solutions = mdp.getSolutions();
+		String message = result.getReturnValue().getMessage();
 		if (!solutions.isEmpty()) {
-			String message = getPropertyName() + " is violated with the following trace:\n";
+			if (message == null) {
+				message = getPropertyName() + " is violated with the following trace:\n";
+			}
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
 			GUI.centerAndSizeToParent(solutionsDialog, task.getFramework().getMainWindow());
 			solutionsDialog.setVisible(true);
 		} else {
-			String message = result.getReturnValue().getMessage();
 			if (message == null) {
 				message = getPropertyName() + " is satisfied.";
 			}

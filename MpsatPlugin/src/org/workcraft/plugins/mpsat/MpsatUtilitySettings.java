@@ -35,10 +35,12 @@ public class MpsatUtilitySettings implements SettingsPage {
 	private static final String commandKey = "Tools.mpsat.command";
 	private static final String solutionModeKey = "Tools.mpsat.solutionMode";
 	private static final String extraArgsKey = "Tools.mpsat.args";
+	private static final String debugReachKey = "Tools.mpsat.debugReach";
 
 	private static String command = "mpsat";
 	private static SolutionMode solutionMode = SolutionMode.MINIMUM_COST;
 	private static String extraArgs = "";
+	private static Boolean debugReach = false;
 
 	public MpsatUtilitySettings() {
 		properties = new LinkedList<PropertyDescriptor>();
@@ -72,6 +74,16 @@ public class MpsatUtilitySettings implements SettingsPage {
 				return MpsatUtilitySettings.getExtraArgs();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "MPSat debug", Boolean.class) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				MpsatUtilitySettings.setDebugReach(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return MpsatUtilitySettings.getDebugReach();
+			}
+		});
 	}
 
 	@Override
@@ -84,6 +96,7 @@ public class MpsatUtilitySettings implements SettingsPage {
 		command = config.getString(commandKey, "mpsat");
 		solutionMode = config.getEnum(solutionModeKey, SolutionMode.class, SolutionMode.FIRST);
 		extraArgs = config.getString(extraArgsKey, "");
+		debugReach = config.getBoolean(debugReachKey, false);
 	}
 
 	@Override
@@ -91,6 +104,7 @@ public class MpsatUtilitySettings implements SettingsPage {
 		config.set(commandKey, command);
 		config.setEnum(solutionModeKey, SolutionMode.class, solutionMode);
 		config.set(extraArgsKey, extraArgs);
+		config.setBoolean(debugReachKey, debugReach);
 	}
 
 	@Override
@@ -129,5 +143,13 @@ public class MpsatUtilitySettings implements SettingsPage {
 
 	public static int getSolutionCount() {
 		return (MpsatUtilitySettings.solutionMode == SolutionMode.ALL) ? 10 : 1;
+	}
+
+	public static Boolean getDebugReach() {
+		return debugReach;
+	}
+
+	public static void setDebugReach(Boolean debug) {
+		MpsatUtilitySettings.debugReach = debug;
 	}
 }

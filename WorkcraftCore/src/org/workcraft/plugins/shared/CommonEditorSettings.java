@@ -32,11 +32,16 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class CommonEditorSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
+	private static final String backgroundColorKey = "CommonEditorSettings.backgroundColor";
+	private static final String showGridKey = "CommonEditorSettings.showGrid";
+	private static final String showRulersKey = "CommonEditorSettings.showRulers";
+	private static final String iconSizeKey = "CommonEditorSettings.iconSize";
+	private static final String debugClipboardKey = "CommonEditorSettings.debugClipboard";
+
 	protected static Color backgroundColor = Color.WHITE;
 	private static boolean showGrid = true;
 	private static boolean showRulers = true;
 	protected static int iconSize = 24;
-
 	private static boolean debugClipboard = false;
 
 	public String getSection() {
@@ -115,19 +120,19 @@ public class CommonEditorSettings implements SettingsPage {
 	}
 
 	public void load(Config config) {
-		backgroundColor = config.getColor("CommonEditorSettings.backgroundColor", Color.WHITE);
-		showGrid = config.getBoolean("CommonEditorSettings.showGrid", true);
-		showRulers = config.getBoolean("CommonEditorSettings.showRullers", true);
-		iconSize = config.getInt("CommonEditorSettings.iconSize", 24);
-		debugClipboard = config.getBoolean("CommonEditorSettings.debugClipboard", false);
+		backgroundColor = config.getColor(backgroundColorKey, Color.WHITE);
+		showGrid = config.getBoolean(showGridKey, true);
+		showRulers = config.getBoolean(showRulersKey, true);
+		iconSize = config.getInt(iconSizeKey, 24);
+		debugClipboard = config.getBoolean(debugClipboardKey, false);
 	}
 
 	public void save(Config config) {
-		config.setColor("CommonEditorSettings.backgroundColor", backgroundColor);
-		config.setBoolean("CommonEditorSettings.showGrid", showGrid);
-		config.setBoolean("CommonEditorSettings.showRullers", showRulers);
-		config.setInt("CommonEditorSettings.iconSize", iconSize);
-		config.setBoolean("CommonEditorSettings.debugClipboard", debugClipboard);
+		config.setColor(backgroundColorKey, backgroundColor);
+		config.setBoolean(showGridKey, showGrid);
+		config.setBoolean(showRulersKey, showRulers);
+		config.setInt(iconSizeKey, iconSize);
+		config.setBoolean(debugClipboardKey, debugClipboard);
 	}
 
 	public static Color getBackgroundColor() {
