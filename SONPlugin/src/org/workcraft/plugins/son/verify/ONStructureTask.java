@@ -11,8 +11,8 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
-import org.workcraft.plugins.son.components.Condition;
-import org.workcraft.plugins.son.components.Event;
+import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.Event;
 
 
 public class ONStructureTask implements SONStructureVerification{

@@ -13,9 +13,9 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
-import org.workcraft.plugins.son.components.ChannelPlace;
-import org.workcraft.plugins.son.components.Condition;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.ChannelPlace;
+import org.workcraft.plugins.son.elements.Condition;
 
 public class BSONStructureTask implements SONStructureVerification{
 

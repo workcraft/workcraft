@@ -30,10 +30,10 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.components.VisualChannelPlace;
-import org.workcraft.plugins.son.components.VisualCondition;
-import org.workcraft.plugins.son.components.VisualEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
+import org.workcraft.plugins.son.elements.VisualChannelPlace;
+import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.GUI;
 
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {

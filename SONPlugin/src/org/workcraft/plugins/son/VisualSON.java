@@ -22,12 +22,12 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.plugins.son.components.VisualChannelPlace;
-import org.workcraft.plugins.son.components.VisualCondition;
-import org.workcraft.plugins.son.components.VisualEvent;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.elements.VisualChannelPlace;
+import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.Hierarchy;
 
 

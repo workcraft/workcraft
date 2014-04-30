@@ -15,8 +15,8 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
-import org.workcraft.plugins.son.components.ChannelPlace;
-import org.workcraft.plugins.son.components.Event;
+import org.workcraft.plugins.son.elements.ChannelPlace;
+import org.workcraft.plugins.son.elements.Event;
 
 public class CSONStructureTask implements SONStructureVerification{
 
