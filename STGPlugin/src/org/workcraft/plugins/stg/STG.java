@@ -241,7 +241,6 @@ public class STG extends AbstractMathModel implements STGModel {
 							new SignalTypePropertyDescriptor(this, signal));
 				}
 			}
-			System.out.println("===");
 		} else {
 			if (node instanceof STGPlace) {
 				STGPlace place = (STGPlace) node;
@@ -335,8 +334,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
-		Pair<String, String> implicitPlaceTransitions = LabelParser
-				.parseImplicitPlaceReference(reference);
+		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());

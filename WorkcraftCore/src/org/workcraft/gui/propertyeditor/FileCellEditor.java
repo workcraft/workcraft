@@ -11,8 +11,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-import org.workcraft.gui.FileFilters;
-
 @SuppressWarnings("serial")
 public class FileCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
@@ -34,7 +32,6 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 		if (EDIT.equals(e.getActionCommand())) {
 			JFileChooser fc = new JFileChooser();
 			fc.setDialogType(JFileChooser.OPEN_DIALOG);
-			fc.setFileFilter(FileFilters.DOCUMENT_FILES);
 			fc.setMultiSelectionEnabled(false);
 			fc.setSelectedFile(file);
 			fc.setDialogTitle("Open environment file");

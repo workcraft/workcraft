@@ -89,16 +89,18 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	}
 
 	FormulaRenderingResult getRenderedSetFormula(FontRenderContext fcon) {
-		if (renderedSetFormula == null) {
+		if (((FunctionContact)getReferencedContact()).getSetFunction() == null) {
+			return null;
+		} else if (renderedSetFormula == null) {
 			renderedSetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getSetFunction(), fcon, font);
 		}
 		return renderedSetFormula;
 	}
 
 	FormulaRenderingResult getRenderedResetFormula(FontRenderContext fcon) {
-		if (((FunctionContact)getReferencedContact()).getResetFunction()==null) return null;
-
-		if (renderedResetFormula == null) {
+		if (((FunctionContact)getReferencedContact()).getResetFunction() == null) {
+			return null;
+		} else if (renderedResetFormula == null) {
 			renderedResetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getResetFunction(), fcon, font);
 		}
 		return renderedResetFormula;
@@ -154,6 +156,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 
 	private void drawFormula(Graphics2D g, int arrowType, float xOffset, float yOffset, Color foreground, Color background, FormulaRenderingResult result) {
+		if (result == null) return;
+
 		Rectangle2D textBB = result.boundingBox;
 		float textX = 0;
 		float textY = (float)-textBB.getCenterY()-(float)0.5-yOffset;

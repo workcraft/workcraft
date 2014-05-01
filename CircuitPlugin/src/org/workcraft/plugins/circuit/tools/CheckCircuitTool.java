@@ -15,9 +15,8 @@ public class CheckCircuitTool implements Tool {
 	}
 
 	public String getDisplayName() {
-		return "Check circuit for deadlocks and hazards (reuse unfolding data)";
+		return "Check circuit for conformation, deadlocks and hazards (reuse unfolding)";
 	}
-
 
 	@Override
 	public String getSection() {
@@ -31,13 +30,26 @@ public class CheckCircuitTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckCircuitTask task = new CheckCircuitTask(we, framework);
+		final CheckCircuitTask task = new CheckCircuitTask(we, framework,
+				checkConformation(), checkDeadlock(), checkHazard());
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
+	}
+
+	public boolean checkConformation() {
+		return true;
+	}
+
+	public boolean checkDeadlock() {
+		return true;
+	}
+
+	public boolean checkHazard() {
+		return true;
 	}
 
 }

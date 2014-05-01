@@ -154,7 +154,7 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createSolutionModeButtons() {
-		firstSolutionButton = new JRadioButton ("Find any solution (default)");
+		firstSolutionButton = new JRadioButton ("Find any solution");
 		firstSolutionButton.setSelected(true);
 		firstSolutionButton.addActionListener(new ActionListener() {
 			@Override

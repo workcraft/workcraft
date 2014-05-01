@@ -50,7 +50,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, null, settings));
 			}
 			monitor.progressUpdate(0.33);
 
@@ -63,7 +63,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 				mciFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, punfResult, null, settings));
 			}
 
 			monitor.progressUpdate(0.66);
@@ -75,12 +75,12 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings ));
+				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings ));
 			}
 
 			monitor.progressUpdate(1.0);
 
-			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, punfResult, mpsatResult, settings));
+			return new Result<MpsatChainResult>(Outcome.FINISHED, new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		}

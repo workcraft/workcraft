@@ -26,6 +26,9 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 		if (result.getOutcome() == Outcome.FINISHED) {
 			final MpsatMode mpsatMode = result.getReturnValue().getMpsatSettings().getMode();
 			switch (mpsatMode) {
+			case UNDEFINED:
+				SwingUtilities.invokeLater(new MpsatUndefinedResultHandler(task, result));
+				break;
 			case STG_REACHABILITY:
 			case CSC_CONFLICT_DETECTION:
 			case USC_CONFLICT_DETECTION:
@@ -41,7 +44,6 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			case COMPLEX_GATE_IMPLEMENTATION:
 				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, result));
 				break;
-
 			default:
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -53,57 +55,62 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				});
 				break;
 			}
-		}
-		else if (result.getOutcome() != Outcome.CANCELLED) {
+		} else if (result.getOutcome() != Outcome.CANCELLED) {
 			errorMessage = "MPSat tool chain execution failed :-(";
-
 			Throwable cause1 = result.getCause();
 
 			if (cause1 != null) {
 				// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
 				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the \"Problems\" tab for more details.";
-			} else
-			{
-				Result<? extends Object> exportResult = result.getReturnValue().getExportResult();
-				if (exportResult.getOutcome() == Outcome.FAILED) {
+			} else {
+				MpsatChainResult returnValue = result.getReturnValue();
+				Result<? extends Object> exportResult = returnValue.getExportResult();
+				Result<? extends ExternalProcessResult> pcompResult = returnValue.getPcompResult();
+				Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
+				Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
+				if (exportResult != null && exportResult.getOutcome() == Outcome.FAILED) {
 					errorMessage += "\n\nFailed to export the model as a .g file.";
 					Throwable cause = exportResult.getCause();
-					if (cause != null)
-						errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-					else
-						errorMessage += "\n\nThe exporter class did not offer further explanation.";
-				} else {
-					Result<? extends ExternalProcessResult> punfResult = result.getReturnValue().getPunfResult();
-
-					if (punfResult.getOutcome() == Outcome.FAILED) {
-						errorMessage += "\n\nPunf could not build the unfolding prefix.";
-						Throwable cause = punfResult.getCause();
-						if (cause != null)
-							errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-						else
-							errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
+					if (cause != null) {
+						errorMessage += "\n\nFailure caused by: " + cause.toString();
 					} else {
-						Result<? extends ExternalProcessResult> mpsatResult = result.getReturnValue().getMpsatResult();
-
-						if (mpsatResult.getOutcome() == Outcome.FAILED) {
-							errorMessage += "\n\nMPSat failed to execute as expected.";
-							Throwable cause = mpsatResult.getCause();
-							if (cause != null)
-								errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-							else
-								errorMessage += "\n\nFailure caused by the following errors:\n" + new String(mpsatResult.getReturnValue().getErrors());
-						}
-						else {
-							errorMessage += "\n\nMPSat chain task returned failure status without further explanation. This should not have happened -_-a.";
-						}
+						errorMessage += "\n\nThe exporter class did not offer further explanation.";
 					}
+				} else if (pcompResult != null && pcompResult.getOutcome() == Outcome.FAILED) {
+					errorMessage += "\n\nPcomp could not compose the STGs.";
+					Throwable cause = pcompResult.getCause();
+					if (cause != null) {
+						errorMessage += "\n\nFailure caused by: " + cause.toString();
+					} else {
+						errorMessage += "\n\nFailure caused by the following errors:\n" + new String(pcompResult.getReturnValue().getErrors());
+					}
+				} else if (punfResult != null && punfResult.getOutcome() == Outcome.FAILED) {
+					errorMessage += "\n\nPunf could not build the unfolding prefix.";
+					Throwable cause = punfResult.getCause();
+					if (cause != null) {
+						errorMessage += "\n\nFailure caused by: " + cause.toString();
+					} else {
+						errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
+					}
+				} else if (mpsatResult != null && mpsatResult.getOutcome() == Outcome.FAILED) {
+					errorMessage += "\n\nMPSat failed to execute as expected.";
+					Throwable cause = mpsatResult.getCause();
+					if (cause != null) {
+						errorMessage += "\n\nFailure caused by: " + cause.toString();
+					} else {
+						errorMessage += "\n\nFailure caused by the following errors:\n" + new String(mpsatResult.getReturnValue().getErrors());
+					}
+				} else {
+					errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
 				}
 			}
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					JOptionPane.showMessageDialog(null, errorMessage, "Oops..", JOptionPane.ERROR_MESSAGE);				}
+					JOptionPane.showMessageDialog(null, errorMessage, "Oops..", JOptionPane.ERROR_MESSAGE);
+				}
 			});
 		}
 	}
+
 }

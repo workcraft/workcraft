@@ -54,38 +54,45 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 			File netFile = File.createTempFile("net", exporter.getExtenstion());
 			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-			Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g", mon);
+			Result<? extends Object> exportResult = framework.getTaskManager().execute(
+					exportTask, "Exporting .g", mon);
+
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, null, settings));
+						new MpsatChainResult(exportResult, null, null, null, settings));
 			}
 			monitor.progressUpdate(0.20);
 
 			File mciFile = File.createTempFile("unfolding", ".mci");
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
+			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
+					punfTask, "Unfolding .g", mon);
+
 			netFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
 				mciFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, punfResult, null, settings));
+				return new Result<MpsatChainResult>(Outcome.FAILED,
+						new MpsatChainResult(exportResult, null, punfResult, null, settings));
 			}
 			monitor.progressUpdate(0.40);
 
 			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
-			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
+			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+					mpsatTask, "Running semimodularity checking [MPSat]", mon);
+
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings));
+						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
 			}
 			monitor.progressUpdate(0.90);
 
@@ -93,13 +100,13 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 			if (!mdp.getSolutions().isEmpty()) {
 				mciFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
-						new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
+						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
 			mciFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(exportResult, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
+					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
