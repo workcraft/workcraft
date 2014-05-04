@@ -2,8 +2,9 @@ package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
+import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 
 public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 
@@ -13,11 +14,14 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for deadlocks (punf, MPSat)";
+		return "Check for deadlocks [MPSat]";
 	}
 
 	@Override
-	protected MpsatSettings getSettings() {
-		return MpsatBuiltinPresets.DEADLOCK.getSettings();
+	public MpsatSettings getSettings() {
+		return new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				null);
 	}
+
 }

@@ -22,6 +22,7 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -36,6 +37,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
 
@@ -46,7 +48,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	private Circuit circuit;
 
 	@Override
-	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first==second) {
 			throw new InvalidConnectionException ("Connections are only valid between different objects");
 		}
@@ -75,24 +77,12 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
-/*
-	private final class StateSupervisorExtension extends StateSupervisor {
-		@Override
-		public void handleEvent(StateEvent e) {
-//			if(e instanceof PropertyChangedEvent)
-
-		}
-	}
-*/
-
-	public VisualCircuit(Circuit model, VisualGroup root)
-	{
+	public VisualCircuit(Circuit model, VisualGroup root) {
 		super(model, root);
 		circuit=model;
 	}
 
-	public VisualCircuit(Circuit model)
-	throws VisualModelInstantiationException {
+	public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
 		super(model);
 		circuit=model;
 		try {
@@ -100,13 +90,10 @@ public class VisualCircuit extends AbstractVisualModel {
 		} catch (NodeCreationException e) {
 			throw new VisualModelInstantiationException(e);
 		}
-
-		//new StateSupervisorExtension().attach(getRoot());
 	}
 
 	@Override
-	public void connect(Node first, Node second)
-			throws InvalidConnectionException {
+	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
@@ -120,36 +107,70 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
-	@Override
-	public Properties getProperties(Node node) {
-		if(node instanceof VisualFunctionContact) {
-			VisualFunctionContact contact = (VisualFunctionContact)node;
-			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
-			return Properties.Merge.add(super.getProperties(node),
-					props.getSetProperty(contact),
-					props.getResetProperty(contact));
-		} else {
-			return super.getProperties(node);
-		}
-	}
-
 	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {
-
-		for(VisualFunctionContact c : Hierarchy.filterNodesByType(getRoot().getChildren(), VisualFunctionContact.class)) {
+		for(VisualFunctionContact c : Hierarchy.filterNodesByType(
+				getRoot().getChildren(), VisualFunctionContact.class)) {
 			if(c.getName().equals(name)) return c;
 		}
-
-		FunctionContact fc = new FunctionContact(IOType.OUTPUT);
-		VisualFunctionContact vc = new VisualFunctionContact(fc);
-		Point2D p2d = new Point2D.Double();
-		p2d.setLocation(x,y);
-		vc.setPosition(p2d);
-		circuit.add(fc);
-		this.add(vc);
-
-		vc.setName(name);
-
+		VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(IOType.OUTPUT));
+        vc.setPosition(new Point2D.Double(x, y));
+        addFunctionContact(vc);
+        vc.setName(name);
 		return vc;
+	}
+
+	public void addFunctionComponent(VisualFunctionComponent component) {
+		for (Node node : component.getMathReferences()) {
+			circuit.add(node);
+		}
+		super.add(component);
+	}
+
+	 public void addJoint(VisualJoint joint) {
+		 for (Node node : joint.getMathReferences()) {
+			 circuit.add(node);
+		 }
+		 super.add(joint);
+	 }
+
+	 public void addFunctionContact(VisualFunctionContact contact) {
+		 circuit.add(contact.getFunction());
+		 super.add(contact);
+	 }
+
+	 @NoAutoSerialisation
+	public File getEnvironmentFile() {
+		File result = null;
+		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+			result = env.getFile();
+		}
+		return result;
+	}
+
+	@NoAutoSerialisation
+	public void setEnvironmentFile(File value) {
+		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+			remove(env);
+		}
+		Environment env = new Environment();
+		env.setFile(value);
+		add(env);
+	}
+
+	@Override
+	public Properties getProperties(Node node) {
+		Properties properties = super.getProperties(node);
+		if (node == null) {
+			properties = Properties.Merge.add(properties,
+					new EnvironmentFilePropertyDescriptor(this));
+		} else if(node instanceof VisualFunctionContact) {
+			VisualFunctionContact contact = (VisualFunctionContact)node;
+			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
+			properties = Properties.Merge.add(properties,
+					props.getSetProperty(contact),
+					props.getResetProperty(contact));
+		}
+		return properties;
 	}
 
 }

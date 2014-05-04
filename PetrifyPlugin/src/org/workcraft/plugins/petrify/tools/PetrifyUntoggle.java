@@ -27,7 +27,7 @@ public class PetrifyUntoggle implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Untoggle signal transitions (Petrify)";
+		return "Untoggle signal transitions [Petrify]";
 	}
 
 	@Override

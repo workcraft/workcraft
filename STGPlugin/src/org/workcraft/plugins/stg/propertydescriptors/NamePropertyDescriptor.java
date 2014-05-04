@@ -50,4 +50,5 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 	public boolean isCombinable() {
 		return false;
 	}
+
 }

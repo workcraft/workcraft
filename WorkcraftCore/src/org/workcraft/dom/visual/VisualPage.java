@@ -104,6 +104,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			}
 		});
 
+
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Color>(
 				this, "Foreground color", Color.class) {
 			public void setter(VisualPage object, Color value) {
@@ -114,6 +115,8 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			}
 		});
 	}
+
+
 
 
 
@@ -304,5 +307,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		this.foregroundColor = foregroundColor;
 		sendNotification(new PropertyChangedEvent(this, "foreground color"));
 	}
+
+
 
 }

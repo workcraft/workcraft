@@ -45,12 +45,14 @@ public class PcompTool implements Tool {
 				inputs.add(dotGProvider.getDotG(p));
 			}
 
-			framework.getTaskManager().queue(new PcompTask(inputs.toArray(new File[0]), dialog.getMode(), dialog.isImprovedPcompChecked()), "Running pcomp", new PcompResultHandler(framework, dialog.showInEditor()));
+			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(), dialog.isImprovedPcompChecked());
+			PcompResultHandler pcompResult = new PcompResultHandler(framework, dialog.showInEditor());
+			framework.getTaskManager().queue(pcompTask,	"Running pcomp", pcompResult);
 		}
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Parallel composition (PComp)";
+		return "Parallel composition [PComp]";
 	}
 }

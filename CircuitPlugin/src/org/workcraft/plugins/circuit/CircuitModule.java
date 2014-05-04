@@ -9,8 +9,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
-import org.workcraft.plugins.circuit.tools.CheckCircuitDeadlockTool;
-import org.workcraft.plugins.circuit.tools.CheckCircuitHazardTool;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.STGGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -38,21 +36,67 @@ public class CircuitModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitDeadlockTool(framework);
-			}
-		});
-
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new CheckCircuitHazardTool(framework);
-			}
-		});
-
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
 				return new CheckCircuitTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CheckCircuitTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "Check circuit only for conformation";
+					}
+					@Override
+					public boolean checkDeadlock() {
+						return false;
+					}
+					@Override
+					public boolean checkHazard() {
+						return false;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CheckCircuitTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "Check circuit only for deadlocks";
+					}
+					@Override
+					public boolean checkConformation() {
+						return false;
+					}
+					@Override
+					public boolean checkHazard() {
+						return false;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CheckCircuitTool(framework) {
+					@Override
+					public String getDisplayName() {
+						return "Check circuit only for hazards";
+					}
+					@Override
+					public boolean checkConformation() {
+						return false;
+					}
+					@Override
+					public boolean checkDeadlock() {
+						return false;
+					}
+				};
 			}
 		});
 

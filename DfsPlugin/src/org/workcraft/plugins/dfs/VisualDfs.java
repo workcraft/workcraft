@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
@@ -219,13 +218,6 @@ public class VisualDfs extends AbstractVisualModel {
 			}
 		}
 		return result;
-	}
-
-	public Connection getConnection(Node first, Node second) {
-		for(Connection connection : getConnections(first)) {
-			if (connection.getSecond() == second) return connection;
-		}
-		return null;
 	}
 
 }

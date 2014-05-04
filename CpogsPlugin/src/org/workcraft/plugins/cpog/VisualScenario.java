@@ -63,7 +63,6 @@ public class VisualScenario extends VisualGroup
 		}
 	}
 
-
 	public VisualScenario() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
 				this, "Label", String.class) {
@@ -87,17 +86,17 @@ public class VisualScenario extends VisualGroup
 	}
 
 	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace()
-	{
+	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = getContentsBoundingBox();
 
 		// Increase bb by the label height (to include the latter into the bb)
-		if(labelBB != null)
+		if(labelBB != null) {
 			bb.add(bb.getMinX(), bb.getMinY() - labelBB.getHeight());
-
+		}
 		// Increase bb by the encoding height (to include the latter into the bb)
-		if(encodingBB != null)
+		if(encodingBB != null) {
 			bb.add(bb.getMinX(), bb.getMaxY() + encodingBB.getHeight());
+		}
 
 		return bb;
 	}
@@ -105,15 +104,15 @@ public class VisualScenario extends VisualGroup
 	private Rectangle2D getContentsBoundingBox() {
 		Rectangle2D bb = null;
 
-		for(VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class))
+		for(VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class)) {
 			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
-
-		for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class))
+		}
+		for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class)) {
 			bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
-
-		for(VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class))
+		}
+		for(VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class)) {
 			bb = BoundingBoxHelper.union(bb, a.getLabelBoundingBox());
-
+		}
 		if (bb == null) bb = contentsBB;
 		else
 		bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
@@ -127,8 +126,7 @@ public class VisualScenario extends VisualGroup
 	}
 
 	@Override
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();
@@ -159,8 +157,8 @@ public class VisualScenario extends VisualGroup
 
 			AffineTransform transform = g.getTransform();
 			g.translate(labelPosition.getX(), labelPosition.getY());
-
-			result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
+			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
+			result.draw(g);
 
 			g.setTransform(transform);
 
@@ -209,8 +207,8 @@ public class VisualScenario extends VisualGroup
 
 				transform = g.getTransform();
 				g.translate(labelPosition.getX(), labelPosition.getY());
-
-				result.draw(g, Coloriser.colorise(Color.BLACK, colorisation));
+				g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
+				result.draw(g);
 
 				g.setTransform(transform);
 
@@ -242,8 +240,8 @@ public class VisualScenario extends VisualGroup
 				Color color = Color.BLACK;
 				if (!var.getState().matches(encoding.getState(var))) color = Color.RED;
 				if (perfectMatch) color = Color.GREEN;
-
-				result.draw(g, Coloriser.colorise(color, colorisation));
+				g.setColor(Coloriser.colorise(color, colorisation));
+				result.draw(g);
 
 				g.setTransform(transform);
 
@@ -254,19 +252,17 @@ public class VisualScenario extends VisualGroup
 		}
 	}
 
-	public Variable getVariableAt(Point2D p)
-	{
+	public Variable getVariableAt(Point2D p) {
 		Point2D q = new Point2D.Double();
 		getParentToLocalTransform().transform(p, q);
-		for(Rectangle2D rect : variableBBs.keySet())
+		for(Rectangle2D rect : variableBBs.keySet()) {
 			if (rect.contains(q)) return variableBBs.get(rect);
-
+		}
 		return null;
 	}
 
 	@Override
-	public boolean hitTestInLocalSpace(Point2D p)
-	{
+	public boolean hitTestInLocalSpace(Point2D p) {
 		return
 			getContentsBoundingBox().contains(p) ||
 			getLabelBB().contains(p) ||
@@ -278,25 +274,21 @@ public class VisualScenario extends VisualGroup
 		return new Rectangle2D.Double(bb.getMaxX() - labelBB.getWidth(), bb.getMinY() - labelBB.getHeight(), labelBB.getWidth(), labelBB.getHeight());
 	}
 
-	public void setLabel(String label)
-	{
+	public void setLabel(String label) {
 		this.label = label;
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
-	public String getLabel()
-	{
+	public String getLabel() {
 		return label;
 	}
 
-	public void setEncoding(Encoding encoding)
-	{
+	public void setEncoding(Encoding encoding) {
 		this.encoding = encoding;
 		sendNotification(new PropertyChangedEvent(this, "encoding"));
 	}
 
-	public Encoding getEncoding()
-	{
+	public Encoding getEncoding() {
 		return encoding;
 	}
 }

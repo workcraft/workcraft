@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.components.Event;
+import org.workcraft.plugins.son.elements.Event;
 
 public class BSONPathAlg extends ONPathAlg{
 

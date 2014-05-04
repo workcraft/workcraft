@@ -32,14 +32,14 @@ public class MpsatSynthesis implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final MpsatSettings settings = new MpsatSettings(MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, MpsatSettings.SOLVER_MINISAT, SolutionMode.FIRST, 1, null);
+		final MpsatSettings settings = new MpsatSettings("synthesis", MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, SolutionMode.FIRST, 1, null);
 		final MpsatChainTask task = new MpsatChainTask(we, settings, framework);
 		framework.getTaskManager().queue(task, "Complex gate synthesis with MPSat", new MpsatChainResultHandler(task));
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Complex gate synthesis (MPSat)";
+		return "Complex gate synthesis [MPSat]";
 	}
 
 }

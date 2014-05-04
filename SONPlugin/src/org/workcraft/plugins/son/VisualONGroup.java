@@ -16,9 +16,9 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.son.components.VisualCondition;
-import org.workcraft.plugins.son.components.VisualEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
+import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.Hierarchy;
 
 public class VisualONGroup extends VisualPage{

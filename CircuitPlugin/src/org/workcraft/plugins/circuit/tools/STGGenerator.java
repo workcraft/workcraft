@@ -22,6 +22,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
@@ -29,7 +30,6 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
@@ -40,9 +40,9 @@ import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Hierarchy;
 
 public class STGGenerator {
@@ -172,36 +172,34 @@ public class STGGenerator {
 			}
 
 			// generate implementation for each of the drivers
-			for(VisualContact c : drivers.keySet())
-			{
+			for(VisualContact c : drivers.keySet()) {
 				if (c instanceof VisualFunctionContact) {
 					// function based driver
-					VisualFunctionContact contact = (VisualFunctionContact)c;
-					Dnf set = DnfGenerator.generate(contact.getFunction().getSetFunction());
+					Dnf set = null;
 					Dnf reset = null;
-
-					if (contact.getFunction().getResetFunction()!=null)
-						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-					else {
-						BooleanOperations.worker = new DumbBooleanWorker();
-						reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
-					}
-
+					VisualFunctionContact contact = (VisualFunctionContact)c;
 					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
-
-
 					if (contact.getParent() instanceof VisualCircuitComponent) {
-						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment())
-								ttype = SignalTransition.Type.INPUT;
-						else if (contact.getIOType()==IOType.INPUT)
+						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
+						if (contact.getFunction().getResetFunction() != null) {
+							reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
+						} else {
+							BooleanOperations.worker = new DumbBooleanWorker();
+							reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
+						}
+						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) {
 							ttype = SignalTransition.Type.INPUT;
+						} else if (contact.getIOType()==IOType.INPUT) {
+							ttype = SignalTransition.Type.INPUT;
+						}
 					} else {
-						if (contact.getIOType()==IOType.INPUT)
+						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
+						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
+						if (contact.getIOType()==IOType.INPUT) {
 							ttype = SignalTransition.Type.INPUT;
+						}
 					}
-
 					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, ttype);
-
 				} else {
 					// some generic driver implementation otherwise
 					Dnf set = new Dnf(new DnfClause());
@@ -209,7 +207,6 @@ public class STGGenerator {
 					implementDriver(circuit, stg, c, drivers, targetDrivers, set, reset, SignalTransition.Type.INPUT);
 				}
 			}
-
 			return stg;
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);

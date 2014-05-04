@@ -28,7 +28,6 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -37,29 +36,36 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @SVGIcon("images/icons/svg/variable.svg")
-public class VisualVariable extends VisualComponent
-{
-	private final static double size = 1.0;
-	private final static float strokeWidth = 0.08f;
+public class VisualVariable extends VisualComponent {
+	private static Font variableFont;
 	private static Font valueFont;
-	private static Font labelFont;
-	private Point2D labelPosition = null;
-	private Rectangle2D labelBoundingBox = null;
+
+	private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
+			VariableState.FALSE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+
+	private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
+			VariableState.TRUE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+
+	private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
+			VariableState.UNDEFINED.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+
+	private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
 
 	static {
 		try {
 			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
-			labelFont = font.deriveFont(0.5f);
+			variableFont = font.deriveFont(0.5f);
 			valueFont = font.deriveFont(0.75f);
 		} catch (FontFormatException e) {
 			e.printStackTrace();
@@ -68,10 +74,8 @@ public class VisualVariable extends VisualComponent
 		}
 	}
 
-	public VisualVariable(Variable variable)
-	{
+	public VisualVariable(Variable variable) {
 		super(variable);
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
 				this, "State", VariableState.class, VariableState.getChoice()) {
 			public void setter(VisualVariable object, VariableState value) {
@@ -84,8 +88,7 @@ public class VisualVariable extends VisualComponent
 	}
 
 	@Override
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();
@@ -93,95 +96,81 @@ public class VisualVariable extends VisualComponent
 		Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
 				size - strokeWidth, size - strokeWidth);
 
-		g.setStroke(new BasicStroke(strokeWidth));
+		g.setStroke(new BasicStroke((float)strokeWidth));
 		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(shape);
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(shape);
 
-		String text = getState().toString();
-		FormulaRenderingResult result = FormulaToGraphics.print(text, valueFont, g.getFontRenderContext());
-		Rectangle2D textBB = result.boundingBox;
-
-		float textX = (float)-textBB.getCenterX();
-		float textY = (float)-textBB.getCenterY() + 0.1f;
-		if (getState() == VariableState.UNDEFINED) {
-			// FIXMI: A hack to draw "?" symbol a bit higher, otherwise it shows too low, not sure why)
-			textY -= 0.3f;
+		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+		switch (getState()) {
+		case FALSE:
+			valueFalseRenderedFormula.draw(g);
+			break;
+		case TRUE:
+			valueTrueRenderedFormula.draw(g);
+			break;
+		case UNDEFINED:
+			valueUndefinedRenderedFormula.draw(g);
+			break;
+		default:
+			break;
 		}
+		drawVariableInLocalSpace(r);
+	}
 
-		AffineTransform transform = g.getTransform();
-		g.translate(textX, textY);
-		result.draw(g, Coloriser.colorise(getForegroundColor(), colorisation));
-		g.setTransform(transform);
-		drawLabelInLocalSpace(r);
+
+	protected void cacheVariableRenderedFormula(DrawRequest r) {
+		if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
+			variableRenderedFormula = new RenderedFormula(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
+		}
+	}
+
+	protected void drawVariableInLocalSpace(DrawRequest r) {
+		if (getLabelVisibility()) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			cacheVariableRenderedFormula(r);
+			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+			variableRenderedFormula.draw(g);
+		}
 	}
 
 	@NoAutoSerialisation
 	@Override
-	public String getLabel()
-	{
+	public String getLabel() {
 		return getMathVariable().getLabel();
 	}
 
 	@NoAutoSerialisation
 	@Override
-	public void setLabel(String label)
-	{
+	public void setLabel(String label)	{
 		getMathVariable().setLabel(label);
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
-	protected void drawLabelInLocalSpace(DrawRequest r)
-	{
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-
-		FormulaRenderingResult result = FormulaToGraphics.print(getLabel(), labelFont, g.getFontRenderContext());
-		Rectangle2D gbb = result.boundingBox;
-
-		labelPosition = new Point2D.Double(
-				bb.getCenterX() - gbb.getCenterX() + 0.5 * getLabelPositioning().xOffset * (bb.getWidth() + gbb.getWidth() + 0.2),
-				bb.getCenterY() - gbb.getCenterY() + 0.5 * getLabelPositioning().yOffset * (bb.getHeight() + gbb.getHeight() + 0.2));
-		labelBoundingBox = new Rectangle2D.Double(gbb.getX() + labelPosition.getX(), gbb.getY() + labelPosition.getY(),
-				gbb.getWidth(), gbb.getHeight());
-
-		AffineTransform oldTransform = g.getTransform();
-		g.translate(labelPosition.getX(), labelPosition.getY());
-		result.draw(g, Coloriser.colorise(getLabelColor(), colorisation));
-		g.setTransform(oldTransform);
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		if (getLabelVisibility()) {
+			bb = BoundingBoxHelper.union(bb, variableRenderedFormula.getBoundingBox());
+		}
+		return bb;
 	}
 
-	public Rectangle2D getBoundingBoxInLocalSpace()
-	{
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-		return BoundingBoxHelper.union(bb, labelBoundingBox);
-	}
-
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		if (labelBoundingBox != null && labelBoundingBox.contains(pointInLocalSpace)) return true;
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
-	}
-
-	public Variable getMathVariable()
-	{
+	public Variable getMathVariable() {
 		return (Variable)getReferencedComponent();
 	}
 
-	public VariableState getState()
-	{
+	public VariableState getState() {
 		return getMathVariable().getState();
 	}
 
-	public void setState(VariableState state)
-	{
+	public void setState(VariableState state) {
 		getMathVariable().setState(state);
 	}
 
-	public void toggle()
-	{
+	public void toggle() {
 		setState(getState().toggle());
 	}
 

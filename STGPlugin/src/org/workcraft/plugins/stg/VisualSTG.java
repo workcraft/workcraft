@@ -161,7 +161,7 @@ public class VisualSTG extends AbstractVisualModel {
 				new VisualConnection(con, firstComponent, secondComponent));
 	}
 
-	private VisualPlace makeExplicit(VisualImplicitPlaceArc con) {
+	public VisualPlace makeExplicit(VisualImplicitPlaceArc con) {
 		Container group = Hierarchy.getNearestAncestor(con, Container.class);
 
 		STGPlace implicitPlace = con.getImplicitPlace();
@@ -183,12 +183,15 @@ public class VisualSTG extends AbstractVisualModel {
 		return place;
 	}
 
-	private void maybeMakeImplicit (VisualPlace place) {
-		final STGPlace stgPlace = (STGPlace)place.getReferencedPlace();
-		if ( stgPlace.isImplicit() ) {
+	public void maybeMakeImplicit (VisualPlace place) {
+		Collection<Node> preset = getPreset(place);
+		Collection<Node> postset = getPostset(place);
+		if (preset.size() == 1 && postset.size() == 1) {
+			final STGPlace stgPlace = (STGPlace)place.getReferencedPlace();
+			stgPlace.setImplicit(true);
+			VisualComponent first = (VisualComponent)preset.iterator().next();
+			VisualComponent second = (VisualComponent)postset.iterator().next();
 			MathConnection refCon1 = null, refCon2 = null;
-			VisualComponent first = (VisualComponent) getPreset(place).iterator().next();
-			VisualComponent second = (VisualComponent) getPostset(place).iterator().next();
 			Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
 			for (Connection con: connections) {
 				if (con.getFirst() == place) {
@@ -227,6 +230,10 @@ public class VisualSTG extends AbstractVisualModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
 	}
 
+	public Collection<VisualImplicitPlaceArc> getVisualImplicitPlaceArcs() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualImplicitPlaceArc.class);
+	}
+
 	public Collection<VisualTransition> getVisualTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
 	}
@@ -240,12 +247,5 @@ public class VisualSTG extends AbstractVisualModel {
 		return null;
 	}
 
-
-	public Connection getConnection(Node first, Node second) {
-		for(Connection connection : getConnections(first)) {
-			if (connection.getSecond() == second) return connection;
-		}
-		return null;
-	}
 
 }

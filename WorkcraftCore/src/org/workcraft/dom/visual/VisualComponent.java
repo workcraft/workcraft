@@ -53,11 +53,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
-	private TouchableRenderedText labelRenderedText = new TouchableRenderedText("", labelFont, labelPositioning, getLabelOffset(labelPositioning));
+	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, getLabelOffset());
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	private TouchableRenderedText nameRenderedText = new TouchableRenderedText("", nameFont, namePositioning, getNameOffset(namePositioning));
+	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -246,12 +246,20 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return CommonVisualSettings.getLabelVisibility();
 	}
 
-	private void cacheLabelRenderedText(DrawRequest r) {
+	public Point2D getOffset(Positioning positioning) {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+	    double xOffset = (positioning.xSign<0) ? bb.getMinX() : (positioning.xSign>0) ? bb.getMaxX() : bb.getCenterX();
+        double yOffset = (positioning.ySign<0) ? bb.getMinY() : (positioning.ySign>0) ? bb.getMaxY() : bb.getCenterY();
+        return new Point2D.Double(xOffset, yOffset);
+	}
 
-		Point2D offset = getLabelOffset(labelPositioning);
+	public Point2D getLabelOffset() {
+        return getOffset(labelPositioning);
+	}
 
-		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, offset)) {
-			labelRenderedText = new TouchableRenderedText(label, labelFont, labelPositioning, getLabelOffset(labelPositioning));
+	protected void cacheLabelRenderedText(DrawRequest r) {
+		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, getLabelOffset())) {
+			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, getLabelOffset());
 		}
 	}
 
@@ -269,28 +277,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return CommonVisualSettings.getNameVisibility();
 	}
 
-
-	public Point2D getLabelOffset(Positioning positioning) {
-		return getNameOffset(positioning);
-	}
-
-	public Point2D getNameOffset(Positioning positioning) {
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		double xOffset = 0.0;
-		double yOffset = 0.0;
-
-		xOffset = (positioning.xSign<0)?bb.getMinX():((positioning.xSign>0)?bb.getMaxX():bb.getCenterX());
-		yOffset = (positioning.ySign<0)?bb.getMinY():((positioning.ySign>0)?bb.getMaxY():bb.getCenterY());
-
-		return new Point2D.Double(xOffset, yOffset);
-	}
-
-	/*
-	 * The internal bounding box does not include the related label and name of the node
-	 */
-	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
-		return bb;
+	public Point2D getNameOffset() {
+        return getOffset(namePositioning);
 	}
 
 
@@ -307,10 +295,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			name = "";
 		}
 
-		Point2D offset = getNameOffset(namePositioning);
+		Point2D offset = getNameOffset();
 
 		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
-			nameRenderedText = new TouchableRenderedText(name, nameFont, namePositioning, getNameOffset(namePositioning));
+			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
 		}
 	}
 
@@ -331,10 +319,17 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		cacheNameRenderedText(r);
 	}
 
+	/*
+     * The internal bounding box does not include the related label and name of the node
+     */
+    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+        Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+        return bb;
+    }
+
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-
-		Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size,	size);
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 		if (getLabelVisibility()&&labelRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
 		}
@@ -346,8 +341,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2
-			&& Math.abs(pointInLocalSpace.getY()) <= size / 2;
+		return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
 }

@@ -48,6 +48,7 @@ public class CustomPropertyMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check custom property (punf, MPSat)";
+		return "Custom properties [MPSat]...";
 	}
+
 }

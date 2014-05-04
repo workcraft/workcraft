@@ -202,4 +202,12 @@ public abstract class AbstractModel implements Model {
 	public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {
 		// reparent for the general model undefined?
 	}
+
+	public Connection getConnection(Node first, Node second) {
+		for(Connection connection : getConnections(first)) {
+			if (connection.getSecond() == second) return connection;
+		}
+		return null;
+	}
+
 }

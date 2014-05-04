@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -43,13 +42,13 @@ import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
-	private JPanel content, reachPanel, buttonsPanel;
+	private JPanel content, optionsPanel, buttonsPanel;
 	private PresetManagerPanel<MpsatSettings> presetPanel;
-	private JLabel numberOfSolutionsLabel;
-	private JScrollPane optionsPanel;
-	private JComboBox modeCombo, satCombo, verbosityCombo;
+	private JScrollPane reachPanel;
+	private JComboBox modeCombo, verbosityCombo;
 	private JButton runButton, cancelButton, helpButton;
-	private JTextField solutionLimitText;
+	private JLabel numberOfSolutionsLabel;
+	private JTextField solutionLimitText, propertyNameText;
 	private JTextArea reachText;
 	private JRadioButton allSolutionsButton, firstSolutionButton, cheapestSolutionButton;
 	private PresetManager<MpsatSettings> presetManager;
@@ -74,9 +73,10 @@ public class MpsatConfigurationDialog extends JDialog {
 	private void createPresetPanel() {
 		ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<Preset<MpsatSettings>>();
 
-		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK);
-		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_ALL_TRACES);
-		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_SHORTEST_TRACE);
+		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER);
+		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
+		builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
+		builtInPresets.add(MpsatBuiltinPresets.PERSISTENCE_CHECKER);
 
 		presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, new SettingsToControlsMapper<MpsatSettings>() {
 			@Override
@@ -92,50 +92,38 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createOptionsPanel() {
-		JPanel optionsPanelContent = new JPanel(new SimpleFlowLayout());
-
-		optionsPanel = new JScrollPane(optionsPanelContent);
+		setMinimumSize(new Dimension(600, 400));
+		optionsPanel = new JPanel(new SimpleFlowLayout());
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("MPSat settings"));
-		optionsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		optionsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		modeCombo = new JComboBox();
 		modeCombo.setEditable(false);
-
-		for (MpsatMode mode : MpsatMode.modes)
+		for (MpsatMode mode : MpsatMode.modes) {
 			modeCombo.addItem(mode);
-
+		}
 		modeCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MpsatMode selectedMode = (MpsatMode)modeCombo.getSelectedItem();
-
 				if (selectedMode.isReach()) {
 					reachPanel.setVisible(true);
 					layout.setRow(2, TableLayout.FILL);
-				}
-				else {
+				} else {
 					reachPanel.setVisible(false);
 					layout.setRow(2, 0);
 				}
 			}
 		});
+		optionsPanel.add(GUI.createLabeledComponent(modeCombo, "Mode:"));
 
-		optionsPanelContent.add(new JLabel("Mode:"));
-		optionsPanelContent.add(new SimpleFlowLayout.LineBreak());
-		optionsPanelContent.add(modeCombo);
-		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(8));
-
-		optionsPanelContent.add(new JLabel("Solution mode:"));
-		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(-2));
-
+		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
+		optionsPanel.add(new JLabel("Solution:"));
+		optionsPanel.add(new SimpleFlowLayout.LineBreak(-2));
 		createSolutionModeButtons();
-
-		optionsPanelContent.add(firstSolutionButton);
-		optionsPanelContent.add(cheapestSolutionButton);
-		optionsPanelContent.add(allSolutionsButton);
-
-		optionsPanelContent.add(new SimpleFlowLayout.LineBreak());
+		optionsPanel.add(firstSolutionButton);
+		optionsPanel.add(cheapestSolutionButton);
+		optionsPanel.add(allSolutionsButton);
+		optionsPanel.add(new SimpleFlowLayout.LineBreak());
 
 		solutionLimitText = new JTextField();
 		solutionLimitText.setText("WWWW");
@@ -147,27 +135,26 @@ public class MpsatConfigurationDialog extends JDialog {
 		numberOfSolutionsLabel = new JLabel("Maximum number of solutions (leave blank for no limit):");
 		numberOfSolutionsPanel.add(numberOfSolutionsLabel);
 		numberOfSolutionsPanel.add(solutionLimitText);
-
 		disableNumberOfSolutionControls();
+		optionsPanel.add(numberOfSolutionsPanel);
+		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
 
-		optionsPanelContent.add(numberOfSolutionsPanel);
-		optionsPanelContent.add(new SimpleFlowLayout.LineBreak(8));
-
-		satCombo = new JComboBox();
-		satCombo.addItem(new IntMode(0, "ZChaff"));
-		satCombo.addItem(new IntMode(1, "MiniSat"));
-
-		optionsPanelContent.add(GUI.createLabeledComponent(satCombo, "SAT solver:"));
-
+		JPanel verbosityAndNamePanel =  new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
 		verbosityCombo = new JComboBox();
-		for (int i=0; i<=9; i++)
-			verbosityCombo.addItem(new IntMode(i, Integer.toString(i)));
+		for (int i=0; i<=9; i++) {
+			verbosityCombo.addItem(new IntMode(i, "level " + i));
+		}
+		verbosityAndNamePanel.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity:"));
 
-		optionsPanelContent.add(GUI.createLabeledComponent(verbosityCombo, "Verbosity level:"));
+		propertyNameText = new JTextField();
+		propertyNameText.setPreferredSize(new Dimension(250, preferredSize.height));
+		verbosityAndNamePanel.add(GUI.createLabeledComponent(propertyNameText, "Property name:"));
+		optionsPanel.add(verbosityAndNamePanel);
+		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
 	}
 
 	private void createSolutionModeButtons() {
-		firstSolutionButton = new JRadioButton ("Find any solution (default)");
+		firstSolutionButton = new JRadioButton ("Find any solution");
 		firstSolutionButton.setSelected(true);
 		firstSolutionButton.addActionListener(new ActionListener() {
 			@Override
@@ -207,20 +194,15 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private void createReachPanel() {
-		reachPanel = new JPanel  (new BorderLayout());
-		reachPanel.setBorder(BorderFactory.createTitledBorder("Property specification (Reach)"));
-
 		reachText = new JTextArea();
 		reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		reachText.setText("test");
-		reachPanel.add(reachText);
+		reachPanel = new JScrollPane(reachText);
+		reachPanel.setBorder(BorderFactory.createTitledBorder("Property specification (Reach)"));
 	}
 
 	private void applySettingsToControls(MpsatSettings settings) {
-
 		modeCombo.setSelectedItem(settings.getMode());
-		satCombo.setSelectedIndex(settings.getSatSolver());
-		verbosityCombo.setSelectedIndex(settings.getVerbosity());
 		switch (settings.getSolutionMode()) {
 		case ALL:
 			allSolutionsButton.setSelected(true);
@@ -237,18 +219,23 @@ public class MpsatConfigurationDialog extends JDialog {
 		}
 		int n = settings.getSolutionNumberLimit();
 
-		if (n>0)
+		if (n>0) {
 			solutionLimitText.setText(Integer.toString(n));
-		else
+		} else {
 			solutionLimitText.setText("");
-
+		}
+		verbosityCombo.setSelectedIndex(settings.getVerbosity());
+		String propertyName = settings.getName();
+		if (propertyName == null) {
+			propertyName = "";
+		}
+		propertyNameText.setText(propertyName);
 		reachText.setText(settings.getReach());
 	}
 
 	public MpsatConfigurationDialog(Window owner, PresetManager<MpsatSettings> presetManager) {
 		super(owner, "MPSat configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
-
 
 		createOptionsPanel();
 		createReachPanel();
@@ -257,7 +244,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
-				{TableLayout.PREFERRED, TableLayout.FILL, TableLayout.FILL, buttonsPanel.getPreferredSize().height}
+				{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height}
 		};
 
 		layout = new TableLayout(size);
@@ -351,9 +338,9 @@ public class MpsatConfigurationDialog extends JDialog {
 		if (n<0)
 			n=0;
 
-		MpsatSettings settings = new MpsatSettings((MpsatMode) modeCombo
-				.getSelectedItem(), verbosityCombo.getSelectedIndex(), satCombo
-				.getSelectedIndex(), m, n, reachText.getText());
+		MpsatSettings settings = new MpsatSettings(propertyNameText.getText(), (MpsatMode)modeCombo.getSelectedItem(),
+				verbosityCombo.getSelectedIndex(), m, n, reachText.getText());
+
 		return settings;
 	}
 

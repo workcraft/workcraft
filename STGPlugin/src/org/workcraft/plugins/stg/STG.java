@@ -42,10 +42,11 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.propertydescriptors.DirectionPropertyDescriptor;
-import org.workcraft.plugins.stg.propertydescriptors.DummyNamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.NamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalPropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -63,7 +64,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public STG(Container root) {
-		this (root, null);
+		this(root, null);
 	}
 
 	public STG(Container root, References refs) {
@@ -85,13 +86,8 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public STGPlace createPlace(String name) {
-		return createPlace (name, false);
-	}
-
-	final public STGPlace createPlace(String name, boolean markAsImplicit) {
 		STGPlace newPlace = new STGPlace();
-		newPlace.setImplicit(markAsImplicit);
-		if (name!=null) {
+		if (name != null) {
 			setName(newPlace, name);
 		}
 		getRoot().add(newPlace);
@@ -109,7 +105,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	final public SignalTransition createSignalTransition(String name) {
 		SignalTransition ret = new SignalTransition();
-		if (name!=null) {
+		if (name != null) {
 			setName(ret, name);
 		}
 		getRoot().add(ret);
@@ -124,16 +120,17 @@ public class STG extends AbstractMathModel implements STGModel {
 		return PetriNet.isUnfireEnabled(this, t);
 	}
 
-	final public void fire (Transition t) {
+	final public void fire(Transition t) {
 		PetriNet.fire(this, t);
 	}
 
-	final public void unFire (Transition t) {
+	final public void unFire(Transition t) {
 		PetriNet.unFire(this, t);
 	}
 
 	final public Collection<SignalTransition> getSignalTransitions() {
-		return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
+		return Hierarchy
+				.getDescendantsOfType(getRoot(), SignalTransition.class);
 	}
 
 	final public Collection<Place> getPlaces() {
@@ -146,23 +143,25 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	@Override
 	public Collection<Transition> getDummies() {
-		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class, new Func<Transition, Boolean>(){
-			@Override
-			public Boolean eval(Transition arg) {
-				if (arg instanceof SignalTransition)
-					return false;
-				return true;
-			}
-		});
+		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class,
+				new Func<Transition, Boolean>() {
+					@Override
+					public Boolean eval(Transition arg) {
+						if (arg instanceof SignalTransition)
+							return false;
+						return true;
+					}
+				});
 	}
 
 	public Collection<SignalTransition> getSignalTransitions(final Type t) {
-		return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class, new Func<SignalTransition, Boolean>(){
-			@Override
-			public Boolean eval(SignalTransition arg) {
-				return arg.getSignalType() == t;
-			}}
-		);
+		return Hierarchy.getDescendantsOfType(getRoot(),
+				SignalTransition.class, new Func<SignalTransition, Boolean>() {
+					@Override
+					public Boolean eval(SignalTransition arg) {
+						return arg.getSignalType() == t;
+					}
+				});
 	}
 
 	public Set<String> getSignalNames(Type type) {
@@ -185,35 +184,37 @@ public class STG extends AbstractMathModel implements STGModel {
 		return result;
 	}
 
-	public int getInstanceNumber (Node st) {
+	public int getInstanceNumber(Node st) {
 		return referenceManager.getInstanceNumber(st);
 	}
 
-	public void setInstanceNumber (Node st, int number) {
+	public void setInstanceNumber(Node st, int number) {
 		referenceManager.setInstanceNumber(st, number);
 	}
 
-	public Direction getDirection (Node t) {
+	public Direction getDirection(Node t) {
 		String name = referenceManager.getName(t);
 		return LabelParser.parseSignalTransition(name).getSecond();
 	}
 
-	public void setDirectionWithAutoInstance (Node t, Direction direction) {
+	public void setDirectionWithAutoInstance(Node t, Direction direction) {
 		String name = referenceManager.getName(t);
-		Triple<String, Direction, Integer> old = LabelParser.parseSignalTransition(name);
+		Triple<String, Direction, Integer> old = LabelParser
+				.parseSignalTransition(name);
 		referenceManager.setName(t, old.getFirst() + direction.toString());
 	}
 
-	public String makeReference (Pair<String, Integer> label) {
+	public String makeReference(Pair<String, Integer> label) {
 		String name = label.getFirst();
 		Integer instance = label.getSecond();
-		return name+"/"+((instance==null)?0:instance);
+		return name + "/" + ((instance == null) ? 0 : instance);
 	}
 
-	public String makeReference (Triple<String, Direction, Integer> label) {
+	public String makeReference(Triple<String, Direction, Integer> label) {
 		String name = label.getFirst();
 		Integer instance = label.getThird();
-		return name+label.getSecond()+"/"+((instance==null)?0:instance);
+		return name + label.getSecond() + "/"
+				+ ((instance == null) ? 0 : instance);
 	}
 
 	public String getName(Node node) {
@@ -230,57 +231,99 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	@Override
 	public Properties getProperties(Node node) {
-		Properties.Mix result = new Properties.Mix();
-		if (node instanceof STGPlace && !((STGPlace) node).isImplicit()) {
-				result.add (new NamePropertyDescriptor(this, node));
+		Properties properties = super.getProperties(node);
+		if (node == null) {
+			for (Type type : Type.values()) {
+				for (final String signal : getSignalNames(type)) {
+					if (getSignalTransitions(signal).isEmpty() ) continue;
+					properties = Properties.Merge.add(properties,
+							new SignalNamePropertyDescriptor(this, signal),
+							new SignalTypePropertyDescriptor(this, signal));
+				}
+			}
+		} else {
+			if (node instanceof STGPlace) {
+				STGPlace place = (STGPlace) node;
+				if (!place.isImplicit()) {
+					properties = Properties.Merge.add(properties,
+							new NamePropertyDescriptor(this, place));
+				}
+			} else if (node instanceof SignalTransition) {
+				SignalTransition transition = (SignalTransition) node;
+				properties = Properties.Merge.add(properties,
+						new TypePropertyDescriptor(this, transition),
+						new SignalPropertyDescriptor(this, transition),
+						new DirectionPropertyDescriptor(this, transition),
+						new InstancePropertyDescriptor(this, transition));
+			} else if (node instanceof DummyTransition) {
+				DummyTransition dummy = (DummyTransition) node;
+				properties = Properties.Merge.add(properties,
+						new NamePropertyDescriptor(this, dummy),
+						new InstancePropertyDescriptor(this, dummy));
+			}
 		}
-		if (node instanceof SignalTransition) {
-			result.add(new TypePropertyDescriptor(this, node));
-			result.add(new SignalNamePropertyDescriptor(this, (SignalTransition) node));
-			result.add(new DirectionPropertyDescriptor(this, node));
-			result.add(new InstancePropertyDescriptor(this, node));
-		} if (node instanceof DummyTransition) {
-			result.add(new DummyNamePropertyDescriptor(this, (DummyTransition) node));
-			result.add(new InstancePropertyDescriptor(this, node));
-		}
-		return result;
+		return properties;
 	}
 
 	public Collection<SignalTransition> getSignalTransitions(String signalName) {
 		return referenceManager.getSignalTransitions(signalName);
 	}
 
-	public ConnectionResult connect(Node first, Node second) throws InvalidConnectionException {
+	public Type getSignalType(String signalName) {
+		Type type = null;
+		Collection<SignalTransition> transitions = getSignalTransitions(signalName);
+		if ( !transitions.isEmpty() ) {
+			type = transitions.iterator().next().getSignalType();
+		}
+		return type;
+	}
+
+	public void setSignalType(String signalName, Type signalType) {
+		for (SignalTransition transition : getSignalTransitions(signalName)) {
+			transition.setSignalType(signalType);
+			// It is sufficient to change the type of a single transition
+			// - all the others will be notified.
+			break;
+		}
+	}
+
+	public ConnectionResult connect(Node first, Node second)
+			throws InvalidConnectionException {
 		if (first instanceof Transition && second instanceof Transition) {
 			STGPlace p = new STGPlace();
 			p.setImplicit(true);
 
-			MathConnection con1 = new MathConnection ( (Transition) first, p);
-			MathConnection con2 = new MathConnection ( p, (Transition) second);
+			MathConnection con1 = new MathConnection((Transition) first, p);
+			MathConnection con2 = new MathConnection(p, (Transition) second);
 
-			Hierarchy.getNearestContainer(first, second).add( Arrays.asList(new Node[] { p, con1, con2}) );
+			Hierarchy.getNearestContainer(first, second).add(
+					Arrays.asList(new Node[] { p, con1, con2 }));
 
 			return new ComplexResult(p, con1, con2);
 		} else if (first instanceof Place && second instanceof Place)
-			throw new InvalidConnectionException ("Connections between places are not valid");
+			throw new InvalidConnectionException(
+					"Connections between places are not valid");
 		else {
-			MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
+			MathConnection con = new MathConnection((MathNode) first,
+					(MathNode) second);
 			Hierarchy.getNearestContainer(first, second).add(con);
 			return new SimpleResult(con);
 		}
 	}
 
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-		if(node instanceof STGPlace) {
-			if(((STGPlace) node).isImplicit()) {
+		if (node instanceof STGPlace) {
+			if (((STGPlace) node).isImplicit()) {
 				Set<Node> preset = getPreset(node);
 				Set<Node> postset = getPostset(node);
 
-				if (!(preset.size()==1 && postset.size()==1)) {
-					throw new RuntimeException ("An implicit place cannot have more that one transition in its preset or postset.");
+				if (!(preset.size() == 1 && postset.size() == 1)) {
+					throw new RuntimeException(
+							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
 				return "<"+referenceManager.getNodeReference(provider, preset.iterator().next())
 							+ "," + referenceManager.getNodeReference(provider, postset.iterator().next()) + ">";
+
 			} else {
 				return referenceManager.getNodeReference(provider, node);
 			}
@@ -292,11 +335,12 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
-		if (implicitPlaceTransitions!=null) {
+		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
 
-			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
+			Set<Node> implicitPlaceCandidates = SetUtils.intersection(
+					getPreset(t2), getPostset(t1));
 
 			for (Node node : implicitPlaceCandidates) {
 				if (node instanceof STGPlace && ((STGPlace) node).isImplicit()) {
@@ -304,9 +348,10 @@ public class STG extends AbstractMathModel implements STGModel {
 				}
 			}
 
-			throw new NotFoundException("Implicit place between " + implicitPlaceTransitions.getFirst() +
-					" and " + implicitPlaceTransitions.getSecond() + " does not exist.");
-		}	else
+			throw new NotFoundException("Implicit place between "
+					+ implicitPlaceTransitions.getFirst() + " and "
+					+ implicitPlaceTransitions.getSecond() + " does not exist.");
+		} else
 		return referenceManager.getNodeByReference(provider, reference);
 	}
 
