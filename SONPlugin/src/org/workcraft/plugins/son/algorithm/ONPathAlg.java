@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.SONModel;
 public class ONPathAlg{
 
 	protected SONModel net;
-	protected RelationAlg relation;
+	protected RelationAlg relationAlg;
 	protected Collection<Node> history;
 	protected Collection<ArrayList<Node>> pathResult;
 	protected Collection<ArrayList<Node>> cycleResult;
@@ -19,7 +19,7 @@ public class ONPathAlg{
 
 	public ONPathAlg(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
+		relationAlg = new RelationAlg(net);
 		history = new ArrayList<Node>();
 		pathResult =new  HashSet<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
@@ -92,8 +92,8 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cycleResult;
@@ -102,8 +102,8 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> pathTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 		 return pathResult;
 	}
@@ -143,8 +143,8 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> backwardCycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getFinal(nodes))
-			for(Node end : relation.getInitial(nodes))
+		for(Node start : relationAlg.getFinal(nodes))
+			for(Node end : relationAlg.getInitial(nodes))
 				getAllPath(start, end, createBackwardAdj(nodes));
 
 		 return cycleResult;
@@ -152,8 +152,8 @@ public class ONPathAlg{
 
 	public Collection<ArrayList<Node>> backwardPathTask (Collection<Node> nodes){
 		this.clearAll();
-		for(Node start : relation.getFinal(nodes))
-			for(Node end : relation.getInitial(nodes))
+		for(Node start : relationAlg.getFinal(nodes))
+			for(Node end : relationAlg.getInitial(nodes))
 				getAllPath(start, end, createBackwardAdj(nodes));
 
 		 return pathResult;

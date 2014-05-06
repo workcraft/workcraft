@@ -23,8 +23,8 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> errorousNodes = new HashSet<Node>();
 	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
 
-	private ONPathAlg traverse;
-	private RelationAlg relation;
+	private ONPathAlg onPathAlg;
+	private RelationAlg relationAlg;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -32,8 +32,8 @@ public class ONStructureTask implements SONStructureVerification{
 
 	public ONStructureTask(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
-		traverse = new ONPathAlg(net);
+		relationAlg = new RelationAlg(net);
+		onPathAlg = new ONPathAlg(net);
 
 	}
 
@@ -69,7 +69,7 @@ public class ONStructureTask implements SONStructureVerification{
 			logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
 			logger.info("Running components relation task...");
 
-			if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
+			if(!relationAlg.hasFinal(groupComponents) || !relationAlg.hasInitial(groupComponents)){
 				logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
 				hasErr = true;
 				errNumber ++;
@@ -126,10 +126,10 @@ public class ONStructureTask implements SONStructureVerification{
 			//cycle detection
 			logger.info("Running cycle detection...");
 
-			cycleResult = traverse.cycleTask(groupComponents);
+			cycleResult = onPathAlg.cycleTask(groupComponents);
 
 			backwardCycleResult = new ArrayList<ArrayList<Node>>();
-			backwardCycleResult.addAll(this.traverse.backwardCycleTask(groupComponents));
+			backwardCycleResult.addAll(this.onPathAlg.backwardCycleTask(groupComponents));
 
 			cyclePaths.addAll(cycleResult);
 			cyclePaths.addAll(backwardCycleResult);
@@ -149,7 +149,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Event)
-				if(relation.isInitial(node))
+				if(relationAlg.isInitial(node))
 					result.add(node);
 		return result;
 	}
@@ -158,7 +158,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Event)
-				if(relation.isFinal(node))
+				if(relationAlg.isFinal(node))
 					result.add(node);
 		return result;
 	}
@@ -167,7 +167,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Condition)
-				if(relation.hasPostConflictEvents(node))
+				if(relationAlg.hasPostConflictEvents(node))
 					result.add(node);
 		return result;
 	}
@@ -176,7 +176,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Condition)
-				if(relation.hasPreConflictEvents(node))
+				if(relationAlg.hasPreConflictEvents(node))
 					result.add(node);
 		return result;
 	}

@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -141,11 +142,11 @@ public class SONStructureTask implements Task<VerificationResult>{
 			totalWarningNum++;
 			logger.info("WARNING : Structure error exist, cannot output before(e).");
 		}else{
-			RelationAlg alg = new RelationAlg(net);
+			BSONAlg bsonAlg = new BSONAlg(net);
 			logger.info("\nOutput before(e):");
 			Collection<Condition[]> before = new ArrayList<Condition[]>();
 			for(Event e : net.getEvents()){
-				before =  alg.before(e);
+				before =  bsonAlg.before(e);
 				if(!before.isEmpty()){
 					Collection<String> subResult = new ArrayList<String>();
 					logger.info("before("+ net.getName(e)+"): ");

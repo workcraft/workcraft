@@ -47,8 +47,8 @@ public class CSONPathAlg extends ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cyclePathFilter(cycleResult);

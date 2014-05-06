@@ -55,6 +55,7 @@ import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
@@ -71,7 +72,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected VisualModel visualNet;
 	private Framework framework;
 	private RelationAlg relationAlg;
-	private SimulationAlg alg;
+	private BSONAlg bsonAlg;
+	private SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 	private SONModel net;
 
@@ -184,11 +186,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					runList.add((Event)event);
 			}
 			if(!reverse){
-				alg.fire(runList);
+				simuAlg.fire(runList);
 				this.setErrNum(runList, reverse);
 			}
 			else{
-				alg.unFire(runList);
+				simuAlg.unFire(runList);
 				this.setErrNum(runList, reverse);
 			}
 			branchStep++;
@@ -210,11 +212,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		if (runList.isEmpty()) return false;
 
 		if(!reverse){
-			alg.fire(runList);
+			simuAlg.fire(runList);
 			this.setErrNum(runList, reverse);
 		}
 		else{
-			alg.unFire(runList);
+			simuAlg.unFire(runList);
 			this.setErrNum(runList, reverse);
 		}
 
@@ -244,11 +246,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			branchStep--;
 
 			if(!reverse){
-				alg.unFire(runList);
+				simuAlg.unFire(runList);
 				this.setErrNum(runList, !reverse);
 			}
 			else{
-				alg.fire(runList);
+				simuAlg.fire(runList);
 				this.setErrNum(runList, !reverse);
 			}
 
@@ -272,11 +274,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		branchStep--;
 
 		if(!reverse){
-			alg.unFire(runList);
+			simuAlg.unFire(runList);
 			this.setErrNum(runList, !reverse);
 		}
 		else{
-			alg.fire(runList);
+			simuAlg.fire(runList);
 			this.setErrNum(runList, !reverse);
 		}
 		return true;
@@ -332,19 +334,19 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			result.put(cp, false);
 		}
 		//initial marking for abstract groups and behavioral groups
-		for(ONGroup abstractGroup : relationAlg.getAbstractGroups(net.getGroups())){
+		for(ONGroup abstractGroup : bsonAlg.getAbstractGroups(net.getGroups())){
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
 				if(c instanceof Condition){
 					result.put(c, true);
 					((Condition) c).setMarked(true);
-					Collection<ONGroup> bhvGroup = relationAlg.getBhvGroups((Condition) c);
+					Collection<ONGroup> bhvGroup = bsonAlg.getBhvGroups((Condition) c);
 					if(bhvGroup.size() != 1)
 						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
 					else
 						for(ONGroup group : bhvGroup){
 							//can optimize
 							Collection<Node> initial = relationAlg.getInitial(group.getComponents());
-							if(relationAlg.getPhase((Condition)c).containsAll(initial))
+							if(bsonAlg.getPhase((Condition)c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(group.getComponents())){
 									result.put(c1, true);
 									((Condition) c1).setMarked(true);}
@@ -761,7 +763,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		nodes.addAll(net.getConditions());
 		nodes.addAll(net.getEvents());
 
-		return alg.getSyncCycles(nodes);
+		return simuAlg.getSyncCycles(nodes);
 	}
 
 	@Override
@@ -771,9 +773,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		visualNet = editor.getModel();
 		this.setFramework(editor.getFramework());
 		net = (SONModel)visualNet.getMathModel();
-		relationAlg = new RelationAlg(net);;
+		relationAlg = new RelationAlg(net);
+		bsonAlg = new BSONAlg(net);
 		initialMarking = autoInitalMarking();
-		alg = new SimulationAlg(net);
+		simuAlg = new SimulationAlg(net);
 
 		reverse=false;
 		traceStep = 0;
@@ -782,11 +785,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 		syncSet = getSyncCycles();
 		errAlg = new ErrorTracingAlg(net);
-		abstractGroups = relationAlg.getAbstractGroups(net.getGroups());
+		abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
 		phases = new HashMap<Condition, Collection<Condition>>();
 		for(ONGroup group : abstractGroups){
 			for(Condition c : group.getConditions())
-				phases.put(c, relationAlg.getPhase(c));
+				phases.put(c, bsonAlg.getPhase(c));
 		}
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
@@ -864,10 +867,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				@Override
 				public Boolean eval(Node node) {
 
-					if(node instanceof VisualEvent && alg.isEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && !reverse){
+					if(node instanceof VisualEvent && simuAlg.isEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && !reverse){
 						return true;
 					}
-					if(node instanceof VisualEvent && alg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && reverse){
+					if(node instanceof VisualEvent && simuAlg.isUnfireEnabled(((VisualEvent)node).getReferencedEvent(), syncSet, phases) && reverse){
 						return true;
 					}
 					return false;
@@ -881,17 +884,17 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 			if(reverse){
 				for(Event enable : net.getEvents())
-					if(alg.isUnfireEnabled(enable, syncSet, phases))
+					if(simuAlg.isUnfireEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
 				}
 			else{
 				for(Event enable : net.getEvents())
-					if(alg.isEnabled(enable, syncSet, phases))
+					if(simuAlg.isEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
 				}
 
-			List<Event> minimalEvents = alg.getMinimalExeResult(event, syncSet, enabledEvents);
-			List<Event> minimalReverseEvents = alg.getMinimalReverseExeResult(event, syncSet, enabledEvents);
+			List<Event> minimalEvents = simuAlg.getMinimalExeResult(event, syncSet, enabledEvents);
+			List<Event> minimalReverseEvents = simuAlg.getMinimalReverseExeResult(event, syncSet, enabledEvents);
 
 			if(!reverse){
 				List<Event> possibleEvents = new ArrayList<Event>();
@@ -921,13 +924,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
-						alg.clearEventSet();
+						simuAlg.clearEventSet();
 						return;
 						}
 					}
 				//Error tracing
 			//	setErrNum(runList, reverse);
-				alg.clearEventSet();
+				simuAlg.clearEventSet();
 
 			}else{
 				//reverse simulation
@@ -944,7 +947,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				if(possibleEvents.isEmpty() && minimalReverseEvents.isEmpty()){
 					runList.add(event);
 					executeEvent(runList);
-					alg.clearEventSet();
+					simuAlg.clearEventSet();
 				} else {
 					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, syncSet, enabledEvents, reverse);
@@ -960,13 +963,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
-						alg.clearEventSet();
+						simuAlg.clearEventSet();
 						return;
 					}
 				}
 				//Reverse error tracing
 				//setErrNum(runList, reverse);
-				alg.clearEventSet();
+				simuAlg.clearEventSet();
 			}
 		}
 	}
@@ -1054,7 +1057,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 					}
 
-					if (alg.isEnabled(event, syncSet, phases)&& !reverse)
+					if (simuAlg.isEnabled(event, syncSet, phases)&& !reverse)
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -1066,7 +1069,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 								return CommonVisualSettings.getEnabledBackgroundColor();
 							}
 						};
-					if (alg.isUnfireEnabled(event, syncSet, phases)&& reverse)
+					if (simuAlg.isUnfireEnabled(event, syncSet, phases)&& reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {

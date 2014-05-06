@@ -23,8 +23,8 @@ public class CSONStructureTask implements SONStructureVerification{
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private RelationAlg relation;
-	private CSONPathAlg traverse;
+	private RelationAlg relationAlg;
+	private CSONPathAlg csonPathAlg;
 
 	private Collection<ChannelPlace> cPlaceResult;
 	private Collection<ChannelPlace> cPlaceConTypeResult;
@@ -37,8 +37,8 @@ public class CSONStructureTask implements SONStructureVerification{
 
 	public CSONStructureTask(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
-		traverse = new CSONPathAlg(net);
+		relationAlg = new RelationAlg(net);
+		csonPathAlg = new CSONPathAlg(net);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -56,7 +56,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		logger.info("Group Components = " + components.size());
 
 		ArrayList<ChannelPlace> relatedcPlaces = new ArrayList<ChannelPlace>();
-		relatedcPlaces.addAll(relation.getRelatedChannelPlace(groups));
+		relatedcPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
 		components.addAll(relatedcPlaces);
 
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
@@ -97,7 +97,7 @@ public class CSONStructureTask implements SONStructureVerification{
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
-		cycleResult = traverse.cycleTask(components);
+		cycleResult = csonPathAlg.cycleTask(components);
 
 		if (cycleResult.isEmpty() )
 			logger.info("Acyclic structure correct");

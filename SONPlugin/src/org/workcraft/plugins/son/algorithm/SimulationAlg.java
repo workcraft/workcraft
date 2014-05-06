@@ -19,7 +19,8 @@ import org.workcraft.plugins.son.elements.Event;
 public class SimulationAlg {
 
 	private SONModel net;
-	private RelationAlg relation;
+	private RelationAlg relationAlg;
+	private BSONAlg bsonAlg;
 
 	private Collection<Event> syncEventSet = new HashSet<Event>();
 	private Collection<Node> checkedEvents = new HashSet<Node>();
@@ -41,10 +42,11 @@ public class SimulationAlg {
 		history = new ArrayList<Node>();
 		syncCycles= new ArrayList<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
-		relation =  new RelationAlg(net);
+		relationAlg =  new RelationAlg(net);
+		bsonAlg = new BSONAlg(net);
 
-		abstractGroups = relation.getAbstractGroups(net.getGroups());
-		bhvGroups = relation.getBhvGroups(net.getGroups());
+		abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
+		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
 	protected List<Event> getPreAsynEvents (Event e){
@@ -265,8 +267,8 @@ public class SimulationAlg {
 
 		this.clearEventSet();
 
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		if(!cycleResult.isEmpty()){
@@ -398,10 +400,10 @@ public class SimulationAlg {
 	private boolean isBhvEnabled(Event e, Map<Condition, Collection<Condition>> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
-				for(Node pre : relation.getPrePNSet(e))
+				for(Node pre : relationAlg.getPrePNSet(e))
 					if(pre instanceof Condition){
 						Collection<Condition> phase = phases.get((Condition)pre);
-						for(Condition max : relation.getMaximalPhase(phase))
+						for(Condition max : bsonAlg.getMaximalPhase(phase))
 							if(!max.isMarked())
 								return false;
 				}
@@ -413,11 +415,11 @@ public class SimulationAlg {
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))||
-								(!phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e))))
+						if((!phases.get(c).containsAll(relationAlg.getPrePNSet(e)) && phases.get(c).containsAll(relationAlg.getPostPNSet(e)))||
+								(!phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e))))
 							return false;
 					if(!c.isMarked())
-						if(phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e)))
+						if(phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e)))
 							return false;
 					}
 				}
@@ -470,15 +472,15 @@ public class SimulationAlg {
 			if(group.getEvents().contains(e)){
 				Collection<Condition> preMax = new HashSet<Condition>();
 				Collection<Condition> postMin = new HashSet<Condition>();
-				for(Node pre : relation.getPrePNSet(e))
-					preMax.addAll( relation.getMaximalPhase(relation.getPhase((Condition)pre)));
-				for(Node post : relation.getPostPNSet(e))
-					postMin.addAll(relation.getMinimalPhase(relation.getPhase((Condition)post)));
+				for(Node pre : relationAlg.getPrePNSet(e))
+					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+				for(Node post : relationAlg.getPostPNSet(e))
+					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
 				if(!preMax.containsAll(postMin)){
 					boolean isFinal=true;
 					for(Condition fin : preMax)
-							if(!relation.isFinal(fin))
+							if(!relationAlg.isFinal(fin))
 								isFinal=false;
 					if(isFinal){
 						for(Condition fin : preMax){
@@ -496,7 +498,7 @@ public class SimulationAlg {
 					}
 					boolean isIni = true;
 					for(Condition init : postMin)
-							if(!relation.isInitial(init))
+							if(!relationAlg.isInitial(init))
 								isIni=false;
 					if(isIni)
 						for(Condition ini : postMin){
@@ -585,10 +587,10 @@ public class SimulationAlg {
 	private boolean isBhvUnEnabled(Event e, Map<Condition, Collection<Condition>> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
-				for(Node pre : relation.getPostPNSet(e))
+				for(Node pre : relationAlg.getPostPNSet(e))
 					if(pre instanceof Condition){
-						Collection<Condition> phase = relation.getPhase((Condition)pre);
-						for(Condition min : relation.getMinimalPhase(phase))
+						Collection<Condition> phase = bsonAlg.getPhase((Condition)pre);
+						for(Condition min : bsonAlg.getMinimalPhase(phase))
 							if(!min.isMarked())
 								return false;
 				}
@@ -600,11 +602,11 @@ public class SimulationAlg {
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(relation.getPrePNSet(e)) && phases.get(c).containsAll(relation.getPostPNSet(e)))||
-								(!phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e))))
+						if((!phases.get(c).containsAll(relationAlg.getPrePNSet(e)) && phases.get(c).containsAll(relationAlg.getPostPNSet(e)))||
+								(!phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e))))
 							return false;
 					if(!c.isMarked())
-						if(phases.get(c).containsAll(relation.getPostPNSet(e)) && phases.get(c).containsAll(relation.getPrePNSet(e)))
+						if(phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e)))
 							return false;
 					}
 				}
@@ -643,15 +645,15 @@ public class SimulationAlg {
 				if(group.getEvents().contains(e)){
 					Collection<Condition> preMax = new HashSet<Condition>();
 					Collection<Condition> postMin = new HashSet<Condition>();
-					for(Node pre : relation.getPrePNSet(e))
-						preMax.addAll( relation.getMaximalPhase(relation.getPhase((Condition)pre)));
-					for(Node post : relation.getPostPNSet(e))
-						postMin.addAll(relation.getMinimalPhase(relation.getPhase((Condition)post)));
+					for(Node pre : relationAlg.getPrePNSet(e))
+						preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+					for(Node post : relationAlg.getPostPNSet(e))
+						postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
 					if(!preMax.containsAll(postMin)){
 						boolean isInitial=true;
 						for(Condition ini : postMin)
-								if(!relation.isInitial(ini))
+								if(!relationAlg.isInitial(ini))
 									isInitial=false;
 						if(isInitial){
 								for(Condition ini : postMin){
@@ -670,7 +672,7 @@ public class SimulationAlg {
 
 						boolean isFinal = true;
 						for(Condition fin : preMax)
-								if(!relation.isFinal(fin))
+								if(!relationAlg.isFinal(fin))
 									isFinal=false;
 						if(isFinal)
 							for(Condition fin : preMax){

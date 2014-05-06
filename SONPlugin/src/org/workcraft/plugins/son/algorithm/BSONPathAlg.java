@@ -11,12 +11,12 @@ import org.workcraft.plugins.son.elements.Event;
 public class BSONPathAlg extends ONPathAlg{
 
 	private SONModel net;
-	private RelationAlg alg;
+	private BSONAlg bsonAlg;
 
 	public BSONPathAlg(SONModel net){
 		super(net);
 		this.net = net;
-		alg =new RelationAlg(net);
+		bsonAlg =new BSONAlg(net);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class BSONPathAlg extends ONPathAlg{
 				}
 			}
 			if(n instanceof Event)
-				result.addAll(alg.before((Event)n));
+				result.addAll(bsonAlg.before((Event)n));
 		}
 		return result;
 	}
@@ -52,8 +52,8 @@ public class BSONPathAlg extends ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cyclePathFilter(cycleResult);
