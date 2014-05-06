@@ -11,6 +11,8 @@ public class VisualBlock extends VisualPage{
 
 	public VisualBlock(Block refNode) {
 		super(refNode);
+		//set default fill color
+
 		this.mathBlock = refNode;
 	}
 
@@ -33,6 +35,16 @@ public class VisualBlock extends VisualPage{
 	@Override
 	public Color getForegroundColor(){
 		return this.getMathBlock().getForegroundColor();
+	}
+
+	@Override
+	public void setFillColor(Color color){
+		this.getMathBlock().setFillColor(color);
+	}
+
+	@Override
+	public Color getFillColor(){
+		return this.getMathBlock().getFillColor();
 	}
 
 	public Block getMathBlock(){

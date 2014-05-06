@@ -15,7 +15,8 @@ import org.workcraft.util.Hierarchy;
 
 public class Block extends PageNode{
 	private String label="";
-	private Color color = CommonVisualSettings.getBorderColor();
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
+	private Color fillColor  = new Color(0, 0, 0, 0);
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -45,12 +46,21 @@ public class Block extends PageNode{
 	}
 
 	public void setForegroundColor(Color color){
-		this.color = color;
+		this.foregroundColor = color;
 		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
 	}
 
 	public Color getForegroundColor(){
-		return color;
+		return foregroundColor;
+	}
+
+	public void setFillColor(Color color){
+		this.fillColor = color;
+		sendNotification(new PropertyChangedEvent(this, "fill color"));
+	}
+
+	public Color getFillColor(){
+		return fillColor;
 	}
 
 	public void setLabel(String label){

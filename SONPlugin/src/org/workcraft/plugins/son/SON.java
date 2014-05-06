@@ -50,6 +50,8 @@ public class SON extends AbstractMathModel implements SONModel {
 					return "con";
 				if (arg instanceof ChannelPlace)
 					return "q";
+				if (arg instanceof Block)
+					return "block";
 				return "node";
 			}
 		}));

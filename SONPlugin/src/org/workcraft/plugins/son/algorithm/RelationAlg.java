@@ -229,7 +229,7 @@ public class RelationAlg{
 		return result;
 	}
 
-	//get unchecked abstract groups.
+	//get unchecked behaviour groups.
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(ONGroup group : groups){

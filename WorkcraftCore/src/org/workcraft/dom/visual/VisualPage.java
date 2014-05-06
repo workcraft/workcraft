@@ -36,8 +36,6 @@ import org.workcraft.util.Hierarchy;
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
 
 	protected final double margin = 0.05;
-	private Color foregroundColor = CommonVisualSettings.getBorderColor();
-
 
 	private boolean isCollapsed = false;
 	@Override
@@ -104,16 +102,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			}
 		});
 
-
-		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Color>(
-				this, "Foreground color", Color.class) {
-			public void setter(VisualPage object, Color value) {
-				object.setForegroundColor(value);
-			}
-			public Color getter(VisualPage object) {
-				return object.getForegroundColor();
-			}
-		});
 	}
 
 
@@ -136,8 +124,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	public VisualPage(MathNode refNode) {
 		super(refNode);
-
-
 
 		addPropertyDeclarations();
 	}
@@ -269,6 +255,8 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
 				Graphics2D g = r.getGraphics();
+				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
+				g.fill(bb);
 
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
@@ -282,6 +270,8 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
 				Graphics2D g = r.getGraphics();
+				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
+				g.fill(bb);
 
 //				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
@@ -293,21 +283,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				drawLabelInLocalSpace(r);
 
 			}
-
 		}
 	}
-
-
-
-	public Color getForegroundColor() {
-		return foregroundColor;
-	}
-
-	public void setForegroundColor(Color foregroundColor) {
-		this.foregroundColor = foregroundColor;
-		sendNotification(new PropertyChangedEvent(this, "foreground color"));
-	}
-
-
-
 }
