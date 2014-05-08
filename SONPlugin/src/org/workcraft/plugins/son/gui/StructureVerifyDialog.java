@@ -140,6 +140,7 @@ public class StructureVerifyDialog extends JDialog{
 		typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
 		typeCombo.addItem(new typeMode(2, "Communication Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(3, "Behavioural Abstraction"));
+		typeCombo.addItem(new typeMode(4, "Temporal Abstraction"));
 
 		ArcTypePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 

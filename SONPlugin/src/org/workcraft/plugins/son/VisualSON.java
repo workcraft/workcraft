@@ -15,6 +15,7 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
@@ -22,9 +23,12 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.plugins.son.algorithm.RelationAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
@@ -36,8 +40,9 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualSON extends AbstractVisualModel{
 
-	private String title="Invalid Group Selection";
-	private String title2="Invalid Super Group Selection";
+	private String group="Invalid Group Selection";
+	private String superGroup="Invalid Super Group Selection";
+	private String block="Invalid Block Selection";
 	private SON net;
 
 	public VisualSON(SON model){
@@ -179,29 +184,32 @@ public class VisualSON extends AbstractVisualModel{
 
 	private Collection<Node> getGroupableSelection(){
 		Collection<Node> result = new HashSet<Node>();
-		Collection<Node> validateSet = getOrderedCurrentLevelSelection();
+		Collection<Node> selection = new HashSet<Node>();
 		boolean validate = false;
 
 		for(Node node : getOrderedCurrentLevelSelection()){
 			if(node instanceof VisualPage){
-				validateSet.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
+				selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
+			}
+			if(node instanceof VisualTransformableNode) {
+				selection.add((VisualTransformableNode)node);
 			}
 		}
 
-		if(validateSelection(validateSet)){
-			for(Node node : getOrderedCurrentLevelSelection()){
+		if(validateSelection(selection)){
+			for(Node node : selection){
 				if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)){
 					result.add(node);
 				}
 				else{
-					JOptionPane.showMessageDialog(null, "Group Selection containing Channel Places or other groups is invaild",title, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
 					result.clear();
 					return result;
 				}
 			}
 		}
 		else{
-			JOptionPane.showMessageDialog(null, "Grouping a partial occurrence net is invalid",title, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Grouping a partial occurrence net is invalid",group, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 		}
@@ -211,7 +219,7 @@ public class VisualSON extends AbstractVisualModel{
 				validate = true;
 		}
 		if (!validate) {
-			JOptionPane.showMessageDialog(null, "An occurrence net must contain at least one condition",title, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
@@ -360,7 +368,7 @@ public class VisualSON extends AbstractVisualModel{
 			validateSelection=false;
 
 		if(!validateSelection){
-			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title2, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",superGroup, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
@@ -399,12 +407,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	//Block
 	public void groupBlockSelection() {
-		ArrayList<Node> selected = new ArrayList<Node>();
-		for (Node node : getOrderedCurrentLevelSelection()) {
-			if (node instanceof VisualTransformableNode) {
-				selected.add((VisualTransformableNode)node);
-			}
-		}
+		Collection<Node> selected = getBlockSelection();
 
 		if (selected.size() > 1) {
 
@@ -471,6 +474,66 @@ public class VisualSON extends AbstractVisualModel{
 		}
 	}
 
+
+	private Collection<Node> getBlockSelection(){
+		Collection<Node> result = new HashSet<Node>();
+		RelationAlg relationAlg = new RelationAlg(net);
+		int errorType = 0;
+
+		for(Node node : getOrderedCurrentLevelSelection()){
+			if((node instanceof VisualCondition || node instanceof VisualEvent)) {
+				if(relationAlg.isFinal(((VisualComponent)node).getReferencedComponent())
+						|| relationAlg.isInitial(((VisualComponent)node).getReferencedComponent()))
+					errorType = 1;
+				else
+					result.add(node);
+			}
+			else if(node instanceof VisualComment){
+				result.add(node);
+			}
+			else if(!(node instanceof VisualSONConnection))
+				errorType = 2;
+		}
+
+		if(errorType==1){
+			JOptionPane.showMessageDialog(null, "Block contianing initial or final node is invalid", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+		}
+
+
+		if(errorType==2){
+			JOptionPane.showMessageDialog(null, "Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
+
+		for (VisualSONConnection connect : getVisualConnections()){
+			if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
+				if(connect.getSecond() instanceof VisualEvent)
+					errorType = 3;
+			}
+
+			if(!result.contains(connect.getFirst()) && result.contains(connect.getSecond())){
+				if(connect.getFirst() instanceof VisualEvent)
+					errorType = 3;
+			}
+		}
+
+		if(errorType==3){
+			JOptionPane.showMessageDialog(null, "The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
+
+		if (result.size() == 1) {
+			JOptionPane.showMessageDialog(null, "A single component cannot be set as a block",group, JOptionPane.WARNING_MESSAGE);
+			result.removeAll(result);
+			return result;
+		}
+
+		return result;
+	}
 
 	@Override
 	public void ungroupSelection(){

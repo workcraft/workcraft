@@ -26,20 +26,19 @@ public class BSONPathAlg extends ONPathAlg{
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n))
-				if(nodes.contains(next) && !net.getSONConnections(n, next).contains("BHVLINE")){
+				if(nodes.contains(next) && net.getSONConnectionType(n, next) != "BHVLINE"){
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
 					result.add(adjoin);
 
-					for (String conType :  net.getSONConnectionTypes(n, next)){
-						if(conType == "SYNCLINE"){
-							Node[] reAdjoin = new Node[2];
-							reAdjoin[0] = next;
-							reAdjoin[1] = n;
-							if(!result.contains(reAdjoin))
-								result.add(reAdjoin);
-					}
+					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+						Node[] reAdjoin = new Node[2];
+						reAdjoin[0] = next;
+						reAdjoin[1] = n;
+						if(!result.contains(reAdjoin))
+							result.add(reAdjoin);
+
 				}
 			}
 			if(n instanceof Event)

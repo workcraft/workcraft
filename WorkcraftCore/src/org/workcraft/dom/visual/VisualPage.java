@@ -270,8 +270,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
 				Graphics2D g = r.getGraphics();
-				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
-				g.fill(bb);
 
 //				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));

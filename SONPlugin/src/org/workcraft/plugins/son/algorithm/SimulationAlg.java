@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
@@ -52,8 +50,7 @@ public class SimulationAlg {
 	protected List<Event> getPreAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPreset(e)){
-			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
-			&& net.getSONConnectionTypes(node, e).contains("ASYNLINE"))
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
 				for(Node node2 : net.getPreset(node))
 					if(node2 instanceof Event)
 						result.add((Event)node2);
@@ -64,8 +61,7 @@ public class SimulationAlg {
 	protected List<Event> getPostAsynEvents (Event e){
 		List<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPostset(e) )
-			if(node instanceof ChannelPlace && net.getSONConnectionTypes(node, e).size() ==1
-			&& net.getSONConnectionTypes(node, e).contains("ASYNLINE"))
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
 				for(Node node2 : net.getPostset(node))
 					if(node2 instanceof Event)
 						result.add((Event)node2);
@@ -93,7 +89,7 @@ public class SimulationAlg {
 
 				}
 				if(!enabledEvents.contains(n))
-					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle  "+net.getName(n), "error", JOptionPane.WARNING_MESSAGE);
+					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getName(n));
 			}
 		}
 
@@ -144,7 +140,7 @@ public class SimulationAlg {
 
 				}
 				if(!enabledEvents.contains(n))
-					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle", "error", JOptionPane.WARNING_MESSAGE);
+					throw new RuntimeException("algorithm error: has unenabled event in sync cycle");
 			}
 		}
 
@@ -195,8 +191,7 @@ public class SimulationAlg {
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n)){
-				if(next instanceof ChannelPlace && net.getSONConnectionTypes(next, n).size() ==1
-						&& net.getSONConnectionTypes(next, n).contains("ASYNLINE")){
+				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == "ASYNLINE"){
 					Node[] adjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
 						if(n2 instanceof Event){
@@ -206,8 +201,7 @@ public class SimulationAlg {
 						}
 				}
 
-				if(next instanceof ChannelPlace && net.getSONConnectionTypes(next, n).size() ==1
-						&& net.getSONConnectionTypes(next, n).contains("SYNCLINE")){
+				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) =="SYNCLINE"){
 					Node[] adjoin = new Node[2];
 					Node[] reAdjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
@@ -441,7 +435,7 @@ public class SimulationAlg {
 				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
 					if(to.isMarked())
-						JOptionPane.showMessageDialog(null, "Token setting error: the number of token in "+net.getName(to) + " > 1", "Error", JOptionPane.WARNING_MESSAGE);
+						throw new RuntimeException("Token setting error: the number of token in "+net.getName(to) + " > 1");
 					to.setMarked(true);
 				}
 				if (c.getType() == "POLYLINE" && e==c.getSecond()) {
@@ -455,7 +449,7 @@ public class SimulationAlg {
 							to.setToken(((ChannelPlace)to).hasToken());
 						else{
 							if(to.hasToken())
-								JOptionPane.showMessageDialog(null, "Token setting error: the number of token in "+net.getName(to) + " > 1", "Error", JOptionPane.WARNING_MESSAGE);
+								throw new RuntimeException("Token setting error: the number of token in "+net.getName(to) + " > 1");
 							to.setToken(true);
 						}
 				}
@@ -487,7 +481,7 @@ public class SimulationAlg {
 							//structure such that condition fin has more than one high-level states
 							int tokens = 0;
 							for(Node post : net.getPostset(fin)){
-								if(post instanceof Condition && net.getSONConnectionTypes(post, fin).contains("BHVLINE"))
+								if(post instanceof Condition && net.getSONConnectionType(post, fin) == "BHVLINE")
 									if(((Condition)post).isMarked())
 										tokens++;
 							}
@@ -506,7 +500,7 @@ public class SimulationAlg {
 							int tokens = 0;
 							int size = 0;
 							for(Node post : net.getPostset(ini)){
-								if(post instanceof Condition && net.getSONConnectionTypes(post, ini).contains("BHVLINE")){
+								if(post instanceof Condition && net.getSONConnectionType(post, ini) == "BHVLINE"){
 									size++;
 									if(((Condition)post).isMarked())
 										tokens++;
@@ -660,7 +654,7 @@ public class SimulationAlg {
 									//structure such that condition fin has more than one high-level states
 									int tokens = 0;
 									for(Node post : net.getPostset(ini)){
-										if(post instanceof Condition && net.getSONConnectionTypes(post, ini).contains("BHVLINE"))
+										if(post instanceof Condition && net.getSONConnectionType(post, ini) == "BHVLINE")
 											if(((Condition)post).isMarked())
 												tokens++;
 									}
@@ -680,7 +674,7 @@ public class SimulationAlg {
 								int tokens = 0;
 								int size = 0;
 								for(Node post : net.getPostset(fin)){
-									if(post instanceof Condition && net.getSONConnectionTypes(post, fin).contains("BHVLINE")){
+									if(post instanceof Condition && net.getSONConnectionType(post, fin)== "BHVLINE"){
 										size++;
 										if(((Condition)post).isMarked())
 											tokens++;
@@ -718,7 +712,7 @@ public class SimulationAlg {
 
 				}
 				if(!enabledEvents.contains(n))
-					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle  "+net.getName(n), "error", JOptionPane.WARNING_MESSAGE);
+					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getName(n));
 			}
 		}
 
@@ -769,7 +763,7 @@ public class SimulationAlg {
 
 				}
 				if(!enabledEvents.contains(n))
-					JOptionPane.showMessageDialog(null, "algorithm error: has unenabled event in sync cycle", "error", JOptionPane.WARNING_MESSAGE);
+					throw new RuntimeException("algorithm error: has unenabled event in sync cycle");
 			}
 		}
 

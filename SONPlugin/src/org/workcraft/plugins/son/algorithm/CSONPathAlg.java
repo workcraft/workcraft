@@ -29,14 +29,12 @@ public class CSONPathAlg extends ONPathAlg{
 					adjoin[1] = next;
 					result.add(adjoin);
 
-					for (String conType :  net.getSONConnectionTypes(n, next)){
-						if(conType == "SYNCLINE"){
-							Node[] reAdjoin = new Node[2];
-							reAdjoin[0] = next;
-							reAdjoin[1] = n;
-							if(!result.contains(reAdjoin))
-								result.add(reAdjoin);
-					}
+					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+						Node[] reAdjoin = new Node[2];
+						reAdjoin[0] = next;
+						reAdjoin[1] = n;
+						if(!result.contains(reAdjoin))
+							result.add(reAdjoin);
 				}
 			}
 		}

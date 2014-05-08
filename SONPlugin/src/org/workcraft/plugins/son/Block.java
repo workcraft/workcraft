@@ -16,7 +16,7 @@ import org.workcraft.util.Hierarchy;
 public class Block extends PageNode{
 	private String label="";
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
-	private Color fillColor  = new Color(0, 0, 0, 0);
+	private Color fillColor  = CommonVisualSettings.getFillColor();
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();

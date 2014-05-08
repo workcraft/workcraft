@@ -12,6 +12,7 @@ public class ONPathAlg{
 
 	protected SONModel net;
 	protected RelationAlg relationAlg;
+
 	protected Collection<Node> history;
 	protected Collection<ArrayList<Node>> pathResult;
 	protected Collection<ArrayList<Node>> cycleResult;
@@ -51,7 +52,7 @@ public class ONPathAlg{
 	 * obtain all paths and cycle paths between two given nodes
 	 *
 	 */
-	public void getAllPath(Node start, Node end, List<Node[]> adj){
+	protected void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
 

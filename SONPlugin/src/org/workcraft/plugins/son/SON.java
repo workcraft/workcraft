@@ -68,7 +68,7 @@ public class SON extends AbstractMathModel implements SONModel {
 		/*if (first instanceof Condition && second instanceof Condition)
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		*/
-		if (!this.getSONConnections(first, second).isEmpty())
+		if (this.getSONConnection(first, second) != null)
 			throw new InvalidConnectionException ("Duplicate Connections");
 		if (first instanceof Event && second instanceof Event)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
@@ -218,12 +218,19 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public Collection<SONConnection> getSONConnections(Node first, Node second){
-		ArrayList<SONConnection> result =  new ArrayList<SONConnection>();
+	public SONConnection getSONConnection(Node first, Node second){
+		ArrayList<SONConnection> connection =  new ArrayList<SONConnection>();
+
 		for (SONConnection con : this.getSONConnections(first))
 			if (this.getSONConnections(second).contains(con))
-				result.add(con);
-		return result;
+				connection.add(con);
+		if(connection.size() > 1)
+			throw new RuntimeException("Conection size between"+ first.toString() + "and"+ second.toString()+ "> 1");
+
+		if(connection.size()  == 0)
+		return null;
+
+		return connection.iterator().next();
 	}
 
 
@@ -267,13 +274,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Node first, Node second){
-		Collection<String> result =  new HashSet<String>();
-		for (SONConnection con : getSONConnections(first, second)){
-			result.add(con.getType());
-		}
+	public String getSONConnectionType (Node first, Node second){
 
-		return result;
+		return getSONConnection(first, second).getType();
 	}
 
 	public Collection<String> getInputSONConnectionTypes(Node node){

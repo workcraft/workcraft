@@ -160,9 +160,9 @@ public class RelationAlg{
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node n : net.getPreset(c))
-			if(n instanceof Event && net.getSONConnectionTypes(c, n).size()==1 && net.getSONConnectionTypes(c, n).contains("POLYLINE"))
+			if(n instanceof Event && net.getSONConnectionType(c, n) == "POLYLINE")
 				for(Node n2 : net.getPreset(n))
-					if(n2 instanceof Condition && net.getSONConnectionTypes(n, n2).size()==1 && net.getSONConnectionTypes(n, n2).contains("POLYLINE"))
+					if(n2 instanceof Condition && net.getSONConnectionType(n, n2)== "POLYLINE")
 						result.add((Condition)n2);
 
 		return result;
@@ -171,9 +171,9 @@ public class RelationAlg{
 	public Collection<Condition> getPostPNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node n : net.getPostset(c))
-			if(n instanceof Event && net.getSONConnectionTypes(c, n).size()==1 && net.getSONConnectionTypes(c, n).contains("POLYLINE"))
+			if(n instanceof Event && net.getSONConnectionType(c, n)=="POLYLINE")
 				for(Node n2 : net.getPostset(n))
-					if(n2 instanceof Condition && net.getSONConnectionTypes(n, n2).size()==1 && net.getSONConnectionTypes(n, n2).contains("POLYLINE"))
+					if(n2 instanceof Condition && net.getSONConnectionType(n, n2) == "POLYLINE")
 						result.add((Condition)n2);
 
 		return result;
@@ -184,12 +184,12 @@ public class RelationAlg{
 		for(Node n : net.getPreset(e)){
 			if(n instanceof Condition)
 				result.add((Condition)n);
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("ASYNLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("ASYNLINE"))
 				for(Node pre : net.getPreset(n))
 					for(Node preCondition : net.getPreset(pre))
 						if(preCondition instanceof Condition)
 							result.add((Condition)preCondition);
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("SYNCLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
 				for(Node pre : net.getPreset(n))
 					for(Node preCondition : net.getPreset(pre))
 						if(preCondition instanceof Condition)
@@ -197,7 +197,7 @@ public class RelationAlg{
 		}
 
 		for(Node n : net.getPostset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("SYNCLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
 				for(Node post : net.getPostset(n))
 					for(Node preCondition : net.getPreset(post))
 						if(preCondition instanceof Condition)
@@ -213,12 +213,12 @@ public class RelationAlg{
 		for(Node n : net.getPostset(e)){
 			if(n instanceof Condition)
 				result.add((Condition)n);
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("ASYNLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("ASYNLINE"))
 				for(Node post : net.getPostset(n))
 					for(Node postCondition : net.getPostset(post))
 						if(postCondition instanceof Condition)
 							result.add((Condition)postCondition);
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("SYNCLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
 				for(Node post : net.getPostset(n))
 					for(Node postCondition : net.getPostset(post))
 						if(postCondition instanceof Condition)
@@ -226,7 +226,7 @@ public class RelationAlg{
 		}
 
 		for(Node n : net.getPreset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionTypes(e, n).contains("SYNCLINE"))
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
 				for(Node pre : net.getPreset(n))
 					for(Node postCondition : net.getPostset(pre))
 						if(postCondition instanceof Condition)
@@ -239,7 +239,7 @@ public class RelationAlg{
 	public Collection<Node> getPrePNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPreset(node)){
-			if(net.getSONConnectionTypes(node, n).size()==1 && net.getSONConnectionTypes(node, n).contains("POLYLINE") )
+			if(net.getSONConnectionType(node, n)=="POLYLINE" )
 			result.add(n);
 		}
 		return result;
@@ -248,7 +248,7 @@ public class RelationAlg{
 	public Collection<Node> getPostPNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPostset(node)){
-			if(net.getSONConnectionTypes(node, n).size()==1 && net.getSONConnectionTypes(node, n).contains("POLYLINE") )
+			if(net.getSONConnectionType(node, n) =="POLYLINE")
 			result.add(n);
 		}
 		return result;

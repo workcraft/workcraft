@@ -111,6 +111,19 @@ public class SONStructureTask implements Task<VerificationResult>{
 				outputBefore();
 		}
 
+		//TSON structure tasks
+		if(settings.getType() == 4){
+			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			if(settings.getErrNodesHighlight()){
+				tsonSTask.errNodesHighlight();
+			}
+
+			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
+			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+		}
+
 		logger.info("\n\nVerification-Result : "+ this.getTotalErrNum() + " Error(s), " + this.getTotalWarningNum() + " Warning(s).");
 
 		return new Result<VerificationResult>(Outcome.FINISHED);

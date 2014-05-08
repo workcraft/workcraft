@@ -28,6 +28,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.plugins.son.VisualBlock;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -185,8 +186,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e)
-	{
+	public void mouseClicked(GraphEditorMouseEvent e){
 		VisualModel model = e.getEditor().getModel();
 
 		if (e.getClickCount() > 1)
@@ -209,6 +209,15 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				if (selectedNode instanceof VisualONGroup) {
 					setChannelPlaceToolState(e.getEditor(), false);
 				}
+
+				if (selectedNode instanceof VisualBlock) {
+					if(!((VisualBlock)selectedNode).getIsCollapsed())
+						((VisualBlock)selectedNode).setIsCollapsed(true);
+					else
+						((VisualBlock)selectedNode).setIsCollapsed(false);
+					return;
+				}
+
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
 					if (vc.hasToken() == false)

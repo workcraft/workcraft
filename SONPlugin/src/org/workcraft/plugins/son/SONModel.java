@@ -64,13 +64,13 @@ public interface SONModel extends Model{
 
 	public Collection<SONConnection> getSONConnections();
 	public Collection<SONConnection> getSONConnections(Node node);
-	public Collection<SONConnection> getSONConnections(Node first, Node second);
+	public SONConnection getSONConnection(Node first, Node second);
 
 	public Collection<SONConnection> getInputSONConnections(Node node);
 	public Collection<SONConnection> getOutputSONConnections(Node node);
 
 	public Collection<String> getSONConnectionTypes (Node node);
-	public Collection<String> getSONConnectionTypes (Node first, Node second);
+	public String getSONConnectionType (Node first, Node second);
 	public Collection<String> getSONConnectionTypes (Collection<Node> nodes);
 
 	public Collection<String> getInputSONConnectionTypes(Node node);

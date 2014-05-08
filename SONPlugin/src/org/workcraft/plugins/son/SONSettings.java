@@ -15,8 +15,10 @@ public class SONSettings implements SettingsPage {
 	private static Color relationErrColor = new Color(255, 204, 204);
 	private static Color cyclePathColor = new Color(255, 102, 102);
 	private static Color connectionErrColor = new  Color(255, 102, 102);
-	private static Positioning errLabelPositioning = Positioning.BOTTOM;
 	private static Color errLabelColor = Color.GREEN.darker();
+	private static Color defaultBlockColor = new  Color(255, 255, 255, 0);
+	private static Positioning errLabelPositioning = Positioning.BOTTOM;
+
 
 	@Override
 	public String getName() {
@@ -79,6 +81,16 @@ public class SONSettings implements SettingsPage {
 				return SONSettings.getErrLabelColor();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Default Block color", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setDefaultBlockColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getDefaultBlockColor();
+			}
+		});
 	}
 
 	@Override
@@ -91,6 +103,7 @@ public class SONSettings implements SettingsPage {
 		config.setColor("SONSettings.relationErrColor", relationErrColor);
 		config.setColor("SONSettings.cyclePathColor", cyclePathColor);
 		config.setColor("SONSettings.connectionErrColor", connectionErrColor);
+		config.setColor("SONSettings.defaultBlockColor", defaultBlockColor);
 
 		config.setTextPositioning("SONSettings.errLabelPositioning", errLabelPositioning);
 		config.setColor("SONSettings.errLabelColor", errLabelColor);
@@ -144,5 +157,13 @@ public class SONSettings implements SettingsPage {
 
 	public static void setErrLabelColor(Color value) {
 		SONSettings.errLabelColor = value;
+	}
+
+	public static Color getDefaultBlockColor() {
+		return defaultBlockColor;
+	}
+
+	public static void setDefaultBlockColor(Color value) {
+		SONSettings.defaultBlockColor = value;
 	}
 }
