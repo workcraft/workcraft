@@ -18,12 +18,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	final private static String quoteType = "'";
 	final private static String hierarchySeparator = "/";
 
-	final private HashMap<NamespaceProvider, UniqueNameManager<Node>> managers = new HashMap<NamespaceProvider, UniqueNameManager<Node>>();
+	final private HashMap<NamespaceProvider, NameManager<Node>> managers = new HashMap<NamespaceProvider, NameManager<Node>>();
+
 	// every node belongs to some name space provider (except the main root node of the model)
 	final private HashMap<Node, NamespaceProvider> node2namespace = new HashMap<Node, NamespaceProvider>();
-	final private NamespaceProvider topProvider;
-	Func<Node, String> defaultName;
+	final private NamespaceProvider topProvider; // namespace provided by root
 
+	protected Func<Node, String> defaultName;
 	private References existing;
 
 	public HierarchicalUniqueNameReferenceManager(NamespaceProvider provider, References existing, Func<Node, String> defaultName) {
@@ -33,15 +34,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		this.defaultName = defaultName;
 	}
 
-//	public HierarchicalUniqueNameReferenceManager(UniqueNameManager<Node> manager, References existing, Func<Node, String> defaultName) {
-//		this.existing = existing;
-//
-//		if (manager == null) {
-//			this.manager = new UniqueNameManager<Node>(defaultName);
-//		} else {
-//			this.manager = manager;
-//		}
-//	}
 
 	public NamespaceProvider getNamespaceProvider(Node node) {
 
@@ -53,6 +45,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if (container != null)
 			provider = Hierarchy.getNearestAncestor(container, NamespaceProvider.class);
 		else
+			// the root node does not have a provider
 			return null;
 			//provider = topProvider;
 
@@ -73,6 +66,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if (provider==null) provider = topProvider;
 
 		NamespaceProvider oldProvider = getNamespaceProvider(node);
+		if (oldProvider==null) return;
 
 		node2namespace.remove(node);
 		nodeManager.node2namespace.remove(node);
@@ -80,26 +74,29 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		if (provider!=oldProvider) {
 
+			NameManager<Node> oldMan = getNameManager(oldProvider);
+			NameManager<Node> newMan = getNameManager(provider);
+
 			String name = nodeManager.getName(node);
-			UniqueNameManager<Node> oldMan = getNameManager(oldProvider);
-			UniqueNameManager<Node> newMan = getNameManager(provider);
+
 			oldMan.remove(node);
 
 			Node checkNode = newMan.get(name);
 			// we must assign some name in any case, be it an old or a new one
 			if (checkNode == null)
-				setName(node, name);
+				newMan.setName(node, name);
 			else
 				newMan.setDefaultNameIfUnnamed(node);
+
+
 		}
 	}
-
-
 
 	@Override
 	public void attach(Node root) {
 		if (existing != null) {
-			setExistingReference(root);
+			//setExistingReference(root);
+
 			for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
 				setExistingReference(n);
 			}
@@ -109,13 +106,19 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 
-	private UniqueNameManager<Node> getNameManager(NamespaceProvider provider) {
+	protected NameManager<Node> createNameManager() {
+		return new UniqueNameManager<Node>(defaultName);
+	}
+
+	protected NameManager<Node> getNameManager(NamespaceProvider provider) {
+
+
 		if (provider==null) provider = topProvider;
 
+		NameManager<Node> man = managers.get(provider);
 
-		UniqueNameManager<Node> man = managers.get(provider);
 		if (man==null) {
-			man = new UniqueNameManager<Node>(defaultName);
+			man = createNameManager();
 			managers.put(provider, man);
 		}
 		return man;
@@ -126,26 +129,30 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		if (reference != null) {
 			NamespaceProvider provider = getNamespaceProvider(n);
-			UniqueNameManager<Node> man = getNameManager(provider);
-			man.setName(n, reference);
+			NameManager<Node> man = getNameManager(provider);
+			String name = getNameFromReference(reference);
+
+			man.setName(n, name);
 		}
 	}
 
 	// TODO: make it work with the embedded ' characters
-	private static String hPattern = "(\\"+quoteType+"[^\\"+quoteType+"]+\\"+quoteType+")(.*)";
+	private static String hPattern = "(\\"+quoteType+"([^\\"+quoteType+"]+)\\"+quoteType+")(.*)";
 
 	public static String getReferenceHead(String reference) {
 
 		if (reference.startsWith(hierarchySeparator))
 			reference = reference.substring(1);
 
-		if (!reference.startsWith("+quoteType+")) return reference;
+		if (!reference.startsWith(quoteType))
+			return reference;
+
 		Pattern pattern = Pattern.compile(hPattern);
 
 		Matcher matcher = pattern.matcher(reference);
 		if (matcher.find()) {
 
-			String head = matcher.group(1);
+			String head = matcher.group(2);
 			return head;
 		}
 
@@ -157,17 +164,28 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if (reference.startsWith(hierarchySeparator))
 			reference = reference.substring(1);
 
-		if (!reference.startsWith(quoteType)) return reference;
+		if (!reference.startsWith(quoteType)) return "";
 		Pattern pattern = Pattern.compile(hPattern);
 
 		Matcher matcher = pattern.matcher(reference);
 
 		if (matcher.find()) {
-			String tail = matcher.group(2);
+			String tail = matcher.group(3);
 			return tail;
 		}
 
 		return null;
+	}
+
+	public static String getNameFromReference(String reference) {
+
+		String head = getReferenceHead(reference);
+		String tail = getReferenceTail(reference);
+
+		if (tail.equals("")) return head;
+		else
+			return getNameFromReference(tail);
+
 	}
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
@@ -185,7 +203,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			provider = topProvider;
 		}
 
-		UniqueNameManager<Node> man = getNameManager(provider);
+		NameManager<Node> man = getNameManager(provider);
 
 		Node node = man.get(head);
 
@@ -195,17 +213,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		return null;
 	}
-
-//	@Override
-//	public Node getNodeByReference(String reference) {
-//		return getNodeByReference(null, reference);
-//	}
-//
-//	@Override
-//	public String getNodeReference(Node node) {
-//		UniqueNameManager<Node> man = getNameManager(getNamespaceProvider(node));
-//		return man.getName(node);
-//	}
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
@@ -222,17 +229,23 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		do {
 			prov = getNamespaceProvider(node);
+
+			if (prov==null) break; // we've just reached the root, do not add it's name
+
 			if (!ret.equals(""))
 				ret=hierarchySeparator+ret;
 
-			ret=quoteType+getNameManager(prov).getName(node)+quoteType+ret;
+
+			String name = getNameManager(prov).getName(node);
+			// the unnamed component just returns null
+			if (name==null) return null;
+
+			ret=quoteType+name+quoteType+ret;
 			node = node.getParent();
 
 		} while (prov!=null&&provider!=prov);
 
-
-
-		return (isAbsolutePath?hierarchySeparator:"")+ret;
+		return (provider==topProvider&&isAbsolutePath?hierarchySeparator:"")+ret;
 	}
 
 
@@ -242,9 +255,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if(e instanceof NodesAddedEvent) {
 			for(Node node : e.getAffectedNodes()) {
 
-				NamespaceProvider provider = getNamespaceProvider(node);
-				UniqueNameManager<Node> man = getNameManager(provider);
-				man.setDefaultNameIfUnnamed(node);
+
+				if (node.getParent()!=null) {
+					// if it is not a root node
+					NamespaceProvider provider = getNamespaceProvider(node);
+					NameManager<Node> man = getNameManager(provider);
+					man.setDefaultNameIfUnnamed(node);
+				}
 
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
 					getNameManager(getNamespaceProvider(node2)).setDefaultNameIfUnnamed(node2);
@@ -267,12 +284,18 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public void setName(Node node, String name) {
-		UniqueNameManager<Node> man = getNameManager(getNamespaceProvider(node));
+		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
 		man.setName(node, name);
 	}
 
+
+	public boolean isNamed(Node node) {
+		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
+		return man.isNamed(node);
+	}
+
 	public String getName(Node node) {
-		UniqueNameManager<Node> man = getNameManager(getNamespaceProvider(node));
+		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
 		return man.getName(node);
 	}
 

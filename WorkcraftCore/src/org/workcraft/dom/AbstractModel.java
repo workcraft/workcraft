@@ -49,7 +49,6 @@ public abstract class AbstractModel implements Model {
 	private Container root;
 
 
-
 	public AbstractModel (Container root) {
 		this (root, null);
 	}
@@ -71,7 +70,7 @@ public abstract class AbstractModel implements Model {
 								if (arg instanceof PageNode) return "pg";
 								if (arg instanceof CommentNode) return "comment";
 
-								if (arg instanceof Container) return "";
+								if (arg instanceof Container) return "gr";
 
 								return "v";
 							}
@@ -149,16 +148,15 @@ public abstract class AbstractModel implements Model {
 		return nodeContextTracker.getPreset(component);
 	}
 
-
-
 	@Override
 	public Node getNodeByReference(String reference) {
-		return referenceManager.getNodeByReference(null, reference);
+		return getNodeByReference(null, reference);
 	}
 
 	@Override
 	public String getNodeReference(Node node) {
-		return referenceManager.getNodeReference(null, node);
+
+		return getNodeReference(null, node);
 	}
 
 	@Override
@@ -168,6 +166,7 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
+
 		return referenceManager.getNodeReference(provider, node);
 	}
 

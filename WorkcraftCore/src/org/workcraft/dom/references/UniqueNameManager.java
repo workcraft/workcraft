@@ -9,7 +9,7 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
 
-public class UniqueNameManager<T> {
+public class UniqueNameManager<T> implements NameManager<T> {
 	private Func<T, String> nodePrefix;
 	private Map<String, Integer> prefixCount = new HashMap<String, Integer>();
 	private TwoWayMap<String, T> Ts = new TwoWayMap<String, T>();
@@ -46,8 +46,22 @@ public class UniqueNameManager<T> {
 		return prefixCount.put(prefix, count);
 	}
 
-	public String getName(T t) {
+	public String getNameQuiet(T t) {
 		String name = Ts.getKey(t);
+		return name;
+	}
+
+	public boolean isNamed(T t) {
+		String name = getNameQuiet(t);
+		if (name == null) {
+			return false;
+		}
+		return true;
+	}
+
+
+	public String getName(T t) {
+		String name = getNameQuiet(t);
 		if (name == null) {
 			throw new NotFoundException("Object \"" + t.toString() + "\" was not issued a name");
 		}
@@ -91,4 +105,5 @@ public class UniqueNameManager<T> {
 	public void remove (T t) {
 		Ts.removeValue(t);
 	}
+
 }

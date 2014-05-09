@@ -27,12 +27,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -68,7 +71,10 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public STG(Container root, References refs) {
-		super(root, new STGReferenceManager(refs));
+
+		super(root,
+				new STGReferenceManager((NamespaceProvider)root, refs, null));
+
 		referenceManager = (STGReferenceManager) getReferenceManager();
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
@@ -311,7 +317,9 @@ public class STG extends AbstractMathModel implements STGModel {
 		}
 	}
 
+	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
+
 		if (node instanceof STGPlace) {
 			if (((STGPlace) node).isImplicit()) {
 				Set<Node> preset = getPreset(node);
@@ -321,20 +329,20 @@ public class STG extends AbstractMathModel implements STGModel {
 					throw new RuntimeException(
 							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
-				return "<"+referenceManager.getNodeReference(provider, preset.iterator().next())
-							+ "," + referenceManager.getNodeReference(provider, postset.iterator().next()) + ">";
 
-			} else {
-				return referenceManager.getNodeReference(provider, node);
+				return "<"+referenceManager.getName(preset.iterator().next())
+							+ "," + referenceManager.getName(postset.iterator().next()) + ">";
+
 			}
-		} else {
-		return referenceManager.getNodeReference(provider, node);
-
 		}
+
+		return super.getNodeReference(provider, node);
+
 	}
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
@@ -352,7 +360,8 @@ public class STG extends AbstractMathModel implements STGModel {
 					+ implicitPlaceTransitions.getFirst() + " and "
 					+ implicitPlaceTransitions.getSecond() + " does not exist.");
 		} else
-		return referenceManager.getNodeByReference(provider, reference);
+
+			return super.getNodeByReference(provider, reference);
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {

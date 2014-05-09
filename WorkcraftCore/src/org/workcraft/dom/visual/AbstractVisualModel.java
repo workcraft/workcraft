@@ -413,9 +413,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 	}
 
-
-
-
 	@Override
 	public void groupPageSelection() {
 		ArrayList<Node> selected = new ArrayList<Node>();
@@ -457,12 +454,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			ArrayList<Node> selectedMath = new ArrayList<Node>();
 			for (Node node:selected) {
 				if (node instanceof VisualComponent) {
-					selectedMath.add(((VisualComponent)node).getReferencedComponent());
+					selectedMath.addAll(((VisualComponent)node).getMathReferences());
 				}
 			}
 			for (Node node:connectionsToGroup) {
 				if (node instanceof VisualConnection) {
-					selectedMath.add(((VisualConnection)node).getReferencedConnection());
+					selectedMath.addAll(((VisualConnection)node).getMathReferences());
 				}
 			}
 
