@@ -104,14 +104,11 @@ public class SON extends AbstractMathModel implements SONModel {
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result =  new ArrayList<Node>();
-		for (Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)){
-			if (node instanceof Condition)
-				result.add(node);
-			if (node instanceof Event)
-				result.add(node);
-		    if (node instanceof ChannelPlace)
-		    	result.add(node);
-		}
+
+		result.addAll(this.getConditions());
+		result.addAll(this.getEvents());
+		result.addAll(this.getChannelPlace());
+
 		return result;
 	}
 
@@ -124,6 +121,9 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		if(n instanceof ChannelPlace)
 			return ((ChannelPlace)n).getLabel();
+
+		if(n instanceof Block)
+			return ((Block)n).getLabel();
 
 		else
 			return null;
@@ -157,6 +157,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		if(n instanceof ChannelPlace){
 			((ChannelPlace) n).setFillColor(nodeColor);
 		}
+		if(n instanceof Block){
+			((Block) n).setFillColor(nodeColor);
+		}
 	}
 
 	public void refreshColor(){
@@ -170,6 +173,12 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		for (SONConnection con : this.getSONConnections())
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
+
+		for (Block block : this.getBlocks()){
+			if(block.getIsCollapsed()){
+				this.setFillColor(block, CommonVisualSettings.getFillColor());
+			}
+		}
 	}
 
 	public void resetErrStates(){
@@ -302,15 +311,15 @@ public class SON extends AbstractMathModel implements SONModel {
 	//Group Methods
 
 	public Collection<Block> getBlocks(){
-		return Hierarchy.getChildrenOfType(getRoot(), Block.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
 
 	public Collection<PageNode> getPageNodes(){
-		return Hierarchy.getChildrenOfType(getRoot(), PageNode.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), PageNode.class);
 	}
 
 	public Collection<ONGroup> getGroups(){
-		return Hierarchy.getChildrenOfType(getRoot(), ONGroup.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), ONGroup.class);
 	}
 
 	public boolean isInSameGroup (Node first, Node second){

@@ -49,7 +49,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		logger.info("-----------------Behavioral-SON Verification-----------------");
 
 		//group info
-		logger.info("Initialising selected groups elements...");
+		logger.info("Initialising selected group elements...");
 		ArrayList<Node> components = new ArrayList<Node>();
 
 		for(ONGroup group : groups){

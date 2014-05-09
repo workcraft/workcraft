@@ -76,7 +76,7 @@ public class ONStructureTask implements SONStructureVerification{
 				return;
 			}
 
-			//initial state output
+			//initial state result
 			iniStateResult = iniStateTask(groupComponents);
 
 			if (iniStateResult.isEmpty())
@@ -90,7 +90,7 @@ public class ONStructureTask implements SONStructureVerification{
 				}
 			}
 
-			//final state output
+			//final state result
 			finalStateResult = finalStateTask(groupComponents);
 			if (finalStateResult.isEmpty())
 				logger.info("Final states correct.");
@@ -103,7 +103,7 @@ public class ONStructureTask implements SONStructureVerification{
 				}
 			}
 
-			//conflict output
+			//conflict result
 			postConflictResult = postConflictTask(groupComponents);
 			preConflictResult = preConflictTask(groupComponents);
 
@@ -123,7 +123,7 @@ public class ONStructureTask implements SONStructureVerification{
 			}
 			logger.info("Components relation task complete.");
 
-			//cycle detection
+			//cycle detection result
 			logger.info("Running cycle detection...");
 
 			cycleResult = onPathAlg.cycleTask(groupComponents);

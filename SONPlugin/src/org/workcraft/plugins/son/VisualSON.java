@@ -197,7 +197,7 @@ public class VisualSON extends AbstractVisualModel{
 		}
 
 		if(validateSelection(selection)){
-			for(Node node : selection){
+			for(Node node : getOrderedCurrentLevelSelection()){
 				if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)){
 					result.add(node);
 				}

@@ -4,6 +4,8 @@ import java.awt.Color;
 
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformChangingEvent;
 
 public class VisualBlock extends VisualPage{
 
@@ -14,6 +16,18 @@ public class VisualBlock extends VisualPage{
 		//set default fill color
 
 		this.mathBlock = refNode;
+	}
+
+	@Override
+	public void setIsCollapsed(boolean isCollapsed) {
+		sendNotification(new TransformChangingEvent(this));
+		this.getMathBlock().setIsCollapsed(isCollapsed);
+		sendNotification(new TransformChangedEvent(this));
+	}
+
+	@Override
+	public boolean getIsCollapsed() {
+		return  this.getMathBlock().getIsCollapsed();
 	}
 
 

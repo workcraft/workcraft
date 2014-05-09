@@ -46,7 +46,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		logger.info("-----------------Communication-SON Verification-----------------");
 
 		//group info
-		logger.info("Initialising selected groups components...");
+		logger.info("Initialising selected group components...");
 		ArrayList<Node> components = new ArrayList<Node>();
 		for(ONGroup group : groups){
 			components.addAll(group.getComponents());
