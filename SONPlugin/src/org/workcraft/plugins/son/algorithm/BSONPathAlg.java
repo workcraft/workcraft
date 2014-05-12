@@ -8,7 +8,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.Event;
 
-public class BSONPathAlg extends ONPathAlg{
+public class BSONPathAlg extends PathAlgorithm{
 
 	private SONModel net;
 	private BSONAlg bsonAlg;

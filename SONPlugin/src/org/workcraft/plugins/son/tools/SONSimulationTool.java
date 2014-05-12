@@ -57,7 +57,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -71,7 +71,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	protected VisualModel visualNet;
 	private Framework framework;
-	private RelationAlg relationAlg;
+	private RelationAlgorithm relationAlg;
 	private BSONAlg bsonAlg;
 	private SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
@@ -773,7 +773,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		visualNet = editor.getModel();
 		this.setFramework(editor.getFramework());
 		net = (SONModel)visualNet.getMathModel();
-		relationAlg = new RelationAlg(net);
+		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
 		initialMarking = autoInitalMarking();
 		simuAlg = new SimulationAlg(net);
@@ -924,13 +924,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
-						simuAlg.clearEventSet();
+						simuAlg.clearAll();
 						return;
 						}
 					}
 				//Error tracing
 			//	setErrNum(runList, reverse);
-				simuAlg.clearEventSet();
+				simuAlg.clearAll();
 
 			}else{
 				//reverse simulation
@@ -947,7 +947,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				if(possibleEvents.isEmpty() && minimalReverseEvents.isEmpty()){
 					runList.add(event);
 					executeEvent(runList);
-					simuAlg.clearEventSet();
+					simuAlg.clearAll();
 				} else {
 					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, syncSet, enabledEvents, reverse);
@@ -963,13 +963,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						executeEvent(runList);
 					}
 					if(dialog.getRun()==2){
-						simuAlg.clearEventSet();
+						simuAlg.clearAll();
 						return;
 					}
 				}
 				//Reverse error tracing
 				//setErrNum(runList, reverse);
-				simuAlg.clearEventSet();
+				simuAlg.clearAll();
 			}
 		}
 	}

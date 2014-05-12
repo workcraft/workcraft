@@ -14,10 +14,9 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
-public class SimulationAlg {
+public class SimulationAlg extends RelationAlgorithm {
 
 	private SONModel net;
-	private RelationAlg relationAlg;
 	private BSONAlg bsonAlg;
 
 	private Collection<Event> syncEventSet = new HashSet<Event>();
@@ -36,38 +35,20 @@ public class SimulationAlg {
 	private Collection<ONGroup> bhvGroups;
 
 	public SimulationAlg(SONModel net){
+		super(net);
 		this.net = net;
 		history = new ArrayList<Node>();
 		syncCycles= new ArrayList<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
-		relationAlg =  new RelationAlg(net);
 		bsonAlg = new BSONAlg(net);
 
 		abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
 		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
-	protected List<Event> getPreAsynEvents (Event e){
-		List<Event> result = new ArrayList<Event>();
-		for(Node node : net.getPreset(e)){
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
-				for(Node node2 : net.getPreset(node))
-					if(node2 instanceof Event)
-						result.add((Event)node2);
-		}
-		return result;
-	}
 
-	protected List<Event> getPostAsynEvents (Event e){
-		List<Event> result = new ArrayList<Event>();
-		for(Node node : net.getPostset(e) )
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
-				for(Node node2 : net.getPostset(node))
-					if(node2 instanceof Event)
-						result.add((Event)node2);
-		return result;
-	}
-
+	//return minimal execution set of a given event.
+	//This may contain other events which have synchronous with the target event.
 	private void getMinimalExeEventSet (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 
 		HashSet<Node> syncEvents = new HashSet<Node>();
@@ -119,9 +100,9 @@ public class SimulationAlg {
 		return result;
 	}
 
-	private void getPostEventsSet(Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
+	private void getSynEventSet(Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 
-		HashSet<Node> syncEvents = new HashSet<Node>();
+		Collection<Node> syncEvents = new HashSet<Node>();
 
 		for(ArrayList<Node> cycle : sync){
 			if(cycle.contains(e))
@@ -135,12 +116,12 @@ public class SimulationAlg {
 
 					for(Event post : this.getPostAsynEvents((Event)n)){
 						if(!syncEvents.contains(post) && enabledEvents.contains(post))
-							getPostEventsSet((Event)n, sync, enabledEvents);
+							getSynEventSet((Event)n, sync, enabledEvents);
 					}
 
 				}
 				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenabled event in sync cycle");
+					throw new RuntimeException("algorithm error: has unenable event in sync cycle");
 			}
 		}
 
@@ -151,7 +132,7 @@ public class SimulationAlg {
 			for(Event n : this.getPostAsynEvents(e))
 				if(!postEventSet.contains(n) && enabledEvents.contains(n)){
 					postEventSet.add(n);
-					getPostEventsSet((Event)n, sync, enabledEvents);
+					getSynEventSet((Event)n, sync, enabledEvents);
 				}
 		}
 		else
@@ -160,7 +141,7 @@ public class SimulationAlg {
 
 	public List<Event> getPostExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 		List<Event> result = new ArrayList<Event>();
-		getPostEventsSet(e, sync, enabledEvents);
+		getSynEventSet(e, sync, enabledEvents);
 
 		for(Node n : this.postEventSet)
 			if(n instanceof Event)
@@ -169,7 +150,7 @@ public class SimulationAlg {
 		return result;
 	}
 
-	public void clearEventSet(){
+	public void clearAll(){
 			syncEventSet.clear();
 			checkedEvents.clear();
 
@@ -185,7 +166,7 @@ public class SimulationAlg {
 
 	// enable ,fire
 
-	private List<Node[]> createAdj(Collection<Node> nodes){
+	public List<Node[]> createAdj(Collection<Node> nodes){
 
 		List<Node[]> result = new ArrayList<Node[]>();
 
@@ -253,16 +234,18 @@ public class SimulationAlg {
 		history.remove(start);
 	}
 
-
+	/**
+	 * get synchronous cycle.
+	 */
 	public Collection<ArrayList<Node>> getSyncCycles(Collection<Node> nodes){
 
 		List<ArrayList<Node>> subResult = new ArrayList<ArrayList<Node>>();
 		Collection<ArrayList<Node>> result = new ArrayList<ArrayList<Node>>();
 
-		this.clearEventSet();
+		this.clearAll();
 
-		for(Node start : relationAlg.getInitial(nodes))
-			for(Node end : relationAlg.getFinal(nodes))
+		for(Node start : getInitial(nodes))
+			for(Node end : getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		if(!cycleResult.isEmpty()){
@@ -394,7 +377,7 @@ public class SimulationAlg {
 	private boolean isBhvEnabled(Event e, Map<Condition, Collection<Condition>> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
-				for(Node pre : relationAlg.getPrePNSet(e))
+				for(Node pre : getPrePNSet(e))
 					if(pre instanceof Condition){
 						Collection<Condition> phase = phases.get((Condition)pre);
 						for(Condition max : bsonAlg.getMaximalPhase(phase))
@@ -409,11 +392,11 @@ public class SimulationAlg {
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(relationAlg.getPrePNSet(e)) && phases.get(c).containsAll(relationAlg.getPostPNSet(e)))||
-								(!phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e))))
+						if((!phases.get(c).containsAll(getPrePNSet(e)) && phases.get(c).containsAll(getPostPNSet(e)))||
+								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e))))
 							return false;
 					if(!c.isMarked())
-						if(phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e)))
+						if(phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))
 							return false;
 					}
 				}
@@ -466,15 +449,15 @@ public class SimulationAlg {
 			if(group.getEvents().contains(e)){
 				Collection<Condition> preMax = new HashSet<Condition>();
 				Collection<Condition> postMin = new HashSet<Condition>();
-				for(Node pre : relationAlg.getPrePNSet(e))
+				for(Node pre : getPrePNSet(e))
 					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-				for(Node post : relationAlg.getPostPNSet(e))
+				for(Node post : getPostPNSet(e))
 					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
 				if(!preMax.containsAll(postMin)){
 					boolean isFinal=true;
 					for(Condition fin : preMax)
-							if(!relationAlg.isFinal(fin))
+							if(!isFinal(fin))
 								isFinal=false;
 					if(isFinal){
 						for(Condition fin : preMax){
@@ -492,7 +475,7 @@ public class SimulationAlg {
 					}
 					boolean isIni = true;
 					for(Condition init : postMin)
-							if(!relationAlg.isInitial(init))
+							if(!isInitial(init))
 								isIni=false;
 					if(isIni)
 						for(Condition ini : postMin){
@@ -581,7 +564,7 @@ public class SimulationAlg {
 	private boolean isBhvUnEnabled(Event e, Map<Condition, Collection<Condition>> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
-				for(Node pre : relationAlg.getPostPNSet(e))
+				for(Node pre : getPostPNSet(e))
 					if(pre instanceof Condition){
 						Collection<Condition> phase = bsonAlg.getPhase((Condition)pre);
 						for(Condition min : bsonAlg.getMinimalPhase(phase))
@@ -596,11 +579,11 @@ public class SimulationAlg {
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(relationAlg.getPrePNSet(e)) && phases.get(c).containsAll(relationAlg.getPostPNSet(e)))||
-								(!phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e))))
+						if((!phases.get(c).containsAll(getPrePNSet(e)) && phases.get(c).containsAll(getPostPNSet(e)))||
+								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e))))
 							return false;
 					if(!c.isMarked())
-						if(phases.get(c).containsAll(relationAlg.getPostPNSet(e)) && phases.get(c).containsAll(relationAlg.getPrePNSet(e)))
+						if(phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))
 							return false;
 					}
 				}
@@ -639,15 +622,15 @@ public class SimulationAlg {
 				if(group.getEvents().contains(e)){
 					Collection<Condition> preMax = new HashSet<Condition>();
 					Collection<Condition> postMin = new HashSet<Condition>();
-					for(Node pre : relationAlg.getPrePNSet(e))
+					for(Node pre : getPrePNSet(e))
 						preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-					for(Node post : relationAlg.getPostPNSet(e))
+					for(Node post : getPostPNSet(e))
 						postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
 					if(!preMax.containsAll(postMin)){
 						boolean isInitial=true;
 						for(Condition ini : postMin)
-								if(!relationAlg.isInitial(ini))
+								if(!isInitial(ini))
 									isInitial=false;
 						if(isInitial){
 								for(Condition ini : postMin){
@@ -666,7 +649,7 @@ public class SimulationAlg {
 
 						boolean isFinal = true;
 						for(Condition fin : preMax)
-								if(!relationAlg.isFinal(fin))
+								if(!isFinal(fin))
 									isFinal=false;
 						if(isFinal)
 							for(Condition fin : preMax){

@@ -14,7 +14,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Event;
 
@@ -23,7 +23,7 @@ public class CSONStructureTask implements SONStructureVerification{
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private RelationAlg relationAlg;
+	private RelationAlgorithm relationAlg;
 	private CSONPathAlg csonPathAlg;
 
 	private Collection<ChannelPlace> cPlaceResult;
@@ -37,7 +37,7 @@ public class CSONStructureTask implements SONStructureVerification{
 
 	public CSONStructureTask(SONModel net){
 		this.net = net;
-		relationAlg = new RelationAlg(net);
+		relationAlg = new RelationAlgorithm(net);
 		csonPathAlg = new CSONPathAlg(net);
 	}
 

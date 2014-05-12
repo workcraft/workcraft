@@ -7,7 +7,7 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 
-public class CSONPathAlg extends ONPathAlg{
+public class CSONPathAlg extends PathAlgorithm{
 
 	private SONModel net;
 

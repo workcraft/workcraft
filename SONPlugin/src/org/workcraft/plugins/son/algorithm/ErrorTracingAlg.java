@@ -9,16 +9,15 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
-public class ErrorTracingAlg extends SimulationAlg{
+public class ErrorTracingAlg extends RelationAlgorithm{
 
 	private SONModel net;
 	private BSONAlg bsonAlg;
 
 	public ErrorTracingAlg(SONModel net){
 		super(net);
-		this.net = net;
 		bsonAlg = new BSONAlg(net);
-
+		this.net = net;
 	}
 
 	//Forward error tracing

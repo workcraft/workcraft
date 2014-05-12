@@ -10,7 +10,7 @@ import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
 
@@ -19,7 +19,7 @@ public class TSONStructureTask implements SONStructureVerification{
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	private TSONAlg tsonAlg;
-	private ONPathAlg onPathAlg;
+	private PathAlgorithm onPathAlg;
 
 	private Collection<Block> errBlocks = new HashSet<Block>();
 	private Collection<Node> errNodes = new HashSet<Node>();
@@ -31,7 +31,7 @@ public class TSONStructureTask implements SONStructureVerification{
 	public TSONStructureTask(SONModel net){
 		this.net = net;
 		tsonAlg  = new TSONAlg(net);
-		onPathAlg = new ONPathAlg(net);
+		onPathAlg = new PathAlgorithm(net);
 	}
 
 	@Override

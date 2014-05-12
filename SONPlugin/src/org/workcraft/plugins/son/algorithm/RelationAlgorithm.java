@@ -12,16 +12,17 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
-public class RelationAlg{
+public class RelationAlgorithm{
 
 	private SONModel net;
 
-	public RelationAlg(SONModel net) {
+	public RelationAlgorithm(SONModel net) {
 		this.net = net;
 	}
 
-	//Occurrence net relation
-
+	/**
+	 * check if a given condition has more than one input events
+	 */
 	public boolean hasPostConflictEvents(Node c){
 		if (c instanceof Condition){
 			if(net.getPostset(c).size() > 1){
@@ -43,6 +44,9 @@ public class RelationAlg{
 		return false;
 	}
 
+	/**
+	 * check if a given condition has more than one output events
+	 */
 	public boolean hasPreConflictEvents(Node c){
 		if (c instanceof Condition){
 			if(net.getPreset(c).size() > 1){
@@ -64,6 +68,9 @@ public class RelationAlg{
 	return false;
 	}
 
+	/**
+	 * check if a given node is initial state i.e., empty preset
+	 */
 	public boolean isInitial(Node n){
 		boolean conType = true;
 
@@ -83,6 +90,9 @@ public class RelationAlg{
 		return false;
 	}
 
+	/**
+	 * check if a given node is final state i.e., empty postset
+	 */
 	public boolean isFinal(Node n){
 		boolean conType = true;
 
@@ -102,6 +112,9 @@ public class RelationAlg{
 		return false;
 	}
 
+	/**
+	 * check if a given set of nodes contains initial states.
+	 */
 	public boolean hasInitial(Collection<Node> nodes){
 		boolean result = false;
 
@@ -111,6 +124,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * check if a given set of nodes contains final states.
+	 */
 	public boolean hasFinal(Collection<Node> nodes){
 		boolean result = false;
 
@@ -120,6 +136,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * get all initial states of a given node set
+	 */
 	public Collection<Node> getInitial(Collection<Node> nodes){
 		ArrayList<Node> result =  new ArrayList<Node>();
 		for (Node node : nodes)
@@ -128,6 +147,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * get all final states of a given node set
+	 */
 	public Collection<Node> getFinal(Collection<Node> nodes){
 		ArrayList<Node> result =  new ArrayList<Node>();
 		for (Node node : nodes)
@@ -136,8 +158,9 @@ public class RelationAlg{
 		return result;
 	}
 
-	//Communication SON relation
-
+	/**
+	 * get all connected channel places for a set of groups
+	 */
 	public Collection<ChannelPlace> getRelatedChannelPlace(Collection<ONGroup> groups){
 		HashSet<ChannelPlace> result = new HashSet<ChannelPlace>();
 
@@ -156,29 +179,92 @@ public class RelationAlg{
 		return result;
 	}
 
-
+	/**
+	 * get all PN-based(petri net) pre-conditions of a given condition
+	 */
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
-		for(Node n : net.getPreset(c))
-			if(n instanceof Event && net.getSONConnectionType(c, n) == "POLYLINE")
-				for(Node n2 : net.getPreset(n))
-					if(n2 instanceof Condition && net.getSONConnectionType(n, n2)== "POLYLINE")
+		for(Node pre : net.getPreset(c))
+			if(pre instanceof Event && net.getSONConnectionType(c, pre) == "POLYLINE")
+				for(Node n2 : net.getPreset(pre))
+					if(n2 instanceof Condition && net.getSONConnectionType(pre, n2)== "POLYLINE")
 						result.add((Condition)n2);
 
 		return result;
 	}
 
+	/**
+	 * get all PN-based post-conditions of a given condition
+	 */
 	public Collection<Condition> getPostPNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
-		for(Node n : net.getPostset(c))
-			if(n instanceof Event && net.getSONConnectionType(c, n)=="POLYLINE")
-				for(Node n2 : net.getPostset(n))
-					if(n2 instanceof Condition && net.getSONConnectionType(n, n2) == "POLYLINE")
+		for(Node post : net.getPostset(c))
+			if(post instanceof Event && net.getSONConnectionType(c, post)=="POLYLINE")
+				for(Node n2 : net.getPostset(post))
+					if(n2 instanceof Condition && net.getSONConnectionType(post, n2) == "POLYLINE")
 						result.add((Condition)n2);
 
 		return result;
 	}
 
+	/**
+	 * get all CSON-based (Communication-SON) post-event of a given event
+	 */
+	public Collection<Event> getPreASynEvents(Event e){
+		Collection<Event> result = new ArrayList<Event>();
+		for(Node post : net.getPostset(e)){
+			if(post instanceof ChannelPlace)
+				for(Node post2 : net.getPostset(post))
+					result.add((Event)post2);
+		}
+
+		return result;
+	}
+
+	/**
+	 * get all asynchronous (Communication-SON) pre-events of a given event
+	 */
+	public Collection<Event> getPreAsynEvents (Event e){
+		Collection<Event> result = new ArrayList<Event>();
+		for(Node node : net.getPreset(e)){
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
+				for(Node node2 : net.getPreset(node))
+					if(node2 instanceof Event)
+						result.add((Event)node2);
+		}
+		return result;
+	}
+
+	/**
+	 * get all asynchronous (Communication-SON) post-events of a given event
+	 */
+	public Collection<Event> getPostAsynEvents (Event e){
+		Collection<Event> result = new ArrayList<Event>();
+		for(Node node : net.getPostset(e) )
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
+				for(Node node2 : net.getPostset(node))
+					if(node2 instanceof Event)
+						result.add((Event)node2);
+		return result;
+	}
+
+	/**
+	 * get all CSON-based (Communication-SON) post-event of a given event
+	 */
+	public Collection<Event> getPostASynEvents(Event e){
+		Collection<Event> result = new ArrayList<Event>();
+		for(Node post : net.getPostset(e)){
+			if(post instanceof ChannelPlace)
+				for(Node post2 : net.getPostset(post))
+					result.add((Event)post2);
+		}
+
+		return result;
+	}
+
+	/**
+	 * get all PRE-conditions (PN and CSON-based) of a given event.
+	 */
 	public Collection<Condition> getPREset(Event e){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node n : net.getPreset(e)){
@@ -207,6 +293,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * get all POST-conditions (PN and CSON-based) of a given event.
+	 */
 	public Collection<Condition> getPOSTset(Event e){
 		Collection<Condition> result = new ArrayList<Condition>();
 
@@ -236,6 +325,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * get all PN-based postset of a given node.
+	 */
 	public Collection<Node> getPrePNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPreset(node)){
@@ -245,6 +337,9 @@ public class RelationAlg{
 		return result;
 	}
 
+	/**
+	 * get all PN-based preset of a given node.
+	 */
 	public Collection<Node> getPostPNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPostset(node)){

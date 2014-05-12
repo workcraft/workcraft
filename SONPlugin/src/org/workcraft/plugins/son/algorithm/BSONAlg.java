@@ -11,14 +11,13 @@ import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
-public class BSONAlg {
+public class BSONAlg extends RelationAlgorithm{
 
 	private SONModel net;
-	private RelationAlg relationAlg;
 
 	public BSONAlg(SONModel net) {
+		super(net);
 		this.net = net;
-		relationAlg = new RelationAlg(net);
 	}
 
 	//Behavioral SON
@@ -54,7 +53,7 @@ public class BSONAlg {
 		Collection<Condition> result = new HashSet<Condition>();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
 		Collection<ArrayList<Node>> paths = null;
-		ONPathAlg alg = new ONPathAlg(net);
+		PathAlgorithm alg = new PathAlgorithm(net);
 
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSecond()==c && con.getType()=="BHVLINE")
@@ -137,7 +136,7 @@ public class BSONAlg {
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMinimal = true;
-			for(Condition pre : relationAlg.getPrePNCondition(c))
+			for(Condition pre : this.getPrePNCondition(c))
 				if(phase.contains(pre))
 					isMinimal = false;
 			if(isMinimal)
@@ -150,7 +149,7 @@ public class BSONAlg {
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMaximal = true;
-			for(Condition pre : relationAlg.getPostPNCondition(c))
+			for(Condition pre : this.getPostPNCondition(c))
 				if(phase.contains(pre))
 					isMaximal = false;
 			if(isMaximal)
@@ -164,13 +163,13 @@ public class BSONAlg {
 		Condition[] pre = new Condition[1];
 		Condition[] post = new Condition[1];
 
-		if(relationAlg.getPostPNSet(e).size()!=1 || relationAlg.getPrePNSet(e).size()!=1){
+		if(this.getPostPNSet(e).size()!=1 || this.getPrePNSet(e).size()!=1){
 			//System.out.println("size > 1");
 			return result;
 		}
-		for(Node node : relationAlg.getPrePNSet(e))
+		for(Node node : this.getPrePNSet(e))
 			pre[0] = (Condition)node;
-		for(Node node : relationAlg.getPostPNSet(e))
+		for(Node node : this.getPostPNSet(e))
 			post[0] = (Condition)node;
 
 		Collection<Condition> phaseI = getPhase(pre[0]);
@@ -182,8 +181,8 @@ public class BSONAlg {
 
 		Collection<Condition> maxI = getMaximalPhase(phaseI);
 		Collection<Condition> minI2 = getMinimalPhase(phaseI2);
-		Collection<Condition> PRE = relationAlg.getPREset(e);
-		Collection<Condition> POST = relationAlg.getPOSTset(e);
+		Collection<Condition> PRE = this.getPREset(e);
+		Collection<Condition> POST = this.getPOSTset(e);
 		if(!maxI.containsAll(minI2)){
 			for(Condition c0 : maxI){
 				for(Condition c1 : minI2){
@@ -216,19 +215,19 @@ public class BSONAlg {
 			Collection<Node> preMaxI = new HashSet<Node>();
 			Collection<Node> postMinI2 = new HashSet<Node>();
 			for(Node n: maxI)
-				preMaxI.addAll(relationAlg.getPrePNSet(n));
+				preMaxI.addAll(this.getPrePNSet(n));
 			for(Node n: minI2)
-				postMinI2.addAll(relationAlg.getPostPNSet(n));
+				postMinI2.addAll(this.getPostPNSet(n));
 
 			Collection<Condition> PREpreMaxI = new HashSet<Condition>();
 			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
 
 			for(Node n : preMaxI){
 				if(n instanceof Event)
-				PREpreMaxI.addAll(relationAlg.getPREset((Event)n));}
+				PREpreMaxI.addAll(this.getPREset((Event)n));}
 			for(Node n : postMinI2){
 				if(n instanceof Event)
-				POSTpostMinI2.addAll(relationAlg.getPOSTset((Event)n));}
+				POSTpostMinI2.addAll(this.getPOSTset((Event)n));}
 
 			for(Condition c0 : PREpreMaxI){
 				for(Condition c1 : POSTpostMinI2){

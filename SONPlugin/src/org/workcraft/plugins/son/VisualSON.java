@@ -23,7 +23,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
@@ -477,7 +477,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	private Collection<Node> getBlockSelection(){
 		Collection<Node> result = new HashSet<Node>();
-		RelationAlg relationAlg = new RelationAlg(net);
+		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
 		int errorType = 0;
 
 		for(Node node : getOrderedCurrentLevelSelection()){

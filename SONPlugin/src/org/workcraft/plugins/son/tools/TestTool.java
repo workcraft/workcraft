@@ -27,7 +27,7 @@ import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.AsynLine;
 import org.workcraft.plugins.son.connections.SONConnection;

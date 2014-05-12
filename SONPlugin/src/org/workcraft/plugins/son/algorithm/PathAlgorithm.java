@@ -8,29 +8,24 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 
-public class ONPathAlg{
+public class PathAlgorithm{
 
 	protected SONModel net;
-	protected RelationAlg relationAlg;
+	protected RelationAlgorithm relationAlg;
 
 	protected Collection<Node> history;
 	protected Collection<ArrayList<Node>> pathResult;
 	protected Collection<ArrayList<Node>> cycleResult;
 
 
-	public ONPathAlg(SONModel net){
+	public PathAlgorithm(SONModel net){
 		this.net = net;
-		relationAlg = new RelationAlg(net);
+		relationAlg = new RelationAlgorithm(net);
 		history = new ArrayList<Node>();
 		pathResult =new  HashSet<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
 	}
 
-	/**
-	 *
-	 * create a adjacency matrix
-	 *
-	 */
 	public List<Node[]> createAdj(Collection<Node> nodes){
 
 		List<Node[]> result = new ArrayList<Node[]>();
@@ -47,12 +42,7 @@ public class ONPathAlg{
 		return result;
 	}
 
-	/**
-	 *
-	 * obtain all paths and cycle paths between two given nodes
-	 *
-	 */
-	protected void getAllPath(Node start, Node end, List<Node[]> adj){
+	public void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
 
@@ -109,7 +99,7 @@ public class ONPathAlg{
 		 return pathResult;
 	}
 
-	protected void clearAll(){
+	public void clearAll(){
 		history.clear();
 		cycleResult.clear();
 		pathResult.clear();

@@ -9,8 +9,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
@@ -23,8 +23,8 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> errorousNodes = new HashSet<Node>();
 	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
 
-	private ONPathAlg onPathAlg;
-	private RelationAlg relationAlg;
+	private PathAlgorithm onPathAlg;
+	private RelationAlgorithm relationAlg;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -32,8 +32,8 @@ public class ONStructureTask implements SONStructureVerification{
 
 	public ONStructureTask(SONModel net){
 		this.net = net;
-		relationAlg = new RelationAlg(net);
-		onPathAlg = new ONPathAlg(net);
+		relationAlg = new RelationAlgorithm(net);
+		onPathAlg = new PathAlgorithm(net);
 
 	}
 

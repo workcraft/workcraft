@@ -12,8 +12,8 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -24,7 +24,7 @@ public class BSONStructureTask implements SONStructureVerification{
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private RelationAlg relationAlg;
+	private RelationAlgorithm relationAlg;
 	private BSONAlg bsonAlg;
 	private BSONPathAlg bsonPathAlg;
 
@@ -39,7 +39,7 @@ public class BSONStructureTask implements SONStructureVerification{
 
 	public BSONStructureTask(SONModel net){
 		this.net = net;
-		relationAlg = new RelationAlg(net);
+		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
 		bsonPathAlg = new BSONPathAlg(net);
 	}
@@ -269,7 +269,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		Collection<Condition> minimal = bsonAlg.getMinimalPhase(phase);
 		Collection<Condition> maximal = bsonAlg.getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
-		ONPathAlg alg = new ONPathAlg(net);
+		PathAlgorithm alg = new PathAlgorithm(net);
 		ONGroup bhvGroup = bsonAlg.getBhvGroup(phase);
 		Collection<ArrayList<Node>> paths = alg.pathTask(bhvGroup.getComponents());
 

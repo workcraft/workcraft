@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.gui.StructureVerifySettings;
@@ -44,15 +44,14 @@ public class SONStructureTask implements Task<VerificationResult>{
 			SONStructureVerification bsonSTask = new BSONStructureTask(net);
 			bsonSTask.task(settings.getSelectedGroups());
 
-			if(settings.getErrNodesHighlight())
+			SONStructureVerification tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			if(settings.getErrNodesHighlight()){
 				groupSTask.errNodesHighlight();
-
-			if(settings.getErrNodesHighlight()){
 				csonSTask.errNodesHighlight();
-			}
-
-			if(settings.getErrNodesHighlight()){
 				bsonSTask.errNodesHighlight();
+				tsonSTask.errNodesHighlight();
 			}
 
 			totalErrNum = groupSTask.getErrNumber();
