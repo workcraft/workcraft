@@ -208,29 +208,15 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all CSON-based (Communication-SON) post-event of a given event
-	 */
-	public Collection<Event> getPreASynEvents(Event e){
-		Collection<Event> result = new ArrayList<Event>();
-		for(Node post : net.getPostset(e)){
-			if(post instanceof ChannelPlace)
-				for(Node post2 : net.getPostset(post))
-					result.add((Event)post2);
-		}
-
-		return result;
-	}
-
-	/**
 	 * get all asynchronous (Communication-SON) pre-events of a given event
 	 */
 	public Collection<Event> getPreAsynEvents (Event e){
 		Collection<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPreset(e)){
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
-				for(Node node2 : net.getPreset(node))
-					if(node2 instanceof Event)
-						result.add((Event)node2);
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
+				Event node2 = (Event)net.getPreset(node).iterator().next();
+				result.add(node2);
+			}
 		}
 		return result;
 	}
@@ -241,24 +227,50 @@ public class RelationAlgorithm{
 	public Collection<Event> getPostAsynEvents (Event e){
 		Collection<Event> result = new ArrayList<Event>();
 		for(Node node : net.getPostset(e) )
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE")
-				for(Node node2 : net.getPostset(node))
-					if(node2 instanceof Event)
-						result.add((Event)node2);
+			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
+				Event node2 = (Event)net.getPostset(node).iterator().next();
+				result.add(node2);
+				}
 		return result;
 	}
 
 	/**
-	 * get all CSON-based (Communication-SON) post-event of a given event
+	 * get all asynchronous and synchronous (Communication-SON) pre-event of a given event
+	 */
+	public Collection<Event> getPreASynEvents(Event e){
+		Collection<Event> result = new ArrayList<Event>();
+		for(Node pre : net.getPreset(e)){
+			if(pre instanceof ChannelPlace){
+				Event pre2 = (Event)net.getPreset(pre).iterator().next();
+				result.add(pre2);
+			}
+		}
+		for(Node post : net.getPostset(e)){
+			if(post instanceof ChannelPlace && net.getSONConnectionType(post, e) == "SYNCLINE"){
+				Event post2 = (Event)net.getPostset(post).iterator().next();
+				result.add(post2);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * get all asynchronous and synchronous(Communication-SON) post-event of a given event
 	 */
 	public Collection<Event> getPostASynEvents(Event e){
 		Collection<Event> result = new ArrayList<Event>();
 		for(Node post : net.getPostset(e)){
-			if(post instanceof ChannelPlace)
-				for(Node post2 : net.getPostset(post))
-					result.add((Event)post2);
+			if(post instanceof ChannelPlace){
+				Event post2 = (Event)net.getPostset(post).iterator().next();
+				result.add(post2);
+			}
 		}
-
+		for(Node pre : net.getPreset(e)){
+			if(pre instanceof ChannelPlace && net.getSONConnectionType(pre, e) == "SYNCLINE"){
+				Event pre2 = (Event)net.getPreset(pre).iterator().next();
+				result.add(pre2);
+			}
+		}
 		return result;
 	}
 
@@ -270,24 +282,21 @@ public class RelationAlgorithm{
 		for(Node n : net.getPreset(e)){
 			if(n instanceof Condition)
 				result.add((Condition)n);
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("ASYNLINE"))
-				for(Node pre : net.getPreset(n))
-					for(Node preCondition : net.getPreset(pre))
-						if(preCondition instanceof Condition)
-							result.add((Condition)preCondition);
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
-				for(Node pre : net.getPreset(n))
-					for(Node preCondition : net.getPreset(pre))
-						if(preCondition instanceof Condition)
-							result.add((Condition)preCondition);
+			if(n instanceof ChannelPlace){
+				Node pre = (Node)net.getPreset(n).iterator().next();
+				for(Node preCondition : net.getPreset(pre))
+					if(preCondition instanceof Condition)
+						result.add((Condition)preCondition);
+			}
 		}
 
 		for(Node n : net.getPostset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
-				for(Node post : net.getPostset(n))
-					for(Node preCondition : net.getPreset(post))
-						if(preCondition instanceof Condition)
-							result.add((Condition)preCondition);
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n) == "SYNCLINE"){
+				Node post = (Node)net.getPostset(n).iterator().next();
+				for(Node preCondition : net.getPreset(post))
+					if(preCondition instanceof Condition)
+						result.add((Condition)preCondition);
+			}
 		}
 
 		return result;
@@ -302,24 +311,21 @@ public class RelationAlgorithm{
 		for(Node n : net.getPostset(e)){
 			if(n instanceof Condition)
 				result.add((Condition)n);
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("ASYNLINE"))
-				for(Node post : net.getPostset(n))
-					for(Node postCondition : net.getPostset(post))
-						if(postCondition instanceof Condition)
-							result.add((Condition)postCondition);
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
-				for(Node post : net.getPostset(n))
-					for(Node postCondition : net.getPostset(post))
-						if(postCondition instanceof Condition)
-							result.add((Condition)postCondition);
+			if(n instanceof ChannelPlace){
+				Node post = (Node)net.getPostset(n).iterator().next();
+				for(Node postCondition : net.getPostset(post))
+					if(postCondition instanceof Condition)
+						result.add((Condition)postCondition);
+			}
 		}
 
 		for(Node n : net.getPreset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n).contains("SYNCLINE"))
-				for(Node pre : net.getPreset(n))
-					for(Node postCondition : net.getPostset(pre))
-						if(postCondition instanceof Condition)
-							result.add((Condition)postCondition);
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n) =="SYNCLINE"){
+				Node pre = (Node)net.getPreset(n).iterator().next();
+				for(Node postCondition : net.getPostset(pre))
+					if(postCondition instanceof Condition)
+						result.add((Condition)postCondition);
+			}
 		}
 
 		return result;

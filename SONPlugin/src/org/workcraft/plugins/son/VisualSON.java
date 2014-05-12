@@ -509,14 +509,16 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		for (VisualSONConnection connect : getVisualConnections()){
-			if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
-				if(connect.getSecond() instanceof VisualEvent)
-					errorType = 3;
-			}
+			if(connect.getReferencedConnection().getType()=="POLYLINE"){
+				if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
+					if(connect.getSecond() instanceof VisualEvent)
+						errorType = 3;
+				}
 
-			if(!result.contains(connect.getFirst()) && result.contains(connect.getSecond())){
-				if(connect.getFirst() instanceof VisualEvent)
-					errorType = 3;
+				if(!result.contains(connect.getFirst()) && result.contains(connect.getSecond())){
+					if(connect.getFirst() instanceof VisualEvent)
+						errorType = 3;
+				}
 			}
 		}
 

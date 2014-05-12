@@ -105,12 +105,12 @@ public class TSONStructureTask implements SONStructureVerification{
 	private Collection<Node> interfaceTask(Block block){
 		Collection<Node> result = new ArrayList<Node>();
 
-		for(Node node : tsonAlg.getBlockInputs(block)){
+		for(Node node : tsonAlg.getBlockPNInputs(block)){
 			if(!(node instanceof Condition))
 				result.add(node);
 		}
 
-		for(Node node : tsonAlg.getBlockOutputs(block)){
+		for(Node node : tsonAlg.getBlockPNOutputs(block)){
 			if(!(node instanceof Condition))
 				result.add(node);
 		}
@@ -121,8 +121,8 @@ public class TSONStructureTask implements SONStructureVerification{
 	//Warning: run cycle check before
 	private Collection<Node> CausallyPrecedeTask(Block block){
 		Collection<Node> result = new ArrayList<Node>();
-		for(Node input : tsonAlg.getBlockInputs(block)){
-			if(!tsonAlg.isCausallyPrecede(input, tsonAlg.getBlockOutputs(block))){
+		for(Node input : tsonAlg.getBlockPNInputs(block)){
+			if(!tsonAlg.isCausallyPrecede(input, tsonAlg.getBlockPNOutputs(block))){
 				result.add(input);
 			}
 		}

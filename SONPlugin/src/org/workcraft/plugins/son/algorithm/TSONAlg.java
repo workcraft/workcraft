@@ -6,6 +6,7 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.elements.Event;
 
 public class TSONAlg extends RelationAlgorithm{
 
@@ -16,7 +17,9 @@ public class TSONAlg extends RelationAlgorithm{
 		this.net = net;
 	}
 
-	//return block inputs
+	/**
+	 * get all inputs of a given block without concerning connection types
+	 */
 	public Collection<Node> getBlockInputs(Block block){
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
@@ -27,11 +30,28 @@ public class TSONAlg extends RelationAlgorithm{
 					result.add(pre);
 			}
 		}
-
 		return result;
 	}
 
-	//return block inputs w.r.t. petri net
+	/**
+	 * get all outputs of a given block without concerning connection types
+	 */
+	public Collection<Node> getBlockOutputs(Block block){
+		Collection<Node> result = new HashSet<Node>();
+		Collection<Node> components = block.getComponents();
+
+		for(Node node: components){
+			for(Node post : net.getPostset(node)){
+				if(!components.contains(post))
+					result.add(post);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * get petri net-based inputs of a given block
+	 */
 	public Collection<Node> getBlockPNInputs(Block block){
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
@@ -46,35 +66,60 @@ public class TSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	//return block inputs w.r.t. communication son
-	public Collection<Node> getBlockASynInputs(Block block){
+	/**
+	 * get petri net-based outputs of a given block
+	 */
+	public Collection<Node> getBlockPNOutputs(Block block){
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
 		for(Node node:components){
-			for(Node pre : net.getPreset(node)){
-				if(!components.contains(pre) && net.getSONConnectionType(node, pre) == "POLYLINE")
-					result.add(pre);
-			}
-		}
-
-		return result;
-	}
-
-	//return block outputs
-	public Collection<Node> getBlockOutputs(Block block){
-		Collection<Node> result = new HashSet<Node>();
-		Collection<Node> components = block.getComponents();
-
-		for(Node node: components){
 			for(Node post : net.getPostset(node)){
-				if(!components.contains(post))
+				if(!components.contains(post) && net.getSONConnectionType(node, post) == "POLYLINE")
 					result.add(post);
 			}
 		}
+
 		return result;
 	}
 
+	/**
+	 * get cson-based inputs of a given block
+	 */
+	public Collection<Event> getBlockASynInputs(Block block){
+		Collection<Event> result = new HashSet<Event>();
+		Collection<Node> components = block.getComponents();
+
+		for(Node node:components){
+			if(node instanceof Event)
+				for(Event e : this.getPreASynEvents((Event)node)){
+					if(!components.contains(e))
+						result.add(e);
+				}
+		}
+		return result;
+	}
+
+	/**
+	 * get cson-based outputs of a given block
+	 */
+	public Collection<Event> getBlockASynOutputs(Block block){
+		Collection<Event> result = new HashSet<Event>();
+		Collection<Node> components = block.getComponents();
+
+		for(Node node:components){
+			if(node instanceof Event)
+				for(Event e : this.getPostASynEvents((Event)node)){
+					if(!components.contains(e))
+						result.add(e);
+				}
+		}
+		return result;
+	}
+
+	/**
+	 * check if a given input causally precede all outputs
+	 */
 	public boolean isCausallyPrecede (Node input, Collection<Node> outputs){
 		for(Node post : net.getPostset(input)){
 			if(outputs.contains(post))
