@@ -7,8 +7,6 @@ import java.util.Collection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Condition;

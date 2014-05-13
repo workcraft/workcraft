@@ -111,9 +111,7 @@ public class PathAlgorithm{
 
 	//Backward Traverse
 	/**
-	 *
 	 * create a backward adjacency matrix
-	 *
 	 */
 	public List<Node[]> createBackwardAdj(Collection<Node> nodes){
 

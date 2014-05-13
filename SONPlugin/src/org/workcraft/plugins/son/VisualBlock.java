@@ -3,7 +3,6 @@ package org.workcraft.plugins.son;
 import java.awt.Color;
 
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 

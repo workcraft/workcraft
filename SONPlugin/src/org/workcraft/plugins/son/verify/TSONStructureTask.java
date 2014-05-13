@@ -70,6 +70,7 @@ public class TSONStructureTask implements SONStructureVerification{
 		logger.info("Running block structural checking tasks...");
 		//interface task result
 			Collection<Node> result = interfaceTask(block);
+			Collection<Node> result2 = phaseTask(block);
 			if(!result.isEmpty()){
 				errNodes.addAll(result);
 				errBlocks.add(block);
@@ -77,18 +78,25 @@ public class TSONStructureTask implements SONStructureVerification{
 				for(Node node : result)
 					logger.error("ERROR : Incorrect interface, the input/output must be condition: "
 				+ net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
-			}else
+			}else if(!result2.isEmpty()){
+				errNodes.addAll(result2);
+				errBlocks.add(block);
+				errNumber = errNumber + result2.size();
+				for(Node node : result2)
+					logger.error("ERROR : Incorrect interface, block cannot cross phases: "
+				+ net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
+			}
+			else
 				logger.info("Correct block interface relation");
-
 
 		//Causally Precede task result
 			if(onPathAlg.cycleTask(block.getComponents()).isEmpty()){
-				Collection<Node> result2 = CausallyPrecedeTask(block);
-				if(!result2.isEmpty()){
-					errNodes.addAll(result2);
+				Collection<Node> result3 = CausallyPrecedeTask(block);
+				if(!result3.isEmpty()){
+					errNodes.addAll(result3);
 					errBlocks.add(block);
-					errNumber = errNumber + result2.size();
-					for(Node node : result2)
+					errNumber = errNumber + result3.size();
+					for(Node node : result3)
 						logger.error("ERROR : Incorrect causally relation, the input node "+
 					net.getName(node) + "(" + net.getComponentLabel(node) + ")" +" must causally precede all outputs" );
 				}else
@@ -101,6 +109,7 @@ public class TSONStructureTask implements SONStructureVerification{
 		}
 	}
 
+
 	//Static check all inputs and outputs of a block
 	private Collection<Node> interfaceTask(Block block){
 		Collection<Node> result = new ArrayList<Node>();
@@ -112,6 +121,15 @@ public class TSONStructureTask implements SONStructureVerification{
 
 		for(Node node : tsonAlg.getBlockPNOutputs(block)){
 			if(!(node instanceof Condition))
+				result.add(node);
+		}
+		return result;
+	}
+
+	private Collection<Node> phaseTask(Block block){
+		Collection<Node> result = new ArrayList<Node>();
+		for(Node node : block.getComponents()){
+			if(node instanceof Condition && net.getSONConnectionTypes(node).contains("BHVLINE"))
 				result.add(node);
 		}
 		return result;

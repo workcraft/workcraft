@@ -11,7 +11,6 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -27,8 +26,6 @@ import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
@@ -520,10 +517,20 @@ public class VisualSON extends AbstractVisualModel{
 						errorType = 3;
 				}
 			}
+			if(connect.getReferencedConnection().getType()=="BHVLINE"){
+				if(result.contains(connect.getFirst()) || result.contains(connect.getSecond()))
+					errorType =4;
+			}
 		}
 
 		if(errorType==3){
 			JOptionPane.showMessageDialog(null, "The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
+
+		if(errorType==4){
+			JOptionPane.showMessageDialog(null, "Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}

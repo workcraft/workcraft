@@ -886,8 +886,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				for(Event enable : net.getEvents())
 					if(simuAlg.isUnfireEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
-				}
-			else{
+				}else{
 				for(Event enable : net.getEvents())
 					if(simuAlg.isEnabled(enable, syncSet, phases))
 						enabledEvents.add(enable);
@@ -994,9 +993,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				errAlg.setReverseErrNum(abstractEvents, syncSet, false);
 				errAlg.setReverseErrNum(runList, syncSet, true);
 			}
-
 		}
-
 	}
 
 	@Override

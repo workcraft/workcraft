@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -35,6 +36,7 @@ import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.plugins.son.gui.DropdownButton;
 import org.workcraft.util.GUI;
 
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
@@ -309,6 +311,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 	private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
 		editor.getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
+	}
+
+	private void groupPageButton(){
+
 	}
 
 }

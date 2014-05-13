@@ -47,8 +47,6 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 
-	//return minimal execution set of a given event.
-	//This may contain other events which have synchronous with the target event.
 	private void getMinimalExeEventSet (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 
 		HashSet<Node> syncEvents = new HashSet<Node>();
@@ -88,6 +86,10 @@ public class SimulationAlg extends RelationAlgorithm {
 			minimalExeEvents.add(e);
 	}
 
+	/**
+	 * return minimal execution set of a given node.
+	 * This may contain other nodes which have synchronous with the target node.
+	 */
 	public List<Event> getMinimalExeResult (Event e, Collection<ArrayList<Node>> sync, Collection<Event> enabledEvents){
 		List<Event> result = new ArrayList<Event>();
 
@@ -150,6 +152,9 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
+	/**
+	 * clear all set.
+	 */
 	public void clearAll(){
 			syncEventSet.clear();
 			checkedEvents.clear();
@@ -164,8 +169,9 @@ public class SimulationAlg extends RelationAlgorithm {
 			preEventSet.clear();
 	}
 
-	// enable ,fire
-
+	/**
+	 * create a adjacency matrix.
+	 */
 	public List<Node[]> createAdj(Collection<Node> nodes){
 
 		List<Node[]> result = new ArrayList<Node[]>();
@@ -207,6 +213,9 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
+	/**
+	 * get all paths between two given nodes. They may contain cyclic path.
+	 */
 	public void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
@@ -235,7 +244,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	/**
-	 * get synchronous cycle.
+	 * get synchronous cycle for a set of node.
 	 */
 	public Collection<ArrayList<Node>> getSyncCycles(Collection<Node> nodes){
 
@@ -411,7 +420,12 @@ public class SimulationAlg extends RelationAlgorithm {
 		}
 		return false;
 	}
+	/*
+	public Collection<Node> getForwardEnabledEvents(){
+		Collection<Node> result = new ArrayList<Event>();
 
+	}
+	*/
 	public void fire(Collection<Event> events){
 		for(Event e : events){
 			for (SONConnection c : net.getSONConnections(e)) {
