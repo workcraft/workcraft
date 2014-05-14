@@ -68,16 +68,15 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		NamespaceProvider oldProvider = getNamespaceProvider(node);
 		if (oldProvider==null) return;
 
+		String name = nodeManager.getName(node);
+
 		node2namespace.remove(node);
 		nodeManager.node2namespace.remove(node);
 
 
 		if (provider!=oldProvider) {
-
 			NameManager<Node> oldMan = getNameManager(oldProvider);
 			NameManager<Node> newMan = getNameManager(provider);
-
-			String name = nodeManager.getName(node);
 
 			oldMan.remove(node);
 
@@ -88,7 +87,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			else
 				newMan.setDefaultNameIfUnnamed(node);
 
-
+			String n = newMan.getName(node);
 		}
 	}
 
