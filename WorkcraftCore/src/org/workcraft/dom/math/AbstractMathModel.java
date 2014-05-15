@@ -64,6 +64,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 			manager.setNamespaceProvider(node, (HierarchicalUniqueNameReferenceManager)sourceModel.getReferenceManager(), provider);
 
 		}
+		sourceRoot.reparent(nodes, targetContainer);
 
 		for (Node node: nodes) {
 
@@ -95,8 +96,6 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
 		}
 
-		Collection<Node> nodes = Hierarchy.getChildrenOfType(sourceRoot, Node.class);
-		sourceRoot.reparent(nodes, targetContainer);
 
 	}
 
