@@ -5,6 +5,7 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.son.OutputRedirect;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.StructureVerifyDialog;
 import org.workcraft.plugins.son.verify.SONStructureTask;
 import org.workcraft.util.GUI;
@@ -37,6 +38,7 @@ public class StructurePropertyChecker implements Tool {
 	public void run(WorkspaceEntry we){
 
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
+		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
 		StructureVerifyDialog dialog = new StructureVerifyDialog(framework.getMainWindow(), net);
 		GUI.centerToParent(dialog, framework.getMainWindow());
@@ -44,7 +46,10 @@ public class StructurePropertyChecker implements Tool {
 
 		if (dialog.getRun() == 1){
 			OutputRedirect.Redirect();
-			framework.getTaskManager().queue(new SONStructureTask(dialog.getSetting(), net), "Verification");
+			vnet.connectToBlocks();
+			//framework.getTaskManager().queue(new SONStructureTask(dialog.getSetting(), net, vnet), "Verification");
+			framework.getTaskManager().execute(new SONStructureTask(dialog.getSetting(), net, vnet), "Verification");
+			vnet.connectToBlocksInside();
 		}
 	}
 }

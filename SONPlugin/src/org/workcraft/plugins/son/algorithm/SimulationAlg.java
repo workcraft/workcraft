@@ -413,6 +413,10 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
+	final public boolean isBlockEnabled(Event e){
+		return false;
+	}
+
 	final public boolean isEnabled (Event e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
 		checkedEvents.clear();
 		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases) && this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
@@ -420,12 +424,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		}
 		return false;
 	}
-	/*
-	public Collection<Node> getForwardEnabledEvents(){
-		Collection<Node> result = new ArrayList<Event>();
 
-	}
-	*/
 	public void fire(Collection<Event> events){
 		for(Event e : events){
 			for (SONConnection c : net.getSONConnections(e)) {

@@ -332,7 +332,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based postset of a given node.
+	 * get all PN-based preset of a given node.
 	 */
 	public Collection<Node> getPrePNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
@@ -344,7 +344,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based preset of a given node.
+	 * get all PN-based postset of a given node.
 	 */
 	public Collection<Node> getPostPNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();

@@ -13,6 +13,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -35,7 +36,7 @@ public class CSONStructureTask implements SONStructureVerification{
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public CSONStructureTask(SONModel net){
+	public CSONStructureTask(SONModel net, VisualSON vnet){
 		this.net = net;
 		relationAlg = new RelationAlgorithm(net);
 		csonPathAlg = new CSONPathAlg(net);
@@ -78,7 +79,8 @@ public class CSONStructureTask implements SONStructureVerification{
 		}
 
 		//channel place structure
-		cPlaceStructureResult = cPlaceStructureTask(relatedcPlaces);
+		//cPlaceStructureResult = cPlaceStructureTask(relatedcPlaces);
+		cPlaceStructureResult = new ArrayList<List<ChannelPlace>>();
 		if(cPlaceStructureResult.isEmpty())
 			logger.info("Correct communication strucuture.");
 		else{

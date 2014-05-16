@@ -45,7 +45,7 @@ public class TSONStructureTask implements SONStructureVerification{
 		Collection<Block> blocks = new ArrayList<Block>();
 
 		for(ONGroup group : selectedGroups){
-			blocks.addAll(group.getBlock());
+			blocks.addAll(group.getBlocks());
 		}
 
 		logger.info("Selected Groups = " +  selectedGroups.size());

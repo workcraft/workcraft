@@ -3,7 +3,9 @@
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -48,7 +50,6 @@ public class VisualSON extends AbstractVisualModel{
 
 	public VisualSON (SON model, VisualGroup root){
 		super (model, root);
-
 	//	currentmathLevel = getCurrentLevel();
 
 		if (root == null)
@@ -60,6 +61,7 @@ public class VisualSON extends AbstractVisualModel{
 
 		this.net = model;
 	}
+
 
 	public void validateConnection (Node first, Node second) throws InvalidConnectionException{
 	}
@@ -143,6 +145,7 @@ public class VisualSON extends AbstractVisualModel{
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void connect (Node first, Node second) throws InvalidConnectionException{
 		throw new org.workcraft.exceptions.NotImplementedException();
@@ -150,7 +153,6 @@ public class VisualSON extends AbstractVisualModel{
 
 	public void connect (Node first, Node second, SONConnectionType type) throws InvalidConnectionException{
 		validateConnection(first, second, type);
-
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
 
@@ -170,13 +172,15 @@ public class VisualSON extends AbstractVisualModel{
 		if (type == VisualSONConnection.SONConnectionType.BHVLINE)
 			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.BHVLINE);
 
-		if (c1 instanceof VisualChannelPlace || c2 instanceof VisualChannelPlace){
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
-			con.setType("ASYNLINE");
+		if (c1 instanceof VisualChannelPlace || c2 instanceof VisualChannelPlace ){
+			if(type != VisualSONConnection.SONConnectionType.SYNCLINE){
+				ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
+				con.setType("ASYNLINE");
+			}
 		}
 
-		Hierarchy.getNearestContainer(c1,c2).add(ret);
 
+		Hierarchy.getNearestContainer(c1,c2).add(ret);
 	}
 
 	private Collection<Node> getGroupableSelection(){
@@ -195,8 +199,9 @@ public class VisualSON extends AbstractVisualModel{
 
 		if(validateSelection(selection)){
 			for(Node node : getOrderedCurrentLevelSelection()){
-				if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)){
-					result.add(node);
+				if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
+					//if(!(node instanceof VisualSONConnection))
+						result.add(node);
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
@@ -424,6 +429,7 @@ public class VisualSON extends AbstractVisualModel{
 			currentMathLevel.add(mathBlock);
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+
 			for(VisualConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class)) {
 				if(Hierarchy.isDescendant(connection.getFirst(), block) &&
 						Hierarchy.isDescendant(connection.getSecond(), block)) {
@@ -614,6 +620,8 @@ public class VisualSON extends AbstractVisualModel{
 		for (VisualSONConnection con : this.getVisualConnections()){
 			if (con.getFirst() == node)
 				result.add(con);
+			if (con.getSecond() == node)
+				result.add(con);
 		}
 		return result;
 	}
@@ -626,6 +634,125 @@ public class VisualSON extends AbstractVisualModel{
 				result.add(con);
 		}
 		return result;
+	}
+
+
+	public void connectToBlocks(){
+		for(VisualBlock vBlock : this.getVisualBlocks()){
+			if(vBlock.getIsCollapsed() && this.getConnections(vBlock).isEmpty()){
+				Map<VisualComponent[], SONConnectionType> inputs = this.getBlockInputRelations(vBlock);
+				Map<VisualComponent[], SONConnectionType> outputs = this.getBlockOutputRelations(vBlock);
+				vBlock.setInputRelations(inputs);
+				vBlock.setOutputRelations(outputs);
+				 for(VisualComponent[] pair : inputs.keySet()){
+					 //remove visual connection
+					 VisualSONConnection con = getVisualConnections(pair[0], pair[1]).iterator().next();
+					 SONConnection mathCon = con.getReferencedConnection();
+
+					 Container parent = (Container)con.getParent();
+					 parent.remove(con);
+					 //remove math connection
+					 Container mathParent = (Container)mathCon.getParent();
+					 if(mathParent != null)
+						 mathParent.remove(mathCon);
+					 try {
+						this.connect(pair[0], vBlock, inputs.get(pair));
+					} catch (InvalidConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				 }
+				 for(VisualComponent[] pair : outputs.keySet()){
+					 //remove visual connection
+					 VisualSONConnection con = getVisualConnections(pair[0], pair[1]).iterator().next();
+					 SONConnection mathCon = con.getReferencedConnection();
+
+					 Container parent = (Container)con.getParent();
+					 parent.remove(con);
+					 //remove math connection
+					 Container mathParent = (Container)mathCon.getParent();
+					 if(mathParent != null)
+						 mathParent.remove(mathCon);
+					 try {
+						this.connect(vBlock, pair[1], outputs.get(pair));
+					} catch (InvalidConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			 	}
+			}
+		}
+	}
+
+	public void connectToBlocksInside(){
+		for(VisualBlock vBlock : this.getVisualBlocks()){
+			if(!this.getConnections(vBlock).isEmpty()){
+				Map<VisualComponent[], SONConnectionType> inputs = vBlock.getInputRelations();
+				Map<VisualComponent[], SONConnectionType> outputs = vBlock.getOutputRelations();
+
+				for(VisualSONConnection con : this.getVisualConnections(vBlock)){
+					Container parent = (Container)con.getParent();
+					SONConnection mathCon = con.getReferencedConnection();
+					parent.remove(con);
+
+					//remove math connection
+					Container mathParent = (Container)mathCon.getParent();
+					if(mathParent != null)
+						mathParent.remove(mathCon);
+
+				}
+
+				for(VisualComponent[] pair : inputs.keySet()){
+					if(this.getVisualComponent().contains(pair[0]) && this.getVisualComponent().contains(pair[1]))
+						try {
+							this.connect(pair[0], pair[1], inputs.get(pair));
+						} catch (InvalidConnectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+				for(VisualComponent[] pair : outputs.keySet()){
+					if(this.getVisualComponent().contains(pair[0]) && this.getVisualComponent().contains(pair[1]))
+						try {
+							this.connect(pair[0], pair[1], outputs.get(pair));
+						} catch (InvalidConnectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+			}
+		}
+	}
+
+	private Map<VisualComponent[], SONConnectionType> getBlockInputRelations(VisualBlock vBlock){
+		 Map<VisualComponent[], SONConnectionType> result = new HashMap<VisualComponent[], SONConnectionType>();
+		 Collection<VisualComponent> components = vBlock.getComponents();
+
+		 for(VisualSONConnection con : this.getVisualConnections()){
+			 if(!components.contains(con.getFirst()) && components.contains(con.getSecond())){
+				 VisualComponent[] pair = new VisualComponent[2];
+				 pair[0] = con.getFirst();
+				 pair[1] = con.getSecond();
+				 result.put(pair, con.getSONConnectionType());
+			 }
+		 }
+		 return result;
+	}
+
+	private Map<VisualComponent[], SONConnectionType> getBlockOutputRelations(VisualBlock vBlock){
+		 Map<VisualComponent[], SONConnectionType> result = new HashMap<VisualComponent[], SONConnectionType>();
+		 Collection<VisualComponent> components = vBlock.getComponents();
+
+		 for(VisualSONConnection con : this.getVisualConnections()){
+			 if(components.contains(con.getFirst()) && !components.contains(con.getSecond())){
+				 VisualComponent[] pair = new VisualComponent[2];
+				 pair[0] = con.getFirst();
+				 pair[1] = con.getSecond();
+				 result.put(pair, con.getSONConnectionType());
+			 }
+
+		 }
+		 return result;
 	}
 
 }

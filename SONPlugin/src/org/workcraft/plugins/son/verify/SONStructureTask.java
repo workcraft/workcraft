@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.gui.StructureVerifySettings;
@@ -18,6 +18,7 @@ import org.workcraft.tasks.Result.Outcome;
 public class SONStructureTask implements Task<VerificationResult>{
 
 	private SONModel net;
+	private VisualSON vnet;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private StructureVerifySettings settings;
@@ -29,16 +30,27 @@ public class SONStructureTask implements Task<VerificationResult>{
 		this.net = net;
 	}
 
+	public SONStructureTask(StructureVerifySettings settings, SONModel net, VisualSON vnet){
+		this.settings = settings;
+		this.net = net;
+		this.vnet = vnet;
+	}
+
 	@Override
 	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
-
 		clearConsole();
 		//all tasks
+/*		try {
+			vnet.connectToBlock();
+		} catch (InvalidConnectionException e1) {
+			e1.printStackTrace();
+		}*/
+
 		if(settings.getType() == 0){
 			SONStructureVerification groupSTask = new ONStructureTask(net);
 			groupSTask.task(settings.getSelectedGroups());
 
-			SONStructureVerification csonSTask = new CSONStructureTask(net);
+			SONStructureVerification csonSTask = new CSONStructureTask(net, vnet);
 			csonSTask.task(settings.getSelectedGroups());
 
 			SONStructureVerification bsonSTask = new BSONStructureTask(net);
@@ -84,7 +96,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 
 		//CSON structure tasks
 		if(settings.getType() == 2){
-			CSONStructureTask csonSTask = new CSONStructureTask(net);
+			CSONStructureTask csonSTask = new CSONStructureTask(net, vnet);
 			csonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
@@ -124,6 +136,13 @@ public class SONStructureTask implements Task<VerificationResult>{
 		}
 
 		logger.info("\n\nVerification-Result : "+ this.getTotalErrNum() + " Error(s), " + this.getTotalWarningNum() + " Warning(s).");
+
+/*
+		try {
+			vnet.connectToBlockNode();
+		} catch (InvalidConnectionException e1) {
+			e1.printStackTrace();
+		}*/
 
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}

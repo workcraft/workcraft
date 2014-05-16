@@ -86,7 +86,6 @@ public class VisualONGroup extends VisualPage{
 			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
 
 			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
-
 		}
 	}
 

@@ -117,6 +117,13 @@ public class TSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	public boolean isInCollapsedBlock(Node node){
+		for(Block block : net.getBlocks())
+			if(block.getComponents().contains(node) && block.getIsCollapsed())
+				return true;
+		return false;
+	}
+
 	/**
 	 * check if a given input causally precede all outputs
 	 */

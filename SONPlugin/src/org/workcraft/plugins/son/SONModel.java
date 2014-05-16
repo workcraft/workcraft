@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -48,6 +49,8 @@ public interface SONModel extends Model{
 
 	public ChannelPlace createChannelPlace();
 	public ChannelPlace createChannelPlace(String name);
+
+	public SONConnection connect(Node first, Node second, String conType) throws InvalidConnectionException;
 
 	public void setFillColor(Node n, Color nodeColor);
 	public void setForegroundColor(Node n, Color nodeColor);

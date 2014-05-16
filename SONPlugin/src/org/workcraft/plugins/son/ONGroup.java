@@ -24,6 +24,15 @@ public class ONGroup extends PageNode{
 		ArrayList<Node> result = new ArrayList<Node>();
 		result.addAll(getConditions());
 		result.addAll(getEvents());
+
+		//remove the nodes in isolate blocks
+		for(Block block : this.getBlocks())
+			for(SONConnection con : getSONConnections())
+				if(con.getFirst() == block || con.getSecond() == block){
+					result.removeAll(block.getComponents());
+					result.add(block);
+				}
+
 		return result;
 	}
 
@@ -54,7 +63,7 @@ public class ONGroup extends PageNode{
 		return Hierarchy.getDescendantsOfType(this, PageNode.class);
 	}
 
-	public Collection<Block> getBlock(){
+	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(this, Block.class);
 	}
 

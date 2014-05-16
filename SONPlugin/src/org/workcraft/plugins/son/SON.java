@@ -60,6 +60,7 @@ public class SON extends AbstractMathModel implements SONModel {
 	public void validate() throws ModelValidationException {
 	}
 
+	@SuppressWarnings("deprecation")
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
@@ -68,8 +69,10 @@ public class SON extends AbstractMathModel implements SONModel {
 		/*if (first instanceof Condition && second instanceof Condition)
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		*/
-		if (this.getSONConnection(first, second) != null)
+		if (this.getSONConnection(first, second) != null){
+			System.out.println("first "+ this.getName(first) + " second " + this.getName(second));
 			throw new InvalidConnectionException ("Duplicate Connections");
+		}
 		if (first instanceof Event && second instanceof Event)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
 		if (first instanceof ChannelPlace && second instanceof ChannelPlace)
@@ -79,6 +82,7 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, conType);
 		Hierarchy.getNearestContainer(first, second).add(con);
+
 		return con;
 	}
 
@@ -108,6 +112,13 @@ public class SON extends AbstractMathModel implements SONModel {
 		result.addAll(this.getConditions());
 		result.addAll(this.getEvents());
 		result.addAll(this.getChannelPlace());
+
+		//remove the nodes in isolate blocks
+		for(Block block : this.getBlocks())
+			if(!this.getSONConnections(block).isEmpty()){
+				result.removeAll(block.getComponents());
+				result.add(block);
+			}
 
 		return result;
 	}
@@ -329,4 +340,5 @@ public class SON extends AbstractMathModel implements SONModel {
 		}
 		return false;
 	}
+
 }

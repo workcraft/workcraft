@@ -13,7 +13,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -22,7 +21,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -36,7 +34,6 @@ import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
-import org.workcraft.plugins.son.gui.DropdownButton;
 import org.workcraft.util.GUI;
 
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
@@ -189,7 +186,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e){
-		VisualModel model = e.getEditor().getModel();
+		VisualSON model = (VisualSON)e.getEditor().getModel();
 
 		if (e.getClickCount() > 1)
 		{
@@ -217,6 +214,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 						((VisualBlock)selectedNode).setIsCollapsed(true);
 					else
 						((VisualBlock)selectedNode).setIsCollapsed(false);
+
 					return;
 				}
 
@@ -311,10 +309,6 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 	private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
 		editor.getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
-	}
-
-	private void groupPageButton(){
-
 	}
 
 }
