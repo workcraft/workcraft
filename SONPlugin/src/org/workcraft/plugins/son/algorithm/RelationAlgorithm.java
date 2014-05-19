@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -34,7 +35,7 @@ public class RelationAlgorithm{
 				if(polyTypeCount > 1){
 					int n = 0;
 						for (Node post : net.getPostset(c))
-							if (post instanceof Event)
+							if (post instanceof Event || post instanceof Block)
 								n++;
 							if (n > 1)
 								return true;
@@ -58,7 +59,7 @@ public class RelationAlgorithm{
 				if(polyTypeCount > 1){
 					int n = 0;
 					for (Node pre : net.getPreset(c))
-						if (pre instanceof Event)
+						if (pre instanceof Event || pre instanceof Block)
 								n++;
 						if (n > 1)
 							return true;

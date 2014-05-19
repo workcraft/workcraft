@@ -156,6 +156,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		if (n instanceof SONConnection)
 			((SONConnection)n).setColor(nodeColor);
 
+		if(n instanceof Block)
+			((Block)n).setForegroundColor(nodeColor);
+
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
@@ -188,6 +191,7 @@ public class SON extends AbstractMathModel implements SONModel {
 		for (Block block : this.getBlocks()){
 			if(block.getIsCollapsed()){
 				this.setFillColor(block, CommonVisualSettings.getFillColor());
+				this.setForegroundColor(block, CommonVisualSettings.getBorderColor());
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
@@ -24,7 +25,7 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
 
 	private PathAlgorithm onPathAlg;
-	private RelationAlgorithm relationAlg;
+	private RelationAlgorithm relation;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -32,7 +33,7 @@ public class ONStructureTask implements SONStructureVerification{
 
 	public ONStructureTask(SONModel net){
 		this.net = net;
-		relationAlg = new RelationAlgorithm(net);
+		relation = new RelationAlgorithm(net);
 		onPathAlg = new PathAlgorithm(net);
 
 	}
@@ -66,10 +67,11 @@ public class ONStructureTask implements SONStructureVerification{
 				else
 					logger.info("Group label : " + group.getLabel() );
 
-			logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
+			logger.info("Condition(s) = "+group.getConditions().size()+".\n" +"Event(s) = "+group.getEvents().size()
+					+".\n" + "Collapsed Block(s) = " + group.getCollapsedBlocks().size()+".");
 			logger.info("Running components relation task...");
 
-			if(!relationAlg.hasFinal(groupComponents) || !relationAlg.hasInitial(groupComponents)){
+			if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
 				logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
 				hasErr = true;
 				errNumber ++;
@@ -84,9 +86,9 @@ public class ONStructureTask implements SONStructureVerification{
 			else{
 				hasErr = true;
 				errNumber = errNumber + iniStateResult.size();
-				for(Node event : iniStateResult){
-					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getComponentLabel(event) + ")  ");
+				for(Node node : iniStateResult){
+					errorousNodes.add(node);
+					logger.error("ERROR : Incorrect initial state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
@@ -97,9 +99,9 @@ public class ONStructureTask implements SONStructureVerification{
 			else{
 				hasErr = true;
 				errNumber = errNumber + finalStateResult.size();
-				for(Node event : finalStateResult){
-					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getComponentLabel(event) + ")  ");
+				for(Node node : finalStateResult){
+					errorousNodes.add(node);
+					logger.error("ERROR : Incorrect final state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
@@ -114,11 +116,11 @@ public class ONStructureTask implements SONStructureVerification{
 				errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
 				for(Node condition : postConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					logger.error("ERROR : Post set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 					}
 				for(Node condition : preConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					logger.error("ERROR : Pre set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 				}
 			}
 			logger.info("Components relation task complete.");
@@ -148,8 +150,8 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> iniStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event)
-				if(relationAlg.isInitial(node))
+			if(node instanceof Event ||node instanceof Block)
+				if(relation.isInitial(node))
 					result.add(node);
 		return result;
 	}
@@ -157,8 +159,8 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> finalStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event)
-				if(relationAlg.isFinal(node))
+			if(node instanceof Event || node instanceof Block)
+				if(relation.isFinal(node))
 					result.add(node);
 		return result;
 	}
@@ -167,7 +169,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Condition)
-				if(relationAlg.hasPostConflictEvents(node))
+				if(relation.hasPostConflictEvents(node))
 					result.add(node);
 		return result;
 	}
@@ -176,7 +178,7 @@ public class ONStructureTask implements SONStructureVerification{
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
 			if(node instanceof Condition)
-				if(relationAlg.hasPreConflictEvents(node))
+				if(relation.hasPreConflictEvents(node))
 					result.add(node);
 		return result;
 	}

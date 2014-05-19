@@ -42,16 +42,20 @@ public class TSONStructureTask implements SONStructureVerification{
 		//group info
 		logger.info("Initialising selected group elements...");
 
-		Collection<Block> blocks = new ArrayList<Block>();
+		Collection<Block> collapsedBlocks = new ArrayList<Block>();
+		Collection<Block> unCollapsedBlocks = new ArrayList<Block>();
 
-		for(ONGroup group : selectedGroups){
-			blocks.addAll(group.getBlocks());
-		}
+		for(ONGroup cGroup : selectedGroups)
+			collapsedBlocks.addAll(cGroup.getCollapsedBlocks());
+
+		for(ONGroup ucGroup : selectedGroups)
+			unCollapsedBlocks.addAll(ucGroup.getUncollapsedBlocks());
 
 		logger.info("Selected Groups = " +  selectedGroups.size());
-		logger.info("Block size = " + blocks.size());
+		logger.info("Collapsed Block size = " + collapsedBlocks.size());
+		logger.info("Un-collapsed Block size = " + unCollapsedBlocks.size());
 
-		for(Block block : blocks){
+		for(Block block : collapsedBlocks){
 			logger.info("Initialising block " +net.getName(block)+ " ...");
 			Collection<Node> inputs = tsonAlg.getBlockInputs(block);
 			Collection<Node> outputs = tsonAlg.getBlockOutputs(block);

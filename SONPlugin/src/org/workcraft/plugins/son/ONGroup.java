@@ -67,6 +67,24 @@ public class ONGroup extends PageNode{
 		return Hierarchy.getDescendantsOfType(this, Block.class);
 	}
 
+	public Collection<Block> getCollapsedBlocks(){
+		Collection<Block> result = new ArrayList<Block>();
+		for(Block block : getBlocks()){
+			if (block.getIsCollapsed())
+				result.add(block);
+		}
+		return result;
+	}
+
+	public Collection<Block> getUncollapsedBlocks(){
+		Collection<Block> result = new ArrayList<Block>();
+		for(Block block : getBlocks()){
+			if (!block.getIsCollapsed())
+				result.add(block);
+		}
+		return result;
+	}
+
 	public Collection<SONConnection> getSONConnections(){
 		return Hierarchy.getDescendantsOfType(this, SONConnection.class);
 	}

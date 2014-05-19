@@ -27,7 +27,8 @@ public class CSONPathAlg extends PathAlgorithm{
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
-					result.add(adjoin);
+					if(!result.contains(adjoin))
+						result.add(adjoin);
 
 					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
 						Node[] reAdjoin = new Node[2];

@@ -2,11 +2,7 @@ package org.workcraft.plugins.son.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
@@ -17,7 +13,7 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Event;
+
 
 public class CSONStructureTask implements SONStructureVerification{
 
@@ -72,10 +68,12 @@ public class CSONStructureTask implements SONStructureVerification{
 			hasErr = true;
 			errNumber = errNumber + cPlaceResult.size() + cPlaceConTypeResult.size();
 			for(ChannelPlace cPlace : cPlaceResult)
-				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
+						"input/output size > 1");
 
 			for(ChannelPlace cPlace : cPlaceConTypeResult)
-				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
+						"different input and output connection types");
 		}
 
 		//channel place structure
@@ -133,7 +131,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	private Collection<List<ChannelPlace>> cPlaceStructureTask(ArrayList<ChannelPlace> cPlaces){
+/*	private Collection<List<ChannelPlace>> cPlaceStructureTask(ArrayList<ChannelPlace> cPlaces){
 		Collection<List<ChannelPlace>> result = new HashSet<List<ChannelPlace>>();
 
 		//input/output events of each channel place
@@ -208,7 +206,7 @@ public class CSONStructureTask implements SONStructureVerification{
 			System.err.println("same nodes"+this.toString());
 
 		return result;
-	}
+	}*/
 
 	public void errNodesHighlight(){
 
