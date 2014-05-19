@@ -107,6 +107,8 @@ public class VisualSON extends AbstractVisualModel{
 				throw new InvalidConnectionException ("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
 			if (this.isInSameGroup(first, second))
 				throw new InvalidConnectionException ("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
+			if (this.isInBlock(first) || this.isInBlock(second))
+				throw new InvalidConnectionException ("Block cannot cross phases (Block)");
 			}
 		}
 
@@ -125,6 +127,15 @@ public class VisualSON extends AbstractVisualModel{
 				}
 			}
 
+		//block
+		if(first instanceof VisualBlock || second instanceof VisualBlock)
+			throw new InvalidConnectionException ("Connections from/to the block bounding are not valid (Block)");
+
+		if(first instanceof VisualEvent && isInBlock(second))
+			throw new InvalidConnectionException ("Block inputs must be conditions (Block)");
+
+		if(second instanceof VisualEvent && isInBlock(first))
+			throw new InvalidConnectionException ("Block outputs must be conditions (Block)");
 	}
 
 	private boolean isGrouped(Node node){
@@ -142,6 +153,13 @@ public class VisualSON extends AbstractVisualModel{
 				return true;
 			}
 		}
+		return false;
+	}
+
+	private boolean isInBlock(Node node){
+		for(VisualBlock block : this.getVisualBlocks())
+			if(block.getComponents().contains(node))
+				return true;
 		return false;
 	}
 

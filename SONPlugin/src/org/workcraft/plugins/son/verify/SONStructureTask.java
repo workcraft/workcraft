@@ -40,11 +40,6 @@ public class SONStructureTask implements Task<VerificationResult>{
 	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
 		clearConsole();
 		//all tasks
-/*		try {
-			vnet.connectToBlock();
-		} catch (InvalidConnectionException e1) {
-			e1.printStackTrace();
-		}*/
 
 		if(settings.getType() == 0){
 			SONStructureVerification groupSTask = new ONStructureTask(net);
@@ -56,7 +51,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 			SONStructureVerification bsonSTask = new BSONStructureTask(net);
 			bsonSTask.task(settings.getSelectedGroups());
 
-			SONStructureVerification tsonSTask = new TSONStructureTask(net);
+			SONStructureVerification tsonSTask = new TSONStructureTask(net, vnet);
 			tsonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
@@ -124,7 +119,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 
 		//TSON structure tasks
 		if(settings.getType() == 4){
-			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			TSONStructureTask tsonSTask = new TSONStructureTask(net, vnet);
 			tsonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){

@@ -10,6 +10,7 @@ import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
@@ -17,6 +18,7 @@ import org.workcraft.plugins.son.elements.Condition;
 public class TSONStructureTask implements SONStructureVerification{
 
 	private SONModel net;
+	private VisualSON vnet;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	private TSONAlg tsonAlg;
 	private PathAlgorithm onPathAlg;
@@ -28,8 +30,9 @@ public class TSONStructureTask implements SONStructureVerification{
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public TSONStructureTask(SONModel net){
+	public TSONStructureTask(SONModel net, VisualSON vnet){
 		this.net = net;
+		this.vnet = vnet;
 		tsonAlg  = new TSONAlg(net);
 		onPathAlg = new PathAlgorithm(net);
 	}
@@ -42,20 +45,15 @@ public class TSONStructureTask implements SONStructureVerification{
 		//group info
 		logger.info("Initialising selected group elements...");
 
-		Collection<Block> collapsedBlocks = new ArrayList<Block>();
-		Collection<Block> unCollapsedBlocks = new ArrayList<Block>();
+		Collection<Block> blocks = new ArrayList<Block>();
 
 		for(ONGroup cGroup : selectedGroups)
-			collapsedBlocks.addAll(cGroup.getCollapsedBlocks());
-
-		for(ONGroup ucGroup : selectedGroups)
-			unCollapsedBlocks.addAll(ucGroup.getUncollapsedBlocks());
+			blocks.addAll(cGroup.getBlocks());
 
 		logger.info("Selected Groups = " +  selectedGroups.size());
-		logger.info("Collapsed Block size = " + collapsedBlocks.size());
-		logger.info("Un-collapsed Block size = " + unCollapsedBlocks.size());
+		logger.info("Collapsed Block size = " + blocks.size());
 
-		for(Block block : collapsedBlocks){
+		for(Block block : blocks){
 			logger.info("Initialising block " +net.getName(block)+ " ...");
 			Collection<Node> inputs = tsonAlg.getBlockInputs(block);
 			Collection<Node> outputs = tsonAlg.getBlockOutputs(block);
@@ -70,9 +68,7 @@ public class TSONStructureTask implements SONStructureVerification{
 				outputNames.add(" "+net.getName(node) + " ");
 			logger.info(" outputs = "+ outputNames.toString() + " ");
 
-
-		logger.info("Running block structural checking tasks...");
-		//interface task result
+/*		//interface task result
 			Collection<Node> result = interfaceTask(block);
 			Collection<Node> result2 = phaseTask(block);
 			if(!result.isEmpty()){
@@ -91,9 +87,11 @@ public class TSONStructureTask implements SONStructureVerification{
 				+ net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 			}
 			else
-				logger.info("Correct block interface relation");
+				logger.info("Correct block interface relation");*/
 
 		//Causally Precede task result
+			logger.info("Running block structural checking tasks...");
+			vnet.connectToBlocksInside();
 			if(onPathAlg.cycleTask(block.getComponents()).isEmpty()){
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
@@ -110,11 +108,12 @@ public class TSONStructureTask implements SONStructureVerification{
 				logger.info("Warning : Block contians cyclic path, cannot run causally precede task: " + net.getName(block));
 			}
 			logger.info("block structural checking tasks complete");
+			vnet.connectToBlocks();
 		}
 	}
 
-
-	//Static check all inputs and outputs of a block
+//dynamic checking in VisualSON
+/*	//Static check all inputs and outputs of a block
 	private Collection<Node> interfaceTask(Block block){
 		Collection<Node> result = new ArrayList<Node>();
 
@@ -137,17 +136,18 @@ public class TSONStructureTask implements SONStructureVerification{
 				result.add(node);
 		}
 		return result;
-	}
+	}*/
 
-	//Check all inputs of a block causally precede all outputs of the block
+	//Check all inputs of a block causally precede all outputs of an un-collapsed block
 	//Warning: run cycle check before
 	private Collection<Node> CausallyPrecedeTask(Block block){
 		Collection<Node> result = new ArrayList<Node>();
-		for(Node input : tsonAlg.getBlockPNInputs(block)){
-			if(!tsonAlg.isCausallyPrecede(input, tsonAlg.getBlockPNOutputs(block))){
-				result.add(input);
+		if(!block.getIsCollapsed())
+			for(Node input : tsonAlg.getBlockPNInputs(block)){
+				if(!tsonAlg.isCausallyPrecede(input, tsonAlg.getBlockPNOutputs(block))){
+					result.add(input);
+				}
 			}
-		}
 		return result;
 	}
 

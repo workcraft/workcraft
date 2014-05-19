@@ -158,7 +158,7 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition[]> before(Event e){
+	public Collection<Condition[]> before(Node e){
 		Collection<Condition[]> result = new ArrayList<Condition[]>();
 		Condition[] pre = new Condition[1];
 		Condition[] post = new Condition[1];

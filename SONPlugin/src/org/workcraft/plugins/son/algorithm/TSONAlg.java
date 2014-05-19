@@ -24,12 +24,15 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		for(Node node:components){
-			for(Node pre : net.getPreset(node)){
-				if(!components.contains(pre))
-					result.add(pre);
+		if(!block.getIsCollapsed())
+			for(Node node:components){
+				for(Node pre : net.getPreset(node)){
+					if(!components.contains(pre))
+						result.add(pre);
+				}
 			}
-		}
+		else
+			result.addAll(net.getPreset(block));
 		return result;
 	}
 
@@ -40,12 +43,15 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		for(Node node: components){
-			for(Node post : net.getPostset(node)){
-				if(!components.contains(post))
-					result.add(post);
+		if(!block.getIsCollapsed())
+			for(Node node: components){
+				for(Node post : net.getPostset(node)){
+					if(!components.contains(post))
+						result.add(post);
+				}
 			}
-		}
+		else
+			result.addAll(net.getPostset(block));
 		return result;
 	}
 
@@ -56,12 +62,17 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		for(Node node:components){
-			for(Node pre : net.getPreset(node)){
-				if(!components.contains(pre) && net.getSONConnectionType(node, pre) == "POLYLINE")
-					result.add(pre);
+		if(!block.getIsCollapsed())
+			for(Node node:components){
+				for(Node pre : net.getPreset(node)){
+					if(!components.contains(pre) && net.getSONConnectionType(node, pre) == "POLYLINE")
+						result.add(pre);
+				}
 			}
-		}
+		else
+			for(Node pre : net.getPreset(block))
+				if(net.getSONConnectionType(block, pre) == "POLYLINE")
+					result.add(pre);
 
 		return result;
 	}
@@ -73,12 +84,17 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		for(Node node:components){
-			for(Node post : net.getPostset(node)){
-				if(!components.contains(post) && net.getSONConnectionType(node, post) == "POLYLINE")
-					result.add(post);
+		if(!block.getIsCollapsed())
+			for(Node node:components){
+				for(Node post : net.getPostset(node)){
+					if(!components.contains(post) && net.getSONConnectionType(node, post) == "POLYLINE")
+						result.add(post);
+				}
 			}
-		}
+		else
+			for(Node post : net.getPostset(block))
+				if(net.getSONConnectionType(block, post) == "POLYLINE")
+					result.add(post);
 
 		return result;
 	}
@@ -86,15 +102,15 @@ public class TSONAlg extends RelationAlgorithm{
 	/**
 	 * get cson-based inputs of a given block
 	 */
-	public Collection<Event> getBlockASynInputs(Block block){
-		Collection<Event> result = new HashSet<Event>();
+	public Collection<Node> getBlockASynInputs(Block block){
+		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
 		for(Node node:components){
-			if(node instanceof Event)
-				for(Event e : this.getPreASynEvents((Event)node)){
-					if(!components.contains(e))
-						result.add(e);
+			if(node instanceof Event || node instanceof Block)
+				for(Node pre : this.getPreASynEvents(node)){
+					if(!components.contains(pre) && pre!=null)
+						result.add(pre);
 				}
 		}
 		return result;
@@ -103,25 +119,18 @@ public class TSONAlg extends RelationAlgorithm{
 	/**
 	 * get cson-based outputs of a given block
 	 */
-	public Collection<Event> getBlockASynOutputs(Block block){
-		Collection<Event> result = new HashSet<Event>();
+	public Collection<Node> getBlockASynOutputs(Block block){
+		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
 		for(Node node:components){
-			if(node instanceof Event)
-				for(Event e : this.getPostASynEvents((Event)node)){
-					if(!components.contains(e))
-						result.add(e);
+			if(node instanceof Event || node instanceof Block)
+				for(Node post : this.getPostASynEvents(node)){
+					if(!components.contains(post) && post!=null)
+						result.add(post);
 				}
 		}
 		return result;
-	}
-
-	public boolean isInCollapsedBlock(Node node){
-		for(Block block : net.getBlocks())
-			if(block.getComponents().contains(node) && block.getIsCollapsed())
-				return true;
-		return false;
 	}
 
 	/**
