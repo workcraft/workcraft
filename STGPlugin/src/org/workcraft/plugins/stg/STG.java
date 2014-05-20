@@ -326,12 +326,13 @@ public class STG extends AbstractMathModel implements STGModel {
 				Set<Node> postset = getPostset(node);
 
 				if (!(preset.size() == 1 && postset.size() == 1)) {
+
 					throw new RuntimeException(
 							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
 
-				return "<"+referenceManager.getName(preset.iterator().next())
-							+ "," + referenceManager.getName(postset.iterator().next()) + ">";
+				return "<"+referenceManager.getNodeReference(null, preset.iterator().next())
+						+ "," + referenceManager.getNodeReference(null, postset.iterator().next()) + ">";
 
 			}
 		}

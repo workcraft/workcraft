@@ -272,8 +272,12 @@ public class STGNameManager implements NameManager<Node> {
 			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
 			return instance.getFirst() + "/" + instance.getSecond();
 		} else {
-			String name = defaultNameManager.getName(node);
-			return name;
+
+			if (node instanceof STGPlace && ((STGPlace)node).isImplicit()) {
+				return null;
+			}
+
+			return defaultNameManager.getName(node);
 		}
 	}
 

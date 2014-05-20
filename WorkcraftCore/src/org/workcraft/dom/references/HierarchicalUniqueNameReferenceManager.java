@@ -73,8 +73,8 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		node2namespace.remove(node);
 		nodeManager.node2namespace.remove(node);
 
-
-		if (provider!=oldProvider) {
+		// do not assign name if it wasn't assigned in the first place (eg. the implicit place)
+		if (name!=null&&provider!=oldProvider) {
 			NameManager<Node> oldMan = getNameManager(oldProvider);
 			NameManager<Node> newMan = getNameManager(provider);
 
