@@ -94,24 +94,12 @@ public class SON extends AbstractMathModel implements SONModel {
 		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
 	}
 
-	public Collection<Condition> getConditions(){
-		return Hierarchy.getDescendantsOfType(getRoot(), Condition.class);
-	}
-
-	public Collection<ChannelPlace> getChannelPlace(){
-		return Hierarchy.getDescendantsOfType(getRoot(), ChannelPlace.class);
-	}
-
-	public Collection<Event> getEvents(){
-		return Hierarchy.getDescendantsOfType(getRoot(),Event.class);
-	}
-
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result =  new ArrayList<Node>();
 
-		result.addAll(this.getConditions());
-		result.addAll(this.getEvents());
-		result.addAll(this.getChannelPlace());
+		for(Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class))
+			if(node instanceof Condition || node instanceof Event || node instanceof ChannelPlace)
+				result.add(node);
 
 		//remove the nodes in isolate blocks
 		for(Block block : this.getBlocks())
@@ -119,6 +107,28 @@ public class SON extends AbstractMathModel implements SONModel {
 				result.removeAll(block.getComponents());
 				result.add(block);
 			}
+
+		return result;
+	}
+
+	public Collection<Condition> getConditions(){
+		ArrayList<Condition> result =  new ArrayList<Condition>();
+		for(Node node : getComponents())
+			if(node instanceof Condition)
+				result.add((Condition)node);
+
+		return result;
+	}
+
+	public Collection<ChannelPlace> getChannelPlace(){
+		return Hierarchy.getDescendantsOfType(getRoot(), ChannelPlace.class);
+	}
+
+	public Collection<Event> getEvents(){
+		ArrayList<Event> result =  new ArrayList<Event>();
+		for(Node node : getComponents())
+			if(node instanceof Event)
+				result.add((Event)node);
 
 		return result;
 	}

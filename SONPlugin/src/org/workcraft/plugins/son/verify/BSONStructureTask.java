@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 
-public class BSONStructureTask implements SONStructureVerification{
+public class BSONStructureTask implements StructuralVerification{
 
 
 	private SONModel net;
@@ -28,10 +28,11 @@ public class BSONStructureTask implements SONStructureVerification{
 	private BSONAlg bsonAlg;
 	private BSONPathAlg bsonPathAlg;
 
-	private Collection<ONGroup> abstractGroupResult;
-	private Collection<HashSet<SONConnection>> bhvRelationResult;
-	private Collection<Condition> phaseTaskResult1, phaseTaskResult2;
-	private Collection<ArrayList<Node>> cycleResult;
+	private Collection<ONGroup> abstractGroupResult = new HashSet<ONGroup>();
+	private Collection<HashSet<SONConnection>> bhvRelationResult = new HashSet<HashSet<SONConnection>>();
+	private Collection<Condition> phaseTaskResult1 =  new HashSet<Condition>();
+	private Collection<Condition> phaseTaskResult2 = new HashSet<Condition>();
+	private Collection<ArrayList<Node>> cycleResult = new ArrayList<ArrayList<Node>>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -59,10 +60,15 @@ public class BSONStructureTask implements SONStructureVerification{
 		logger.info("Selected Groups = " +  groups.size());
 		logger.info("Group Components = " + components.size());
 
+		if(!net.getSONConnectionTypes(components).contains("BHVLINE")){
+			logger.info("Task termination: no behavioural connections in selected groups.");
+			return;
+		}
+
 		//Abstract level structure
 		logger.info("Running model strucuture and components relation check...");
 		logger.info("Running abstract group structure task...");
-		abstractGroupResult = invalidAbstractGroups(groups);
+		abstractGroupResult.addAll(invalidAbstractGroups(groups));
 		if(abstractGroupResult.isEmpty())
 			logger.info("Correct abstract group structure.");
 		else {
@@ -75,7 +81,7 @@ public class BSONStructureTask implements SONStructureVerification{
 
 		//bhv relation task
 		logger.info("Running behavioural groups structure task...");
-		bhvRelationResult = bhvRelationsTask(groups);
+		bhvRelationResult.addAll(bhvRelationsTask(groups));
 		if(bhvRelationResult.isEmpty())
 			logger.info("Correct behavioural relation");
 		else{
@@ -95,8 +101,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		logger.info("Running phase decomposition task...");
 		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
 
-		phaseTaskResult1 = phaseTask1(abstractGroups);
-		phaseTaskResult2 = new HashSet<Condition>();
+		phaseTaskResult1.addAll(phaseTask1(abstractGroups));
 
 			if(!phaseTaskResult1.isEmpty()){
 				hasErr = true;
@@ -138,7 +143,7 @@ public class BSONStructureTask implements SONStructureVerification{
 		//BSON cycle task
 		if(!hasErr){
 		logger.info("Running cycle detection...");
-		cycleResult = bsonPathAlg.cycleTask(components);
+		cycleResult.addAll(bsonPathAlg.cycleTask(components));
 
 		if (cycleResult.isEmpty() )
 			logger.info("Acyclic structure correct");
@@ -227,7 +232,7 @@ public class BSONStructureTask implements SONStructureVerification{
 	private Collection<Condition> phaseTask2(Collection<ONGroup> abstractGroups){
 		Collection<Condition> result = new HashSet<Condition>();
 		for(ONGroup group : abstractGroups)
-			for(Condition c : group.getConditions()){;
+			for(Condition c : group.getConditions()){
 				if(relationAlg.getPrePNSet(c).isEmpty()){
 					Collection<Condition> min = bsonAlg.getMinimalPhase(bsonAlg.getPhase(c));
 					for(Condition c2 : min)

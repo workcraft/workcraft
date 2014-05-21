@@ -11,10 +11,12 @@ import org.workcraft.plugins.son.elements.Event;
 public class TSONAlg extends RelationAlgorithm{
 
 	private SONModel net;
+	private RelationAlgorithm relation;
 
 	public TSONAlg(SONModel net) {
 		super(net);
 		this.net = net;
+		relation = new RelationAlgorithm(net);
 	}
 
 	/**
@@ -24,15 +26,17 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		if(!block.getIsCollapsed())
-			for(Node node:components){
-				for(Node pre : net.getPreset(node)){
-					if(!components.contains(pre))
-						result.add(pre);
-				}
+		for(Node node:components){
+			for(Node pre : net.getPreset(node)){
+				if(!components.contains(pre))
+					result.add(pre);
 			}
-		else
-			result.addAll(net.getPreset(block));
+			for(Node post : net.getPostset(node)){
+				if(!components.contains(post) && net.getSONConnectionType(node, post)=="SYNCLINE")
+					result.add(post);
+			}
+		}
+		result.addAll(net.getPreset(block));
 		return result;
 	}
 
@@ -43,15 +47,17 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		if(!block.getIsCollapsed())
-			for(Node node: components){
-				for(Node post : net.getPostset(node)){
-					if(!components.contains(post))
-						result.add(post);
-				}
+		for(Node node: components){
+			for(Node post : net.getPostset(node)){
+				if(!components.contains(post))
+					result.add(post);
 			}
-		else
-			result.addAll(net.getPostset(block));
+			for(Node pre : net.getPreset(node)){
+				if(!components.contains(pre) && net.getSONConnectionType(node, pre)=="SYNCLINE")
+					result.add(pre);
+			}
+		}
+		result.addAll(net.getPostset(block));
 		return result;
 	}
 
@@ -62,17 +68,15 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		if(!block.getIsCollapsed())
-			for(Node node:components){
-				for(Node pre : net.getPreset(node)){
-					if(!components.contains(pre) && net.getSONConnectionType(node, pre) == "POLYLINE")
-						result.add(pre);
-				}
-			}
-		else
-			for(Node pre : net.getPreset(block))
-				if(net.getSONConnectionType(block, pre) == "POLYLINE")
+		for(Node node:components){
+			for(Node pre : net.getPreset(node)){
+				if(!components.contains(pre) && net.getSONConnectionType(node, pre) == "POLYLINE")
 					result.add(pre);
+			}
+		}
+		for(Node pre : net.getPreset(block))
+			if(net.getSONConnectionType(block, pre) == "POLYLINE")
+				result.add(pre);
 
 		return result;
 	}
@@ -84,17 +88,15 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> components = block.getComponents();
 
-		if(!block.getIsCollapsed())
-			for(Node node:components){
-				for(Node post : net.getPostset(node)){
-					if(!components.contains(post) && net.getSONConnectionType(node, post) == "POLYLINE")
-						result.add(post);
-				}
-			}
-		else
-			for(Node post : net.getPostset(block))
-				if(net.getSONConnectionType(block, post) == "POLYLINE")
+		for(Node node:components){
+			for(Node post : net.getPostset(node)){
+				if(!components.contains(post) && net.getSONConnectionType(node, post) == "POLYLINE")
 					result.add(post);
+			}
+		}
+		for(Node post : net.getPostset(block))
+			if(net.getSONConnectionType(block, post) == "POLYLINE")
+				result.add(post);
 
 		return result;
 	}
@@ -137,7 +139,7 @@ public class TSONAlg extends RelationAlgorithm{
 	 * check if a given input causally precede all outputs
 	 */
 	public boolean isCausallyPrecede (Node input, Collection<Node> outputs){
-		for(Node post : net.getPostset(input)){
+		for(Node post : relation.getPostPNSet(input)){
 			if(outputs.contains(post))
 				outputs.remove(post);
 			else

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.Event;
 
@@ -41,8 +42,8 @@ public class BSONPathAlg extends PathAlgorithm{
 
 				}
 			}
-			if(n instanceof Event)
-				result.addAll(bsonAlg.before((Event)n));
+			if(n instanceof Event || n instanceof Block)
+				result.addAll(bsonAlg.before(n));
 		}
 		return result;
 	}

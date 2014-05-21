@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -223,11 +224,11 @@ public class BSONAlg extends RelationAlgorithm{
 			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
 
 			for(Node n : preMaxI){
-				if(n instanceof Event)
-				PREpreMaxI.addAll(this.getPREset((Event)n));}
+				if(n instanceof Event || n instanceof Block)
+				PREpreMaxI.addAll(this.getPREset(n));}
 			for(Node n : postMinI2){
-				if(n instanceof Event)
-				POSTpostMinI2.addAll(this.getPOSTset((Event)n));}
+				if(n instanceof Event || n instanceof Block)
+				POSTpostMinI2.addAll(this.getPOSTset(n));}
 
 			for(Condition c0 : PREpreMaxI){
 				for(Condition c1 : POSTpostMinI2){

@@ -16,16 +16,16 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
 
-public class ONStructureTask implements SONStructureVerification{
+public class ONStructureTask implements StructuralVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private Collection<Node> errorousNodes = new HashSet<Node>();
-	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
-
 	private PathAlgorithm onPathAlg;
 	private RelationAlgorithm relation;
+
+	private Collection<Node> errorousNodes = new HashSet<Node>();
+	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -72,10 +72,10 @@ public class ONStructureTask implements SONStructureVerification{
 			logger.info("Running components relation task...");
 
 			if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
-				logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
+				logger.error("ERROR : Occurrence net must have at least one initial state and one final state \n");
 				hasErr = true;
 				errNumber ++;
-				return;
+				continue;
 			}
 
 			//initial state result

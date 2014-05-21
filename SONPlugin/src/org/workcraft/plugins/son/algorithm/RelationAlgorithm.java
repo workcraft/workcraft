@@ -186,10 +186,11 @@ public class RelationAlgorithm{
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node pre : net.getPreset(c))
-			if(pre instanceof Event && net.getSONConnectionType(c, pre) == "POLYLINE")
-				for(Node n2 : net.getPreset(pre))
-					if(n2 instanceof Condition && net.getSONConnectionType(pre, n2)== "POLYLINE")
-						result.add((Condition)n2);
+			if(pre instanceof Event || pre instanceof Block)
+				if(net.getSONConnectionType(c, pre) == "POLYLINE")
+					for(Node n2 : net.getPreset(pre))
+						if(n2 instanceof Condition && net.getSONConnectionType(pre, n2)== "POLYLINE")
+							result.add((Condition)n2);
 
 		return result;
 	}
@@ -200,10 +201,11 @@ public class RelationAlgorithm{
 	public Collection<Condition> getPostPNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node post : net.getPostset(c))
-			if(post instanceof Event && net.getSONConnectionType(c, post)=="POLYLINE")
-				for(Node n2 : net.getPostset(post))
-					if(n2 instanceof Condition && net.getSONConnectionType(post, n2) == "POLYLINE")
-						result.add((Condition)n2);
+			if(post instanceof Event || post instanceof Block)
+				if(net.getSONConnectionType(c, post)=="POLYLINE")
+					for(Node n2 : net.getPostset(post))
+						if(n2 instanceof Condition && net.getSONConnectionType(post, n2) == "POLYLINE")
+							result.add((Condition)n2);
 
 		return result;
 	}
@@ -283,7 +285,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PRE-conditions (PN and CSON-based) of a given event.
+	 * get all PRE-conditions (PN and CSON-based) of a given event or block.
 	 */
 	public Collection<Condition> getPREset(Node e){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -311,7 +313,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all POST-conditions (PN and CSON-based) of a given event.
+	 * get all POST-conditions (PN and CSON-based) of a given event or block.
 	 */
 	public Collection<Condition> getPOSTset(Node e){
 		Collection<Condition> result = new ArrayList<Condition>();

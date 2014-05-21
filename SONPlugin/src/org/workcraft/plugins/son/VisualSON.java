@@ -42,6 +42,7 @@ public class VisualSON extends AbstractVisualModel{
 	private String group="Invalid Group Selection";
 	private String superGroup="Invalid Super Group Selection";
 	private String block="Invalid Block Selection";
+	private String blockConnection="Block Connection Error";
 	private SON net;
 
 	public VisualSON(SON model){
@@ -128,9 +129,6 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		//block
-		if(first instanceof VisualBlock || second instanceof VisualBlock)
-			throw new InvalidConnectionException ("Connections from/to the block bounding are not valid (Block)");
-
 		if(first instanceof VisualEvent && isInBlock(second))
 			throw new InvalidConnectionException ("Block inputs must be conditions (Block)");
 
@@ -655,7 +653,10 @@ public class VisualSON extends AbstractVisualModel{
 	}
 
 
-	public void connectToBlocks(){
+	public boolean connectToBlocks(){
+		if(!this.beforeConToBlock())
+			return false;
+
 		for(VisualBlock vBlock : this.getVisualBlocks()){
 			if(vBlock.getIsCollapsed() && this.getConnections(vBlock).isEmpty()){
 				Map<VisualComponent[], SONConnectionType> inputs = this.getBlockInputRelations(vBlock);
@@ -700,9 +701,11 @@ public class VisualSON extends AbstractVisualModel{
 			 	}
 			}
 		}
+		return true;
 	}
 
-	public void connectToBlocksInside(){
+	public boolean connectToBlocksInside(){
+
 		for(VisualBlock vBlock : this.getVisualBlocks()){
 			if(!this.getConnections(vBlock).isEmpty()){
 				Map<VisualComponent[], SONConnectionType> inputs = vBlock.getInputRelations();
@@ -740,7 +743,43 @@ public class VisualSON extends AbstractVisualModel{
 				}
 			}
 		}
+		return true;
 	}
+
+	private boolean beforeConToBlock(){
+		Collection<String> errBlocks = new ArrayList<String>();
+		boolean err = true;
+
+		for(VisualBlock block : this.getVisualBlocks()){
+			if(!net.getPreset(block.getMathBlock()).isEmpty() || !net.getPostset(block.getMathBlock()).isEmpty()){
+				err = false;
+				errBlocks.add(net.getName(block.getMathBlock())+" ");
+				block.setForegroundColor(SONSettings.getRelationErrColor());
+				}
+		}
+		if(!err)
+			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
+					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+		return err;
+	}
+
+/*	private boolean beforeConToInside(){
+		Collection<String> errBlocks = new ArrayList<String>();
+		boolean err = true;
+
+		for(VisualBlock block : this.getVisualBlocks()){
+			if(block.getIsCollapsed())
+				if(block.getInputRelations().isEmpty() || block.getOutputRelations().isEmpty()){
+					err = false;
+					errBlocks.add(net.getName(block.getMathBlock())+" ");
+				}
+
+		}
+		if(!err)
+			JOptionPane.showMessageDialog(null, "Lost block connection information, reconnect block again"+ errBlocks.toString(),
+					blockConnection, JOptionPane.WARNING_MESSAGE);
+		return true;
+	}*/
 
 	private Map<VisualComponent[], SONConnectionType> getBlockInputRelations(VisualBlock vBlock){
 		 Map<VisualComponent[], SONConnectionType> result = new HashMap<VisualComponent[], SONConnectionType>();

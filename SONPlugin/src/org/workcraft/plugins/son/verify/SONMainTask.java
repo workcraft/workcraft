@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -15,25 +14,18 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
-public class SONStructureTask implements Task<VerificationResult>{
+public class SONMainTask implements Task<VerificationResult>{
 
 	private SONModel net;
-	private VisualSON vnet;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private StructureVerifySettings settings;
-	private int totalErrNum;
+	private int totalErrNum = 0;
 	private int totalWarningNum = 0;
 
-	public SONStructureTask(StructureVerifySettings settings, SONModel net){
+	public SONMainTask(StructureVerifySettings settings, SONModel net){
 		this.settings = settings;
 		this.net = net;
-	}
-
-	public SONStructureTask(StructureVerifySettings settings, SONModel net, VisualSON vnet){
-		this.settings = settings;
-		this.net = net;
-		this.vnet = vnet;
 	}
 
 	@Override
@@ -42,23 +34,20 @@ public class SONStructureTask implements Task<VerificationResult>{
 		//all tasks
 
 		if(settings.getType() == 0){
-			SONStructureVerification groupSTask = new ONStructureTask(net);
+
+			StructuralVerification groupSTask = new ONStructureTask(net);
 			groupSTask.task(settings.getSelectedGroups());
 
-			SONStructureVerification csonSTask = new CSONStructureTask(net, vnet);
+			StructuralVerification csonSTask = new CSONStructureTask(net);
 			csonSTask.task(settings.getSelectedGroups());
 
-			SONStructureVerification bsonSTask = new BSONStructureTask(net);
+			StructuralVerification bsonSTask = new BSONStructureTask(net);
 			bsonSTask.task(settings.getSelectedGroups());
-
-			SONStructureVerification tsonSTask = new TSONStructureTask(net, vnet);
-			tsonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
 				groupSTask.errNodesHighlight();
 				csonSTask.errNodesHighlight();
 				bsonSTask.errNodesHighlight();
-				tsonSTask.errNodesHighlight();
 			}
 
 			totalErrNum = groupSTask.getErrNumber();
@@ -72,6 +61,8 @@ public class SONStructureTask implements Task<VerificationResult>{
 
 			if(settings.getOuputBefore())
 				outputBefore();
+
+			//continue TSON verification
 
 		}
 
@@ -87,11 +78,12 @@ public class SONStructureTask implements Task<VerificationResult>{
 
 			totalErrNum = groupSTask.getErrNumber();
 			totalWarningNum = groupSTask.getWarningNumber();
+
 		}
 
 		//CSON structure tasks
 		if(settings.getType() == 2){
-			CSONStructureTask csonSTask = new CSONStructureTask(net, vnet);
+			CSONStructureTask csonSTask = new CSONStructureTask(net);
 			csonSTask.task(settings.getSelectedGroups());
 
 			if(settings.getErrNodesHighlight()){
@@ -99,6 +91,7 @@ public class SONStructureTask implements Task<VerificationResult>{
 			}
 			totalErrNum = totalErrNum + csonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
+
 		}
 
 		//BSON structure tasks
@@ -116,28 +109,6 @@ public class SONStructureTask implements Task<VerificationResult>{
 			if(settings.getOuputBefore())
 				outputBefore();
 		}
-
-		//TSON structure tasks
-		if(settings.getType() == 4){
-			TSONStructureTask tsonSTask = new TSONStructureTask(net, vnet);
-			tsonSTask.task(settings.getSelectedGroups());
-
-			if(settings.getErrNodesHighlight()){
-				tsonSTask.errNodesHighlight();
-			}
-
-			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
-			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
-		}
-
-		logger.info("\n\nVerification-Result : "+ this.getTotalErrNum() + " Error(s), " + this.getTotalWarningNum() + " Warning(s).");
-
-/*
-		try {
-			vnet.connectToBlockNode();
-		} catch (InvalidConnectionException e1) {
-			e1.printStackTrace();
-		}*/
 
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}

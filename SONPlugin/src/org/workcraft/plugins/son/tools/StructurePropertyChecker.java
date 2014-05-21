@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.tools;
 
+import org.apache.log4j.Logger;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.OutputRedirect;
@@ -7,7 +8,8 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.StructureVerifyDialog;
-import org.workcraft.plugins.son.verify.SONStructureTask;
+import org.workcraft.plugins.son.verify.SONMainTask;
+import org.workcraft.plugins.son.verify.TSONMainTask;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -15,6 +17,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class StructurePropertyChecker implements Tool {
 
 	private final Framework framework;
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public StructurePropertyChecker(Framework framework){
 
@@ -45,11 +48,24 @@ public class StructurePropertyChecker implements Tool {
 		dialog.setVisible(true);
 
 		if (dialog.getRun() == 1){
+			//Change connections from block inside to bounding.
+			if(!vnet.connectToBlocks())
+				return;
+
 			OutputRedirect.Redirect();
-			vnet.connectToBlocks();
-			//framework.getTaskManager().queue(new SONStructureTask(dialog.getSetting(), net, vnet), "Verification");
-			framework.getTaskManager().execute(new SONStructureTask(dialog.getSetting(), net, vnet), "Verification");
+
+			SONMainTask sonTask = new SONMainTask(dialog.getSetting(), net);
+			framework.getTaskManager().execute(sonTask, "Verification");
+			//Change connections from block bounding to inside.
 			vnet.connectToBlocksInside();
+
+			TSONMainTask tsonTask = new TSONMainTask(dialog.getSetting(), net);
+			framework.getTaskManager().execute(tsonTask, "Verification");
+
+			int err = sonTask.getTotalErrNum() + tsonTask.getTotalErrNum();
+			int warning = sonTask.getTotalWarningNum() + tsonTask.getTotalWarningNum();
+
+			logger.info("\n\nVerification-Result : "+ err + " Error(s), " + warning + " Warning(s).");
 		}
 	}
 }
