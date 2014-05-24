@@ -9,16 +9,15 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
-public class ErrorTracingAlg extends SimulationAlg{
+public class ErrorTracingAlg extends RelationAlgorithm{
 
 	private SONModel net;
-	private RelationAlg relation;
+	private BSONAlg bsonAlg;
 
 	public ErrorTracingAlg(SONModel net){
 		super(net);
+		bsonAlg = new BSONAlg(net);
 		this.net = net;
-		relation =  new RelationAlg(net);
-
 	}
 
 	//Forward error tracing
@@ -107,7 +106,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 				((Condition)post).setErrors(err);
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 					}
 			}
@@ -140,7 +139,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 						((Condition)post).setErrors(err);
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 							}
 					}
@@ -228,7 +227,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 			if(post instanceof Condition){
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 					}
 				((Condition)post).setErrors(((Condition)post).getErrors() - err);
@@ -262,7 +261,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 					if(post instanceof Condition){
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 							}
 						((Condition)post).setErrors(((Condition)post).getErrors() - err);

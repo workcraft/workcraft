@@ -3,28 +3,23 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.VisualBlock;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection;
 
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TestTool implements Tool{
+public class TestTool2 implements Tool{
 
 	private final Framework framework;
 
-	public TestTool(Framework framework){
+	public TestTool2(Framework framework){
 
 		this.framework = framework;
 
@@ -41,7 +36,7 @@ public class TestTool implements Tool{
 	}
 
 	public String getDisplayName(){
-		return "Test";
+		return "Test2";
 	}
 
 	public void run(WorkspaceEntry we){
@@ -49,43 +44,16 @@ public class TestTool implements Tool{
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
-		//relation(net, vnet);
-	}
-
-	private void relation(SONModel net, VisualSON vnet){
-		for(Node node : net.getComponents()){
-			System.out.println("node name: "+net.getName(node) + "  node pre size:" + net.getPreset(node).size()
-					+ "  node post size:" + net.getPostset(node).size());
-		}
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){
-		for(Node node : net.getSONConnections()){
-			System.out.println("before "+net.getName(node)+ " parent "+ node.getParent().toString() + " type = " + ((SONConnection)node).getType());
-	}
-			vnet.connectToBlocks();
-			System.out.println("node size =" + net.getComponents().size());
-			for(Node node : net.getSONConnections()){
-					System.out.println("after "+net.getName(node)+ " parent "+ node.getParent().toString() + " type = " + ((SONConnection)node).getType());
-			}
-	}
-	*/
+		System.out.println("vcon size " + vnet.getVisualConnections().size());
 
-	private void blockMathLevelTest(SONModel net, VisualSON vnet){
-		for(Block block : net.getBlocks()){
-			System.out.println("block name :" + net.getName(block));
-			System.out.println("connection size : " + block.getSONConnections().size());
-		}
+				vnet.connectToBlocksInside();
 
-		for(VisualBlock block : vnet.getVisualBlocks()){
-			System.out.println("visual block name :" + vnet.getName(block));
-			System.out.println("connection size : " + block.getVisualSONConnections().size());
-		}
-
-	}
+	}*/
 
 	private void mathLevelTest(SONModel net, VisualSON vnet){
 		for(ONGroup group: net.getGroups()){

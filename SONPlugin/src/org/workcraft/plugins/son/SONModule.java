@@ -16,6 +16,7 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
 import org.workcraft.plugins.son.tools.TestTool;
+import org.workcraft.plugins.son.tools.TestTool2;
 import org.workcraft.plugins.son.tools.TokenRefreshTool;
 //import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -28,6 +29,7 @@ public class SONModule implements Module{
 		framework.getPluginManager().registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		framework.getPluginManager().registerClass(SettingsPage.class, SONSettings.class);
 		framework.getPluginManager().registerClass(Tool.class, TestTool.class, framework);
+		framework.getPluginManager().registerClass(Tool.class, TestTool2.class, framework);
 		//structural verification
 		framework.getPluginManager().registerClass(Tool.class, StructurePropertyChecker.class, framework);
 		//Custom tools

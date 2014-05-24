@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.workcraft.plugins.son.ONGroup;
 
-public interface SONStructureVerification {
+public interface StructuralVerification {
 
 	public void task(Collection<ONGroup> selectedGroups);
 

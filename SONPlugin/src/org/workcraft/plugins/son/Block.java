@@ -15,13 +15,20 @@ import org.workcraft.util.Hierarchy;
 
 public class Block extends PageNode{
 	private String label="";
-	private Color color = CommonVisualSettings.getBorderColor();
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
+	private Color fillColor  = CommonVisualSettings.getFillColor();
+	private boolean isCollapsed = false;
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
 		result.addAll(getConditions());
 		result.addAll(getEvents());
 		return result;
+	}
+
+	public void setIsCollapsed(boolean isCollapsed) {
+		this.isCollapsed = isCollapsed;
+		sendNotification( new PropertyChangedEvent(this, "isCollapsed") );
 	}
 
 	public Collection<Condition> getConditions(){
@@ -45,12 +52,25 @@ public class Block extends PageNode{
 	}
 
 	public void setForegroundColor(Color color){
-		this.color = color;
+		this.foregroundColor = color;
 		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
 	}
 
 	public Color getForegroundColor(){
-		return color;
+		return foregroundColor;
+	}
+
+	public void setFillColor(Color color){
+		this.fillColor = color;
+		sendNotification(new PropertyChangedEvent(this, "fill color"));
+	}
+
+	public Color getFillColor(){
+		return fillColor;
+	}
+
+	public boolean getIsCollapsed() {
+		return isCollapsed;
 	}
 
 	public void setLabel(String label){

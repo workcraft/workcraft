@@ -5,18 +5,19 @@ import java.util.Collection;
 import java.util.List;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.Event;
 
-public class BSONPathAlg extends ONPathAlg{
+public class BSONPathAlg extends PathAlgorithm{
 
 	private SONModel net;
-	private RelationAlg alg;
+	private BSONAlg bsonAlg;
 
 	public BSONPathAlg(SONModel net){
 		super(net);
 		this.net = net;
-		alg =new RelationAlg(net);
+		bsonAlg =new BSONAlg(net);
 	}
 
 	@Override
@@ -26,24 +27,23 @@ public class BSONPathAlg extends ONPathAlg{
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n))
-				if(nodes.contains(next) && !net.getSONConnections(n, next).contains("BHVLINE")){
+				if(nodes.contains(next) && net.getSONConnectionType(n, next) != "BHVLINE"){
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
 					result.add(adjoin);
 
-					for (String conType :  net.getSONConnectionTypes(n, next)){
-						if(conType == "SYNCLINE"){
-							Node[] reAdjoin = new Node[2];
-							reAdjoin[0] = next;
-							reAdjoin[1] = n;
-							if(!result.contains(reAdjoin))
-								result.add(reAdjoin);
-					}
+					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+						Node[] reAdjoin = new Node[2];
+						reAdjoin[0] = next;
+						reAdjoin[1] = n;
+						if(!result.contains(reAdjoin))
+							result.add(reAdjoin);
+
 				}
 			}
-			if(n instanceof Event)
-				result.addAll(alg.before((Event)n));
+			if(n instanceof Event || n instanceof Block)
+				result.addAll(bsonAlg.before(n));
 		}
 		return result;
 	}
@@ -52,8 +52,8 @@ public class BSONPathAlg extends ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cyclePathFilter(cycleResult);

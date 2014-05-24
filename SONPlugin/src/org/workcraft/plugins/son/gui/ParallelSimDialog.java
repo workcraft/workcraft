@@ -171,7 +171,7 @@ public class ParallelSimDialog  extends JDialog{
 										}
 									}
 								item.setForegroudColor(Color.BLUE);
-								alg.clearEventSet();
+								alg.clearAll();
 							}
 
 							if(!item.isSelected() ){
@@ -198,7 +198,7 @@ public class ParallelSimDialog  extends JDialog{
 									}
 								}
 								item.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
-								alg.clearEventSet();
+								alg.clearAll();
 							}
 
 							for(int i=0; i<list.getModel().getSize(); i++)
