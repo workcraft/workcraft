@@ -6,12 +6,12 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
+import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask implements StructuralVerification{
 

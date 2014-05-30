@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.elements;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -9,15 +9,14 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.util.Hierarchy;
 
-public class Block extends PageNode{
+public class Block extends PageNode implements EventNode{
 	private String label="";
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
+	private Boolean faulty = false;
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -49,6 +48,16 @@ public class Block extends PageNode{
 
 	public Collection<SONConnection> getSONConnections(){
 		return Hierarchy.getDescendantsOfType(this, SONConnection.class);
+	}
+
+	@Override
+	public void setFaulty(boolean faulty) {
+		this.faulty =faulty;
+	}
+
+	@Override
+	public boolean isFaulty(){
+		return faulty;
 	}
 
 	public void setForegroundColor(Color color){

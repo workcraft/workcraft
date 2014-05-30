@@ -5,13 +5,14 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
 public class RelationAlgorithm{
 
@@ -211,13 +212,13 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous (Communication-SON) pre-events of a given event
+	 * get all asynchronous (Communication-SON) pre-events of a given event node
 	 */
-	public Collection<Event> getPreAsynEvents (Event e){
-		Collection<Event> result = new ArrayList<Event>();
+	public Collection<EventNode> getPreAsynEvents (EventNode e){
+		Collection<EventNode> result = new ArrayList<EventNode>();
 		for(Node node : net.getPreset(e)){
 			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
-				Event node2 = (Event)net.getPreset(node).iterator().next();
+				EventNode node2 = (EventNode)net.getPreset(node).iterator().next();
 				result.add(node2);
 			}
 		}
@@ -225,13 +226,13 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous (Communication-SON) post-events of a given event
+	 * get all asynchronous (Communication-SON) post-events of a given event node
 	 */
-	public Collection<Event> getPostAsynEvents (Event e){
-		Collection<Event> result = new ArrayList<Event>();
+	public Collection<EventNode> getPostAsynEvents (EventNode e){
+		Collection<EventNode> result = new ArrayList<EventNode>();
 		for(Node node : net.getPostset(e) )
 			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
-				Event node2 = (Event)net.getPostset(node).iterator().next();
+				EventNode node2 = (EventNode)net.getPostset(node).iterator().next();
 				result.add(node2);
 				}
 		return result;

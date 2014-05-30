@@ -285,4 +285,11 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 			button.setEnabled(state);
 		}
 	}
+
+	public void setToolButtonSelected(GraphEditorTool tool, boolean state) {
+		JToggleButton button = buttons.get(tool);
+		if (button != null){
+			button.setSelected(state);
+		}
+	}
 }

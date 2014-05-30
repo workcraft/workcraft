@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Event;
 
 public class TSONAlg extends RelationAlgorithm{

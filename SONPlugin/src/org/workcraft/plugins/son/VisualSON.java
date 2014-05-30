@@ -28,6 +28,8 @@ import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.elements.Block;
+import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
@@ -707,7 +709,7 @@ public class VisualSON extends AbstractVisualModel{
 	public boolean connectToBlocksInside(){
 
 		for(VisualBlock vBlock : this.getVisualBlocks()){
-			if(!this.getConnections(vBlock).isEmpty()){
+			if( !vBlock.getInputRelations().isEmpty() && !vBlock.getInputRelations().isEmpty()){
 				Map<VisualComponent[], SONConnectionType> inputs = vBlock.getInputRelations();
 				Map<VisualComponent[], SONConnectionType> outputs = vBlock.getOutputRelations();
 
@@ -749,17 +751,17 @@ public class VisualSON extends AbstractVisualModel{
 	private boolean beforeConToBlock(){
 		Collection<String> errBlocks = new ArrayList<String>();
 		boolean err = true;
-
 		for(VisualBlock block : this.getVisualBlocks()){
-			if(!net.getPreset(block.getMathBlock()).isEmpty() || !net.getPostset(block.getMathBlock()).isEmpty()){
+			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
 				err = false;
-				errBlocks.add(net.getName(block.getMathBlock())+" ");
+				errBlocks.add(net.getName(block.getReferencedComponent())+" ");
 				block.setForegroundColor(SONSettings.getRelationErrColor());
 				}
 		}
-		if(!err)
+		if(!err){
 			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
 					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+		}
 		return err;
 	}
 
