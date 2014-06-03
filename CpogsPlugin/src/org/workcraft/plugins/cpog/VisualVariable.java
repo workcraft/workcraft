@@ -52,13 +52,13 @@ public class VisualVariable extends VisualComponent {
 	private static Font valueFont;
 
 	private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
-			VariableState.FALSE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+			VariableState.FALSE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
-			VariableState.TRUE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+			VariableState.TRUE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
-			VariableState.UNDEFINED.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.2));
+			VariableState.UNDEFINED.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
 

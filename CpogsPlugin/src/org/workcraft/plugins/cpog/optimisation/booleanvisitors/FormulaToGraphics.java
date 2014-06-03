@@ -119,7 +119,11 @@ public class FormulaToGraphics
 
 		glyphs = font.createGlyphVector(fontRenderContext, "" + c);
 
-		result.boundingBox = glyphs.getLogicalBounds();
+		result.boundingBox = glyphs.getVisualBounds();
+		result.boundingBox.add(new Point2D.Double(
+				glyphs.getLogicalBounds().getMaxX(),
+				glyphs.getLogicalBounds().getMinY()));
+
 		result.visualTop = glyphs.getVisualBounds().getMinY();
 
 		result.glyphs = new ArrayList<GlyphVector>();
@@ -328,9 +332,7 @@ public class FormulaToGraphics
 				res.boundingBox.getMinX(), res.visualTop,
 				res.boundingBox.getMaxX(), res.visualTop));
 
-
 			res.boundingBox.add(new Point2D.Double(res.boundingBox.getMaxX(), res.boundingBox.getMinY() - font.getSize2D() / 8.0));
-
 			return res;
 		}
 	}
