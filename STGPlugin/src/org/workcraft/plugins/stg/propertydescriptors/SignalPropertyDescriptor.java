@@ -43,7 +43,6 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		transition.setSignalName((String)value);
 		stg.setName(transition, (String)value);
 	}
 
