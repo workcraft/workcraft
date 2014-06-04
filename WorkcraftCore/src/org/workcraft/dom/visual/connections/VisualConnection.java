@@ -353,8 +353,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	@Override
 	public double getArrowLength() {
-		if (!hasArrow())
-			return 0.0;
+		if (!hasArrow()) return 0.0;
 		return arrowLength;
 	}
 

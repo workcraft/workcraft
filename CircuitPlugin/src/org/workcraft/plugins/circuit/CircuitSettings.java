@@ -13,61 +13,24 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class CircuitSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static boolean showContacts = true;
-	private static boolean showArrows = true;
-	private static Color activeWireColor = new Color(1.0f, 0.0f, 0.0f);
-	private static Double componentBorderWidth=1.0;
-	private static Double circuitWireWidth=1.0;
+	private static final String prefix = "CircuitSettings";
+	private static final String keyShowContacts  = prefix + ".showContacts";
+	private static final String keyActiveWireColor  = prefix + ".activeWireColor";
+	private static final String keyInactiveWireColor  = prefix + ".inactiveWireColor";
+	private static final String keyBorderWidth  = prefix + ".borderWidth";
+	private static final String keyWireWidth  = prefix + ".wireWidth";
 
-	public static double getComponentBorderWidth() {
-		return componentBorderWidth;
-	}
+	private static final boolean defaultShowContacts = true;
+	private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
+	private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
+	private static final Double defaultBorderWidth = 0.06;
+	private static final Double defaultWireWidth = 0.04;
 
-	public static void setComponentBorderWidth(double componentBorderWidth) {
-		CircuitSettings.componentBorderWidth = componentBorderWidth;
-	}
-
-	public static double getCircuitWireWidth() {
-		return circuitWireWidth;
-	}
-
-	public static void setCircuitWireWidth(double circuitWireWidth) {
-		CircuitSettings.circuitWireWidth = circuitWireWidth;
-	}
-
-	public static boolean getShowContacts() {
-		return showContacts;
-	}
-
-	public static void setShowContacts(boolean showContacts) {
-		CircuitSettings.showContacts = showContacts;
-	}
-
-	public static boolean getShowArrows() {
-		return CircuitSettings.showArrows;
-	}
-
-	public static void setShowArrows(boolean showArrows) {
-		CircuitSettings.showArrows = showArrows;
-	}
-
-	public static Color getActiveWireColor() {
-		return CircuitSettings.activeWireColor;
-	}
-
-	public static void setActiveWireColor(Color activeWireColor) {
-		CircuitSettings.activeWireColor = activeWireColor;
-	}
-
-	public static Color getInactiveWireColor() {
-		return inactiveWireColor;
-	}
-
-	public static void setInactiveWireColor(Color inactiveWireColor) {
-		CircuitSettings.inactiveWireColor = inactiveWireColor;
-	}
-
-	private static Color inactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
+	private static boolean showContacts = defaultShowContacts;
+	private static Color activeWireColor = defaultActiveWireColor;
+	private static Color inactiveWireColor = defaultInactiveWireColor;
+	private static Double borderWidth = defaultBorderWidth;
+	private static Double wireWidth = defaultWireWidth;
 
 	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
@@ -84,16 +47,6 @@ public class CircuitSettings implements SettingsPage {
 			}
 			protected Boolean getter(CircuitSettings object) {
 				return CircuitSettings.getShowContacts();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-				this, "Show arrows", Boolean.class) {
-			protected void setter(CircuitSettings object, Boolean value) {
-				CircuitSettings.setShowArrows(value);
-			}
-			protected Boolean getter(CircuitSettings object) {
-				return CircuitSettings.getShowArrows();
 			}
 		});
 
@@ -118,22 +71,22 @@ public class CircuitSettings implements SettingsPage {
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-				this, "Component width", Double.class) {
+				this, "Border width", Double.class) {
 			protected void setter(CircuitSettings object, Double value) {
-				CircuitSettings.setComponentBorderWidth(value);
+				CircuitSettings.setBorderWidth(value);
 			}
 			protected Double getter(CircuitSettings object) {
-				return CircuitSettings.getComponentBorderWidth();
+				return CircuitSettings.getBorderWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
 				this, "Wire width", Double.class) {
 			protected void setter(CircuitSettings object, Double value) {
-				CircuitSettings.setCircuitWireWidth(value);
+				CircuitSettings.setWireWidth(value);
 			}
 			protected Double getter(CircuitSettings object) {
-				return CircuitSettings.getCircuitWireWidth();
+				return CircuitSettings.getWireWidth();
 			}
 		});
 	}
@@ -150,26 +103,60 @@ public class CircuitSettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		showContacts = config.getBoolean("CircuitSettings.showContacts", true);
-		showArrows = config.getBoolean("CircuitSettings.showArrows", true);
-
-		activeWireColor = config.getColor("CircuitSettings.activeWireColor", new Color(1.0f, 0.0f, 0.0f));
-		inactiveWireColor = config.getColor("CircuitSettings.inactiveWireColor", new Color(0.0f, 0.0f, 1.0f));
-
-		componentBorderWidth  = config.getDouble("CircuitSettings.componentBorderWidth", 0.06);
-		circuitWireWidth = config.getDouble("CircuitSettings.circuitWireWidth", 0.04);
+		setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
+		setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
+		setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
+		setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
+		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.setBoolean("CircuitSettings.showContacts", showContacts);
-		config.setBoolean("CircuitSettings.showArrows", showArrows);
+		config.setBoolean(keyShowContacts, getShowContacts());
+		config.setColor(keyActiveWireColor, getActiveWireColor());
+		config.setColor(keyInactiveWireColor, getInactiveWireColor());
+		config.setDouble(keyBorderWidth, getBorderWidth());
+		config.setDouble(keyWireWidth, getWireWidth());
+	}
 
-		config.setColor("CircuitSettings.activeWireColor", activeWireColor);
-		config.setColor("CircuitSettings.inactiveWireColor", inactiveWireColor);
+	public static boolean getShowContacts() {
+		return showContacts;
+	}
 
-		config.setDouble("CircuitSettings.componentBorderWidth", componentBorderWidth);
-		config.setDouble("CircuitSettings.circuitWireWidth", circuitWireWidth);
+	public static void setShowContacts(boolean value) {
+		showContacts = value;
+	}
+
+	public static Color getActiveWireColor() {
+		return activeWireColor;
+	}
+
+	public static void setActiveWireColor(Color value) {
+		activeWireColor = value;
+	}
+
+	public static Color getInactiveWireColor() {
+		return inactiveWireColor;
+	}
+
+	public static void setInactiveWireColor(Color value) {
+		inactiveWireColor = value;
+	}
+
+	public static double getBorderWidth() {
+		return borderWidth;
+	}
+
+	public static void setBorderWidth(double value) {
+		borderWidth = value;
+	}
+
+	public static double getWireWidth() {
+		return wireWidth;
+	}
+
+	public static void setWireWidth(double value) {
+		wireWidth = value;
 	}
 
 }
