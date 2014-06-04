@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
@@ -56,12 +54,6 @@ public class RenderedFormula implements Touchable {
 	public void draw (Graphics2D g) {
 		g.setFont(font);
 		AffineTransform oldTransform = g.getTransform();
-
-		g.setColor(Color.RED);
-		g.setStroke(new BasicStroke(0.01f));
-		g.draw(boundingBox);
-		g.setColor(Color.BLACK);
-
 		g.translate(boundingBox.getX(), boundingBox.getMaxY());
 		renderingResult.draw(g);
 		g.setTransform(oldTransform);

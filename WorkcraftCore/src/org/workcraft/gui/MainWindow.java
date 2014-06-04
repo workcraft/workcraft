@@ -1239,8 +1239,7 @@ class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
 	}
 
 	public boolean accept(File f) {
-		return (f.isDirectory() || f.getName().endsWith(
-				exporter.getExtenstion()));
+		return (f.isDirectory() || f.getName().endsWith(exporter.getExtenstion()));
 	}
 
 	public String getDescription() {

@@ -32,17 +32,24 @@ import org.workcraft.gui.propertyeditor.SettingsPage;
 public class CommonEditorSettings implements SettingsPage {
 	private static LinkedList<PropertyDescriptor> properties;
 
-	private static final String backgroundColorKey = "CommonEditorSettings.backgroundColor";
-	private static final String showGridKey = "CommonEditorSettings.showGrid";
-	private static final String showRulersKey = "CommonEditorSettings.showRulers";
-	private static final String iconSizeKey = "CommonEditorSettings.iconSize";
-	private static final String debugClipboardKey = "CommonEditorSettings.debugClipboard";
+	private static final String prefix = "CommonEditorSettings";
+	private static final String backgroundColorKey = prefix + ".backgroundColor";
+	private static final String showGridKey = prefix + ".showGrid";
+	private static final String showRulersKey = prefix + ".showRulers";
+	private static final String iconSizeKey = prefix + ".iconSize";
+	private static final String debugClipboardKey = prefix + ".debugClipboard";
 
-	protected static Color backgroundColor = Color.WHITE;
-	private static boolean showGrid = true;
-	private static boolean showRulers = true;
-	protected static int iconSize = 24;
-	private static boolean debugClipboard = false;
+	private static final Color defaultBackgroundColor = Color.WHITE;
+	private static final boolean defaultShowGrid = true;
+	private static final boolean defaultShowRulers = true;
+	private static final int defaultIconSize = 24;
+	private static final boolean defaultDebugClipboard = false;
+
+	private static Color backgroundColor = defaultBackgroundColor;
+	private static boolean showGrid = defaultShowGrid;
+	private static boolean showRulers = defaultShowRulers;
+	private static int iconSize = defaultIconSize;
+	private static boolean debugClipboard = defaultDebugClipboard;
 
 	public String getSection() {
 		return "Common";
@@ -120,19 +127,19 @@ public class CommonEditorSettings implements SettingsPage {
 	}
 
 	public void load(Config config) {
-		backgroundColor = config.getColor(backgroundColorKey, Color.WHITE);
-		showGrid = config.getBoolean(showGridKey, true);
-		showRulers = config.getBoolean(showRulersKey, true);
-		iconSize = config.getInt(iconSizeKey, 24);
-		debugClipboard = config.getBoolean(debugClipboardKey, false);
+		setBackgroundColor(config.getColor(backgroundColorKey, defaultBackgroundColor));
+		setShowGrid(config.getBoolean(showGridKey, defaultShowGrid));
+		setShowRulers(config.getBoolean(showRulersKey, defaultShowRulers));
+		setIconSize(config.getInt(iconSizeKey, defaultIconSize));
+		setDebugClipboard(config.getBoolean(debugClipboardKey, defaultDebugClipboard));
 	}
 
 	public void save(Config config) {
-		config.setColor(backgroundColorKey, backgroundColor);
-		config.setBoolean(showGridKey, showGrid);
-		config.setBoolean(showRulersKey, showRulers);
-		config.setInt(iconSizeKey, iconSize);
-		config.setBoolean(debugClipboardKey, debugClipboard);
+		config.setColor(backgroundColorKey, getBackgroundColor());
+		config.setBoolean(showGridKey, getShowGrid());
+		config.setBoolean(showRulersKey, getShowRulers());
+		config.setInt(iconSizeKey, getIconSize());
+		config.setBoolean(debugClipboardKey, getDebugClipboard());
 	}
 
 	public static Color getBackgroundColor() {
@@ -140,11 +147,11 @@ public class CommonEditorSettings implements SettingsPage {
 	}
 
 	public static void setBackgroundColor(Color value) {
-		CommonEditorSettings.backgroundColor = value;
+		backgroundColor = value;
 	}
 
 	public static void setShowGrid(Boolean value) {
-		CommonEditorSettings.showGrid = value;
+		showGrid = value;
 	}
 
 	public static Boolean getShowGrid() {
@@ -152,7 +159,7 @@ public class CommonEditorSettings implements SettingsPage {
 	}
 
 	public static void setShowRulers(Boolean value) {
-		CommonEditorSettings.showRulers = value;
+		showRulers = value;
 	}
 
 	public static Boolean getShowRulers() {
@@ -170,7 +177,7 @@ public class CommonEditorSettings implements SettingsPage {
 		if (value > 256) {
 			value = 256;
 		}
-		CommonEditorSettings.iconSize = value;
+		iconSize = value;
 	}
 
 }

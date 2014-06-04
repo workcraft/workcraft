@@ -28,7 +28,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -40,6 +39,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -107,7 +107,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public static final Color outputColor = Color.BLUE;
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	private double size = 0.5;
+	private double size = 0.3;
 	private GlyphVector nameGlyph = null;
 	private Direction direction = Direction.WEST;
 
@@ -126,38 +126,21 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		nameGlyph = null;
 	}
 
-
-	private int connections = 0;
-
 	private Shape getShape() {
-
-		double size = getSize();
-
 		if (getParent() instanceof VisualCircuitComponent) {
-			if (CircuitSettings.getShowContacts()) {
-				return new Rectangle2D.Double(
-						-size / 2 + CircuitSettings.getCircuitWireWidth(),
-						-size / 2 + CircuitSettings.getCircuitWireWidth(),
-						size - CircuitSettings.getCircuitWireWidth()*2,
-						size - CircuitSettings.getCircuitWireWidth()*2);
-			} else {
-				if (connections!=1) {
-					return VisualJoint.shape;
-				}
-
-				return new Line2D.Double(0,0,0,0);
-			}
+			return new Rectangle2D.Double(
+					-size / 2 + CircuitSettings.getWireWidth(),
+					-size / 2 + CircuitSettings.getWireWidth(),
+					size - CircuitSettings.getWireWidth() * 2,
+					size - CircuitSettings.getWireWidth() * 2);
 		} else {
-
 			Path2D path = new Path2D.Double();
-
-			path.moveTo(-(size / 2), -(size / 2));
-			path.lineTo((size / 2), -(size / 2));
-			path.lineTo(size, 0);
-			path.lineTo((size / 2), (size / 2));
-			path.lineTo(-(size / 2), (size / 2));
+			path.moveTo(-size / 2, -size / 2);
+			path.lineTo(0, -size / 2);
+			path.lineTo(size / 2, 0);
+			path.lineTo(0, size / 2);
+			path.lineTo(-size / 2, size / 2);
 			path.closePath();
-
 			return path;
 		}
 	}
@@ -216,43 +199,38 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		Color fillColor = r.getDecoration().getBackground();
-		if (fillColor==null) fillColor=getFillColor();
+		Decoration d = r.getDecoration();
+		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+		Color colorisation = d.getColorisation();
+		Color fillColor = d.getBackground();
+		if (fillColor == null) {
+			fillColor = getFillColor();
+		}
 
 		AffineTransform oldTransform = g.getTransform();
 		AffineTransform at = Direction.getDirectionTransform(getDirection());
-		if (getIOType()==IOType.INPUT) at.quadrantRotate(2);
+		if (getIOType()==IOType.INPUT) {
+			at.quadrantRotate(2);
+		}
 		g.transform(at);
 
-		Shape shape = getShape();
-		connections = r.getModel().getConnections(this).size();
-		if (connections>1&&(getParent() instanceof VisualCircuitComponent)&&!CircuitSettings.getShowContacts()) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+		if (inSimulationMode || CircuitSettings.getShowContacts() || !(getParent() instanceof VisualCircuitComponent)) {
+			Shape shape = getShape();
+			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+			g.setColor(fillColor);
 			g.fill(shape);
-
-		} else {
-			if (!(shape instanceof Line2D)) {
-				g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
-				g.setColor(fillColor);
-				g.fill(shape);
-				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-				g.draw(shape);
-			}
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.draw(shape);
+		} else if (r.getModel().getConnections(this).size() > 1) {
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.fill(VisualJoint.shape);
 		}
-
 		g.setTransform(oldTransform);
 
-		if (!(getParent() instanceof VisualCircuitComponent)) {
-
-
+		if ( !(getParent() instanceof VisualCircuitComponent) ) {
 			at.setToIdentity();
-			switch (getDirection()) {
-			case NORTH:
-			case SOUTH:
+			if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
 				at.quadrantRotate(-1);
-				break;
-			default:
 			}
 			g.transform(at);
 
@@ -260,37 +238,30 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
-			float xx = (float)0.5;
-			if (getDirection()==Direction.SOUTH || getDirection() == Direction.WEST)
-				xx = (float)(-cur.getWidth()-0.5);
-
-			g.drawGlyphVector(gv, xx, -0.5f);
+			float xx = (float)size;
+			if (getDirection() == Direction.SOUTH || getDirection() == Direction.WEST) {
+				xx = (float)(-cur.getWidth() - size);
+			}
+			g.drawGlyphVector(gv, xx, (float)-size);
 		}
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (getShape()!=null) {
-			return getShape().getBounds2D();
+		Shape shape = getShape();
+		if (shape != null) {
+			return shape.getBounds2D();
+		} else {
+			return new Rectangle2D.Double(-size/2, -size/2, size, size);
 		}
-		double size = getSize();
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-	}
-
-	private double getSize() {
-		return size;
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-
 		Point2D p2 = new Point2D.Double();
 		p2.setLocation(pointInLocalSpace);
-
 		if (!(getParent() instanceof VisualCircuitComponent)) {
-
 			AffineTransform at = new AffineTransform();
-
 			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
 			case NORTH:
@@ -306,19 +277,19 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				at.setToIdentity();
 				break;
 			}
-			if (getIOType()==IOType.INPUT) at.quadrantRotate(2);
-
+			if (getIOType()==IOType.INPUT) {
+				at.quadrantRotate(2);
+			}
 			at.transform(pointInLocalSpace, p2);
 		}
-
-
-
 		Shape shape = getShape();
-		if (shape!=null) return shape.contains(p2);
-		return false;
+		if (shape != null) {
+			return shape.contains(p2);
+		} else {
+			return false;
+		}
 	}
 
-	/////////////////////////////////////////////////////////
 	public GlyphVector getNameGlyphs(Graphics2D g) {
 		if (nameGlyph == null) {
 			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
@@ -373,12 +344,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	public static boolean isDriver(Node contact) {
-		if (!(contact instanceof VisualContact)) return false;
-
-		return (((VisualContact)contact).getIOType() == IOType.OUTPUT)
-				== (((VisualContact)contact).getParent() instanceof VisualComponent);
+		if (!(contact instanceof VisualContact)) {
+			return false;
+		}
+		return ( (((VisualContact)contact).getIOType() == IOType.OUTPUT)
+			== (((VisualContact)contact).getParent() instanceof VisualComponent) );
 	}
-
 
 	public HashSet<SignalTransition> getReferencedTransitions() {
 		return referencedTransitions;
