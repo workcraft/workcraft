@@ -26,10 +26,12 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -40,12 +42,12 @@ import org.workcraft.util.Hierarchy;
 public class Dfs extends AbstractMathModel {
 
 	public Dfs() {
-		this(null, null);
+		this(new MathGroup(), null);
 	}
 
 	public Dfs(Container root, References refs) {
 
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if ((arg instanceof Logic) || (arg instanceof CounterflowLogic))
@@ -83,11 +85,4 @@ public class Dfs extends AbstractMathModel {
 		return null;
 	}
 
-	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
-	}
-
-	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
 }

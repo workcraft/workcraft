@@ -9,10 +9,13 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
@@ -31,15 +34,11 @@ import org.workcraft.util.Hierarchy;
 public class SON extends AbstractMathModel implements SONModel {
 
 	public SON(){
-		this(null);
-	}
-
-	public SON(Container root){
-		this(root, null);
+		this(new MathGroup(), null);
 	}
 
 	public SON(Container root, References refs) {
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if (arg instanceof Condition)
@@ -86,13 +85,6 @@ public class SON extends AbstractMathModel implements SONModel {
 		return con;
 	}
 
-	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
-
-	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
-	}
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result =  new ArrayList<Node>();

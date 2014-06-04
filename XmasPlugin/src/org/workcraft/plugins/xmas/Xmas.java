@@ -26,10 +26,12 @@ import java.util.Collection;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.xmas.components.XmasContact;
@@ -49,11 +51,11 @@ import org.workcraft.util.Hierarchy;
 public class Xmas extends AbstractMathModel {
 
 	public Xmas() {
-		this(null, null);
+		this(new MathGroup(), null);
 	}
 
 	public Xmas(Container root, References refs) {
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider) root, refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if (arg instanceof SourceComponent)
@@ -95,13 +97,6 @@ public class Xmas extends AbstractMathModel {
 		return null;
 	}
 
-	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
-	}
-
-	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
 
 	public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
