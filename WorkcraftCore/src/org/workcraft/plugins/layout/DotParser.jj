@@ -46,6 +46,7 @@ TOKEN :
   	| <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
   	| <INTEGER: (["0"-"9"])+>
   	| <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
+  	| <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 }
 
 String id() :{  Token t;}{
@@ -56,7 +57,9 @@ String id() :{  Token t;}{
   | t = "digraph"
   | t = "node"
   | t = "edge"
-  | t = < NAME >  )  {    return t.image;  }}
+  | t = < NAME >
+  | t = < NUMERAL >  )  {    return t.image;  }
+}
 
 void graph(DotListener listener) :
 {}
@@ -102,4 +105,4 @@ void attr_statement() :
 {	("graph"|"node"|"edge") attr_list()
 }
 
-void statement(DotListener listener) :{  Token name;  Map < String, String > prop;  String i, j;}{  (    attr_statement()  | i = id()    (      prop = attr_list()      {        listener.node(i, prop);      }    | "->" j = id() prop = attr_list()      {        listener.arc(i, j, prop);      }    )  )  ";"}
+void statement(DotListener listener) :{  Token name;  Map < String, String > prop;  String i, j;}{  (    attr_statement()  	| i = id()    (      prop = attr_list()      {        listener.node(i, prop);      }    | "->" j = id() prop = attr_list()      {        listener.arc(i, j, prop);      }    )  )  ";"}
