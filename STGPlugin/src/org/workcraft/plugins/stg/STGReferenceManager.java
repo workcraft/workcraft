@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -145,6 +146,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 //					setDefaultNameIfUnnamed(n);
 //			}
 //	}
+
 
 
 

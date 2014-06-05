@@ -226,10 +226,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		} else {
 			drawLabelInLocalSpace(r);
 			if (!getIsEnvironment()) {
-				g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
+				g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));
 			} else {
 				float dash[] = {0.05f, 0.05f};
-				g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth(),
+				g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
 					BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 			}
 			Point2D mp=null, lp=null, pp=null;
@@ -273,7 +273,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 			// draw contact wires
 			Stroke s = g.getStroke();
-			g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
+			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
 			g.setColor(GateRenderer.foreground);
 			Line2D line;
 

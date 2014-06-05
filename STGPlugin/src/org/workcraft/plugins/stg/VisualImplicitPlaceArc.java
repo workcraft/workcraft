@@ -64,7 +64,8 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		addPropertyDeclarations();
 	}
 
-	public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second, MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
+	public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second,
+			MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
 		super(null, first, second);
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;

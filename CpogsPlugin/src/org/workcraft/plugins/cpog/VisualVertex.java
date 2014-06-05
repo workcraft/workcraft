@@ -29,6 +29,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
@@ -69,8 +70,6 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	public VisualVertex(Vertex vertex) {
 		super(vertex);
 	}
-
-
 
 	@Override
 	public void draw(DrawRequest r) {
@@ -117,15 +116,6 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 		}
 	}
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-		if (getLabelVisibility()) {
-			bb = BoundingBoxHelper.union(bb, conditionRenderedFormula.getBoundingBox());
-		}
-		return bb;
-	}
-
 	public Vertex getMathVertex() {
 		return (Vertex) getReferencedComponent();
 	}
@@ -161,6 +151,20 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	@Override
 	public <T> T accept(CpogVisitor<T> visitor) {
 		return visitor.visit(this);
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		if (getLabelVisibility()) {
+			bb = BoundingBoxHelper.union(bb, conditionRenderedFormula.getBoundingBox());
+		}
+		return bb;
+	}
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
 }

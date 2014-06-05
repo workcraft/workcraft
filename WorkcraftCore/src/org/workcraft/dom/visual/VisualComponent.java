@@ -323,8 +323,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
      * The internal bounding box does not include the related label and name of the node
      */
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        Rectangle2D bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-        return bb;
+        return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
     }
 
 	@Override

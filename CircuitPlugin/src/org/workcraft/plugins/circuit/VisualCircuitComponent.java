@@ -201,19 +201,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			switch (vc.getDirection()) {
 			case EAST:
 				vc.setY(eastStep);
-				eastStep+=contactStep;
+				eastStep += contactStep;
 				break;
 			case WEST:
 				vc.setY(westStep);
-				westStep+=contactStep;
+				westStep += contactStep;
 				break;
 			case SOUTH:
 				vc.setX(southStep);
-				southStep+=contactStep;
+				southStep += contactStep;
 				break;
 			case NORTH:
 				vc.setX(northStep);
-				northStep+=contactStep;
+				northStep += contactStep;
 				break;
 			}
 		}
@@ -326,7 +326,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	protected void drawContactConnections(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
-		g.setStroke(new BasicStroke((float)CircuitSettings.getCircuitWireWidth()));
+		g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
 		Rectangle2D bb = getBestBB();
 		for (Node n: getChildren()) {
 			if (n instanceof VisualContact) {
@@ -368,7 +368,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (!c.getDirection().equals(Direction.WEST)) continue;
 				GlyphVector gv = c.getNameGlyphs(g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
 				step_pos = c.getY();
 				g.drawGlyphVector(gv, (float)(bb.getMinX()+marginSize), (float)(step_pos+(cur.getHeight())/2));
 			}
@@ -380,7 +380,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (!c.getDirection().equals(Direction.EAST)) continue;
 				GlyphVector gv = c.getNameGlyphs(g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
 				step_pos = c.getY();
 				g.drawGlyphVector(gv, (float)(bb.getMaxX()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
 			}
@@ -396,7 +396,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (!c.getDirection().equals(Direction.NORTH)) continue;
 				GlyphVector gv = c.getNameGlyphs(g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
 				step_pos = c.getX();
 				g.drawGlyphVector(gv, (float)(bb.getMaxY()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
 			}
@@ -408,7 +408,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				if (!c.getDirection().equals(Direction.SOUTH)) continue;
 				GlyphVector gv = c.getNameGlyphs(g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
+				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
 				step_pos = c.getX();
 				g.drawGlyphVector(gv, (float)(bb.getMinY()+marginSize), (float)(step_pos+(cur.getHeight())/2));
 			}
@@ -439,10 +439,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 
 		if (!getIsEnvironment()) {
-			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth()));
+			g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));
 		} else {
 			float dash[] = {0.25f, 0.25f};
-			g.setStroke(new BasicStroke((float)CircuitSettings.getComponentBorderWidth(),
+			g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
 				BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 		}
 		g.draw(shape);

@@ -66,7 +66,7 @@ public class MpsatUtilitySettings implements SettingsPage {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
-				this, "MPSat additional arguments", String.class) {
+				this, "Additional arguments", String.class) {
 			protected void setter(MpsatUtilitySettings object, String value) {
 				MpsatUtilitySettings.setExtraArgs(value);
 			}
@@ -76,7 +76,7 @@ public class MpsatUtilitySettings implements SettingsPage {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
-				this, "MPSat debug", Boolean.class) {
+				this, "Debug Reach expressions", Boolean.class) {
 			protected void setter(MpsatUtilitySettings object, Boolean value) {
 				MpsatUtilitySettings.setDebugReach(value);
 			}

@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.stg;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,7 +36,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -55,17 +53,13 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public VisualSTG(STG model, VisualGroup root) {
 		super(model, root);
+		this.stg = model;
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
 			}
-		}
-		this.stg = model;
-		Collection<VisualPlace> places = new ArrayList<VisualPlace>(Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class));
-		for(VisualPlace place : places) {
-			maybeMakeImplicit(place);
 		}
 	}
 
@@ -165,12 +159,9 @@ public class VisualSTG extends AbstractVisualModel {
 		Container group = Hierarchy.getNearestAncestor(con, Container.class);
 
 		STGPlace implicitPlace = con.getImplicitPlace();
-
 		stg.makeExplicit(implicitPlace);
-
 		VisualPlace place = new VisualPlace(implicitPlace);
-		Point2D p = con.getPointOnConnection(0.5);
-		place.setX(p.getX()); place.setY(p.getY());
+		place.setPosition(con.getPointOnConnection(0.5));
 
 		VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
 		VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
@@ -186,11 +177,12 @@ public class VisualSTG extends AbstractVisualModel {
 	public void maybeMakeImplicit (VisualPlace place) {
 		Collection<Node> preset = getPreset(place);
 		Collection<Node> postset = getPostset(place);
-		if (preset.size() == 1 && postset.size() == 1) {
+		if ((preset.size() == 1) && (postset.size() == 1)) {
 			final STGPlace stgPlace = (STGPlace)place.getReferencedPlace();
 			stgPlace.setImplicit(true);
 			VisualComponent first = (VisualComponent)preset.iterator().next();
 			VisualComponent second = (VisualComponent)postset.iterator().next();
+
 			MathConnection refCon1 = null, refCon2 = null;
 			Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
 			for (Connection con: connections) {
@@ -201,17 +193,16 @@ public class VisualSTG extends AbstractVisualModel {
 				}
 			}
 			VisualImplicitPlaceArc con = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace)place.getReferencedPlace());
-			Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class)	.add(con);
+			con.addPolylinePoint(place.getPosition(), true);
+			Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
+			parent.add(con);
+			// Remove explicit place, all its connections will get removed automatically by the hanging connection remover
 			remove(place);
-			// connections will get removed automatically by the hanging connection remover
 		}
 	}
 
 	public VisualPlace createPlace(String name) {
-		return createPlace(stg.createPlace(name));
-	}
-
-	public VisualPlace createPlace(Place p) {
+		STGPlace p = stg.createPlace(name);
 		VisualPlace place = new VisualPlace(p);
 		add(place);
 		return place;

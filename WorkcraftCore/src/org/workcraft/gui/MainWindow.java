@@ -87,7 +87,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.DotLayoutTool;
+import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -263,7 +263,7 @@ public class MainWindow extends JFrame {
 				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
 				modelEntry.setModel(visualModel);
-				DotLayoutTool layout = new DotLayoutTool(framework);
+				RandomLayoutTool layout = new RandomLayoutTool();
 				layout.run(we);
 				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
@@ -791,6 +791,27 @@ public class MainWindow extends JFrame {
 			printCause(e.getCause());
 	}
 
+	public boolean checkFile(File f) {
+		boolean result = true;
+		if (!f.exists()) {
+			JOptionPane.showMessageDialog(this,
+					"The path  \""	+ f.getPath() + "\" does not exisit.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		} else if (!f.isFile()) {
+			JOptionPane.showMessageDialog(this,
+					"The path  \""	+ f.getPath() + "\" is not a file.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		} else if (!f.canRead()) {
+			JOptionPane.showMessageDialog(this,
+					"The file  \""	+ f.getPath() + "\" cannot be read.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		}
+		return result;
+	}
+
 	public void openWork() throws OperationCancelledException {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
@@ -811,17 +832,19 @@ public class MainWindow extends JFrame {
 	}
 
 	public void openWork(File f) {
-		try {
-			WorkspaceEntry we = framework.getWorkspace().open(f, true);
-			if (we.getModelEntry().isVisual()) {
-				createEditorWindow(we);
+		if (checkFile(f)) {
+			try {
+				WorkspaceEntry we = framework.getWorkspace().open(f, true);
+				if (we.getModelEntry().isVisual()) {
+					createEditorWindow(we);
+				}
+			} catch (DeserialisationException e) {
+				JOptionPane.showMessageDialog(this,
+					"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
+					+ "Please see Problems window for details.",
+					"Load failed", JOptionPane.ERROR_MESSAGE);
+				printCause(e);
 			}
-		} catch (DeserialisationException e) {
-			JOptionPane.showMessageDialog(this,
-				"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
-				+ "Please see Problems window for details.",
-				"Load failed", JOptionPane.ERROR_MESSAGE);
-			printCause(e);
 		}
 	}
 
@@ -846,18 +869,19 @@ public class MainWindow extends JFrame {
 	}
 
 	public void mergeWork(File f) {
-		try {
-			if (editorInFocus == null) {
-				openWork(f);
-			} else {
+		if (editorInFocus == null) {
+			openWork(f);
+		} else {
+			try {
 				WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
 				framework.getWorkspace().merge(we, f);
+			} catch (DeserialisationException e) {
+				JOptionPane.showMessageDialog(this,
+					"A problem was encountered while trying to merge \""
+					+ f.getPath() + "\".\nPlease see Problems window for details.",
+					"Load failed", JOptionPane.ERROR_MESSAGE);
+				printCause(e);
 			}
-		} catch (DeserialisationException e) {
-			JOptionPane.showMessageDialog(this,
-				"A problem was encountered while trying to merge \""	+ f.getPath() + "\".\nPlease see Problems window for details.",
-				"Load failed", JOptionPane.ERROR_MESSAGE);
-			printCause(e);
 		}
 	}
 
@@ -941,7 +965,8 @@ public class MainWindow extends JFrame {
 				if (!f.exists()) {
 					break;
 				}
-				if (JOptionPane.showConfirmDialog(	this, "The file \"" + f.getName()	+ "\" already exists. Do you want to overwrite it?",
+				if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()
+						+ "\" already exists. Do you want to overwrite it?",
 						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					break;
 				}
@@ -1004,27 +1029,32 @@ public class MainWindow extends JFrame {
 		fc.setDialogTitle("Import model(s)");
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
-				for (Importer importer : importers) {
-					if (importer.accept(f)) {
-						ModelEntry me;
-						try {
-							me = Import.importFromFile(importer, f);
-							me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
-							framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, me.isVisual());
-							break;
-						} catch (IOException e) {
-							e.printStackTrace();
-							JOptionPane.showMessageDialog(this, e.getMessage(),
-									"I/O error", JOptionPane.ERROR_MESSAGE);
-						} catch (DeserialisationException e) {
-							e.printStackTrace();
-							JOptionPane.showMessageDialog(this, e.getMessage(),
-									"Import error", JOptionPane.ERROR_MESSAGE);
-						}
+				importFrom(f, importers);
+			}
+			lastOpenPath = fc.getCurrentDirectory().getPath();
+		}
+	}
+
+	public void importFrom(File f, Importer[] importers) {
+		if (checkFile(f)) {
+			for (Importer importer : importers) {
+				if (importer.accept(f)) {
+					try {
+						ModelEntry me = Import.importFromFile(importer, f);
+						me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
+						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, me.isVisual());
+						break;
+					} catch (IOException e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(this, e.getMessage(),
+								"I/O error", JOptionPane.ERROR_MESSAGE);
+					} catch (DeserialisationException e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(this, e.getMessage(),
+								"Import error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
-			lastOpenPath = fc.getCurrentDirectory().getPath();
 		}
 	}
 
@@ -1095,8 +1125,9 @@ public class MainWindow extends JFrame {
 
 	public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
 		ArrayList<GraphEditorPanel> result = new ArrayList<GraphEditorPanel>();
-		for (DockableWindow window : editorWindows.get(we))
+		for (DockableWindow window : editorWindows.get(we)) {
 			result.add(getGraphEditorPanel(window));
+		}
 		return result;
 	}
 
@@ -1239,8 +1270,7 @@ class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
 	}
 
 	public boolean accept(File f) {
-		return (f.isDirectory() || f.getName().endsWith(
-				exporter.getExtenstion()));
+		return (f.isDirectory() || f.getName().endsWith(exporter.getExtenstion()));
 	}
 
 	public String getDescription() {

@@ -69,13 +69,11 @@ public class SettingsEditorDialog extends JDialog {
 		}
 
 		@Override
-		public String toString()
-		{
+		public String toString() {
 			return page.getName();
 		}
 
-		public SettingsPage getPage()
-		{
+		public SettingsPage getPage() {
 			return page;
 		}
 	}
@@ -101,10 +99,8 @@ public class SettingsEditorDialog extends JDialog {
 		Dimension mySize = getSize();
 		owner.getLocationOnScreen();
 
-		this.setLocation (((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
-
+		this.setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
 		initComponents();
-
 		loadSections();
 	}
 
@@ -116,8 +112,7 @@ public class SettingsEditorDialog extends JDialog {
 		if (dotPos < 0) {
 			thisLevel = section;
 			nextLevel = null;
-		}
-		else {
+		} else {
 			thisLevel = section.substring(0, dotPos);
 			nextLevel = section.substring(dotPos+1);
 		}
@@ -126,24 +121,25 @@ public class SettingsEditorDialog extends JDialog {
 
 		for (int i=0; i < node.getChildCount(); i++) {
 			DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-			if (! (child.getUserObject() instanceof String))
+			if (! (child.getUserObject() instanceof String)) {
 				continue;
-
+			}
 			if (((String)child.getUserObject()).equals(thisLevel)) {
 				thisLevelNode = child;
 				break;
 			}
 		}
 
-		if (thisLevelNode == null)
+		if (thisLevelNode == null) {
 			thisLevelNode = new DefaultMutableTreeNode(thisLevel);
-
+		}
 		node.add(thisLevelNode);
 
-		if (nextLevel == null)
+		if (nextLevel == null) {
 			return thisLevelNode;
-		else
+		} else {
 			return getSectionNode(thisLevelNode, nextLevel);
+		}
 	}
 
 	private void addItem (String section, SettingsPage item) {
@@ -208,29 +204,26 @@ public class SettingsEditorDialog extends JDialog {
 		propertiesPane.setLayout(new BorderLayout());
 		propertiesPane.add(propertiesTable);
 
-		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
 		okButton = new JButton();
 		okButton.setPreferredSize(new Dimension(100, 20));
 		okButton.setText("OK");
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-					ok();
+				ok();
 			}
 		});
 
+		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		buttonsPane.add(okButton);
-
 		contentPane.add(sectionScroll, BorderLayout.WEST);
 		contentPane.add(propertiesPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
-
 		getRootPane().setDefaultButton(okButton);
 	}
-
 
 	private void ok() {
 		setObject(null);
 		setVisible(false);
 	}
+
 }

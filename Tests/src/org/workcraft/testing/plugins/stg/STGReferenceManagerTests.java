@@ -17,7 +17,7 @@ public class STGReferenceManagerTests {
 		SignalTransition transition = new SignalTransition();
 		STGReferenceManager refMan = new STGReferenceManager(null, null, null);
 		refMan.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-		Assert.assertEquals("s", transition.getSignalName());
+		Assert.assertEquals("t0", transition.getSignalName());
 	}
 	@Test
 	public void testGenerateSignalNameFromNull() {
@@ -25,7 +25,7 @@ public class STGReferenceManagerTests {
 		transition.setSignalName(null);
 		STGReferenceManager refMan = new STGReferenceManager(null, null, null);
 		refMan.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-		Assert.assertEquals("s", transition.getSignalName());
+		Assert.assertEquals("t0", transition.getSignalName());
 	}
 	@Test
 	public void testGenerateSignalNameFromEmpty() {
@@ -33,7 +33,7 @@ public class STGReferenceManagerTests {
 		transition.setSignalName("");
 		STGReferenceManager refMan = new STGReferenceManager(null, null, null);
 		refMan.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-		Assert.assertEquals("s", transition.getSignalName());
+		Assert.assertEquals("t0", transition.getSignalName());
 	}
 	@Test
 	public void testGenerateSignalNameTwice() {
@@ -42,7 +42,7 @@ public class STGReferenceManagerTests {
 		STGReferenceManager refMan = new STGReferenceManager(null, null, null);
 		refMan.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition1})));
 		refMan.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition2})));
-		Assert.assertEquals("s", transition1.getSignalName());
-		Assert.assertEquals("s", transition2.getSignalName());
+		Assert.assertEquals("t0", transition1.getSignalName());
+		Assert.assertEquals("t0", transition2.getSignalName());
 	}
 }

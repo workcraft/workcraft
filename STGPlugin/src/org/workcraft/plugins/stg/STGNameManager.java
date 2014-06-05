@@ -198,6 +198,18 @@ public class STGNameManager implements NameManager<Node> {
 		}
 	}
 
+	private void renameSignalTransition(SignalTransition t, String signalName) {
+		signalTransitions.remove(t.getSignalName(), t);
+		t.setSignalName(signalName);
+		signalTransitions.put(t.getSignalName(), t);
+	}
+
+	private void renameDummyTransition(DummyTransition t, String name) {
+		dummyTransitions.remove(t.getName(), t);
+		t.setName(name);
+		dummyTransitions.put(t.getName(), t);
+	}
+
 
 	public void setName(Node node, String s, boolean forceInstance) {
 		if (node instanceof STGPlace) {
@@ -212,19 +224,15 @@ public class STGNameManager implements NameManager<Node> {
 				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
 				}
-				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()), forceInstance);
-				signalTransitions.remove(st.getSignalName(), st);
-				signalTransitions.put(r.getFirst(), st);
-				st.setSignalName(r.getFirst());
+				instancedNameManager.assign(st, Pair.of(r.getFirst() + r.getSecond(), r.getThird()), forceInstance);
+				renameSignalTransition(st, r.getFirst());
 				st.setDirection(r.getSecond());
 			} catch (DuplicateIDException e) {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			} catch (ArgumentException e) {
 				if (Identifier.isValid(s)) {
 					instancedNameManager.assign(st, s + st.getDirection());
-					signalTransitions.remove(st.getSignalName(), st);
-					signalTransitions.put(s, st);
-					st.setSignalName(s);
+					renameSignalTransition(st, s);
 				} else {
 					throw new ArgumentException ("\"" + s + "\" is not a valid signal transition label.");
 				}
@@ -241,18 +249,14 @@ public class STGNameManager implements NameManager<Node> {
 				} else {
 					instancedNameManager.assign(dt, r.getFirst());
 				}
-				dummyTransitions.remove(dt.getName(), dt);
-				dummyTransitions.put(r.getFirst(), dt);
-				dt.setName(r.getFirst());
+				renameDummyTransition(dt, r.getFirst());
 			} catch (DuplicateIDException e) {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			}
-		}
-		else {
+		} else {
 			defaultNameManager.setName(node, s);
 		}
 	}
-
 
 	public Pair<String, Integer> getNamePair(Node node) {
 		if (node instanceof Transition)

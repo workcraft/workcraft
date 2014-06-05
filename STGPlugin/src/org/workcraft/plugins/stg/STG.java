@@ -307,11 +307,9 @@ public class STG extends AbstractMathModel implements STGModel {
 
 			return new ComplexResult(p, con1, con2);
 		} else if (first instanceof Place && second instanceof Place)
-			throw new InvalidConnectionException(
-					"Connections between places are not valid");
+			throw new InvalidConnectionException("Connections between places are not valid");
 		else {
-			MathConnection con = new MathConnection((MathNode) first,
-					(MathNode) second);
+			MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
 			Hierarchy.getNearestContainer(first, second).add(con);
 			return new SimpleResult(con);
 		}
@@ -348,11 +346,10 @@ public class STG extends AbstractMathModel implements STGModel {
 			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
 
-			Set<Node> implicitPlaceCandidates = SetUtils.intersection(
-					getPreset(t2), getPostset(t1));
+			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
 			for (Node node : implicitPlaceCandidates) {
-				if (node instanceof STGPlace && ((STGPlace) node).isImplicit()) {
+				if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
 					return node;
 				}
 			}

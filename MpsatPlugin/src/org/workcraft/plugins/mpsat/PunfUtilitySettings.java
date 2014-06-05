@@ -41,7 +41,7 @@ public class PunfUtilitySettings implements SettingsPage {
 		properties = new LinkedList<PropertyDescriptor>();
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
-				this, "punf command", String.class) {
+				this, "Punf command", String.class) {
 			protected void setter(PunfUtilitySettings object, String value) {
 				PunfUtilitySettings.setPunfCommand(value);
 			}
@@ -51,7 +51,7 @@ public class PunfUtilitySettings implements SettingsPage {
 		});
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
-				this, "Additional punf command line arguments", String.class) {
+				this, "Additional arguments", String.class) {
 			protected void setter(PunfUtilitySettings object, String value) {
 				PunfUtilitySettings.setPunfExtraArgs(value);
 			}
