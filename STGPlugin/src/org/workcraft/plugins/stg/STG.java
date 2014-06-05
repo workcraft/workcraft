@@ -331,16 +331,13 @@ public class STG extends AbstractMathModel implements STGModel {
 	public Node getNodeByReference(String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 		if (implicitPlaceTransitions != null) {
-			Node t1 = referenceManager
-					.getNodeByReference(implicitPlaceTransitions.getFirst());
-			Node t2 = referenceManager
-					.getNodeByReference(implicitPlaceTransitions.getSecond());
+			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
+			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
 
-			Set<Node> implicitPlaceCandidates = SetUtils.intersection(
-					getPreset(t2), getPostset(t1));
+			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
 			for (Node node : implicitPlaceCandidates) {
-				if (node instanceof STGPlace && ((STGPlace) node).isImplicit()) {
+				if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
 					return node;
 				}
 			}
