@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -158,11 +159,11 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 	}
 
 	public Collection<SignalTransition> getSignalTransitions(String signalName) {
-		return signalTransitions.get(signalName);
+		return new LinkedList<SignalTransition>(signalTransitions.get(signalName));
 	}
 
 	public Collection<DummyTransition> getDummyTransitions(String name) {
-		return dummyTransitions.get(name);
+		return new LinkedList<DummyTransition>(dummyTransitions.get(name));
 	}
 
 	public int getInstanceNumber (Node st) {
@@ -177,6 +178,18 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 		setName(node, s, false);
 	}
 
+	private void renameSignalTransition(SignalTransition t, String signalName) {
+		signalTransitions.remove(t.getSignalName(), t);
+		t.setSignalName(signalName);
+		signalTransitions.put(t.getSignalName(), t);
+	}
+
+	private void renameDummyTransition(DummyTransition t, String name) {
+		dummyTransitions.remove(t.getName(), t);
+		t.setName(name);
+		dummyTransitions.put(t.getName(), t);
+	}
+
 	public void setName(Node node, String s, boolean forceInstance) {
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
@@ -185,19 +198,15 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
 				}
-				instancedNameManager.assign(st, Pair.of(r.getFirst()+r.getSecond(), r.getThird()), forceInstance);
-				signalTransitions.remove(st.getSignalName(), st);
-				signalTransitions.put(r.getFirst(), st);
-				st.setSignalName(r.getFirst());
+				instancedNameManager.assign(st, Pair.of(r.getFirst() + r.getSecond(), r.getThird()), forceInstance);
+				renameSignalTransition(st, r.getFirst());
 				st.setDirection(r.getSecond());
 			} catch (DuplicateIDException e) {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			} catch (ArgumentException e) {
 				if (Identifier.isValid(s)) {
 					instancedNameManager.assign(st, s + st.getDirection());
-					signalTransitions.remove(st.getSignalName(), st);
-					signalTransitions.put(s, st);
-					st.setSignalName(s);
+					renameSignalTransition(st, s);
 				} else {
 					throw new ArgumentException ("\"" + s + "\" is not a valid signal transition label.");
 				}
@@ -214,14 +223,11 @@ public class STGReferenceManager extends HierarchySupervisor implements Referenc
 				} else {
 					instancedNameManager.assign(dt, r.getFirst());
 				}
-				dummyTransitions.remove(dt.getName(), dt);
-				dummyTransitions.put(r.getFirst(), dt);
-				dt.setName(r.getFirst());
+				renameDummyTransition(dt, r.getFirst());
 			} catch (DuplicateIDException e) {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			}
-		}
-		else {
+		} else {
 			defaultNameManager.setName(node, s);
 		}
 	}

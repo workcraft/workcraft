@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -45,13 +44,7 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		if ( !signal.equals(value) ) {
-			Collection<SignalTransition> transitions = stg.getSignalTransitions(signal);
-			// First, update all the transitions
-			for (SignalTransition transition : transitions) {
-				transition.setSignalName((String)value);
-			}
-			// Then, let STG know that transition names have been changed
-			for (SignalTransition transition : transitions) {
+			for (SignalTransition transition : stg.getSignalTransitions(signal)) {
 				stg.setName(transition, (String)value);
 			}
 		}
