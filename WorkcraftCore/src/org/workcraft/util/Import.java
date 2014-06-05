@@ -40,13 +40,6 @@ public class Import {
 		return model;
 	}
 
-	static public ModelEntry importFromFile (Importer importer, String fileName) throws IOException, DeserialisationException {
-		FileInputStream fileInputStream = new FileInputStream(new File(fileName));
-		ModelEntry model = importer.importFrom(fileInputStream);
-		fileInputStream.close();
-		return model;
-	}
-
 	static public Importer chooseBestImporter (PluginProvider provider, File file) {
 		for (PluginInfo<? extends Importer> info : provider.getPlugins(Importer.class)) {
 			Importer importer = info.getSingleton();
@@ -55,7 +48,7 @@ public class Import {
 				return importer;
 			}
 		}
-
 		return null;
 	}
+
 }

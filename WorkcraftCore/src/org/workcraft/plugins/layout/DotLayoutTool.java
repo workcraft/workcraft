@@ -149,7 +149,8 @@ public class DotLayoutTool implements Tool {
 							}
 							else
 							{
-								System.err.println("Dot graph parse error: node 'pos' attribute has value '"+posStr+"', which is not a comma-separated pair of integers");
+								System.err.println("Dot graph parse error: node 'pos' attribute has value '"
+										+ posStr + "', which is not a comma-separated pair of integers");
 							}
 						}
 					}
@@ -231,9 +232,12 @@ public class DotLayoutTool implements Tool {
 			if(res.getReturnValue().getReturnCode() == 0) {
 				String in = FileUtils.readAllText(layout);
 				applyLayout(in, (VisualModel)model);
+			} else {
+				throw new LayoutException("External process (dot) failed (code " +
+					res.getReturnValue().getReturnCode() +")\n\n" +
+					new String(res.getReturnValue().getOutput()) + "\n\n" +
+					new String(res.getReturnValue().getErrors()));
 			}
-			else
-				throw new LayoutException("External process (dot) failed (code " + res.getReturnValue().getReturnCode() +")\n\n"+new String(res.getReturnValue().getOutput())+"\n\n"+new String(res.getReturnValue().getErrors()));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		} catch (ModelValidationException e) {

@@ -21,6 +21,7 @@
 
 package org.workcraft.testing.serialisation;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,7 +90,7 @@ public class DotGSerialiserTests {
 		int reimportedTokens;
 		do
 		{
-			ModelEntry importedEntry = Import.importFromFile(new DotGImporter(), "D:\\Work\\Out\\fetchA-fetchAmB-varA-muxA.g.ren.g");
+			ModelEntry importedEntry = Import.importFromFile(new DotGImporter(), new File("D:\\Work\\Out\\fetchA-fetchAmB-varA-muxA.g.ren.g"));
 			STG model = (STG) importedEntry.getModel();
 
 			reimportedTokens = getTokenCount(model);
