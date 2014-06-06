@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.dom.visual.RemovedNodeDeselector;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
@@ -41,6 +42,18 @@ import com.sun.org.apache.regexp.internal.RE;
 public class CpogProgrammer {
 
 	private EncoderSettings settings;
+	private File scenarioFile, encodingFile;
+	private String toolPath = "../tools/";
+
+	// SETTING PARAMETERS FOR CALLING PROGRAMMER.X
+	private String espressoCommand, abcFolder , gatesLibrary ,
+			verbose = "", genMode= "", numSol= "", customFlag= "", customPath= "", effort= "", espressoFlag= "", abcFlag= "", gateLibFlag= "", cpogSize= "", disableFunction= "",
+			oldSynt= "";
+	// Allocation data structures
+	private Process process;
+	private String[] opt_enc, opt_formulaeVertices,truthTableVertices, opt_vertices, opt_sources, opt_dests,
+			opt_formulaeArcs, truthTableArcs;
+	private int v,a,n;
 
 	public CpogProgrammer(EncoderSettings settings){
 		this.setSettings(settings);
@@ -77,10 +90,9 @@ public class CpogProgrammer {
 	private int WriteCpogIntoFile(int m, ArrayList<VisualScenario> scenarios)
 	{
 		try{
-			// FileOutputStream file = new FileOutputStream("../tools/scenarios.cpog");
-			 File cpogFile = File.createTempFile("scenarios", "cpog");
+			scenarioFile = File.createTempFile("scenarios", "cpog");
 
-		     PrintStream Output = new PrintStream(cpogFile);
+		     PrintStream Output = new PrintStream(scenarioFile);
 
 
 			for(int k = 0; k < m; k++)
@@ -170,9 +182,8 @@ public class CpogProgrammer {
 		// WRITING CUSTOM ENCODING FILE
 		if(settings.isCustomEncMode()){
 			try{
-				// FileOutputStream file = new FileOutputStream("../Tools/custom.enc");
-				 File file = File.createTempFile("custom", "enc");
-			     PrintStream Output = new PrintStream(file);
+				 encodingFile = File.createTempFile("custom", "enc");
+			     PrintStream Output = new PrintStream(encodingFile);
 
 				String [] enc = settings.getCustomEnc();
 				for(int k = 0; k < m; k++)
@@ -203,6 +214,106 @@ public class CpogProgrammer {
 		return 0;
 	}
 
+	private void deleteTempFiles(){
+		if(scenarioFile.exists()) scenarioFile.delete();
+		if(encodingFile.exists()) encodingFile.delete();
+		return;
+	}
+
+	private void callingProgrammer(Double minArea, Double currArea, WorkspaceEntry we, int it) throws IOException{
+		process = new ProcessBuilder(toolPath + "programmer.x", scenarioFile.getAbsolutePath(),
+				"-m",effort,genMode, numSol,customFlag,customPath,verbose,cpogSize,disableFunction,oldSynt,
+				espressoFlag,espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
+		InputStream is = process.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = new BufferedReader(isr);
+		String line;
+		boolean finish = false;
+		while ( (line = br.readLine()) != null && !finish) {
+			//System.out.println(line);
+			// Read Area
+			if(line.contains(".area")){
+				line = br.readLine();
+				currArea = Double.valueOf(line);
+				line = br.readLine();
+				if(currArea < minArea){
+					v = 0; a = 0;
+					minArea = currArea;
+					if(settings.isContMode())
+						System.out.println(it + ") " + "Area of current circuit: " + minArea);
+					while((line = br.readLine()) != null){
+						// Read Optimal Encoding
+						if(line.contains("MIN: ")){
+							StringTokenizer st2 = new StringTokenizer(line, " ");
+							int j = 0;
+							st2.nextElement();
+							while (st2.hasMoreElements()) {
+								opt_enc[j++] = (String) st2.nextElement();
+							}
+						}
+
+						// Read Optimal Formulae
+						if(line.contains(".start_formulae")){
+							line = br.readLine();
+							while(line.contains(".end_formulae") == false){
+								if(!settings.isContMode() && settings.isVerboseMode())
+									System.out.println(line);
+								StringTokenizer st2 = new StringTokenizer(line, ",");
+								String el = (String)st2.nextElement();
+								if(el.equals("V")){ //formula of a vertex
+									opt_vertices[v] = (String) st2.nextElement();
+									truthTableVertices[v] = (String) st2.nextElement();
+									opt_formulaeVertices[v++] = (String) st2.nextElement();
+								}else{
+									opt_sources[a] = (String) st2.nextElement();
+									opt_dests[a] = (String) st2.nextElement();
+									truthTableArcs[a] = (String) st2.nextElement();
+									opt_formulaeArcs[a++] = (String) st2.nextElement();
+								}
+								line = br.readLine();
+							}
+
+						}
+
+						// Read statistics
+						if(line.contains(".statistics")){
+							line = br.readLine();
+							while(line.contains(".end_statistics") == false){
+								if(!settings.isContMode())
+									System.out.println(line);
+								line = br.readLine();
+							}
+						}
+
+						// Read errors
+						if(line.contains(".error")){
+							line = br.readLine();
+							while(line.contains(".end_error") == false){
+								JOptionPane.showMessageDialog(null,
+										line,
+										"Programmer.x error",
+										JOptionPane.ERROR_MESSAGE);
+								line = br.readLine();
+							}
+							deleteTempFiles();
+							we.cancelMemento();
+							return;
+
+						}
+					}
+				}else{
+					finish = true;
+				}
+			}
+
+		}
+		process.destroy();
+		is.close();
+		isr.close();
+		br.close();
+		return;
+	}
+
 	public void run(WorkspaceEntry we)
 	{
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
@@ -210,7 +321,7 @@ public class CpogProgrammer {
 		we.captureMemento();
 
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
-		int n = 0;
+		n = 0;
 		ArrayList<Point2D> positions = new ArrayList<Point2D>();
 		ArrayList<Integer> count = new ArrayList<Integer>();
 
@@ -228,6 +339,7 @@ public class CpogProgrammer {
 					"Not enough scenarios",
 					JOptionPane.ERROR_MESSAGE);
 			we.cancelMemento();
+			deleteTempFiles();
 			return;
 		}
 
@@ -313,6 +425,7 @@ public class CpogProgrammer {
 			for(int i = 0; i < n; i++)
 				if (graph[i][i] > 0)
 				{
+					deleteTempFiles();
 					JOptionPane.showMessageDialog(null,
 												"Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.",
 												"Invalid scenario",
@@ -338,9 +451,8 @@ public class CpogProgrammer {
 		// Write scenarios into file.
 		int res;
 		if((res = WriteCpogIntoFile(m, scenarios)) != 0){
-			if(res == -1){
-
-			}else{
+			deleteTempFiles();
+			if(res != -1){
 				JOptionPane.showMessageDialog(null,
 						"Error on writing scenario file.",
 						"Workcraft error",
@@ -350,42 +462,31 @@ public class CpogProgrammer {
 			return;
 		}
 
-		// CALLING PROGRAMMER.X
+		espressoCommand = CpogSettings.getEspressoCommand();
+		abcFolder = CpogSettings.getAbcFolder();
+		gatesLibrary = CpogSettings.getGatesLibrary();
+		opt_enc = new String[m];
+		opt_formulaeVertices = new String[n*n];
+		truthTableVertices =  new String[n*n];
+		opt_vertices = new String[n];
+		opt_sources = new String[n*n];
+		opt_dests = new String[n*n];
+		opt_formulaeArcs = new String[n*n];
+		truthTableArcs =  new String[n*n];
+		espressoCommand = CpogSettings.getEspressoCommand();
+		abcFolder = CpogSettings.getAbcFolder();
+		gatesLibrary = CpogSettings.getGatesLibrary();
+		espressoFlag = "-e";
+		v=0;
+		a=0;
 
-		// Allocation data structures
-		Process process;
-		String[] opt_enc = new String[m];
-		String opt_formulaeVertices[] = new String[n*n];
-		String truthTableVertices[] =  new String[n*n];
-		String opt_vertices[] = new String[n];
-		String opt_sources[] = new String[n*n];
-		String opt_dests[] = new String[n*n];
-		String opt_formulaeArcs[] = new String[n*n];
-		String truthTableArcs[] =  new String[n*n];
-		int v=0,a=0;
+		// CALLING PROGRAMMER.X
 		boolean SCENCO = false;
 		try {
-
-			// SETTING PARAMETERS FOR CALLING PROGRAMMER.X
-			String espressoCommand = CpogSettings.getEspressoCommand();
-			String abcFolder = CpogSettings.getAbcFolder();
-			String gatesLibrary = CpogSettings.getGatesLibrary();
-			String verbose = "";
-			String genMode = "";
-			String numSol = "";
-			String customFlag = "";
-			String customPath = "";
-			String effort = "";
-			String espressoFlag = "-e";
-			String abcFlag = "";
-			String gateLibFlag = "";
-			String cpogSize = "";
-			String disableFunction = "";
-			String oldSynt = "";
-
 			File f;
 			f = new File(espressoCommand);
 			if(!f.exists() || f.isDirectory()){
+				deleteTempFiles();
 				JOptionPane.showMessageDialog(null,
 						"Espresso tool is needed to programmer to work properly",
 						"Espresso tool not present",
@@ -408,6 +509,7 @@ public class CpogProgrammer {
 				gateLibFlag = "-lib";
 				f = new File(abcFolder + gatesLibrary);
 				if(!f.exists() || f.isDirectory()){
+					deleteTempFiles();
 					JOptionPane.showMessageDialog(null,
 							"It is needed to compute area of circuit properly",
 							"Gate library not present",
@@ -426,6 +528,7 @@ public class CpogProgrammer {
 					break;
 				case RECURSIVE:
 					if(settings.isCustomEncMode()){
+						deleteTempFiles();
 						JOptionPane.showMessageDialog(null,
 								"Recursive encodings generation combined with custom op-codes is not supported.",
 								"Encodings generation error",
@@ -437,6 +540,7 @@ public class CpogProgrammer {
 				case RANDOM:
 					genMode = "-r";
 					if(settings.isCustomEncMode()){
+						deleteTempFiles();
 						JOptionPane.showMessageDialog(null,
 								"Random encodings generation combined with custom op-codes is not supported.",
 								"Encodings generation error",
@@ -447,10 +551,11 @@ public class CpogProgrammer {
 					break;
 				case SCENCO:
 					SCENCO = true;
+					customFlag = "-set";
 					break;
 				case OLD_SYNT:
 					customFlag = "-set";
-					customPath = "../Tools/custom.enc";
+					customPath = encodingFile.getAbsolutePath();
 					oldSynt = "-old";
 
 					break;
@@ -465,191 +570,31 @@ public class CpogProgrammer {
 			if(settings.getGenMode() == generationMode.OLD_SYNT) numSol = "";
 			if(settings.isCustomEncMode()){
 				customFlag = "-set";
-				customPath = "../Tools/custom.enc";
+				customPath = encodingFile.getAbsolutePath();
 			}
 
-			// TODO REMOVE RESULTS FOLDER BEFORE STARTING GENERATION
-
-			/*System.out.println("../Tools/programmer.x" +"../Tools/scenarios.cpog "+
-					"-m "+effort+" "+genMode+" "+ numSol + " "+customFlag +" "+ customPath +" "+ verbose +" "+cpogSize +" "+ disableFunction +" "+ oldSynt +" "+
-					espressoFlag +" "+ espressoCommand +" "+ abcFlag +" "+ abcFolder +" "+ gateLibFlag +" "+ gatesLibrary);
-			if(true) return;*/
+			deleteDir(new File(toolPath + "results/"));
+			File d = new File("../tools/results/generated_encoding/");
+			d.mkdirs();
 
 		if(!SCENCO){
 			// CALLING PROGRAMMER.X
+			boolean out = false;
+			int limit, it = 0;
 				if(settings.isContMode()){
-					boolean out = false;
-					int limit = 1000, it = 1;
-					double minArea = Double.MAX_VALUE, currArea = Double.MAX_VALUE;
-					while(!out && it < limit){
-						process = new ProcessBuilder("../tools/programmer.x", "../tools/scenarios.cpog",
-								"-m",effort,genMode, "1",customFlag,customPath,verbose,cpogSize,disableFunction,oldSynt,
-								espressoFlag,espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
-						InputStream is = process.getInputStream();
-						InputStreamReader isr = new InputStreamReader(is);
-						BufferedReader br = new BufferedReader(isr);
-						String line;
-						boolean finish = false;
-						while ( (line = br.readLine()) != null && !finish) {
-							//System.out.println(line);
-							// Read Area
-							if(line.contains(".area")){
-								line = br.readLine();
-								currArea = Double.valueOf(line);
-								line = br.readLine();
-								if(currArea < minArea){
-									v = 0; a = 0;
-									minArea = currArea;
-									System.out.println(it + ") " + "Area of current circuit: " + minArea);
-									while((line = br.readLine()) != null){
-										// Read Optimal Encoding
-										if(line.contains("MIN: ")){
-											StringTokenizer st2 = new StringTokenizer(line, " ");
-											int j = 0;
-											st2.nextElement();
-											while (st2.hasMoreElements()) {
-												opt_enc[j++] = (String) st2.nextElement();
-											}
-										}
-
-										// Read Optimal Formulae
-										if(line.contains(".start_formulae")){
-											line = br.readLine();
-											while(line.contains(".end_formulae") == false){
-												StringTokenizer st2 = new StringTokenizer(line, ",");
-												String el = (String)st2.nextElement();
-												if(el.equals("V")){ //formula of a vertex
-													opt_vertices[v] = (String) st2.nextElement();
-													truthTableVertices[v] = (String) st2.nextElement();
-													opt_formulaeVertices[v++] = (String) st2.nextElement();
-												}else{
-													opt_sources[a] = (String) st2.nextElement();
-													opt_dests[a] = (String) st2.nextElement();
-													truthTableArcs[a] = (String) st2.nextElement();
-													opt_formulaeArcs[a++] = (String) st2.nextElement();
-												}
-												line = br.readLine();
-											}
-
-										}
-
-										// Read statistics
-										if(line.contains(".statistics")){
-											line = br.readLine();
-											while(line.contains(".end_statistics") == false){
-												//System.out.println(line);
-												line = br.readLine();
-											}
-										}
-
-										// Read errors
-										if(line.contains(".error")){
-											line = br.readLine();
-											while(line.contains(".end_error") == false){
-												JOptionPane.showMessageDialog(null,
-														line,
-														"Programmer.x error",
-														JOptionPane.ERROR_MESSAGE);
-												line = br.readLine();
-											}
-											we.cancelMemento();
-											return;
-
-										}
-									}
-								}else{
-									finish = true;
-								}
-							}
-
-						}
-						process.destroy();
-						is.close();
-						isr.close();
-						br.close();
-						it++;
-					}
+					limit = 100;
+					numSol = "1";
 				}else{
-					process = new ProcessBuilder("../Tools/programmer.x","../Tools/scenarios.cpog",
-							"-m",effort,genMode, numSol,customFlag,customPath,verbose,cpogSize,disableFunction,oldSynt,
-							espressoFlag,espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
-					InputStream is = process.getInputStream();
-					InputStreamReader isr = new InputStreamReader(is);
-					BufferedReader br = new BufferedReader(isr);
-					String line;
-
-					while ((line = br.readLine()) != null) {
-						if(settings.isVerboseMode())
-							System.out.println(line);
-
-						// Read Optimal Encoding
-						if(line.contains("MIN: ")){
-							StringTokenizer st2 = new StringTokenizer(line, " ");
-							int j = 0;
-							st2.nextElement();
-							while (st2.hasMoreElements()) {
-								opt_enc[j++] = (String) st2.nextElement();
-							}
-						}
-
-						// Read Optimal Formulae
-						if(line.contains(".start_formulae")){
-							line = br.readLine();
-							while(line.contains(".end_formulae") == false){
-								if(settings.isVerboseMode())
-									System.out.println(line);
-								StringTokenizer st2 = new StringTokenizer(line, ",");
-								String el = (String)st2.nextElement();
-								if(el.equals("V")){ //formula of a vertex
-									opt_vertices[v] = (String) st2.nextElement();
-									truthTableVertices[v] = (String) st2.nextElement();
-									opt_formulaeVertices[v++] = (String) st2.nextElement();
-								}else{
-									opt_sources[a] = (String) st2.nextElement();
-									opt_dests[a] = (String) st2.nextElement();
-									truthTableArcs[a] = (String) st2.nextElement();
-									opt_formulaeArcs[a++] = (String) st2.nextElement();
-								}
-								line = br.readLine();
-							}
-
-						}
-
-						// Read statistics
-						if(line.contains(".statistics")){
-							line = br.readLine();
-							while(line.contains(".end_statistics") == false){
-								System.out.println(line);
-								line = br.readLine();
-							}
-						}
-
-						// Read errors
-						if(line.contains(".error")){
-							line = br.readLine();
-							while(line.contains(".end_error") == false){
-								JOptionPane.showMessageDialog(null,
-										line,
-										"Programmer.x error",
-										JOptionPane.ERROR_MESSAGE);
-								line = br.readLine();
-							}
-							we.cancelMemento();
-							return;
-
-						}
-					}
-					process.destroy();
-					is.close();
-					isr.close();
-					br.close();
+					limit = 1;
 				}
-				// DEBUG
-				System.out.println();
-
+				double minArea = Double.MAX_VALUE, currArea = Double.MAX_VALUE;
+				while(!out && it < limit){
+					callingProgrammer(minArea, currArea, we,it);
+					it++;
+				}
 				// Print controller
 				System.out.println();
-				String fileName = "../Tools/results/generated_encoding/";
+				String fileName = toolPath + "results/generated_encoding/";
 				for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
 				fileName = fileName.concat(".prg");
 				f = new File(fileName);
@@ -739,6 +684,7 @@ public class CpogProgrammer {
 					we.cancelMemento();
 					JOptionPane.showMessageDialog(null, "SCENCO is not able to solve the CPOG, try other options.",
 							"Encoding result", JOptionPane.ERROR_MESSAGE);
+					deleteTempFiles();
 					return;
 				}
 				System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
@@ -755,9 +701,6 @@ public class CpogProgrammer {
 					System.out.println(name + ": " + opt_enc[i]);
 				}
 				solution = new CpogEncoding(null, null);
-				//we.cancelMemento();
-				//JOptionPane.showMessageDialog(null, "No solution.", "Encoding result", JOptionPane.INFORMATION_MESSAGE);
-				//return;
 			}
 
 			if(!SCENCO){
@@ -831,12 +774,12 @@ public class CpogProgrammer {
 
 		boolean[][] encoding = solution.getEncoding();
 
-		if(settings.getGenMode() == generationMode.SCENCO){
+		//TODO Scenco option don't work properly yet
+		/*if(settings.getGenMode() == generationMode.SCENCO){
 
 			try{
-//				 FileOutputStream file = new FileOutputStream("../Tools/scenarios.cpog");
-				 File cpogFile = File.createTempFile("scenarios", "cpog");
-			     PrintStream Output = new PrintStream(cpogFile);
+				 encodingFile = File.createTempFile("encoding", "cpog");
+			     PrintStream Output = new PrintStream(encodingFile);
 
 			     for(int i=0; i<m; i++){
 			    	 for(int j=0; j<settings.getBits(); j++){
@@ -844,16 +787,16 @@ public class CpogProgrammer {
 			    		 else Output.print("0");
 			    	 }
 			    	 Output.println();
-
 			     }
 			     Output.close();
+
+			     customPath = encodingFile.getAbsolutePath();
+
+			     callingProgrammer(Double.MAX_VALUE, Double.MAX_VALUE, we, 0);
 			}catch (IOException e) {
 				System.out.println("Error: " + e);
 			}
-
-
-
-		}
+		}*/
 
 		for(int k = 0; k < m; k++)
 		{
@@ -906,16 +849,7 @@ public class CpogProgrammer {
 					arc.setCondition(condition);
 				}
 			}
-		// REMOVING TEMPORARY FILES
-		File f = new File("../Tools/scenarios.cpog");
-		f.delete();
 
-		/*f = new File("../Tools/results/");
-		deleteDir(f);
-		f.delete();*/
-
-		f = new File("../Tools/custom.enc");
-		f.delete();
 		we.saveMemento();
 	}
 	private String binaryToInt(String string) {
