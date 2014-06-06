@@ -16,6 +16,7 @@ import org.workcraft.plugins.cpog.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
+import org.workcraft.plugins.cpog.tools.EncoderPreferencesTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -40,7 +41,9 @@ public class CpogModule implements Module {
 		p.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
 		p.registerClass(SettingsPage.class, CpogSettings.class);
 
-		p.registerClass(Tool.class, CpogEncoder.class);
+		//p.registerClass(Tool.class, CpogEncoder.class);
+
+		p.registerClass(Tool.class, EncoderPreferencesTool.class, framework);
 
 		p.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override

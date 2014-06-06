@@ -31,6 +31,15 @@ public class CpogEncoding {
 	public boolean[][] getEncoding() {
 		return encoding;
 	}
-	private final BooleanFormula[] functions;
-	private final boolean[][] encoding;
+	public void setEncoding(boolean[][] encoding){
+		this.encoding = encoding;
+	}
+	public void setFormula(BooleanFormula formula,int index){
+		this.functions[index] = formula;
+	}
+	public void setFormule(BooleanFormula[] formula){
+		this.functions = formula;
+	}
+	private  BooleanFormula[] functions;
+	private boolean[][] encoding;
 }
