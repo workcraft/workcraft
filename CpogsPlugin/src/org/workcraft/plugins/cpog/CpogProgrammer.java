@@ -42,7 +42,7 @@ import com.sun.org.apache.regexp.internal.RE;
 public class CpogProgrammer {
 
 	private EncoderSettings settings;
-	private File scenarioFile, encodingFile;
+	private File scenarioFile, encodingFile ;
 	private String toolPath = "../tools/";
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER.X
@@ -175,43 +175,68 @@ public class CpogProgrammer {
 				}
 			}
 			Output.close();
+
+			// WRITING CUSTOM ENCODING FILE
+			if(settings.getGenMode() != generationMode.SCENCO){
+				encodingFile = File.createTempFile("custom", "enc");
+				if(settings.isCustomEncMode()){
+					    PrintStream Output1 = new PrintStream(encodingFile);
+
+						String [] enc = settings.getCustomEnc();
+						for(int k = 0; k < m; k++)
+						{
+							if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
+									enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
+									enc[k].contains("8") || enc[k].contains("9")){
+								JOptionPane.showMessageDialog(null,
+										"Op-code " + enc[k] + " not allowed.",
+										"Custom encoding error",
+										JOptionPane.ERROR_MESSAGE);
+								return -1;
+
+							}
+							String empty = "";
+							for(int i=0; i<settings.getBits(); i++) empty += 'X';
+							if(enc[k].equals("") || enc[k].equals(empty))
+								Output1.println("/");
+							else
+								Output1.println(enc[k]);
+						}
+						Output1.close();
+				}
+			}
 		}catch (IOException e) {
 			System.out.println("Error: " + e);
 		}
 
-		// WRITING CUSTOM ENCODING FILE
-		if(settings.isCustomEncMode()){
-			try{
-				 encodingFile = File.createTempFile("custom", "enc");
-			     PrintStream Output = new PrintStream(encodingFile);
-
-				String [] enc = settings.getCustomEnc();
-				for(int k = 0; k < m; k++)
-				{
-					if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
-							enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
-							enc[k].contains("8") || enc[k].contains("9")){
-						JOptionPane.showMessageDialog(null,
-								"Op-code " + enc[k] + " not allowed.",
-								"Custom encoding error",
-								JOptionPane.ERROR_MESSAGE);
-						return -1;
-
-					}
-					String empty = "";
-					for(int i=0; i<settings.getBits(); i++) empty += 'X';
-					if(enc[k].equals("") || enc[k].equals(empty))
-						Output.println("/");
-					else
-						Output.println(enc[k]);
-				}
-				Output.close();
-			}catch (IOException e) {
-				System.out.println("Error: " + e);
-			}
-		}
-
 		return 0;
+	}
+
+	private void printController(int m){
+		System.out.println();
+		String fileName = toolPath + "results/generated_encoding/";
+		for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
+		fileName = fileName.concat(".prg");
+		File f = new File(fileName);
+		if(f.exists() && !f.isDirectory()){
+			System.out.println("Boolean controller:");
+			try{
+				  FileInputStream fstream = new FileInputStream(fileName);
+				  DataInputStream in = new DataInputStream(fstream);
+				  BufferedReader bre = new BufferedReader(new InputStreamReader(in));
+				  String strLine;
+				  bre.readLine();
+				  bre.readLine();
+				  while ((strLine = bre.readLine()) != null)   {
+					  System.out.println (strLine);
+				  }
+				  in.close();
+			}catch (Exception e){ //Catch exception if any
+				System.err.println("Error: " + e.getMessage());
+			}
+			System.out.println();
+		}
+		return;
 	}
 
 	private void deleteTempFiles(){
@@ -221,6 +246,12 @@ public class CpogProgrammer {
 	}
 
 	private void callingProgrammer(Double minArea, Double currArea, WorkspaceEntry we, int it) throws IOException{
+		//Debug Printing
+		/*System.out.println(toolPath + "programmer.x" + " " + scenarioFile.getAbsolutePath() + " " +
+				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
+				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
+				espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
+				gatesLibrary);*/
 		process = new ProcessBuilder(toolPath + "programmer.x", scenarioFile.getAbsolutePath(),
 				"-m",effort,genMode, numSol,customFlag,customPath,verbose,cpogSize,disableFunction,oldSynt,
 				espressoFlag,espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
@@ -230,7 +261,8 @@ public class CpogProgrammer {
 		String line;
 		boolean finish = false;
 		while ( (line = br.readLine()) != null && !finish) {
-			//System.out.println(line);
+			if(settings.isVerboseMode())
+				System.out.println(line);
 			// Read Area
 			if(line.contains(".area")){
 				line = br.readLine();
@@ -242,6 +274,8 @@ public class CpogProgrammer {
 					if(settings.isContMode())
 						System.out.println(it + ") " + "Area of current circuit: " + minArea);
 					while((line = br.readLine()) != null){
+						if(settings.isVerboseMode() && !settings.isContMode())
+							System.out.println(line);
 						// Read Optimal Encoding
 						if(line.contains("MIN: ")){
 							StringTokenizer st2 = new StringTokenizer(line, " ");
@@ -314,11 +348,20 @@ public class CpogProgrammer {
 		return;
 	}
 
+	private void reset_vars(){
+		verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
+		abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
+
+		return;
+	}
+
 	public void run(WorkspaceEntry we)
 	{
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 
 		we.captureMemento();
+
+		reset_vars();
 
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
 		n = 0;
@@ -522,9 +565,16 @@ public class CpogProgrammer {
 			if(settings.isCpogSize()) cpogSize = "-cs";
 			if(settings.isCostFunc()) disableFunction = "-d";
 			if(settings.isVerboseMode()) verbose = "-v";
+			if(settings.isEffort()) effort = "all";
+			else effort = "min";
+			if(settings.isCustomEncMode()){
+				customFlag = "-set";
+				customPath = encodingFile.getAbsolutePath();
+			}
 			switch(settings.getGenMode()){
 				case OPTIMAL_ENCODING:
 					genMode = "-top";
+					numSol = String.valueOf(settings.getSolutionNumber());
 					break;
 				case RECURSIVE:
 					if(settings.isCustomEncMode()){
@@ -548,29 +598,23 @@ public class CpogProgrammer {
 						we.cancelMemento();
 						return;
 					}
+					numSol = String.valueOf(settings.getSolutionNumber());
 					break;
 				case SCENCO:
 					SCENCO = true;
 					customFlag = "-set";
+					genMode = "-top";
+					numSol = "1";
 					break;
 				case OLD_SYNT:
 					customFlag = "-set";
 					customPath = encodingFile.getAbsolutePath();
 					oldSynt = "-old";
-
+					genMode = "-top";
+					numSol = "1";
 					break;
 				default:
 					System.out.println("Error");
-			}
-			if(settings.isEffort())
-				effort = "all";
-			else
-				effort = "min";
-			if(settings.getGenMode() != generationMode.RECURSIVE) numSol = String.valueOf(settings.getSolutionNumber());
-			if(settings.getGenMode() == generationMode.OLD_SYNT) numSol = "";
-			if(settings.isCustomEncMode()){
-				customFlag = "-set";
-				customPath = encodingFile.getAbsolutePath();
 			}
 
 			deleteDir(new File(toolPath + "results/"));
@@ -593,29 +637,8 @@ public class CpogProgrammer {
 					it++;
 				}
 				// Print controller
-				System.out.println();
-				String fileName = toolPath + "results/generated_encoding/";
-				for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
-				fileName = fileName.concat(".prg");
-				f = new File(fileName);
-				if(f.exists() && !f.isDirectory()){
-					System.out.println("Boolean controller:");
-					try{
-						  FileInputStream fstream = new FileInputStream(fileName);
-						  DataInputStream in = new DataInputStream(fstream);
-						  BufferedReader bre = new BufferedReader(new InputStreamReader(in));
-						  String strLine;
-						  bre.readLine();
-						  bre.readLine();
-						  while ((strLine = bre.readLine()) != null)   {
-							  System.out.println (strLine);
-						  }
-						  in.close();
-					}catch (Exception e){ //Catch exception if any
-						System.err.println("Error: " + e.getMessage());
-					}
-					System.out.println();
-				}
+				printController(m);
+
 			}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
@@ -774,8 +797,7 @@ public class CpogProgrammer {
 
 		boolean[][] encoding = solution.getEncoding();
 
-		//TODO Scenco option don't work properly yet
-		/*if(settings.getGenMode() == generationMode.SCENCO){
+		if(settings.getGenMode() == generationMode.SCENCO){
 
 			try{
 				 encodingFile = File.createTempFile("encoding", "cpog");
@@ -783,8 +805,12 @@ public class CpogProgrammer {
 
 			     for(int i=0; i<m; i++){
 			    	 for(int j=0; j<settings.getBits(); j++){
-			    		 if(encoding[i][j]) Output.print("1");
-			    		 else Output.print("0");
+			    		 if(encoding[i][j]){
+			    			 Output.print("1");
+			    		 }
+			    		 else{
+			    			 Output.print("0");
+			    		 }
 			    	 }
 			    	 Output.println();
 			     }
@@ -793,10 +819,13 @@ public class CpogProgrammer {
 			     customPath = encodingFile.getAbsolutePath();
 
 			     callingProgrammer(Double.MAX_VALUE, Double.MAX_VALUE, we, 0);
+
+			     // Print controller
+			     printController(m);
 			}catch (IOException e) {
 				System.out.println("Error: " + e);
 			}
-		}*/
+		}
 
 		for(int k = 0; k < m; k++)
 		{
