@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;

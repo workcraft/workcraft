@@ -31,6 +31,7 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString.V
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.util.Identifier;
 
 public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 {
@@ -52,10 +53,17 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 		}
 
 		PrinterSuite printers = new FormulaToString.PrinterSuite();
-		printers.vars = new FormulaToString.VariablePrinter(){
+		printers.vars = new FormulaToString.VariablePrinter() {
 			@Override
 			public Void visit(BooleanVariable node) {
-				append("var_"+internalReferences.getReference(node));
+
+				String ref = internalReferences.getReference(node);
+				if (Identifier.isNumber(ref)) {
+					append("var_"+ref);
+				} else
+					append(ref);
+
+
 				return null;
 			}
 		};

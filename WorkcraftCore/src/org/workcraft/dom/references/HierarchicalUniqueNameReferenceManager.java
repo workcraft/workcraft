@@ -128,11 +128,10 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		final String reference = existing.getReference(n);
 
 		if (reference != null) {
-			NamespaceProvider provider = getNamespaceProvider(n);
-			NameManager<Node> man = getNameManager(provider);
+
 			String name = getNameFromReference(reference);
 
-			man.setName(n, name);
+			setName(n, name);
 		}
 	}
 
@@ -188,7 +187,16 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 	}
 
+
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
+		return getNodeByReference(provider, reference, false);
+	}
+
+	public Node getNodeByReferenceQuiet(NamespaceProvider provider, String reference) {
+		return getNodeByReference(provider, reference, true);
+	}
+
+	public Node getNodeByReference(NamespaceProvider provider, String reference, boolean quiet) {
 
 		if (provider!=null&&reference.equals("")) return (Node)provider;
 
@@ -205,10 +213,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		NameManager<Node> man = getNameManager(provider);
 
-		Node node = man.get(head);
+		Node node;
+
+		node = man.get(head);
+		if (node==null) return null;
 
 		if (node instanceof NamespaceProvider) {
-			return getNodeByReference((NamespaceProvider)node, tail);
+			return getNodeByReference((NamespaceProvider)node, tail, quiet);
 		}
 
 		return null;
@@ -284,6 +295,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public void setName(Node node, String name) {
+
 		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
 		man.setName(node, name);
 	}

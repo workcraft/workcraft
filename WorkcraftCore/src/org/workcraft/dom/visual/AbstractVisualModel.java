@@ -585,7 +585,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 
-	private static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
+	public static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
 		MathModel mmodel = sourceModel.getMathModel();
 
 		// find the closest container that has a referenced math node

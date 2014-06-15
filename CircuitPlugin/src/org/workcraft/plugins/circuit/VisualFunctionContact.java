@@ -141,12 +141,14 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void updateCombinedFunction() {
 		CleverBooleanWorker worker = new CleverBooleanWorker();
 		BooleanOperations.worker = new DumbBooleanWorker();
+
 		if (getFunction().getSetFunction()!=null&&
 			getFunction().getResetFunction()!=null)
 
 			getFunction().setCombinedFunction(
 					DnfGenerator.generate(
-					worker.or(getFunction().getSetFunction(), worker.and(new FreeVariable(getName()), worker.not(getFunction().getResetFunction())))
+					worker.or(getFunction().getSetFunction(), worker.and(
+							new FreeVariable(getReferencedContact().getName()), worker.not(getFunction().getResetFunction())))
 					));
 
 		if (getFunction().getSetFunction()!=null && getFunction().getResetFunction()==null) {

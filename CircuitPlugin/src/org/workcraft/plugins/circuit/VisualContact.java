@@ -166,15 +166,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 		});
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualContact, String>(
-				this, "Name", String.class) {
-			protected void setter(VisualContact object, String value) {
-				object.setName(value);
-			}
-			protected String getter(VisualContact object) {
-				return object.getName();
-			}
-		});
+//		addPropertyDeclaration(new PropertyDeclaration<VisualContact, String>(
+//				this, "Name", String.class) {
+//			protected void setter(VisualContact object, String value) {
+//				object.setName(value);
+//			}
+//			protected String getter(VisualContact object) {
+//				return object.getName();
+//			}
+//		});
 
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
@@ -200,6 +200,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
+		Circuit circuit = (Circuit)r.getModel().getMathModel();
+
 		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
 		Color colorisation = d.getColorisation();
 		Color fillColor = d.getBackground();
@@ -234,7 +236,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 			g.transform(at);
 
-			GlyphVector gv = getNameGlyphs(g);
+			GlyphVector gv = getNameGlyphs(circuit, g);
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
@@ -290,19 +292,19 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
-	public GlyphVector getNameGlyphs(Graphics2D g) {
+	public GlyphVector getNameGlyphs(Circuit circuit, Graphics2D g) {
 		if (nameGlyph == null) {
 			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
-			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), getName());
+			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), circuit.getName(this.getReferencedContact()));
 		}
 		return nameGlyph;
 	}
 
-	public Rectangle2D getNameBB(Graphics2D g) {
-		return getNameGlyphs(g).getVisualBounds();
+	public Rectangle2D getNameBB(Circuit circuit, Graphics2D g) {
+		return getNameGlyphs(circuit, g).getVisualBounds();
 	}
 
 	public void setDirection(VisualContact.Direction dir) {
@@ -329,15 +331,21 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return getReferencedContact().getIOType();
 	}
 
+//	public String getName(Circuit circuit) {
+//		return circuit.getName(getReferencedContact());
+//	}
+
 	public String getName() {
 		return getReferencedContact().getName();
 	}
 
-	public void setName(String name) {
-		resetNameGlyph();
-		getReferencedContact().setName(name);
-		sendNotification(new PropertyChangedEvent(this, "name"));
-	}
+
+////
+//	public void updateLocalName(String name) {
+//		resetNameGlyph();
+//		getReferencedContact().setName(name);
+//		sendNotification(new PropertyChangedEvent(this, "name"));
+//	}
 
 	public Contact getReferencedContact() {
 		return (Contact)getReferencedComponent();

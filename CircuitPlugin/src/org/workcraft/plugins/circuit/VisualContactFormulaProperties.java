@@ -3,7 +3,9 @@ package org.workcraft.plugins.circuit;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.workcraft.dom.Container;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
@@ -11,10 +13,10 @@ import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.util.Func;
 
 public class VisualContactFormulaProperties {
-	VisualCircuit circuit;
+	VisualCircuit vcircuit;
 
 	public VisualContactFormulaProperties(VisualCircuit circuit) {
-		this.circuit = circuit;
+		this.vcircuit = circuit;
 	}
 
 	private BooleanFormula parseFormula(final VisualFunctionContact contact, String resetFunction) {
@@ -23,13 +25,19 @@ public class VisualContactFormulaProperties {
 					new Func<String, BooleanFormula>() {
 						@Override
 						public BooleanFormula eval(String name) {
-							if (contact.getParent() instanceof VisualFunctionComponent) {
-								return ((VisualFunctionComponent)contact.getParent()).getOrCreateInput(name)
-								.getReferencedContact();
-							}
 
-							else
-								return circuit.getOrCreateOutput(name, contact.getX()+1, contact.getY()+1).getReferencedContact();
+
+							if (contact.getParent() instanceof VisualFunctionComponent) {
+								return
+									(BooleanFormula)
+									vcircuit.getOrCreateContact(
+											(Container)contact.getParent(),
+											name,
+											IOType.INPUT, 0, 0
+										).getReferencedContact();
+							} else
+								return (BooleanFormula)
+										vcircuit.getOrCreateOutput(name, contact.getX()+1, contact.getY()+1).getReferencedContact();
 						}
 					});
 		} catch (ParseException e) {

@@ -43,7 +43,12 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 			this.internalReferenceResolver = internalReferenceResolver;
 		}
 
-		public BooleanVariable eval(String ref){ return (BooleanVariable) internalReferenceResolver.getObject(ref.substring("var_".length())); }
+		public BooleanVariable eval(String ref){
+			if (ref.startsWith("var_")) {
+				ref = ref.substring("var_".length());
+			}
+			return (BooleanVariable) internalReferenceResolver.getObject(ref);
+		}
 	}
 
 	@Override

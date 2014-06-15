@@ -39,9 +39,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	public VisualFunctionComponent(CircuitComponent component) {
 		super(component);
-		if (component.getChildren().isEmpty()) {
-			this.addFunction("x", null, false);
-		}
+//		if (component.getChildren().isEmpty()) {
+//			this.addFunction("x", null, false);
+//		}
 	}
 
 	ComponentRenderingResult renderingResult = null;
@@ -99,32 +99,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		} else {
 			return super.hitTestInLocalSpace(pointInLocalSpace);
 		}
-	}
-
-	public VisualFunctionContact addFunction(String prefix, IOType ioType, boolean allowShort) {
-		VisualContact.Direction dir=null;
-		if (ioType==null) ioType = IOType.OUTPUT;
-
-		dir=VisualContact.Direction.WEST;
-		if (ioType==IOType.OUTPUT) {
-			dir=VisualContact.Direction.EAST;
-		}
-		FunctionContact c = new FunctionContact(ioType);
-		VisualFunctionContact vc = new VisualFunctionContact(c);
-		vc.setDirection(dir);
-		vc.setName(Contact.getNewName(this.getReferencedComponent(), prefix, null, allowShort));
-		addContact(vc);
-		return vc;
-	}
-
-	public VisualFunctionContact getOrCreateInput(String arg) {
-		for (VisualFunctionContact c : Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class)) {
-			if(c.getName().equals(arg)) return c;
-		}
-		VisualFunctionContact vc = addFunction(arg, IOType.INPUT, true);
-		vc.setSetFunction(One.instance());
-		vc.setResetFunction(One.instance());
-		return vc;
 	}
 
 	@Override
@@ -185,8 +159,11 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 						vc.setTransform(ct, !firstUpdate); // suppress notifications at first recalculation of contact coordinates
 						continue;
 					}
+
 					if (vc.getIOType() != IOType.INPUT) continue;
-					Point2D position = res.contactPositions().get(vc.getName());
+
+					String vcName = vc.getName();
+					Point2D position = res.contactPositions().get(vcName);
 					if (position != null) {
 						bt.translate(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin), position.getY());
 
@@ -221,6 +198,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
 		GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 		ComponentRenderingResult res = getRenderingResult();
+		VisualCircuit vcircuit = (VisualCircuit)r.getModel();
+
+
 		if (res == null) {
 			super.draw(r);
 		} else {
@@ -290,7 +270,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 					if (vc.getIOType() != IOType.INPUT) continue;
 
-					Point2D position = res.contactPositions().get(vc.getName());
+					String cname = vc.getReferencedContact().getName();
+					Point2D position = res.contactPositions().get(cname);
 					if (position != null) {
 						line = new Line2D.Double(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin),
 							position.getY(), position.getX(), position.getY());

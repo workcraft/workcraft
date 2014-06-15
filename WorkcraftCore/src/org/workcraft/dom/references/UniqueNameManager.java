@@ -76,6 +76,8 @@ public class UniqueNameManager<T> implements NameManager<T> {
 		if(occupant != null) {
 			throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
 		}
+
+
 		if (!Identifier.isValid(name)) {
 			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
 					+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
@@ -98,12 +100,17 @@ public class UniqueNameManager<T> implements NameManager<T> {
 		Ts.put(name, t);
 	}
 
+
 	public T get (String name) {
+		// special case, when the name is number only, convert it to C-style id (to support the old models)
+		if (Identifier.isNumber(name)) name="_"+name;
+
 		return Ts.getValue(name);
 	}
 
 	public void remove (T t) {
 		Ts.removeValue(t);
 	}
+
 
 }

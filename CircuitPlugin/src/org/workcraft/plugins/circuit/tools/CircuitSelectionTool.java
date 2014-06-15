@@ -15,8 +15,13 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.Contact.IOType;
 
 public class CircuitSelectionTool extends SelectionTool {
 
@@ -52,11 +57,15 @@ public class CircuitSelectionTool extends SelectionTool {
 			popup.addSeparator();
 
 			JMenuItem addFunction = new JMenuItem("Add function");
+
 			addFunction.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
-					comp.addFunction("x", null, false);
+					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+
+					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0, 0);
+//					comp.addFunction("x", null, false);
 				}
 			});
 
@@ -76,7 +85,10 @@ public class CircuitSelectionTool extends SelectionTool {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
-					comp.addInput("", null);
+					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+
+					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0, 0);
+//					comp.addInput((Circuit)vcircuit.getMathModel(), "", null);
 				}
 			});
 
@@ -85,7 +97,10 @@ public class CircuitSelectionTool extends SelectionTool {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
-					comp.addOutput("", null);
+					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+
+					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0, 0);
+//					comp.addOutput((Circuit)vcircuit.getMathModel(), "", null);
 				}
 			});
 

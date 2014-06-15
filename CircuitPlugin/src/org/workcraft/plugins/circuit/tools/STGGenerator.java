@@ -339,7 +339,7 @@ public class STGGenerator {
 				ContactSTG source = drivers.get(driverContact);
 
 				if(source == null)
-					throw new RuntimeException("No source for " + targetContact.getName() + " while generating " + signalName);
+					throw new RuntimeException("No source for " + circuit.getMathModel().getName(targetContact) + " while generating " + signalName);
 
 				VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
 
@@ -371,12 +371,14 @@ public class STGGenerator {
 				}
 			}
 
-			result = ((VisualFunctionComponent)parent).getName();
+//			result = ((VisualFunctionComponent)parent).getName();
+			result = circuit.getName(parent);
+
 			if (contact.getIOType() == IOType.INPUT || output_cnt > 1) {
-				result += "_" + contact.getName();
+				result += "_" + circuit.getMathModel().getName(contact.getReferencedContact());
 			}
 		} else {
-			result = contact.getName();
+			result = circuit.getMathModel().getName(contact.getReferencedContact());
 		}
 		return result;
 	}

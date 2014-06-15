@@ -75,6 +75,8 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
 	}
 
+
+
 	@Override
 	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot) {
 		if (sourceModel==null) sourceModel = this;

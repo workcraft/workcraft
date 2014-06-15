@@ -10,4 +10,10 @@ public class Identifier {
 		final Matcher matcher = identifierPattern.matcher(s);
 		return (matcher.find() && matcher.start() == 0 && matcher.end() == s.length());
 	}
+
+	private static final Pattern numberPattern = Pattern.compile("[0-9]*");
+	public static boolean isNumber (String s) {
+		final Matcher matcher = numberPattern.matcher(s);
+		return (matcher.find() && matcher.start() == 0 && matcher.end() == s.length());
+	}
 }

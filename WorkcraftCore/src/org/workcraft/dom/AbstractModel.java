@@ -164,6 +164,18 @@ public abstract class AbstractModel implements Model {
 		return referenceManager.getNodeByReference(provider, reference);
 	}
 
+	public Node getNodeByReferenceQuiet(NamespaceProvider provider, String reference) {
+
+		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager) {
+			HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)referenceManager;
+			return manager.getNodeByReferenceQuiet(provider, reference);
+		}
+
+
+		return referenceManager.getNodeByReference(provider, reference);
+	}
+
+
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
 
