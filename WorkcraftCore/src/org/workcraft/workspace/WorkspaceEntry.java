@@ -204,6 +204,14 @@ public class WorkspaceEntry implements ObservableState {
 		if (changed == false) {
 			savedMemento = capturedMemento;
 		}
+
+		if (CommonEditorSettings.getDebugClipboard()) {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
+			clipboard.setContents(new StringSelection(str), null);
+
+		}
+
 	}
 
 	public void cancelMemento() {
@@ -272,10 +280,9 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
-	public String getClipboardAsString() {
+	public String unzipInputStream(ZipInputStream zis) {
 		String result = "";
 		try {
-			ZipInputStream zis = new ZipInputStream(framework.clipboard.getStream());
 			ZipEntry ze;
 			while ((ze = zis.getNextEntry()) != null)	{
 		        StringBuilder isb = new StringBuilder();
@@ -293,6 +300,10 @@ public class WorkspaceEntry implements ObservableState {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public String getClipboardAsString() {
+		return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
 	}
 
 	public void copy() {
