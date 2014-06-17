@@ -16,7 +16,6 @@ public class Block extends PageNode implements EventNode{
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
-	private Boolean faulty = false;
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -51,13 +50,11 @@ public class Block extends PageNode implements EventNode{
 	}
 
 	@Override
-	public void setFaulty(boolean faulty) {
-		this.faulty =faulty;
-	}
-
-	@Override
 	public boolean isFaulty(){
-		return faulty;
+		for(Event event : this.getEvents())
+			if(event.isFaulty())
+				return true;
+		return false;
 	}
 
 	public void setForegroundColor(Color color){

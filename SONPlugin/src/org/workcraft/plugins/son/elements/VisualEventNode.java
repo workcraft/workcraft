@@ -14,4 +14,6 @@ public interface VisualEventNode {
 	public EventNode getMathEventNode();
 
 	public void drawFault(DrawRequest r);
+
+	public boolean isFaulty();
 }

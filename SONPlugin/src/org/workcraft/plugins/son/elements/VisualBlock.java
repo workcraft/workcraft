@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.elements;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -13,6 +14,7 @@ import java.util.Map;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -32,6 +34,58 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 		outputRelations = new HashMap<VisualComponent[], SONConnectionType>();
 	}
 
+	@Override
+	public void draw(DrawRequest r){
+
+
+		// This is to update the rendered text for names (and labels) of group children,
+		// which is necessary to calculate the bounding box before children have been drawn
+		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
+			component.cacheRenderedText(r);
+		}
+
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+
+
+		if (bb != null && getParent() != null) {
+
+			if (getIsCollapsed()&&!isCurrentLevelInside()) {
+
+				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
+				Graphics2D g = r.getGraphics();
+				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
+				g.fill(bb);
+
+				g.setBackground(new Color(190, 230, 240));
+				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+				float[] pattern = {0.2f, 0.2f};
+				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.draw(bb);
+
+				drawFault(r);
+				drawNameInLocalSpace(r);
+				drawLabelInLocalSpace(r);
+
+			} else {
+
+				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
+				Graphics2D g = r.getGraphics();
+
+//				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+				g.setBackground(new Color(190, 230, 240));
+				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+				float[] pattern = {0.2f, 0.2f};
+				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+
+				g.draw(bb);
+				drawNameInLocalSpace(r);
+				drawLabelInLocalSpace(r);
+
+			}
+		}
+
+	}
+
 	public void drawFault(DrawRequest r){
 		if (ErrTracingDisable.showErrorTracing()) {
 			Graphics2D g = r.getGraphics();
@@ -40,13 +94,10 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 
 			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
-			Integer faultCount = new Integer(0);
-			for(VisualComponent node : this.getComponents())
-				if(node instanceof VisualEvent)
-					if(((VisualEvent)node).isFaulty())
-						faultCount++;
-
-			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), faultCount.toString());
+			if (isFaulty())
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "1");
+			else
+				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "0");
 
 			labelBB = glyphVector.getVisualBounds();
 			Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
@@ -64,10 +115,6 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 	@Override
 	public boolean getIsCollapsed() {
 		return  this.getReferencedComponent().getIsCollapsed();
-	}
-
-	public void setFaulty(Boolean fault){
-		((Block)getReferencedComponent()).setFaulty(fault);
 	}
 
 	public boolean isFaulty(){

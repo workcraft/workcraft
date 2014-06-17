@@ -170,6 +170,11 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public void remove(Node node) {
+		if(node instanceof VisualComponent){
+			MathNode math = ((VisualComponent)node).getReferencedComponent();
+			Container parent = (Container)math.getParent();
+			parent.remove(math);
+		}
 		groupImpl.remove(node);
 	}
 
@@ -194,7 +199,9 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public void remove(Collection<Node> nodes) {
-		groupImpl.remove(nodes);
+		for(Node node : nodes)
+			remove(node);
+		//groupImpl.remove(nodes);
 	}
 
 

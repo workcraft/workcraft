@@ -18,9 +18,11 @@ import javax.swing.JPopupMenu;
 
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -35,6 +37,7 @@ import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.GUI;
+import org.workcraft.util.Hierarchy;
 
 public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
@@ -70,17 +73,17 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		groupPanel.add(groupButton);
 
 		//Create GroupPageButton
-		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/page.svg"), "Group selection into a page/block (Alt+G)");
+		final JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/son-selection-page.svg"), "Group selection into a page/block");
 
         //Create the popup menu.
-        final JFrame frame = new JFrame();
         final JPopupMenu popup = new JPopupMenu();
         popup.add(new JMenuItem(new AbstractAction("Block") {
             public void actionPerformed(ActionEvent e) {
             	selectionBlock(editor);
             }
         }));
+        popup.addSeparator();
         popup.add(new JMenuItem(new AbstractAction("Page") {
             public void actionPerformed(ActionEvent e) {
 				selectionPageGroup(editor);
@@ -88,11 +91,9 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
         }));
         groupPageButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                popup.show(e.getComponent(), e.getX(), e.getY());
+                popup.show(groupPageButton, 0, groupPageButton.getHeight());
             }
         });
-
-
 		groupPanel.add(groupPageButton);
 
 		JButton supergroupButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -193,21 +194,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 			Collection<Node> selection = e.getModel().getSelection();
 
-			if (model.getCurrentLevel() instanceof VisualGroup) {
-				VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
-				if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
-					setChannelPlaceToolState(e.getEditor(), true);
-				}
-			}
-
 			if(selection.size() == 1)
 			{
 				Node selectedNode = selection.iterator().next();
 				selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
-
-				if (selectedNode instanceof VisualONGroup) {
-					setChannelPlaceToolState(e.getEditor(), false);
-				}
 
 				if (selectedNode instanceof VisualBlock) {
 					if(!((VisualBlock)selectedNode).getIsCollapsed())
@@ -270,23 +260,6 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 	public void keyPressed(GraphEditorKeyEvent e)
 	{
 		super.keyPressed(e);
-		if (!e.isCtrlDown())
-		{
-			if (!e.isShiftDown()) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_PAGE_UP:
-					setChannelPlaceToolState(e.getEditor(), true);
-					// Note: level-up is handled in the parent
-					// selectionLevelUp();
-					break;
-				case KeyEvent.VK_PAGE_DOWN:
-					setChannelPlaceToolState(e.getEditor(), false);
-					// Note: level-down is handled in the parent
-					// selectionLevelDown();
-					break;
-				}
-			}
-		}
 
 		if(e.isCtrlDown()){
 			switch (e.getKeyCode()){
@@ -294,6 +267,39 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				selectionSupergroup(e.getEditor());
 				break;
 			}
+		}
+	}
+
+	@Override
+	protected void changeLevelDown(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
+		Collection<Node> selection = model.getSelection();
+		if (selection.size() == 1) {
+			Node node = selection.iterator().next();
+			if(node instanceof Container) {
+				model.setCurrentLevel((Container)node);
+				if(node instanceof VisualONGroup)
+					setChannelPlaceToolState(editor, false);
+				else
+					setChannelPlaceToolState(editor, true);
+				editor.repaint();
+			}
+		}
+	}
+
+	@Override
+	protected void changeLevelUp(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
+		Container level = model.getCurrentLevel();
+		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+		if (parent != null) {
+			model.setCurrentLevel(parent);
+			if(parent instanceof VisualONGroup)
+				setChannelPlaceToolState(editor, false);
+			else
+				setChannelPlaceToolState(editor, true);
+			model.addToSelection(level);
+			editor.repaint();
 		}
 	}
 

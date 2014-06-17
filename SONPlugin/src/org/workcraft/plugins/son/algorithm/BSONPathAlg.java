@@ -6,8 +6,7 @@ import java.util.List;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.elements.Block;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
 public class BSONPathAlg extends PathAlgorithm{
 
@@ -42,8 +41,8 @@ public class BSONPathAlg extends PathAlgorithm{
 
 				}
 			}
-			if(n instanceof Event || n instanceof Block)
-				result.addAll(bsonAlg.before(n));
+			if(n instanceof EventNode)
+				result.addAll(bsonAlg.before((EventNode)n));
 		}
 		return result;
 	}
@@ -55,6 +54,7 @@ public class BSONPathAlg extends PathAlgorithm{
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
+
 
 		 return cyclePathFilter(cycleResult);
 	}

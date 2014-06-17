@@ -62,7 +62,7 @@ public class PathAlgorithm{
 					pathResult.add(path);
 					continue;
 				}
-				if(!history.contains((Node)adj.get(i)[1])){
+				else if(!history.contains((Node)adj.get(i)[1])){
 					getAllPath((Node)adj.get(i)[1], end, adj);
 				}
 				else {

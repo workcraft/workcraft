@@ -8,8 +8,6 @@ public interface EventNode extends Node{
 
 	public boolean isFaulty();
 
-	public void setFaulty(boolean faulty);
-
 	public String getLabel();
 
 	public void setFillColor (Color fillColor);

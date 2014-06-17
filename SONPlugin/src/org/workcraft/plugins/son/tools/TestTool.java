@@ -49,8 +49,8 @@ public class TestTool implements Tool{
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		blockMathLevelTest(net, vnet);
-		//mathLevelTest(net, vnet);
+	//	blockMathLevelTest(net, vnet);
+		mathLevelTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
 	}
@@ -98,21 +98,23 @@ public class TestTool implements Tool{
 			System.out.println();
 		}
 
-		for(PageNode page : net.getPageNodes()){
+/*		for(PageNode page : net.getPageNodes()){
 			System.out.println("page parent  "+ page.getParent().toString());
 		}
-
+		*/
 		for(VisualONGroup vgroup: vnet.getVisualONGroups()){
 			System.out.println(vgroup.toString());
-			System.out.println("Page size = " + vgroup.getVisualPages().size());
-			System.out.println("block size = " + vgroup.getVisualBlocks().size());
+			System.out.println("Visual Page size = " + vgroup.getVisualPages().size());
+			System.out.println("Visual Condition size = " + vgroup.getVisualConditions().size());
+			System.out.println("Visual Connection size = " + vgroup.getVisualSONConnections().size());
+			System.out.println("Visual block size = " + vgroup.getVisualBlocks().size());
 
 		}
 
-		for(VisualPage page : vnet.getVisualPages()){
+/*		for(VisualPage page : vnet.getVisualPages()){
 			System.out.println();
 			System.out.println("visual page parent  "+ page.getParent().toString());
-		}
+		}*/
 	}
 }
 
