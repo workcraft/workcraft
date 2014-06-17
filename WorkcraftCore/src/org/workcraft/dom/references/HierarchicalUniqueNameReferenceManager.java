@@ -85,10 +85,14 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			// we must assign some name in any case, be it an old or a new one
 			if (checkNode == null)
 				newMan.setName(node, name);
-			else
+			else {
 				newMan.setDefaultNameIfUnnamed(node);
+				// additional call to propagate the name data after calling setDefaultNameIfUnnamed
+				setName(node, newMan.getName(node));
 
-			String n = newMan.getName(node);
+			}
+//			String n = newMan.getName(node);
+
 		}
 	}
 
@@ -272,10 +276,15 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 					NamespaceProvider provider = getNamespaceProvider(node);
 					NameManager<Node> man = getNameManager(provider);
 					man.setDefaultNameIfUnnamed(node);
+
+					// additional call to propagate the name data after calling setDefaultNameIfUnnamed
+					setName(node, man.getName(node));
 				}
 
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
 					getNameManager(getNamespaceProvider(node2)).setDefaultNameIfUnnamed(node2);
+					// additional call to propagate the name data after calling setDefaultNameIfUnnamed
+					setName(node2, getNameManager(getNamespaceProvider(node2)).getName(node2));
 				}
 
 			}

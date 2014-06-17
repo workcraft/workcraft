@@ -246,9 +246,12 @@ public class VisualCircuit extends AbstractVisualModel {
 		if (node == null) {
 			properties = Properties.Merge.add(properties,
 					new EnvironmentFilePropertyDescriptor(this));
-		} else if (node instanceof VisualFunctionContact) {
+		}
+
+		if (node instanceof VisualFunctionContact) {
 			VisualFunctionContact contact = (VisualFunctionContact)node;
 			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
+
 			properties = Properties.Merge.add(properties,
 					props.getSetProperty(contact),
 					props.getResetProperty(contact));

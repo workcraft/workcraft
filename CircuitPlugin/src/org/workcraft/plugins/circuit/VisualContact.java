@@ -365,6 +365,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void notify(StateEvent e) {
+		if (e instanceof PropertyChangedEvent) {
+			PropertyChangedEvent p = (PropertyChangedEvent)e;
+			if (p.getPropertyName().equals("name")) {
+				nameGlyph = null;
+			}
+		}
 	}
 
 	public void setReferencedOnePlace(Place referencedOnePlace) {
