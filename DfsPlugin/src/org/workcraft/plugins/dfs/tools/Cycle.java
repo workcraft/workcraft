@@ -164,8 +164,8 @@ public class Cycle implements Comparable<Cycle> {
 			for (VisualDelayComponent component: components) {
 				if (result.length() > 0) {
 					result += "→";
-					result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
 				}
+				result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
 			}
 		}
 		return result;
