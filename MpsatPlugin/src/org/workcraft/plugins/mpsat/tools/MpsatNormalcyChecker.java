@@ -19,7 +19,7 @@ public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("CSC", MpsatMode.NORMALCY, 0,
+		return new MpsatSettings("Normalcy", MpsatMode.NORMALCY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
 				null);
 	}
