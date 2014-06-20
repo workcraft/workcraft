@@ -5,8 +5,6 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractMpsatChecker implements Tool {
@@ -23,11 +21,6 @@ public abstract class AbstractMpsatChecker implements Tool {
 	}
 
 	@Override
-	public final boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, PetriNetModel.class);
-	}
-
-	@Override
 	public final void run(WorkspaceEntry we) {
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
@@ -40,6 +33,9 @@ public abstract class AbstractMpsatChecker implements Tool {
 
 	@Override
 	public abstract String getDisplayName();
+
+	@Override
+	public abstract boolean isApplicableTo(WorkspaceEntry we);
 
 	public abstract MpsatSettings getSettings();
 
