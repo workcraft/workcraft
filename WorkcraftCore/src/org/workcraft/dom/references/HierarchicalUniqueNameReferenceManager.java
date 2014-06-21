@@ -13,10 +13,9 @@ import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager {
-	final private static String quoteType = "'";
-	final private static String hierarchySeparator = "/";
 
 	final private HashMap<NamespaceProvider, NameManager<Node>> managers = new HashMap<NamespaceProvider, NameManager<Node>>();
 
@@ -98,6 +97,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 	@Override
 	public void attach(Node root) {
+
 		if (existing != null) {
 			//setExistingReference(root);
 
@@ -106,6 +106,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			}
 			existing = null;
 		}
+
 		super.attach(root);
 	}
 
@@ -128,68 +129,24 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		return man;
 	}
 
-	private void setExistingReference(Node n) {
-		final String reference = existing.getReference(n);
+	protected void setExistingReference(Node n) {
+		String reference = existing.getReference(n);
+
+		if (Identifier.isNumber(reference)) {
+			String nm = getName(n);
+			if (nm!=null)
+				reference = nm;
+		}
 
 		if (reference != null) {
 
-			String name = getNameFromReference(reference);
+			String name =
+					HierarchicalNames.getNameFromReference(reference);
 
 			setName(n, name);
 		}
 	}
 
-	// TODO: make it work with the embedded ' characters
-	private static String hPattern = "(\\"+quoteType+"([^\\"+quoteType+"]+)\\"+quoteType+")(.*)";
-
-	public static String getReferenceHead(String reference) {
-
-		if (reference.startsWith(hierarchySeparator))
-			reference = reference.substring(1);
-
-		if (!reference.startsWith(quoteType))
-			return reference;
-
-		Pattern pattern = Pattern.compile(hPattern);
-
-		Matcher matcher = pattern.matcher(reference);
-		if (matcher.find()) {
-
-			String head = matcher.group(2);
-			return head;
-		}
-
-		return null;
-	}
-
-	public static String getReferenceTail(String reference) {
-
-		if (reference.startsWith(hierarchySeparator))
-			reference = reference.substring(1);
-
-		if (!reference.startsWith(quoteType)) return "";
-		Pattern pattern = Pattern.compile(hPattern);
-
-		Matcher matcher = pattern.matcher(reference);
-
-		if (matcher.find()) {
-			String tail = matcher.group(3);
-			return tail;
-		}
-
-		return null;
-	}
-
-	public static String getNameFromReference(String reference) {
-
-		String head = getReferenceHead(reference);
-		String tail = getReferenceTail(reference);
-
-		if (tail.equals("")) return head;
-		else
-			return getNameFromReference(tail);
-
-	}
 
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
@@ -204,12 +161,12 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		if (provider!=null&&reference.equals("")) return (Node)provider;
 
-		String head = getReferenceHead(reference);
-		String tail = getReferenceTail(reference);
+		String head =  HierarchicalNames.getReferenceHead(reference);
+		String tail =  HierarchicalNames.getReferenceTail(reference);
 
 		boolean isAbsolutePath = false;
 
-		if (reference.startsWith(hierarchySeparator)) isAbsolutePath = true;
+		if (reference.startsWith(HierarchicalNames.hierarchySeparator)) isAbsolutePath = true;
 
 		if (provider==null||isAbsolutePath) {
 			provider = topProvider;
@@ -248,19 +205,21 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			if (prov==null) break; // we've just reached the root, do not add it's name
 
 			if (!ret.equals(""))
-				ret=hierarchySeparator+ret;
+				ret= HierarchicalNames.hierarchySeparator+ret;
 
 
 			String name = getNameManager(prov).getName(node);
 			// the unnamed component just returns null
 			if (name==null) return null;
 
-			ret=quoteType+name+quoteType+ret;
+			// for now don't use quotes
+//			ret= HierarchicalNames.quoteType+name+ HierarchicalNames.quoteType+ret;
+			ret= name+ret;
 			node = node.getParent();
 
 		} while (prov!=null&&provider!=prov);
 
-		return (provider==topProvider&&isAbsolutePath?hierarchySeparator:"")+ret;
+		return (provider==topProvider&&isAbsolutePath? HierarchicalNames.hierarchySeparator:"")+ret;
 	}
 
 

@@ -2,9 +2,12 @@ package org.workcraft.plugins.circuit.references;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Identifier;
@@ -17,6 +20,23 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 		super(provider, existing, defaultName);
 	}
 
+	@Override
+	public String getName(Node node) {
+
+		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
+
+		if (node instanceof Contact && !man.isNamed(node)) {
+			return ((Contact)node).getName();
+		}
+
+		if (node instanceof FunctionComponent && (!man.isNamed(node))) {
+			return ((FunctionComponent)node).getName();
+		}
+
+		if (!man.isNamed(node)) return null;
+
+		return super.getName(node);
+	}
 
 	@Override
 	public void setName(Node node, String name) {
@@ -25,6 +45,8 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 		if (Identifier.isNumber(name) && node instanceof Contact) {
 
 			String n = ((Contact)node).getName();
+			((Contact)node).setLegacyID(Integer.valueOf(name));
+
 			if (n!=null&&!n.equals("")) name=n;
 		} else if (Identifier.isNumber(name) && node instanceof CircuitComponent) {
 

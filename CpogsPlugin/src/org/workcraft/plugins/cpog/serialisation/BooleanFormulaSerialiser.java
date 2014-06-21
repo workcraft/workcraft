@@ -22,6 +22,8 @@
 package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -58,10 +60,14 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 			public Void visit(BooleanVariable node) {
 
 				String ref = internalReferences.getReference(node);
+				// use full path to a flattened name
+				String flat = HierarchicalNames.getFlatName(ref, null);
+
+				// old style naming, if number is used as an ID for a contact
 				if (Identifier.isNumber(ref)) {
 					append("var_"+ref);
 				} else
-					append(ref);
+					append(flat);
 
 
 				return null;

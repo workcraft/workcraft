@@ -32,6 +32,18 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.cpog.VisualVariable.class)
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable
 {
+
+	// an integer ID from the old model files
+	private Integer legacyID=null;
+	@Override
+	public Integer getLegacyID() {
+		return legacyID;
+	}
+	public void setLegacyID(Integer id) {
+		legacyID = id;
+	}
+
+
 	private VariableState state = VariableState.UNDEFINED;
 
 	private String label = "";

@@ -4,6 +4,16 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class FreeVariable implements BooleanVariable, Comparable<FreeVariable> {
 
+	// an integer ID from the old model files
+	private Integer legacyID=null;
+	@Override
+	public Integer getLegacyID() {
+		return legacyID;
+	}
+	public void setLegacyID(Integer id) {
+		legacyID = id;
+	}
+
 	private final String label;
 
 	public FreeVariable(String label) {

@@ -62,6 +62,17 @@ public class Contact extends MathNode implements BooleanVariable {
 	private boolean initOne = false;
 
 
+	private Integer legacyID=null;
+	@Override
+	public Integer getLegacyID() {
+		return legacyID;
+	}
+
+	public void setLegacyID(Integer id) {
+		legacyID = id;
+	}
+
+
 	//private boolean invertSignal = false;
 
 	public boolean getInitOne() {

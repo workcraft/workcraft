@@ -21,6 +21,9 @@
 
 package org.workcraft.serialisation;
 
+import java.util.Set;
+
 public interface ReferenceResolver {
 	public Object getObject (String reference);
+	public Set<Object> getObjects();
 }
