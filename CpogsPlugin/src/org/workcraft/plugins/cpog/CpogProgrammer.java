@@ -44,6 +44,7 @@ public class CpogProgrammer {
 	private EncoderSettings settings;
 	private File scenarioFile, encodingFile ;
 	private String toolPath = "../tools/";
+	private int bits = 1;
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER.X
 	private String espressoCommand, abcFolder , gatesLibrary ,
@@ -52,12 +53,42 @@ public class CpogProgrammer {
 	// Allocation data structures
 	private Process process;
 	private String[] opt_enc, opt_formulaeVertices,truthTableVertices, opt_vertices, opt_sources, opt_dests,
-			opt_formulaeArcs, truthTableArcs;
+			opt_formulaeArcs, truthTableArcs, arcNames;
 	private int v,a,n;
 
 	public CpogProgrammer(EncoderSettings settings){
 		this.setSettings(settings);
 	}
+
+	private String binaryToInt(String string) {
+		int value = 0, wg = 1;
+		if(string != null){
+			for(int i = string.length()-1; i>=0; i--){
+				if(string.charAt(i) == '1'){
+					value += wg;
+				}
+				wg *= 2;
+			}
+
+			return String.valueOf(value);
+		}
+		return "0";
+	}
+
+	private static boolean deleteDir(File dir) {
+	    if (dir.isDirectory()) {
+	        String[] children = dir.list();
+	        for (int i = 0; i < children.length; i++) {
+	            boolean success = deleteDir(new File(dir, children[i]));
+	            if (!success) {
+	                return false;
+	            }
+	        }
+	    }
+
+	    return dir.delete(); // The directory is empty now and can be deleted.
+	}
+
 	private String generateConstraint(char [][][] constraints, int numScenarios, int event1, int event2)
 	{
 		StringBuilder s = new StringBuilder();
@@ -164,8 +195,9 @@ public class CpogProgrammer {
 						}
 
 						//VisualVertex vertex = (VisualVertex)component;
-						if(!nodes.containsKey(vertex.getLabel()))
+						if(!nodes.containsKey(vertex.getLabel())){
 							Output.println(vertex.getLabel());
+						}
 					}
 
 				}
@@ -301,6 +333,7 @@ public class CpogProgrammer {
 								}else{
 									opt_sources[a] = (String) st2.nextElement();
 									opt_dests[a] = (String) st2.nextElement();
+									arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
 									truthTableArcs[a] = (String) st2.nextElement();
 									opt_formulaeArcs[a++] = (String) st2.nextElement();
 								}
@@ -422,7 +455,9 @@ public class CpogProgrammer {
 
 		for(int k = 0; k < m; k++)
 		{
-			for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) constraints[k][i][j] = '0';
+			for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) {
+				constraints[k][i][j] = '0';
+			}
 
 			for(VisualComponent component : scenarios.get(k).getComponents())
 			if (component instanceof VisualVertex)
@@ -451,17 +486,17 @@ public class CpogProgrammer {
 
 			for(int t = 0; t < n; t++)
 				for(int i = 0; i < n; i++)
-				if (graph[i][t] > 0)
-					for(int j = 0; j < n; j++)
-					if (graph[t][j] > 0) graph[i][j] = 1;
+					if (graph[i][t] > 0)
+						for(int j = 0; j < n; j++)
+							if (graph[t][j] > 0) graph[i][j] = 1;
 
 			// detect transitive arcs
 
 			for(int t = 0; t < n; t++)
 				for(int i = 0; i < n; i++)
-				if (graph[i][t] > 0)
-					for(int j = 0; j < n; j++)
-					if (graph[t][j] > 0) graph[i][j] = 2;
+					if (graph[i][t] > 0)
+						for(int j = 0; j < n; j++)
+							if (graph[t][j] > 0) graph[i][j] = 2;
 
 			// report cyclic scenario
 
@@ -485,7 +520,7 @@ public class CpogProgrammer {
 
 					if (graph[i][j] > 0) ch = '1';
 					if (graph[i][j] > 1) ch = '-';
-					if (constraints[k][i][i] == '0' || constraints[k][j][j] == '0') ch = '-';
+					if ( constraints[k][i][i] == '0' || constraints[k][j][j] == '0' ) ch = '-';
 
 					constraints[k][i][j] = ch;
 				}
@@ -516,6 +551,7 @@ public class CpogProgrammer {
 		opt_dests = new String[n*n];
 		opt_formulaeArcs = new String[n*n];
 		truthTableArcs =  new String[n*n];
+		arcNames = new String[n*n];
 		espressoCommand = CpogSettings.getEspressoCommand();
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
@@ -641,14 +677,12 @@ public class CpogProgrammer {
 
 			}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				System.out.println("Error.");
 				e1.printStackTrace();
 			}
 		// group similar constraints
-
+		HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
 		HashMap<String, Integer> task = new HashMap<String, Integer>();
-
 		for(int i = 0; i < n; i++)
 			for(int j = 0; j < n; j++)
 				if (trivialEncoding(constraints, m, i, j) == '?')
@@ -727,17 +761,17 @@ public class CpogProgrammer {
 			}
 
 			if(!SCENCO){
+
 				solution = new CpogEncoding(null, null);
-				int k=0;
+				//TODO Encoding vars useless, figure where I could take length of encodings out
+				//TODO then use as key the name of the element
 				BooleanFormula[][] encodingVars = opt_task.getEncodingVars();
-				//BooleanFormula[] formule = solution.getFunctions();
 				BooleanFormula[] formule = new BooleanFormula[v + a];
 				// Set optimal formulae to graphs
 				final Variable [] variables = vars;
 				for(int i=0; i<v; i++){
 					if(opt_formulaeVertices[i].contains("x")){
 						BooleanFormula formula_opt = null;
-						//System.out.println("FORMULA " + i + ": " + opt_formulaeVertices[i]);
 						formula_opt = BooleanParser.parse(opt_formulaeVertices[i], new Func<String, BooleanFormula>() {
 
 							@Override
@@ -747,8 +781,13 @@ public class CpogProgrammer {
 								return variables[id];
 							}
 						});
-						//solution.setFormula(formula_opt, task.get(truthTableVertices[i]));
-						formule[task.get(truthTableVertices[i])] = formula_opt;
+
+						formulaeName.put(opt_vertices[i], formula_opt);
+
+						// OLD formulae array
+						/*if(task.containsKey(truthTableVertices[i])){
+							formule[task.get(truthTableVertices[i])] = formula_opt;
+						}*/
 					}
 				}
 				for(int i=0; i<a; i++){
@@ -762,19 +801,29 @@ public class CpogProgrammer {
 								return variables[id];
 							}
 						});
-						//solution.setFormula(formula_opt, task.get(truthTableArcs[i]));
-						formule[task.get(truthTableArcs[i])] = formula_opt;
+
+						formulaeName.put(arcNames[i], formula_opt);
+
+						/*if(task.containsKey(truthTableArcs[i])){
+							formule[task.get(truthTableArcs[i])] = formula_opt;
+						}*/
 					}
 				}
 				solution.setFormule(formule);
 
 				// Set optimal encoding to graphs
-				//System.out.println(encodingVars.length + " " + encodingVars[0].length);
-				boolean[][] opt_encoding = new boolean[encodingVars.length][];
-				for(int i=0;i<encodingVars.length;i++)
+				int value = 2;
+				while(value < m){
+					value *=2;
+					bits++;
+				}
+				int varsLength = bits + pr;
+
+				boolean[][] opt_encoding = new boolean[m][];
+				for(int i=0;i<m;i++)
 				{
-					opt_encoding[i] = new boolean[encodingVars[i].length - pr];
-					for(int j=0;j<encodingVars[i].length -pr;j++){
+					opt_encoding[i] = new boolean[m];
+					for(int j=0;j<bits;j++){
 						if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
 						else	opt_encoding[i][j] = true;
 					}
@@ -827,10 +876,15 @@ public class CpogProgrammer {
 			}
 		}
 
+
 		for(int k = 0; k < m; k++)
 		{
-			for(int i = 0; i < freeVariables; i++)
+			for(int i = 0; i < freeVariables; i++){
 				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+			}
+			for(int i = freeVariables; i < freeVariables + pr; i++){
+				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(true));
+			}
 		}
 
 		VisualScenario result = cpog.createVisualScenario();
@@ -842,8 +896,14 @@ public class CpogProgrammer {
 			vertices[id] = cpog.createVisualVertex(result);
 			vertices[id].setLabel(eventName);
 			vertices[id].setPosition(Geometry.multiply(positions.get(id), 1.0/count.get(id)));
+			if(formulaeName.containsKey(eventName)){
+				vertices[id].setCondition(formulaeName.get(eventName));
+			}else
+				vertices[id].setCondition(One.instance());
 		}
 
+
+		// SET FORMULAE INTO RESULT GRAPH
 		BooleanFormula[] functions = solution.getFunctions();
 		for(int i = 0; i < n; i++)
 			for(int j = 0; j < n; j++)
@@ -862,54 +922,34 @@ public class CpogProgrammer {
 						continue;
 					}
 				}
-				else
+				/*else
 				{
 					String constraint = generateConstraint(constraints, m, i, j);
 					condition = functions[task.get(constraint)];
-				}
+				}*/
 
-				if (i == j)
+				/*if (i == j)
 				{
 					vertices[i].setCondition(condition);
-				}
-				else
+				}*/
+				if (i != j)
 				{
 					VisualArc arc = cpog.connect(vertices[i], vertices[j]);
+					String arcName = vertices[i].getLabel() + "->" + vertices[j].getLabel();
+
+					if(formulaeName.containsKey(arcName)){
+						condition = formulaeName.get(arcName);
+					}else
+						condition = One.instance();
+
 					arc.setCondition(condition);
 				}
 			}
 
 		we.saveMemento();
 	}
-	private String binaryToInt(String string) {
-		int value = 0, wg = 1;
-		if(string != null){
-			for(int i = string.length()-1; i>=0; i--){
-				if(string.charAt(i) == '1'){
-					value += wg;
-				}
-				wg *= 2;
-			}
 
-			return String.valueOf(value);
-		}
-		return "0";
-	}
 	public void setSettings(EncoderSettings settings) {
 		this.settings = settings;
-	}
-
-	private static boolean deleteDir(File dir) {
-	    if (dir.isDirectory()) {
-	        String[] children = dir.list();
-	        for (int i = 0; i < children.length; i++) {
-	            boolean success = deleteDir(new File(dir, children[i]));
-	            if (!success) {
-	                return false;
-	            }
-	        }
-	    }
-
-	    return dir.delete(); // The directory is empty now and can be deleted.
 	}
 }
