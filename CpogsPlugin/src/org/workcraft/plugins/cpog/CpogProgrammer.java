@@ -45,6 +45,7 @@ public class CpogProgrammer {
 	private File scenarioFile, encodingFile ;
 	private String toolPath = "../tools/";
 	private int bits = 1;
+	private Double minArea;
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER.X
 	private String espressoCommand, abcFolder , gatesLibrary ,
@@ -230,12 +231,13 @@ public class CpogProgrammer {
 							String empty = "";
 							for(int i=0; i<settings.getBits(); i++) empty += 'X';
 							if(enc[k].equals("") || enc[k].equals(empty)){
-								Output1.println(empty);
+								Output1.println("/");
 							}
 							else{
 								Output1.println(enc[k]);
 							}
 						}
+						Output1.println(settings.getBits());
 						Output1.close();
 				}
 			}
@@ -279,7 +281,7 @@ public class CpogProgrammer {
 		return;
 	}
 
-	private void callingProgrammer(Double minArea, Double currArea, WorkspaceEntry we, int it) throws IOException{
+	private int callingProgrammer(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
 		//Debug Printing: launching executable
 		/*System.out.println(toolPath + "programmer.x" + " " + scenarioFile.getAbsolutePath() + " " +
 				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
@@ -294,93 +296,147 @@ public class CpogProgrammer {
 		BufferedReader br = new BufferedReader(isr);
 		String line;
 		boolean finish = false;
-		while ( (line = br.readLine()) != null && !finish) {
-			if(settings.isVerboseMode())
-				System.out.println(line);
-			// Read Area
-			if(line.contains(".area")){
-				line = br.readLine();
-				currArea = Double.valueOf(line);
-				line = br.readLine();
-				if(currArea < minArea){
-					v = 0; a = 0;
-					minArea = currArea;
-					if(settings.isContMode())
+		if(continuous){
+			while ( (line = br.readLine()) != null && finish == false) {
+				// Read Area
+				if(line.contains(".area")){
+					line = br.readLine();
+					currArea = Double.valueOf(line);
+					line = br.readLine();
+					if(currArea < minArea){
+						v = 0; a = 0;
+						minArea = currArea;
 						System.out.println(it + ") " + "Area of current circuit: " + minArea);
-					while((line = br.readLine()) != null){
-						if(settings.isVerboseMode() && !settings.isContMode())
-							System.out.println(line);
-						// Read Optimal Encoding
-						if(line.contains("MIN: ")){
-							StringTokenizer st2 = new StringTokenizer(line, " ");
-							int j = 0;
-							st2.nextElement();
-							while (st2.hasMoreElements()) {
-								opt_enc[j++] = (String) st2.nextElement();
-							}
-						}
-
-						// Read Optimal Formulae
-						if(line.contains(".start_formulae")){
-							line = br.readLine();
-							while(line.contains(".end_formulae") == false){
-								if(!settings.isContMode() && settings.isVerboseMode())
-									System.out.println(line);
-								StringTokenizer st2 = new StringTokenizer(line, ",");
-								String el = (String)st2.nextElement();
-								if(el.equals("V")){ //formula of a vertex
-									opt_vertices[v] = (String) st2.nextElement();
-									truthTableVertices[v] = (String) st2.nextElement();
-									opt_formulaeVertices[v++] = (String) st2.nextElement();
-								}else{
-									opt_sources[a] = (String) st2.nextElement();
-									opt_dests[a] = (String) st2.nextElement();
-									arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
-									truthTableArcs[a] = (String) st2.nextElement();
-									opt_formulaeArcs[a++] = (String) st2.nextElement();
+						while((line = br.readLine()) != null){
+							// Read Optimal Encoding
+							if(line.contains("MIN: ")){
+								StringTokenizer st2 = new StringTokenizer(line, " ");
+								int j = 0;
+								st2.nextElement();
+								while (st2.hasMoreElements()) {
+									opt_enc[j++] = (String) st2.nextElement();
 								}
-								line = br.readLine();
 							}
 
-						}
-
-						// Read statistics
-						if(line.contains(".statistics")){
-							line = br.readLine();
-							while(line.contains(".end_statistics") == false){
-								if(!settings.isContMode())
-									System.out.println(line);
+							// Read Optimal Formulae
+							if(line.contains(".start_formulae")){
 								line = br.readLine();
+								while(line.contains(".end_formulae") == false){
+									StringTokenizer st2 = new StringTokenizer(line, ",");
+									String el = (String)st2.nextElement();
+									if(el.equals("V")){ //formula of a vertex
+										opt_vertices[v] = (String) st2.nextElement();
+										truthTableVertices[v] = (String) st2.nextElement();
+										opt_formulaeVertices[v++] = (String) st2.nextElement();
+									}else{
+										opt_sources[a] = (String) st2.nextElement();
+										opt_dests[a] = (String) st2.nextElement();
+										arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
+										truthTableArcs[a] = (String) st2.nextElement();
+										opt_formulaeArcs[a++] = (String) st2.nextElement();
+									}
+									line = br.readLine();
+								}
+
+							}
+
+							// Read statistics
+							if(line.contains(".statistics")){
+								line = br.readLine();
+								while(line.contains(".end_statistics") == false){
+									line = br.readLine();
+								}
+							}
+
+							// Read errors
+							if(line.contains(".error")){
+								line = br.readLine();
+								while(line.contains(".end_error") == false){
+									JOptionPane.showMessageDialog(null,
+											line,
+											"Programmer.x error",
+											JOptionPane.ERROR_MESSAGE);
+									line = br.readLine();
+								}
+								return -1;
+
 							}
 						}
-
-						// Read errors
-						if(line.contains(".error")){
-							line = br.readLine();
-							while(line.contains(".end_error") == false){
-								JOptionPane.showMessageDialog(null,
-										line,
-										"Programmer.x error",
-										JOptionPane.ERROR_MESSAGE);
-								line = br.readLine();
-							}
-							deleteTempFiles();
-							we.cancelMemento();
-							return;
-
-						}
+					}else{
+						finish = true;
 					}
-				}else{
-					finish = true;
+				}
+
+			}
+		}else{
+			while ( (line = br.readLine()) != null){
+				if(settings.isVerboseMode())
+					System.out.println(line);
+
+				// Read Optimal Encoding
+				if(line.contains("MIN: ")){
+					StringTokenizer st2 = new StringTokenizer(line, " ");
+					int j = 0;
+					st2.nextElement();
+					while (st2.hasMoreElements()) {
+						opt_enc[j++] = (String) st2.nextElement();
+					}
+				}
+
+				// Read Optimal Formulae
+				if(line.contains(".start_formulae")){
+					line = br.readLine();
+					while(line.contains(".end_formulae") == false){
+						if(settings.isVerboseMode())
+							System.out.println(line);
+						StringTokenizer st2 = new StringTokenizer(line, ",");
+						String el = (String)st2.nextElement();
+						if(el.equals("V")){ //formula of a vertex
+							opt_vertices[v] = (String) st2.nextElement();
+							truthTableVertices[v] = (String) st2.nextElement();
+							opt_formulaeVertices[v++] = (String) st2.nextElement();
+						}else{
+							opt_sources[a] = (String) st2.nextElement();
+							opt_dests[a] = (String) st2.nextElement();
+							arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
+							truthTableArcs[a] = (String) st2.nextElement();
+							opt_formulaeArcs[a++] = (String) st2.nextElement();
+						}
+						line = br.readLine();
+					}
+
+				}
+
+				// Read statistics
+				if(line.contains(".statistics")){
+					line = br.readLine();
+					while(line.contains(".end_statistics") == false){
+						System.out.println(line);
+						line = br.readLine();
+					}
+				}
+
+				// Read errors
+				if(line.contains(".error")){
+					line = br.readLine();
+					while(line.contains(".end_error") == false){
+						JOptionPane.showMessageDialog(null,
+								line,
+								"Programmer.x error",
+								JOptionPane.ERROR_MESSAGE);
+						line = br.readLine();
+					}
+					return -1;
+
 				}
 			}
-
 		}
+
 		process.destroy();
 		is.close();
 		isr.close();
 		br.close();
-		return;
+		return 0;
 	}
 
 	private void reset_vars(){
@@ -662,16 +718,23 @@ public class CpogProgrammer {
 		if(!SCENCO){
 			// CALLING PROGRAMMER.X
 			boolean out = false;
+			boolean continuous = false;
 			int limit, it = 0;
 				if(settings.isContMode()){
 					limit = 100;
 					numSol = "1";
+					continuous = true;
 				}else{
 					limit = 1;
 				}
-				double minArea = Double.MAX_VALUE, currArea = Double.MAX_VALUE;
+				minArea = Double.MAX_VALUE;
+				Double currArea = Double.MAX_VALUE;
 				while(!out && it < limit){
-					callingProgrammer(minArea, currArea, we,it);
+					if(callingProgrammer(currArea, we,it, continuous) != 0){
+						deleteTempFiles();
+						we.cancelMemento();
+						return;
+					}
 					it++;
 				}
 				// Print controller
@@ -868,8 +931,11 @@ public class CpogProgrammer {
 			     Output.close();
 
 			     customPath = encodingFile.getAbsolutePath();
-
-			     callingProgrammer(Double.MAX_VALUE, Double.MAX_VALUE, we, 0);
+			     if(callingProgrammer(Double.MAX_VALUE, we, 0, false) != 0){
+			    	 deleteTempFiles();
+					we.cancelMemento();
+					return;
+			     }
 
 			     // Print controller
 			     printController(m);
