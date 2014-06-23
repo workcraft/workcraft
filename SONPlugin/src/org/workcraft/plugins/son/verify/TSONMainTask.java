@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son.verify;
 
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.gui.StructureVerifySettings;
+import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;

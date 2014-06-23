@@ -33,6 +33,7 @@ import javax.swing.ListSelectionModel;
 
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.util.GUI;
 
 
