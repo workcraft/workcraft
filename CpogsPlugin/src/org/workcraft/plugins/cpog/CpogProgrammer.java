@@ -229,10 +229,12 @@ public class CpogProgrammer {
 							}
 							String empty = "";
 							for(int i=0; i<settings.getBits(); i++) empty += 'X';
-							if(enc[k].equals("") || enc[k].equals(empty))
-								Output1.println("/");
-							else
+							if(enc[k].equals("") || enc[k].equals(empty)){
+								Output1.println(empty);
+							}
+							else{
 								Output1.println(enc[k]);
+							}
 						}
 						Output1.close();
 				}
@@ -278,7 +280,7 @@ public class CpogProgrammer {
 	}
 
 	private void callingProgrammer(Double minArea, Double currArea, WorkspaceEntry we, int it) throws IOException{
-		//Debug Printing
+		//Debug Printing: launching executable
 		/*System.out.println(toolPath + "programmer.x" + " " + scenarioFile.getAbsolutePath() + " " +
 				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
 				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
@@ -729,6 +731,11 @@ public class CpogProgrammer {
 		for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
 		for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
 
+		// DEBUG PRINTING: printing variables needed to encode graph.
+		/*System.out.println("PRINTING VARIABLES:");
+		for(int i = 0; i< freeVariables + pr; i++)
+			System.out.println(vars[i].getLabel());*/
+
 		CpogEncoding solution = null;
 		try
 		{
@@ -746,25 +753,24 @@ public class CpogProgrammer {
 				}
 				System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
 				System.out.println();
-				System.out.println("Op-code selected for graphs:");
-				for(int i=0; i<m; i++){
-					String name;
-					if(scenarios.get(i).getLabel().equals("")){
-						name = "CPOG " + i;
-					}
-					else{
-						name = scenarios.get(i).getLabel();
-					}
-					System.out.println(name + ": " + opt_enc[i]);
-				}
-				solution = new CpogEncoding(null, null);
 			}
+
+			System.out.println("Op-code selected for graphs:");
+			for(int i=0; i<m; i++){
+				String name;
+				if(scenarios.get(i).getLabel().equals("")){
+					name = "CPOG " + i;
+				}
+				else{
+					name = scenarios.get(i).getLabel();
+				}
+				System.out.println(name + ": " + opt_enc[i]);
+			}
+			solution = new CpogEncoding(null, null);
 
 			if(!SCENCO){
 
 				solution = new CpogEncoding(null, null);
-				//TODO Encoding vars useless, figure where I could take length of encodings out
-				//TODO then use as key the name of the element
 				BooleanFormula[][] encodingVars = opt_task.getEncodingVars();
 				BooleanFormula[] formule = new BooleanFormula[v + a];
 				// Set optimal formulae to graphs
@@ -810,22 +816,18 @@ public class CpogProgrammer {
 					}
 				}
 				solution.setFormule(formule);
-
+				//TODO
 				// Set optimal encoding to graphs
-				int value = 2;
-				while(value < m){
-					value *=2;
-					bits++;
-				}
-				int varsLength = bits + pr;
-
 				boolean[][] opt_encoding = new boolean[m][];
 				for(int i=0;i<m;i++)
 				{
-					opt_encoding[i] = new boolean[m];
-					for(int j=0;j<bits;j++){
+					opt_encoding[i] = new boolean[freeVariables + pr];
+					for(int j=0;j<freeVariables;j++){
 						if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
 						else	opt_encoding[i][j] = true;
+					}
+					for(int j=freeVariables;j<freeVariables + pr;j++){
+						opt_encoding[i][j] = false;
 					}
 
 				}
@@ -876,14 +878,14 @@ public class CpogProgrammer {
 			}
 		}
 
-
+		//TODO
 		for(int k = 0; k < m; k++)
 		{
 			for(int i = 0; i < freeVariables; i++){
 				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
 			}
 			for(int i = freeVariables; i < freeVariables + pr; i++){
-				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(true));
+				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
 			}
 		}
 
