@@ -33,17 +33,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable
 {
 
-	// an integer ID from the old model files
-	private Integer legacyID=null;
-	@Override
-	public Integer getLegacyID() {
-		return legacyID;
-	}
-	public void setLegacyID(Integer id) {
-		legacyID = id;
-	}
-
-
 	private VariableState state = VariableState.UNDEFINED;
 
 	private String label = "";

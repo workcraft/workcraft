@@ -22,7 +22,5 @@ package org.workcraft.plugins.cpog.optimisation;
 
 
 public interface BooleanVariable extends BooleanFormula {
-	public Integer getLegacyID();
-
 	public String getLabel();
 }

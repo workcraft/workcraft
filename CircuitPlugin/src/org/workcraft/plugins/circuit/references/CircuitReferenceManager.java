@@ -45,7 +45,6 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 		if (Identifier.isNumber(name) && node instanceof Contact) {
 
 			String n = ((Contact)node).getName();
-			((Contact)node).setLegacyID(Integer.valueOf(name));
 
 			if (n!=null&&!n.equals("")) name=n;
 		} else if (Identifier.isNumber(name) && node instanceof CircuitComponent) {
