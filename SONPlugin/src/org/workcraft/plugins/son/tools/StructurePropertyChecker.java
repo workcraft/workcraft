@@ -51,9 +51,7 @@ public class StructurePropertyChecker implements Tool {
 			//Change connections from block inside to bounding.
 			if(!vnet.connectToBlocks())
 				return;
-
 			OutputRedirect.Redirect();
-
 			SONMainTask sonTask = new SONMainTask(dialog.getSetting(), net);
 			framework.getTaskManager().execute(sonTask, "Verification");
 			//Change connections from block bounding to inside.

@@ -8,9 +8,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
 public interface SONModel extends Model{
 
@@ -35,6 +37,8 @@ public interface SONModel extends Model{
 	 *
 	 */
 	public Collection<ChannelPlace> getChannelPlace();
+
+	public Collection<EventNode> getEventNodes();
 
 	public Collection<Node> getComponents();
 

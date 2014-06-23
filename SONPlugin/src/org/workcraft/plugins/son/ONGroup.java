@@ -11,9 +11,10 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.ChannelPlace;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
@@ -69,6 +70,19 @@ public class ONGroup extends PageNode{
 		for(Node node : getComponents())
 			if(node instanceof Event)
 				result.add((Event)node);
+
+		return result;
+	}
+
+	public Collection<EventNode> getEventNodes(){
+		ArrayList<EventNode> result =  new ArrayList<EventNode>();
+		for(Node node : getComponents()){
+			if(node instanceof Event)
+				result.add((Event)node);
+			if(node instanceof Block)
+				if(((Block)node).getIsCollapsed())
+					result.add((Block)node);
+		}
 
 		return result;
 	}

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Touchable;
@@ -87,6 +88,7 @@ public class VisualSONConnection extends VisualConnection
 	private HashSet<Node> children = new HashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
+	@Override
 	protected void initialise() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Double>(
 				this, "Line width", Double.class) {
@@ -154,6 +156,16 @@ public class VisualSONConnection extends VisualConnection
 			}
 		});
 
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Color>(
+				this, "Connection color", Color.class) {
+			protected void setter(VisualSONConnection object, Color value) {
+				object.setColor(value);
+			}
+			protected Color getter(VisualSONConnection object) {
+				return object.getDrawColor();
+			}
+		});
+
 		componentsTransformObserver = new ComponentsTransformObserver(this);
 		children.add(componentsTransformObserver);
 		children.add(graphic);
@@ -179,6 +191,12 @@ public class VisualSONConnection extends VisualConnection
 	@NoAutoSerialisation
 	public SONConnectionType getSONConnectionType() {
 		return connectionType;
+	}
+
+	@Override
+	public void setVisualConnectionDependencies(VisualComponent first,	VisualComponent second,
+			ConnectionGraphic graphic, MathConnection refConnection){
+
 	}
 
 	public void setVisualConnectionDependencies(VisualComponent first, VisualComponent second, ConnectionGraphic graphic, SONConnection refConnection) {

@@ -5,12 +5,11 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Block;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
 public class BSONAlg extends RelationAlgorithm{
 
@@ -21,8 +20,9 @@ public class BSONAlg extends RelationAlgorithm{
 		this.net = net;
 	}
 
-	//Behavioral SON
-
+	/**
+	 * get all related behavoural connections in a given set of groups.
+	 */
 	public Collection<SONConnection> getRelatedBhvLine(Collection<ONGroup> groups){
 		HashSet<SONConnection> result = new HashSet<SONConnection>();
 
@@ -40,6 +40,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	/**
+	 * check if a given group is line like. i.e., post/pre set of every node < 1.
+	 */
 	public boolean isLineLikeGroup(ONGroup group){
 		for(Node node : group.getComponents()){
 			if(net.getPostset(node).size() > 1 && group.containsAll(net.getPostset(node)))
@@ -50,6 +53,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return true;
 	}
 
+	/**
+	 * get phase of a given (high-level) condition
+	 */
 	public Collection<Condition> getPhase(Condition c){
 		Collection<Condition> result = new HashSet<Condition>();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
@@ -77,6 +83,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	/**
+	 * get related ONGroup of a given phase
+	 */
 	public ONGroup getBhvGroup(Collection<Condition> phase){
 		for(ONGroup group : net.getGroups())
 			if(group.getConditions().containsAll(phase))
@@ -84,6 +93,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return null;
 	}
 
+	/**
+	 * get related ONGroup of a given condition
+	 */
 	public Collection<ONGroup> getBhvGroups(Condition c){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(SONConnection con : net.getInputSONConnections(c))
@@ -94,7 +106,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	//get unchecked behaviour groups.
+	/**
+	 * get unchecked behaviour groups.
+	 */
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(ONGroup group : groups){
@@ -113,7 +127,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	//get unchecked abstract groups.
+	/**
+	 * get unchecked abstract groups.
+	 */
 	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(ONGroup group : groups){
@@ -159,7 +175,7 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition[]> before(Node e){
+	public Collection<Condition[]> before(EventNode e){
 		Collection<Condition[]> result = new ArrayList<Condition[]>();
 		Condition[] pre = new Condition[1];
 		Condition[] post = new Condition[1];
@@ -224,11 +240,11 @@ public class BSONAlg extends RelationAlgorithm{
 			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
 
 			for(Node n : preMaxI){
-				if(n instanceof Event || n instanceof Block)
-				PREpreMaxI.addAll(this.getPREset(n));}
+				if(n instanceof EventNode)
+				PREpreMaxI.addAll(this.getPREset((EventNode)n));}
 			for(Node n : postMinI2){
-				if(n instanceof Event || n instanceof Block)
-				POSTpostMinI2.addAll(this.getPOSTset(n));}
+				if(n instanceof EventNode)
+				POSTpostMinI2.addAll(this.getPOSTset((EventNode)n));}
 
 			for(Condition c0 : PREpreMaxI){
 				for(Condition c1 : POSTpostMinI2){
