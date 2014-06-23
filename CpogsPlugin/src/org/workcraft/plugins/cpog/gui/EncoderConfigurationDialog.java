@@ -369,6 +369,8 @@ public class EncoderConfigurationDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+            	if(Integer.parseInt(bitsText.getText()) < bits +1)
+            		bitsText.setText(String.valueOf(bits + 1));
             	for(int i=0;i<m;i++){
             		String data = "";
             		for(int j=0; j < Integer.valueOf(bitsText.getText()); j++) data = data + "X";
