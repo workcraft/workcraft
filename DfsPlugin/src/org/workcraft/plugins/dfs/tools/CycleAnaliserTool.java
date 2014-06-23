@@ -328,7 +328,10 @@ public class CycleAnaliserTool extends AbstractTool {
 
 		@Override
 		public int getRowCount() {
-			return Math.min(cycleCount, cycles.size());
+			if (cycles != null) {
+				return Math.min(cycleCount, cycles.size());
+			}
+			return 0;
 		}
 
 		@Override

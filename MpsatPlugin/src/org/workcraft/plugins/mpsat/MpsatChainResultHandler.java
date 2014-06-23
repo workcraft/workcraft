@@ -29,6 +29,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			case UNDEFINED:
 				SwingUtilities.invokeLater(new MpsatUndefinedResultHandler(task, result));
 				break;
+			case REACHABILITY:
 			case STG_REACHABILITY:
 			case CSC_CONFLICT_DETECTION:
 			case USC_CONFLICT_DETECTION:
