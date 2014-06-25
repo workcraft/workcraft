@@ -30,6 +30,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.observation.NodesReparentingEvent;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
@@ -138,7 +139,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 		if (e instanceof NodesReparentingEvent) {
 			for (Node n : e.getAffectedNodes())
 				nodeAdded(n);
-		} else if (e instanceof NodesAddedEvent ) {
+		} else if (e instanceof NodesAddedEvent) {
 			for (Node n : e.getAffectedNodes())
 				nodeAdded(n);
 		} else if (e instanceof NodesDeletedEvent) {

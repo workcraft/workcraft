@@ -22,6 +22,8 @@
 package org.workcraft.dom;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.observation.HierarchyObserver;
@@ -33,6 +35,7 @@ import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.observation.NodesReparentingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.ObservableHierarchyImpl;
+import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	private Node parent = null;
@@ -136,14 +139,27 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	}
 
 
+
+
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		observableHierarchyImpl.sendNotification(new NodesReparentingEvent(groupRef, newParent, nodes));
 
-		for (Node node : nodes)
+		//HashSet<Node> newModelNodes= new HashSet<Node>();
+		boolean differentModels = false;
+
+		for (Node node : nodes) {
+
+			if (Hierarchy.getTopParent(newParent)!=Hierarchy.getTopParent(node)) differentModels = true;
+
 			removeInternal(node, false);
 
-		newParent.reparent(nodes);
+		}
+
+		if (differentModels)
+			newParent.add(nodes);
+		else
+			newParent.reparent(nodes);
 
 		observableHierarchyImpl.sendNotification(new NodesReparentedEvent(groupRef, newParent, nodes));
 	}
@@ -151,7 +167,7 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	@Override
 	public void reparent (Collection<Node> nodes) {
 		for (Node node : nodes) {
-			addInternal(node, true);
+			addInternal(node, false);
 		}
 	}
 

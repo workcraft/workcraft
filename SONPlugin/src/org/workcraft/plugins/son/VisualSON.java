@@ -568,40 +568,40 @@ public class VisualSON extends AbstractVisualModel{
 		return result;
 	}
 
-	@Override
-	public void ungroupSelection(){
-		ArrayList<Node> toSelect = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-
-			if(node instanceof VisualONGroup) {
-
-				VisualONGroup group = (VisualONGroup)node;
-				for(Node subNode : group.unGroup(getMathModel().getReferenceManager())) {
-					toSelect.add(subNode);
-				}
-				getCurrentLevel().remove(group);
-			} else if(node instanceof VisualPage) {
-
-				VisualPage page = (VisualPage)node;
-
-				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
-					toSelect.add(subNode);
-				}
-				getCurrentLevel().remove(page);
-
-			} else if(node instanceof VisualSuperGroup){
-				VisualSuperGroup sGroup = (VisualSuperGroup)node;
-				for(Node subNode : sGroup.unGroup()){
-					toSelect.add(subNode);
-				}
-				getCurrentLevel().remove(sGroup);
-			}
-			else {
-				toSelect.add(node);
-			}
-		}
-		select(toSelect);
-	}
+//	@Override
+//	public void ungroupSelection(){
+//		ArrayList<Node> toSelect = new ArrayList<Node>();
+//		for(Node node : getOrderedCurrentLevelSelection()) {
+//
+//			if(node instanceof VisualONGroup) {
+//
+//				VisualONGroup group = (VisualONGroup)node;
+//				for(Node subNode : group.unGroup(getMathModel().getReferenceManager())) {
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(group);
+//			} else if(node instanceof VisualPage) {
+//
+//				VisualPage page = (VisualPage)node;
+//
+//				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(page);
+//
+//			} else if(node instanceof VisualSuperGroup){
+//				VisualSuperGroup sGroup = (VisualSuperGroup)node;
+//				for(Node subNode : sGroup.unGroup()){
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(sGroup);
+//			}
+//			else {
+//				toSelect.add(node);
+//			}
+//		}
+//		select(toSelect);
+//	}
 
 	public Collection<VisualONGroup> getVisualONGroups()
 	{

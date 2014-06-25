@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
@@ -23,10 +22,8 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 
@@ -101,11 +98,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 				return object.getReferencedModel();
 			}
 		});
-
 	}
-
-
-
 
 
 	private boolean isInside = false;
@@ -135,10 +128,8 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 		groupImpl.reparent(nodesToReparent, newParent);
 
-
 		for (Node node : nodesToReparent)
 			TransformHelper.applyTransform(node, localToParentTransform);
-
 
 		PageNode page = (PageNode)getReferencedComponent();
 
@@ -170,11 +161,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public void remove(Node node) {
-		if(node instanceof VisualComponent){
-			MathNode math = ((VisualComponent)node).getReferencedComponent();
-			Container parent = (Container)math.getParent();
-			parent.remove(math);
-		}
 		groupImpl.remove(node);
 	}
 
@@ -199,9 +185,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public void remove(Collection<Node> nodes) {
-		for(Node node : nodes)
-			remove(node);
-		//groupImpl.remove(nodes);
+		groupImpl.remove(nodes);
 	}
 
 

@@ -22,6 +22,7 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -415,11 +416,33 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public void groupPageSelection() {
+
+		Collection<Node> selection = getOrderedCurrentLevelSelection();
+
 		ArrayList<Node> selected = new ArrayList<Node>();
-		for (Node node : getOrderedCurrentLevelSelection()) {
-			if (node instanceof VisualTransformableNode) {
-				selected.add((VisualTransformableNode)node);
+
+
+		Collection<Node> recursiveSelection = new HashSet<Node>();
+
+		for (Node node : selection) {
+			if (!(node instanceof VisualNode)) continue;
+			recursiveSelection.add(node);
+			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
+		}
+
+
+		for (Node node : selection) {
+
+			if (!(node instanceof VisualNode)) continue;
+
+			if ((node instanceof VisualConnection)) {
+				VisualConnection con = (VisualConnection)node;
+				if (!recursiveSelection.contains(con.getFirst())) continue;
+				if (!recursiveSelection.contains(con.getSecond())) continue;
+
 			}
+
+			selected.add(node);
 		}
 
 		if (selected.size() > 1) {
@@ -427,57 +450,61 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
 
-			currentLevel.add(page);
-			currentLevel.reparent(selected, page);
-
-
-			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
 
 			Container currentMathLevel;
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
 			if(visualContainer==null)
 				currentMathLevel = getMathModel().getRoot();
 			else
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+
 			currentMathLevel.add(pageNode);
+			getCurrentLevel().add(page);
 
 
-			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-				if(Hierarchy.isDescendant(connection.getFirst(), page) &&
-						Hierarchy.isDescendant(connection.getSecond(), page)) {
-					connectionsToGroup.add(connection);
-				}
-			}
-			currentLevel.reparent(connectionsToGroup, page);
 
-			// reparenting for the math model nodes
-			ArrayList<Node> selectedMath = new ArrayList<Node>();
-			for (Node node:selected) {
-				if (node instanceof VisualComponent) {
-					selectedMath.addAll(((VisualComponent)node).getMathReferences());
-				}
-			}
-			for (Node node:connectionsToGroup) {
-				if (node instanceof VisualConnection) {
-					selectedMath.addAll(((VisualConnection)node).getMathReferences());
-				}
-			}
+			this.reparent(page, this, getCurrentLevel(), selected);
 
-			for (Node node: selectedMath) {
-				Container parent = (Container)node.getParent();
-				ArrayList<Node> re = new ArrayList<Node>();
-				re.add(node);
-
-
-				// reparenting at the level of the reference manager
-				ReferenceManager refMan = getMathModel().getReferenceManager();
-				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-					manager.setNamespaceProvider(node, pageNode);
-				}
-				parent.reparent(re, pageNode);
-
-			}
+//
+//
+//
+//			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+//			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
+//				if(Hierarchy.isDescendant(connection.getFirst(), page) &&
+//						Hierarchy.isDescendant(connection.getSecond(), page)) {
+//					connectionsToGroup.add(connection);
+//				}
+//			}
+//			currentLevel.reparent(connectionsToGroup, page);
+//
+//			// reparenting for the math model nodes
+//			ArrayList<Node> selectedMath = new ArrayList<Node>();
+//			for (Node node:selected) {
+//				if (node instanceof VisualComponent) {
+//					selectedMath.addAll(((VisualComponent)node).getMathReferences());
+//				}
+//			}
+//			for (Node node:connectionsToGroup) {
+//				if (node instanceof VisualConnection) {
+//					selectedMath.addAll(((VisualConnection)node).getMathReferences());
+//				}
+//			}
+//
+//			for (Node node: selectedMath) {
+//				Container parent = (Container)node.getParent();
+//				ArrayList<Node> re = new ArrayList<Node>();
+//				re.add(node);
+//
+//
+//				// reparenting at the level of the reference manager
+//				ReferenceManager refMan = getMathModel().getReferenceManager();
+//				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+//					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
+//					manager.setNamespaceProvider(node, pageNode);
+//				}
+//				parent.reparent(re, pageNode);
+//
+//			}
 
 
 			// final touch on visual part
@@ -511,10 +538,18 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 				VisualPage page = (VisualPage)node;
 
-				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
-					toSelect.add(subNode);
-				}
-				currentLevel.remove(page);
+				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
+				toSelect.addAll(nodesToReparent);
+
+				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
+
+				AffineTransform localToParentTransform = page.getLocalToParentTransform();
+
+				for (Node n : nodesToReparent)
+					TransformHelper.applyTransform(n, localToParentTransform);
+
+				getMathModel().remove(page.getReferencedComponent());
+				getCurrentLevel().remove(page);
 
 			} else {
 				toSelect.add(node);
@@ -584,6 +619,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return null;
 	}
 
+	public static Collection<Node> getMathChildren( Collection<Node> sourceChildren) {
+		Collection<Node> ret = new HashSet<Node>();
+
+		for (Node n: sourceChildren) {
+			if (n instanceof DependentNode) {
+				ret.addAll( ((DependentNode)n).getMathReferences());
+			}
+		}
+
+		return ret;
+	}
 
 	public static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
 		MathModel mmodel = sourceModel.getMathModel();
@@ -603,24 +649,31 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot) {
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+
 
 		if (sourceModel == null) sourceModel = this;
+		if (sourceChildren==null) sourceChildren = sourceRoot.getChildren();
+
 		MathModel mmodel = getMathModel();
 
+		Container mathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
+
 		mmodel.reparent(getMathContainer(this, targetContainer),
-				((VisualModel)sourceModel).getMathModel(),
-				getMathContainer((VisualModel)sourceModel, sourceRoot));
+				((VisualModel)sourceModel).getMathModel(), mathContainer,
+				getMathChildren(sourceChildren));
 
-		//while (!(targetContainer instanceof VisualComponent))
-		Container newParent = getCurrentLevel();
 		Collection<Node> children = new HashSet<Node>();
-		children.addAll(sourceRoot.getChildren());
 
-		// reparenting between different models
-		sourceRoot.reparent(children, newParent);
+		if (sourceChildren==null) {
+			children.addAll(sourceRoot.getChildren());
+		} else {
+			children.addAll(sourceChildren);
+		}
 
-		select(children);
+		sourceRoot.reparent(children, targetContainer);
+
+
 	}
 
 }

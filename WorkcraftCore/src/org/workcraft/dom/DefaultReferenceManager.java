@@ -28,6 +28,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.util.TwoWayMap;
 
 public class DefaultReferenceManager extends HierarchySupervisor implements ReferenceManager {

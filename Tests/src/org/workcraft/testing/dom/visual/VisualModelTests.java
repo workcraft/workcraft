@@ -57,7 +57,7 @@ public class VisualModelTests {
 
 		@Override
 		public void reparent(Container targetContainer, Model sourceModel,
-				Container sourceRoot) {
+				Container sourceRoot, Collection<Node> sourceChildren) {
 			// TODO Auto-generated method stub
 
 		}

@@ -675,8 +675,12 @@ public class Framework {
 				throw new DeserialisationException("incompatible models cannot be merged");
 			}
 
+
+			Collection<Node> children = new HashSet<Node>(vmodel2.getRoot().getChildren());
+
 			vmodel1.selectNone();
-			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot());
+			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
+			vmodel1.select(children);
 
 			return me1;
 
