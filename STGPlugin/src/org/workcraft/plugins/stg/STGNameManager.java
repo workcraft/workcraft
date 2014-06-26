@@ -274,7 +274,13 @@ public class STGNameManager implements NameManager<Node> {
 
 		if (node instanceof Transition) {
 			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
-			return instance.getFirst() + "/" + instance.getSecond();
+
+			if (instance.getSecond().equals(0))
+				return instance.getFirst();
+			else
+				return instance.getFirst() + "/" + instance.getSecond();
+
+
 		} else {
 
 			if (node instanceof STGPlace && ((STGPlace)node).isImplicit()) {
@@ -292,8 +298,23 @@ public class STGNameManager implements NameManager<Node> {
 
 
 	public Node get (String name) {
+
+		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
+
+		if (instancedName != null)	{
+
+			if (instancedName.getSecond() == null) {
+				instancedName = Pair.of(instancedName.getFirst(), 0);
+			}
+			Node node = instancedNameManager.getObject(instancedName);
+			if (node != null) {
+				return node;
+			}
+		}
+
 		Node ret = defaultNameManager.get(name);
 		return ret;
+
 	}
 
 	public void remove (Node n) {

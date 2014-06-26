@@ -52,8 +52,6 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 		new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
 	}
 
-
-
 	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager manager, Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
 
 		// need to assign the whole tree to the new providers

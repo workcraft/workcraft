@@ -36,6 +36,7 @@ import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -329,8 +330,10 @@ public class STG extends AbstractMathModel implements STGModel {
 							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
 
-				return "<"+referenceManager.getNodeReference(null, preset.iterator().next())
-						+ "," + referenceManager.getNodeReference(null, postset.iterator().next()) + ">";
+				return "<"+
+					HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()), null)
+						+ "," +
+						HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next()), null) + ">";
 
 			}
 		}
@@ -343,8 +346,12 @@ public class STG extends AbstractMathModel implements STGModel {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
 
 		if (implicitPlaceTransitions != null) {
-			Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
-			Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
+			Node t1 = referenceManager.getNodeByReference(provider,
+					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getFirst(), null)
+					);
+			Node t2 = referenceManager.getNodeByReference(provider,
+					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getSecond(), null)
+					);
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 

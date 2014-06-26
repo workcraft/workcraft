@@ -9,6 +9,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
@@ -77,6 +78,11 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 //		return new UniqueNameManager<Node>(defaultName);
 //	}
 
+	@Override
+	protected void setExistingReference(Node n) {
+		if (n instanceof STGPlace && ((STGPlace)n).isImplicit()) return;
+		super.setExistingReference(n);
+	}
 
 //	private void setExistingReference(Node n) {
 //		final String reference = existingReferences.getReference(n);
@@ -93,7 +99,9 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 
 //	@Override
 //	public Node getNodeByReference(NamespaceProvider provider, String reference) {
+//
 //		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(reference);
+//
 //		if (instancedName != null)	{
 //			if (instancedName.getSecond() == null) {
 //				instancedName = Pair.of(instancedName.getFirst(), 0);
@@ -103,9 +111,10 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 //				return node;
 //			}
 //		}
-//		return defaultNameManager.get(reference);
-//	}
 //
+//		return super.getNodeByReference(provider, reference);
+//	}
+
 //	@Override
 //	public String getNodeReference(NamespaceProvider provider, Node node) {
 //

@@ -27,10 +27,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	private References existing;
 
 	public HierarchicalUniqueNameReferenceManager(NamespaceProvider provider, References existing, Func<Node, String> defaultName) {
-//		this (null, existing, defaultName);
+
 		this.existing = existing;
 		topProvider = provider;
 		this.defaultName = defaultName;
+
+		if (topProvider==null)
+			System.err.println("HierarchicalUniqueNameReferenceManager created with provider==null!");
 	}
 
 
@@ -164,13 +167,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		String head =  HierarchicalNames.getReferenceHead(reference);
 		String tail =  HierarchicalNames.getReferenceTail(reference);
 
-		boolean isAbsolutePath = false;
+//		boolean isAbsolutePath = false;
+//		if (reference.startsWith(HierarchicalNames.hierarchySeparator)) isAbsolutePath = true;
+//		if (provider==null||isAbsolutePath) {
+//			provider = topProvider;
+//		}
 
-		if (reference.startsWith(HierarchicalNames.hierarchySeparator)) isAbsolutePath = true;
-
-		if (provider==null||isAbsolutePath) {
-			provider = topProvider;
-		}
+		if (provider==null) provider = topProvider;
 
 		NameManager<Node> man = getNameManager(provider);
 
@@ -183,7 +186,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			return getNodeByReference((NamespaceProvider)node, tail, quiet);
 		}
 
-		return null;
+		return node;
 	}
 
 	@Override

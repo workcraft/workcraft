@@ -32,6 +32,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -45,7 +46,7 @@ import org.workcraft.util.Hierarchy;
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
 	public PetriNet() {
-		this(null, null);
+		this(new MathGroup(), null);
 	}
 
 	public PetriNet(Container root) {
@@ -80,6 +81,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 				return result;
 			}
 		}));
+
 	}
 
 
