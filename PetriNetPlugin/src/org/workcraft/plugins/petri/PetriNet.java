@@ -120,7 +120,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
 	}
 
-
 	public boolean isUnfireEnabled(Transition t) {
 		return isUnfireEnabled (this, t);
 	}

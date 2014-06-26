@@ -1,8 +1,7 @@
-package org.workcraft.plugins.son.gui;
+package org.workcraft.plugins.son;
 
 import java.util.ArrayList;
 
-import org.workcraft.plugins.son.ONGroup;
 
 public class StructureVerifySettings {
 

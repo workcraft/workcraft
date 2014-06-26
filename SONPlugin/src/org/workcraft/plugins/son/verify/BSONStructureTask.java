@@ -61,7 +61,7 @@ public class BSONStructureTask implements StructuralVerification{
 		logger.info("Group Components = " + components.size());
 
 		if(!net.getSONConnectionTypes(components).contains("BHVLINE")){
-			logger.info("Task termination: no behavioural connections in selected groups.");
+			logger.info("Task terminated: no behavioural connections in selected groups.");
 			return;
 		}
 

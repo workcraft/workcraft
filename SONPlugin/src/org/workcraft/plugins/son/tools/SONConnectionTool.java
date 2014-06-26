@@ -250,6 +250,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 	@Override
 	public void deactivated(GraphEditor editor) {
 		super.deactivated(editor);
+		conType = 1;
 		first = null;
 		mouseOverObject = null;
 	}

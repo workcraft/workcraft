@@ -33,6 +33,7 @@ import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.plugins.son.elements.VisualEventNode;
 import org.workcraft.util.Hierarchy;
 
 
@@ -197,7 +198,6 @@ public class VisualSON extends AbstractVisualModel{
 			}
 		}
 
-
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
 	}
 
@@ -215,21 +215,22 @@ public class VisualSON extends AbstractVisualModel{
 			}
 		}
 
-		if(validateSelection(selection)){
+		if(isComplete(selection)){
 			for(Node node : getOrderedCurrentLevelSelection()){
-				if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
-					//if(!(node instanceof VisualSONConnection))
-						result.add(node);
-				}
-				else{
-					JOptionPane.showMessageDialog(null, "Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
-					result.clear();
-					return result;
+				if(node instanceof VisualTransformableNode){
+					if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
+							result.add(node);
+					}else{
+						JOptionPane.showMessageDialog(null,
+								"Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
+						result.clear();
+						return result;
+					}
 				}
 			}
-		}
-		else{
-			JOptionPane.showMessageDialog(null, "Grouping a partial occurrence net is invalid",group, JOptionPane.WARNING_MESSAGE);
+		}else{
+			JOptionPane.showMessageDialog(null,
+					"Grouping a partial occurrence net is invalid",group, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 		}
@@ -239,7 +240,8 @@ public class VisualSON extends AbstractVisualModel{
 				validate = true;
 		}
 		if (!validate) {
-			JOptionPane.showMessageDialog(null, "An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
@@ -248,7 +250,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	}
 
-	private boolean validateSelection (Collection<Node> nodes) {
+	private boolean isComplete (Collection<Node> nodes) {
 		for (VisualSONConnection connect : getVisualConnections()){
 			if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
 				&& ! nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
@@ -330,99 +332,48 @@ public class VisualSON extends AbstractVisualModel{
 		}
 	}
 
-	//super group
-	private Collection<Node> getSuperGroupableSelection()
-	{
-		Collection<Node> result = new HashSet<Node>();
-		Collection<Node> groupComponents = new HashSet<Node>();
-
-		for(Node node : getOrderedCurrentLevelSelection()){
-			if(node instanceof VisualComponent || node instanceof VisualSONConnection)
-				result.add(node);
-			if (node instanceof VisualONGroup){
-				result.add(node);
-				groupComponents.addAll(((VisualONGroup)node).getVisualComponents());
-			}
-			if(node instanceof VisualSuperGroup){
-				result.removeAll(result);
-				return result;}
-		}
-
-		if(getOrderedCurrentLevelSelection().isEmpty())
-			return result;
-
-		boolean validateSelection = true;
-		for (VisualSONConnection connect : getVisualConnections()){
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.POLYLINE){
-				if (result.contains(connect.getFirst()) && !result.contains(connect.getSecond()))
-					validateSelection = false;
-				if (!result.contains(connect.getFirst()) && result.contains(connect.getSecond()))
-					validateSelection = false;
-			}
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.SYNCLINE
-					|| connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.ASYNLINE){
-				if(result.contains(connect.getFirst()) && !groupComponents.contains(connect.getSecond()))
-					validateSelection = false;
-				if(!result.contains(connect.getFirst()) && groupComponents.contains(connect.getSecond()))
-					validateSelection = false;
-				if(result.contains(connect.getSecond()) && !groupComponents.contains(connect.getFirst()))
-					validateSelection = false;
-				if(!result.contains(connect.getSecond()) && groupComponents.contains(connect.getFirst()))
-					validateSelection = false;
-			}
-
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
-				if(groupComponents.contains(connect.getFirst()) || groupComponents.contains(connect.getSecond()) && !result.contains(connect))
-					result.add(connect);
-
-		}
-		boolean hasComponent = false;
-		for (Node node : result){
-			if (node instanceof VisualComponent)
-				hasComponent = true;
-			if (node instanceof VisualONGroup)
-				hasComponent = true;
-		}
-
-		if(!hasComponent)
-			validateSelection=false;
-
-		if(!validateSelection){
-			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",superGroup, JOptionPane.WARNING_MESSAGE);
-			result.removeAll(result);
-			return result;
-		}
-
-
-		return result;
-	}
-
 	public void superGroupSelection(){
-		Collection<Node> selected = getSuperGroupableSelection();
-		Collection<Node> cons = new HashSet<Node>();
-		Collection<Node> bhv = new HashSet<Node>();
-
-		if (selected.size() < 1) return;
-		VisualGroup vsgroup = new VisualSuperGroup();
-
-		Container currentLevel = getCurrentLevel();
-
-		currentLevel.add(vsgroup);
-
-		for(Node n : selected){
-			if(n instanceof VisualSONConnection)
-				cons.add(n);
-			if(n instanceof VisualSONConnection && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
-				bhv.add(n);
+		ArrayList<Node> selected = new ArrayList<Node>();
+		for(Node node : getOrderedCurrentLevelSelection()) {
+			if(node instanceof VisualTransformableNode){
+				if(node instanceof VisualCondition || node instanceof VisualEventNode){
+					JOptionPane.showMessageDialog(null,
+							"Selection containing ungroup component is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
+					selected.clear();
+					return;
+				}
+				else if(node instanceof VisualSuperGroup){
+					JOptionPane.showMessageDialog(null,
+							"Selection containing super group is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
+					selected.clear();
+					return;
+				}
+				else
+					selected.add(node);
+			}
 		}
 
-		currentLevel.reparent(selected, vsgroup);
-		// && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE
+		if(selected.size() > 1) {
+			VisualSuperGroup group = new VisualSuperGroup();
+			getCurrentLevel().add(group);
+			getCurrentLevel().reparent(selected, group);
 
-		vsgroup.reparent(cons, vsgroup);
-		vsgroup.reparent(bhv, currentLevel);
+			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+			for(VisualSONConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualSONConnection.class)) {
+				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
+						Hierarchy.isDescendant(connection.getSecond(), group)) {
+					connectionsToGroup.add(connection);
+				}
+			}
+			getCurrentLevel().reparent(connectionsToGroup, group);
 
-		select(vsgroup);
+			if (group != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				group.setPosition(groupCenter);
+				select(group);
+			}
+
+		}
 	}
 
 	//Block
@@ -517,14 +468,16 @@ public class VisualSON extends AbstractVisualModel{
 		}
 
 		if(errorType==1){
-			JOptionPane.showMessageDialog(null, "Block contianing initial or final node is invalid", block, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"Block contianing initial or final node is invalid", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 		}
 
 
 		if(errorType==2){
-			JOptionPane.showMessageDialog(null, "Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}
@@ -548,19 +501,22 @@ public class VisualSON extends AbstractVisualModel{
 		}
 
 		if(errorType==3){
-			JOptionPane.showMessageDialog(null, "The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}
 
 		if(errorType==4){
-			JOptionPane.showMessageDialog(null, "Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}
 
 		if (result.size() == 1) {
-			JOptionPane.showMessageDialog(null, "A single component cannot be set as a block",group, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"A single component cannot be set as a block",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
@@ -709,7 +665,7 @@ public class VisualSON extends AbstractVisualModel{
 	public boolean connectToBlocksInside(){
 
 		for(VisualBlock vBlock : this.getVisualBlocks()){
-			if( !vBlock.getInputRelations().isEmpty() && !vBlock.getInputRelations().isEmpty()){
+			if( !vBlock.getInputRelations().isEmpty() && !vBlock.getInputRelations().isEmpty() && !this.getConnections(vBlock).isEmpty()){
 				Map<VisualComponent[], SONConnectionType> inputs = vBlock.getInputRelations();
 				Map<VisualComponent[], SONConnectionType> outputs = vBlock.getOutputRelations();
 
@@ -743,6 +699,7 @@ public class VisualSON extends AbstractVisualModel{
 							e.printStackTrace();
 						}
 				}
+
 			}
 		}
 		return true;
