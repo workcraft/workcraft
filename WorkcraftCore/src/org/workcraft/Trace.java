@@ -8,28 +8,35 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Trace extends ArrayList<String>{
+public class Trace extends ArrayList<String> {
+	public int step = 0;
+
+	@Override
+	public void clear() {
+		super.clear();
+		step = 0;
+	}
+
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
-
 		boolean first = true;
-
 		for (String t : this) {
-			if (first)
+			if (first) {
 				first = false;
-			else
+			} else {
 				result.append(',');
+			}
 			result.append(t);
 		}
-
 		return result.toString();
 	}
 
 	public void fromString(String str) {
 		clear();
 		for (String st : str.split("\n")) {
-			for (String st2 : st.trim().split(","))
+			for (String st2 : st.trim().split(",")) {
 				add(st2.trim());
+			}
 		}
 	}
 
@@ -39,8 +46,10 @@ public class Trace extends ArrayList<String>{
 
 	public static Trace load (InputStream is, Trace trace) throws IOException {
 		Trace result = new Trace();
-		for (String s : new BufferedReader(new InputStreamReader(is)).readLine().split(","))
+		for (String s : new BufferedReader(new InputStreamReader(is)).readLine().split(",")) {
 			result.add(s);
+		}
 		return result;
 	}
+
 }
