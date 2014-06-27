@@ -48,7 +48,7 @@ public class Circuit extends AbstractMathModel {
 
 
 	public Circuit() {
-		this(null);
+		this(new MathGroup());
 	}
 
 	public Circuit(MathGroup root) {

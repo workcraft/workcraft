@@ -64,7 +64,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 //				}
 			}
 
-			String hier = HierarchicalNames.flatToHierarchicalName(ref, null);
+			String hier = HierarchicalNames.flatToHierarchicalName(ref);
 
 			return (BooleanVariable) internalReferenceResolver.getObject(hier);
 		}

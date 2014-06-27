@@ -61,7 +61,7 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 
 				String ref = internalReferences.getReference(node);
 				// use full path to a flattened name
-				String flat = HierarchicalNames.getFlatName(ref, null);
+				String flat = HierarchicalNames.getFlatName(ref);
 
 				// old style naming, if number is used as an ID for a contact
 				if (Identifier.isNumber(ref)) {

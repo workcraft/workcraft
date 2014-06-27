@@ -15,11 +15,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -129,9 +132,23 @@ public class STGGenerator {
 		}
 	}
 
+
+//	private static void copyPages(VisualSTG targetModel, Container targetContainer, VisualCircuit sourceModel, Container sourceContainer) {
+//		for (Node vn: sourceContainer.getChildren()) {
+//			if (vn instanceof VisualPage) {
+//				VisualPage vp = (VisualPage)vn;
+//
+//
+//			}
+//		}
+//	}
+
 	public static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
+
+			// first, create the same pages
+
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
@@ -179,7 +196,10 @@ public class STGGenerator {
 					Dnf reset = null;
 					VisualFunctionContact contact = (VisualFunctionContact)c;
 					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
-					if (contact.getParent() instanceof VisualCircuitComponent) {
+
+
+					if (contact.getFunction().getSetFunction()!=null) {
+
 						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
 						if (contact.getFunction().getResetFunction() != null) {
 							reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
@@ -187,14 +207,20 @@ public class STGGenerator {
 							BooleanOperations.worker = new DumbBooleanWorker();
 							reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
 						}
+
+					}
+
+
+					if (contact.getParent() instanceof VisualCircuitComponent) {
+
+
 						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) {
 							ttype = SignalTransition.Type.INPUT;
 						} else if (contact.getIOType()==IOType.INPUT) {
 							ttype = SignalTransition.Type.INPUT;
 						}
 					} else {
-						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
+
 						if (contact.getIOType()==IOType.INPUT) {
 							ttype = SignalTransition.Type.INPUT;
 						}
@@ -372,7 +398,10 @@ public class STGGenerator {
 			}
 
 //			result = ((VisualFunctionComponent)parent).getName();
-			result = circuit.getName(parent);
+
+			result = HierarchicalNames.getFlatName(
+					circuit.getMathModel().getNodeReference(vc.getReferencedComponent())
+					);
 
 			if (contact.getIOType() == IOType.INPUT || output_cnt > 1) {
 				result += "_" + circuit.getMathModel().getName(contact.getReferencedContact());

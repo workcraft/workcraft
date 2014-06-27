@@ -10,7 +10,7 @@ public class Identifier {
 
 	public static boolean isValid (String s) {
 		// disallow starting with __ and var_ to avoid possible further problems
-		if (s.startsWith(HierarchicalNames.flatNameSeparator)) return false;
+//		if (s.contains(HierarchicalNames.flatNameSeparator)) return false;
 		if (s.startsWith("var_")) return false;
 
 		final Matcher matcher = identifierPattern.matcher(s);

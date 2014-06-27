@@ -13,11 +13,20 @@ public class HierarchicalNames {
 	// TODO: make it work with the embedded ' characters
 	private static String hPattern = "(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)";
 
-	public static String getFlatName(String reference, String flatSeparator) {
+
+
+	public static String getFlatName(String reference) {
+		return getFlatName(reference, flatNameSeparator, true);
+	}
+
+	private static String getFlatName(String reference, String flatSeparator, boolean isFirst) {
 		if (flatSeparator==null) flatSeparator=flatNameSeparator;
 
 		String ret = "";
-		if (reference.startsWith(hierarchySeparator)) ret=flatSeparator;
+		// in this version the first separator is not shown
+		if (!isFirst && reference.startsWith(hierarchySeparator)) ret=flatSeparator;
+		//
+//		if (reference.startsWith(hierarchySeparator)) ret=flatSeparator;
 
 		String head = getReferenceHead(reference);
 		String tail = getReferenceTail(reference);
@@ -25,11 +34,15 @@ public class HierarchicalNames {
 		if (tail.equals(""))
 			return ret+head;
 		else
-			return ret+head+getFlatName(tail, flatSeparator);
+			return ret+head+getFlatName(tail, flatSeparator, false);
 	}
 
 
-	public static String flatToHierarchicalName(String reference, String flatSeparator) {
+	public static String flatToHierarchicalName(String reference) {
+		return flatToHierarchicalName(reference, flatNameSeparator);
+	}
+
+	private static String flatToHierarchicalName(String reference, String flatSeparator) {
 		if (flatSeparator==null) flatSeparator = flatNameSeparator;
 
 		return reference.replaceAll(flatSeparator, hierarchySeparator);

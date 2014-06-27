@@ -623,8 +623,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Collection<Node> ret = new HashSet<Node>();
 
 		for (Node n: sourceChildren) {
+
 			if (n instanceof DependentNode) {
 				ret.addAll( ((DependentNode)n).getMathReferences());
+			} else if (n instanceof VisualGroup) {
+				ret.addAll(getMathChildren(n.getChildren()));
 			}
 		}
 
@@ -659,9 +662,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		Container mathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
 
+
+		Collection<Node> mchildren = getMathChildren(sourceChildren);
+
 		mmodel.reparent(getMathContainer(this, targetContainer),
 				((VisualModel)sourceModel).getMathModel(), mathContainer,
-				getMathChildren(sourceChildren));
+				mchildren);
 
 		Collection<Node> children = new HashSet<Node>();
 

@@ -33,13 +33,20 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 	static HashMap<String, String> flatNames = new HashMap<String, String>(){
 		private static final long serialVersionUID = -2931077011392124649L;
 	{
-		put("/abc/dfe", "__abc__dfe");
-		put("/'abc'/'dfe'", "__abc__dfe");
-		put("/'abc'/'dfe'/'asdf'", "__abc__dfe__asdf");
-		put("/abc/dfe/asdf", "__abc__dfe__asdf");
-		put("/abc/dfe/asdf/1", "__abc__dfe__asdf/1");
-		put("/abc/dfe/asdf+", "__abc__dfe__asdf+");
-		put("/abc/dfe/asdf+/12", "__abc__dfe__asdf+/12");
+		put("abc/dfe", "abc__dfe");
+		put("'abc'/'dfe'", "abc__dfe");
+		put("'abc'/'dfe'/'asdf'", "abc__dfe__asdf");
+		put("abc/dfe/asdf", "abc__dfe__asdf");
+		put("abc/dfe/asdf/1", "abc__dfe__asdf/1");
+		put("abc/dfe/asdf+", "abc__dfe__asdf+");
+		put("abc/dfe/asdf+/12", "abc__dfe__asdf+/12");
+//		put("/abc/dfe", "__abc__dfe");
+//		put("/'abc'/'dfe'", "__abc__dfe");
+//		put("/'abc'/'dfe'/'asdf'", "__abc__dfe__asdf");
+//		put("/abc/dfe/asdf", "__abc__dfe__asdf");
+//		put("/abc/dfe/asdf/1", "__abc__dfe__asdf/1");
+//		put("/abc/dfe/asdf+", "__abc__dfe__asdf+");
+//		put("/abc/dfe/asdf+/12", "__abc__dfe__asdf+/12");
 	}};
 
 	@Test
@@ -49,11 +56,11 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 			String hName = en.getKey();
 			String fName = en.getValue();
 
-			String answer = HierarchicalNames.getFlatName(hName, null);
+			String answer = HierarchicalNames.getFlatName(hName);
 			assertTrue(answer.equals(fName));
 
 			hName = hName.replaceAll("'", "");
-			answer = HierarchicalNames.flatToHierarchicalName(fName, null);
+			answer = HierarchicalNames.flatToHierarchicalName(fName);
 			assertTrue(answer.equals(hName));
 
 		}

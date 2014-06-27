@@ -34,6 +34,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalNames;
@@ -64,7 +65,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	private STGReferenceManager referenceManager;
 
 	public STG() {
-		this(null);
+		this(new MathGroup());
 	}
 
 	public STG(Container root) {
@@ -331,9 +332,9 @@ public class STG extends AbstractMathModel implements STGModel {
 				}
 
 				return "<"+
-					HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()), null)
+					HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
 						+ "," +
-						HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next()), null) + ">";
+						HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
 
 			}
 		}
@@ -347,10 +348,10 @@ public class STG extends AbstractMathModel implements STGModel {
 
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider,
-					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getFirst(), null)
+					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getFirst())
 					);
 			Node t2 = referenceManager.getNodeByReference(provider,
-					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getSecond(), null)
+					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getSecond())
 					);
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));

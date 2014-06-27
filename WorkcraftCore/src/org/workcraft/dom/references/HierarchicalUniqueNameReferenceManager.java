@@ -192,10 +192,10 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
 
-		boolean isAbsolutePath = false;
+		//boolean isAbsolutePath = false;
 
 		if (provider==null) {
-			isAbsolutePath = true;
+			//isAbsolutePath = true;
 			provider = topProvider;
 		}
 
@@ -222,7 +222,9 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		} while (prov!=null&&provider!=prov);
 
-		return (provider==topProvider&&isAbsolutePath? HierarchicalNames.hierarchySeparator:"")+ret;
+		return ret;
+		// uncomment if the absolute path begins with the separator
+		// return (provider==topProvider&&isAbsolutePath? HierarchicalNames.hierarchySeparator:"")+ret;
 	}
 
 
