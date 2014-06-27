@@ -30,12 +30,12 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
@@ -171,40 +171,35 @@ public class STGGenerator {
 				}
 			}
 
-			// generate implementation for each of the drivers
+			// Generate implementation for each of the drivers
 			for(VisualContact c : drivers.keySet()) {
 				if (c instanceof VisualFunctionContact) {
-					// function based driver
-					Dnf set = null;
-					Dnf reset = null;
 					VisualFunctionContact contact = (VisualFunctionContact)c;
+					// Determine I/O type of the contact
 					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
+					boolean comesFromEnvironment = false;
 					if (contact.getParent() instanceof VisualCircuitComponent) {
-						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-						if (contact.getFunction().getResetFunction() != null) {
-							reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-						} else {
-							BooleanOperations.worker = new DumbBooleanWorker();
-							reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
-						}
-						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) {
-							ttype = SignalTransition.Type.INPUT;
-						} else if (contact.getIOType()==IOType.INPUT) {
-							ttype = SignalTransition.Type.INPUT;
-						}
-					} else {
-						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-						reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-						if (contact.getIOType()==IOType.INPUT) {
-							ttype = SignalTransition.Type.INPUT;
-						}
+						comesFromEnvironment = ((VisualCircuitComponent)contact.getParent()).getIsEnvironment();
 					}
-					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, ttype);
+					if (comesFromEnvironment || (contact.getIOType()==IOType.INPUT)) {
+						ttype = SignalTransition.Type.INPUT;
+					}
+					// Function based driver
+					BooleanFormula setFunc = contact.getFunction().getSetFunction();
+					BooleanFormula resetFunc = contact.getFunction().getResetFunction();
+					if ((setFunc != null) && (resetFunc == null)) {
+						resetFunc = new DumbBooleanWorker().not(setFunc);
+					} else if ((setFunc == null) && (resetFunc != null)) {
+						setFunc = new DumbBooleanWorker().not(resetFunc);
+					}
+					Dnf setDnf = DnfGenerator.generate(setFunc);
+					Dnf resetDnf = DnfGenerator.generate(resetFunc);
+					implementDriver(circuit, stg, contact, drivers, targetDrivers, setDnf, resetDnf, ttype);
 				} else {
-					// some generic driver implementation otherwise
-					Dnf set = new Dnf(new DnfClause());
-					Dnf reset = new Dnf(new DnfClause());
-					implementDriver(circuit, stg, c, drivers, targetDrivers, set, reset, SignalTransition.Type.INPUT);
+					// Some generic driver implementation otherwise
+					Dnf setDnf = new Dnf(new DnfClause());
+					Dnf resetDnf = new Dnf(new DnfClause());
+					implementDriver(circuit, stg, c, drivers, targetDrivers, setDnf, resetDnf, SignalTransition.Type.INPUT);
 				}
 			}
 			return stg;
