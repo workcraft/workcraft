@@ -61,15 +61,13 @@ public class Contact extends MathNode implements BooleanVariable {
 	private String name = "";
 	private boolean initOne = false;
 
-
-	//private boolean invertSignal = false;
-
 	public boolean getInitOne() {
 		return initOne;
 	}
 
 	public void setInitOne(boolean initOne) {
 		this.initOne = initOne;
+		sendNotification(new PropertyChangedEvent(this, "initOne"));
 	}
 
 	public Contact() {
@@ -79,7 +77,6 @@ public class Contact extends MathNode implements BooleanVariable {
 		super();
 		setIOType(iot);
 	}
-
 
 	static public String getNewName(Node paren, String prefix, Node node, boolean allowShort) {
 		// iterate through all contacts, check that the name doesn't exist
@@ -144,23 +141,19 @@ public class Contact extends MathNode implements BooleanVariable {
 		return ioType;
 	}
 
-
 	public void setName(String name) {
 		this.name = name;
 		sendNotification(new PropertyChangedEvent(this, "name"));
 	}
 
-
 	public String getName() {
 		return name;
 	}
-
 
 	@Override
 	public <T> T accept(BooleanVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
-
 
 	@Override
 	public String getLabel() {

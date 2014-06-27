@@ -57,7 +57,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public Object getValue() throws InvocationTargetException {
-				return FormulaToString.toString(contact.getFunction().getSetFunction());
+				return FormulaToString.toString(contact.getSetFunction());
 			}
 
 			@Override
@@ -102,7 +102,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public Object getValue() throws InvocationTargetException {
-				return FormulaToString.toString(contact.getFunction().getResetFunction());
+				return FormulaToString.toString(contact.getResetFunction());
 			}
 
 			@Override

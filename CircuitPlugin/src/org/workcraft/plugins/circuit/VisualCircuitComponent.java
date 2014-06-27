@@ -470,18 +470,22 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
+	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
 
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
+	@Override
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
 	}
 
+	@Override
 	public void remove(Node node) {
 		if (node instanceof VisualContact) {
 			contactLabelBB = null;
@@ -489,6 +493,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		groupImpl.remove(node);
 	}
 
+	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 		for (Node node: nodes) {
@@ -498,18 +503,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		}
 	}
 
+	@Override
 	public void remove(Collection<Node> nodes) {
 		for (Node n: nodes) {
 			remove(n);
 		}
 	}
 
-
+	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
 
-
+	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
@@ -555,7 +561,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 		}
 		if (e instanceof PropertyChangedEvent) {
-
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("name")||
 				pc.getPropertyName().equals("IOtype")||
@@ -564,12 +569,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 				pc.getPropertyName().equals("resetFunction")) {
 
 				contactLabelBB = null;
-
 				for (Node n : getChildren()) {
 					if (n instanceof VisualFunctionContact) {
-						VisualFunctionContact vf = (VisualFunctionContact)n;
-						vf.resetRenderedFormula();
-						vf.resetNameGlyph();
+						VisualFunctionContact c = (VisualFunctionContact)n;
+						c.resetRenderedFormula();
+						c.resetNameGlyph();
 					}
 				}
 			}

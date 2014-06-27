@@ -185,8 +185,8 @@ public class STGGenerator {
 						ttype = SignalTransition.Type.INPUT;
 					}
 					// Function based driver
-					BooleanFormula setFunc = contact.getFunction().getSetFunction();
-					BooleanFormula resetFunc = contact.getFunction().getResetFunction();
+					BooleanFormula setFunc = contact.getSetFunction();
+					BooleanFormula resetFunc = contact.getResetFunction();
 					if ((setFunc != null) && (resetFunc == null)) {
 						resetFunc = new DumbBooleanWorker().not(setFunc);
 					} else if ((setFunc == null) && (resetFunc != null)) {

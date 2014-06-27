@@ -23,6 +23,7 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -107,9 +108,16 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
-	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {
-		for(VisualFunctionContact c : Hierarchy.filterNodesByType(
-				getRoot().getChildren(), VisualFunctionContact.class)) {
+	public Collection<VisualFunctionContact> getVisualFunctionContacts() {
+		return Hierarchy.getChildrenOfType(getRoot(), VisualFunctionContact.class);
+	}
+
+	public Collection<Environment> getEnvironments() {
+		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
+	}
+
+	public VisualFunctionContact getOrCreateOutput(String name, double x, double y) {
+		for(VisualFunctionContact c : getVisualFunctionContacts()) {
 			if(c.getName().equals(name)) return c;
 		}
 		VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(IOType.OUTPUT));
@@ -134,14 +142,14 @@ public class VisualCircuit extends AbstractVisualModel {
 	 }
 
 	 public void addFunctionContact(VisualFunctionContact contact) {
-		 circuit.add(contact.getFunction());
+		 circuit.add(contact.getReferencedFunctionContact());
 		 super.add(contact);
 	 }
 
 	 @NoAutoSerialisation
 	public File getEnvironmentFile() {
 		File result = null;
-		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+		for (Environment env: getEnvironments()) {
 			result = env.getFile();
 		}
 		return result;
@@ -149,7 +157,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@NoAutoSerialisation
 	public void setEnvironmentFile(File value) {
-		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+		for (Environment env: getEnvironments()) {
 			remove(env);
 		}
 		Environment env = new Environment();
@@ -161,8 +169,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	public Properties getProperties(Node node) {
 		Properties properties = super.getProperties(node);
 		if (node == null) {
-			properties = Properties.Merge.add(properties,
-					new EnvironmentFilePropertyDescriptor(this));
+			properties = Properties.Merge.add(properties, new EnvironmentFilePropertyDescriptor(this));
 		} else if(node instanceof VisualFunctionContact) {
 			VisualFunctionContact contact = (VisualFunctionContact)node;
 			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);

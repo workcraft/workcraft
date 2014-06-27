@@ -49,6 +49,7 @@ import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public class VisualContact extends VisualComponent implements StateObserver {
@@ -188,10 +189,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 	}
 
+	@NoAutoSerialisation
 	public boolean getInitOne() {
 		return getReferencedContact().getInitOne();
 	}
 
+	@NoAutoSerialisation
 	public void setInitOne(boolean value) {
 		getReferencedContact().setInitOne(value);
 	}
@@ -292,7 +295,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public GlyphVector getNameGlyphs(Graphics2D g) {
 		if (nameGlyph == null) {
-			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
+			if (getDirection() == VisualContact.Direction.NORTH || getDirection() == VisualContact.Direction.SOUTH) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
@@ -319,24 +322,24 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return direction;
 	}
 
+	@NoAutoSerialisation
 	public void setIOType(IOType type) {
-		resetNameGlyph();
 		getReferencedContact().setIOType(type);
-		sendNotification(new PropertyChangedEvent(this, "IOtype"));
 	}
 
+	@NoAutoSerialisation
 	public IOType getIOType() {
 		return getReferencedContact().getIOType();
 	}
 
+	@NoAutoSerialisation
 	public String getName() {
 		return getReferencedContact().getName();
 	}
 
+	@NoAutoSerialisation
 	public void setName(String name) {
-		resetNameGlyph();
 		getReferencedContact().setName(name);
-		sendNotification(new PropertyChangedEvent(this, "name"));
 	}
 
 	public Contact getReferencedContact() {
@@ -357,6 +360,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void notify(StateEvent e) {
+		if (e instanceof PropertyChangedEvent) {
+			PropertyChangedEvent pc = (PropertyChangedEvent)e;
+			if (pc.getPropertyName().equals("name")) {
+				resetNameGlyph();
+			}
+		}
 	}
 
 	public void setReferencedOnePlace(Place referencedOnePlace) {
