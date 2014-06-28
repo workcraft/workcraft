@@ -106,11 +106,11 @@ public class CircuitSimulationTool extends STGSimulationTool {
 					VisualContact contact = (VisualContact) node;
 					String transitionId = null;
 					Node transition2 = null;
-					if (!branchTrace.isEmpty() && (branchTrace.step < branchTrace.size())) {
-						transitionId = branchTrace.get(branchTrace.step);
+					if (branchTrace.canProgress()) {
+						transitionId = branchTrace.getCurrent();
 						transition2 = net.getNodeByReference(transitionId);
-					} else if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.step < mainTrace.size())) {
-						transitionId = mainTrace.get(mainTrace.step);
+					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+						transitionId = mainTrace.getCurrent();
 						transition2 = net.getNodeByReference(transitionId);
 					}
 

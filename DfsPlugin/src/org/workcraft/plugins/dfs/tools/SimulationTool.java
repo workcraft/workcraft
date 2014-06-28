@@ -131,11 +131,11 @@ public class SimulationTool extends STGSimulationTool {
 			public Decoration getDecoration(Node node) {
 				String transitionId = null;
 				Node transition = null;
-				if (!branchTrace.isEmpty() && (branchTrace.step < branchTrace.size())) {
-					transitionId = branchTrace.get(branchTrace.step);
+				if (branchTrace.canProgress()) {
+					transitionId = branchTrace.getCurrent();
 					transition = net.getNodeByReference(transitionId);
-				} else if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.step < mainTrace.size())) {
-					transitionId = mainTrace.get(mainTrace.step);
+				} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+					transitionId = mainTrace.getCurrent();
 					transition = net.getNodeByReference(transitionId);
 				}
 

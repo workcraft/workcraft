@@ -119,10 +119,12 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		boolean isActive(int row, int column) {
 			if (column == 0) {
 				if (!mainTrace.isEmpty() && branchTrace.isEmpty())
-					return row == mainTrace.step;
+					return row == mainTrace.getPosition();
 			} else {
-				if (!branchTrace.isEmpty() && (row >= mainTrace.step) && (row < mainTrace.step + branchTrace.size())) {
-					return (row == mainTrace.step + branchTrace.step);
+				int absoluteBranchSize = mainTrace.getPosition() + branchTrace.size();
+				int absoluteBranchPosition = mainTrace.getPosition() + branchTrace.getPosition();
+				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < absoluteBranchSize)) {
+					return (row == absoluteBranchPosition);
 				}
 			}
 			return false;
@@ -191,10 +193,10 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		super.updateState(editor);
 		ArrayList<String> combinedTrace = new ArrayList<String>();
 		if (!mainTrace.isEmpty()) {
-			combinedTrace.addAll(mainTrace.subList(0, mainTrace.step));
+			combinedTrace.addAll(mainTrace.subList(0, mainTrace.getPosition()));
 		}
 		if (!branchTrace.isEmpty()) {
-			combinedTrace.addAll(branchTrace.subList(0, branchTrace.step));
+			combinedTrace.addAll(branchTrace.subList(0, branchTrace.getPosition()));
 		}
 
 		for (String signalName: stateMap.keySet()) {
