@@ -26,14 +26,14 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(final MpsatChainTask task, final Trace t, final ActionListener closeAction) {
+	public SolutionPanel(final MpsatChainTask task, final Trace trace, final ActionListener closeAction) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
 		));
 
 		traceText = new JTextArea();
-		traceText.setText(t.toString());
+		traceText.setText(trace.toString());
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(traceText);
@@ -63,7 +63,7 @@ public class SolutionPanel extends JPanel {
 				}
 				final ToolboxPanel toolbox = currentEditor.getToolBox();
 				final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
-				tool.setTrace(t);
+				tool.setTrace(trace);
 				toolbox.selectTool(tool);
 				closeAction.actionPerformed(null);
 			}
