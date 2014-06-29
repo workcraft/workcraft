@@ -82,41 +82,48 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public Place createPlace() {
-		return createPlace(null);
+		return createPlace(null, null);
 	}
 
 	final public Transition createTransition() {
-		return createDummyTransition(null);
+		return createDummyTransition(null, null);
 	}
 
 	final public SignalTransition createSignalTransition() {
-		return createSignalTransition(null);
+		return createSignalTransition(null, null);
 	}
 
-	final public STGPlace createPlace(String name) {
+	final public STGPlace createPlace(String name, Container cont) {
+		if (cont==null) cont=getRoot();
+
 		STGPlace newPlace = new STGPlace();
 		if (name != null) {
 			setName(newPlace, name);
 		}
-		getRoot().add(newPlace);
+		cont.add(newPlace);
 		return newPlace;
 	}
 
-	final public DummyTransition createDummyTransition(String name) {
+	final public DummyTransition createDummyTransition(String name, Container container) {
+		if (container == null) container = getRoot();
+
 		DummyTransition newTransition = new DummyTransition();
-		if (name != null) {
+		container.add(newTransition);
+		if (name != null)
 			setName(newTransition, name);
-		}
-		getRoot().add(newTransition);
+
 		return newTransition;
 	}
 
-	final public SignalTransition createSignalTransition(String name) {
+	final public SignalTransition createSignalTransition(String name, Container container) {
+		if (container == null) container = getRoot();
+
 		SignalTransition ret = new SignalTransition();
-		if (name != null) {
-			setName(ret, name);
-		}
-		getRoot().add(ret);
+
+		container.add(ret);
+
+		if (name != null) setName(ret, name);
+
 		return ret;
 	}
 
@@ -374,5 +381,6 @@ public class STG extends AbstractMathModel implements STGModel {
 		implicitPlace.setImplicit(false);
 		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
 	}
+
 
 }

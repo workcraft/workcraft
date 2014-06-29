@@ -41,13 +41,10 @@ import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -465,46 +462,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 			this.reparent(page, this, getCurrentLevel(), selected);
 
-//
-//
-//
-//			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-//			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-//				if(Hierarchy.isDescendant(connection.getFirst(), page) &&
-//						Hierarchy.isDescendant(connection.getSecond(), page)) {
-//					connectionsToGroup.add(connection);
-//				}
-//			}
-//			currentLevel.reparent(connectionsToGroup, page);
-//
-//			// reparenting for the math model nodes
-//			ArrayList<Node> selectedMath = new ArrayList<Node>();
-//			for (Node node:selected) {
-//				if (node instanceof VisualComponent) {
-//					selectedMath.addAll(((VisualComponent)node).getMathReferences());
-//				}
-//			}
-//			for (Node node:connectionsToGroup) {
-//				if (node instanceof VisualConnection) {
-//					selectedMath.addAll(((VisualConnection)node).getMathReferences());
-//				}
-//			}
-//
-//			for (Node node: selectedMath) {
-//				Container parent = (Container)node.getParent();
-//				ArrayList<Node> re = new ArrayList<Node>();
-//				re.add(node);
-//
-//
-//				// reparenting at the level of the reference manager
-//				ReferenceManager refMan = getMathModel().getReferenceManager();
-//				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-//					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-//					manager.setNamespaceProvider(node, pageNode);
-//				}
-//				parent.reparent(re, pageNode);
-//
-//			}
 
 
 			// final touch on visual part
@@ -634,8 +591,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return ret;
 	}
 
-	public static Container getMathContainer(VisualModel sourceModel, Container visualContainer) {
-		MathModel mmodel = sourceModel.getMathModel();
+	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
+		MathModel mmodel = visualModel.getMathModel();
 
 		// find the closest container that has a referenced math node
 		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);

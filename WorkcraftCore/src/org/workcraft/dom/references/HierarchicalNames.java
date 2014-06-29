@@ -1,5 +1,6 @@
 package org.workcraft.dom.references;
 
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +51,50 @@ public class HierarchicalNames {
 	}
 
 
+	public static void splitReference(String reference, LinkedList<String> path) {
+
+		if (reference.equals("")) return;
+
+		Pattern pattern = Pattern.compile(hPattern);
+
+		Matcher matcher = pattern.matcher(reference);
+		if (matcher.find()) {
+			String str = matcher.group(2);
+			str=str.replace("'", "");
+			path.add(str);
+			splitReference(matcher.group(9), path);
+		}
+	}
+
+	public static String getParentReference(String reference) {
+		// legacy reference support
+		if (Identifier.isNumber(reference)) return "";
+
+		LinkedList<String> path = new LinkedList<String>();
+		splitReference(reference, path);
+
+		String ret = "";
+		for (int i=0;i<path.size()-1;i++) {
+			ret +=path.get(i);
+			if (i<path.size()-2) ret+=hierarchySeparator;
+		}
+		return ret;
+	}
+
+	public static String getReferencePath(String reference) {
+		// legacy reference support
+		if (Identifier.isNumber(reference)) return "";
+
+		LinkedList<String> path = new LinkedList<String>();
+		splitReference(reference, path);
+
+		String ret = "";
+		for (int i=0;i<path.size()-1;i++) {
+			ret +=path.get(i)+hierarchySeparator;
+		}
+		return ret;
+	}
+
 	public static String getReferenceHead(String reference) {
 
 		// legacy reference support
@@ -60,10 +105,6 @@ public class HierarchicalNames {
 
 		Matcher matcher = pattern.matcher(reference);
 		if (matcher.find()) {
-
-//			for (int i=0;i<10;i++) {
-//				System.out.println(i+" "+matcher.group(i));
-//			}
 
 			String head = matcher.group(2);
 			head = head.replace("'", "");

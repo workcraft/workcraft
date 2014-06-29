@@ -1,8 +1,6 @@
 package org.workcraft.dom.references;
 
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -162,7 +160,10 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 	public Node getNodeByReference(NamespaceProvider provider, String reference, boolean quiet) {
 
-		if (provider!=null&&reference.equals("")) return (Node)provider;
+		if (provider==null) provider = topProvider;
+
+		if (reference.equals("")||reference.equals(HierarchicalNames.hierarchySeparator))
+			return (Node)provider;
 
 		String head =  HierarchicalNames.getReferenceHead(reference);
 		String tail =  HierarchicalNames.getReferenceTail(reference);
@@ -172,8 +173,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 //		if (provider==null||isAbsolutePath) {
 //			provider = topProvider;
 //		}
-
-		if (provider==null) provider = topProvider;
 
 		NameManager<Node> man = getNameManager(provider);
 
@@ -231,7 +230,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
 
-		if(e instanceof NodesAddedEvent) {
+		if (e instanceof NodesAddedEvent) {
 			for(Node node : e.getAffectedNodes()) {
 
 

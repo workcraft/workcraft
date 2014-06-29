@@ -201,19 +201,24 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	public VisualPlace createPlace(String name) {
-		STGPlace p = stg.createPlace(name);
+	public VisualPlace createPlace(String name, Container visualContainer) {
+
+		if (visualContainer==null) visualContainer = getRoot();
+		STGPlace p = stg.createPlace(name, getMathContainer(this, visualContainer));
 		VisualPlace place = new VisualPlace(p);
-		add(place);
+		visualContainer.add(place);
 		return place;
 	}
 
-	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction) {
-		SignalTransition transition = stg.createSignalTransition(signalName);
+	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
+		if (container==null) container = getRoot();
+
+		SignalTransition transition = stg.createSignalTransition(signalName, getMathContainer(this, container));
 		stg.setName(transition, signalName + direction.toString());
 		transition.setSignalType(type);
 		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
-		add(visualTransition);
+
+		container.add(visualTransition);
 		return visualTransition;
 	}
 

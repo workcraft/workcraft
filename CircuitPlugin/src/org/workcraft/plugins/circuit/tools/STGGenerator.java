@@ -11,13 +11,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -47,6 +50,7 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 public class STGGenerator {
 
@@ -88,14 +92,23 @@ public class STGGenerator {
 
 	private static ContactSTG generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
 		String contactName = getContactName(circuit, contact);
-		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
+
+		String path = HierarchicalNames.getParentReference(circuit.getMathModel().getNodeReference(contact.getReferencedComponent()));
+		Container curContainer = (Container)createdContainers.get(path);
+		while (curContainer==null) {
+			path = HierarchicalNames.getParentReference(path);
+			curContainer = (Container)createdContainers.get(path);
+		}
+
+
+		VisualPlace zeroPlace = stg.createPlace(contactName+"_0", curContainer);
 		zeroPlace.setLabel(contactName+"=0");
 
 		if (!contact.getInitOne()) {
 			zeroPlace.getReferencedPlace().setTokens(1);
 		}
 
-		VisualPlace onePlace = stg.createPlace(contactName+"_1");
+		VisualPlace onePlace = stg.createPlace(contactName+"_1", curContainer);
 		onePlace.setLabel(contactName+"=1");
 		if (contact.getInitOne()) {
 			onePlace.getReferencedPlace().setTokens(1);
@@ -133,28 +146,50 @@ public class STGGenerator {
 	}
 
 
-//	private static void copyPages(VisualSTG targetModel, Container targetContainer, VisualCircuit sourceModel, Container sourceContainer) {
-//		for (Node vn: sourceContainer.getChildren()) {
-//			if (vn instanceof VisualPage) {
-//				VisualPage vp = (VisualPage)vn;
-//
-//
-//			}
-//		}
-//	}
 
-	public static VisualSTG generate(VisualCircuit circuit) {
+	// store created containers in a separate map
+	private static HashMap<String, Node> createdContainers = null;
+	private static void copyPages(VisualSTG targetModel, Container targetContainer, VisualCircuit sourceModel, Container sourceContainer) {
+		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
+
+		for (Node vn: sourceContainer.getChildren()) {
+			if (vn instanceof VisualPage) {
+
+				VisualPage vp = (VisualPage)vn;
+				String name = sourceModel.getMathModel().getName(vp.getReferencedComponent());
+
+				PageNode np2 = new PageNode();
+				VisualPage vp2 = new VisualPage(np2);
+				targetContainer.add(vp2);
+				AbstractVisualModel.getMathContainer(targetModel, targetContainer).add(np2);
+				targetModel.getMathModel().setName(np2, name);
+				createdContainers.put(targetModel.getMathModel().getNodeReference(np2), vp2);
+
+
+				toProcess.put(vp, vp2);
+			}
+		}
+
+		for (Entry<Container, Container> en: toProcess.entrySet()) {
+			copyPages(targetModel, en.getValue(), sourceModel, en.getKey());
+		}
+	}
+
+	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
 
-			// first, create the same pages
+			// first, create the same page structure
+			createdContainers = new HashMap<String, Node>();
+			createdContainers.put("", stg.getRoot());
+			copyPages(stg, stg.getRoot(), circuit, circuit.getRoot());
 
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
 
 			// generate all possible drivers and fill out the targets
-			for(VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+			for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
 				ContactSTG cstg;
 
 				if(VisualContact.isDriver(contact)) {
@@ -189,7 +224,7 @@ public class STGGenerator {
 			}
 
 			// generate implementation for each of the drivers
-			for(VisualContact c : drivers.keySet()) {
+			for (VisualContact c : drivers.keySet()) {
 				if (c instanceof VisualFunctionContact) {
 					// function based driver
 					Dnf set = null;
@@ -328,6 +363,15 @@ public class STGGenerator {
 
 		LinkedList<VisualNode> nodes = new LinkedList<VisualNode>();
 
+
+		String path = HierarchicalNames.getParentReference(circuit.getMathModel().getNodeReference(parentContact.getReferencedComponent()));
+		Container curContainer = (Container)createdContainers.get(path);
+		while (curContainer==null) {
+			path = HierarchicalNames.getParentReference(path);
+			curContainer = (Container)createdContainers.get(path);
+		}
+
+
 		TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
 				new Comparator<DnfClause>() {
 					@Override
@@ -343,7 +387,7 @@ public class STGGenerator {
 
 		for(DnfClause clause : clauses)
 		{
-			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection);
+			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection, curContainer);
 			nodes.add(transition);
 			parentContact.getReferencedTransitions().add(transition.getReferencedTransition());
 
@@ -397,11 +441,13 @@ public class STGGenerator {
 				}
 			}
 
-//			result = ((VisualFunctionComponent)parent).getName();
-
 			result = HierarchicalNames.getFlatName(
-					circuit.getMathModel().getNodeReference(vc.getReferencedComponent())
+						circuit.getMathModel().getName(vc.getReferencedComponent())
 					);
+
+//			result = HierarchicalNames.getFlatName(
+//					circuit.getMathModel().getNodeReference(vc.getReferencedComponent())
+//					);
 
 			if (contact.getIOType() == IOType.INPUT || output_cnt > 1) {
 				result += "_" + circuit.getMathModel().getName(contact.getReferencedContact());
