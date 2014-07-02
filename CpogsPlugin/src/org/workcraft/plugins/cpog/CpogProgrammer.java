@@ -35,6 +35,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import com.sun.org.apache.regexp.internal.RE;
@@ -781,13 +782,8 @@ public class CpogProgrammer {
 
 		VisualVariable predicatives[] = new VisualVariable[n];
 		int pr = 0;
-		for(int k = 0; k < m; k++)
-		{
-			for(VisualComponent component : scenarios.get(k).getComponents()){
-				if(component instanceof VisualVariable){
-					predicatives[pr++] = (VisualVariable) component;
-				}
-			}
+		for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
+			predicatives[pr++] = variable;
 		}
 
 		Variable [] vars = new Variable[freeVariables + pr];
@@ -879,7 +875,7 @@ public class CpogProgrammer {
 					}
 				}
 				solution.setFormule(formule);
-				//TODO
+
 				// Set optimal encoding to graphs
 				boolean[][] opt_encoding = new boolean[m][];
 				for(int i=0;i<m;i++)
@@ -944,7 +940,6 @@ public class CpogProgrammer {
 			}
 		}
 
-		//TODO
 		for(int k = 0; k < m; k++)
 		{
 			for(int i = 0; i < freeVariables; i++){
