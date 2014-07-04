@@ -74,8 +74,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public STG(Container root, References refs) {
 
-		super(root,
-				new STGReferenceManager((NamespaceProvider)root, refs, null));
+		super(root, new STGReferenceManager(refs, null));
 
 		referenceManager = (STGReferenceManager) getReferenceManager();
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());

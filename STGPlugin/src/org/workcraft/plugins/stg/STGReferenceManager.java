@@ -1,41 +1,20 @@
 package org.workcraft.plugins.stg;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.math.CommentNode;
-import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.references.UniqueNameManager;
-import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DuplicateIDException;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
-import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
 
 public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager implements ReferenceManager {
 
 
-	public STGReferenceManager(NamespaceProvider provider, References existing, Func<Node, String> defaultName) {
-		super(provider, existing, defaultName);
+	public STGReferenceManager(References existing, Func<Node, String> defaultName) {
+		super(existing, defaultName);
 	}
 
 //	@Override

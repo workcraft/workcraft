@@ -40,7 +40,7 @@ public class SON extends AbstractMathModel implements SONModel {
 	}
 
 	public SON(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if (arg instanceof Condition)

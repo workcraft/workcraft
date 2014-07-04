@@ -73,8 +73,14 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
 		}
 
-
 		sourceRoot.reparent(nodes, targetContainer);
+
+		for (Node node: nodes) {
+			// after reparenting,
+			// additional call to propagate the name data into the nodes (if necessary)
+			// when setDefaultNameIfUnnamed was called
+			manager.setName(node, manager.getName(node));
+		}
 
 		for (Node node: nodes) {
 

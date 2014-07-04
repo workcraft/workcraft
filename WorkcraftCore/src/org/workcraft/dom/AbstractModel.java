@@ -63,7 +63,7 @@ public abstract class AbstractModel implements Model {
 			if (root instanceof NamespaceProvider) {
 
 				this.referenceManager =
-						new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, null, new Func<Node, String>() {
+						new HierarchicalUniqueNameReferenceManager(null, new Func<Node, String>() {
 							@Override
 							public String eval(Node arg) {
 								if (arg instanceof Connection) return "c";

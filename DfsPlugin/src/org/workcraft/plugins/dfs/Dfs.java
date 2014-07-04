@@ -47,7 +47,7 @@ public class Dfs extends AbstractMathModel {
 
 	public Dfs(Container root, References refs) {
 
-		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if ((arg instanceof Logic) || (arg instanceof CounterflowLogic))

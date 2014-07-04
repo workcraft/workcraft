@@ -617,13 +617,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		MathModel mmodel = getMathModel();
 
-		Container mathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
+		Container sourceMathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
 
 
 		Collection<Node> mchildren = getMathChildren(sourceChildren);
 
 		mmodel.reparent(getMathContainer(this, targetContainer),
-				((VisualModel)sourceModel).getMathModel(), mathContainer,
+				((VisualModel)sourceModel).getMathModel(), sourceMathContainer,
 				mchildren);
 
 		Collection<Node> children = new HashSet<Node>();

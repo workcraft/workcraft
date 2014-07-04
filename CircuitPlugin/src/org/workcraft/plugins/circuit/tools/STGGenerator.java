@@ -50,7 +50,6 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
 
 public class STGGenerator {
 

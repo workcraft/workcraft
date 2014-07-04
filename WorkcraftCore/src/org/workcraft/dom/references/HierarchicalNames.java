@@ -23,6 +23,10 @@ public class HierarchicalNames {
 	private static String getFlatName(String reference, String flatSeparator, boolean isFirst) {
 		if (flatSeparator==null) flatSeparator=flatNameSeparator;
 
+		// do not work with implicit places(?)
+		if (reference.startsWith("<"))
+			return reference;
+
 		String ret = "";
 		// in this version the first separator is not shown
 		if (!isFirst && reference.startsWith(hierarchySeparator)) ret=flatSeparator;

@@ -17,7 +17,7 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 
 	public CircuitReferenceManager(NamespaceProvider provider,
 			References existing, Func<Node, String> defaultName) {
-		super(provider, existing, defaultName);
+		super(existing, defaultName);
 	}
 
 	@Override
