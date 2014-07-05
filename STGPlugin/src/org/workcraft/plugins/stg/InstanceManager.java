@@ -40,6 +40,11 @@ public class InstanceManager<T> {
 		return result;
 	}
 
+	public boolean containsGenerator(String name) {
+		return generators.get(name)!=null;
+	}
+
+
 	public boolean contains(T t) {
 		return instances.containsKey(t);
 	}

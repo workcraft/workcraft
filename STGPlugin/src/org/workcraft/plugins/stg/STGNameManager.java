@@ -251,13 +251,18 @@ public class STGNameManager implements NameManager<Node> {
 
 			final SignalTransition st = (SignalTransition)node;
 			try {
+
 				final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(s);
+
 				if (r == null) {
 					throw new ArgumentException (s + " is not a valid signal transition label");
 				}
 
-				if (defaultNameManager.get(r.getFirst())!=null)
-					throw new ArgumentException ("Signal name "+s+" is taken by a place");
+
+				String cn = r.getFirst();
+				Object o = defaultNameManager.get(cn);
+				if (o!=null)
+					throw new ArgumentException ("Signal name "+s+" is not awailable.");
 
 				instancedNameManager.assign(st, Pair.of(r.getFirst() + r.getSecond(), r.getThird()), forceInstance);
 				renameSignalTransition(st, r.getFirst());
@@ -265,11 +270,16 @@ public class STGNameManager implements NameManager<Node> {
 			} catch (DuplicateIDException e) {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			} catch (ArgumentException e) {
+
 				if (Identifier.isValid(s)) {
+
+					if (defaultNameManager.get(s)!=null)
+						throw new ArgumentException ("Signal name "+s+" is not available.");
+
 					instancedNameManager.assign(st, s + st.getDirection());
 					renameSignalTransition(st, s);
 				} else {
-					throw new ArgumentException ("\"" + s + "\" is not a valid signal transition label.");
+					throw new ArgumentException (e.getMessage());
 				}
 			}
 		} else if (node instanceof DummyTransition) {
@@ -281,7 +291,7 @@ public class STGNameManager implements NameManager<Node> {
 				}
 
 				if (defaultNameManager.get(r.getFirst())!=null)
-					throw new ArgumentException ("Dummy name "+s+" is taken by a place");
+					throw new ArgumentException ("Dummy name "+s+" is taken.");
 
 
 				if (r.getSecond() != null) {
@@ -291,12 +301,17 @@ public class STGNameManager implements NameManager<Node> {
 				}
 				renameDummyTransition(dt, r.getFirst());
 			} catch (DuplicateIDException e) {
+
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			}
 		} else {
 
-			if (instancedNameManager.getObject(new Pair<String, Integer>(s, 0))!=null)
-				throw  new ArgumentException("The name "+s+" is taken");
+
+			if (instancedNameManager.containsGenerator(s+"-")||
+				instancedNameManager.containsGenerator(s+"+")||
+				instancedNameManager.containsGenerator(s+"~")||
+				instancedNameManager.containsGenerator(s))
+				throw  new ArgumentException("The name "+s+" is already taken.");
 
 			defaultNameManager.setName(node, s);
 		}
