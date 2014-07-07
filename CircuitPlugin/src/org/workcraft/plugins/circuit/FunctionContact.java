@@ -25,15 +25,14 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("FunctionContact")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 
 public class FunctionContact extends Contact {
-	private BooleanFormula setFunction=Zero.instance();
-	private BooleanFormula resetFunction=null;
+	private BooleanFormula setFunction = null;
+	private BooleanFormula resetFunction = null;
 
 	public FunctionContact(IOType ioType) {
 		super(ioType);

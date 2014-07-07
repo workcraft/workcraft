@@ -346,12 +346,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return (Contact)getReferencedComponent();
 	}
 
-	public static boolean isDriver(Node contact) {
-		if (!(contact instanceof VisualContact)) {
-			return false;
+	public static boolean isDriver(Node node) {
+		if (node instanceof VisualContact) {
+			VisualContact contact = (VisualContact)node;
+			return (contact.getIOType() == IOType.OUTPUT) || !(contact.getParent() instanceof VisualComponent);
 		}
-		return ( (((VisualContact)contact).getIOType() == IOType.OUTPUT)
-			== (((VisualContact)contact).getParent() instanceof VisualComponent) );
+		return false;
 	}
 
 	public HashSet<SignalTransition> getReferencedTransitions() {
