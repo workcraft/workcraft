@@ -129,7 +129,7 @@ public class CpogProgrammer {
 
 			for(int k = 0; k < m; k++)
 			{
-				Map nodes = new HashMap<>();
+				Map<String, Integer> nodes = new HashMap<String, Integer>();
 				// Print arcs
 				Output.println(".scenario CPOG_" + k);
 				for(VisualConnection c : scenarios.get(k).getConnections()){
