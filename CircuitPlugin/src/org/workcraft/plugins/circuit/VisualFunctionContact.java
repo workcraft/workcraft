@@ -47,15 +47,10 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.FreeVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
-import org.workcraft.plugins.cpog.optimisation.expressions.CleverBooleanWorker;
-import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.util.Hierarchy;
 
 
 @DisplayName("Input/output port")
@@ -84,6 +79,40 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		super(contact);
 	}
 
+	public FunctionContact getReferencedFunctionContact() {
+		return (FunctionContact)getReferencedComponent();
+	}
+
+	@NoAutoSerialisation
+	public BooleanFormula getSetFunction() {
+		return getReferencedFunctionContact().getSetFunction();
+	}
+
+	@NoAutoSerialisation
+	public void setSetFunction(BooleanFormula setFunction) {
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
+			p.resetRenderingResult();
+		}
+		renderedSetFormula = null;
+		getReferencedFunctionContact().setSetFunction(setFunction);
+	}
+
+	@NoAutoSerialisation
+	public BooleanFormula getResetFunction() {
+		return getReferencedFunctionContact().getResetFunction();
+	}
+
+	@NoAutoSerialisation
+	public void setResetFunction(BooleanFormula resetFunction) {
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
+			p.resetRenderingResult();
+		}
+		renderedResetFormula = null;
+		getReferencedFunctionContact().setResetFunction(resetFunction);
+	}
+
 	public void resetRenderedFormula() {
 		renderedSetFormula = null;
 		renderedResetFormula = null;
@@ -106,57 +135,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		}
 		return renderedResetFormula;
 	}
-
-	@NoAutoSerialisation
-	public String getResetFunction() {
-		return FormulaToString.toString(getFunction().getResetFunction());
-	}
-
-	@NoAutoSerialisation
-	public String getSetFunction() {
-		return FormulaToString.toString(getFunction().getSetFunction());
-	}
-
-	@NoAutoSerialisation
-	public void setResetFunction(BooleanFormula resetFunction) {
-		if (getParent() instanceof VisualFunctionComponent) {
-			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
-		}
-		renderedResetFormula = null;
-		getFunction().setResetFunction(resetFunction);
-		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
-	}
-
-	@NoAutoSerialisation
-	public void setSetFunction(BooleanFormula setFunction) {
-		if (getParent() instanceof VisualFunctionComponent) {
-			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
-		}
-		renderedSetFormula = null;
-		getFunction().setSetFunction(setFunction);
-		sendNotification(new PropertyChangedEvent(this, "setFunction"));
-	}
-
-	public void updateCombinedFunction() {
-		CleverBooleanWorker worker = new CleverBooleanWorker();
-		BooleanOperations.worker = new DumbBooleanWorker();
-
-		if (getFunction().getSetFunction()!=null&&
-			getFunction().getResetFunction()!=null)
-
-			getFunction().setCombinedFunction(
-					DnfGenerator.generate(
-					worker.or(getFunction().getSetFunction(), worker.and(
-							new FreeVariable(getReferencedContact().getName()), worker.not(getFunction().getResetFunction())))
-					));
-
-		if (getFunction().getSetFunction()!=null && getFunction().getResetFunction()==null) {
-			getFunction().setCombinedFunction(DnfGenerator.generate(getFunction().getSetFunction()));
-		}
-	}
-
 
 	private void drawFormula(Graphics2D g, int arrowType, float xOffset, float yOffset, Color foreground, Color background, FormulaRenderingResult result) {
 		if (result == null) return;
@@ -260,8 +238,22 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		super.draw(r);
 	}
 
-	public FunctionContact getFunction() {
-		return (FunctionContact)getReferencedContact();
+	@Override
+	public void notify(StateEvent e) {
+		if (e instanceof PropertyChangedEvent) {
+			PropertyChangedEvent pc = (PropertyChangedEvent)e;
+			if (pc.getPropertyName().equals("setFunction")
+			 || pc.getPropertyName().equals("resetFunction")) {
+				resetRenderedFormula();
+			}
+			if (pc.getPropertyName().equals("name")) {
+				Node root = Hierarchy.getRoot(this);
+				for (VisualFunctionContact c : Hierarchy.getDescendantsOfType(root, VisualFunctionContact.class)) {
+					c.resetRenderedFormula();
+				}
+			}
+		}
+		super.notify(e);
 	}
 
 }

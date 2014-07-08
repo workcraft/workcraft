@@ -36,17 +36,19 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Hierarchy;
@@ -195,77 +197,56 @@ public class STGGenerator {
 					// if it is a driver, add it to the list of drivers
 					cstg = generatePlaces(circuit, stg, contact);
 					drivers.put(contact, cstg);
-
 					// attach driven wires to the place
 					attachConnections(circuit, contact, cstg);
-
 					// put itself on a target list as well, so that it can be addressed by other drivers
 					targetDrivers.put(contact.getReferencedContact(), contact);
 				} else {
 					// if not a driver, find related driver, add to the map of targets
 					VisualContact driver = findDriver(circuit, contact);
-
-					if (driver==null) {
+					if (driver == null) {
 						// if target driver was not found, create artificial one that looks like input
-						//driver = new VisualContact(new Contact(IOType.INPUT), VisualContact.flipDirection(contact.getDirection()), contact.getName());
-						//driver.setTransform(contact.getTransform());
-						//driver.setParent(contact.getParent());
 						driver = contact;
 						cstg = generatePlaces(circuit, stg, contact);
-
 						drivers.put(driver, cstg);
 						// attach driven wires to the place
 						attachConnections(circuit, contact, cstg);
 					}
-
 					targetDrivers.put(contact.getReferencedContact(), driver);
 				}
 			}
 
-			// generate implementation for each of the drivers
-			for (VisualContact c : drivers.keySet()) {
-				if (c instanceof VisualFunctionContact) {
-					// function based driver
-					Dnf set = null;
-					Dnf reset = null;
-					VisualFunctionContact contact = (VisualFunctionContact)c;
-					SignalTransition.Type ttype = SignalTransition.Type.OUTPUT;
-
-
-					if (contact.getFunction().getSetFunction()!=null) {
-
-						set = DnfGenerator.generate(contact.getFunction().getSetFunction());
-						if (contact.getFunction().getResetFunction() != null) {
-							reset = DnfGenerator.generate(contact.getFunction().getResetFunction());
-						} else {
-							BooleanOperations.worker = new DumbBooleanWorker();
-							reset = DnfGenerator.generate(BooleanOperations.worker.not(contact.getFunction().getSetFunction()));
-						}
-
+			// Generate implementation for each of the drivers
+			for(VisualContact driver : drivers.keySet()) {
+				BooleanFormula setFunc = null;
+				BooleanFormula resetFunc = null;
+				Type signalType = Type.INPUT;
+				if (driver instanceof VisualFunctionContact) {
+					VisualFunctionContact contact = (VisualFunctionContact)driver;
+					if ((contact.getIOType() == IOType.OUTPUT) && !isFromEnvironment(contact)) {
+						signalType = Type.OUTPUT;
 					}
-
-
-					if (contact.getParent() instanceof VisualCircuitComponent) {
-
-
-						if (((VisualCircuitComponent)contact.getParent()).getIsEnvironment()) {
-							ttype = SignalTransition.Type.INPUT;
-						} else if (contact.getIOType()==IOType.INPUT) {
-							ttype = SignalTransition.Type.INPUT;
+					if ((contact.getIOType() == IOType.OUTPUT) && !(contact.getParent() instanceof VisualCircuitComponent)) {
+						// Driver of the primary output port
+						VisualContact outputDriver = findDriver(circuit, contact);
+						if (outputDriver != null) {
+							setFunc = outputDriver.getReferencedContact();
 						}
 					} else {
-
-						if (contact.getIOType()==IOType.INPUT) {
-							ttype = SignalTransition.Type.INPUT;
-						}
+						// Function based driver
+						setFunc = contact.getSetFunction();
+						resetFunc = contact.getResetFunction();
 					}
-					implementDriver(circuit, stg, contact, drivers, targetDrivers, set, reset, ttype);
-				} else {
-					// some generic driver implementation otherwise
-					Dnf set = new Dnf(new DnfClause());
-					Dnf reset = new Dnf(new DnfClause());
-					implementDriver(circuit, stg, c, drivers, targetDrivers, set, reset, SignalTransition.Type.INPUT);
 				}
+				// Create complementary set/reset if only one of them is defined
+				if ((setFunc != null) && (resetFunc == null)) {
+					resetFunc = new DumbBooleanWorker().not(setFunc);
+				} else if ((setFunc == null) && (resetFunc != null)) {
+					setFunc = new DumbBooleanWorker().not(resetFunc);
+				}
+				Dnf setDnf = DnfGenerator.generate(setFunc);
+				Dnf resetDnf = DnfGenerator.generate(resetFunc);
+				implementDriver(circuit, stg, driver, drivers, targetDrivers, setDnf, resetDnf, signalType);
 			}
 			return stg;
 		} catch (InvalidConnectionException e) {
@@ -273,6 +254,12 @@ public class STGGenerator {
 		}
 	}
 
+	private static boolean isFromEnvironment(VisualContact contact) {
+		if (contact.getParent() instanceof VisualCircuitComponent) {
+			return ((VisualCircuitComponent)contact.getParent()).getIsEnvironment();
+		}
+		return false;
+	}
 
 	private static void implementDriver(VisualCircuit circuit, VisualSTG stg,
 			VisualContact contact,
@@ -341,13 +328,11 @@ public class STGGenerator {
 		contact.getReferencedTransitions().clear();
 
 		nodes.addAll(buildTransitions(contact, stg, circuit, drivers, targetDrivers,
-				set,
-				add(add(center, direction), pOffset), plusDirection,
+				set, add(add(center, direction), pOffset), plusDirection,
 				signalName, ttype, SignalTransition.Direction.PLUS, p.p0, p.p1));
 
 		nodes.addAll(buildTransitions(contact, stg, circuit, drivers, targetDrivers,
-				reset,
-				subtract(add(center, direction), pOffset),  minusDirection,
+				reset, subtract(add(center, direction), pOffset),  minusDirection,
 				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
 
 		stg.select(nodes);

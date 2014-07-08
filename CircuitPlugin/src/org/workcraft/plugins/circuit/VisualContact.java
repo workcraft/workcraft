@@ -49,6 +49,7 @@ import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public class VisualContact extends VisualComponent implements StateObserver {
@@ -188,10 +189,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 	}
 
+	@NoAutoSerialisation
 	public boolean getInitOne() {
 		return getReferencedContact().getInitOne();
 	}
 
+	@NoAutoSerialisation
 	public void setInitOne(boolean value) {
 		getReferencedContact().setInitOne(value);
 	}
@@ -294,7 +297,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public GlyphVector getNameGlyphs(Circuit circuit, Graphics2D g) {
 		if (nameGlyph == null) {
-			if (getDirection()==VisualContact.Direction.NORTH||getDirection()==VisualContact.Direction.SOUTH) {
+			if (getDirection() == VisualContact.Direction.NORTH || getDirection() == VisualContact.Direction.SOUTH) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
@@ -321,22 +324,24 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return direction;
 	}
 
+	@NoAutoSerialisation
 	public void setIOType(IOType type) {
-		resetNameGlyph();
 		getReferencedContact().setIOType(type);
-		sendNotification(new PropertyChangedEvent(this, "IOtype"));
 	}
 
+	@NoAutoSerialisation
 	public IOType getIOType() {
 		return getReferencedContact().getIOType();
 	}
 
-//	public String getName(Circuit circuit) {
-//		return circuit.getName(getReferencedContact());
-//	}
-
+	@NoAutoSerialisation
 	public String getName() {
 		return getReferencedContact().getName();
+	}
+
+	@NoAutoSerialisation
+	public void setName(String name) {
+		getReferencedContact().setName(name);
 	}
 
 
@@ -351,12 +356,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return (Contact)getReferencedComponent();
 	}
 
-	public static boolean isDriver(Node contact) {
-		if (!(contact instanceof VisualContact)) {
-			return false;
+	public static boolean isDriver(Node node) {
+		if (node instanceof VisualContact) {
+			VisualContact contact = (VisualContact)node;
+			return (contact.getIOType() == IOType.OUTPUT) || !(contact.getParent() instanceof VisualComponent);
 		}
-		return ( (((VisualContact)contact).getIOType() == IOType.OUTPUT)
-			== (((VisualContact)contact).getParent() instanceof VisualComponent) );
+		return false;
 	}
 
 	public HashSet<SignalTransition> getReferencedTransitions() {
@@ -366,9 +371,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof PropertyChangedEvent) {
-			PropertyChangedEvent p = (PropertyChangedEvent)e;
-			if (p.getPropertyName().equals("name")) {
-				nameGlyph = null;
+			PropertyChangedEvent pc = (PropertyChangedEvent)e;
+			if (pc.getPropertyName().equals("name")) {
+				resetNameGlyph();
 			}
 		}
 	}

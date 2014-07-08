@@ -1,46 +1,93 @@
 package org.workcraft;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Trace extends ArrayList<String>{
+public class Trace extends ArrayList<String> {
+
+	private int position = 0;
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int value) {
+		position = Math.min(Math.max(0, value), size());
+	}
+
+	public void incPosition(int value) {
+		setPosition(position + value);
+	}
+
+	public void decPosition(int value) {
+		setPosition(position - value);
+	}
+
+	public boolean canProgress() {
+		return (!isEmpty() && (position < size()));
+	}
+
+	public String getCurrent() {
+		return canProgress() ? get(position) : null;
+	}
+
+	public void removeCurrent() {
+		remove(getPosition());
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		setPosition(0);
+	}
+
+	@Override
+	public String remove(int index) {
+		if (index < getPosition()) {
+			decPosition(1);
+		}
+		return super.remove(index);
+	}
+
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
-
+		// position
+		result.append(String.valueOf(getPosition()));
+		result.append(':');
+		// trace
 		boolean first = true;
-
 		for (String t : this) {
-			if (first)
-				first = false;
-			else
+			if (!first) {
 				result.append(',');
+			}
+			result.append(' ');
 			result.append(t);
+			first = false;
 		}
-
 		return result.toString();
 	}
 
 	public void fromString(String str) {
 		clear();
-		for (String st : str.split("\n")) {
-			for (String st2 : st.trim().split(","))
-				add(st2.trim());
+		int tmpPosition = 0;
+		boolean first = true;
+		for (String s : str.split(":")) {
+			if (first) {
+				// position
+				try {
+					tmpPosition = Integer.valueOf(s.trim());
+				} catch (Exception e) {
+
+				}
+			} else {
+				// trace
+				for (String st : s.trim().split(",")) {
+					add(st.trim());
+				}
+			}
+			first = false;
 		}
+		setPosition(tmpPosition);
 	}
 
-	public static void save (OutputStream os, Trace trace) throws IOException {
-		os.write(trace.toString().getBytes());
-	}
-
-	public static Trace load (InputStream is, Trace trace) throws IOException {
-		Trace result = new Trace();
-		for (String s : new BufferedReader(new InputStreamReader(is)).readLine().split(","))
-			result.add(s);
-		return result;
-	}
 }
