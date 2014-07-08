@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+CURRENT_DIR=`pwd -P`
 WORKCRAFT_DIR=`dirname "$0"`
-WORKCRAFT_HOME=`readlink -m "$WORKCRAFT_DIR"`
+cd "$WORKCRAFT_DIR"
+WORKCRAFT_HOME=`pwd -P`
 
 export PATH=$PATH:$WORKCRAFT_HOME/tools
 
@@ -54,6 +56,5 @@ CLASSPATH=\
 "$WORKCRAFT_HOME/WorkcraftCore/bin:"\
 "$WORKCRAFT_HOME/XmasPlugin/bin:"\
 
-pushd "$WORKCRAFT_HOME"
 java -classpath "$CLASSPATH" org.workcraft.Console
-popd
+cd "$CURRENT_DIR"
