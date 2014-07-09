@@ -111,9 +111,6 @@ public class UniqueNameManager<T> implements NameManager<T> {
 
 
 	public T get (String name) {
-		// special case, when the name is number only, convert it to C-style id (to support the old models)
-		if (Identifier.isNumber(name)) name="_"+name;
-
 		return Ts.getValue(name);
 	}
 

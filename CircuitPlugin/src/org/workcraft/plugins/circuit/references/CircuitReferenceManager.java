@@ -53,8 +53,8 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 			if (n!=null&&!n.equals("")) name=n;
 
 		} else if (Identifier.isNumber(name)) {
-
-			name="_"+name;
+			// name="_"+name;
+			name=defaultName.eval(node)+name;
 		}
 
 		if (node instanceof Contact) {
