@@ -66,7 +66,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
 		for (String s : sortedNames) {
 			out.print(" ");
-			out.print(s);
+			out.print(HierarchicalNames.getFlatName(s));
 		}
 
 		out.print("\n");

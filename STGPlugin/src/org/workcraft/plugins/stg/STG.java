@@ -185,6 +185,8 @@ public class STG extends AbstractMathModel implements STGModel {
 	public Set<String> getDummyNames() {
 		Set<String> result = new HashSet<String>();
 		for (Transition t : getDummies()) {
+
+
 			result.add(referenceManager.getNamePair(t).getFirst());
 		}
 		return result;
@@ -193,7 +195,12 @@ public class STG extends AbstractMathModel implements STGModel {
 	private Set<String> getUniqueNames(Collection<SignalTransition> transitions) {
 		Set<String> result = new HashSet<String>();
 		for (SignalTransition st : transitions) {
-			result.add(st.getSignalName());
+
+			String reference = referenceManager.getNodeReference(null, st);
+			String path = HierarchicalNames.getReferencePath(reference);
+
+			result.add(path+st.getSignalName());
+//			result.add(st.getSignalName());
 		}
 		return result;
 	}
