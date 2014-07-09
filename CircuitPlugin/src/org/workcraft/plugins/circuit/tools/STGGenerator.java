@@ -222,10 +222,10 @@ public class STGGenerator {
 				BooleanFormula resetFunc = null;
 				Type signalType = Type.INPUT;
 				if (driver instanceof VisualFunctionContact) {
+					// Determine signal type
 					VisualFunctionContact contact = (VisualFunctionContact)driver;
-					if ((contact.getIOType() == IOType.OUTPUT) && !isFromEnvironment(contact)) {
-						signalType = Type.OUTPUT;
-					}
+					signalType = getSignalType(contact);
+
 					if ((contact.getIOType() == IOType.OUTPUT) && !(contact.getParent() instanceof VisualCircuitComponent)) {
 						// Driver of the primary output port
 						VisualContact outputDriver = findDriver(circuit, contact);
@@ -254,11 +254,19 @@ public class STGGenerator {
 		}
 	}
 
-	private static boolean isFromEnvironment(VisualContact contact) {
-		if (contact.getParent() instanceof VisualCircuitComponent) {
-			return ((VisualCircuitComponent)contact.getParent()).getIsEnvironment();
-		}
-		return false;
+	private static Type getSignalType(VisualFunctionContact contact) {
+		Type result = Type.INPUT;
+		if (contact.getIOType() == IOType.OUTPUT) {
+			if (contact.getParent() instanceof VisualCircuitComponent) {
+				VisualCircuitComponent component = (VisualCircuitComponent)contact.getParent();
+				if (!component.getIsEnvironment()) {
+					result = Type.INTERNAL;
+				}
+			} else {
+				result = Type.OUTPUT;
+			   }
+		  }
+		  return result;
 	}
 
 	private static void implementDriver(VisualCircuit circuit, VisualSTG stg,
