@@ -37,7 +37,6 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
@@ -343,8 +342,22 @@ public class STGGenerator {
 				reset, subtract(add(center, direction), pOffset),  minusDirection,
 				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
 
+		Container currentLevel = null;
+		Container oldLevel = stg.getCurrentLevel();
+
+		for (Node node:nodes) {
+			if (currentLevel==null)
+				currentLevel = (Container)node.getParent();
+
+			if (currentLevel!=node.getParent())
+				throw new RuntimeException("Current level is not the same among the processed nodes");
+		}
+
+
+		stg.setCurrentLevel(currentLevel);
 		stg.select(nodes);
 		stg.groupSelection();
+		stg.setCurrentLevel(oldLevel);
 	}
 
 	private static LinkedList<VisualNode> buildTransitions(VisualContact parentContact,
