@@ -16,7 +16,6 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
