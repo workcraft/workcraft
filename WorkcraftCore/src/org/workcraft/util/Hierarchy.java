@@ -32,57 +32,53 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.NodeHelper;
 
 public class Hierarchy {
-	public static <T> Func<Node, Boolean> getTypeFilter(
-			final Class<T> type) {
+	public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
 		return new Func<Node, Boolean> (){
 			public Boolean eval(Node node) {
-				if (type.isInstance(node))
+				if (type.isInstance(node)) {
 					return true;
-				else
+				} else {
 					return false;
+				}
 			}
 		};
 	}
 
 	public static  Collection<Node> fillterNodes (Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
 		LinkedList<Node> result = new LinkedList<Node>();
-
 		for (Node node : nodes) {
-			if (filter.fn(node))
+			if (filter.fn(node)) {
 				result.add(node);
+			}
 		}
-
 		return result;
 	}
 
 
 	public static <T extends Node> Collection <T> filterNodesByType (Collection<Node> nodes, final Class<T> type) {
 		LinkedList<T> result = new LinkedList<T>();
-
 		for (Node node : nodes) {
-			if (type.isInstance(node))
+			if (type.isInstance(node)) {
 				result.add(type.cast(node));
+			}
 		}
 		return result;
 	}
+
 	public static Node [] getPath(Node node) {
 		Node n = node;
-			int i = 0;
-			while(n!=null)
-			{
-				i++;
-				n = n.getParent();
-			}
-			Node [] result = new Node[i];
-
-			n = node;
-			while(n!=null)
-			{
-				result[--i] = n;
-				n = n.getParent();
-			}
-
-			return result;
+		int i = 0;
+		while(n!=null) {
+			i++;
+			n = n.getParent();
+		}
+		Node [] result = new Node[i];
+		n = node;
+		while(n!=null) {
+			result[--i] = n;
+			n = n.getParent();
+		}
+		return result;
 	}
 
 
@@ -95,44 +91,53 @@ public class Hierarchy {
 
 	public static Node getCommonParent(Node... nodes) {
 		ArrayList<Node[]> paths = new ArrayList<Node[]>(nodes.length);
-
 		int minPathLength = Integer.MAX_VALUE;
-
 		for (Node node : nodes) {
 			final Node[] path = getPath(node);
-			if (minPathLength > path.length)
+			if (minPathLength > path.length) {
 				minPathLength = path.length;
+			}
 			paths.add(path);
 		}
 
 		Node result = null;
-
 		for(int i=0;i<minPathLength;i++) {
 			Node node = paths.get(0)[i];
-
 			boolean good = true;
-
-			for (Node[] path : paths)
+			for (Node[] path : paths) {
 				if (path[i] != node) {
 					good = false;
 					break;
 				}
+			}
 
-			if (good)
+			if (good) {
 				result = node;
-			else
+			} else {
 				break;
+			}
 		}
-
 		return result;
+	}
+
+	public static Node getRoot(Node node) {
+		Node root = node;
+		while (root != null) {
+			if (root.getParent() == null) {
+				return root;
+			} else {
+				root = root.getParent();
+			}
+		}
+		return root;
 	}
 
 	public static boolean isDescendant(Node descendant, Node parent) {
 		Node node = descendant;
-		while(node != parent)
-		{
-			if(node == null)
+		while(node != parent) {
+			if(node == null) {
 				return false;
+			}
 			node = node.getParent();
 		}
 		return true;
@@ -144,73 +149,70 @@ public class Hierarchy {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> T getNearestAncestor(Node node, final Class<T> type)
-	{
-		return (T)getNearestAncestor(node, new Func<Node, Boolean>()
-				{
-					@Override
-					public Boolean eval(Node node) {
-						return type.isInstance(node);
-					}
-				});
+	public static <T> T getNearestAncestor(Node node, final Class<T> type) {
+		return (T)getNearestAncestor(node, new Func<Node, Boolean>() {
+			@Override
+			public Boolean eval(Node node) {
+				return type.isInstance(node);
+			}
+		});
 	}
 
 	public static Node getNearestAncestor(Node node, Func<Node, Boolean> filter) {
 		Node parent = node;
-		while(parent != null)
-		{
-			if(filter.eval(parent))
+		while(parent != null) {
+			if(filter.eval(parent)) {
 				return parent;
+			}
 			parent = parent.getParent();
 		}
 		return null;
 	}
 
-	public static <T> Collection<T> getChildrenOfType(Node node, Class<T> type)
-	{
+	public static <T> Collection<T> getChildrenOfType(Node node, Class<T> type) {
 		return NodeHelper.filterByType(node.getChildren(), type);
 	}
 
-	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type)
-	{
+	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type) {
 		ArrayList<T> result = new ArrayList<T>();
 		result.addAll(getChildrenOfType(node, type));
-		for(Node n : node.getChildren())
+		for(Node n : node.getChildren()) {
 			result.addAll(getDescendantsOfType(n, type));
+		}
 		return result;
 	}
 
-	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter)
-	{
+	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
 		ArrayList<T> result = new ArrayList<T>();
-
-		for (T t : getChildrenOfType(node, type))
-			if (filter.eval(t))
+		for (T t : getChildrenOfType(node, type)) {
+			if (filter.eval(t)) {
 				result.add(t);
-
-		for(Node n : node.getChildren())
+			}
+		}
+		for(Node n : node.getChildren()) {
 			result.addAll(getDescendantsOfType(n, type, filter));
-
+		}
 		return result;
 	}
 
-	public static Collection<Node> getDescendants (Node node)
-	{
+	public static Collection<Node> getDescendants (Node node) {
 		ArrayList<Node> result = new ArrayList<Node>();
 		result.addAll(node.getChildren());
-		for(Node n : node.getChildren())
-			result.addAll(getDescendants(n));
-		return result;
-	}
-
-	public static Collection<Node> getDescendants (Node node, Func<Node, Boolean> filter)
-	{
-		ArrayList<Node> result = new ArrayList<Node>();
 		for(Node n : node.getChildren()) {
-			if (filter.eval(n))
-				result.add(n);
 			result.addAll(getDescendants(n));
 		}
 		return result;
 	}
+
+	public static Collection<Node> getDescendants (Node node, Func<Node, Boolean> filter) {
+		ArrayList<Node> result = new ArrayList<Node>();
+		for(Node n : node.getChildren()) {
+			if (filter.eval(n)) {
+				result.add(n);
+			}
+			result.addAll(getDescendants(n));
+		}
+		return result;
+	}
+
 }

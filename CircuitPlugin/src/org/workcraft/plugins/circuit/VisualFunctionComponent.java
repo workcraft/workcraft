@@ -54,7 +54,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			for (Node n: getChildren()) {
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (vc.getFunction().getSetFunction()==null) {
+					if (vc.getSetFunction()==null) {
 						return null;
 					}
 					if (vc.getIOType()==IOType.OUTPUT) {
@@ -62,15 +62,15 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 						case GATE:
 							GateRenderer.foreground = getForegroundColor();
 							GateRenderer.background = getFillColor();
-							renderingResult = GateRenderer.renderGate(vc.getFunction().getSetFunction());
+							renderingResult = GateRenderer.renderGate(vc.getSetFunction());
 							break;
 						case BUFFER:
-							renderingResult = BufferRenderer.renderGate(vc.getFunction().getSetFunction());
+							renderingResult = BufferRenderer.renderGate(vc.getSetFunction());
 							break;
 						case C_ELEMENT:
-							if (vc.getFunction().getResetFunction()!=null) {
+							if (vc.getResetFunction()!=null) {
 								renderingResult = CElementRenderer.renderGate(
-									vc.getFunction().getSetFunction(), vc.getFunction().getResetFunction());
+									vc.getSetFunction(), vc.getResetFunction());
 							}
 							break;
 						default:

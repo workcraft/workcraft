@@ -61,14 +61,13 @@ public class Contact extends MathNode implements BooleanVariable {
 	private String name = "";
 	private boolean initOne = false;
 
-	//private boolean invertSignal = false;
-
 	public boolean getInitOne() {
 		return initOne;
 	}
 
 	public void setInitOne(boolean initOne) {
 		this.initOne = initOne;
+		sendNotification(new PropertyChangedEvent(this, "initOne"));
 	}
 
 	public Contact() {
@@ -88,7 +87,6 @@ public class Contact extends MathNode implements BooleanVariable {
 		return ioType;
 	}
 
-
 	// this is only for information, use Circuit to set component's names
 	public void setName(String name) {
 		this.name = name;
@@ -98,7 +96,6 @@ public class Contact extends MathNode implements BooleanVariable {
 	public String getName() {
 		return name;
 	}
-
 
 	@Override
 	public <T> T accept(BooleanVisitor<T> visitor) {

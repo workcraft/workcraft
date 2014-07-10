@@ -63,7 +63,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	public PetriNet(Container root, References refs, final Func<Node, String> nodePrefixFunc) {
-		super(root, new HierarchicalUniqueNameReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				String result = nodePrefixFunc.eval(arg);

@@ -26,14 +26,14 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(final MpsatChainTask task, final Trace t, final ActionListener closeAction) {
+	public SolutionPanel(final MpsatChainTask task, final Trace trace, final ActionListener closeAction) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
 		));
 
 		traceText = new JTextArea();
-		traceText.setText(t.toString());
+		traceText.setText(trace.toString());
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(traceText);
@@ -41,18 +41,14 @@ public class SolutionPanel extends JPanel {
 		buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
-		JButton saveButton = new JButton("Save");
-
 		JButton playButton = new JButton("Play");
-		playButton.addActionListener(new ActionListener()
-		{
+		playButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final WorkspaceEntry we = task.getWorkspaceEntry();
 				final MainWindow mainWindow = task.getFramework().getMainWindow();
 				GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-				if(currentEditor == null || currentEditor.getWorkspaceEntry() != we)
-				{
+				if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
 					final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
 					if(editors.size()>0) {
 						currentEditor = editors.get(0);
@@ -63,15 +59,13 @@ public class SolutionPanel extends JPanel {
 				}
 				final ToolboxPanel toolbox = currentEditor.getToolBox();
 				final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
-				tool.setTrace(t);
 				toolbox.selectTool(tool);
+				tool.setTrace(trace);
 				closeAction.actionPerformed(null);
 			}
 		});
 
-		buttonsPanel.add(saveButton);
 		buttonsPanel.add(playButton);
-
 
 		add(scrollPane, "0 0");
 		add(buttonsPanel, "1 0");

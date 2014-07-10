@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -65,7 +66,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
 		for (String s : sortedNames) {
 			out.print(" ");
-			out.print(s);
+			out.print(HierarchicalNames.getFlatName(s));
 		}
 
 		out.print("\n");
@@ -89,7 +90,7 @@ public class DotGSerialiser implements ModelSerialiser {
 				return;
 
 		if (model.getPostset(node).size()>0) {
-			out.write(model.getNodeReference(node));
+			out.write(HierarchicalNames.getFlatName(model.getNodeReference(node)));
 
 			for (Node n : sortNodes (model.getPostset(node), model)  ) {
 				if (n instanceof STGPlace) {
@@ -97,11 +98,11 @@ public class DotGSerialiser implements ModelSerialiser {
 						Collection<Node> postset = model.getPostset(n);
 						if (postset.size() > 1)
 							throw new FormatException("Implicit place cannot have more than one node in postset");
-						out.write(" " + model.getNodeReference(postset.iterator().next()));
+						out.write(" " + HierarchicalNames.getFlatName(model.getNodeReference(postset.iterator().next())));
 					} else
-						out.write(" " + model.getNodeReference(n));
+						out.write(" " + HierarchicalNames.getFlatName(model.getNodeReference(n)));
 				} else {
-					out.write(" " + model.getNodeReference(n));
+					out.write(" " + HierarchicalNames.getFlatName(model.getNodeReference(n)));
 				}
 			}
 
@@ -164,12 +165,12 @@ public class DotGSerialiser implements ModelSerialiser {
 
 			if (p instanceof STGPlace) {
 				if ( ((STGPlace)p).isImplicit() ) {
-					reference = "<" + model.getNodeReference(model.getPreset(p).iterator().next()) + "," +
-										model.getNodeReference(model.getPostset(p).iterator().next()) + ">";
+					reference = "<" + HierarchicalNames.getFlatName(model.getNodeReference(model.getPreset(p).iterator().next())) + "," +
+							HierarchicalNames.getFlatName(model.getNodeReference(model.getPostset(p).iterator().next())) + ">";
 				} else
-					reference = model.getNodeReference(p);
+					reference = HierarchicalNames.getFlatName(model.getNodeReference(p));
 			} else {
-				reference = model.getNodeReference(p);
+				reference = HierarchicalNames.getFlatName(model.getNodeReference(p));
 			}
 
 			if (tokens == 1)
@@ -200,7 +201,7 @@ public class DotGSerialiser implements ModelSerialiser {
 		for (Place p : places) {
 			if (p instanceof STGPlace)
 				if (((STGPlace)p).getCapacity() != 1)
-				capacity.append(" " + model.getNodeReference(p) + "=" + ((STGPlace)p).getCapacity());
+				capacity.append(" " + HierarchicalNames.getFlatName(model.getNodeReference(p)) + "=" + ((STGPlace)p).getCapacity());
 		}
 
 		if (capacity.length() > 0)
@@ -211,7 +212,7 @@ public class DotGSerialiser implements ModelSerialiser {
 		LinkedList<String> transitions = new LinkedList<String>();
 
 		for (Transition t : net.getTransitions())
-			transitions.add(net.getNodeReference(t));
+			transitions.add(HierarchicalNames.getFlatName(net.getNodeReference(t)));
 
 		writeSignalsHeader(out, transitions, ".dummy");
 

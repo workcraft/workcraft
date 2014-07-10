@@ -27,16 +27,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
@@ -74,8 +71,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
 	public STG(Container root, References refs) {
 
-		super(root,
-				new STGReferenceManager((NamespaceProvider)root, refs, null));
+		super(root, new STGReferenceManager(refs, null));
 
 		referenceManager = (STGReferenceManager) getReferenceManager();
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
@@ -97,10 +93,11 @@ public class STG extends AbstractMathModel implements STGModel {
 		if (cont==null) cont=getRoot();
 
 		STGPlace newPlace = new STGPlace();
+		cont.add(newPlace);
+
 		if (name != null) {
 			setName(newPlace, name);
 		}
-		cont.add(newPlace);
 		return newPlace;
 	}
 
@@ -194,7 +191,12 @@ public class STG extends AbstractMathModel implements STGModel {
 	private Set<String> getUniqueNames(Collection<SignalTransition> transitions) {
 		Set<String> result = new HashSet<String>();
 		for (SignalTransition st : transitions) {
-			result.add(st.getSignalName());
+
+			String reference = referenceManager.getNodeReference(null, st);
+			String path = HierarchicalNames.getReferencePath(reference);
+
+			result.add(path+st.getSignalName());
+//			result.add(st.getSignalName());
 		}
 		return result;
 	}

@@ -77,6 +77,8 @@ class XMLDeserialiserState implements References {
 
 	@Override
 	public Object getObject(String reference) {
+		if (reference.equals("")) return null;
+
 		return internalReferenceMap.getValue(reference);
 	}
 

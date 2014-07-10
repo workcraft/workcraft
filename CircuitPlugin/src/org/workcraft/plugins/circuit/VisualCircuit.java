@@ -23,6 +23,7 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -113,7 +114,15 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
-	public VisualFunctionContact  getOrCreateOutput(String name, double x, double y) {
+	public Collection<VisualFunctionContact> getVisualFunctionContacts() {
+		return Hierarchy.getChildrenOfType(getRoot(), VisualFunctionContact.class);
+	}
+
+	public Collection<Environment> getEnvironments() {
+		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
+	}
+
+	public VisualFunctionContact getOrCreateOutput(String name, double x, double y) {
 
 		VisualFunctionContact vc = getOrCreateContact(getCurrentLevel(), name, IOType.OUTPUT, x, y);
 
@@ -224,7 +233,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	 @NoAutoSerialisation
 	public File getEnvironmentFile() {
 		File result = null;
-		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+		for (Environment env: getEnvironments()) {
 			result = env.getFile();
 		}
 		return result;
@@ -232,7 +241,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@NoAutoSerialisation
 	public void setEnvironmentFile(File value) {
-		for (Environment env: Hierarchy.filterNodesByType(getRoot().getChildren(), Environment.class)) {
+		for (Environment env: getEnvironments()) {
 			remove(env);
 		}
 		Environment env = new Environment();
@@ -244,8 +253,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	public Properties getProperties(Node node) {
 		Properties properties = super.getProperties(node);
 		if (node == null) {
-			properties = Properties.Merge.add(properties,
-					new EnvironmentFilePropertyDescriptor(this));
+			properties = Properties.Merge.add(properties, new EnvironmentFilePropertyDescriptor(this));
 		}
 
 		if (node instanceof VisualFunctionContact) {

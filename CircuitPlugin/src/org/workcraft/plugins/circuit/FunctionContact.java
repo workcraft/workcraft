@@ -23,17 +23,16 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("FunctionContact")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 
 public class FunctionContact extends Contact {
-	private BooleanFormula setFunction=Zero.instance();
-	private BooleanFormula resetFunction=null;
-	private BooleanFormula combinedFunction=null;
+	private BooleanFormula setFunction = null;
+	private BooleanFormula resetFunction = null;
 
 	public FunctionContact(IOType ioType) {
 		super(ioType);
@@ -49,6 +48,7 @@ public class FunctionContact extends Contact {
 
 	public void setSetFunction(BooleanFormula setFunction) {
 		this.setFunction = setFunction;
+		sendNotification(new PropertyChangedEvent(this, "setFunction"));
 	}
 
 	public BooleanFormula getResetFunction() {
@@ -57,13 +57,7 @@ public class FunctionContact extends Contact {
 
 	public void setResetFunction(BooleanFormula resetFunction) {
 		this.resetFunction = resetFunction;
+		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
 	}
 
-	public void setCombinedFunction(BooleanFormula combinedFunction) {
-		this.combinedFunction = combinedFunction;
-	}
-
-	public BooleanFormula getCombinedFunction() {
-		return combinedFunction;
-	}
 }

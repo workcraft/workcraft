@@ -41,7 +41,7 @@ public class EncoderConfigurationDialog extends JDialog {
 					optimiseLabel, disableLabel;
 	private JCheckBox verboseModeCheck, customEncodings, effortCheck,
 					disableCheck, contCheck;
-	private JComboBox<String> generationModeBox,OptimiseBox;
+	private JComboBox generationModeBox,OptimiseBox;
 	private JPanel generationPanel, buttonsPanel, content;
 	private JButton saveButton, closeButton;
 	private JTextField numberOfSolutionsText, bitsText;
@@ -185,7 +185,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		// GENERATION MODE COMBOBOX
 		genLabel = new JLabel("Mode:");
 		genLabel.setPreferredSize(dimensionLabel);
-		generationModeBox = new JComboBox<>();
+		generationModeBox = new JComboBox();
 		generationModeBox.setEditable(false);
 		generationModeBox.setPreferredSize(dimensionBox);
 		for (generationMode mode : generationMode.modes) {
@@ -274,7 +274,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel("Optimise for:");
 		optimiseLabel.setPreferredSize(dimensionLabel);
-		OptimiseBox = new JComboBox<>();
+		OptimiseBox = new JComboBox();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(dimensionBox);
 		OptimiseBox.addItem("microcontroller");

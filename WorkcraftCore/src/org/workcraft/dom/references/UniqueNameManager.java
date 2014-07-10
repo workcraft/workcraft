@@ -86,7 +86,10 @@ public class UniqueNameManager<T> implements NameManager<T> {
 		Ts.put(name, t);
 	}
 
-	public void setDefaultNameIfUnnamed(T t) {
+
+
+	@Override
+	public void setDefaultNameIfUnnamed(T t, String suggestedPrefix) {
 		if (Ts.containsValue(t)) {
 			return;
 		}
@@ -98,19 +101,23 @@ public class UniqueNameManager<T> implements NameManager<T> {
 		} while (Ts.containsKey(name));
 		setPrefixCount(prefix, count);
 		Ts.put(name, t);
+
+	}
+
+	@Override
+	public void setDefaultNameIfUnnamed(T t) {
+		setDefaultNameIfUnnamed(t, null);
 	}
 
 
 	public T get (String name) {
-		// special case, when the name is number only, convert it to C-style id (to support the old models)
-		if (Identifier.isNumber(name)) name="_"+name;
-
 		return Ts.getValue(name);
 	}
 
 	public void remove (T t) {
 		Ts.removeValue(t);
 	}
+
 
 
 }
