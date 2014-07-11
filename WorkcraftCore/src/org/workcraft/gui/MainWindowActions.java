@@ -3,7 +3,6 @@ package org.workcraft.gui;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -237,9 +236,8 @@ public class MainWindowActions {
 	public static final Action HELP_ACTION = new Action() {
 		@Override
 		public void run(Framework f) {
-			URI uri = new File("help/index.html").toURI();
 			try {
-				Desktop.getDesktop().browse(uri);
+				Desktop.getDesktop().open(new File("help/start.html"));
 			} catch(IOException e1) {
 				System.out.println(e1);
 			}

@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -303,9 +302,8 @@ public class MpsatConfigurationDialog extends JDialog {
 		helpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				URI uri = new File("help/reach.html").toURI();
 				try {
-					Desktop.getDesktop().browse(uri);
+					Desktop.getDesktop().open(new File("help/reach.html"));
 				} catch(IOException e1) {
 					System.out.println(e1);
 				}
