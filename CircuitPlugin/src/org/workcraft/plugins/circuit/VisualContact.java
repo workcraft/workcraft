@@ -356,10 +356,16 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return (Contact)getReferencedComponent();
 	}
 
+
+	/*
+	 * returns true if
+	 */
 	public static boolean isDriver(Node node) {
 		if (node instanceof VisualContact) {
 			VisualContact contact = (VisualContact)node;
-			return (contact.getIOType() == IOType.OUTPUT) || !(contact.getParent() instanceof VisualComponent);
+			boolean ret =	(contact.getIOType() == IOType.OUTPUT) ||
+							!(contact.getParent() instanceof VisualCircuitComponent);
+			return ret;
 		}
 		return false;
 	}

@@ -485,16 +485,22 @@ public class SelectionTool extends AbstractTool {
 			}
 		}
 
+		if (e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_G:
+				selectionPageGroup(e.getEditor());
+				break;
+			}
+		}
+
+
 		if (e.isCtrlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
 				if (e.isShiftDown()) {
 					selectionUngroup(e.getEditor());
 				} else {
-					if (e.isAltDown())
-						selectionPageGroup(e.getEditor());
-					else
-						selectionGroup(e.getEditor());
+					selectionGroup(e.getEditor());
 				}
 				break;
 			case KeyEvent.VK_F:

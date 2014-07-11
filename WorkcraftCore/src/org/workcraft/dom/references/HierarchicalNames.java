@@ -1,9 +1,17 @@
 package org.workcraft.dom.references;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.util.Identifier;
 
 public class HierarchicalNames {
@@ -144,4 +152,41 @@ public class HierarchicalNames {
 			return getNameFromReference(tail);
 
 	}
+
+	public static HashMap<String, Node> copyPageStructure(VisualModel targetModel, Container targetContainer, VisualModel sourceModel, Container sourceContainer, HashMap<String, Node> createdPageContainers) {
+
+		if (createdPageContainers == null)
+			createdPageContainers = new HashMap<String, Node>();
+
+		createdPageContainers.put("", targetModel.getRoot());
+
+
+		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
+
+		for (Node vn: sourceContainer.getChildren()) {
+			if (vn instanceof VisualPage) {
+
+				VisualPage vp = (VisualPage)vn;
+				String name = sourceModel.getMathModel().getName(vp.getReferencedComponent());
+
+				PageNode np2 = new PageNode();
+				VisualPage vp2 = new VisualPage(np2);
+				targetContainer.add(vp2);
+				AbstractVisualModel.getMathContainer(targetModel, targetContainer).add(np2);
+				targetModel.getMathModel().setName(np2, name);
+				createdPageContainers.put(targetModel.getMathModel().getNodeReference(np2), vp2);
+
+
+				toProcess.put(vp, vp2);
+			}
+		}
+
+		for (Entry<Container, Container> en: toProcess.entrySet()) {
+			copyPageStructure(targetModel, en.getValue(), sourceModel, en.getKey(), createdPageContainers);
+		}
+
+		return createdPageContainers;
+	}
+
+
 }

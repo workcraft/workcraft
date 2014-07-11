@@ -11,21 +11,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalNames;
-import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -149,41 +145,13 @@ public class STGGenerator {
 
 	// store created containers in a separate map
 	private static HashMap<String, Node> createdContainers = null;
-	private static void copyPages(VisualSTG targetModel, Container targetContainer, VisualCircuit sourceModel, Container sourceContainer) {
-		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
-
-		for (Node vn: sourceContainer.getChildren()) {
-			if (vn instanceof VisualPage) {
-
-				VisualPage vp = (VisualPage)vn;
-				String name = sourceModel.getMathModel().getName(vp.getReferencedComponent());
-
-				PageNode np2 = new PageNode();
-				VisualPage vp2 = new VisualPage(np2);
-				targetContainer.add(vp2);
-				AbstractVisualModel.getMathContainer(targetModel, targetContainer).add(np2);
-				targetModel.getMathModel().setName(np2, name);
-				createdContainers.put(targetModel.getMathModel().getNodeReference(np2), vp2);
-
-
-				toProcess.put(vp, vp2);
-			}
-		}
-
-		for (Entry<Container, Container> en: toProcess.entrySet()) {
-			copyPages(targetModel, en.getValue(), sourceModel, en.getKey());
-		}
-	}
 
 	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
 
 			// first, create the same page structure
-			createdContainers = new HashMap<String, Node>();
-			createdContainers.put("", stg.getRoot());
-			copyPages(stg, stg.getRoot(), circuit, circuit.getRoot());
-
+			createdContainers = HierarchicalNames.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();

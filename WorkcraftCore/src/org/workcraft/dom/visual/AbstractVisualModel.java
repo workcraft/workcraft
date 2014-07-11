@@ -427,7 +427,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
 		}
 
-
 		for (Node node : selection) {
 
 			if (!(node instanceof VisualNode)) continue;
@@ -442,7 +441,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			selected.add(node);
 		}
 
-		if (selected.size() > 1) {
+		if (selected.size() >= 1) {
 
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
