@@ -3,6 +3,7 @@ package org.workcraft.dom.references;
 import java.util.HashMap;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
@@ -140,7 +141,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if (reference != null) {
 
 			String name =
-					HierarchicalNames.getNameFromReference(reference);
+					NamespaceHelper.getNameFromReference(reference);
 
 			setName(n, name);
 		}
@@ -163,11 +164,11 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 		if (provider==null) provider = topProvider;
 
-		if (reference.equals("")||reference.equals(HierarchicalNames.hierarchySeparator))
+		if (reference.equals("")||reference.equals(NamespaceHelper.hierarchySeparator))
 			return (Node)provider;
 
-		String head =  HierarchicalNames.getReferenceHead(reference);
-		String tail =  HierarchicalNames.getReferenceTail(reference);
+		String head =  NamespaceHelper.getReferenceHead(reference);
+		String tail =  NamespaceHelper.getReferenceTail(reference);
 
 //		boolean isAbsolutePath = false;
 //		if (reference.startsWith(HierarchicalNames.hierarchySeparator)) isAbsolutePath = true;
@@ -208,7 +209,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			if (prov==null) break; // we've just reached the root, do not add it's name
 
 			if (!ret.equals(""))
-				ret= HierarchicalNames.hierarchySeparator+ret;
+				ret= NamespaceHelper.hierarchySeparator+ret;
 
 
 			String name = getNameManager(prov).getName(node);

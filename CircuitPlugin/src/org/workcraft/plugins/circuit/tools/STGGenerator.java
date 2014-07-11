@@ -17,7 +17,7 @@ import java.util.TreeSet;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -89,10 +89,10 @@ public class STGGenerator {
 	private static ContactSTG generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
 		String contactName = getContactName(circuit, contact);
 
-		String path = HierarchicalNames.getParentReference(circuit.getMathModel().getNodeReference(contact.getReferencedComponent()));
+		String path = NamespaceHelper.getParentReference(circuit.getMathModel().getNodeReference(contact.getReferencedComponent()));
 		Container curContainer = (Container)createdContainers.get(path);
 		while (curContainer==null) {
-			path = HierarchicalNames.getParentReference(path);
+			path = NamespaceHelper.getParentReference(path);
 			curContainer = (Container)createdContainers.get(path);
 		}
 
@@ -151,7 +151,7 @@ public class STGGenerator {
 			VisualSTG stg = new VisualSTG(new STG());
 
 			// first, create the same page structure
-			createdContainers = HierarchicalNames.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
+			createdContainers = NamespaceHelper.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
@@ -337,10 +337,10 @@ public class STGGenerator {
 		LinkedList<VisualNode> nodes = new LinkedList<VisualNode>();
 
 
-		String path = HierarchicalNames.getParentReference(circuit.getMathModel().getNodeReference(parentContact.getReferencedComponent()));
+		String path = NamespaceHelper.getParentReference(circuit.getMathModel().getNodeReference(parentContact.getReferencedComponent()));
 		Container curContainer = (Container)createdContainers.get(path);
 		while (curContainer==null) {
-			path = HierarchicalNames.getParentReference(path);
+			path = NamespaceHelper.getParentReference(path);
 			curContainer = (Container)createdContainers.get(path);
 		}
 
@@ -414,7 +414,7 @@ public class STGGenerator {
 				}
 			}
 
-			result = HierarchicalNames.getFlatName(
+			result = NamespaceHelper.getFlatName(
 						circuit.getMathModel().getName(vc.getReferencedComponent())
 					);
 

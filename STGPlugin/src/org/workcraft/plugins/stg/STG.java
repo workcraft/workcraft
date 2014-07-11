@@ -29,12 +29,12 @@ import java.util.Set;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -193,7 +193,7 @@ public class STG extends AbstractMathModel implements STGModel {
 		for (SignalTransition st : transitions) {
 
 			String reference = referenceManager.getNodeReference(null, st);
-			String path = HierarchicalNames.getReferencePath(reference);
+			String path = NamespaceHelper.getReferencePath(reference);
 
 			result.add(path+st.getSignalName());
 //			result.add(st.getSignalName());
@@ -341,9 +341,9 @@ public class STG extends AbstractMathModel implements STGModel {
 				}
 
 				return "<"+
-					HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
+					NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
 						+ "," +
-						HierarchicalNames.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
+						NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
 
 			}
 		}
@@ -357,10 +357,10 @@ public class STG extends AbstractMathModel implements STGModel {
 
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider,
-					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getFirst())
+					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst())
 					);
 			Node t2 = referenceManager.getNodeByReference(provider,
-					HierarchicalNames.flatToHierarchicalName(implicitPlaceTransitions.getSecond())
+					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond())
 					);
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));

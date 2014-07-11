@@ -22,7 +22,7 @@
 package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -64,7 +64,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 //				}
 			}
 
-			String hier = HierarchicalNames.flatToHierarchicalName(ref);
+			String hier = NamespaceHelper.flatToHierarchicalName(ref);
 
 			return (BooleanVariable) internalReferenceResolver.getObject(hier);
 		}

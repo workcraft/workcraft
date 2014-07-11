@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.junit.Test;
-import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.util.Pair;
 
 
@@ -34,7 +34,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 		for (Entry<String, Pair<String, String>> en: headTails.entrySet()) {
 			String reference = en.getKey();
 			String head = en.getValue().getFirst();
-			String answer = HierarchicalNames.getReferenceHead(reference);
+			String answer = NamespaceHelper.getReferenceHead(reference);
 			assertTrue(answer.equals(head));
 		}
 	}
@@ -44,7 +44,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 		for (Entry<String, Pair<String, String>> en: headTails.entrySet()) {
 			String reference = en.getKey();
 			String tail = en.getValue().getSecond();
-			String answer = HierarchicalNames.getReferenceTail(reference);
+			String answer = NamespaceHelper.getReferenceTail(reference);
 			assertTrue(answer.equals(tail));
 		}
 	}
@@ -68,11 +68,11 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 			String hName = en.getKey();
 			String fName = en.getValue();
 
-			String answer = HierarchicalNames.getFlatName(hName);
+			String answer = NamespaceHelper.getFlatName(hName);
 			assertTrue(answer.equals(fName));
 
 			hName = hName.replaceAll("'", "");
-			answer = HierarchicalNames.flatToHierarchicalName(fName);
+			answer = NamespaceHelper.flatToHierarchicalName(fName);
 			assertTrue(answer.equals(hName));
 
 		}
@@ -100,7 +100,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 			String reference = en.getKey();
 			String path = en.getValue();
 
-			String answer = HierarchicalNames.getReferencePath(reference);
+			String answer = NamespaceHelper.getReferencePath(reference);
 			assertTrue(answer.equals(path));
 
 

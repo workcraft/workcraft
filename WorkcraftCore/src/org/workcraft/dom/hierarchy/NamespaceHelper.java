@@ -1,4 +1,4 @@
-package org.workcraft.dom.references;
+package org.workcraft.dom.hierarchy;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.util.Identifier;
 
-public class HierarchicalNames {
+public class NamespaceHelper {
 	final static String quoteType = "'";
 	final public static String hierarchySeparator = "/";
 	final public static String flatNameSeparator = "__";

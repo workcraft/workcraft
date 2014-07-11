@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.dom.references.HierarchicalNames;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
@@ -35,7 +35,7 @@ public class MpsatResultParser {
 				String[] ss = mpsatTrace.split(",");
 
 				for (String k: ss) {
-					k=k.replace(HierarchicalNames.flatNameSeparator, HierarchicalNames.hierarchySeparator);
+					k=k.replace(NamespaceHelper.flatNameSeparator, NamespaceHelper.hierarchySeparator);
 
 					if (k.charAt(1) == '.')
 						trace.add(k.substring(2).trim());

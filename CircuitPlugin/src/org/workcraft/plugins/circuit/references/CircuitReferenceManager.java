@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit.references;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalNames;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.circuit.CircuitComponent;
