@@ -1,10 +1,11 @@
 	package org.workcraft.plugins.son;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -12,18 +13,27 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.elements.Block;
+import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.plugins.son.elements.VisualEventNode;
 import org.workcraft.util.Hierarchy;
 
 
@@ -32,8 +42,10 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualSON extends AbstractVisualModel{
 
-	private String title="Invalid Group Selection";
-	private String title2="Invalid Super Group Selection";
+	private String group="Invalid Group Selection";
+	private String superGroup="Invalid Super Group Selection";
+	private String block="Invalid Block Selection";
+	private String blockConnection="Block Connection Error";
 	private SON net;
 
 	public VisualSON(SON model){
@@ -42,7 +54,6 @@ public class VisualSON extends AbstractVisualModel{
 
 	public VisualSON (SON model, VisualGroup root){
 		super (model, root);
-
 	//	currentmathLevel = getCurrentLevel();
 
 		if (root == null)
@@ -54,6 +65,7 @@ public class VisualSON extends AbstractVisualModel{
 
 		this.net = model;
 	}
+
 
 	public void validateConnection (Node first, Node second) throws InvalidConnectionException{
 	}
@@ -99,6 +111,8 @@ public class VisualSON extends AbstractVisualModel{
 				throw new InvalidConnectionException ("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
 			if (this.isInSameGroup(first, second))
 				throw new InvalidConnectionException ("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
+			if (this.isInBlock(first) || this.isInBlock(second))
+				throw new InvalidConnectionException ("Block cannot cross phases (Block)");
 			}
 		}
 
@@ -117,6 +131,12 @@ public class VisualSON extends AbstractVisualModel{
 				}
 			}
 
+		//block
+		if(first instanceof VisualEvent && isInBlock(second))
+			throw new InvalidConnectionException ("Block inputs must be conditions (Block)");
+
+		if(second instanceof VisualEvent && isInBlock(first))
+			throw new InvalidConnectionException ("Block outputs must be conditions (Block)");
 	}
 
 	private boolean isGrouped(Node node){
@@ -137,14 +157,21 @@ public class VisualSON extends AbstractVisualModel{
 		return false;
 	}
 
+	private boolean isInBlock(Node node){
+		for(VisualBlock block : this.getVisualBlocks())
+			if(block.getComponents().contains(node))
+				return true;
+		return false;
+	}
+
+	@SuppressWarnings("deprecation")
 	@Override
 	public void connect (Node first, Node second) throws InvalidConnectionException{
-		System.out.print("non-implement");
+		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 
 	public void connect (Node first, Node second, SONConnectionType type) throws InvalidConnectionException{
 		validateConnection(first, second, type);
-
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
 
@@ -164,290 +191,373 @@ public class VisualSON extends AbstractVisualModel{
 		if (type == VisualSONConnection.SONConnectionType.BHVLINE)
 			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.BHVLINE);
 
-		if (c1 instanceof VisualChannelPlace || c2 instanceof VisualChannelPlace){
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
-			con.setType("ASYNLINE");
+		if (c1 instanceof VisualChannelPlace || c2 instanceof VisualChannelPlace ){
+			if(type != VisualSONConnection.SONConnectionType.SYNCLINE){
+				ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
+				con.setType("ASYNLINE");
+			}
 		}
 
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
-
 	}
 
-	private Collection<Node> getGroupableSelection()
-	{
+	private Collection<Node> getGroupableSelection(){
+		Collection<Node> result = new HashSet<Node>();
+		Collection<Node> selection = new HashSet<Node>();
 		boolean validate = false;
-		HashSet<Node> result = new HashSet<Node>();
-		if (validateSelection ())
-		{
+
+		for(Node node : getOrderedCurrentLevelSelection()){
+			if(node instanceof VisualPage){
+				selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
+			}
+			if(node instanceof VisualTransformableNode) {
+				selection.add((VisualTransformableNode)node);
+			}
+		}
+
+		if(isComplete(selection)){
 			for(Node node : getOrderedCurrentLevelSelection()){
-				if (node instanceof VisualCondition || node instanceof VisualEvent || node instanceof VisualSONConnection || node instanceof VisualComment)
-					result.add(node);
-				else
-				{
-					JOptionPane.showMessageDialog(null, "Group Selection containing Channel Places or other groups are invaild",title, JOptionPane.WARNING_MESSAGE);
-					result.removeAll(result);
-					return result;
+				if(node instanceof VisualTransformableNode){
+					if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
+							result.add(node);
+					}else{
+						JOptionPane.showMessageDialog(null,
+								"Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
+						result.clear();
+						return result;
+					}
 				}
 			}
-		}else
-			{
-					JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title, JOptionPane.WARNING_MESSAGE);
-					result.removeAll(result);
-					return result;
-			}
+		}else{
+			JOptionPane.showMessageDialog(null,
+					"Grouping a partial occurrence net is invalid",group, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+		}
+
 		for (Node node : result){
-			if (node instanceof VisualEvent)
-				validate = true;
 			if (node instanceof VisualCondition)
 				validate = true;
 		}
 		if (!validate) {
-			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
 		else
 			return result;
+
 	}
 
-	private boolean validateSelection () {
-
+	private boolean isComplete (Collection<Node> nodes) {
 		for (VisualSONConnection connect : getVisualConnections()){
+			if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
+				&& ! nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
+			return false;
 
-				if (!(getOrderedCurrentLevelSelection().contains(connect.getFirst())) && ! (connect.getFirst() instanceof VisualChannelPlace)
-						&&	getOrderedCurrentLevelSelection().contains(connect.getSecond()) && ! (connect.getSecond() instanceof VisualChannelPlace))
-				return false;
-				if (!(getOrderedCurrentLevelSelection().contains(connect.getSecond())) &&! (connect.getSecond() instanceof VisualChannelPlace)
-						&&	getOrderedCurrentLevelSelection().contains(connect.getFirst()) &&! (connect.getSecond() instanceof VisualChannelPlace))
-				return false;
+			if(!nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
+					&& nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
+			return false;
 		}
-			return true;
+
+		return true;
 	}
 
-
-	@Override
 	public void groupSelection(){
-
 		Collection<Node> selected = getGroupableSelection();
-		if (selected.size() < 1) return;
-		//Math Group
-		HashSet<Node> mathSelected = new HashSet<Node>();
 
-		for (Node node : selected){
-			if (node instanceof VisualComponent){
-				mathSelected.add(((VisualComponent) node).getReferencedComponent());
+		if (selected.size() > 0) {
+
+			ONGroup mathGroup = new ONGroup();
+			VisualONGroup group = new VisualONGroup(mathGroup);
+			Container currentLevel = getCurrentLevel();
+
+			currentLevel.add(group);
+			currentLevel.reparent(selected, group);
+
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
+
+			Container currentMathLevel;
+			if(visualContainer==null)
+				currentMathLevel = getMathModel().getRoot();
+			else
+				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			currentMathLevel.add(mathGroup);
+
+			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
+				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
+						Hierarchy.isDescendant(connection.getSecond(), group)) {
+					connectionsToGroup.add(connection);
+				}
+			}
+			currentLevel.reparent(connectionsToGroup, group);
+
+			// reparenting for the math model nodes
+			ArrayList<Node> selectedMath = new ArrayList<Node>();
+			for (Node node:selected) {
+				if (node instanceof VisualComponent) {
+					selectedMath.add(((VisualComponent)node).getReferencedComponent());
+				}
+			}
+			for (Node node:connectionsToGroup) {
+				if (node instanceof VisualConnection) {
+					selectedMath.add(((VisualConnection)node).getReferencedConnection());
+				}
+			}
+
+			for (Node node: selectedMath) {
+				Container parent = (Container)node.getParent();
+				ArrayList<Node> re = new ArrayList<Node>();
+				re.add(node);
+
+
+				// reparenting at the level of the reference manager
+				ReferenceManager refMan = getMathModel().getReferenceManager();
+				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
+					manager.setNamespaceProvider(node, mathGroup);
+				}
+				parent.reparent(re, mathGroup);
+
+			}
+
+			// final touch on visual part
+			if (group != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				group.setPosition(groupCenter);
+				select(group);
+			}
+		}
+	}
+
+	public void superGroupSelection(){
+		ArrayList<Node> selected = new ArrayList<Node>();
+		for(Node node : getOrderedCurrentLevelSelection()) {
+			if(node instanceof VisualTransformableNode){
+				if(node instanceof VisualCondition || node instanceof VisualEventNode){
+					JOptionPane.showMessageDialog(null,
+							"Selection containing ungroup component is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
+					selected.clear();
+					return;
+				}
+				else if(node instanceof VisualSuperGroup){
+					JOptionPane.showMessageDialog(null,
+							"Selection containing super group is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
+					selected.clear();
+					return;
+				}
+				else
+					selected.add(node);
 			}
 		}
 
-		ONGroup mathGroup = new ONGroup();
+		if(selected.size() > 1) {
+			VisualSuperGroup group = new VisualSuperGroup();
+			getCurrentLevel().add(group);
+			getCurrentLevel().reparent(selected, group);
 
-		this.net.getRoot().add(mathGroup);
+			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+			for(VisualSONConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualSONConnection.class)) {
+				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
+						Hierarchy.isDescendant(connection.getSecond(), group)) {
+					connectionsToGroup.add(connection);
+				}
+			}
+			getCurrentLevel().reparent(connectionsToGroup, group);
 
-		this.net.getRoot().reparent(mathSelected, mathGroup);
+			if (group != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				group.setPosition(groupCenter);
+				select(group);
+			}
 
-		//Visual Group
-		VisualONGroup group = new VisualONGroup(mathGroup);
+		}
+	}
 
-		Container currentLevel = getCurrentLevel();
+	//Block
+	public void groupBlockSelection() {
+		Collection<Node> selected = getBlockSelection();
 
-		currentLevel.add(group);
+		if (selected.size() > 1) {
 
-		currentLevel.reparent(selected, group);
+			Block mathBlock = new Block();
+			VisualBlock block = new VisualBlock(mathBlock);
 
-		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+			getCurrentLevel().add(block);
+			getCurrentLevel().reparent(selected, block);
 
-		for (VisualSONConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualSONConnection.class))
-		{
-			if (Hierarchy.isDescendant(connection.getFirst(), group) &&
-				Hierarchy.isDescendant(connection.getSecond(), group))
-			{
-				connectionsToGroup.add(connection);
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+
+			Container currentMathLevel;
+			if(visualContainer==null)
+				currentMathLevel = getMathModel().getRoot();
+			else
+				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			currentMathLevel.add(mathBlock);
+
+			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+
+			for(VisualConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class)) {
+				if(Hierarchy.isDescendant(connection.getFirst(), block) &&
+						Hierarchy.isDescendant(connection.getSecond(), block)) {
+					connectionsToGroup.add(connection);
+				}
+			}
+			getCurrentLevel().reparent(connectionsToGroup, block);
+
+			// reparenting for the math model nodes
+			ArrayList<Node> selectedMath = new ArrayList<Node>();
+			for (Node node:selected) {
+				if (node instanceof VisualComponent) {
+					selectedMath.add(((VisualComponent)node).getReferencedComponent());
+				}
+			}
+			for (Node node:connectionsToGroup) {
+				if (node instanceof VisualConnection) {
+					selectedMath.add(((VisualConnection)node).getReferencedConnection());
+				}
+			}
+
+			for (Node node: selectedMath) {
+				Container parent = (Container)node.getParent();
+				ArrayList<Node> re = new ArrayList<Node>();
+				re.add(node);
+
+
+				// reparenting at the level of the reference manager
+				ReferenceManager refMan = getMathModel().getReferenceManager();
+				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
+					manager.setNamespaceProvider(node, mathBlock);
+				}
+				parent.reparent(re, mathBlock);
+
+			}
+
+
+			// final touch on visual part
+			if (block != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				block.setPosition(groupCenter);
+				select(block);
 			}
 		}
-
-		currentLevel.reparent(connectionsToGroup, group);
-
-		select(group);
 	}
 
 
-	//super group
-
-	private Collection<Node> getSuperGroupableSelection()
-	{
+	private Collection<Node> getBlockSelection(){
 		Collection<Node> result = new HashSet<Node>();
-		Collection<Node> groupComponents = new HashSet<Node>();
+		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
+		int errorType = 0;
 
 		for(Node node : getOrderedCurrentLevelSelection()){
-			if(node instanceof VisualComponent || node instanceof VisualSONConnection)
-				result.add(node);
-			if (node instanceof VisualONGroup){
-				result.add(node);
-				groupComponents.addAll(((VisualONGroup)node).getVisualComponents());
+			if((node instanceof VisualCondition || node instanceof VisualEvent)) {
+				if(relationAlg.isFinal(((VisualComponent)node).getReferencedComponent())
+						|| relationAlg.isInitial(((VisualComponent)node).getReferencedComponent()))
+					errorType = 1;
+				else
+					result.add(node);
 			}
-			if(node instanceof VisualSuperGroup){
-				result.removeAll(result);
-				return result;}
+			else if(node instanceof VisualComment){
+				result.add(node);
+			}
+			else if(!(node instanceof VisualSONConnection))
+				errorType = 2;
 		}
 
-		if(getOrderedCurrentLevelSelection().isEmpty())
+		if(errorType==1){
+			JOptionPane.showMessageDialog(null,
+					"Block contianing initial or final node is invalid", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
 			return result;
+		}
 
-		boolean validateSelection = true;
+
+		if(errorType==2){
+			JOptionPane.showMessageDialog(null,
+					"Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
+
 		for (VisualSONConnection connect : getVisualConnections()){
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.POLYLINE){
-				if (result.contains(connect.getFirst()) && !result.contains(connect.getSecond()))
-					validateSelection = false;
-				if (!result.contains(connect.getFirst()) && result.contains(connect.getSecond()))
-					validateSelection = false;
-			}
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.SYNCLINE
-					|| connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.ASYNLINE){
-				if(result.contains(connect.getFirst()) && !groupComponents.contains(connect.getSecond()))
-					validateSelection = false;
-				if(!result.contains(connect.getFirst()) && groupComponents.contains(connect.getSecond()))
-					validateSelection = false;
-				if(result.contains(connect.getSecond()) && !groupComponents.contains(connect.getFirst()))
-					validateSelection = false;
-				if(!result.contains(connect.getSecond()) && groupComponents.contains(connect.getFirst()))
-					validateSelection = false;
-			}
+			if(connect.getReferencedConnection().getType()=="POLYLINE"){
+				if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
+					if(connect.getSecond() instanceof VisualEvent)
+						errorType = 3;
+				}
 
-			if(connect.getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
-				if(groupComponents.contains(connect.getFirst()) || groupComponents.contains(connect.getSecond()) && !result.contains(connect))
-					result.add(connect);
-
-		}
-		boolean hasComponent = false;
-		for (Node node : result){
-			if (node instanceof VisualComponent)
-				hasComponent = true;
-			if (node instanceof VisualONGroup)
-				hasComponent = true;
+				if(!result.contains(connect.getFirst()) && result.contains(connect.getSecond())){
+					if(connect.getFirst() instanceof VisualEvent)
+						errorType = 3;
+				}
+			}
+			if(connect.getReferencedConnection().getType()=="BHVLINE"){
+				if(result.contains(connect.getFirst()) || result.contains(connect.getSecond()))
+					errorType =4;
+			}
 		}
 
-		if(!hasComponent)
-			validateSelection=false;
+		if(errorType==3){
+			JOptionPane.showMessageDialog(null,
+					"The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
 
-		if(!validateSelection){
-			JOptionPane.showMessageDialog(null, "Partial Selection is not valid",title2, JOptionPane.WARNING_MESSAGE);
+		if(errorType==4){
+			JOptionPane.showMessageDialog(null,
+					"Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+			}
+
+		if (result.size() == 1) {
+			JOptionPane.showMessageDialog(null,
+					"A single component cannot be set as a block",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
 		}
 
-
 		return result;
 	}
 
-	public void superGroupSelection(){
-		Collection<Node> selected = getSuperGroupableSelection();
-		Collection<Node> cons = new HashSet<Node>();
-		Collection<Node> bhv = new HashSet<Node>();
-
-		if (selected.size() < 1) return;
-		VisualGroup vsgroup = new VisualSuperGroup();
-
-		Container currentLevel = getCurrentLevel();
-
-		currentLevel.add(vsgroup);
-
-		for(Node n : selected){
-			if(n instanceof VisualSONConnection)
-				cons.add(n);
-			if(n instanceof VisualSONConnection && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE)
-				bhv.add(n);
-		}
-
-		currentLevel.reparent(selected, vsgroup);
-		// && ((VisualSONConnection)n).getSONConnectionType()==VisualSONConnection.SONConnectionType.BHVLINE
-
-		vsgroup.reparent(cons, vsgroup);
-		vsgroup.reparent(bhv, currentLevel);
-
-		select(vsgroup);
-	}
-
-	@Override
-	public void ungroupSelection() {
-		ArrayList<Node> toSelect = new ArrayList<Node>();
-		Collection<Node> mathNodes = new ArrayList<Node>();
-		int i = 0;
-		for(Node node : getOrderedCurrentLevelSelection()){
-			if(node instanceof VisualONGroup)
-				i++;
-		}
-		if(i>1)
-			return;
-
-		for(Node node : getOrderedCurrentLevelSelection())
-		{
-			if(node instanceof VisualONGroup)
-			{
-				VisualONGroup group = (VisualONGroup)node;
-				for(Node subNode : group.unGroup()){
-					toSelect.add(subNode);
-				}
-
-				for(Node child : group.getMathGroup().getChildren()){
-					mathNodes.add(child);
-				}
-				group.getMathGroup().reparent(mathNodes, net.getRoot());
-				this.net.remove(group.getMathGroup());
-				getCurrentLevel().remove(group);
-
-			}
-			else if(node instanceof VisualSuperGroup){
-				VisualSuperGroup sGroup = (VisualSuperGroup)node;
-				for(Node subNode : sGroup.unGroup()){
-					toSelect.add(subNode);
-				}
-				getCurrentLevel().remove(sGroup);
-			}
-			else
-				toSelect.add(node);
-		}
-
-		select(toSelect);
-	}
-
-	@Override
-	public void deleteSelection() {
-
-		HashMap<Container, LinkedList<Node>> batches = new HashMap<Container, LinkedList<Node>>();
-		LinkedList<Node> remainingSelection = new LinkedList<Node>();
-
-		for(Node node : getOrderedCurrentLevelSelection())
-		{
-			if(node instanceof VisualONGroup)
-			{
-				VisualONGroup group = (VisualONGroup)node;
-				this.net.getRoot().remove(group.getMathGroup());
-			}
-			if(node instanceof VisualSuperGroup){
-				Collection<VisualONGroup> groups = ((VisualSuperGroup)node).getVisualONGroups();
-				for(VisualONGroup group : groups)
-					this.net.getRoot().remove(group.getMathGroup());
-			}
-		}
-
-		for (Node n : getSelection()) {
-			if (n.getParent() instanceof Container) {
-				Container c = (Container)n.getParent();
-				LinkedList<Node> batch = batches.get(c);
-				if (batch == null) {
-					batch = new LinkedList<Node>();
-					batches.put(c, batch);
-				}
-				batch.add(n);
-			} else remainingSelection.add(n);
-		}
-
-		for (Container c : batches.keySet())
-			c.remove(batches.get(c));
-
-		select(remainingSelection);
-
-	}
+//	@Override
+//	public void ungroupSelection(){
+//		ArrayList<Node> toSelect = new ArrayList<Node>();
+//		for(Node node : getOrderedCurrentLevelSelection()) {
+//
+//			if(node instanceof VisualONGroup) {
+//
+//				VisualONGroup group = (VisualONGroup)node;
+//				for(Node subNode : group.unGroup(getMathModel().getReferenceManager())) {
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(group);
+//			} else if(node instanceof VisualPage) {
+//
+//				VisualPage page = (VisualPage)node;
+//
+//				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(page);
+//
+//			} else if(node instanceof VisualSuperGroup){
+//				VisualSuperGroup sGroup = (VisualSuperGroup)node;
+//				for(Node subNode : sGroup.unGroup()){
+//					toSelect.add(subNode);
+//				}
+//				getCurrentLevel().remove(sGroup);
+//			}
+//			else {
+//				toSelect.add(node);
+//			}
+//		}
+//		select(toSelect);
+//	}
 
 	public Collection<VisualONGroup> getVisualONGroups()
 	{
@@ -468,11 +578,23 @@ public class VisualSON extends AbstractVisualModel{
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualSONConnection.class);
 	}
 
+	public Collection<VisualBlock> getVisualBlocks()
+	{
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualBlock.class);
+	}
+
+	public Collection<VisualPage> getVisualPages()
+	{
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualPage.class);
+	}
+
 	public Collection<VisualSONConnection> getVisualConnections(VisualComponent node)
 	{
 		ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
 		for (VisualSONConnection con : this.getVisualConnections()){
 			if (con.getFirst() == node)
+				result.add(con);
+			if (con.getSecond() == node)
 				result.add(con);
 		}
 		return result;
@@ -487,4 +609,166 @@ public class VisualSON extends AbstractVisualModel{
 		}
 		return result;
 	}
+
+
+	public boolean connectToBlocks(){
+		if(!this.beforeConToBlock())
+			return false;
+
+		for(VisualBlock vBlock : this.getVisualBlocks()){
+			if(vBlock.getIsCollapsed() && this.getConnections(vBlock).isEmpty()){
+				Map<VisualComponent[], SONConnectionType> inputs = this.getBlockInputRelations(vBlock);
+				Map<VisualComponent[], SONConnectionType> outputs = this.getBlockOutputRelations(vBlock);
+				vBlock.setInputRelations(inputs);
+				vBlock.setOutputRelations(outputs);
+				 for(VisualComponent[] pair : inputs.keySet()){
+					 //remove visual connection
+					 VisualSONConnection con = getVisualConnections(pair[0], pair[1]).iterator().next();
+					 SONConnection mathCon = con.getReferencedConnection();
+
+					 Container parent = (Container)con.getParent();
+					 parent.remove(con);
+					 //remove math connection
+					 Container mathParent = (Container)mathCon.getParent();
+					 if(mathParent != null)
+						 mathParent.remove(mathCon);
+					 try {
+						this.connect(pair[0], vBlock, inputs.get(pair));
+					} catch (InvalidConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				 }
+				 for(VisualComponent[] pair : outputs.keySet()){
+					 //remove visual connection
+					 VisualSONConnection con = getVisualConnections(pair[0], pair[1]).iterator().next();
+					 SONConnection mathCon = con.getReferencedConnection();
+
+					 Container parent = (Container)con.getParent();
+					 parent.remove(con);
+					 //remove math connection
+					 Container mathParent = (Container)mathCon.getParent();
+					 if(mathParent != null)
+						 mathParent.remove(mathCon);
+					 try {
+						this.connect(vBlock, pair[1], outputs.get(pair));
+					} catch (InvalidConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			 	}
+			}
+		}
+		return true;
+	}
+
+	public boolean connectToBlocksInside(){
+
+		for(VisualBlock vBlock : this.getVisualBlocks()){
+			if( !vBlock.getInputRelations().isEmpty() && !vBlock.getInputRelations().isEmpty() && !this.getConnections(vBlock).isEmpty()){
+				Map<VisualComponent[], SONConnectionType> inputs = vBlock.getInputRelations();
+				Map<VisualComponent[], SONConnectionType> outputs = vBlock.getOutputRelations();
+
+				for(VisualSONConnection con : this.getVisualConnections(vBlock)){
+					Container parent = (Container)con.getParent();
+					SONConnection mathCon = con.getReferencedConnection();
+					parent.remove(con);
+
+					//remove math connection
+					Container mathParent = (Container)mathCon.getParent();
+					if(mathParent != null)
+						mathParent.remove(mathCon);
+
+				}
+
+				for(VisualComponent[] pair : inputs.keySet()){
+					if(this.getVisualComponent().contains(pair[0]) && this.getVisualComponent().contains(pair[1]))
+						try {
+							this.connect(pair[0], pair[1], inputs.get(pair));
+						} catch (InvalidConnectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+				for(VisualComponent[] pair : outputs.keySet()){
+					if(this.getVisualComponent().contains(pair[0]) && this.getVisualComponent().contains(pair[1]))
+						try {
+							this.connect(pair[0], pair[1], outputs.get(pair));
+						} catch (InvalidConnectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+
+			}
+		}
+		return true;
+	}
+
+	private boolean beforeConToBlock(){
+		Collection<String> errBlocks = new ArrayList<String>();
+		boolean err = true;
+		for(VisualBlock block : this.getVisualBlocks()){
+			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
+				err = false;
+				errBlocks.add(net.getName(block.getReferencedComponent())+" ");
+				block.setForegroundColor(SONSettings.getRelationErrColor());
+				}
+		}
+		if(!err){
+			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
+					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+		}
+		return err;
+	}
+
+/*	private boolean beforeConToInside(){
+		Collection<String> errBlocks = new ArrayList<String>();
+		boolean err = true;
+
+		for(VisualBlock block : this.getVisualBlocks()){
+			if(block.getIsCollapsed())
+				if(block.getInputRelations().isEmpty() || block.getOutputRelations().isEmpty()){
+					err = false;
+					errBlocks.add(net.getName(block.getMathBlock())+" ");
+				}
+
+		}
+		if(!err)
+			JOptionPane.showMessageDialog(null, "Lost block connection information, reconnect block again"+ errBlocks.toString(),
+					blockConnection, JOptionPane.WARNING_MESSAGE);
+		return true;
+	}*/
+
+	private Map<VisualComponent[], SONConnectionType> getBlockInputRelations(VisualBlock vBlock){
+		 Map<VisualComponent[], SONConnectionType> result = new HashMap<VisualComponent[], SONConnectionType>();
+		 Collection<VisualComponent> components = vBlock.getComponents();
+
+		 for(VisualSONConnection con : this.getVisualConnections()){
+			 if(!components.contains(con.getFirst()) && components.contains(con.getSecond())){
+				 VisualComponent[] pair = new VisualComponent[2];
+				 pair[0] = con.getFirst();
+				 pair[1] = con.getSecond();
+				 result.put(pair, con.getSONConnectionType());
+			 }
+		 }
+		 return result;
+	}
+
+	private Map<VisualComponent[], SONConnectionType> getBlockOutputRelations(VisualBlock vBlock){
+		 Map<VisualComponent[], SONConnectionType> result = new HashMap<VisualComponent[], SONConnectionType>();
+		 Collection<VisualComponent> components = vBlock.getComponents();
+
+		 for(VisualSONConnection con : this.getVisualConnections()){
+			 if(components.contains(con.getFirst()) && !components.contains(con.getSecond())){
+				 VisualComponent[] pair = new VisualComponent[2];
+				 pair[0] = con.getFirst();
+				 pair[1] = con.getSecond();
+				 result.put(pair, con.getSONConnectionType());
+			 }
+
+		 }
+		 return result;
+	}
+
 }

@@ -65,6 +65,7 @@ public class VisualGraph extends AbstractVisualModel {
 	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
+
 		VisualComponent c1 = (VisualComponent) first;
 		VisualComponent c2 = (VisualComponent) second;
 

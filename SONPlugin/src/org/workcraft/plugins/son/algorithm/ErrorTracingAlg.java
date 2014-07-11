@@ -7,26 +7,25 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
-public class ErrorTracingAlg extends SimulationAlg{
+public class ErrorTracingAlg extends RelationAlgorithm{
 
 	private SONModel net;
-	private RelationAlg relation;
+	private BSONAlg bsonAlg;
 
 	public ErrorTracingAlg(SONModel net){
 		super(net);
+		bsonAlg = new BSONAlg(net);
 		this.net = net;
-		relation =  new RelationAlg(net);
-
 	}
 
 	//Forward error tracing
-	public void setErrNum (Collection<Event> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setErrNum (Collection<EventNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
-			Collection<Event> removeList = new ArrayList<Event>();
-			for(Event e : runList){
+			Collection<EventNode> removeList = new ArrayList<EventNode>();
+			for(EventNode e : runList){
 				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
 					if(this.getPreAsynEvents(e).isEmpty() || !this.hasCommonElements(runList, this.getPreAsynEvents(e))){
 						this.setAsyncErrNum(e, isBhv);
@@ -42,22 +41,22 @@ public class ErrorTracingAlg extends SimulationAlg{
 
 		while(true){
 			boolean b = false;
-			Collection<Event> removeList = new ArrayList<Event>();
+			Collection<EventNode> removeList = new ArrayList<EventNode>();
 
-			for(Event e :runList){
+			for(EventNode e :runList){
 				for(ArrayList<Node> cycle : syncSet){
 					if(cycle.contains(e) && !removeList.contains(e)){
-						Collection<Event> runList2 = new ArrayList<Event>();
-						Collection<Event> eventCycle = new ArrayList<Event>();
+						Collection<EventNode> runList2 = new ArrayList<EventNode>();
+						Collection<EventNode> eventCycle = new ArrayList<EventNode>();
 
 						runList2.addAll(runList);
 						runList2.removeAll(cycle);
 						boolean hasPreAsyn = false;
 						for(Node n: cycle){
-							if(n instanceof Event){
-								eventCycle.add((Event)n);
-								if(!this.getPreAsynEvents((Event)n).isEmpty()
-										&& this.hasCommonElements(runList2, this.getPreAsynEvents((Event)n)))
+							if(n instanceof EventNode){
+								eventCycle.add((EventNode)n);
+								if(!this.getPreAsynEvents((EventNode)n).isEmpty()
+										&& this.hasCommonElements(runList2, this.getPreAsynEvents((EventNode)n)))
 									hasPreAsyn = true;
 							}
 						}
@@ -80,7 +79,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 	}
 
 
-	private boolean hasCommonElements(Collection<Event> cycle1, Collection<Event> cycle2){
+	private boolean hasCommonElements(Collection<EventNode> cycle1, Collection<EventNode> cycle2){
 		for(Node n : cycle1)
 			if(cycle2.contains(n))
 				return true;
@@ -90,7 +89,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 		return false;
 	}
 
-	private void setAsyncErrNum(Event e, boolean isBhv){
+	private void setAsyncErrNum(EventNode e, boolean isBhv){
 		int err = 0;
 		if(e.isFaulty())
 			err++;
@@ -107,7 +106,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 				((Condition)post).setErrors(err);
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 					}
 			}
@@ -117,10 +116,10 @@ public class ErrorTracingAlg extends SimulationAlg{
 		}
 	}
 
-	private void setSyncErrNum(Collection<Event> syncEvents, boolean isBhv){
+	private void setSyncErrNum(Collection<EventNode> syncEvents, boolean isBhv){
 		int err = 0;
-		for(Event e : syncEvents){
-			if(((Event)e).isFaulty())
+		for(EventNode e : syncEvents){
+			if(((EventNode)e).isFaulty())
 				err++;
 			for(Node pre : net.getPreset(e)){
 				if(pre instanceof Condition)
@@ -134,13 +133,13 @@ public class ErrorTracingAlg extends SimulationAlg{
 		}
 
 		for(Node e : syncEvents)
-			if(e instanceof Event){
+			if(e instanceof EventNode){
 				for(Node post: net.getPostset(e)){
 					if(post instanceof Condition){
 						((Condition)post).setErrors(err);
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 							}
 					}
@@ -154,11 +153,11 @@ public class ErrorTracingAlg extends SimulationAlg{
 	}
 
 	//Backward error tracing
-	public void setReverseErrNum (Collection<Event> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setReverseErrNum (Collection<EventNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
-			Collection<Event> removeList = new ArrayList<Event>();
-			for(Event e : runList){
+			Collection<EventNode> removeList = new ArrayList<EventNode>();
+			for(EventNode e : runList){
 				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
 					if(this.getPostAsynEvents(e).isEmpty()
 							|| !this.hasCommonElements(runList, this.getPostAsynEvents(e))){
@@ -175,22 +174,22 @@ public class ErrorTracingAlg extends SimulationAlg{
 
 		while(true){
 			boolean b = false;
-			Collection<Event> removeList = new ArrayList<Event>();
+			Collection<EventNode> removeList = new ArrayList<EventNode>();
 
-			for(Event e :runList){
+			for(EventNode e :runList){
 				for(ArrayList<Node> cycle : syncSet){
 					if(cycle.contains(e)  && !removeList.contains(e)){
-						Collection<Event> runList2 = new ArrayList<Event>();
-						Collection<Event> eventCycle = new ArrayList<Event>();
+						Collection<EventNode> runList2 = new ArrayList<EventNode>();
+						Collection<EventNode> eventCycle = new ArrayList<EventNode>();
 
 						runList2.addAll(runList);
 						runList2.removeAll(cycle);
 						boolean hasPostAsyn = false;
 						for(Node n: cycle){
-							if(n instanceof Event){
-								eventCycle.add((Event)n);
-								if(!this.getPostAsynEvents((Event)n).isEmpty()
-										&& this.hasCommonElements(runList2, this.getPostAsynEvents((Event)n)))
+							if(n instanceof EventNode){
+								eventCycle.add((EventNode)n);
+								if(!this.getPostAsynEvents((EventNode)n).isEmpty()
+										&& this.hasCommonElements(runList2, this.getPostAsynEvents((EventNode)n)))
 									hasPostAsyn = true;
 							}
 						}
@@ -212,7 +211,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 			setReverseErrNum(runList, syncSet, isBhv);
 	}
 
-	private void setReverseAsyncErrNum(Event e, boolean isBhv){
+	private void setReverseAsyncErrNum(EventNode e, boolean isBhv){
 		int err = 0;
 		if(e.isFaulty())
 			err++;
@@ -228,7 +227,7 @@ public class ErrorTracingAlg extends SimulationAlg{
 			if(post instanceof Condition){
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 					}
 				((Condition)post).setErrors(((Condition)post).getErrors() - err);
@@ -239,10 +238,10 @@ public class ErrorTracingAlg extends SimulationAlg{
 		}
 	}
 
-	private void setReverseSyncErrNum(Collection<Event> syncEvents, boolean isBhv){
+	private void setReverseSyncErrNum(Collection<EventNode> syncEvents, boolean isBhv){
 		int err = 0;
-		for(Event e : syncEvents){
-			if(((Event)e).isFaulty())
+		for(EventNode e : syncEvents){
+			if(((EventNode)e).isFaulty())
 				err++;
 			for(Node pre : net.getPreset(e)){
 				if(pre instanceof Condition){
@@ -257,12 +256,12 @@ public class ErrorTracingAlg extends SimulationAlg{
 		}
 
 		for(Node e : syncEvents)
-			if(e instanceof Event){
+			if(e instanceof EventNode){
 				for(Node post: net.getPostset(e)){
 					if(post instanceof Condition){
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : relation.getMinimalPhase(relation.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 							}
 						((Condition)post).setErrors(((Condition)post).getErrors() - err);

@@ -22,6 +22,8 @@
 package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -31,6 +33,7 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString.V
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.util.Identifier;
 
 public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 {
@@ -52,10 +55,21 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
 		}
 
 		PrinterSuite printers = new FormulaToString.PrinterSuite();
-		printers.vars = new FormulaToString.VariablePrinter(){
+		printers.vars = new FormulaToString.VariablePrinter() {
 			@Override
 			public Void visit(BooleanVariable node) {
-				append("var_"+internalReferences.getReference(node));
+
+				String ref = internalReferences.getReference(node);
+				// use full path to a flattened name
+				String flat = NamespaceHelper.getFlatName(ref);
+
+				// old style naming, if number is used as an ID for a contact
+				if (Identifier.isNumber(ref)) {
+					append("var_"+ref);
+				} else
+					append(flat);
+
+
 				return null;
 			}
 		};

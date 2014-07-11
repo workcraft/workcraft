@@ -37,7 +37,9 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Hierarchy;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
@@ -279,9 +281,23 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return getOffset(namePositioning);
 	}
 
-	protected void cacheNameRenderedText(DrawRequest r) {
-		String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, getNameOffset())) {
+
+	private void cacheNameRenderedText(DrawRequest r) {
+
+		String name = null;
+		if (CommonEditorSettings.getShowAbsolutePaths()) {
+			name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		} else {
+			name = r.getModel().getMathModel().getName(getReferencedComponent());
+		}
+
+		if (name == null) {
+			name = "";
+		}
+
+		Point2D offset = getNameOffset();
+
+		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
 			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
 		}
 	}
@@ -313,10 +329,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		if (getLabelVisibility()) {
+		if (getLabelVisibility()&&labelRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
 		}
-		if (getNameVisibility()) {
+		if (getNameVisibility()&&nameRenderedText!=null) {
 			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
 		}
 		return bb;

@@ -35,6 +35,7 @@ import javax.swing.Icon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -161,6 +162,8 @@ public class ConnectionTool extends AbstractTool {
 				} else if (!mouseLeftFirstNode) {
 					warningMessage = "Move the mouse outside this node before creating a self-loop";
 				}
+			} else if (firstNode instanceof VisualGroup || currentNode instanceof VisualGroup ) {
+				warningMessage = "Connection with group element is not allowed";
 			} else {
 				try {
 					e.getEditor().getWorkspaceEntry().saveMemento();

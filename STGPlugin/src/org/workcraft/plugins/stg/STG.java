@@ -29,8 +29,11 @@ import java.util.Set;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
@@ -59,7 +62,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	private STGReferenceManager referenceManager;
 
 	public STG() {
-		this(null);
+		this(new MathGroup());
 	}
 
 	public STG(Container root) {
@@ -67,47 +70,57 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public STG(Container root, References refs) {
-		super(root, new STGReferenceManager(refs));
+
+		super(root, new STGReferenceManager(refs, null));
+
 		referenceManager = (STGReferenceManager) getReferenceManager();
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
 
 	final public Place createPlace() {
-		return createPlace(null);
+		return createPlace(null, null);
 	}
 
 	final public Transition createTransition() {
-		return createDummyTransition(null);
+		return createDummyTransition(null, null);
 	}
 
 	final public SignalTransition createSignalTransition() {
-		return createSignalTransition(null);
+		return createSignalTransition(null, null);
 	}
 
-	final public STGPlace createPlace(String name) {
+	final public STGPlace createPlace(String name, Container cont) {
+		if (cont==null) cont=getRoot();
+
 		STGPlace newPlace = new STGPlace();
+		cont.add(newPlace);
+
 		if (name != null) {
 			setName(newPlace, name);
 		}
-		getRoot().add(newPlace);
 		return newPlace;
 	}
 
-	final public DummyTransition createDummyTransition(String name) {
+	final public DummyTransition createDummyTransition(String name, Container container) {
+		if (container == null) container = getRoot();
+
 		DummyTransition newTransition = new DummyTransition();
-		if (name != null) {
+		container.add(newTransition);
+		if (name != null)
 			setName(newTransition, name);
-		}
-		getRoot().add(newTransition);
+
 		return newTransition;
 	}
 
-	final public SignalTransition createSignalTransition(String name) {
+	final public SignalTransition createSignalTransition(String name, Container container) {
+		if (container == null) container = getRoot();
+
 		SignalTransition ret = new SignalTransition();
-		if (name != null) {
-			setName(ret, name);
-		}
-		getRoot().add(ret);
+
+		container.add(ret);
+
+		if (name != null) setName(ret, name);
+
 		return ret;
 	}
 
@@ -178,7 +191,12 @@ public class STG extends AbstractMathModel implements STGModel {
 	private Set<String> getUniqueNames(Collection<SignalTransition> transitions) {
 		Set<String> result = new HashSet<String>();
 		for (SignalTransition st : transitions) {
-			result.add(st.getSignalName());
+
+			String reference = referenceManager.getNodeReference(null, st);
+			String path = NamespaceHelper.getReferencePath(reference);
+
+			result.add(path+st.getSignalName());
+//			result.add(st.getSignalName());
 		}
 		return result;
 	}
@@ -308,31 +326,42 @@ public class STG extends AbstractMathModel implements STGModel {
 		}
 	}
 
-	public String getNodeReference(Node node) {
+	@Override
+	public String getNodeReference(NamespaceProvider provider, Node node) {
+
 		if (node instanceof STGPlace) {
 			if (((STGPlace) node).isImplicit()) {
 				Set<Node> preset = getPreset(node);
 				Set<Node> postset = getPostset(node);
 
 				if (!(preset.size() == 1 && postset.size() == 1)) {
+
 					throw new RuntimeException(
 							"An implicit place cannot have more that one transition in its preset or postset.");
 				}
-				return "<" + referenceManager.getNodeReference(preset.iterator().next()) + ","
-						+ referenceManager.getNodeReference(postset.iterator().next()) + ">";
-			} else {
-				return referenceManager.getNodeReference(node);
+
+				return "<"+
+					NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
+						+ "," +
+						NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
+
 			}
-		} else {
-			return referenceManager.getNodeReference(node);
 		}
+
+		return super.getNodeReference(provider, node);
+
 	}
 
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+
 		if (implicitPlaceTransitions != null) {
-			Node t1 = referenceManager.getNodeByReference(implicitPlaceTransitions.getFirst());
-			Node t2 = referenceManager.getNodeByReference(implicitPlaceTransitions.getSecond());
+			Node t1 = referenceManager.getNodeByReference(provider,
+					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst())
+					);
+			Node t2 = referenceManager.getNodeByReference(provider,
+					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond())
+					);
 
 			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
@@ -346,12 +375,14 @@ public class STG extends AbstractMathModel implements STGModel {
 					+ implicitPlaceTransitions.getFirst() + " and "
 					+ implicitPlaceTransitions.getSecond() + " does not exist.");
 		} else
-			return referenceManager.getNodeByReference(reference);
+
+			return super.getNodeByReference(provider, reference);
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {
 		implicitPlace.setImplicit(false);
 		referenceManager.setDefaultNameIfUnnamed(implicitPlace);
 	}
+
 
 }

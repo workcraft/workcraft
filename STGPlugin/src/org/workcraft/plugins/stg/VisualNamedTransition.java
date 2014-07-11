@@ -60,7 +60,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Point2D getLabelOffset() {
-		return new Point2D.Double(0.0, 0.0);
+		return new Point2D.Double(0.0,0.0);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
 	@Override
 	public Point2D getNameOffset() {
-		return new Point2D.Double(0.0, 0.0);
+		return new Point2D.Double(0.0,0.0);
 	}
 
 	@Override

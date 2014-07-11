@@ -10,4 +10,8 @@ desij.logfile*
 generated
 /.metadata
 *.jar
-
+*.orig
+*.moved
+*.BASE
+*.OTHER
+*.THIS

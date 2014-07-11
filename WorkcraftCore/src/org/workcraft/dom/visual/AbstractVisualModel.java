@@ -22,6 +22,7 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,10 +39,12 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -132,6 +135,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void draw (Graphics2D g, Decorator decorator) {
+
 		DrawMan.draw(this, g, decorator, getRoot());
 	}
 
@@ -310,7 +314,66 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void setCurrentLevel(Container newCurrentLevel) {
 		selection.clear();
 		currentLevel = newCurrentLevel;
+
+		// manage the isInside value for all parents and children
+		Collapsible col = null;
+		if (newCurrentLevel instanceof Collapsible) {
+			col = (Collapsible)newCurrentLevel;
+		}
+
+		if (col!=null) {
+			col.setIsCurrentLevelInside(true);
+			Node node = newCurrentLevel.getParent();
+			while (node!=null) {
+				if ((node instanceof Collapsible))
+					((Collapsible)node).setIsCurrentLevelInside(true);
+				node = node.getParent();
+			}
+
+
+			for (Node n: newCurrentLevel.getChildren()) {
+				if (!(n instanceof Collapsible)) continue;
+				((Collapsible)n).setIsCurrentLevelInside(false);
+			}
+		}
+
 	}
+
+
+	/**
+	 * Centralize components
+	 */
+	public static Point2D centralizeComponents(Collection<Node> components) {
+		// find weighted center
+		double deltaX = 0.0;
+		double deltaY = 0.0;
+		int num = 0;
+		for (Node n: components) {
+			if (n instanceof VisualTransformableNode) {
+				VisualTransformableNode tn = (VisualTransformableNode)n;
+				deltaX+= tn.getX();
+				deltaY+= tn.getY();
+				num++;
+			}
+		}
+		if (num>0) {
+			deltaX /=num;
+			deltaY /=num;
+		}
+		// round numbers
+		deltaX = Math.round(deltaX*2)/2;
+		deltaY = Math.round(deltaY*2)/2;
+		//
+
+		for (Node n: components) {
+			if (n instanceof VisualTransformableNode) {
+				VisualTransformableNode tn = (VisualTransformableNode)n;
+				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
+			}
+		}
+		return new Point2D.Double(deltaX, deltaY);
+	}
+
 
 	/**
 	 * Groups the selection, and selects the newly created group.
@@ -338,11 +401,78 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				}
 			}
 			currentLevel.reparent(connectionsToGroup, group);
+
 			if (group != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				group.setPosition(groupCenter);
 				select(group);
 			}
+
 		}
 	}
+
+	@Override
+	public void groupPageSelection() {
+
+		Collection<Node> selection = getOrderedCurrentLevelSelection();
+
+		ArrayList<Node> selected = new ArrayList<Node>();
+
+
+		Collection<Node> recursiveSelection = new HashSet<Node>();
+
+		for (Node node : selection) {
+			if (!(node instanceof VisualNode)) continue;
+			recursiveSelection.add(node);
+			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
+		}
+
+		for (Node node : selection) {
+
+			if (!(node instanceof VisualNode)) continue;
+
+			if ((node instanceof VisualConnection)) {
+				VisualConnection con = (VisualConnection)node;
+				if (!recursiveSelection.contains(con.getFirst())) continue;
+				if (!recursiveSelection.contains(con.getSecond())) continue;
+
+			}
+
+			selected.add(node);
+		}
+
+		if (selected.size() >= 1) {
+
+			PageNode pageNode = new PageNode();
+			VisualPage page = new VisualPage(pageNode);
+
+
+			Container currentMathLevel;
+			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+			if(visualContainer==null)
+				currentMathLevel = getMathModel().getRoot();
+			else
+				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+
+			currentMathLevel.add(pageNode);
+			getCurrentLevel().add(page);
+
+
+
+			this.reparent(page, this, getCurrentLevel(), selected);
+
+
+
+			// final touch on visual part
+			if (page != null) {
+				Point2D groupCenter = centralizeComponents(selected);
+				page.setPosition(groupCenter);
+				select(page);
+			}
+
+		}
+	}
+
 
 	/**
 	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.
@@ -352,17 +482,42 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 		for(Node node : getOrderedCurrentLevelSelection()) {
+
 			if(node instanceof VisualGroup) {
+
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
 				}
 				currentLevel.remove(group);
+			} else if(node instanceof VisualPage) {
+
+				VisualPage page = (VisualPage)node;
+
+				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
+				toSelect.addAll(nodesToReparent);
+
+				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
+
+				AffineTransform localToParentTransform = page.getLocalToParentTransform();
+
+				for (Node n : nodesToReparent)
+					TransformHelper.applyTransform(n, localToParentTransform);
+
+				getMathModel().remove(page.getReferencedComponent());
+				getCurrentLevel().remove(page);
+
 			} else {
 				toSelect.add(node);
 			}
 		}
 		select(toSelect);
+	}
+
+
+	@Override
+	public void ungroupPageSelection() {
+		ungroupSelection();
 	}
 
 	@Override
@@ -418,6 +573,69 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public Properties getProperties(Node node) {
 		return null;
+	}
+
+	public static Collection<Node> getMathChildren( Collection<Node> sourceChildren) {
+		Collection<Node> ret = new HashSet<Node>();
+
+		for (Node n: sourceChildren) {
+
+			if (n instanceof DependentNode) {
+				ret.addAll( ((DependentNode)n).getMathReferences());
+			} else if (n instanceof VisualGroup) {
+				ret.addAll(getMathChildren(n.getChildren()));
+			}
+		}
+
+		return ret;
+	}
+
+	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
+		MathModel mmodel = visualModel.getMathModel();
+
+		// find the closest container that has a referenced math node
+		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		if (visualContainer instanceof VisualComponent) vis = (VisualComponent)visualContainer;
+
+		// get appropriate math container, it will be the target container for the math model
+		Container mathTargetContainer;
+		mathTargetContainer = mmodel.getRoot();
+
+		if (vis!=null)
+			mathTargetContainer = (Container)vis.getReferencedComponent();
+
+		return mathTargetContainer;
+	}
+
+	@Override
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+
+
+		if (sourceModel == null) sourceModel = this;
+		if (sourceChildren==null) sourceChildren = sourceRoot.getChildren();
+
+		MathModel mmodel = getMathModel();
+
+		Container sourceMathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
+
+
+		Collection<Node> mchildren = getMathChildren(sourceChildren);
+
+		mmodel.reparent(getMathContainer(this, targetContainer),
+				((VisualModel)sourceModel).getMathModel(), sourceMathContainer,
+				mchildren);
+
+		Collection<Node> children = new HashSet<Node>();
+
+		if (sourceChildren==null) {
+			children.addAll(sourceRoot.getChildren());
+		} else {
+			children.addAll(sourceChildren);
+		}
+
+		sourceRoot.reparent(children, targetContainer);
+
+
 	}
 
 }

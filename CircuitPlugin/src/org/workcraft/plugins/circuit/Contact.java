@@ -78,62 +78,8 @@ public class Contact extends MathNode implements BooleanVariable {
 		setIOType(iot);
 	}
 
-	static public String getNewName(Node paren, String prefix, Node node, boolean allowShort) {
-		// iterate through all contacts, check that the name doesn't exist
-		int index=0;
-		boolean found = false;
-		if (allowShort) {
-			for (Node n : paren.getChildren()) {
-				if (n instanceof Contact && n != node) {
-					if (((Contact)n).getName().equals(prefix)) {
-						found = true;
-						break;
-					}
-				}
-			}
-			if (!found) return prefix;
-		}
-		do {
-			found = false;
-			index++;
-			for (Node n : paren.getChildren()) {
-				if (n instanceof Contact && n != node) {
-					if (((Contact)n).getName().equals(prefix + index)) {
-						found = true;
-						break;
-					}
-				}
-			}
-		} while (found);
-		return (prefix + index);
-	}
-
-	public void checkName(Node parent) {
-		if (parent == null) return;
-		String prefix = getName();
-		if (prefix == null || prefix == "") {
-			if (getIOType()==IOType.INPUT) {
-				prefix="input";
-			} else {
-				prefix="output";
-			}
-			setName(getNewName(parent, prefix, this, false));
-		}
-	}
-
-	@Override
-	public void setParent(Node parent) {
-		super.setParent(parent);
-		checkName(parent);
-	}
-
 	public void setIOType(IOType t) {
 		this.ioType = t;
-		if (getName().startsWith("input") && getIOType()==IOType.OUTPUT) {
-			setName(getNewName(getParent(), "output", this, false));
-		} else if (getName().startsWith("output") && getIOType()==IOType.INPUT) {
-			setName(getNewName(getParent(), "input", this, false));
-		}
 		sendNotification(new PropertyChangedEvent(this, "ioType"));
 	}
 
@@ -141,6 +87,7 @@ public class Contact extends MathNode implements BooleanVariable {
 		return ioType;
 	}
 
+	// this is only for information, use Circuit to set component's names
 	public void setName(String name) {
 		this.name = name;
 		sendNotification(new PropertyChangedEvent(this, "name"));

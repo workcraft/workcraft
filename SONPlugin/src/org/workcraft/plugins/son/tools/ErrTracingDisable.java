@@ -7,7 +7,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ErrTracingDisable implements Tool{
 
-	private static boolean showErrorTracing = true;
+	private static boolean showErrorTracing = false;
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);

@@ -2,6 +2,7 @@ package org.workcraft.dom.references;
 
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
@@ -49,12 +50,12 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		return manager.get(reference);
 	}
 
 	@Override
-	public String getNodeReference(Node node) {
+	public String getNodeReference(NamespaceProvider provider, Node node) {
 		return manager.getName(node);
 	}
 
@@ -62,6 +63,7 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 	public void handleEvent(HierarchyEvent e) {
 		if(e instanceof NodesAddedEvent) {
 			for(Node node : e.getAffectedNodes()) {
+
 				manager.setDefaultNameIfUnnamed(node);
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
 					manager.setDefaultNameIfUnnamed(node2);

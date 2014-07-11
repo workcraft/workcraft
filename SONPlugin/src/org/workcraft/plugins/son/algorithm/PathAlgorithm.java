@@ -8,28 +8,24 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 
-public class ONPathAlg{
+public class PathAlgorithm{
 
 	protected SONModel net;
-	protected RelationAlg relation;
+	protected RelationAlgorithm relationAlg;
+
 	protected Collection<Node> history;
 	protected Collection<ArrayList<Node>> pathResult;
 	protected Collection<ArrayList<Node>> cycleResult;
 
 
-	public ONPathAlg(SONModel net){
+	public PathAlgorithm(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
+		relationAlg = new RelationAlgorithm(net);
 		history = new ArrayList<Node>();
 		pathResult =new  HashSet<ArrayList<Node>>();
 		cycleResult = new HashSet<ArrayList<Node>>();
 	}
 
-	/**
-	 *
-	 * create a adjacency matrix
-	 *
-	 */
 	public List<Node[]> createAdj(Collection<Node> nodes){
 
 		List<Node[]> result = new ArrayList<Node[]>();
@@ -46,11 +42,6 @@ public class ONPathAlg{
 		return result;
 	}
 
-	/**
-	 *
-	 * obtain all paths and cycle paths between two given nodes
-	 *
-	 */
 	public void getAllPath(Node start, Node end, List<Node[]> adj){
 
 		history.add(start);
@@ -71,7 +62,7 @@ public class ONPathAlg{
 					pathResult.add(path);
 					continue;
 				}
-				if(!history.contains((Node)adj.get(i)[1])){
+				else if(!history.contains((Node)adj.get(i)[1])){
 					getAllPath((Node)adj.get(i)[1], end, adj);
 				}
 				else {
@@ -92,8 +83,8 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cycleResult;
@@ -102,13 +93,13 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> pathTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 		 return pathResult;
 	}
 
-	protected void clearAll(){
+	public void clearAll(){
 		history.clear();
 		cycleResult.clear();
 		pathResult.clear();
@@ -120,9 +111,7 @@ public class ONPathAlg{
 
 	//Backward Traverse
 	/**
-	 *
 	 * create a backward adjacency matrix
-	 *
 	 */
 	public List<Node[]> createBackwardAdj(Collection<Node> nodes){
 
@@ -143,8 +132,8 @@ public class ONPathAlg{
 	public Collection<ArrayList<Node>> backwardCycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getFinal(nodes))
-			for(Node end : relation.getInitial(nodes))
+		for(Node start : relationAlg.getFinal(nodes))
+			for(Node end : relationAlg.getInitial(nodes))
 				getAllPath(start, end, createBackwardAdj(nodes));
 
 		 return cycleResult;
@@ -152,8 +141,8 @@ public class ONPathAlg{
 
 	public Collection<ArrayList<Node>> backwardPathTask (Collection<Node> nodes){
 		this.clearAll();
-		for(Node start : relation.getFinal(nodes))
-			for(Node end : relation.getInitial(nodes))
+		for(Node start : relationAlg.getFinal(nodes))
+			for(Node end : relationAlg.getInitial(nodes))
 				getAllPath(start, end, createBackwardAdj(nodes));
 
 		 return pathResult;

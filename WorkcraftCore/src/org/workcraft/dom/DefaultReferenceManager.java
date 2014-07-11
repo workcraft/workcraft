@@ -21,12 +21,14 @@
 
 package org.workcraft.dom;
 
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.util.TwoWayMap;
 
 public class DefaultReferenceManager extends HierarchySupervisor implements ReferenceManager {
@@ -63,12 +65,12 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 	}
 
 	@Override
-	public Node getNodeByReference(String reference) {
+	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		return nodes.getValue(reference);
 	}
 
 	@Override
-	public String getNodeReference(Node node) {
+	public String getNodeReference(NamespaceProvider provider, Node node) {
 		return nodes.getKey(node);
 	}
 

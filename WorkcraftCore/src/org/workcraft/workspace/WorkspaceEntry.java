@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -47,6 +48,7 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
@@ -204,6 +206,14 @@ public class WorkspaceEntry implements ObservableState {
 		if (changed == false) {
 			savedMemento = capturedMemento;
 		}
+
+		if (CommonEditorSettings.getDebugClipboard()) {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
+			clipboard.setContents(new StringSelection(str), null);
+
+		}
+
 	}
 
 	public void cancelMemento() {
@@ -272,10 +282,9 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
-	public String getClipboardAsString() {
+	public String unzipInputStream(ZipInputStream zis) {
 		String result = "";
 		try {
-			ZipInputStream zis = new ZipInputStream(framework.clipboard.getStream());
 			ZipEntry ze;
 			while ((ze = zis.getNextEntry()) != null)	{
 		        StringBuilder isb = new StringBuilder();
@@ -295,11 +304,16 @@ public class WorkspaceEntry implements ObservableState {
 		return result;
 	}
 
+	public String getClipboardAsString() {
+		return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
+	}
+
 	public void copy() {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
 			captureMemento();
 			try {
+
 				// copy selected nodes inside a group as if it was the root
 				while (model.getCurrentLevel() != model.getRoot()) {
 					Collection<Node> nodes = new HashSet<Node>(model.getSelection());
@@ -323,6 +337,7 @@ public class WorkspaceEntry implements ObservableState {
 			} finally {
 				cancelMemento();
 			}
+
 		}
 	}
 

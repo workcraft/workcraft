@@ -55,8 +55,12 @@ public interface VisualModel extends Model, ObservableState {
 	public void removeFromSelection (Node node);
 	public void removeFromSelection (Collection<Node> nodes);
 	public void deleteSelection();
+
 	public void groupSelection();
 	public void ungroupSelection();
+
+	public void groupPageSelection();
+	public void ungroupPageSelection();
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 }

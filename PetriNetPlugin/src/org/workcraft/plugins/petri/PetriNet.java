@@ -29,10 +29,12 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -44,7 +46,7 @@ import org.workcraft.util.Hierarchy;
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
 	public PetriNet() {
-		this(null, null);
+		this(new MathGroup(), null);
 	}
 
 	public PetriNet(Container root) {
@@ -61,7 +63,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	public PetriNet(Container root, References refs, final Func<Node, String> nodePrefixFunc) {
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				String result = nodePrefixFunc.eval(arg);
@@ -79,15 +81,9 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 				return result;
 			}
 		}));
+
 	}
 
-	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
-
-	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
-	}
 
 	final public Place createPlace(String name) {
 		Place newPlace = new Place();
@@ -125,7 +121,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	final public Collection<Transition> getTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
 	}
-
 
 	public boolean isUnfireEnabled(Transition t) {
 		return isUnfireEnabled (this, t);

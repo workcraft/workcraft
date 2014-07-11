@@ -9,22 +9,23 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 
 
-public class ONStructureTask implements SONStructureVerification{
+public class ONStructureTask implements StructuralVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
+	private PathAlgorithm onPathAlg;
+	private RelationAlgorithm relation;
+
 	private Collection<Node> errorousNodes = new HashSet<Node>();
 	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
-
-	private ONPathAlg traverse;
-	private RelationAlg relation;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -32,8 +33,8 @@ public class ONStructureTask implements SONStructureVerification{
 
 	public ONStructureTask(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
-		traverse = new ONPathAlg(net);
+		relation = new RelationAlgorithm(net);
+		onPathAlg = new PathAlgorithm(net);
 
 	}
 
@@ -66,17 +67,18 @@ public class ONStructureTask implements SONStructureVerification{
 				else
 					logger.info("Group label : " + group.getLabel() );
 
-			logger.info("Condition(s) = "+group.getConditions().size()+"\n" +"Event(s) = "+group.getEvents().size()+".");
+			logger.info("Condition(s) = "+group.getConditions().size()+".\n" +"Event(s) = "+group.getEvents().size()
+					+".\n" + "Collapsed Block(s) = " + group.getCollapsedBlocks().size()+".");
 			logger.info("Running components relation task...");
 
 			if(!relation.hasFinal(groupComponents) || !relation.hasInitial(groupComponents)){
-				logger.error("ERROR : Occurrence net must have at least one initial state and one final state");
+				logger.error("ERROR : Occurrence net must have at least one initial state and one final state \n");
 				hasErr = true;
 				errNumber ++;
-				return;
+				continue;
 			}
 
-			//initial state output
+			//initial state result
 			iniStateResult = iniStateTask(groupComponents);
 
 			if (iniStateResult.isEmpty())
@@ -84,26 +86,26 @@ public class ONStructureTask implements SONStructureVerification{
 			else{
 				hasErr = true;
 				errNumber = errNumber + iniStateResult.size();
-				for(Node event : iniStateResult){
-					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect initial state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+				for(Node node : iniStateResult){
+					errorousNodes.add(node);
+					logger.error("ERROR : Incorrect initial state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
-			//final state output
+			//final state result
 			finalStateResult = finalStateTask(groupComponents);
 			if (finalStateResult.isEmpty())
 				logger.info("Final states correct.");
 			else{
 				hasErr = true;
 				errNumber = errNumber + finalStateResult.size();
-				for(Node event : finalStateResult){
-					errorousNodes.add(event);
-					logger.error("ERROR : Incorrect final state: " + net.getName(event) + "(" + net.getNodeLabel(event) + ")  ");
+				for(Node node : finalStateResult){
+					errorousNodes.add(node);
+					logger.error("ERROR : Incorrect final state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
-			//conflict output
+			//conflict result
 			postConflictResult = postConflictTask(groupComponents);
 			preConflictResult = preConflictTask(groupComponents);
 
@@ -114,22 +116,22 @@ public class ONStructureTask implements SONStructureVerification{
 				errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
 				for(Node condition : postConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Post set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+					logger.error("ERROR : Post set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 					}
 				for(Node condition : preConflictResult){
 					errorousNodes.add(condition);
-					logger.error("ERROR : Pre set events in conflict: " + net.getName(condition) + "(" + net.getNodeLabel(condition) + ")  ");
+					logger.error("ERROR : Pre set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 				}
 			}
 			logger.info("Components relation task complete.");
 
-			//cycle detection
+			//cycle detection result
 			logger.info("Running cycle detection...");
 
-			cycleResult = traverse.cycleTask(groupComponents);
+			cycleResult = onPathAlg.cycleTask(groupComponents);
 
 			backwardCycleResult = new ArrayList<ArrayList<Node>>();
-			backwardCycleResult.addAll(this.traverse.backwardCycleTask(groupComponents));
+			backwardCycleResult.addAll(this.onPathAlg.backwardCycleTask(groupComponents));
 
 			cyclePaths.addAll(cycleResult);
 			cyclePaths.addAll(backwardCycleResult);
@@ -148,7 +150,7 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> iniStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event)
+			if(node instanceof Event ||node instanceof Block)
 				if(relation.isInitial(node))
 					result.add(node);
 		return result;
@@ -157,7 +159,7 @@ public class ONStructureTask implements SONStructureVerification{
 	private Collection<Node> finalStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event)
+			if(node instanceof Event || node instanceof Block)
 				if(relation.isFinal(node))
 					result.add(node);
 		return result;

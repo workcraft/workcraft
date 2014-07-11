@@ -163,6 +163,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		traceTable = new JTable(new TraceTableModel());
 		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 		infoPanel = new JScrollPane(traceTable);
 		infoPanel.setPreferredSize(new Dimension(1, 1));
 

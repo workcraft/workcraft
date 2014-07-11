@@ -44,12 +44,21 @@ public class CommonEditorSettings implements SettingsPage {
 	private static final boolean defaultShowRulers = true;
 	private static final int defaultIconSize = 24;
 	private static final boolean defaultDebugClipboard = false;
+	private static boolean showAbsolutePaths = false;
+
+	public static boolean getShowAbsolutePaths() {
+		return showAbsolutePaths;
+	}
+
 
 	private static Color backgroundColor = defaultBackgroundColor;
 	private static boolean showGrid = defaultShowGrid;
 	private static boolean showRulers = defaultShowRulers;
 	private static int iconSize = defaultIconSize;
 	private static boolean debugClipboard = defaultDebugClipboard;
+	public static void setShowAbsolutePaths(boolean showAbsolutePaths) {
+		CommonEditorSettings.showAbsolutePaths = showAbsolutePaths;
+	}
 
 	public String getSection() {
 		return "Common";
@@ -112,6 +121,15 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 		});
 
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Names shown with absolute paths", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setShowAbsolutePaths(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getShowAbsolutePaths();
+			}
+		});
 	}
 
 	public static Boolean getDebugClipboard() {
@@ -132,6 +150,7 @@ public class CommonEditorSettings implements SettingsPage {
 		setShowRulers(config.getBoolean(showRulersKey, defaultShowRulers));
 		setIconSize(config.getInt(iconSizeKey, defaultIconSize));
 		setDebugClipboard(config.getBoolean(debugClipboardKey, defaultDebugClipboard));
+		showAbsolutePaths = config.getBoolean("CommonEditorSettings.showAbsolutePaths", false);
 	}
 
 	public void save(Config config) {
@@ -140,6 +159,7 @@ public class CommonEditorSettings implements SettingsPage {
 		config.setBoolean(showRulersKey, getShowRulers());
 		config.setInt(iconSizeKey, getIconSize());
 		config.setBoolean(debugClipboardKey, getDebugClipboard());
+		config.setBoolean("CommonEditorSettings.showAbsolutePaths", showAbsolutePaths);
 	}
 
 	public static Color getBackgroundColor() {

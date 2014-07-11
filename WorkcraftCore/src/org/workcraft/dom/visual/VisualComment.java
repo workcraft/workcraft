@@ -64,6 +64,7 @@ public class VisualComment extends VisualComponent implements Container {
 		return new Point2D.Double(0.0, 0.0);
 	}
 
+
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();

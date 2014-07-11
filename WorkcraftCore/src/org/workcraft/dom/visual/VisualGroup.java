@@ -35,40 +35,123 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
 
 
-public class VisualGroup extends VisualTransformableNode implements Drawable, Container, ObservableHierarchy {
+public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
+
+	private boolean isCollapsed = false;
+	@Override
+	public void setIsCollapsed(boolean isCollapsed) {
+		sendNotification(new TransformChangingEvent(this));
+
+		this.isCollapsed = isCollapsed;
+		Point2D newCentre = AbstractVisualModel.centralizeComponents(getChildren());
+		this.setPosition(new Point2D.Double(this.getPosition().getX() + newCentre.getX(), this.getPosition().getY() + newCentre.getY()));
+
+		sendNotification(new TransformChangedEvent(this));
+	}
+
+	@Override
+	public boolean getIsCollapsed() {
+		return isCollapsed;
+	}
+
+	private boolean isInside = false;
+	@Override
+	public void setIsCurrentLevelInside(boolean isInside) {
+		sendNotification(new TransformChangingEvent(this));
+		this.isInside = isInside;
+		sendNotification(new TransformChangedEvent(this));
+	}
+
+	public boolean isCurrentLevelInside() {
+		return isInside;
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
+				this, "Is collapsed", Boolean.class) {
+
+			@Override
+			protected void setter(VisualGroup object, Boolean value) {
+				object.setIsCollapsed(value);
+			}
+			@Override
+			protected Boolean getter(VisualGroup object) {
+				return object.getIsCollapsed();
+			}
+		});
+	}
+
+	public VisualGroup() {
+		super();
+		addPropertyDeclarations();
+	}
+
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
 	@Override
 	public void draw(DrawRequest r) {
+
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn
 		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
 			component.cacheRenderedText(r);
 		}
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if (bb != null && getParent() != null) {
-			bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
-			Graphics2D g = r.getGraphics();
 
-			g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-			float[] pattern = {0.2f, 0.2f};
-			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-			g.draw(bb);
+		Rectangle2D bb = getBoundingBoxInLocalSpace();
+
+		if (bb != null && getParent() != null) {
+
+
+			if (getIsCollapsed()&&!isCurrentLevelInside()) {
+				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
+				Graphics2D g = r.getGraphics();
+
+
+				g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+				float[] pattern = {0.2f, 0.2f};
+				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.draw(bb);
+
+			} else {
+
+				bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
+				Graphics2D g = r.getGraphics();
+
+				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+				float[] pattern = {0.2f, 0.2f};
+				g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.draw(bb);
+
+			}
+
+//			// draw the collapse button
+//			Rectangle2D sb = new Rectangle2D.Double();
+//			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
+//			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f));
+//			g.draw(sb);
 		}
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
+		if (getIsCollapsed()&&!isCurrentLevelInside()) {
+			Rectangle2D sb = new Rectangle2D.Double();
+			sb.setRect(-0.5, -0.5, 1, 1);
+			return sb;
+		} else
+			return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
 	}
 
 	public final Collection<VisualComponent> getComponents() {
@@ -94,6 +177,18 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		Rectangle2D bb = getBoundingBoxInLocalSpace();
+
+		if (bb != null && getParent() != null) {
+
+			if (getIsCollapsed()&&!isCurrentLevelInside()) return bb.contains(pointInLocalSpace);
+
+			Rectangle2D sb = new Rectangle2D.Double();
+
+			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
+			return sb.contains(pointInLocalSpace);
+		}
+
 		return false;
 	}
 
@@ -160,6 +255,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public Point2D getCenterInLocalSpace() {
+		Rectangle2D bb = getBoundingBoxInLocalSpace();
+		if (bb != null)
+			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+
 		return new Point2D.Double(0, 0);
 	}
 

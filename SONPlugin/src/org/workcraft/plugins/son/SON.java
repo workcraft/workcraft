@@ -9,18 +9,24 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -30,15 +36,11 @@ import org.workcraft.util.Hierarchy;
 public class SON extends AbstractMathModel implements SONModel {
 
 	public SON(){
-		this(null);
-	}
-
-	public SON(Container root){
-		this(root, null);
+		this(new MathGroup(), null);
 	}
 
 	public SON(Container root, References refs) {
-		super(root, new UniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
 			@Override
 			public String eval(Node arg) {
 				if (arg instanceof Condition)
@@ -49,6 +51,8 @@ public class SON extends AbstractMathModel implements SONModel {
 					return "con";
 				if (arg instanceof ChannelPlace)
 					return "q";
+				if (arg instanceof Block)
+					return "b";
 				return "node";
 			}
 		}));
@@ -57,6 +61,7 @@ public class SON extends AbstractMathModel implements SONModel {
 	public void validate() throws ModelValidationException {
 	}
 
+	@SuppressWarnings("deprecation")
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
@@ -65,8 +70,10 @@ public class SON extends AbstractMathModel implements SONModel {
 		/*if (first instanceof Condition && second instanceof Condition)
 			throw new InvalidConnectionException ("Connections between places are not valid");
 		*/
-		if (!this.getSONConnections(first, second).isEmpty())
+		if (this.getSONConnection(first, second) != null){
+			System.out.println("first "+ this.getName(first) + " second " + this.getName(second));
 			throw new InvalidConnectionException ("Duplicate Connections");
+		}
 		if (first instanceof Event && second instanceof Event)
 			throw new InvalidConnectionException ("Connections between transitions are not valid");
 		if (first instanceof ChannelPlace && second instanceof ChannelPlace)
@@ -76,19 +83,35 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, conType);
 		Hierarchy.getNearestContainer(first, second).add(con);
+
 		return con;
 	}
 
-	public void setName(Node node, String name) {
-		((UniqueNameReferenceManager)getReferenceManager()).setName(node, name);
-	}
 
-	public String getName(Node node) {
-		return ((UniqueNameReferenceManager)getReferenceManager()).getName(node);
+	public Collection<Node> getComponents(){
+		ArrayList<Node> result =  new ArrayList<Node>();
+
+		for(Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class))
+			if(node instanceof Condition || node instanceof Event || node instanceof ChannelPlace)
+				result.add(node);
+
+		//remove the nodes in isolate blocks
+		for(Block block : this.getBlocks())
+			if(!this.getSONConnections(block).isEmpty()){
+				result.removeAll(block.getComponents());
+				result.add(block);
+			}
+
+		return result;
 	}
 
 	public Collection<Condition> getConditions(){
-		return Hierarchy.getDescendantsOfType(getRoot(), Condition.class);
+		ArrayList<Condition> result =  new ArrayList<Condition>();
+		for(Node node : getComponents())
+			if(node instanceof Condition)
+				result.add((Condition)node);
+
+		return result;
 	}
 
 	public Collection<ChannelPlace> getChannelPlace(){
@@ -96,23 +119,15 @@ public class SON extends AbstractMathModel implements SONModel {
 	}
 
 	public Collection<Event> getEvents(){
-		return Hierarchy.getDescendantsOfType(getRoot(),Event.class);
-	}
+		ArrayList<Event> result =  new ArrayList<Event>();
+		for(Node node : getComponents())
+			if(node instanceof Event)
+				result.add((Event)node);
 
-	public Collection<Node> getComponents(){
-		ArrayList<Node> result =  new ArrayList<Node>();
-		for (Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)){
-			if (node instanceof Condition)
-				result.add(node);
-			if (node instanceof Event)
-				result.add(node);
-		    if (node instanceof ChannelPlace)
-		    	result.add(node);
-		}
 		return result;
 	}
 
-	public String getNodeLabel(Node n){
+	public String getComponentLabel(Node n){
 		if(n instanceof Condition)
 			return ((Condition)n).getLabel();
 
@@ -121,6 +136,9 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		if(n instanceof ChannelPlace)
 			return ((ChannelPlace)n).getLabel();
+
+		if(n instanceof Block)
+			return ((Block)n).getLabel();
 
 		else
 			return null;
@@ -142,6 +160,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		if (n instanceof SONConnection)
 			((SONConnection)n).setColor(nodeColor);
 
+		if(n instanceof Block)
+			((Block)n).setForegroundColor(nodeColor);
+
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
@@ -153,6 +174,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		}
 		if(n instanceof ChannelPlace){
 			((ChannelPlace) n).setFillColor(nodeColor);
+		}
+		if(n instanceof Block){
+			((Block) n).setFillColor(nodeColor);
 		}
 	}
 
@@ -167,6 +191,13 @@ public class SON extends AbstractMathModel implements SONModel {
 
 		for (SONConnection con : this.getSONConnections())
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
+
+		for (Block block : this.getBlocks()){
+			if(block.getIsCollapsed()){
+				this.setFillColor(block, CommonVisualSettings.getFillColor());
+				this.setForegroundColor(block, CommonVisualSettings.getBorderColor());
+			}
+		}
 	}
 
 	public void resetErrStates(){
@@ -215,12 +246,19 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public Collection<SONConnection> getSONConnections(Node first, Node second){
-		ArrayList<SONConnection> result =  new ArrayList<SONConnection>();
+	public SONConnection getSONConnection(Node first, Node second){
+		ArrayList<SONConnection> connection =  new ArrayList<SONConnection>();
+
 		for (SONConnection con : this.getSONConnections(first))
 			if (this.getSONConnections(second).contains(con))
-				result.add(con);
-		return result;
+				connection.add(con);
+		if(connection.size() > 1)
+			throw new RuntimeException("Conection size between"+ first.toString() + "and"+ second.toString()+ "> 1");
+
+		if(connection.size()  == 0)
+		return null;
+
+		return connection.iterator().next();
 	}
 
 
@@ -264,13 +302,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Node first, Node second){
-		Collection<String> result =  new HashSet<String>();
-		for (SONConnection con : getSONConnections(first, second)){
-			result.add(con.getType());
-		}
+	public String getSONConnectionType (Node first, Node second){
 
-		return result;
+		return getSONConnection(first, second).getType();
 	}
 
 	public Collection<String> getInputSONConnectionTypes(Node node){
@@ -295,8 +329,29 @@ public class SON extends AbstractMathModel implements SONModel {
 
 	//Group Methods
 
+	public Collection<Block> getBlocks(){
+		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
+	}
+
+	public Collection<EventNode> getEventNodes(){
+		ArrayList<EventNode> result = new ArrayList<EventNode>();
+		for(EventNode node :  Hierarchy.getDescendantsOfType(getRoot(), EventNode.class)){
+				if(node instanceof Block){
+					if(((Block)node).getIsCollapsed())
+						result.add(node);
+				}
+				if(node instanceof Event)
+					result.add(node);
+		}
+		return result;
+	}
+
+	public Collection<PageNode> getPageNodes(){
+		return Hierarchy.getDescendantsOfType(getRoot(), PageNode.class);
+	}
+
 	public Collection<ONGroup> getGroups(){
-		return Hierarchy.getChildrenOfType(getRoot(), ONGroup.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), ONGroup.class);
 	}
 
 	public boolean isInSameGroup (Node first, Node second){
@@ -306,4 +361,5 @@ public class SON extends AbstractMathModel implements SONModel {
 		}
 		return false;
 	}
+
 }

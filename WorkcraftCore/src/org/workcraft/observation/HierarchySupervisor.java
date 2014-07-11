@@ -26,6 +26,10 @@ import org.workcraft.dom.Node;
 public abstract class HierarchySupervisor implements HierarchyObserver {
 	private Node root = null;
 
+	protected Node getRoot() {
+		return root;
+	}
+
 	private void attachInternal (Node root) {
 		if (root instanceof ObservableHierarchy)
 			((ObservableHierarchy)root).addObserver(this);

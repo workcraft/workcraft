@@ -46,8 +46,8 @@ public class SyncLine extends Polyline {
 		g.setColor(connColor);
 
 //		g.setStroke(new BasicStroke((float)connectionInfo.getLineWidth()));
-		g.setStroke(new BasicStroke( 0.18f , BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
-				1.5f, new float[]{ 0.1f , 0.12f,}, 0f));
+		g.setStroke(new BasicStroke( 0.15f , BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
+				1.5f, new float[]{ 0.1f , 0.075f,}, 0f));
 		g.draw(connectionPath);
 
 		boundingBox = connectionPath.getBounds2D();

@@ -21,10 +21,20 @@
 
 package org.workcraft.dom.math;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 
@@ -41,4 +51,70 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
 		new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
 	}
+
+	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager manager, Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+
+		// need to assign the whole tree to the new providers
+		Collection<Node> nodes = null;
+
+		if (sourceChildren!=null) {
+			nodes = new HashSet<Node>();
+			nodes.addAll(sourceChildren);
+		} else {
+			nodes = Hierarchy.getChildrenOfType(sourceRoot, Node.class);
+		}
+
+		for (Node node: nodes) {
+
+			NamespaceProvider provider = manager.getNamespaceProvider(targetContainer);
+			if (targetContainer instanceof NamespaceProvider) provider = (NamespaceProvider) targetContainer;
+
+			manager.setNamespaceProvider(node, (HierarchicalUniqueNameReferenceManager)sourceModel.getReferenceManager(), provider);
+
+		}
+
+		sourceRoot.reparent(nodes, targetContainer);
+
+		for (Node node: nodes) {
+			// after reparenting,
+			// additional call to propagate the name data into the nodes (if necessary)
+			// when setDefaultNameIfUnnamed was called
+			manager.setName(node, manager.getName(node));
+		}
+
+		for (Node node: nodes) {
+
+			if (!(node instanceof Container)) continue;
+
+			setNamespaceRecursively(manager, (Container)node, sourceModel, (Container)node, null);
+		}
+
+	}
+
+
+
+	@Override
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+		if (sourceModel==null) sourceModel = this;
+
+		HierarchicalUniqueNameReferenceManager manager = null;
+
+		if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager)
+			manager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
+
+		if (manager!=null) {
+
+			NamespaceProvider provider = null;
+			if (targetContainer instanceof NamespaceProvider)
+				provider = (NamespaceProvider)targetContainer;
+			else
+				provider = manager.getNamespaceProvider(targetContainer);
+
+			setNamespaceRecursively(manager, provider, sourceModel, sourceRoot, sourceChildren);
+
+		}
+
+
+	}
+
 }

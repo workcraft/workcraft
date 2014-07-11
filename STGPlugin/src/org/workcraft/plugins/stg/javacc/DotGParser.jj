@@ -45,9 +45,9 @@ public class DotGParser {
 		if (node == null) {
 			node = stg.getNodeByReference(name + "/0");		}			
 		if (node == null) {
-		  	if (dummies.contains(name)) {				node = stg.createDummyTransition(name);
+		  	if (dummies.contains(name)) {				node = stg.createDummyTransition(name, null);
 			} else if (signals.containsKey(name)) {				node = getOrCreate(Triple.of(name, Direction.TOGGLE, 0));			} else {
-				node = stg.createPlace(name);			}
+				node = stg.createPlace(name, null);			}
 		}
 		return node;
 	}
@@ -57,7 +57,7 @@ public class DotGParser {
 		Node node = stg.getNodeByReference(reference);
 		if (node == null) {
 		  	if (dummies.contains(name)) {
-				DummyTransition dt = stg.createDummyTransition(null);
+				DummyTransition dt = stg.createDummyTransition(null, null);
 				stg.setName(dt, reference, true);
 				dt.setName(name);
 				node = dt;

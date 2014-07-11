@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathModel;
@@ -52,6 +53,13 @@ public class VisualModelTests {
 	private class MockMathModel extends AbstractModel implements MathModel{
 		public MockMathModel() {
 			super(new MathGroup());
+		}
+
+		@Override
+		public void reparent(Container targetContainer, Model sourceModel,
+				Container sourceRoot, Collection<Node> sourceChildren) {
+			// TODO Auto-generated method stub
+
 		}
 	}
 

@@ -2,11 +2,6 @@ package org.workcraft.plugins.son.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
@@ -14,22 +9,22 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Event;
 
-public class CSONStructureTask implements SONStructureVerification{
+
+public class CSONStructureTask implements StructuralVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private RelationAlg relation;
-	private CSONPathAlg traverse;
+	private RelationAlgorithm relationAlg;
+	private CSONPathAlg csonPathAlg;
 
-	private Collection<ChannelPlace> cPlaceResult;
-	private Collection<ChannelPlace> cPlaceConTypeResult;
-	private Collection<ArrayList<Node>> cycleResult;
-	private Collection<List<ChannelPlace>> cPlaceStructureResult;
+	private Collection<ChannelPlace> cPlaceResult = new ArrayList<ChannelPlace>();
+	private Collection<ChannelPlace> cPlaceConTypeResult =  new ArrayList<ChannelPlace>();
+	private Collection<ArrayList<Node>> cycleResult = new ArrayList<ArrayList<Node>>();
+//	private Collection<List<ChannelPlace>> cPlaceStructureResult;
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -37,8 +32,8 @@ public class CSONStructureTask implements SONStructureVerification{
 
 	public CSONStructureTask(SONModel net){
 		this.net = net;
-		relation = new RelationAlg(net);
-		traverse = new CSONPathAlg(net);
+		relationAlg = new RelationAlgorithm(net);
+		csonPathAlg = new CSONPathAlg(net);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -46,7 +41,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		logger.info("-----------------Communication-SON Verification-----------------");
 
 		//group info
-		logger.info("Initialising selected groups components...");
+		logger.info("Initialising selected group components...");
 		ArrayList<Node> components = new ArrayList<Node>();
 		for(ONGroup group : groups){
 			components.addAll(group.getComponents());
@@ -56,29 +51,38 @@ public class CSONStructureTask implements SONStructureVerification{
 		logger.info("Group Components = " + components.size());
 
 		ArrayList<ChannelPlace> relatedcPlaces = new ArrayList<ChannelPlace>();
-		relatedcPlaces.addAll(relation.getRelatedChannelPlace(groups));
+		relatedcPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
 		components.addAll(relatedcPlaces);
 
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
 
+		if(relatedcPlaces.isEmpty()){
+			logger.info("Task termination: no a/synchronous connections in selected groups.");
+			return;
+		}
+
 		//channel place relation
 		logger.info("Running model structure and components relation check...");
-		cPlaceResult = cPlaceRelationTask(relatedcPlaces);
-		cPlaceConTypeResult = cPlaceConTypeTask(relatedcPlaces);
+		cPlaceResult.addAll(cPlaceRelationTask(relatedcPlaces));
+		cPlaceConTypeResult.addAll(cPlaceConTypeTask(relatedcPlaces));
+
 		if(cPlaceResult.isEmpty() && cPlaceConTypeResult.isEmpty())
 			logger.info("Correct channel place relation.");
 		else{
 			hasErr = true;
 			errNumber = errNumber + cPlaceResult.size() + cPlaceConTypeResult.size();
 			for(ChannelPlace cPlace : cPlaceResult)
-				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
+						"input/output size > 1");
 
 			for(ChannelPlace cPlace : cPlaceConTypeResult)
-				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")  ");
+				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
+						"different input and output connection types");
 		}
 
-		//channel place structure
-		cPlaceStructureResult = cPlaceStructureTask(relatedcPlaces);
+/*		//channel place structure
+		//cPlaceStructureResult = cPlaceStructureTask(relatedcPlaces);
+		cPlaceStructureResult = new ArrayList<List<ChannelPlace>>();
 		if(cPlaceStructureResult.isEmpty())
 			logger.info("Correct communication strucuture.");
 		else{
@@ -87,17 +91,17 @@ public class CSONStructureTask implements SONStructureVerification{
 			for (List<ChannelPlace> list : cPlaceStructureResult){
 				ArrayList<String> cpName = new ArrayList<String>();
 				for(ChannelPlace cPlace : list){
-					cpName.add(net.getName(cPlace) + "(" + net.getNodeLabel(cPlace) + ")");
+					cpName.add(net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")");
 				}
 				logger.error("ERROR : Incorrect communication structure:" + cpName.toString());
 			}
-		}
+		}  */
 
 		logger.info("Model strucuture and components relation task complete.");
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
-		cycleResult = traverse.cycleTask(components);
+		cycleResult.addAll(csonPathAlg.cycleTask(components));
 
 		if (cycleResult.isEmpty() )
 			logger.info("Acyclic structure correct");
@@ -131,7 +135,7 @@ public class CSONStructureTask implements SONStructureVerification{
 		return result;
 	}
 
-	private Collection<List<ChannelPlace>> cPlaceStructureTask(ArrayList<ChannelPlace> cPlaces){
+/*	private Collection<List<ChannelPlace>> cPlaceStructureTask(ArrayList<ChannelPlace> cPlaces){
 		Collection<List<ChannelPlace>> result = new HashSet<List<ChannelPlace>>();
 
 		//input/output events of each channel place
@@ -206,7 +210,7 @@ public class CSONStructureTask implements SONStructureVerification{
 			System.err.println("same nodes"+this.toString());
 
 		return result;
-	}
+	}*/
 
 	public void errNodesHighlight(){
 
@@ -218,9 +222,9 @@ public class CSONStructureTask implements SONStructureVerification{
 			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
 		}
 
-		for(List<ChannelPlace> list : cPlaceStructureResult)
+/*		for(List<ChannelPlace> list : cPlaceStructureResult)
 			for(ChannelPlace cPlace : list)
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
+			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());*/
 
 
 		for (ArrayList<Node> list : this.cycleResult)

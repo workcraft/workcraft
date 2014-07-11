@@ -15,7 +15,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -31,7 +33,6 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
@@ -87,14 +88,23 @@ public class STGGenerator {
 
 	private static ContactSTG generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
 		String contactName = getContactName(circuit, contact);
-		VisualPlace zeroPlace = stg.createPlace(contactName+"_0");
+
+		String path = NamespaceHelper.getParentReference(circuit.getMathModel().getNodeReference(contact.getReferencedComponent()));
+		Container curContainer = (Container)createdContainers.get(path);
+		while (curContainer==null) {
+			path = NamespaceHelper.getParentReference(path);
+			curContainer = (Container)createdContainers.get(path);
+		}
+
+
+		VisualPlace zeroPlace = stg.createPlace(contactName+"_0", curContainer);
 		zeroPlace.setLabel(contactName+"=0");
 
 		if (!contact.getInitOne()) {
 			zeroPlace.getReferencedPlace().setTokens(1);
 		}
 
-		VisualPlace onePlace = stg.createPlace(contactName+"_1");
+		VisualPlace onePlace = stg.createPlace(contactName+"_1", curContainer);
 		onePlace.setLabel(contactName+"=1");
 		if (contact.getInitOne()) {
 			onePlace.getReferencedPlace().setTokens(1);
@@ -131,15 +141,23 @@ public class STGGenerator {
 		}
 	}
 
-	public static VisualSTG generate(VisualCircuit circuit) {
+
+
+	// store created containers in a separate map
+	private static HashMap<String, Node> createdContainers = null;
+
+	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
+
+			// first, create the same page structure
+			createdContainers = NamespaceHelper.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
 
 			// generate all possible drivers and fill out the targets
-			for(VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+			for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
 				ContactSTG cstg;
 
 				if(VisualContact.isDriver(contact)) {
@@ -171,10 +189,10 @@ public class STGGenerator {
 				BooleanFormula resetFunc = null;
 				Type signalType = Type.INPUT;
 				if (driver instanceof VisualFunctionContact) {
+					// Determine signal type
 					VisualFunctionContact contact = (VisualFunctionContact)driver;
-					if ((contact.getIOType() == IOType.OUTPUT) && !isFromEnvironment(contact)) {
-						signalType = Type.OUTPUT;
-					}
+					signalType = getSignalType(contact);
+
 					if ((contact.getIOType() == IOType.OUTPUT) && !(contact.getParent() instanceof VisualCircuitComponent)) {
 						// Driver of the primary output port
 						VisualContact outputDriver = findDriver(circuit, contact);
@@ -203,11 +221,19 @@ public class STGGenerator {
 		}
 	}
 
-	private static boolean isFromEnvironment(VisualContact contact) {
-		if (contact.getParent() instanceof VisualCircuitComponent) {
-			return ((VisualCircuitComponent)contact.getParent()).getIsEnvironment();
-		}
-		return false;
+	private static Type getSignalType(VisualFunctionContact contact) {
+		Type result = Type.INPUT;
+		if (contact.getIOType() == IOType.OUTPUT) {
+			if (contact.getParent() instanceof VisualCircuitComponent) {
+				VisualCircuitComponent component = (VisualCircuitComponent)contact.getParent();
+				if (!component.getIsEnvironment()) {
+					result = Type.INTERNAL;
+				}
+			} else {
+				result = Type.OUTPUT;
+			   }
+		  }
+		  return result;
 	}
 
 	private static void implementDriver(VisualCircuit circuit, VisualSTG stg,
@@ -284,8 +310,22 @@ public class STGGenerator {
 				reset, subtract(add(center, direction), pOffset),  minusDirection,
 				signalName, ttype, SignalTransition.Direction.MINUS, p.p1, p.p0));
 
+		Container currentLevel = null;
+		Container oldLevel = stg.getCurrentLevel();
+
+		for (Node node:nodes) {
+			if (currentLevel==null)
+				currentLevel = (Container)node.getParent();
+
+			if (currentLevel!=node.getParent())
+				throw new RuntimeException("Current level is not the same among the processed nodes");
+		}
+
+
+		stg.setCurrentLevel(currentLevel);
 		stg.select(nodes);
 		stg.groupSelection();
+		stg.setCurrentLevel(oldLevel);
 	}
 
 	private static LinkedList<VisualNode> buildTransitions(VisualContact parentContact,
@@ -295,6 +335,15 @@ public class STGGenerator {
 			VisualPlace preset, VisualPlace postset) throws InvalidConnectionException {
 
 		LinkedList<VisualNode> nodes = new LinkedList<VisualNode>();
+
+
+		String path = NamespaceHelper.getParentReference(circuit.getMathModel().getNodeReference(parentContact.getReferencedComponent()));
+		Container curContainer = (Container)createdContainers.get(path);
+		while (curContainer==null) {
+			path = NamespaceHelper.getParentReference(path);
+			curContainer = (Container)createdContainers.get(path);
+		}
+
 
 		TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
 				new Comparator<DnfClause>() {
@@ -311,7 +360,7 @@ public class STGGenerator {
 
 		for(DnfClause clause : clauses)
 		{
-			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection);
+			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection, curContainer);
 			nodes.add(transition);
 			parentContact.getReferencedTransitions().add(transition.getReferencedTransition());
 
@@ -333,7 +382,7 @@ public class STGGenerator {
 				ContactSTG source = drivers.get(driverContact);
 
 				if(source == null)
-					throw new RuntimeException("No source for " + targetContact.getName() + " while generating " + signalName);
+					throw new RuntimeException("No source for " + circuit.getMathModel().getName(targetContact) + " while generating " + signalName);
 
 				VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
 
@@ -365,12 +414,19 @@ public class STGGenerator {
 				}
 			}
 
-			result = ((VisualFunctionComponent)parent).getName();
+			result = NamespaceHelper.getFlatName(
+						circuit.getMathModel().getName(vc.getReferencedComponent())
+					);
+
+//			result = HierarchicalNames.getFlatName(
+//					circuit.getMathModel().getNodeReference(vc.getReferencedComponent())
+//					);
+
 			if (contact.getIOType() == IOType.INPUT || output_cnt > 1) {
-				result += "_" + contact.getName();
+				result += "_" + circuit.getMathModel().getName(contact.getReferencedContact());
 			}
 		} else {
-			result = contact.getName();
+			result = circuit.getMathModel().getName(contact.getReferencedContact());
 		}
 		return result;
 	}

@@ -22,6 +22,7 @@
 package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -43,7 +44,30 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 			this.internalReferenceResolver = internalReferenceResolver;
 		}
 
-		public BooleanVariable eval(String ref){ return (BooleanVariable) internalReferenceResolver.getObject(ref.substring("var_".length())); }
+		public BooleanVariable eval(String ref){
+
+			if (ref.startsWith("var_")) {
+				ref = ref.substring("var_".length());
+
+				BooleanVariable bv = (BooleanVariable)internalReferenceResolver.getObject(ref);
+				if (bv!=null)
+					return bv;
+
+//				for (Object o: internalReferenceResolver.getObjects()) {
+//					if (o instanceof BooleanVariable) {
+//						bv = (BooleanVariable)o;
+//						if (bv.getLegacyID().equals(Integer.valueOf(ref)))
+//							return bv;
+//
+//						return null;
+//					}
+//				}
+			}
+
+			String hier = NamespaceHelper.flatToHierarchicalName(ref);
+
+			return (BooleanVariable) internalReferenceResolver.getObject(hier);
+		}
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
@@ -197,7 +198,10 @@ public class StgGenerator {
 		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
 		ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(l).size() == 0);
 
-		VisualPlace C0 = stg.createPlace(nameC + name + name0);
+
+		Container curContainer = null;
+
+		VisualPlace C0 = stg.createPlace(nameC + name + name0, curContainer);
 		C0.setLabel(labelC + name + label0);
 		C0.setLabelPositioning(Positioning.BOTTOM);
 		if (!l.getReferencedLogic().isComputed()) {
@@ -208,7 +212,7 @@ public class StgGenerator {
 		setPosition(C0, x + 2.0, y + 1.0);
 		nodes.add(C0);
 
-		VisualPlace C1 = stg.createPlace(nameC + name + name1);
+		VisualPlace C1 = stg.createPlace(nameC + name + name1, curContainer);
 		C1.setLabel(labelC + name + label1);
 		C1.setLabelPositioning(Positioning.TOP);
 		if (l.getReferencedLogic().isComputed()) {
@@ -235,7 +239,7 @@ public class StgGenerator {
 		double dy = 0.0;
 		for (Node n: preset) {
 			if (CR == null || l.getReferencedLogic().isEarlyEvaluation()) {
-				CR = stg.createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS);
+				CR = stg.createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS, curContainer);
 				CR.setTokenColorGenerator(tokenColorGenerator);
 				createConsumingArc(C0, CR, false);
 				createProducingArc(CR, C1, true);
@@ -244,7 +248,7 @@ public class StgGenerator {
 			}
 			CRs.put(n, CR);
 			if (CF == null) {
-				CF = stg.createSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS);
+				CF = stg.createSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS, curContainer);
 				createConsumingArc(C1, CF, false);
 				createProducingArc(CF, C0, false);
 				setPosition(CF, x - 2.0, y - 1.0 - dy);
@@ -305,8 +309,9 @@ public class StgGenerator {
 			type = SignalTransition.Type.OUTPUT;
 		}
 		ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(r).size() == 0);
+		Container curContainer = null;
 
-		VisualPlace M0 = stg.createPlace(nameM + name + name0);
+		VisualPlace M0 = stg.createPlace(nameM + name + name0, curContainer);
 		M0.setLabel(labelM + name + label0);
 		M0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedRegister().isMarked()) {
@@ -317,7 +322,7 @@ public class StgGenerator {
 		setPosition(M0, x + 2.0, y + 1.0);
 		nodes.add(M0);
 
-		VisualPlace M1 = stg.createPlace(nameM + name + name1);
+		VisualPlace M1 = stg.createPlace(nameM + name + name1, curContainer);
 		M1.setLabel(labelM + name + label1);
 		M1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedRegister().isMarked()) {
@@ -327,14 +332,14 @@ public class StgGenerator {
 		setPosition(M1, x + 2.0, y - 1.0);
 		nodes.add(M1);
 
-		VisualSignalTransition MR = stg.createSignalTransition(nameM + name, type, SignalTransition.Direction.PLUS);
+		VisualSignalTransition MR = stg.createSignalTransition(nameM + name, type, SignalTransition.Direction.PLUS, curContainer);
 		MR.setTokenColorGenerator(tokenColorGenerator);
 		createConsumingArc(M0, MR, false);
 		createProducingArc(MR, M1, true);
 		setPosition(MR, x - 2.0, y + 1.0);
 		nodes.add(MR);
 
-		VisualSignalTransition MF = stg.createSignalTransition(nameM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition MF = stg.createSignalTransition(nameM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(M1, MF, false);
 		createProducingArc(MF, M0, false);
 		setPosition(MF, x - 2.0, y - 1.0);
@@ -423,7 +428,9 @@ public class StgGenerator {
 		ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(l).size() == 0);
 		ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(l).size() == 0);
 
-		VisualPlace fwC0 = stg.createPlace(nameFwC + name + name0);
+		Container curContainer = null;
+
+		VisualPlace fwC0 = stg.createPlace(nameFwC + name + name0, curContainer);
 		fwC0.setLabel(labelFwC + name + label0);
 		fwC0.setLabelPositioning(Positioning.BOTTOM);
 		if (!l.getReferencedCounterflowLogic().isForwardComputed()) {
@@ -434,7 +441,7 @@ public class StgGenerator {
 		setPosition(fwC0, x + 2.0, y - 2.0);
 		nodes.add(fwC0);
 
-		VisualPlace fwC1 = stg.createPlace(nameFwC + name + name1);
+		VisualPlace fwC1 = stg.createPlace(nameFwC + name + name1, curContainer);
 		fwC1.setLabel(labelFwC + name + label1);
 		fwC1.setLabelPositioning(Positioning.TOP);
 		if (l.getReferencedCounterflowLogic().isForwardComputed()) {
@@ -459,7 +466,7 @@ public class StgGenerator {
 			double dy = 0.0;
 			for (Node n: preset) {
 				if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
-					fwCR = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS);
+					fwCR = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS, curContainer);
 					fwCR.setTokenColorGenerator(presetTokenColorGenerator);
 					createConsumingArc(fwC0, fwCR, false);
 					createProducingArc(fwCR, fwC1, true);
@@ -468,7 +475,7 @@ public class StgGenerator {
 				}
 				fwCRs.put(n, fwCR);
 				if (fwCF == null) {
-					fwCF = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS);
+					fwCF = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS, curContainer);
 					createConsumingArc(fwC1, fwCF, false);
 					createProducingArc(fwCF, fwC0, false);
 					stg.connect(fwC1, fwCF);
@@ -481,7 +488,7 @@ public class StgGenerator {
 			}
 		}
 
-		VisualPlace bwC0 = stg.createPlace(nameBwC + name + name0);
+		VisualPlace bwC0 = stg.createPlace(nameBwC + name + name0, curContainer);
 		bwC0.setLabel(labelBwC + name + label0);
 		bwC0.setLabelPositioning(Positioning.BOTTOM);
 		if (!l.getReferencedCounterflowLogic().isBackwardComputed()) {
@@ -492,7 +499,7 @@ public class StgGenerator {
 		setPosition(bwC0, x + 2.0, y + 4.0);
 		nodes.add(bwC0);
 
-		VisualPlace bwC1 = stg.createPlace(nameBwC + name + name1);
+		VisualPlace bwC1 = stg.createPlace(nameBwC + name + name1, curContainer);
 		bwC1.setLabel(labelBwC + name + label1);
 		bwC1.setLabelPositioning(Positioning.TOP);
 		if (l.getReferencedCounterflowLogic().isBackwardComputed()) {
@@ -517,7 +524,7 @@ public class StgGenerator {
 			double dy = 0.0;
 			for (Node n: postset) {
 				if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
-					bwCR = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS);
+					bwCR = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS, curContainer);
 					bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
 					stg.connect(bwC0, bwCR);
 					stg.connect(bwCR, bwC1);
@@ -526,7 +533,7 @@ public class StgGenerator {
 				}
 				bwCRs.put(n, bwCR);
 				if (bwCF == null) {
-					bwCF = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS);
+					bwCF = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS, curContainer);
 					stg.connect(bwC1, bwCF);
 					stg.connect(bwCF, bwC0);
 					setPosition(bwCF, x - 2.0, y + 2.0 - dy);
@@ -585,7 +592,9 @@ public class StgGenerator {
 		ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(r).size() == 0);
 		ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(r).size() == 0);
 
-		VisualPlace orM0 = stg.createPlace(nameOrM + name + name0);
+		Container curContainer = null;
+
+		VisualPlace orM0 = stg.createPlace(nameOrM + name + name0, curContainer);
 		orM0.setLabel(labelOrM + name + label0);
 		orM0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedCounterflowRegister().isOrMarked()) {
@@ -596,7 +605,7 @@ public class StgGenerator {
 		setPosition(orM0, x + 2.0, y - 2.0);
 		nodes.add(orM0);
 
-		VisualPlace orM1 = stg.createPlace(nameOrM + name + name1);
+		VisualPlace orM1 = stg.createPlace(nameOrM + name + name1, curContainer);
 		orM1.setLabel(labelOrM + name + label1);
 		orM1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedCounterflowRegister().isOrMarked()) {
@@ -607,33 +616,33 @@ public class StgGenerator {
 		setPosition(orM1, x + 2.0, y - 4.0);
 		nodes.add(orM1);
 
-		VisualSignalTransition orMRfw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS);
+		VisualSignalTransition orMRfw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS, curContainer);
 		orMRfw.setTokenColorGenerator(presetTokenColorGenerator);
 		createConsumingArc(orM0, orMRfw, false);
 		createProducingArc(orMRfw, orM1, true);
 		setPosition(orMRfw, x - 2.0, y - 2.5);
 		nodes.add(orMRfw);
 
-		VisualSignalTransition orMRbw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS);
+		VisualSignalTransition orMRbw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS, curContainer);
 		orMRbw.setTokenColorGenerator(postsetTokenColorGenerator);
 		createConsumingArc(orM0, orMRbw, false);
 		createProducingArc(orMRbw, orM1, true);
 		setPosition(orMRbw, x - 2.0, y - 1.5);
 		nodes.add(orMRbw);
 
-		VisualSignalTransition orMFfw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition orMFfw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(orM1, orMFfw, false);
 		createProducingArc(orMFfw, orM0, false);
 		setPosition(orMFfw, x - 2.0, y - 4.5);
 		nodes.add(orMFfw);
 
-		VisualSignalTransition orMFbw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition orMFbw = stg.createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(orM1, orMFbw, false);
 		createProducingArc(orMFbw, orM0, false);
 		setPosition(orMFbw, x - 2.0, y - 3.5);
 		nodes.add(orMFbw);
 
-		VisualPlace andM0 = stg.createPlace(nameAndM + name + name0);
+		VisualPlace andM0 = stg.createPlace(nameAndM + name + name0, curContainer);
 		andM0.setLabel(labelAndM + name + label0);
 		andM0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedCounterflowRegister().isAndMarked()) {
@@ -644,7 +653,7 @@ public class StgGenerator {
 		setPosition(andM0, x + 2.0, y + 4.0);
 		nodes.add(andM0);
 
-		VisualPlace andM1 = stg.createPlace(nameAndM + name + name1);
+		VisualPlace andM1 = stg.createPlace(nameAndM + name + name1, curContainer);
 		andM1.setLabel(labelAndM + name + label1);
 		andM1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedCounterflowRegister().isAndMarked()) {
@@ -655,13 +664,13 @@ public class StgGenerator {
 		setPosition(andM1, x + 2.0, y + 2.0);
 		nodes.add(andM1);
 
-		VisualSignalTransition andMR = stg.createSignalTransition(nameAndM + name, type, SignalTransition.Direction.PLUS);
+		VisualSignalTransition andMR = stg.createSignalTransition(nameAndM + name, type, SignalTransition.Direction.PLUS, curContainer);
 		createConsumingArc(andM0, andMR, false);
 		createProducingArc(andMR, andM1, false);
 		setPosition(andMR, x - 2.0, y + 4.0);
 		nodes.add(andMR);
 
-		VisualSignalTransition andMF = stg.createSignalTransition(nameAndM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition andMF = stg.createSignalTransition(nameAndM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(andM1, andMF, false);
 		createProducingArc(andMF, andM0, false);
 		setPosition(andMF, x - 2.0, y + 2.0);
@@ -749,8 +758,9 @@ public class StgGenerator {
 			type = SignalTransition.Type.OUTPUT;
 		}
 		ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(r).size() == 0);
+		Container curContainer = null;
 
-		VisualPlace M0 = stg.createPlace(nameM + name + name0);
+		VisualPlace M0 = stg.createPlace(nameM + name + name0, curContainer);
 		M0.setLabel(labelM + name + label0);
 		M0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -761,7 +771,7 @@ public class StgGenerator {
 		setPosition(M0, x - 4.0, y + 1.0);
 		nodes.add(M0);
 
-		VisualPlace M1 = stg.createPlace(nameM + name + name1);
+		VisualPlace M1 = stg.createPlace(nameM + name + name1, curContainer);
 		M1.setLabel(labelM + name + label1);
 		M1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -772,7 +782,7 @@ public class StgGenerator {
 		setPosition(M1, x - 4.0, y - 1.0);
 		nodes.add(M1);
 
-		VisualPlace tM0 = stg.createPlace(nameTrueM + name + name0);
+		VisualPlace tM0 = stg.createPlace(nameTrueM + name + name0, curContainer);
 		tM0.setLabel(labelTrueM + name + label0);
 		tM0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedBinaryRegister().isTrueMarked()) {
@@ -783,7 +793,7 @@ public class StgGenerator {
 		setPosition(tM0, x + 4.0, y - 2.0);
 		nodes.add(tM0);
 
-		VisualPlace tM1 = stg.createPlace(nameTrueM + name + name1);
+		VisualPlace tM1 = stg.createPlace(nameTrueM + name + name1, curContainer);
 		tM1.setLabel(labelTrueM + name + label1);
 		tM1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedBinaryRegister().isTrueMarked()) {
@@ -805,7 +815,7 @@ public class StgGenerator {
 		double dy = 0.0;
 		for (Node n: preset) {
 			if (tMR == null || orSync) {
-				tMR = stg.createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.PLUS);
+				tMR = stg.createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.PLUS, curContainer);
 				tMR.setTokenColorGenerator(tokenColorGenerator);
 				createConsumingArc(tM0, tMR, false);
 				createProducingArc(tMR, tM1, true);
@@ -817,7 +827,7 @@ public class StgGenerator {
 			tMRs.put(n, tMR);
 			dy += 1.0;
 		}
-		VisualSignalTransition tMF = stg.createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition tMF = stg.createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(tM1, tMF, false);
 		createProducingArc(tMF, tM0, false);
 		createConsumingArc(M1, tMF, false);
@@ -825,7 +835,8 @@ public class StgGenerator {
 		setPosition(tMF, x, y - 4.0 - dy);
 		nodes.add(tMF);
 
-		VisualPlace fM0 = stg.createPlace(nameFalseM + name + name0);
+
+		VisualPlace fM0 = stg.createPlace(nameFalseM + name + name0, curContainer);
 		fM0.setLabel(labelFalseM + name + label0);
 		fM0.setLabelPositioning(Positioning.BOTTOM);
 		if (!r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -836,7 +847,7 @@ public class StgGenerator {
 		setPosition(fM0, x + 4.0, y + 4.0);
 		nodes.add(fM0);
 
-		VisualPlace fM1 = stg.createPlace(nameFalseM + name + name1);
+		VisualPlace fM1 = stg.createPlace(nameFalseM + name + name1, curContainer);
 		fM1.setLabel(labelFalseM + name + label1);
 		fM1.setLabelPositioning(Positioning.TOP);
 		if (r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -852,7 +863,7 @@ public class StgGenerator {
 		dy = 0.0;
 		for (Node n: preset) {
 			if (fMR == null || andSync) {
-				fMR = stg.createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.PLUS);
+				fMR = stg.createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.PLUS, curContainer);
 				fMR.setTokenColorGenerator(tokenColorGenerator);
 				createConsumingArc(fM0, fMR, false);
 				createProducingArc(fMR, fM1, true);
@@ -864,7 +875,7 @@ public class StgGenerator {
 			fMRs.put(n, fMR);
 			dy += 1.0;
 		}
-		VisualSignalTransition fMF = stg.createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.MINUS);
+		VisualSignalTransition fMF = stg.createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.MINUS, curContainer);
 		createConsumingArc(fM1, fMF, false);
 		createProducingArc(fMF, fM0, false);
 		createConsumingArc(M1, fMF, false);

@@ -25,7 +25,7 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")
 
-public class VisualEvent extends VisualComponent {
+public class VisualEvent extends VisualComponent implements VisualEventNode{
 	//private boolean displayName = false;
 
 	public VisualEvent(Event event) {
@@ -88,8 +88,8 @@ public class VisualEvent extends VisualComponent {
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
-	public Event getReferencedEvent() {
-		return (Event)getReferencedComponent();
+	public Event getMathEventNode(){
+		return (Event)this.getReferencedComponent();
 	}
 
 	public void setLabel(String label){

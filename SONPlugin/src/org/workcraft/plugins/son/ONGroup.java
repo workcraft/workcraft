@@ -3,28 +3,41 @@ package org.workcraft.plugins.son;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathGroup;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
-public class ONGroup extends MathGroup{
+public class ONGroup extends PageNode{
 
 	private String label="";
 	private Color color = CommonVisualSettings.getBorderColor();
 
 	public Collection<Node> getComponents(){
-		HashSet<Node> result = new HashSet<Node>();
-		for(Node node : this.getChildren())
-			if((node instanceof Condition) || (node instanceof Event) )
+		ArrayList<Node> result = new ArrayList<Node>();
+
+		for(Node node : Hierarchy.getDescendantsOfType(this, MathNode.class))
+			if(node instanceof Condition || node instanceof Event)
 				result.add(node);
+
+		//remove the nodes in isolate blocks
+		for(Block block : this.getBlocks())
+			for(SONConnection con : getSONConnections())
+				if(con.getFirst() == block || con.getSecond() == block){
+					result.removeAll(block.getComponents());
+					result.add(block);
+				}
+
 		return result;
 	}
 
@@ -42,51 +55,66 @@ public class ONGroup extends MathGroup{
 			}
 		return true;
 	}
-	@Override
-	public void setParent(Node parent) {
-		super.setParent(parent);
-	}
-	@Override
-	public void add(Node node) {
-		super.add(node);
-	}
-	@Override
-	public void add(Collection<Node> nodes) {
-		super.add(nodes);
-	}
-	@Override
-	public void remove(Node node) {
-		super.remove(node);
-	}
-	@Override
-	public void remove(Collection<Node> nodes) {
-		super.remove(nodes);
-	}
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
-		super.reparent(nodes, newParent);
-	}
-	@Override
-	public void reparent(Collection<Node> nodes) {
-		super.reparent(nodes);
-	}
 
 	public Collection<Condition> getConditions(){
-		ArrayList<Condition>  result = new ArrayList<Condition>();
-
-		for (Node node : this.getChildren())
-			if (node instanceof Condition)
+		ArrayList<Condition> result =  new ArrayList<Condition>();
+		for(Node node : getComponents())
+			if(node instanceof Condition)
 				result.add((Condition)node);
+
 		return result;
 	}
 
 	public Collection<Event> getEvents(){
-		ArrayList<Event>  result = new ArrayList<Event>();
-
-		for (Node node : this.getChildren())
-			if (node instanceof Event)
+		ArrayList<Event> result =  new ArrayList<Event>();
+		for(Node node : getComponents())
+			if(node instanceof Event)
 				result.add((Event)node);
+
 		return result;
+	}
+
+	public Collection<EventNode> getEventNodes(){
+		ArrayList<EventNode> result =  new ArrayList<EventNode>();
+		for(Node node : getComponents()){
+			if(node instanceof Event)
+				result.add((Event)node);
+			if(node instanceof Block)
+				if(((Block)node).getIsCollapsed())
+					result.add((Block)node);
+		}
+
+		return result;
+	}
+
+	public Collection<PageNode> getPageNodes(){
+		return Hierarchy.getDescendantsOfType(this, PageNode.class);
+	}
+
+	public Collection<Block> getBlocks(){
+		return Hierarchy.getDescendantsOfType(this, Block.class);
+	}
+
+	public Collection<Block> getCollapsedBlocks(){
+		Collection<Block> result = new ArrayList<Block>();
+		for(Block block : getBlocks()){
+			if (block.getIsCollapsed())
+				result.add(block);
+		}
+		return result;
+	}
+
+	public Collection<Block> getUncollapsedBlocks(){
+		Collection<Block> result = new ArrayList<Block>();
+		for(Block block : getBlocks()){
+			if (!block.getIsCollapsed())
+				result.add(block);
+		}
+		return result;
+	}
+
+	public Collection<SONConnection> getSONConnections(){
+		return Hierarchy.getDescendantsOfType(this, SONConnection.class);
 	}
 
 	public void setForegroundColor(Color color){

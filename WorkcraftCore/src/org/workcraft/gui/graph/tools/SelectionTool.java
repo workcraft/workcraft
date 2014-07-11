@@ -58,6 +58,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -74,6 +76,10 @@ public class SelectionTool extends AbstractTool {
 	static private final Color selectionBorderColor = new Color(200, 200, 200);
 	static private final Color selectionFillColor = new Color(99, 130, 191, 32);
 	static private final Color grayOutColor = Color.LIGHT_GRAY;
+	// node for the MouseOver events
+	private VisualNode mouseOverNode = null;
+
+
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -128,6 +134,8 @@ public class SelectionTool extends AbstractTool {
 
 		JPanel groupPanel = new JPanel(new FlowLayout());
 		controlPanel.add(groupPanel);
+
+
 		JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
 		groupButton.addActionListener(new ActionListener(){
@@ -137,6 +145,18 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 		groupPanel.add(groupButton);
+
+		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/page.svg"), "Group selection into a page (Alt+G)");
+		groupPageButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectionPageGroup(editor);
+			}
+		});
+
+		groupPanel.add(groupPageButton);
+
 		JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
 		ungroupButton.addActionListener(new ActionListener(){
@@ -145,6 +165,10 @@ public class SelectionTool extends AbstractTool {
 				selectionUngroup(editor);
 			}
 		});
+
+
+
+
 		groupPanel.add(ungroupButton);
 
 		JPanel levelPanel = new JPanel(new FlowLayout());
@@ -211,15 +235,30 @@ public class SelectionTool extends AbstractTool {
 		rotatePanel.add(rotateCounterclockwiseButton);
 	}
 
+
+	private void resetState(GraphEditor editor) {
+		mouseOverNode = null;
+	}
+
+	private void updateState(GraphEditorMouseEvent e) {
+		Point2D mousePosition = e.getPosition();
+
+		VisualNode node = (VisualNode) HitMan.hitTestForSelection(mousePosition, e.getModel());
+		mouseOverNode = node;
+
+	}
+
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
+		resetState(editor);
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
+		resetState(editor);
 	}
 
 	@Override
@@ -245,6 +284,14 @@ public class SelectionTool extends AbstractTool {
 							changeLevelUp(e.getEditor());
 						}
 					}
+
+					if ( model.getCurrentLevel() instanceof VisualPage) {
+						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
+						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+							changeLevelUp(e.getEditor());
+						}
+					}
+
 				} else {
 					if (e.getKeyModifiers() == 0) {
 						e.getModel().selectNone();
@@ -252,7 +299,7 @@ public class SelectionTool extends AbstractTool {
 				}
 			} else {
 				if (e.getClickCount() > 1) {
-					if (node instanceof VisualGroup) {
+					if (node instanceof VisualGroup || node instanceof VisualPage) {
 						changeLevelDown(e.getEditor());
 					} else if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
@@ -288,7 +335,13 @@ public class SelectionTool extends AbstractTool {
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
 			e.getEditor().repaint();
+		} else {
+			// "mouse over" events
+
 		}
+
+		updateState(e);
+
 	}
 
 	@Override
@@ -432,6 +485,15 @@ public class SelectionTool extends AbstractTool {
 			}
 		}
 
+		if (e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_G:
+				selectionPageGroup(e.getEditor());
+				break;
+			}
+		}
+
+
 		if (e.isCtrlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
@@ -513,6 +575,9 @@ public class SelectionTool extends AbstractTool {
 						}
 					};
 				}
+
+
+				//if (node==mouseOverNode) return selectedDecoration;
 
 				return null;
 			}
@@ -651,6 +716,24 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
+			editor.repaint();
+		}
+	}
+
+	protected void selectionPageGroup(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
+		if (model.getSelection().size() > 0) {
+			editor.getWorkspaceEntry().saveMemento();
+			model.groupPageSelection();
+			editor.repaint();
+		}
+	}
+
+	protected void selectionPageUngroup(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
+		if (model.getSelection().size() > 0) {
+			editor.getWorkspaceEntry().saveMemento();
+			model.ungroupPageSelection();
 			editor.repaint();
 		}
 	}

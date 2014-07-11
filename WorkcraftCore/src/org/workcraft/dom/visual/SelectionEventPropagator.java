@@ -29,6 +29,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -42,7 +43,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-		if (e instanceof NodesAddedEvent) {
+		if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
 			for (Node n:e.getAffectedNodes())
 				nodeAdded(n);
 		} else if (e instanceof NodesDeletedEvent) {

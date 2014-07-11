@@ -5,6 +5,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
+import org.workcraft.observation.NodesReparentedEvent;
 
 public class ConsistencyEnforcer extends HierarchySupervisor {
 
@@ -20,7 +21,7 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
 	@Override
 	public void handleEvent(HierarchyEvent e)
 	{
-		if (e instanceof NodesAddedEvent)
+		if (e instanceof NodesAddedEvent  || e instanceof NodesReparentedEvent)
 		{
 			updateEncoding();
 			createDefaultLabels(e);

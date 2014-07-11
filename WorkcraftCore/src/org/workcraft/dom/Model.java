@@ -23,6 +23,9 @@ package org.workcraft.dom;
 
 import java.util.Collection;
 
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.Properties;
 
 
@@ -37,8 +40,18 @@ public interface Model extends NodeContext {
 	 */
 	public String getDisplayName();
 
+
+	/// methods for work with referenced component names
+	public ReferenceManager getReferenceManager();
+	public Node getNodeByReference(NamespaceProvider provider, String reference);
+	public String getNodeReference(NamespaceProvider provider, Node node);
 	public Node getNodeByReference(String reference);
 	public String getNodeReference(Node node);
+	public String getName(Node node);
+	public void setName(Node node, String name);
+
+	//
+	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren);
 
 	public Container getRoot();
 

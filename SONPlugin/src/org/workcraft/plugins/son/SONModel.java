@@ -5,10 +5,14 @@ import java.util.Collection;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.EventNode;
 
 public interface SONModel extends Model{
 
@@ -34,6 +38,8 @@ public interface SONModel extends Model{
 	 */
 	public Collection<ChannelPlace> getChannelPlace();
 
+	public Collection<EventNode> getEventNodes();
+
 	public Collection<Node> getComponents();
 
 	/**
@@ -43,10 +49,12 @@ public interface SONModel extends Model{
 	 * @return node label
 	 *
 	 */
-	public String getNodeLabel(Node n);
+	public String getComponentLabel(Node n);
 
 	public ChannelPlace createChannelPlace();
 	public ChannelPlace createChannelPlace(String name);
+
+	public SONConnection connect(Node first, Node second, String conType) throws InvalidConnectionException;
 
 	public void setFillColor(Node n, Color nodeColor);
 	public void setForegroundColor(Node n, Color nodeColor);
@@ -63,19 +71,21 @@ public interface SONModel extends Model{
 
 	public Collection<SONConnection> getSONConnections();
 	public Collection<SONConnection> getSONConnections(Node node);
-	public Collection<SONConnection> getSONConnections(Node first, Node second);
+	public SONConnection getSONConnection(Node first, Node second);
 
 	public Collection<SONConnection> getInputSONConnections(Node node);
 	public Collection<SONConnection> getOutputSONConnections(Node node);
 
 	public Collection<String> getSONConnectionTypes (Node node);
-	public Collection<String> getSONConnectionTypes (Node first, Node second);
+	public String getSONConnectionType (Node first, Node second);
 	public Collection<String> getSONConnectionTypes (Collection<Node> nodes);
 
 	public Collection<String> getInputSONConnectionTypes(Node node);
 	public Collection<String> getOutputSONConnectionTypes(Node node);
 
 	//Group methods;
+	public Collection<Block> getBlocks();
+	public Collection<PageNode> getPageNodes();
 	public Collection<ONGroup> getGroups();
 
 	public boolean isInSameGroup (Node first, Node second);

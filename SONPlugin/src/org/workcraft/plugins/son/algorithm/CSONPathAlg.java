@@ -7,7 +7,7 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 
-public class CSONPathAlg extends ONPathAlg{
+public class CSONPathAlg extends PathAlgorithm{
 
 	private SONModel net;
 
@@ -27,16 +27,15 @@ public class CSONPathAlg extends ONPathAlg{
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
-					result.add(adjoin);
+					if(!result.contains(adjoin))
+						result.add(adjoin);
 
-					for (String conType :  net.getSONConnectionTypes(n, next)){
-						if(conType == "SYNCLINE"){
-							Node[] reAdjoin = new Node[2];
-							reAdjoin[0] = next;
-							reAdjoin[1] = n;
-							if(!result.contains(reAdjoin))
-								result.add(reAdjoin);
-					}
+					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+						Node[] reAdjoin = new Node[2];
+						reAdjoin[0] = next;
+						reAdjoin[1] = n;
+						if(!result.contains(reAdjoin))
+							result.add(reAdjoin);
 				}
 			}
 		}
@@ -47,8 +46,8 @@ public class CSONPathAlg extends ONPathAlg{
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
-		for(Node start : relation.getInitial(nodes))
-			for(Node end : relation.getFinal(nodes))
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes))
 				getAllPath(start, end, createAdj(nodes));
 
 		 return cyclePathFilter(cycleResult);

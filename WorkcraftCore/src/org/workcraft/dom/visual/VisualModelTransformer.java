@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 
 public class VisualModelTransformer {
@@ -17,18 +18,17 @@ public class VisualModelTransformer {
 		assert nodes!=null;
 		for (Node node: nodes) {
 			// do transformation group children
-			if (node instanceof VisualGroup) {
-				VisualGroup vg = (VisualGroup) node;
-
+			if (node instanceof VisualGroup ||node instanceof VisualPage) {
+				VisualTransformableNode vt  = (VisualTransformableNode) node;
 //				t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
 
 				AffineTransform t2 = new AffineTransform();
 
-				t2.translate(-vg.getX(), -vg.getY());
+				t2.translate(-vt.getX(), -vt.getY());
 				t2.concatenate(t);
-				t2.translate(vg.getX(), vg.getY());
+				t2.translate(vt.getX(), vt.getY());
 
-				transformNodePosition(vg.getChildren(), t2);
+				transformNodePosition(vt.getChildren(), t2);
 			} else if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode vn = (VisualTransformableNode) node;
 

@@ -15,6 +15,7 @@ import org.workcraft.plugins.son.tools.ColorRefreshTool;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
+import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TokenRefreshTool;
 //import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -26,7 +27,7 @@ public class SONModule implements Module{
 	public void init(Framework framework) {
 		framework.getPluginManager().registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		framework.getPluginManager().registerClass(SettingsPage.class, SONSettings.class);
-	//	framework.getPluginManager().registerClass(Tool.class, TestTool.class, framework);
+		framework.getPluginManager().registerClass(Tool.class, TestTool.class, framework);
 		//structural verification
 		framework.getPluginManager().registerClass(Tool.class, StructurePropertyChecker.class, framework);
 		//Custom tools
