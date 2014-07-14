@@ -12,7 +12,7 @@ import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public interface SONModel extends Model{
 
@@ -38,7 +38,7 @@ public interface SONModel extends Model{
 	 */
 	public Collection<ChannelPlace> getChannelPlace();
 
-	public Collection<EventNode> getEventNodes();
+	public Collection<TransitionNode> getEventNodes();
 
 	public Collection<Node> getComponents();
 

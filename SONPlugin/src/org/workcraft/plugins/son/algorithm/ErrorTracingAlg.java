@@ -7,7 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class ErrorTracingAlg extends RelationAlgorithm{
 
@@ -21,11 +21,11 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Forward error tracing
-	public void setErrNum (Collection<EventNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setErrNum (Collection<TransitionNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
-			Collection<EventNode> removeList = new ArrayList<EventNode>();
-			for(EventNode e : runList){
+			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
+			for(TransitionNode e : runList){
 				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
 					if(this.getPreAsynEvents(e).isEmpty() || !this.hasCommonElements(runList, this.getPreAsynEvents(e))){
 						this.setAsyncErrNum(e, isBhv);
@@ -41,22 +41,22 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 
 		while(true){
 			boolean b = false;
-			Collection<EventNode> removeList = new ArrayList<EventNode>();
+			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 
-			for(EventNode e :runList){
+			for(TransitionNode e :runList){
 				for(ArrayList<Node> cycle : syncSet){
 					if(cycle.contains(e) && !removeList.contains(e)){
-						Collection<EventNode> runList2 = new ArrayList<EventNode>();
-						Collection<EventNode> eventCycle = new ArrayList<EventNode>();
+						Collection<TransitionNode> runList2 = new ArrayList<TransitionNode>();
+						Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
 
 						runList2.addAll(runList);
 						runList2.removeAll(cycle);
 						boolean hasPreAsyn = false;
 						for(Node n: cycle){
-							if(n instanceof EventNode){
-								eventCycle.add((EventNode)n);
-								if(!this.getPreAsynEvents((EventNode)n).isEmpty()
-										&& this.hasCommonElements(runList2, this.getPreAsynEvents((EventNode)n)))
+							if(n instanceof TransitionNode){
+								eventCycle.add((TransitionNode)n);
+								if(!this.getPreAsynEvents((TransitionNode)n).isEmpty()
+										&& this.hasCommonElements(runList2, this.getPreAsynEvents((TransitionNode)n)))
 									hasPreAsyn = true;
 							}
 						}
@@ -79,7 +79,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 
-	private boolean hasCommonElements(Collection<EventNode> cycle1, Collection<EventNode> cycle2){
+	private boolean hasCommonElements(Collection<TransitionNode> cycle1, Collection<TransitionNode> cycle2){
 		for(Node n : cycle1)
 			if(cycle2.contains(n))
 				return true;
@@ -89,7 +89,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		return false;
 	}
 
-	private void setAsyncErrNum(EventNode e, boolean isBhv){
+	private void setAsyncErrNum(TransitionNode e, boolean isBhv){
 		int err = 0;
 		if(e.isFaulty())
 			err++;
@@ -116,10 +116,10 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 	}
 
-	private void setSyncErrNum(Collection<EventNode> syncEvents, boolean isBhv){
+	private void setSyncErrNum(Collection<TransitionNode> syncEvents, boolean isBhv){
 		int err = 0;
-		for(EventNode e : syncEvents){
-			if(((EventNode)e).isFaulty())
+		for(TransitionNode e : syncEvents){
+			if(((TransitionNode)e).isFaulty())
 				err++;
 			for(Node pre : net.getPreset(e)){
 				if(pre instanceof Condition)
@@ -133,7 +133,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 
 		for(Node e : syncEvents)
-			if(e instanceof EventNode){
+			if(e instanceof TransitionNode){
 				for(Node post: net.getPostset(e)){
 					if(post instanceof Condition){
 						((Condition)post).setErrors(err);
@@ -153,11 +153,11 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Backward error tracing
-	public void setReverseErrNum (Collection<EventNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setReverseErrNum (Collection<TransitionNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
-			Collection<EventNode> removeList = new ArrayList<EventNode>();
-			for(EventNode e : runList){
+			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
+			for(TransitionNode e : runList){
 				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
 					if(this.getPostAsynEvents(e).isEmpty()
 							|| !this.hasCommonElements(runList, this.getPostAsynEvents(e))){
@@ -174,22 +174,22 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 
 		while(true){
 			boolean b = false;
-			Collection<EventNode> removeList = new ArrayList<EventNode>();
+			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 
-			for(EventNode e :runList){
+			for(TransitionNode e :runList){
 				for(ArrayList<Node> cycle : syncSet){
 					if(cycle.contains(e)  && !removeList.contains(e)){
-						Collection<EventNode> runList2 = new ArrayList<EventNode>();
-						Collection<EventNode> eventCycle = new ArrayList<EventNode>();
+						Collection<TransitionNode> runList2 = new ArrayList<TransitionNode>();
+						Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
 
 						runList2.addAll(runList);
 						runList2.removeAll(cycle);
 						boolean hasPostAsyn = false;
 						for(Node n: cycle){
-							if(n instanceof EventNode){
-								eventCycle.add((EventNode)n);
-								if(!this.getPostAsynEvents((EventNode)n).isEmpty()
-										&& this.hasCommonElements(runList2, this.getPostAsynEvents((EventNode)n)))
+							if(n instanceof TransitionNode){
+								eventCycle.add((TransitionNode)n);
+								if(!this.getPostAsynEvents((TransitionNode)n).isEmpty()
+										&& this.hasCommonElements(runList2, this.getPostAsynEvents((TransitionNode)n)))
 									hasPostAsyn = true;
 							}
 						}
@@ -211,7 +211,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			setReverseErrNum(runList, syncSet, isBhv);
 	}
 
-	private void setReverseAsyncErrNum(EventNode e, boolean isBhv){
+	private void setReverseAsyncErrNum(TransitionNode e, boolean isBhv){
 		int err = 0;
 		if(e.isFaulty())
 			err++;
@@ -238,10 +238,10 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 	}
 
-	private void setReverseSyncErrNum(Collection<EventNode> syncEvents, boolean isBhv){
+	private void setReverseSyncErrNum(Collection<TransitionNode> syncEvents, boolean isBhv){
 		int err = 0;
-		for(EventNode e : syncEvents){
-			if(((EventNode)e).isFaulty())
+		for(TransitionNode e : syncEvents){
+			if(((TransitionNode)e).isFaulty())
 				err++;
 			for(Node pre : net.getPreset(e)){
 				if(pre instanceof Condition){
@@ -256,7 +256,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 
 		for(Node e : syncEvents)
-			if(e instanceof EventNode){
+			if(e instanceof TransitionNode){
 				for(Node post: net.getPostset(e)){
 					if(post instanceof Condition){
 						//set err number from high level states

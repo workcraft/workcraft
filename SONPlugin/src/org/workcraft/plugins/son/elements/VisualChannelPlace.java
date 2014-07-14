@@ -14,16 +14,18 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 //import java.awt.event.KeyEvent;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/channel-place.svg")
-public class VisualChannelPlace extends VisualComponent {
+public class VisualChannelPlace extends VisualComponent implements VisualPlaceNode{
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
+	private String value = "";
 	//private boolean displayName = false;
 
 	public VisualChannelPlace(ChannelPlace cplace) {
@@ -33,12 +35,21 @@ public class VisualChannelPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualChannelPlace, Boolean>(
-				this, "Token", Boolean.class) {
+				this, "marked", Boolean.class) {
 			public void setter(VisualChannelPlace object, Boolean value) {
-				object.setToken(value);
+				object.setMarked(value);
 			}
 			public Boolean getter(VisualChannelPlace object) {
-				return object.hasToken();
+				return object.isMarked();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualChannelPlace, String>(
+				this, "interface", String.class) {
+			protected void setter(VisualChannelPlace object, String value) {
+			}
+			protected String getter(VisualChannelPlace object) {
+				return object.getInterface();
 			}
 		});
 	}
@@ -62,7 +73,7 @@ public class VisualChannelPlace extends VisualComponent {
 		g.draw(shape);
 
 		ChannelPlace c = (ChannelPlace)getReferencedComponent();
-		drawToken(c.hasToken(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
+		drawToken(c.isMarked(), singleTokenSize, Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()), g);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
 	}
@@ -79,6 +90,7 @@ public class VisualChannelPlace extends VisualComponent {
 			g.fill(shape);
 		}
 	}
+
 	/*
 	public void drawName(DrawRequest r){
 		if (SONSettings.getDisplayName()) {
@@ -115,12 +127,12 @@ public class VisualChannelPlace extends VisualComponent {
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
-	public boolean hasToken() {
-		return ((ChannelPlace)getReferencedComponent()).hasToken();
+	public boolean isMarked() {
+		return ((ChannelPlace)getReferencedComponent()).isMarked();
 	}
 
-	public void setToken(boolean b) {
-		((ChannelPlace)getReferencedComponent()).setToken(b);
+	public void setMarked(boolean b) {
+		((ChannelPlace)getReferencedComponent()).setMarked(b);
 	}
 
 	public Color getTokenColor() {
@@ -155,5 +167,14 @@ public class VisualChannelPlace extends VisualComponent {
 	public String getLabel(){
 		super.getLabel();
 		return ((ChannelPlace)getReferencedComponent()).getLabel();
+	}
+
+	public void setInterface(String value){
+		this.value = value;
+		sendNotification(new PropertyChangedEvent(this, "interface"));
+	}
+
+	public String getInterface(){
+		return value;
 	}
 }

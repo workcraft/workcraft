@@ -10,7 +10,7 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class RelationAlgorithm{
 
@@ -34,7 +34,7 @@ public class RelationAlgorithm{
 				if(count > 1){
 					int n = 0;
 						for (Node post : net.getPostset(c))
-							if (post instanceof EventNode)
+							if (post instanceof TransitionNode)
 								n++;
 							if (n > 1)
 								return true;
@@ -58,7 +58,7 @@ public class RelationAlgorithm{
 				if(count > 1){
 					int n = 0;
 					for (Node pre : net.getPreset(c))
-						if (pre instanceof EventNode)
+						if (pre instanceof TransitionNode)
 								n++;
 						if (n > 1)
 							return true;
@@ -185,7 +185,7 @@ public class RelationAlgorithm{
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node pre : net.getPreset(c))
-			if(pre instanceof EventNode)
+			if(pre instanceof TransitionNode)
 				if(net.getSONConnectionType(c, pre) == "POLYLINE")
 					for(Node n2 : net.getPreset(pre))
 						if(n2 instanceof Condition && net.getSONConnectionType(pre, n2)== "POLYLINE")
@@ -200,7 +200,7 @@ public class RelationAlgorithm{
 	public Collection<Condition> getPostPNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node post : net.getPostset(c))
-			if(post instanceof EventNode)
+			if(post instanceof TransitionNode)
 				if(net.getSONConnectionType(c, post)=="POLYLINE")
 					for(Node n2 : net.getPostset(post))
 						if(n2 instanceof Condition && net.getSONConnectionType(post, n2) == "POLYLINE")
@@ -212,11 +212,11 @@ public class RelationAlgorithm{
 	/**
 	 * get all asynchronous (Communication-SON) pre-events of a given event node
 	 */
-	public Collection<EventNode> getPreAsynEvents (EventNode e){
-		Collection<EventNode> result = new ArrayList<EventNode>();
+	public Collection<TransitionNode> getPreAsynEvents (TransitionNode e){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : net.getPreset(e)){
 			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
-				EventNode node2 = (EventNode)net.getPreset(node).iterator().next();
+				TransitionNode node2 = (TransitionNode)net.getPreset(node).iterator().next();
 				result.add(node2);
 			}
 		}
@@ -226,11 +226,11 @@ public class RelationAlgorithm{
 	/**
 	 * get all asynchronous (Communication-SON) post-events of a given event node
 	 */
-	public Collection<EventNode> getPostAsynEvents (EventNode e){
-		Collection<EventNode> result = new ArrayList<EventNode>();
+	public Collection<TransitionNode> getPostAsynEvents (TransitionNode e){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : net.getPostset(e) )
 			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
-				EventNode node2 = (EventNode)net.getPostset(node).iterator().next();
+				TransitionNode node2 = (TransitionNode)net.getPostset(node).iterator().next();
 				result.add(node2);
 				}
 		return result;
@@ -239,18 +239,18 @@ public class RelationAlgorithm{
 	/**
 	 * get all asynchronous and synchronous (Communication-SON) pre-event of a given event or collapsed block
 	 */
-	public Collection<EventNode> getPreASynEvents(EventNode node){
-		Collection<EventNode> result = new ArrayList<EventNode>();
+	public Collection<TransitionNode> getPreASynEvents(TransitionNode node){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 
 		for(Node pre : net.getPreset(node)){
 			if(pre instanceof ChannelPlace){
-				EventNode pre2 = (EventNode)net.getPreset(pre).iterator().next();
+				TransitionNode pre2 = (TransitionNode)net.getPreset(pre).iterator().next();
 				result.add(pre2);
 			}
 		}
 		for(Node post : net.getPostset(node)){
 			if(post instanceof ChannelPlace && net.getSONConnectionType(post, node) == "SYNCLINE"){
-				EventNode post2 = (EventNode)net.getPostset(post).iterator().next();
+				TransitionNode post2 = (TransitionNode)net.getPostset(post).iterator().next();
 				result.add(post2);
 			}
 		}
@@ -261,18 +261,18 @@ public class RelationAlgorithm{
 	/**
 	 * get all asynchronous and synchronous(Communication-SON) post-event of a given event or block
 	 */
-	public Collection<EventNode> getPostASynEvents(EventNode node){
-		Collection<EventNode> result = new ArrayList<EventNode>();
+	public Collection<TransitionNode> getPostASynEvents(TransitionNode node){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 
 		for(Node post : net.getPostset(node)){
 			if(post instanceof ChannelPlace){
-				EventNode post2 = (EventNode)net.getPostset(post).iterator().next();
+				TransitionNode post2 = (TransitionNode)net.getPostset(post).iterator().next();
 				result.add(post2);
 			}
 		}
 		for(Node pre : net.getPreset(node)){
 			if(pre instanceof ChannelPlace && net.getSONConnectionType(pre, node) == "SYNCLINE"){
-				EventNode pre2 = (EventNode)net.getPreset(pre).iterator().next();
+				TransitionNode pre2 = (TransitionNode)net.getPreset(pre).iterator().next();
 				result.add(pre2);
 			}
 		}
@@ -283,7 +283,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all PRE-conditions (PN and CSON-based) of a given event or block.
 	 */
-	public Collection<Condition> getPREset(EventNode e){
+	public Collection<Condition> getPREset(TransitionNode e){
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node n : net.getPreset(e)){
 			if(n instanceof Condition)
@@ -311,7 +311,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all POST-conditions (PN and CSON-based) of a given event or block.
 	 */
-	public Collection<Condition> getPOSTset(EventNode e){
+	public Collection<Condition> getPOSTset(TransitionNode e){
 		Collection<Condition> result = new ArrayList<Condition>();
 
 		for(Node n : net.getPostset(e)){

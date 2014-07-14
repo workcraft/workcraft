@@ -11,7 +11,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
-public class Block extends PageNode implements EventNode{
+public class Block extends PageNode implements TransitionNode{
 	private String label="";
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor  = CommonVisualSettings.getFillColor();

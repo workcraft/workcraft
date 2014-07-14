@@ -68,12 +68,7 @@ public class TestTool implements Tool{
 	}
 
 	private void conditionOutputTest(VisualSON vnet){
-		for(VisualComponent node : vnet.getVisualComponent()){
-			Node math = node.getReferencedComponent();
-			if(math instanceof Condition){
-				((VisualCondition)node).setOutput("X1");
-			}
-		}
+		vnet.connectToBlocks();
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){

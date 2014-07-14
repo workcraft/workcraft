@@ -212,10 +212,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
-					if (vc.hasToken() == false)
-						vc.setToken(true);
-					else if (vc.hasToken() == true)
-						vc.setToken(false);
+					if (vc.isMarked() == false)
+						vc.setMarked(true);
+					else if (vc.isMarked() == true)
+						vc.setMarked(false);
 				}
 
 				if (selectedNode instanceof VisualEvent) {

@@ -8,8 +8,6 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -18,20 +16,15 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.util.Hierarchy;
 
-public class VisualBlock extends VisualPage implements VisualEventNode{
-	private Map<VisualComponent[], SONConnectionType> inputRelations;
-	private Map<VisualComponent[], SONConnectionType> outputRelations;
+public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private Block mathBlock;
 
 	public VisualBlock(Block refNode) {
 		super(refNode);
 		this.mathBlock = refNode;
-		inputRelations = new HashMap<VisualComponent[], SONConnectionType>();
-		outputRelations = new HashMap<VisualComponent[], SONConnectionType>();
 	}
 
 	@Override
@@ -157,22 +150,6 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 
 	public Collection<VisualSONConnection> getVisualSONConnections(){
 		return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
-	}
-
-	public void setInputRelations(Map<VisualComponent[], SONConnectionType> inputRelations){
-		this.inputRelations = inputRelations;
-	}
-
-	public void setOutputRelations(Map<VisualComponent[], SONConnectionType> outputRelations){
-		this.outputRelations = outputRelations;
-	}
-
-	public Map<VisualComponent[], SONConnectionType> getInputRelations(){
-		return this.inputRelations;
-	}
-
-	public Map<VisualComponent[], SONConnectionType> getOutputRelations(){
-		return this.outputRelations;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
@@ -74,8 +74,8 @@ public class ONGroup extends PageNode{
 		return result;
 	}
 
-	public Collection<EventNode> getEventNodes(){
-		ArrayList<EventNode> result =  new ArrayList<EventNode>();
+	public Collection<TransitionNode> getEventNodes(){
+		ArrayList<TransitionNode> result =  new ArrayList<TransitionNode>();
 		for(Node node : getComponents()){
 			if(node instanceof Event)
 				result.add((Event)node);
