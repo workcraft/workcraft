@@ -424,8 +424,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return false;
 	}
 
-	public void fire(Collection<EventNode> events){
-		for(EventNode e : events){
+	public void fire(Collection<EventNode> runList){
+		for(EventNode e : runList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getType() == "POLYLINE" && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
@@ -440,7 +440,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getFirst()){
 						ChannelPlace to = (ChannelPlace)c.getSecond();
-						if(events.containsAll(net.getPostset(to)) && events.containsAll(net.getPreset(to)))
+						if(runList.containsAll(net.getPostset(to)) && runList.containsAll(net.getPreset(to)))
 							to.setToken(((ChannelPlace)to).hasToken());
 						else{
 							if(to.hasToken())
@@ -450,7 +450,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getType() == "ASYNLINE" && e==c.getSecond()){
 						ChannelPlace from = (ChannelPlace)c.getFirst();
-						if(events.containsAll(net.getPostset(from)) && events.containsAll(net.getPreset(from)))
+						if(runList.containsAll(net.getPostset(from)) && runList.containsAll(net.getPreset(from)))
 							from.setToken(((ChannelPlace)from).hasToken());
 						else
 							from.setToken(!((ChannelPlace)from).hasToken());

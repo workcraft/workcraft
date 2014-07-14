@@ -1,5 +1,7 @@
 package org.workcraft.plugins.son.test;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.OutputRedirect;
 import org.workcraft.plugins.son.verify.VerificationResult;
@@ -60,9 +62,13 @@ public class test implements Task<VerificationResult> {
 	}
 
 	public static void main(String[] arg){
-		test t = new test();
-		t.print();
-
+/*		test t = new test();
+		t.print();*/
+		ArrayList<String> test = new ArrayList<String>();
+		test.add("a");
+		test.add("b");
+		test.add("c");
+		System.out.println(test.toString());
 	}
 
 

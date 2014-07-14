@@ -38,6 +38,7 @@ public class VisualCondition extends VisualComponent{
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
 	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
+	private String output = "";
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
@@ -75,6 +76,15 @@ public class VisualCondition extends VisualComponent{
 			}
 			protected Color getter(VisualCondition object) {
 				return object.getErrLabelColor();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, String>(
+				this, "output event", String.class) {
+			protected void setter(VisualCondition object, String value) {
+			}
+			protected String getter(VisualCondition object) {
+				return object.getOutput();
 			}
 		});
 	}
@@ -224,6 +234,14 @@ public class VisualCondition extends VisualComponent{
 	public String getLabel(){
 		super.getLabel();
 		return ((Condition)getReferencedComponent()).getLabel();
+	}
+
+	public void setOutput(String output){
+		this.output = output;
+	}
+
+	public String getOutput(){
+		return output;
 	}
 
 	public Positioning getErrLabelPositioning() {
