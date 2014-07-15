@@ -682,7 +682,10 @@ public class Framework {
 			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
 			vmodel1.select(children);
 
-			return me1;
+			// dirty hack! to avoid any hanging observers
+			Memento memo = save(me1);
+			ModelEntry me3 = load(memo);
+			return me3;
 
 
 	}
