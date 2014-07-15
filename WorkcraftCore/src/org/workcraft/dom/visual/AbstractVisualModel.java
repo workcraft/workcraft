@@ -627,11 +627,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		Collection<Node> children = new HashSet<Node>();
 
-		if (sourceChildren==null) {
-			children.addAll(sourceRoot.getChildren());
-		} else {
-			children.addAll(sourceChildren);
-		}
+		children.addAll(sourceChildren);
 
 		sourceRoot.reparent(children, targetContainer);
 

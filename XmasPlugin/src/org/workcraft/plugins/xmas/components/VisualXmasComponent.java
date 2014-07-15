@@ -213,6 +213,12 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
+
+
 	abstract public Shape getShape();
 
 	@Override

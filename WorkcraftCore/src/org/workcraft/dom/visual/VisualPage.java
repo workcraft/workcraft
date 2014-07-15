@@ -170,6 +170,10 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
 
 	@Override
 	public void setParent(Node parent) {

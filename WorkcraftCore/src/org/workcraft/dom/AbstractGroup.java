@@ -104,6 +104,10 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 		observableHierarchyImpl.removeObserver(obs);
 	}
 
+	public void removeAllObservers() {
+		observableHierarchyImpl.removeAllObservers();
+	}
+
 	@Override
 	public void add(Node node) {
 		addInternal (node, true);
@@ -154,9 +158,15 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 
 		}
 
-		if (differentModels)
+		if (differentModels) {
+			// remove all listeners as well
+			for (Node n: nodes) {
+				if (n instanceof ObservableHierarchy) {
+					((ObservableHierarchy) n).removeAllObservers();
+				}
+			}
 			newParent.add(nodes);
-		else
+		} else
 			newParent.reparent(nodes);
 
 		observableHierarchyImpl.sendNotification(new NodesReparentedEvent(groupRef, newParent, nodes));

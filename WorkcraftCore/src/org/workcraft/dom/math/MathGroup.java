@@ -30,7 +30,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.util.Hierarchy;
@@ -66,6 +65,11 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
 	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
+	}
+
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
 	}
 
 	@Override

@@ -278,6 +278,10 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		groupImpl.removeObserver(obs);
 	}
 
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
+
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
