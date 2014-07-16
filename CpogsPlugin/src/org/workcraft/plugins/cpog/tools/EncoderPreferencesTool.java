@@ -42,7 +42,7 @@ public class EncoderPreferencesTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Cpog Programmer";
+		return "SCENCO";
 	}
 
 	@Override

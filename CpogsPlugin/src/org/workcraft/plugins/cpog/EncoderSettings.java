@@ -15,7 +15,8 @@ public class EncoderSettings {
 		RECURSIVE("Exhaustive search"),
 		RANDOM("Random search"),
 		SCENCO("Old tool SCENCO"),
-		OLD_SYNT("Old synthesise");
+		OLD_SYNT("Old synthesise"),
+		SEQUENTIAL("Sequential");
 
 		public final String name;
 
@@ -25,7 +26,8 @@ public class EncoderSettings {
 				RECURSIVE,
 				RANDOM,
 				SCENCO,
-				OLD_SYNT
+				OLD_SYNT,
+				SEQUENTIAL
 			};
 
 		private generationMode(String name){
@@ -150,6 +152,9 @@ public class EncoderSettings {
 			break;
 		case 4:
 			genMode = generationMode.OLD_SYNT;
+			break;
+		case 5:
+			genMode = generationMode.SEQUENTIAL;
 			break;
 		default:
 			System.out.println("Error.");
