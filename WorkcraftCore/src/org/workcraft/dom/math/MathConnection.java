@@ -23,6 +23,7 @@ package org.workcraft.dom.math;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 
 @VisualClass(org.workcraft.dom.visual.connections.VisualConnection.class)
 public class MathConnection extends MathNode implements Connection {

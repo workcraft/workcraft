@@ -457,6 +457,12 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	public void removeObserver(HierarchyObserver obs) {
 		observableHierarchyImpl.removeObserver(obs);
 	}
+
+	public void removeAllObservers() {
+		observableHierarchyImpl.removeAllObservers();
+	}
+
+
 	@Override
 	public Point2D getFirstCenter() {
 		return componentsTransformObserver.getFirstCenter();

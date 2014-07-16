@@ -53,6 +53,11 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
 		groupImpl.removeObserver(obs);
 	}
 
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
+
+
 	@Override
 	public void add(Node node) {
 		groupImpl.add(node);

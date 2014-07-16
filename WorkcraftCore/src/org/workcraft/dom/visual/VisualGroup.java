@@ -223,6 +223,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
 
 	@Override
 	public void setParent(Node parent) {
