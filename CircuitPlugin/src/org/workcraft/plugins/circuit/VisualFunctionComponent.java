@@ -28,7 +28,6 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.util.Hierarchy;
 
 
@@ -36,15 +35,11 @@ import org.workcraft.util.Hierarchy;
 @Hotkey(KeyEvent.VK_F)
 @SVGIcon("images/icons/svg/circuit-formula.svg")
 public class VisualFunctionComponent extends VisualCircuitComponent {
+	private ComponentRenderingResult renderingResult = null;
 
 	public VisualFunctionComponent(CircuitComponent component) {
 		super(component);
-//		if (component.getChildren().isEmpty()) {
-//			this.addFunction("x", null, false);
-//		}
 	}
-
-	ComponentRenderingResult renderingResult = null;
 
 	private ComponentRenderingResult getRenderingResult() {
 		if (getRenderType()==RenderType.BOX) return null;
@@ -198,8 +193,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
 		GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 		ComponentRenderingResult res = getRenderingResult();
-		VisualCircuit vcircuit = (VisualCircuit)r.getModel();
-
 
 		if (res == null) {
 			super.draw(r);

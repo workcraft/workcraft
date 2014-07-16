@@ -28,7 +28,6 @@ import javax.swing.Icon;
 
 import org.workcraft.NodeFactory;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
@@ -37,7 +36,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.NodeCreationException;
 
 public abstract class AbstractNodeGenerator implements NodeGenerator {

@@ -30,19 +30,16 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
@@ -140,76 +137,45 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType, double x, double y) {
 		// here "parent" is a container of a visual model
-
-		if (name!=null) {
-
+		if (name != null) {
 			for (Node n: container.getChildren()) {
 				if (n instanceof VisualFunctionContact) {
-					if (getMathModel().getName(((VisualFunctionContact)n).getReferencedContact()).equals(name))
-						return (VisualFunctionContact)n;
-				} // TODO: if found something else with that name, return null?
+					VisualFunctionContact contact = (VisualFunctionContact)n;
+					String contactName = getMathModel().getName(contact.getReferencedContact());
+					if (name.equals(contactName)) {
+						return contact;
+					}
+				} // TODO: if found something else with that name, return null or exception?
 			}
-
 		}
 
-		// the name is available
-		// create a new contact if it was not found
-		VisualContact.Direction dir=null;
-		if (ioType==null) ioType = IOType.OUTPUT;
-		dir=VisualContact.Direction.WEST;
-		if (ioType==IOType.OUTPUT)
-			dir=VisualContact.Direction.EAST;
-
-
-
+		Direction direction = Direction.WEST;
+		if (ioType == null) {
+			ioType = IOType.OUTPUT;
+		}
+		if (ioType == IOType.OUTPUT) {
+			direction = Direction.EAST;
+		}
 
 		VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
-		vc.setDirection(dir);
+		vc.setDirection(direction);
 		vc.setPosition(new Point2D.Double(x, y));
 
 		if (container instanceof VisualFunctionComponent) {
 			VisualFunctionComponent component = (VisualFunctionComponent)container;
-
 			component.addContact(this, vc);
-
-			if (name!=null)
-				circuit.setName(vc.getReferencedComponent(), name);
-
-
 			vc.setSetFunction(One.instance());
 			vc.setResetFunction(One.instance());
 		} else {
-
-	        AbstractVisualModel.getMathContainer(this, getRoot()).add(vc.getReferencedComponent());
+			Container mathContainer = AbstractVisualModel.getMathContainer(this, getRoot());
+			mathContainer.add(vc.getReferencedComponent());
 			add(vc);
-
-			if (name!=null)
-				circuit.setName(vc.getReferencedComponent(), name);
-
 		}
-
+		if (name != null) {
+			circuit.setName(vc.getReferencedComponent(), name);
+		}
 		return vc;
 	}
-
-//	public VisualFunctionContact addFunction(VisualCircuitComponent component, IOType ioType) {
-//		VisualContact.Direction dir=null;
-//		if (ioType==null) ioType = IOType.OUTPUT;
-//		dir=VisualContact.Direction.WEST;
-//
-//		if (ioType==IOType.OUTPUT) {
-//			dir=VisualContact.Direction.EAST;
-//		}
-//
-//		FunctionContact c = new FunctionContact(ioType);
-//		VisualFunctionContact vc = new VisualFunctionContact(c);
-//		vc.setDirection(dir);
-//
-//		//circuit.setName(component.getReferencedComponent(), Contact.getNewName(component.getReferencedComponent(), prefix, null, allowShort));
-//
-//		component.addContact(vc);
-//		return vc;
-//	}
-
 
 	public void addFunctionComponent(VisualFunctionComponent component) {
 		for (Node node : component.getMathReferences()) {
@@ -224,11 +190,6 @@ public class VisualCircuit extends AbstractVisualModel {
 		 }
 		 super.add(joint);
 	 }
-
-//	 public void addFunctionContact(VisualFunctionComponent component, VisualFunctionContact contact) {
-//		 component.add(contact);
-//		 component.getReferencedCircuitComponent().add(contact.getReferencedContact());
-//	 }
 
 	 @NoAutoSerialisation
 	public File getEnvironmentFile() {
