@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -254,7 +253,7 @@ public class MainMenu extends JMenuBar {
 
 		ActionMenuItem miSelectInverse = new ActionMenuItem(MainWindowActions.EDIT_SELECT_INVERSE_ACTION);
 		miSelectInverse.setMnemonic(KeyEvent.VK_V);
-		miSelectInverse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EXCLAMATION_MARK, 0));
+		miSelectInverse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
 		miSelectInverse.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		ActionMenuItem miSelectNone = new ActionMenuItem(MainWindowActions.EDIT_SELECT_NONE_ACTION);
