@@ -30,7 +30,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -61,7 +60,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
-		//checkName(parent);
 	}
 
 	public void addObserver(HierarchyObserver obs) {
@@ -119,36 +117,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 				result.add(c);
 		return result;
 	}
-
-//	public String getNewName(Node n, String start) {
-//		// iterate through all contacts, check that the name doesn't exist
-//		int num=0;
-//		boolean found = true;
-//
-//		while (found) {
-//			num++;
-//			found=false;
-//
-//			for (Node vn : n.getChildren()) {
-//				if (vn instanceof CircuitComponent && vn!=this) {
-//					if (((CircuitComponent)vn).getName().equals(start+num)) {
-//						found=true;
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		return start+num;
-//	}
-
-//	public void checkName(Node parent) {
-//		if (parent==null) return;
-//		String start=getName();
-//		if (start==null||start=="") {
-//			start="c";
-//			setName(getNewName(parent, start));
-//		}
-//	}
 
 	public void setName(String name) {
 		this.name = name;

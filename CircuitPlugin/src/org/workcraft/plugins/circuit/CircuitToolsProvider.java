@@ -12,6 +12,7 @@ import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.tools.CircuitSelectionTool;
 import org.workcraft.plugins.circuit.tools.CircuitSimulationTool;
 import org.workcraft.plugins.circuit.tools.ContactGeneratorTool;
+import org.workcraft.plugins.circuit.tools.FunctionComponentGeneratorTool;
 
 public class CircuitToolsProvider implements CustomToolsProvider {
 
@@ -23,7 +24,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Joint.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(FunctionComponent.class)));
+		result.add(new FunctionComponentGeneratorTool());
 		result.add(new ContactGeneratorTool());
 		result.add(new CircuitSimulationTool());
 
