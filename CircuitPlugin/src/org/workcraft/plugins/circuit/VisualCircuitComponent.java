@@ -632,4 +632,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
+
+
 }

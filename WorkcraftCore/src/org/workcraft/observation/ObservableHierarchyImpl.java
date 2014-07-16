@@ -34,6 +34,10 @@ public class ObservableHierarchyImpl implements ObservableHierarchy {
 		observers.remove(obs);
 	}
 
+	public void removeAllObservers() {
+		observers.clear();
+	}
+
 	public void sendNotification (HierarchyEvent e) {
 		for (HierarchyObserver obs : observers)
 			obs.notify(e);

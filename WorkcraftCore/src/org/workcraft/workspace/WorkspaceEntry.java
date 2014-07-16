@@ -29,10 +29,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -48,7 +49,6 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
@@ -211,9 +211,7 @@ public class WorkspaceEntry implements ObservableState {
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
 			clipboard.setContents(new StringSelection(str), null);
-
 		}
-
 	}
 
 	public void cancelMemento() {
@@ -278,7 +276,8 @@ public class WorkspaceEntry implements ObservableState {
 			setModelEntry(result);
 			setChanged(true);
 		} catch (DeserialisationException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
+					"Model insertion failed", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -356,7 +355,8 @@ public class WorkspaceEntry implements ObservableState {
 				setChanged(true);
 				VisualModelTransformer.translateSelection(result.getVisualModel(), 1.0, 1.0);
 			} catch (DeserialisationException e) {
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
+						"Clipboard paste failed", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
