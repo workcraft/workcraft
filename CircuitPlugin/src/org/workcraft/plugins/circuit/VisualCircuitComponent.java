@@ -132,14 +132,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		return (CircuitComponent)this.getReferencedComponent();
 	}
 
-//	public String getName() {
-//		return getReferencedCircuitComponent().getName();
-//	}
-//
-//	public void setName(String value) {
-//		getReferencedCircuitComponent().setName(value);
-//	}
-
 	public boolean getIsEnvironment() {
 		if (getReferencedCircuitComponent() != null) {
 			return getReferencedCircuitComponent().getIsEnvironment();

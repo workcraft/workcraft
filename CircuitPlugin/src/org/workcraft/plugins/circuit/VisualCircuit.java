@@ -40,7 +40,6 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
@@ -164,8 +163,6 @@ public class VisualCircuit extends AbstractVisualModel {
 		if (container instanceof VisualFunctionComponent) {
 			VisualFunctionComponent component = (VisualFunctionComponent)container;
 			component.addContact(this, vc);
-			vc.setSetFunction(One.instance());
-			vc.setResetFunction(One.instance());
 		} else {
 			Container mathContainer = AbstractVisualModel.getMathContainer(this, getRoot());
 			mathContainer.add(vc.getReferencedComponent());
