@@ -47,7 +47,7 @@ public class EncoderConfigurationDialog extends JDialog {
 					optimiseLabel, abcLabel;
 	private JCheckBox verboseModeCheck, customEncodings,
 					 contCheck, abcCheck;
-	private JComboBox<String> generationModeBox,OptimiseBox, guidedModeBox;
+	private JComboBox generationModeBox,OptimiseBox, guidedModeBox;
 	private JFrame frame;
 	private JPanel generationPanel, buttonsPanel, content;
 	private JButton saveButton, closeButton;
@@ -607,7 +607,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		setPreferredSize(new Dimension(width,height));
 		layout.setRow(new double[] {row1, row2});
 		pack();
-		revalidate();
+		//revalidate();
 
 	}
 
