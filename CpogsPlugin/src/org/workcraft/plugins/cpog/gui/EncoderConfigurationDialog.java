@@ -44,9 +44,9 @@ public class EncoderConfigurationDialog extends JDialog {
 	private JLabel numberOfSolutionsLabel, contLabel,
 					verboseModeLabel,exampleLabel,exampleLabel2,exampleLabel3,exampleLabel4,
 					customEncLabel,bitsLabel,genLabel, guidLabel,
-					optimiseLabel;
+					optimiseLabel, abcLabel;
 	private JCheckBox verboseModeCheck, customEncodings,
-					 contCheck;
+					 contCheck, abcCheck;
 	private JComboBox<String> generationModeBox,OptimiseBox, guidedModeBox;
 	private JFrame frame;
 	private JPanel generationPanel, buttonsPanel, content;
@@ -119,7 +119,7 @@ public class EncoderConfigurationDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(815,650,580,100);
+		sizeWindow(815,685,610,100);
 	}
 
 	private void createButtonPanel() {
@@ -133,6 +133,9 @@ public class EncoderConfigurationDialog extends JDialog {
 
 
 				// ENCODER EXECUTION
+
+				// abc disabled
+				settings.setAbcFlag(abcCheck.isSelected() ? false : true);
 
 				// speed-up mode selection
 				settings.setEffort(normal.isSelected() ? true : false);
@@ -190,12 +193,8 @@ public class EncoderConfigurationDialog extends JDialog {
 				}
 
 				// Set them on encoder
-				if(settingsPresent == false){
-					settingsPresent = true;
-					encoder = new CpogProgrammer(settings);
-				}else{
-					encoder.setSettings(settings);
-				}
+				settingsPresent = true;
+				encoder = new CpogProgrammer(settings);
 
 				// Execute programmer.x
 				encoder.run(we);
@@ -223,10 +222,38 @@ public class EncoderConfigurationDialog extends JDialog {
 		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
 		m = scenarios.size();
 
+		// ABC TOOL DISABLE FLAG
+		abcCheck = new JCheckBox("",settings.isAbcFlag());
+		abcLabel = new JLabel("Disable Abc Tool");
+		abcLabel.setPreferredSize(new Dimension(150, 15));
+		abcCheck.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	if(abcCheck.isSelected()){
+            		slow.setVisible(false);
+            		normal.setSelected(true);
+            		contCheck.setSelected(false);
+            		contCheck.setVisible(false);
+            		contLabel.setVisible(false);
+            	}else{
+            		if (generationModeBox.getSelectedIndex() == 0 && guidedModeBox.getSelectedIndex() == 0){
+            			slow.setVisible(true);
+            			normal.setSelected(true);
+            		}
+            		if (generationModeBox.getSelectedIndex() == 0 && (guidedModeBox.getSelectedIndex() == 0 ||
+            				guidedModeBox.getSelectedIndex() == 2)){
+            			contCheck.setVisible(true);
+                		contLabel.setVisible(true);
+            		}
+            	}
+            }
+        });
+
 		// GENERATION MODE COMBOBOX
 		genLabel = new JLabel("Mode:");
 		genLabel.setPreferredSize(new Dimension(60, 22));
-		generationModeBox = new JComboBox<>();
+		generationModeBox = new JComboBox();
 		generationModeBox.setEditable(false);
 		generationModeBox.setPreferredSize(dimensionBox);
 		generationModeBox.addItem("Heuristic-guided search");
@@ -236,7 +263,7 @@ public class EncoderConfigurationDialog extends JDialog {
 
 		guidLabel = new JLabel("        Strategy:");
 		guidLabel.setPreferredSize(new Dimension(111, 22));
-		guidedModeBox = new JComboBox<>();
+		guidedModeBox = new JComboBox();
 		guidedModeBox.setEditable(false);
 		guidedModeBox.setPreferredSize(dimensionBox);
 		guidedModeBox.addItem("Simulated annealing");
@@ -336,7 +363,8 @@ public class EncoderConfigurationDialog extends JDialog {
 					numbSolutPanelVisibility(true);
 
             		// speed-up
-            		slow.setVisible(true);
+					if(!abcCheck.isSelected())
+						slow.setVisible(true);
             		normal.setVisible(true);
             		fast.setVisible(true);
             		normal.setSelected(true);
@@ -346,7 +374,7 @@ public class EncoderConfigurationDialog extends JDialog {
 
 
             		// set size of window
-            		sizeWindow(815,650,580,100);
+            		sizeWindow(815,685,610,100);
 					break;
 				// FULL COVERAGE
 				case 1:
@@ -363,7 +391,7 @@ public class EncoderConfigurationDialog extends JDialog {
             		customPanelVisibility(false);
 
             		// set size of window
-            		sizeWindow(815,220,150,100);
+            		sizeWindow(815,245,175,100);
 					break;
 				// RANDOM SEARCH
 				case 2:
@@ -381,7 +409,7 @@ public class EncoderConfigurationDialog extends JDialog {
             		customPanelVisibility(false);
 
             		// set size of window
-            		sizeWindow(815,280,200,100);
+            		sizeWindow(815,300,220,100);
 					break;
 				default:
 
@@ -392,7 +420,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel("Generate equations for:");
 		optimiseLabel.setPreferredSize(new Dimension(200, 22));
-		OptimiseBox = new JComboBox<>();
+		OptimiseBox = new JComboBox();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(dimensionBox);
 		OptimiseBox.addItem("Microcontroller");
@@ -529,6 +557,9 @@ public class EncoderConfigurationDialog extends JDialog {
 		verboseModeCheck = new JCheckBox("",false);
 
 		// INSTANTATING PANEL
+		generationPanel.add(abcCheck);
+		generationPanel.add(abcLabel);
+		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(genLabel);
 		generationPanel.add(generationModeBox);
 		generationPanel.add(guidLabel);
@@ -596,8 +627,10 @@ public class EncoderConfigurationDialog extends JDialog {
 	private void numbSolutPanelVisibility(boolean condition){
 		numberOfSolutionsText.setVisible(condition);
 		numberOfSolutionsLabel.setVisible(condition);
-		contLabel.setVisible(condition);
-		contCheck.setVisible(condition);
-		contCheck.setSelected(false);
+		if(!abcCheck.isSelected()){
+			contLabel.setVisible(condition);
+			contCheck.setVisible(condition);
+			contCheck.setSelected(false);
+		}
 	}
 }

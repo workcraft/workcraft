@@ -235,26 +235,38 @@ public class CpogProgrammer {
 
 			espressoCommand = espressoCommand.replace(" ", "\\ ");
 
-			f = new File(abcFolder);
-			if(!f.exists() || !f.isDirectory()){
-				JOptionPane.showMessageDialog(null,
-						"You can download it at http://www.eecs.berkeley.edu/~alanmi/abc/",
-						"Abc tool not present",
-						JOptionPane.ERROR_MESSAGE);
-			}
-			else{
-				abcFlag = "-a";
-				gateLibFlag = "-lib";
-				f = new File(abcFolder + gatesLibrary);
-				if(!f.exists() || f.isDirectory()){
-					deleteTempFiles();
+			if(settings.isAbcFlag()){
+				f = new File(abcFolder);
+				if(!f.exists() || !f.isDirectory()){
 					JOptionPane.showMessageDialog(null,
-							"It is needed to compute area of circuit properly",
-							"Gate library not present",
+							"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to" +
+							"set path of the folder containing Abc inside Workcraft settings.",
+							"Abc tool not installed correctly",
 							JOptionPane.ERROR_MESSAGE);
-					we.cancelMemento();
-					return;
 				}
+				else{
+					abcFlag = "-a";
+					gateLibFlag = "-lib";
+					f = new File(abcFolder + gatesLibrary);
+					if(!f.exists() || f.isDirectory()){
+						deleteTempFiles();
+						JOptionPane.showMessageDialog(null,
+								"It is needed to compute area of circuit properly",
+								"Gate library not present",
+								JOptionPane.ERROR_MESSAGE);
+						we.cancelMemento();
+						return;
+					}
+				}
+			}else{
+				abcFlag = "";
+				abcFolder = "";
+				gateLibFlag = "-lib";
+				gatesLibrary = "";
+				JOptionPane.showMessageDialog(null,
+						"You can download it at http://www.eecs.berkeley.edu/~alanmi/abc/ to improve the outcome of the encoding.",
+						"Abc tool disabled",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			// FILL IN PARAMETERS FOR CALLING PROGRAMER PROPERLY
@@ -388,6 +400,7 @@ public class CpogProgrammer {
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 		DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
 
+		// GET PREDICATES FROM WORKCRAFT ENVIRONMENT
 		VisualVariable predicatives[] = new VisualVariable[n];
 		int pr = 0;
 		for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
@@ -714,7 +727,7 @@ public class CpogProgrammer {
 
 			for(int k = 0; k < m; k++)
 			{
-				Map nodes = new HashMap<>();
+				Map<String, Integer> nodes = new HashMap<String, Integer>();
 				// Print arcs
 				Output.println(".scenario CPOG_" + k);
 				for(VisualConnection c : scenarios.get(k).getConnections()){

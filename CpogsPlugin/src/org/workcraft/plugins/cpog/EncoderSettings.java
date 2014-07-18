@@ -51,7 +51,7 @@ public class EncoderSettings {
 
 	private int solutionNumber = 10, numPO,bits;
 	private generationMode genMode = generationMode.OPTIMAL_ENCODING;
-	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc;
+	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
 	private String[] customEnc;
 	private String espressoPath,abcPath,libPath;
 
@@ -61,6 +61,16 @@ public class EncoderSettings {
 
 	public void setCpogSize(boolean cpogSize) {
 		this.cpogSize = cpogSize;
+	}
+
+
+
+	public boolean isAbcFlag() {
+		return abcFlag;
+	}
+
+	public void setAbcFlag(boolean abcFlag) {
+		this.abcFlag = abcFlag;
 	}
 
 	public boolean isCostFunc() {

@@ -47,14 +47,11 @@ public class EncoderPreferencesTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		if(settingPresent == false){
-			settingPresent = true;
-			settings = new EncoderSettings(10,generationMode.OPTIMAL_ENCODING,false, false);
-			pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-			dialog = new EncoderConfigurationDialog(framework.getMainWindow(), pmgr, settings, we);
-		}
+		settings = new EncoderSettings(10,generationMode.OPTIMAL_ENCODING,false, false);
+		pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
+		dialog = new EncoderConfigurationDialog(framework.getMainWindow(), pmgr, settings, we);
 
-		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
+		GUI.centerToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);
 		// TASK INSERTION
 		/*final ProgrammerChainTask programmerTask = new ProgrammerChainTask(we, dialog.getSettings(), framework);
