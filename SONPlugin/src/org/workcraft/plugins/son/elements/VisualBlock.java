@@ -156,7 +156,4 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	public Block getMathEventNode() {
 		return getReferencedComponent();
 	}
-
-
-
 }

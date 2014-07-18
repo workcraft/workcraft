@@ -3,9 +3,7 @@
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -21,6 +19,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -625,6 +624,9 @@ public class VisualSON extends AbstractVisualModel{
 	}
 
 	public boolean connectToBlocks(){
+		if(!beforeConToBlock())
+			return false;
+
 		for(VisualBlock vBlock : this.getVisualBlocks()){
 			 Collection<VisualComponent> components = vBlock.getComponents();
 			 for(VisualSONConnection con : this.getVisualConnections()){
@@ -641,8 +643,9 @@ public class VisualSON extends AbstractVisualModel{
 						}else{
 							value = ((VisualPlaceNode)first).getInterface()+";"+"to-"+name+type;
 						}
+						ConnectionGraphic graphic =	con.getGraphic();
 						((VisualPlaceNode)first).setInterface(value);
-
+						((VisualCondition)first).setInterfaceGraphic(graphic);
 						 //remove visual connection
 						 Container parent = (Container)con.getParent();
 						 parent.remove(con);
@@ -695,7 +698,29 @@ public class VisualSON extends AbstractVisualModel{
 		return true;
 	}
 
+
+	private boolean beforeConToBlock(){
+		Collection<String> errBlocks = new ArrayList<String>();
+		for(VisualPlaceNode c : this.getVisualPlaceNode())
+			c.setInterface("");
+
+		boolean err = true;
+		for(VisualBlock block : this.getVisualBlocks()){
+			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
+				err = false;
+				errBlocks.add(net.getName(block.getReferencedComponent())+" ");
+				block.setForegroundColor(SONSettings.getRelationErrColor());
+				}
+		}
+		if(!err){
+			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
+					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+		}
+		return err;
+	}
+
 	public boolean connectToBlocksInside(){
+		ArrayList<String> incompatible = new ArrayList<String>();
 		for(VisualPlaceNode p : getVisualPlaceNode()){
 			if(p.getInterface() != ""){
 				String[] infos = p.getInterface().trim().split(";");
@@ -707,20 +732,19 @@ public class VisualSON extends AbstractVisualModel{
 					if(con.getSecond()==p && con.getFirst() instanceof VisualBlock)
 						connections.add(con);
 				}
-				if(connections.size() != infos.length){
-					return false;}
-				else{
-					for(VisualSONConnection con :connections){
-						//remove visual connection
-						Container parent = (Container)con.getParent();
-						SONConnection mathCon = con.getReferencedConnection();
-						parent.remove(con);
+				if(connections.size() != infos.length)
+					incompatible.add(net.getNodeReference(p.getMathPlaceNode()));
 
-						//remove math connection
-						Container mathParent = (Container)mathCon.getParent();
-						if(mathParent != null)
-							mathParent.remove(mathCon);
-					}
+				for(VisualSONConnection con :connections){
+					//remove visual connection
+					Container parent = (Container)con.getParent();
+					SONConnection mathCon = con.getReferencedConnection();
+					parent.remove(con);
+
+					//remove math connection
+					Container mathParent = (Container)mathCon.getParent();
+					if(mathParent != null)
+						mathParent.remove(mathCon);
 				}
 
 				for(String info : infos){
@@ -767,43 +791,10 @@ public class VisualSON extends AbstractVisualModel{
 				p.setInterface("");
 			}
 		}
+		if(!incompatible.isEmpty()){
+			JOptionPane.showMessageDialog(null, "Incompatible connections. Error may due to lost block information, " +
+					"reconnect block components again)"+ incompatible.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+		}
 		return true;
 	}
-
-/*
-	private boolean beforeConToBlock(){
-		Collection<String> errBlocks = new ArrayList<String>();
-		boolean err = true;
-		for(VisualBlock block : this.getVisualBlocks()){
-			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
-				err = false;
-				errBlocks.add(net.getName(block.getReferencedComponent())+" ");
-				block.setForegroundColor(SONSettings.getRelationErrColor());
-				}
-		}
-		if(!err){
-			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
-					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
-		}
-		return err;
-	}
-	*/
-/*	private boolean beforeConToInside(){
-		Collection<String> errBlocks = new ArrayList<String>();
-		boolean err = true;
-
-		for(VisualBlock block : this.getVisualBlocks()){
-			if(block.getIsCollapsed())
-				if(block.getInputRelations().isEmpty() || block.getOutputRelations().isEmpty()){
-					err = false;
-					errBlocks.add(net.getName(block.getMathBlock())+" ");
-				}
-
-		}
-		if(!err)
-			JOptionPane.showMessageDialog(null, "Lost block connection information, reconnect block again"+ errBlocks.toString(),
-					blockConnection, JOptionPane.WARNING_MESSAGE);
-		return true;
-	}*/
-
 }

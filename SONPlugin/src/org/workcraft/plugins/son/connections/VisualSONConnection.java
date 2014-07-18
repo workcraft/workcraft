@@ -188,6 +188,16 @@ public class VisualSONConnection extends VisualConnection
 		initialise();
 	}
 
+	public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second, ConnectionGraphic graphic) {
+
+		this.refConnection = refConnection;
+		this.first = first;
+		this.second = second;
+		this.graphic = graphic;
+
+		initialise();
+	}
+
 	@NoAutoSerialisation
 	public SONConnectionType getSONConnectionType() {
 		return connectionType;

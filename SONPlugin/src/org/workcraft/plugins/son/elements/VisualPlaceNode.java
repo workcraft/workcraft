@@ -12,4 +12,6 @@ public interface VisualPlaceNode extends Node{
 	public boolean isMarked();
 
 	public void setMarked(boolean b);
+
+	public PlaceNode getMathPlaceNode();
 }

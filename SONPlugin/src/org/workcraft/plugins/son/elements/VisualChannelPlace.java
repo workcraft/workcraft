@@ -177,4 +177,9 @@ public class VisualChannelPlace extends VisualComponent implements VisualPlaceNo
 	public String getInterface(){
 		return value;
 	}
+
+	@Override
+	public PlaceNode getMathPlaceNode() {
+		return (PlaceNode) this.getReferencedComponent();
+	}
 }
