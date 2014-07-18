@@ -162,12 +162,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	 */
 	@Override
 	public void selectAll() {
-		if(selection.size()==getRoot().getChildren().size()) {
+		if(selection.size() == getCurrentLevel().getChildren().size()) {
 			return;
 		}
 		Collection<Node> s = saveSelection();
 		selection.clear();
-		selection.addAll(getRoot().getChildren());
+		selection.addAll(getCurrentLevel().getChildren());
 		notifySelectionChanged(s);
 	}
 
@@ -190,12 +190,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void selectInverse() {
 		Collection<Node> s = saveSelection();
 		selection.clear();
-		for (Node node: getRoot().getChildren()) {
+		for (Node node: getCurrentLevel().getChildren()) {
 			if (!s.contains(node)) {
 				selection.add(node);
 			}
 		}
-		notifySelectionChanged(getRoot().getChildren());
+		notifySelectionChanged(getCurrentLevel().getChildren());
 	}
 
 	private void validateSelection (Node node) {

@@ -60,8 +60,6 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
-//@VisualClass("org.workcraft.plugins.circuit.VisualCircuitComponent")
-
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/icons/svg/circuit-component.svg")
@@ -87,16 +85,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	private void addPropertyDeclarations() {
-//		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, String>(
-//				this, "Name", String.class) {
-//			protected void setter(VisualCircuitComponent object, String value) {
-//				get
-//				object.getReferencedCircuitComponent().setName(value);
-//			}
-//			protected String getter(VisualCircuitComponent object) {
-//				return object.getReferencedCircuitComponent().getName();
-//			}
-//		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
 				this, "Treat as environment", Boolean.class) {
@@ -143,14 +131,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	public CircuitComponent getReferencedCircuitComponent() {
 		return (CircuitComponent)this.getReferencedComponent();
 	}
-
-//	public String getName() {
-//		return getReferencedCircuitComponent().getName();
-//	}
-//
-//	public void setName(String value) {
-//		getReferencedCircuitComponent().setName(value);
-//	}
 
 	public boolean getIsEnvironment() {
 		if (getReferencedCircuitComponent() != null) {

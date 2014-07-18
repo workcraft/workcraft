@@ -31,7 +31,6 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
@@ -41,7 +40,6 @@ import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 
 
 public class Circuit extends AbstractMathModel {
@@ -62,26 +60,20 @@ public class Circuit extends AbstractMathModel {
 				new CircuitReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
 					@Override
 					public String eval(Node arg) {
-						if (arg instanceof CircuitComponent) return "cc";
+						if (arg instanceof CircuitComponent) return "g";
+						if (arg instanceof Connection) return "con";
+						if (arg instanceof PageNode) return "pg";
+						if (arg instanceof CommentNode) return "comment";
+						if (arg instanceof Container) return "gr";
 						if (arg instanceof Contact) {
 							Contact cont = (Contact)arg;
-
 							if (cont.getParent() instanceof CircuitComponent)
-								return "x";
-
+								return "z";
 							if (cont.getIOType()==IOType.INPUT)
 								return "in";
 							else
 								return "out";
-
 						}
-
-						if (arg instanceof Connection) return "con";
-						if (arg instanceof PageNode) return "pg";
-						if (arg instanceof CommentNode) return "comment";
-
-						if (arg instanceof Container) return "gr";
-
 						return "v";
 					}
 				}
@@ -89,7 +81,7 @@ public class Circuit extends AbstractMathModel {
 			));
 
 		if (root==null) {
-			Container r  = getRoot();
+			Container r = getRoot();
 			getReferenceManager().attach(r);
 		}
 	}

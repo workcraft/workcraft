@@ -85,7 +85,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public boolean isCombinable() {
-				return false;
+				return true;
 			}
 		};
 	}
@@ -130,7 +130,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public boolean isCombinable() {
-				return false;
+				return true;
 			}
 		};
 	}

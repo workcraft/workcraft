@@ -23,6 +23,7 @@ package org.workcraft.gui.graph;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -34,6 +35,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.OutputStream;
@@ -42,8 +44,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -241,6 +245,17 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		updateEditorPanelTimer.start();
 		updatePropertyTimer.start();
+
+		// This is a hack to prevent editor panel from loosing focus on Ctrl-UP key combination
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK), "doNothing");
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK), "doNothing");
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Event.CTRL_MASK), "doNothing");
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Event.CTRL_MASK), "doNothing");
+		this.getActionMap().put("doNothing", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				//do nothing
+			}
+		});
 	}
 
 	private void reshape() {

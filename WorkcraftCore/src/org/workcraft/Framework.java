@@ -69,11 +69,9 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.serialisation.XMLDualModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
-import org.workcraft.serialisation.DualDeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.References;
@@ -663,18 +661,15 @@ public class Framework {
 	}
 
 	public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-
 			ModelEntry me1 = load(is1);
 			ModelEntry me2 = load(is2);
 
 			VisualModel vmodel1 = me1.getVisualModel();
 			VisualModel vmodel2 = me2.getVisualModel();
 
-			if (!me1.getDescriptor().getDisplayName().equals(
-					me2.getDescriptor().getDisplayName())) {
-				throw new DeserialisationException("incompatible models cannot be merged");
+			if (!me1.getDescriptor().getDisplayName().equals(me2.getDescriptor().getDisplayName())) {
+				throw new DeserialisationException("Incompatible models cannot be merged");
 			}
-
 
 			Collection<Node> children = new HashSet<Node>(vmodel2.getRoot().getChildren());
 
@@ -682,12 +677,10 @@ public class Framework {
 			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
 			vmodel1.select(children);
 
-			// dirty hack! to avoid any hanging observers
+			// FIXME: dirty hack to avoid any hanging observers (serialise and deserialise the model)
 			Memento memo = save(me1);
 			ModelEntry me3 = load(memo);
 			return me3;
-
-
 	}
 
 //  old implementation for reference

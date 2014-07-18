@@ -65,35 +65,38 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 
 	protected void postAdd(Node node, boolean notify) {
 		node.setParent(groupRef);
-
-		if (notify)
+		if (notify) {
 			observableHierarchyImpl.sendNotification (new NodesAddedEvent(groupRef, node));
+		}
 	}
 
 	protected void preAdd(Node node, boolean notify) {
-		if (node.getParent() == this)
+		if (node.getParent() == this) {
 			return;
-
-		if (node.getParent() != null && node.getParent() != groupRef)
+		}
+		if ((node.getParent() != null) && (node.getParent() != groupRef)) {
 			throw new RuntimeException("Cannot attach someone else's node. Please detach from the old parent first.");
-
-		if (notify)
+		}
+		if (notify) {
 			observableHierarchyImpl.sendNotification (new NodesAddingEvent(groupRef, node));
+		}
 	}
 
 	protected void removeInternal(Node node, boolean notify) {
-		if (notify)
+		if (notify) {
 			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, node));
-
-		if (node.getParent() != groupRef)
-			throw new RuntimeException
-			("Failed to remove a node frome a group because it is not a child of that group ("+node+", parent is " + node.getParent() +", expected " + groupRef + ")");
-
+		}
+		if (node.getParent() != groupRef) {
+			throw new RuntimeException(
+					"Failed to remove a node frome a group because it is not a child of that group ("
+					+ node + ", parent is " + node.getParent() + ", expected " + groupRef + ")");
+		}
 		removeInternal(node);
 		node.setParent(null);
 
-		if (notify)
+		if (notify) {
 			observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, node));
+		}
 	}
 
 	public void addObserver(HierarchyObserver obs) {
@@ -116,10 +119,9 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	@Override
 	public void add(Collection<Node> nodes) {
 		observableHierarchyImpl.sendNotification (new NodesAddingEvent(groupRef, nodes));
-
-		for (Node node : nodes)
+		for (Node node : nodes) {
 			addInternal(node, false);
-
+		}
 		observableHierarchyImpl.sendNotification (new NodesAddedEvent(groupRef, nodes));
 	}
 
@@ -131,45 +133,41 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	@Override
 	public void remove(Collection<Node> nodes) {
 		LinkedList<Node> nodesToRemove = new LinkedList<Node>(nodes);
-
 		observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, nodesToRemove));
-
-		for (Node node : nodesToRemove)
+		for (Node node : nodesToRemove) {
 			removeInternal(node, false);
-
+		}
 		observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, nodesToRemove));
 	}
-
-
-
 
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		observableHierarchyImpl.sendNotification(new NodesReparentingEvent(groupRef, newParent, nodes));
-
-		//HashSet<Node> newModelNodes= new HashSet<Node>();
-		boolean differentModels = false;
-
-		for (Node node : nodes) {
-
-			if (Hierarchy.getTopParent(newParent)!=Hierarchy.getTopParent(node)) differentModels = true;
-
+		for (Node node: nodes) {
 			removeInternal(node, false);
-
 		}
-
-		if (differentModels) {
-			// remove all listeners as well
-			for (Node n: nodes) {
-				if (n instanceof ObservableHierarchy) {
-					((ObservableHierarchy) n).removeAllObservers();
+		if (!isSameModel(nodes, newParent)) {
+			// If the model is not the same, then remove all node listeners
+			for (Node node: nodes) {
+				if (node instanceof ObservableHierarchy) {
+					((ObservableHierarchy) node).removeAllObservers();
 				}
 			}
-			newParent.add(nodes);
-		} else
-			newParent.reparent(nodes);
-
+		}
+		newParent.add(nodes);
 		observableHierarchyImpl.sendNotification(new NodesReparentedEvent(groupRef, newParent, nodes));
+	}
+
+	private boolean isSameModel(Collection<Node> nodes, Container newParent) {
+		Node newRoot = Hierarchy.getTopParent(newParent);
+		boolean sameModel = true;
+		for (Node node : nodes) {
+			if (newRoot != Hierarchy.getTopParent(node)) {
+				sameModel = false;
+				break;
+			}
+		}
+		return sameModel;
 	}
 
 	@Override
@@ -183,5 +181,6 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	public abstract Collection<Node> getChildren();
 
 	protected abstract void addInternal(Node node);
+
 	protected abstract void removeInternal (Node node);
 }
