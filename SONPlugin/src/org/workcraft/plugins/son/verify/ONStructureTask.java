@@ -24,8 +24,9 @@ public class ONStructureTask implements StructuralVerification{
 	private PathAlgorithm onPathAlg;
 	private RelationAlgorithm relation;
 
-	private Collection<Node> errorousNodes = new HashSet<Node>();
-	private Collection<ArrayList<Node>> cyclePaths = new HashSet<ArrayList<Node>>();
+	private Collection<Node> relationErrors = new HashSet<Node>();
+	private Collection<ArrayList<Node>> cycleErrors = new HashSet<ArrayList<Node>>();
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -53,9 +54,7 @@ public class ONStructureTask implements StructuralVerification{
 
 		for(ONGroup group : groups){
 
-		Collection<Node> iniStateResult;
-		Collection<Node> finalStateResult ;
-		Collection<Node> postConflictResult, preConflictResult;
+		Collection<Node> task1, task2, task3, task4;
 		Collection<ArrayList<Node>> cycleResult, backwardCycleResult;
 
 		//group info
@@ -79,47 +78,47 @@ public class ONStructureTask implements StructuralVerification{
 			}
 
 			//initial state result
-			iniStateResult = iniStateTask(groupComponents);
+			task1 = iniStateTask(groupComponents);
 
-			if (iniStateResult.isEmpty())
+			if (task1.isEmpty())
 				logger.info("Initial states correct.");
 			else{
 				hasErr = true;
-				errNumber = errNumber + iniStateResult.size();
-				for(Node node : iniStateResult){
-					errorousNodes.add(node);
+				errNumber = errNumber + task1.size();
+				for(Node node : task1){
+					relationErrors.add(node);
 					logger.error("ERROR : Incorrect initial state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
 			//final state result
-			finalStateResult = finalStateTask(groupComponents);
-			if (finalStateResult.isEmpty())
+			task2 = finalStateTask(groupComponents);
+			if (task2.isEmpty())
 				logger.info("Final states correct.");
 			else{
 				hasErr = true;
-				errNumber = errNumber + finalStateResult.size();
-				for(Node node : finalStateResult){
-					errorousNodes.add(node);
+				errNumber = errNumber + task2.size();
+				for(Node node : task2){
+					relationErrors.add(node);
 					logger.error("ERROR : Incorrect final state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
 			//conflict result
-			postConflictResult = postConflictTask(groupComponents);
-			preConflictResult = preConflictTask(groupComponents);
+			task3 = postConflictTask(groupComponents);
+			task4 = preConflictTask(groupComponents);
 
-			if (postConflictResult.isEmpty() && preConflictResult.isEmpty())
+			if (task3.isEmpty() && task4.isEmpty())
 				logger.info("Condition structure correct.");
 			else{
 				hasErr = true;
-				errNumber = errNumber + postConflictResult.size()+ preConflictResult.size();
-				for(Node condition : postConflictResult){
-					errorousNodes.add(condition);
+				errNumber = errNumber + task3.size()+ task4.size();
+				for(Node condition : task3){
+					relationErrors.add(condition);
 					logger.error("ERROR : Post set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 					}
-				for(Node condition : preConflictResult){
-					errorousNodes.add(condition);
+				for(Node condition : task4){
+					relationErrors.add(condition);
 					logger.error("ERROR : Pre set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 				}
 			}
@@ -133,8 +132,8 @@ public class ONStructureTask implements StructuralVerification{
 			backwardCycleResult = new ArrayList<ArrayList<Node>>();
 			backwardCycleResult.addAll(this.onPathAlg.backwardCycleTask(groupComponents));
 
-			cyclePaths.addAll(cycleResult);
-			cyclePaths.addAll(backwardCycleResult);
+			cycleErrors.addAll(cycleResult);
+			cycleErrors.addAll(backwardCycleResult);
 
 			if (cycleResult.isEmpty() && backwardCycleResult.isEmpty())
 				logger.info("Acyclic structure correct");
@@ -182,26 +181,43 @@ public class ONStructureTask implements StructuralVerification{
 					result.add(node);
 		return result;
 	}
-
+	@Override
 	public void errNodesHighlight(){
-		for(Node node : this.errorousNodes){
+		for(Node node : this.relationErrors){
 			this.net.setFillColor(node, SONSettings.getRelationErrColor());
 		}
 
-		for (ArrayList<Node> list : this.cyclePaths)
+		for (ArrayList<Node> list : this.cycleErrors)
 			for (Node node : list)
 				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 	}
 
+	@Override
+	public Collection<Node> getRelationErrors() {
+		return this.relationErrors;
+	}
+
+	@Override
+	public Collection<ArrayList<Node>> getCycleErrors() {
+		return this.cycleErrors;
+	}
+
+	@Override
+	public Collection<ONGroup> getGroupErrors() {
+		return this.groupErrors;
+	}
+
+	@Override
 	public boolean hasErr(){
 		return this.hasErr;
 	}
-
+	@Override
 	public int getErrNumber(){
 		return this.errNumber;
 	}
-
+	@Override
 	public int getWarningNumber(){
 		return this.warningNumber;
 	}
+
 }

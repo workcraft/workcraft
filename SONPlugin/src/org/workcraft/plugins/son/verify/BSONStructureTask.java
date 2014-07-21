@@ -14,7 +14,6 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
-import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 
@@ -28,11 +27,9 @@ public class BSONStructureTask implements StructuralVerification{
 	private BSONAlg bsonAlg;
 	private BSONPathAlg bsonPathAlg;
 
-	private Collection<ONGroup> abstractGroupResult = new HashSet<ONGroup>();
-	private Collection<HashSet<SONConnection>> bhvRelationResult = new HashSet<HashSet<SONConnection>>();
-	private Collection<Condition> phaseTaskResult1 =  new HashSet<Condition>();
-	private Collection<Condition> phaseTaskResult2 = new HashSet<Condition>();
-	private Collection<ArrayList<Node>> cycleResult = new ArrayList<ArrayList<Node>>();
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+	private Collection<Node> relationErrors= new HashSet<Node>();
+	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -68,31 +65,26 @@ public class BSONStructureTask implements StructuralVerification{
 		//Abstract level structure
 		logger.info("Running model strucuture and components relation check...");
 		logger.info("Running abstract group structure task...");
-		abstractGroupResult.addAll(invalidAbstractGroups(groups));
-		if(abstractGroupResult.isEmpty())
+		groupErrors.addAll(groupTask1(groups));
+		if(groupErrors.isEmpty())
 			logger.info("Correct abstract group structure.");
 		else {
 			hasErr = true;
-			errNumber = errNumber + abstractGroupResult.size();
-			for(ONGroup group : abstractGroupResult)
+			for(ONGroup group : groupErrors)
 				logger.error("ERROR: Invalid abstract group structure(group label = "+group.getLabel() + ").");
 		}
 		logger.info("Abstract group structure task complete.");
 
-		//bhv relation task
+		//bhv group task
 		logger.info("Running behavioural groups structure task...");
-		bhvRelationResult.addAll(bhvRelationsTask(groups));
-		if(bhvRelationResult.isEmpty())
+		Collection<ChannelPlace> task2 = groupTask2(groups);
+		relationErrors.addAll(task2);
+		if(relationErrors.isEmpty())
 			logger.info("Correct behavioural relation");
 		else{
 			hasErr = true;
-			errNumber = errNumber + bhvRelationResult.size();
-			for(HashSet<SONConnection> set : bhvRelationResult){
-				ArrayList<String> conName = new ArrayList<String>();
-				for(SONConnection con : set){
-					conName.add(net.getName(con));
-				}
-				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behavioural ONs)" + conName.toString());
+			for(ChannelPlace cPlace : task2){
+				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behavioural ONs)" + net.getName(cPlace));
 			}
 		}
 		logger.info("Behavioural groups structure task complete.");
@@ -100,20 +92,19 @@ public class BSONStructureTask implements StructuralVerification{
 		//phase decomposition task
 		logger.info("Running phase decomposition task...");
 		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
+		Collection<Condition> task3 = phaseTask1(abstractGroups);
+		relationErrors.addAll(task3);
 
-		phaseTaskResult1.addAll(phaseTask1(abstractGroups));
-
-			if(!phaseTaskResult1.isEmpty()){
+			if(!task3.isEmpty()){
 				hasErr = true;
-				errNumber = errNumber + phaseTaskResult1.size();
-				for(Condition c : phaseTaskResult1)
+				for(Condition c : task3)
 					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
 			}else{
-				phaseTaskResult2.addAll(phaseTask2(abstractGroups));
-				if(!phaseTaskResult2.isEmpty()){
+				Collection<Condition> task4 =phaseTask2(abstractGroups);
+				relationErrors.addAll(task4);
+				if(!task4.isEmpty()){
 					hasErr = true;
-					errNumber = errNumber + phaseTaskResult2.size();
-					for(Condition c : phaseTaskResult2)
+					for(Node c : task4)
 						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
 				}
 			}
@@ -124,9 +115,8 @@ public class BSONStructureTask implements StructuralVerification{
 						result = this.phaseTask3(bsonAlg.getPhase(c), c);
 							if(result!=""){
 								hasErr = true;
-								errNumber ++;
 								logger.error("ERROR:"+ result + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
-								phaseTaskResult1.add(c);
+								relationErrors.add(c);
 					}
 				}
 			}else{
@@ -134,7 +124,7 @@ public class BSONStructureTask implements StructuralVerification{
 				warningNumber++;
 			}
 
-			if(phaseTaskResult1.isEmpty())
+			if(relationErrors.isEmpty())
 				logger.info("Correct phase decomposition");
 
 		logger.info("phase decomposition task complete.");
@@ -143,25 +133,27 @@ public class BSONStructureTask implements StructuralVerification{
 		//BSON cycle task
 		if(!hasErr){
 		logger.info("Running cycle detection...");
-		cycleResult.addAll(bsonPathAlg.cycleTask(components));
+		cycleErrors.addAll(bsonPathAlg.cycleTask(components));
 
-		if (cycleResult.isEmpty() )
+		if (cycleErrors.isEmpty() )
 			logger.info("Acyclic structure correct");
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : BSON cycles = "+ cycleResult.size() + ".");
+			logger.error("ERROR : BSON cycles = "+ cycleErrors.size() + ".");
 		}
 
 		logger.info("Cycle detection complete.\n");
 		}else{
-			cycleResult = new HashSet<ArrayList<Node>>();
+			cycleErrors = new HashSet<ArrayList<Node>>();
 			logger.info("WARNING : Relation error exist, cannot run cycle detection task.\n" );
 			warningNumber++;
 		}
+
+		errNumber = errNumber + relationErrors.size() + groupErrors.size();
 	}
 
-	private Collection<ONGroup> invalidAbstractGroups(Collection<ONGroup> groups){
+	private Collection<ONGroup> groupTask1(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 
 		for(ONGroup group : groups){
@@ -190,8 +182,9 @@ public class BSONStructureTask implements StructuralVerification{
 		return result;
 	}
 
-	private Collection<HashSet<SONConnection>> bhvRelationsTask(Collection<ONGroup> groups){
-		Collection<HashSet<SONConnection>> result = new HashSet<HashSet<SONConnection>>();
+	//A/SYN communication between abstract and behavioural ONs
+	private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups){
+		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
 		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
 
 		for(ChannelPlace cPlace : relationAlg.getRelatedChannelPlace(groups)){
@@ -208,11 +201,8 @@ public class BSONStructureTask implements StructuralVerification{
 					}
 				}
 
-			if(inAbGroup < connectedNodes.size() && inAbGroup != 0){
-				HashSet<SONConnection> subResult = new HashSet<SONConnection>();
-					subResult.addAll(net.getSONConnections(cPlace));
-					result.add(subResult);
-				}
+			if(inAbGroup < connectedNodes.size() && inAbGroup != 0)
+					result.add(cPlace);
 			}
 
 		return result;
@@ -257,7 +247,7 @@ public class BSONStructureTask implements StructuralVerification{
 
 		for(ONGroup group : groups){
 			boolean isInput = false;
-			if(bsonAlg.isLineLikeGroup(group) && !abstractGroupResult.contains(group)){
+			if(bsonAlg.isLineLikeGroup(group) && !groupErrors.contains(group)){
 				for(Node node : group.getComponents()){
 					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
 						isInput = true;
@@ -336,40 +326,49 @@ public class BSONStructureTask implements StructuralVerification{
 		return "";
 	}
 
+	@Override
 	public void errNodesHighlight(){
-
-		for(ONGroup group : abstractGroupResult){
+		for(ONGroup group : groupErrors){
 			group.setForegroundColor(Color.RED);
 		}
 
-		for(HashSet<SONConnection> set : this.bhvRelationResult){
-			for(SONConnection con : set)
-				con.setColor(SONSettings.getConnectionErrColor());
+		for(Node c : this.relationErrors){
+			this.net.setFillColor(c, SONSettings.getRelationErrColor());
 		}
 
-		for(Condition c : this.phaseTaskResult1){
-			c.setFillColor(SONSettings.getRelationErrColor());
-		}
-
-		for(Condition c : this.phaseTaskResult2){
-			c.setFillColor(SONSettings.getRelationErrColor());
-		}
-
-		for (ArrayList<Node> list : this.cycleResult)
+		for (ArrayList<Node> list : this.cycleErrors)
 			for (Node node : list)
 				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
-		}
+	}
 
+	@Override
 	public boolean hasErr(){
 		return this.hasErr;
 	}
 
+	@Override
 	public int getErrNumber(){
 		return this.errNumber;
 	}
 
+	@Override
 	public int getWarningNumber(){
 		return this.warningNumber;
+	}
+
+	@Override
+	public Collection<Node> getRelationErrors() {
+		return this.relationErrors;
+	}
+
+	@Override
+	public Collection<ArrayList<Node>> getCycleErrors() {
+		return this.cycleErrors;
+	}
+
+	@Override
+	public Collection<ONGroup> getGroupErrors() {
+		return groupErrors;
 	}
 
 }

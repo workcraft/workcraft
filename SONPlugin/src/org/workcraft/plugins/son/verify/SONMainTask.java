@@ -1,10 +1,15 @@
 package org.workcraft.plugins.son.verify;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
@@ -23,6 +28,10 @@ public class SONMainTask implements Task<VerificationResult>{
 	private int totalErrNum = 0;
 	private int totalWarningNum = 0;
 
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+	private Collection<Node> relationErrors= new HashSet<Node>();
+	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+
 	public SONMainTask(StructureVerifySettings settings, SONModel net){
 		this.settings = settings;
 		this.net = net;
@@ -35,8 +44,8 @@ public class SONMainTask implements Task<VerificationResult>{
 
 		if(settings.getType() == 0){
 
-			StructuralVerification groupSTask = new ONStructureTask(net);
-			groupSTask.task(settings.getSelectedGroups());
+			StructuralVerification onSTask = new ONStructureTask(net);
+			onSTask.task(settings.getSelectedGroups());
 
 			StructuralVerification csonSTask = new CSONStructureTask(net);
 			csonSTask.task(settings.getSelectedGroups());
@@ -44,14 +53,20 @@ public class SONMainTask implements Task<VerificationResult>{
 			StructuralVerification bsonSTask = new BSONStructureTask(net);
 			bsonSTask.task(settings.getSelectedGroups());
 
-			if(settings.getErrNodesHighlight()){
-				groupSTask.errNodesHighlight();
-				csonSTask.errNodesHighlight();
-				bsonSTask.errNodesHighlight();
-			}
+			groupErrors.addAll(onSTask.getGroupErrors());
+			relationErrors.addAll(onSTask.getRelationErrors());
+			cycleErrors.addAll(onSTask.getCycleErrors());
 
-			totalErrNum = groupSTask.getErrNumber();
-			totalWarningNum = groupSTask.getWarningNumber();
+			groupErrors.addAll(csonSTask.getGroupErrors());
+			relationErrors.addAll(csonSTask.getRelationErrors());
+			cycleErrors.addAll(csonSTask.getCycleErrors());
+
+			groupErrors.addAll(bsonSTask.getGroupErrors());
+			relationErrors.addAll(bsonSTask.getRelationErrors());
+			cycleErrors.addAll(bsonSTask.getCycleErrors());
+
+			totalErrNum = onSTask.getErrNumber();
+			totalWarningNum = onSTask.getWarningNumber();
 
 			totalErrNum = totalErrNum + csonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
@@ -68,16 +83,16 @@ public class SONMainTask implements Task<VerificationResult>{
 
 		//group structure tasks
 		if(settings.getType() == 1){
-			ONStructureTask groupSTask = new ONStructureTask(net);
+			ONStructureTask onSTask = new ONStructureTask(net);
 			//main group task
-			groupSTask.task(settings.getSelectedGroups());
+			onSTask.task(settings.getSelectedGroups());
 
-			//highlight setting
-			if(settings.getErrNodesHighlight())
-				groupSTask.errNodesHighlight();
+			groupErrors.addAll(onSTask.getGroupErrors());
+			relationErrors.addAll(onSTask.getRelationErrors());
+			cycleErrors.addAll(onSTask.getCycleErrors());
 
-			totalErrNum = groupSTask.getErrNumber();
-			totalWarningNum = groupSTask.getWarningNumber();
+			totalErrNum = onSTask.getErrNumber();
+			totalWarningNum = onSTask.getWarningNumber();
 
 		}
 
@@ -86,9 +101,10 @@ public class SONMainTask implements Task<VerificationResult>{
 			CSONStructureTask csonSTask = new CSONStructureTask(net);
 			csonSTask.task(settings.getSelectedGroups());
 
-			if(settings.getErrNodesHighlight()){
-				csonSTask.errNodesHighlight();
-			}
+			groupErrors.addAll(csonSTask.getGroupErrors());
+			relationErrors.addAll(csonSTask.getRelationErrors());
+			cycleErrors.addAll(csonSTask.getCycleErrors());
+
 			totalErrNum = totalErrNum + csonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
 
@@ -99,9 +115,9 @@ public class SONMainTask implements Task<VerificationResult>{
 			BSONStructureTask bsonSTask = new BSONStructureTask(net);
 			bsonSTask.task(settings.getSelectedGroups());
 
-			if(settings.getErrNodesHighlight()){
-				bsonSTask.errNodesHighlight();
-			}
+			groupErrors.addAll(bsonSTask.getGroupErrors());
+			relationErrors.addAll(bsonSTask.getRelationErrors());
+			cycleErrors.addAll(bsonSTask.getCycleErrors());
 
 			totalErrNum = totalErrNum + bsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
@@ -161,6 +177,18 @@ public class SONMainTask implements Task<VerificationResult>{
 
 	public int getTotalWarningNum(){
 		return this.totalWarningNum;
+	}
+
+	public Collection<Node> getRelationErrors() {
+		return this.relationErrors;
+	}
+
+	public Collection<ArrayList<Node>> getCycleErrors() {
+		return this.cycleErrors;
+	}
+
+	public Collection<ONGroup> getGroupErrors() {
+		return this.groupErrors;
 	}
 
 }

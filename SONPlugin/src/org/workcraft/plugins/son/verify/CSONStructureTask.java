@@ -2,6 +2,7 @@ package org.workcraft.plugins.son.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
@@ -21,10 +22,9 @@ public class CSONStructureTask implements StructuralVerification{
 	private RelationAlgorithm relationAlg;
 	private CSONPathAlg csonPathAlg;
 
-	private Collection<ChannelPlace> cPlaceResult = new ArrayList<ChannelPlace>();
-	private Collection<ChannelPlace> cPlaceConTypeResult =  new ArrayList<ChannelPlace>();
-	private Collection<ArrayList<Node>> cycleResult = new ArrayList<ArrayList<Node>>();
-//	private Collection<List<ChannelPlace>> cPlaceStructureResult;
+	private Collection<Node> relationErrors = new ArrayList<Node>();
+	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -63,19 +63,21 @@ public class CSONStructureTask implements StructuralVerification{
 
 		//channel place relation
 		logger.info("Running model structure and components relation check...");
-		cPlaceResult.addAll(cPlaceRelationTask(relatedcPlaces));
-		cPlaceConTypeResult.addAll(cPlaceConTypeTask(relatedcPlaces));
+		Collection<ChannelPlace> task1 = cPlaceRelationTask(relatedcPlaces);
+		Collection<ChannelPlace> task2 = cPlaceConTypeTask(relatedcPlaces);
+		relationErrors.addAll(task1);
+		relationErrors.addAll(task2);
 
-		if(cPlaceResult.isEmpty() && cPlaceConTypeResult.isEmpty())
+		if(relationErrors.isEmpty() && relationErrors.isEmpty())
 			logger.info("Correct channel place relation.");
 		else{
 			hasErr = true;
-			errNumber = errNumber + cPlaceResult.size() + cPlaceConTypeResult.size();
-			for(ChannelPlace cPlace : cPlaceResult)
+			errNumber = errNumber + relationErrors.size();
+			for(Node cPlace : task1)
 				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
 						"input/output size > 1");
 
-			for(ChannelPlace cPlace : cPlaceConTypeResult)
+			for(Node cPlace : task2)
 				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
 						"different input and output connection types");
 		}
@@ -101,14 +103,14 @@ public class CSONStructureTask implements StructuralVerification{
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
-		cycleResult.addAll(csonPathAlg.cycleTask(components));
+		cycleErrors.addAll(csonPathAlg.cycleTask(components));
 
-		if (cycleResult.isEmpty() )
+		if (cycleErrors.isEmpty() )
 			logger.info("Acyclic structure correct");
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : global cycles = "+ cycleResult.size() + ".");
+			logger.error("ERROR : global cycles = "+ cycleErrors.size() + ".");
 		}
 
 		logger.info("Cycle detection complete.\n");
@@ -212,13 +214,10 @@ public class CSONStructureTask implements StructuralVerification{
 		return result;
 	}*/
 
+	@Override
 	public void errNodesHighlight(){
 
-		for(ChannelPlace cPlace : cPlaceResult){
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
-		}
-
-		for(ChannelPlace cPlace : cPlaceConTypeResult){
+		for(Node cPlace : relationErrors){
 			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
 		}
 
@@ -227,21 +226,39 @@ public class CSONStructureTask implements StructuralVerification{
 			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());*/
 
 
-		for (ArrayList<Node> list : this.cycleResult)
+		for (ArrayList<Node> list : this.cycleErrors)
 			for (Node node : list)
 				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 	}
 
+	@Override
+	public Collection<Node> getRelationErrors() {
+		return this.relationErrors;
+	}
+
+	@Override
+	public Collection<ArrayList<Node>> getCycleErrors() {
+		return this.cycleErrors;
+	}
+
+	@Override
 	public boolean hasErr(){
 		return this.hasErr;
 	}
 
+	@Override
 	public int getErrNumber(){
 		return this.errNumber;
 	}
 
+	@Override
 	public int getWarningNumber(){
 		return this.warningNumber;
+	}
+
+	@Override
+	public Collection<ONGroup> getGroupErrors() {
+		return this.groupErrors;
 	}
 
 }

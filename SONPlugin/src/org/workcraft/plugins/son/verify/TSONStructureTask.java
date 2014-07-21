@@ -20,7 +20,9 @@ public class TSONStructureTask implements StructuralVerification{
 	private TSONAlg tsonAlg;
 	private PathAlgorithm pathAlg;
 
-	private Collection<Block> errBlocks = new HashSet<Block>();
+	private Collection<Node> relationErrors = new HashSet<Node>();
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
 	private Collection<Node> errNodes = new HashSet<Node>();
 
 	private boolean hasErr = false;
@@ -76,7 +78,7 @@ public class TSONStructureTask implements StructuralVerification{
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
 					errNodes.addAll(result3);
-					errBlocks.add(block);
+					relationErrors.add(block);
 					errNumber = errNumber + result3.size();
 					for(Node node : result3)
 						logger.error("ERROR : Incorrect causally relation, the input node "+
@@ -106,13 +108,21 @@ public class TSONStructureTask implements StructuralVerification{
 
 	@Override
 	public void errNodesHighlight() {
-		for(Node node : this.errNodes){
+		for(Node node : this.relationErrors){
 			this.net.setFillColor(node, SONSettings.getRelationErrColor());
+			if(node instanceof Block)
+				if(((Block)node).getIsCollapsed())
+					this.net.setFillColor((Block)node, SONSettings.getRelationErrColor());
 		}
-		for(Block block : this.errBlocks){
-			if(block.getIsCollapsed())
-				this.net.setFillColor(block, SONSettings.getRelationErrColor());
-		}
+	}
+	@Override
+	public Collection<Node> getRelationErrors() {
+		return this.relationErrors;
+	}
+
+	@Override
+	public Collection<ArrayList<Node>> getCycleErrors() {
+		return this.cycleErrors;
 	}
 
 	@Override
@@ -128,6 +138,11 @@ public class TSONStructureTask implements StructuralVerification{
 	@Override
 	public int getWarningNumber() {
 		return warningNumber;
+	}
+
+	@Override
+	public Collection<ONGroup> getGroupErrors() {
+		return groupErrors;
 	}
 
 }

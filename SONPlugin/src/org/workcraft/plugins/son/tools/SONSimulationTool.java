@@ -329,14 +329,14 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		simuAlg = new SimulationAlg(net);
 		errAlg = new ErrorTracingAlg(net);
 
-		initialMarking = autoInitalMarking();
-		mainTrace.clear();
-		branchTrace.clear();
-
 		if (visualNet == editor.getModel()) {
 			editor.getWorkspaceEntry().captureMemento();
 		}
 		editor.getWorkspaceEntry().setCanModify(false);
+
+		initialMarking = autoInitalMarking();
+		mainTrace.clear();
+		branchTrace.clear();
 
 		if(!visualNet.connectToBlocks()){
 			conToBlock = false;
