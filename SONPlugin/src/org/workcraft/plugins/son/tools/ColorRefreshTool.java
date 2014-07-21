@@ -3,7 +3,6 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -24,8 +23,6 @@ public class ColorRefreshTool implements Tool {
 	public void run(WorkspaceEntry we){
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		net.refreshColor();
-		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		vnet.connectToBlocksInside();
 	}
 
 }

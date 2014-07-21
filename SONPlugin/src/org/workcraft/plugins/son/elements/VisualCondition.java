@@ -269,11 +269,11 @@ public class VisualCondition extends VisualComponent implements VisualPlaceNode{
 		return (PlaceNode) this.getReferencedComponent();
 	}
 
-	public void setInterfaceGraphic(ConnectionGraphic graphic){
+/*	public void setInterfaceGraphic(ConnectionGraphic graphic){
 		this.graphic = graphic;
 	}
 
 	public ConnectionGraphic getInterfaceGraphic(){
 		return graphic;
-	}
+	}*/
 }

@@ -19,7 +19,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -628,72 +627,73 @@ public class VisualSON extends AbstractVisualModel{
 			return false;
 
 		for(VisualBlock vBlock : this.getVisualBlocks()){
-			 Collection<VisualComponent> components = vBlock.getComponents();
-			 for(VisualSONConnection con : this.getVisualConnections()){
-				 Node first = con.getFirst();
-				 Node second = con.getSecond();
-				 if(!components.contains(first) && components.contains(second)){
-					if(first instanceof VisualPlaceNode){
-						 //set input value
-						String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
-						String type = "-"+con.getSONConnectionType().toString();
-						String value = "";
-						if(((VisualPlaceNode)first).getInterface() == ""){
-							value = "to-"+name+type;
-						}else{
-							value = ((VisualPlaceNode)first).getInterface()+";"+"to-"+name+type;
+			if(vBlock.getIsCollapsed()){
+				 Collection<VisualComponent> components = vBlock.getComponents();
+				 for(VisualSONConnection con : this.getVisualConnections()){
+					 Node first = con.getFirst();
+					 Node second = con.getSecond();
+					 if(!components.contains(first) && components.contains(second)){
+						if(first instanceof VisualPlaceNode){
+							 //set input value
+							String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
+							String type = "-"+con.getSONConnectionType().toString();
+							String value = "";
+							if(((VisualPlaceNode)first).getInterface() == ""){
+								value = "to-"+name+type;
+							}else{
+								value = ((VisualPlaceNode)first).getInterface()+";"+"to-"+name+type;
+							}
+							((VisualPlaceNode)first).setInterface(value);
+							//((VisualCondition)first).setInterfaceGraphic(graphic);
+							 //remove visual connection
+							 Container parent = (Container)con.getParent();
+							 parent.remove(con);
+							 //remove math connection
+							 SONConnection mathCon = con.getReferencedConnection();
+							 Container mathParent = (Container)mathCon.getParent();
+							 if(mathParent != null)
+								 mathParent.remove(mathCon);
+							 //create connection between first node and block
+							 try {
+								this.connect(first, vBlock, con.getSONConnectionType());
+							} catch (InvalidConnectionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
-						ConnectionGraphic graphic =	con.getGraphic();
-						((VisualPlaceNode)first).setInterface(value);
-						((VisualCondition)first).setInterfaceGraphic(graphic);
-						 //remove visual connection
-						 Container parent = (Container)con.getParent();
-						 parent.remove(con);
-						 //remove math connection
-						 SONConnection mathCon = con.getReferencedConnection();
-						 Container mathParent = (Container)mathCon.getParent();
-						 if(mathParent != null)
-							 mathParent.remove(mathCon);
-						 //create connection between first node and block
-						 try {
-							this.connect(first, vBlock, con.getSONConnectionType());
-						} catch (InvalidConnectionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				 }
-				 if(components.contains(first) && !components.contains(second)){
-					if(second instanceof VisualPlaceNode){
-						 //set output value
-						String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
-						String type = "-"+con.getSONConnectionType().toString();
-						String value = "";
-						if(((VisualPlaceNode)second).getInterface() == ""){
-							value = "from-"+name+type;
-						}else{
-							value = ((VisualPlaceNode)second).getInterface()+";"+"from-"+name+type;
-						}
-						((VisualPlaceNode)second).setInterface(value);
+					 }
+					 if(components.contains(first) && !components.contains(second)){
+						if(second instanceof VisualPlaceNode){
+							 //set output value
+							String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
+							String type = "-"+con.getSONConnectionType().toString();
+							String value = "";
+							if(((VisualPlaceNode)second).getInterface() == ""){
+								value = "from-"+name+type;
+							}else{
+								value = ((VisualPlaceNode)second).getInterface()+";"+"from-"+name+type;
+							}
+							((VisualPlaceNode)second).setInterface(value);
 
-						 //remove visual connection
-						 Container parent = (Container)con.getParent();
-						 parent.remove(con);
-						 //remove math connection
-						 SONConnection mathCon = con.getReferencedConnection();
-						 Container mathParent = (Container)mathCon.getParent();
-						 if(mathParent != null)
-							 mathParent.remove(mathCon);
-						 //create connection between first node and block
-						 try {
-							this.connect(vBlock, second, con.getSONConnectionType());
-						} catch (InvalidConnectionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							 //remove visual connection
+							 Container parent = (Container)con.getParent();
+							 parent.remove(con);
+							 //remove math connection
+							 SONConnection mathCon = con.getReferencedConnection();
+							 Container mathParent = (Container)mathCon.getParent();
+							 if(mathParent != null)
+								 mathParent.remove(mathCon);
+							 //create connection between first node and block
+							 try {
+								this.connect(vBlock, second, con.getSONConnectionType());
+							} catch (InvalidConnectionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
-					}
+					 }
 				 }
-			 }
+			}
 		}
 		return true;
 	}
@@ -757,8 +757,8 @@ public class VisualSON extends AbstractVisualModel{
 					//c is an input
 					if(piece[0].equals("to") && e!=null){
 						try {
-							if(piece[2].equals("POLYLINE"))
-								this.connect(p, e, VisualSONConnection.SONConnectionType.POLYLINE);
+							if(piece[2].equals("POLYLINE")){
+								this.connect(p, e, VisualSONConnection.SONConnectionType.POLYLINE);}
 							else if(piece[2].equals("SYNCLINE"))
 								this.connect(p, e, VisualSONConnection.SONConnectionType.SYNCLINE);
 							else if(piece[2].equals("ASYNLINE"))

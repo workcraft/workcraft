@@ -320,6 +320,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
+
 		visualNet = (VisualSON)editor.getModel();
 		framework = editor.getFramework();
 		net = (SONModel)visualNet.getMathModel();
@@ -331,6 +332,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		initialMarking = autoInitalMarking();
 		mainTrace.clear();
 		branchTrace.clear();
+
 		if (visualNet == editor.getModel()) {
 			editor.getWorkspaceEntry().captureMemento();
 		}
@@ -352,18 +354,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 			net.resetConditionErrStates();
 		}
 
-		if (visualNet == editor.getModel()) {
-			editor.getWorkspaceEntry().captureMemento();
-		}
-		editor.getWorkspaceEntry().setCanModify(false);
-
 		updateState(editor);
 	}
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
+		//super.deactivated(editor);
 		visualNet.connectToBlocksInside();
-		super.deactivated(editor);
 		if (timer != null) {
 			timer.stop();
 			timer = null;
@@ -373,6 +370,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		}
 		this.visualNet = null;
 		this.net = null;
+
 	}
 
 	public void updateState(final GraphEditor editor) {
