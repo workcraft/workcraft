@@ -607,7 +607,6 @@ public class EncoderConfigurationDialog extends JDialog {
 		setPreferredSize(new Dimension(width,height));
 		layout.setRow(new double[] {row1, row2});
 		pack();
-		//revalidate();
 
 	}
 

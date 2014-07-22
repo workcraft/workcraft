@@ -420,6 +420,13 @@ public class CpogProgrammer {
 		try
 		{
 			// OLD SCENCO EXECUTION
+			if(SCENCO && pr > 0){
+				we.cancelMemento();
+				JOptionPane.showMessageDialog(null, "Exhaustive search option is not able to solve the CPOG with conditions, try other options.",
+						"Encoding result", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
 			solution = solverCnf.solve(instance, vars, derivedVariables);
 			CpogOptimisationTask opt_task = (CpogOptimisationTask) solverCnf.getTask(instance, vars, derivedVariables);
 			if (solution == null)
