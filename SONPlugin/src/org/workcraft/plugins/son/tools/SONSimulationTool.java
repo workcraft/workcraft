@@ -42,12 +42,16 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
 import org.workcraft.Trace;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -65,6 +69,7 @@ import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEventNode;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
@@ -95,6 +100,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
 	protected JButton saveMarkingButton, loadMarkingButton;
 	protected JComboBox typeCombo;
+
+	// cache of "excited" containers (the ones containing the excited simulation elements)
+	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
+
 
 	protected Map<Node, Boolean>initialMarking = null;
 	protected Map<Node, Boolean> savedMarking = null;
@@ -180,6 +189,9 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	}
 
 	private boolean quietStep() {
+
+		excitedContainers.clear();
+
 		if(branchTrace!=null && branchStep < branchTrace.size()){
 			List<EventNode> runList = new ArrayList<EventNode>();
 
@@ -236,6 +248,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	}
 
 	private boolean quietStepBack() {
+		excitedContainers.clear();
+
 		if (branchTrace!=null&&branchStep>0) {
 			List<EventNode> runList = new ArrayList<EventNode>();
 			Trace step = branchTrace.get(branchStep-1);
@@ -858,7 +872,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 		Trace step = new Trace();
 		for(EventNode e : syncList)
-			step.add(net.getName(e));
+			step.add(net.getNodeReference(e));
 
 		while (branchStep<branchTrace.size())
 			branchTrace.remove(branchStep);
@@ -1036,19 +1050,44 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return interfacePanel;
 	}
 
+
+	protected boolean isContainerExcited(Container container) {
+		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		boolean ret = false;
+
+		for (Node node: container.getChildren()) {
+
+			if (node instanceof VisualEventNode) {
+				EventNode event = ((VisualEventNode)node).getMathEventNode();
+
+				ret=ret || simuAlg.isEnabled(event, syncSet, phases);
+			}
+
+			if (node instanceof Container) {
+				ret = ret || isContainerExcited((Container)node);
+			}
+
+			if (ret) break;
+		}
+
+		excitedContainers.put(container, ret);
+		return ret;
+	}
+
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
+
 				if(node instanceof VisualEventNode && conToBlock) {
 					EventNode event = ((VisualEventNode)node).getMathEventNode();
 					String eventId = null;
 					Node event2 = null;
 					if (branchTrace!=null&&branchStep<branchTrace.size()) {
 						Trace step = branchTrace.get(branchStep);
-							if (step.contains(net.getName(event)))
-								event2 = net.getNodeByReference(net.getName(event));
+							if (step.contains(net.getNodeReference(event)))
+								event2 = net.getNodeByReference(net.getNodeReference(event));
 
 					} else if (branchTrace==null&&trace!=null&&traceStep<trace.size()) {
 						eventId = trace.get(traceStep);
@@ -1093,7 +1132,30 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 									return CommonVisualSettings.getEnabledBackgroundColor();
 								}
 							};
+				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
+
+					final boolean ret = isContainerExcited((Container)node);
+
+					return new ContainerDecoration() {
+
+						@Override
+						public Color getColorisation() {
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+
+						@Override
+						public boolean isContainerExcited() {
+							return ret;
+						}
+					};
+
 				}
+
 				return null;
 			}
 		};

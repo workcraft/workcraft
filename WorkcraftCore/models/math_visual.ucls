@@ -12,7 +12,7 @@
   </interface>  
   <class id="2" language="java" name="org.workcraft.dom.math.AbstractMathModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/math/AbstractMathModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="602" y="768"/>    
+    <position height="-1" width="-1" x="602" y="733"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -30,7 +30,7 @@
   </interface>  
   <interface id="4" language="java" name="org.workcraft.dom.Model" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/Model.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="248" y="221"/>    
+    <position height="-1" width="-1" x="238" y="219"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -56,7 +56,7 @@
     </display>  
   </class>  
   <generalization id="7">    
-    <bendpoint x="702" y="527"/>    
+    <bendpoint x="696" y="526"/>    
     <bendpoint x="455" y="526"/>    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="6"/>  

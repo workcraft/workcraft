@@ -63,15 +63,19 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -99,6 +103,9 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	private JSlider speedSlider;
 	private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
 	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
+
+	// cache of "excited" containers (the ones containing the excited simulation elements)
+	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
@@ -395,6 +402,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean quietStepBack() {
+		excitedContainers.clear();
+
 		boolean result = false;
 		String transitionId = null;
 		int mainDec = 0;
@@ -426,12 +435,15 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean stepBack(final GraphEditor editor) {
+
 		boolean ret = quietStepBack();
 		updateState(editor);
 		return ret;
 	}
 
 	private boolean quietStep() {
+		excitedContainers.clear();
+
 		boolean result = false;
 		String transitionId = null;
 		int mainInc = 0;
@@ -687,6 +699,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	public void executeTransition(final GraphEditor editor, Transition t) {
 		if (t == null) return;
+
+
 		String transitionId = null;
 		// if clicked on the trace event, do the step forward
 		if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
@@ -756,11 +770,34 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		branchTrace.clear();
 	}
 
+
+	protected boolean isContainerExcited(Container container) {
+		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		boolean ret = false;
+
+		for (Node node: container.getChildren()) {
+
+			if (node instanceof VisualTransition) {
+				ret=ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
+			}
+
+			if (node instanceof Container) {
+				ret = ret || isContainerExcited((Container)node);
+			}
+
+			if (ret) break;
+		}
+
+		excitedContainers.put(container, ret);
+		return ret;
+	}
+
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
+
 				if(node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
 					String transitionId = null;
@@ -799,6 +836,31 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						};
 					}
 				}
+
+				if (node instanceof VisualPage || node instanceof VisualGroup) {
+
+					final boolean ret = isContainerExcited((Container)node);
+
+					return new ContainerDecoration() {
+
+						@Override
+						public Color getColorisation() {
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+
+						@Override
+						public boolean isContainerExcited() {
+							return ret;
+						}
+					};
+
+				}
+
 				return null;
 			}
 

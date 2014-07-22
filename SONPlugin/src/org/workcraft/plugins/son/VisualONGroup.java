@@ -55,40 +55,40 @@ public class VisualONGroup extends VisualPage{
 		});
 	}
 
-	@Override
-	public void draw(DrawRequest r)
-	{
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-
-//		Rectangle2D bb = getContentsBoundingBox();
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
-		if (bb != null && getParent() != null)
-		{
-//			g.setColor(Coloriser.colorise(fillColor, colorisation));
-//			g.fill(bb);
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-			g.setStroke(new BasicStroke( 2 * strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
-					3.0f, new float[]{ 2 * strokeWidth , 5 * strokeWidth,}, 0f));
-
-			bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
-
-			g.draw(bb);
-
-			// draw label
-			Font labelFont = new Font("Calibri", Font.PLAIN, 1).deriveFont(0.65f);
-			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
-
-			labelBB = glyphVector.getVisualBounds();
-
-			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
-
-			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
-
-			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
-		}
-	}
+//	@Override
+//	public void draw(DrawRequest r)
+//	{
+//		Graphics2D g = r.getGraphics();
+//		Color colorisation = r.getDecoration().getColorisation();
+//
+////		Rectangle2D bb = getContentsBoundingBox();
+//		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+//
+//		if (bb != null && getParent() != null)
+//		{
+////			g.setColor(Coloriser.colorise(fillColor, colorisation));
+////			g.fill(bb);
+//			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+//			g.setStroke(new BasicStroke( 2 * strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
+//					3.0f, new float[]{ 2 * strokeWidth , 5 * strokeWidth,}, 0f));
+//
+//			bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
+//
+//			g.draw(bb);
+//
+//			// draw label
+//			Font labelFont = new Font("Calibri", Font.PLAIN, 1).deriveFont(0.65f);
+//			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
+//
+//			labelBB = glyphVector.getVisualBounds();
+//
+//			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
+//
+//			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
+//
+//			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
+//		}
+//	}
 
 	public void setLabel(String label)
 	{

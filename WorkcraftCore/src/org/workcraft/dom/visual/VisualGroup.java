@@ -35,6 +35,8 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
@@ -62,8 +64,18 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public boolean getIsCollapsed() {
-		return isCollapsed;
+		return isCollapsed&&!isExcited;
 	}
+
+	private boolean isExcited = false;
+	public void setIsExcited(boolean isExcited) {
+		if (this.isExcited==isExcited) return;
+
+		sendNotification(new TransformChangingEvent(this));
+		this.isExcited = isExcited;
+		sendNotification(new TransformChangedEvent(this));
+	}
+
 
 	private boolean isInside = false;
 	@Override
@@ -102,6 +114,11 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public void draw(DrawRequest r) {
+
+		Decoration dec = r.getDecoration();
+		if (dec instanceof ContainerDecoration)
+			setIsExcited(((ContainerDecoration)dec).isContainerExcited());
+
 
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn

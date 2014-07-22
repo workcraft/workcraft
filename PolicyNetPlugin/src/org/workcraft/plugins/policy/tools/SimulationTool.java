@@ -4,11 +4,15 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -59,6 +63,27 @@ public class SimulationTool extends PetriNetSimulationTool {
 		if (transition != null) {
 			executeTransition(e.getEditor(), transition);
 		}
+	}
+
+	protected boolean isContainerExcited(Container container) {
+		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		boolean ret = false;
+
+		for (Node node: container.getChildren()) {
+
+			if (node instanceof VisualBundledTransition) {
+				ret=ret || (getExcitedTransitionOfNode(node) != null);
+			}
+
+			if (node instanceof Container) {
+				ret = ret || isContainerExcited((Container)node);
+			}
+
+			if (ret) break;
+		}
+
+		excitedContainers.put(container, ret);
+		return ret;
 	}
 
 	@Override
@@ -118,6 +143,33 @@ public class SimulationTool extends PetriNetSimulationTool {
 						}
 					};
 				}
+
+				if (node instanceof VisualPage || node instanceof VisualGroup) {
+
+					if (node.getParent()==null) return null; // do not work with the root node
+
+					final boolean ret = isContainerExcited((Container)node);
+
+					return new ContainerDecoration() {
+
+						@Override
+						public Color getColorisation() {
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+
+						@Override
+						public boolean isContainerExcited() {
+							return ret;
+						}
+					};
+
+				}
+
 
 				return null;
 			}
