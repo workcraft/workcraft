@@ -1,23 +1,23 @@
 /*
-*
-* Copyright 2008,2009 Newcastle University
-*
-* This file is part of Workcraft.
-*
-* Workcraft is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Workcraft is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
-*
-*/
+ *
+ * Copyright 2008,2009 Newcastle University
+ *
+ * This file is part of Workcraft.
+ *
+ * Workcraft is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Workcraft is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 package org.workcraft.plugins.circuit;
 
@@ -63,7 +63,8 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/icons/svg/circuit-component.svg")
-public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+public class VisualCircuitComponent extends VisualComponent implements
+		Container, CustomTouchable, StateObserver, ObservableHierarchy {
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
 
@@ -91,16 +92,20 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			protected void setter(VisualCircuitComponent object, Boolean value) {
 				object.getReferencedCircuitComponent().setIsEnvironment(value);
 			}
+
 			protected Boolean getter(VisualCircuitComponent object) {
-				return object.getReferencedCircuitComponent().getIsEnvironment();
+				return object.getReferencedCircuitComponent()
+						.getIsEnvironment();
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
 				this, "Render type", RenderType.class, RenderType.getChoice()) {
-			protected void setter(VisualCircuitComponent object, RenderType value) {
+			protected void setter(VisualCircuitComponent object,
+					RenderType value) {
 				object.setRenderType(value);
 			}
+
 			protected RenderType getter(VisualCircuitComponent object) {
 				return object.getRenderType();
 			}
@@ -113,13 +118,14 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public VisualContact getMainContact() {
 		VisualContact ret = null;
-		if (mainContact!=null) ret=mainContact.get();
-		if (ret==null) {
-			for (Node  n : getChildren()) {
+		if (mainContact != null)
+			ret = mainContact.get();
+		if (ret == null) {
+			for (Node n : getChildren()) {
 				if (n instanceof VisualContact) {
-					if (((VisualContact)n).getIOType()==IOType.OUTPUT) {
-						setMainContact((VisualContact)n);
-						ret = (VisualContact)n;
+					if (((VisualContact) n).getIOType() == IOType.OUTPUT) {
+						setMainContact((VisualContact) n);
+						ret = (VisualContact) n;
 						break;
 					}
 				}
@@ -129,7 +135,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	public CircuitComponent getReferencedCircuitComponent() {
-		return (CircuitComponent)this.getReferencedComponent();
+		return (CircuitComponent) this.getReferencedComponent();
 	}
 
 	public boolean getIsEnvironment() {
@@ -154,6 +160,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		contactLabelBB = null;
 		updateStepPositions();
 		updateTotalBB();
+		sendNotification(new PropertyChangedEvent(this, "render type"));
 	}
 
 	// updates sequential position of the contacts
@@ -162,13 +169,17 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		int south = 0;
 		int east = 0;
 		int west = 0;
-		for (Node n: this.getChildren()) {
+		for (Node n : this.getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact)n;
-				if (vc.getDirection().equals(Direction.EAST)) east++;
-				if (vc.getDirection().equals(Direction.SOUTH)) south++;
-				if (vc.getDirection().equals(Direction.NORTH)) north++;
-				if (vc.getDirection().equals(Direction.WEST)) west++;
+				VisualContact vc = (VisualContact) n;
+				if (vc.getDirection().equals(Direction.EAST))
+					east++;
+				if (vc.getDirection().equals(Direction.SOUTH))
+					south++;
+				if (vc.getDirection().equals(Direction.NORTH))
+					north++;
+				if (vc.getDirection().equals(Direction.WEST))
+					west++;
 			}
 		}
 
@@ -177,9 +188,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		double northStep = -contactStep * (north - 1) / 2;
 		double southStep = -contactStep * (south - 1) / 2;
 
-		for (Node n: getChildren()) {
-			if (!(n instanceof VisualContact)) continue;
-			VisualContact vc=(VisualContact)n;
+		for (Node n : getChildren()) {
+			if (!(n instanceof VisualContact))
+				continue;
+			VisualContact vc = (VisualContact) n;
 			switch (vc.getDirection()) {
 			case EAST:
 				vc.setY(eastStep);
@@ -202,28 +214,29 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	public static double snapP5(double x) {
-		return (double)(Math.round(x * 2)) / 2;
+		return (double) (Math.round(x * 2)) / 2;
 	}
 
 	private void updateSidePosition(VisualContact vc) {
 		Rectangle2D bb = getBestBB();
 		switch (vc.getDirection()) {
-			case EAST:
-				vc.setX(snapP5(bb.getMaxX() + contactLength));
-				break;
-			case WEST:
-				vc.setX(snapP5(bb.getMinX() - contactLength));
-				break;
-			case NORTH:
-				vc.setY(snapP5(bb.getMinY() - contactLength));
-				break;
-			case SOUTH:
-				vc.setY(snapP5(bb.getMaxY() + contactLength));
-				break;
+		case EAST:
+			vc.setX(snapP5(bb.getMaxX() + contactLength));
+			break;
+		case WEST:
+			vc.setX(snapP5(bb.getMinX() - contactLength));
+			break;
+		case NORTH:
+			vc.setY(snapP5(bb.getMinY() - contactLength));
+			break;
+		case SOUTH:
+			vc.setY(snapP5(bb.getMaxY() + contactLength));
+			break;
 		}
 	}
 
-	public void updateDirection(VisualCircuit vcircuit, VisualContact vc, VisualContact.Direction dir) {
+	public void updateDirection(VisualCircuit vcircuit, VisualContact vc,
+			VisualContact.Direction dir) {
 		vc.setDirection(dir);
 		contactLabelBB = null;
 		updateSidePosition(vc);
@@ -232,11 +245,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
-
-	        Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
+			Container container = AbstractVisualModel.getMathContainer(
+					vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
-
 			contactLabelBB = null;
 			updateSidePosition(vc);
 			updateStepPositions();
@@ -244,9 +256,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	protected void updateTotalBB() {
-
-		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
-
+		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy
+				.getChildrenOfType(this, Touchable.class));
 		if (contactLabelBB != null && totalBB != null) {
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 		}
@@ -255,87 +266,103 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	public Rectangle2D getBestBB() {
 		Rectangle2D result = contactLabelBB;
 		if (result == null) {
-			result = new Rectangle2D.Double(-size/2, -size/2, size, size);
+			result = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
 		}
 		return result;
 	}
 
 	public void updateContactLabelBB(Circuit circuit, Graphics2D g) {
-		int north=0;
-		int south=0;
-		int east=0;
-		int west=0;
-		for (Node n: this.getChildren()) {
+		int north = 0;
+		int south = 0;
+		int east = 0;
+		int west = 0;
+		for (Node n : this.getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact)n;
-				if (vc.getDirection().equals(Direction.EAST)) east++;
-				if (vc.getDirection().equals(Direction.SOUTH)) south++;
-				if (vc.getDirection().equals(Direction.NORTH)) north++;
-				if (vc.getDirection().equals(Direction.WEST)) west++;
+				VisualContact vc = (VisualContact) n;
+				if (vc.getDirection().equals(Direction.EAST))
+					east++;
+				if (vc.getDirection().equals(Direction.SOUTH))
+					south++;
+				if (vc.getDirection().equals(Direction.NORTH))
+					north++;
+				if (vc.getDirection().equals(Direction.WEST))
+					west++;
 			}
 		}
 
-		double width_w=0;
-		double width_e=0;
-		double width_n=0;
-		double width_s=0;
-		for (Node vn: getChildren()) {
-			if (!(vn instanceof VisualContact)) continue;
-			VisualContact vc = (VisualContact)vn;
+		double width_w = 0;
+		double width_e = 0;
+		double width_n = 0;
+		double width_s = 0;
+		for (Node vn : getChildren()) {
+			if (!(vn instanceof VisualContact))
+				continue;
+			VisualContact vc = (VisualContact) vn;
 			GlyphVector gv = vc.getNameGlyphs(circuit, g);
 			Rectangle2D cur = gv.getVisualBounds();
-			double xx = (double)(Math.round(cur.getWidth() * 4))/4;
+			double xx = (double) (Math.round(cur.getWidth() * 4)) / 4;
 
 			switch (vc.getDirection()) {
 			case WEST:
-				width_w=(xx>width_w)?xx:width_w;
+				width_w = (xx > width_w) ? xx : width_w;
 				break;
 			case EAST:
-				width_e=(xx>width_e)?xx:width_e;
+				width_e = (xx > width_e) ? xx : width_e;
 				break;
 			case NORTH:
-				width_n=(xx>width_n)?xx:width_n;
+				width_n = (xx > width_n) ? xx : width_n;
 				break;
 			case SOUTH:
-				width_s=(xx>width_s)?xx:width_s;
+				width_s = (xx > width_s) ? xx : width_s;
 				break;
 			}
 		}
 
-		double height = Math.max(east, west)*contactStep+width_n+width_s+marginSize*4;
-		double width = Math.max(north, south)*contactStep+width_e+width_w+marginSize*4;
-		contactLabelBB = new Rectangle2D.Double(-width/2, -height/2, width, height);
+		double height = Math.max(east, west) * contactStep + width_n + width_s
+				+ marginSize * 4;
+		double width = Math.max(north, south) * contactStep + width_e + width_w
+				+ marginSize * 4;
+		contactLabelBB = new Rectangle2D.Double(-width / 2, -height / 2, width,
+				height);
 		updateTotalBB();
 	}
 
 	protected void drawContactConnections(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
-		g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+		g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 		Rectangle2D bb = getBestBB();
-		for (Node n: getChildren()) {
+		for (Node n : getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact vc=(VisualContact)n;
+				VisualContact vc = (VisualContact) n;
 				if (vc.getDirection().equals(Direction.EAST)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), bb.getMaxX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
+					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
+							bb.getMaxX(), vc.getY());
+					g.setColor(Coloriser.colorise(
+							CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 				if (vc.getDirection().equals(Direction.WEST)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), bb.getMinX(), vc.getY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
+					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
+							bb.getMinX(), vc.getY());
+					g.setColor(Coloriser.colorise(
+							CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.NORTH)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMinY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
+					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
+							vc.getX(), bb.getMinY());
+					g.setColor(Coloriser.colorise(
+							CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 
 				if (vc.getDirection().equals(Direction.SOUTH)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMaxY());
-					g.setColor(Coloriser.colorise(CommonVisualSettings.getBorderColor(), colorisation));
+					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
+							vc.getX(), bb.getMaxY());
+					g.setColor(Coloriser.colorise(
+							CommonVisualSettings.getBorderColor(), colorisation));
 					g.draw(line);
 				}
 			}
@@ -345,31 +372,40 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	protected void drawContacts(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
-		Circuit circuit = (Circuit)r.getModel().getMathModel();
+		Circuit circuit = (Circuit) r.getModel().getMathModel();
 
 		Rectangle2D bb = getBestBB();
 		double step_pos;
-		for (Node n: getChildren()) {
+		for (Node n : getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact)n;
-				if (!c.getDirection().equals(Direction.WEST)) continue;
+				VisualContact c = (VisualContact) n;
+				if (!c.getDirection().equals(Direction.WEST))
+					continue;
 				GlyphVector gv = c.getNameGlyphs(circuit, g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
+				g.setColor(Coloriser.colorise(
+						(c.getIOType() == IOType.INPUT) ? inputColor
+								: outputColor, colorisation));
 				step_pos = c.getY();
-				g.drawGlyphVector(gv, (float)(bb.getMinX()+marginSize), (float)(step_pos+(cur.getHeight())/2));
+				g.drawGlyphVector(gv, (float) (bb.getMinX() + marginSize),
+						(float) (step_pos + (cur.getHeight()) / 2));
 			}
 		}
 
-		for (Node n: getChildren()) {
+		for (Node n : getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact)n;
-				if (!c.getDirection().equals(Direction.EAST)) continue;
+				VisualContact c = (VisualContact) n;
+				if (!c.getDirection().equals(Direction.EAST))
+					continue;
 				GlyphVector gv = c.getNameGlyphs(circuit, g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
+				g.setColor(Coloriser.colorise(
+						(c.getIOType() == IOType.INPUT) ? inputColor
+								: outputColor, colorisation));
 				step_pos = c.getY();
-				g.drawGlyphVector(gv, (float)(bb.getMaxX()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
+				g.drawGlyphVector(gv,
+						(float) (bb.getMaxX() - marginSize - cur.getWidth()),
+						(float) (step_pos + (cur.getHeight()) / 2));
 			}
 		}
 
@@ -377,66 +413,79 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		at.quadrantRotate(-1);
 		g.transform(at);
 
-		for (Node n: getChildren()) {
+		for (Node n : getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact)n;
-				if (!c.getDirection().equals(Direction.NORTH)) continue;
+				VisualContact c = (VisualContact) n;
+				if (!c.getDirection().equals(Direction.NORTH))
+					continue;
 				GlyphVector gv = c.getNameGlyphs(circuit, g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
+				g.setColor(Coloriser.colorise(
+						(c.getIOType() == IOType.INPUT) ? inputColor
+								: outputColor, colorisation));
 				step_pos = c.getX();
-				g.drawGlyphVector(gv, (float)(bb.getMaxY()-marginSize-cur.getWidth()), (float)(step_pos+(cur.getHeight())/2));
+				g.drawGlyphVector(gv,
+						(float) (bb.getMaxY() - marginSize - cur.getWidth()),
+						(float) (step_pos + (cur.getHeight()) / 2));
 			}
 		}
 
-		for (Node n: getChildren()) {
+		for (Node n : getChildren()) {
 			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact)n;
-				if (!c.getDirection().equals(Direction.SOUTH)) continue;
+				VisualContact c = (VisualContact) n;
+				if (!c.getDirection().equals(Direction.SOUTH))
+					continue;
 				GlyphVector gv = c.getNameGlyphs(circuit, g);
 				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise((c.getIOType()==IOType.INPUT) ? inputColor : outputColor, colorisation));
+				g.setColor(Coloriser.colorise(
+						(c.getIOType() == IOType.INPUT) ? inputColor
+								: outputColor, colorisation));
 				step_pos = c.getX();
-				g.drawGlyphVector(gv, (float)(bb.getMinY()+marginSize), (float)(step_pos+(cur.getHeight())/2));
+				g.drawGlyphVector(gv, (float) (bb.getMinY() + marginSize),
+						(float) (step_pos + (cur.getHeight()) / 2));
 			}
 		}
 	}
-
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
 		if (groupImpl == null) {
 			return super.getInternalBoundingBoxInLocalSpace();
 		}
-		Rectangle2D rect = BoundingBoxHelper.union(totalBB, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
+		Rectangle2D rect = BoundingBoxHelper.union(totalBB, BoundingBoxHelper
+				.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this,
+						Touchable.class)));
 
-		if (rect==null)
+		if (rect == null)
 			return super.getInternalBoundingBoxInLocalSpace();
 
 		return rect;
 	}
 
-
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Circuit circuit = (Circuit)r.getModel().getMathModel();
+		Circuit circuit = (Circuit) r.getModel().getMathModel();
 
 		cacheRenderedText(r); // needed to better estimate the bounding box
 		updateContactLabelBB(circuit, g);
 		drawContactConnections(r);
 
 		Rectangle2D shape = getBestBB();
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
+		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration()
+				.getBackground()));
 		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration()
+				.getColorisation()));
 
 		if (!getIsEnvironment()) {
-			g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));
+			g.setStroke(new BasicStroke((float) CircuitSettings
+					.getBorderWidth()));
 		} else {
-			float dash[] = {0.25f, 0.25f};
-			g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
-				BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+			float dash[] = { 0.25f, 0.25f };
+			g.setStroke(new BasicStroke((float) CircuitSettings
+					.getBorderWidth(), BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 		}
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
@@ -445,25 +494,26 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (totalBB==null) {
+		if (totalBB == null) {
 			updateTotalBB();
 		}
-		if (totalBB!=null) return totalBB;
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
+		if (totalBB != null)
+			return totalBB;
+		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (contactLabelBB!=null) return contactLabelBB.contains(pointInLocalSpace);
+		if (contactLabelBB != null)
+			return contactLabelBB.contains(pointInLocalSpace);
 		return false;
 	}
-
 
 	@Override
 	public void add(Node node) {
 		groupImpl.add(node);
 		if (node instanceof VisualContact) {
-			((VisualContact)node).addObserver(this);
+			((VisualContact) node).addObserver(this);
 		}
 	}
 
@@ -493,16 +543,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
-		for (Node node: nodes) {
+		for (Node node : nodes) {
 			if (node instanceof VisualContact) {
-				((VisualContact)node).addObserver(this);
+				((VisualContact) node).addObserver(this);
 			}
 		}
 	}
 
 	@Override
 	public void remove(Collection<Node> nodes) {
-		for (Node n: nodes) {
+		for (Node n : nodes) {
 			remove(n);
 		}
 	}
@@ -519,13 +569,14 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	@Override
 	public Node customHitTest(Point2D point) {
-		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
-		for(Node vn : getChildren())
+		Point2D pointInLocalSpace = getParentToLocalTransform().transform(
+				point, null);
+		for (Node vn : getChildren())
 			if (vn instanceof VisualNode)
-				if(((VisualNode)vn).hitTest(pointInLocalSpace))
+				if (((VisualNode) vn).hitTest(pointInLocalSpace))
 					return vn;
 
-		if(hitTest(point))
+		if (hitTest(point))
 			return this;
 		else
 			return null;
@@ -534,8 +585,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof TransformChangedEvent) {
-			TransformChangedEvent t = (TransformChangedEvent)e;
-			VisualContact vc = (VisualContact)t.sender;
+			TransformChangedEvent t = (TransformChangedEvent) e;
+			VisualContact vc = (VisualContact) t.sender;
 
 			AffineTransform at = t.sender.getTransform();
 			double x = at.getTranslateX();
@@ -543,32 +594,37 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 			totalBB = null;
 			Rectangle2D bb = getBestBB();
-
 			VisualContact.Direction dir = vc.getDirection();
-
-			if (x<bb.getMinX()&&y>bb.getMinY()&&y<bb.getMaxY()) dir = Direction.WEST;
-			if (x>bb.getMaxX()&&y>bb.getMinY()&&y<bb.getMaxY()) dir = Direction.EAST;
-			if (y<bb.getMinY()&&x>bb.getMinX()&&x<bb.getMaxX()) dir = Direction.NORTH;
-			if (y>bb.getMaxY()&&x>bb.getMinX()&&x<bb.getMaxX()) dir = Direction.SOUTH;
-
-			if (dir!=vc.getDirection()) {
-	 			vc.setDirection(dir);
+			if (x < bb.getMinX() && y > bb.getMinY() && y < bb.getMaxY()) {
+				dir = Direction.WEST;
+			}
+			if (x > bb.getMaxX() && y > bb.getMinY() && y < bb.getMaxY()) {
+				dir = Direction.EAST;
+			}
+			if (y < bb.getMinY() && x > bb.getMinX() && x < bb.getMaxX()) {
+				dir = Direction.NORTH;
+			}
+			if (y > bb.getMaxY() && x > bb.getMinX() && x < bb.getMaxX()) {
+				dir = Direction.SOUTH;
+			}
+			if (dir != vc.getDirection()) {
+				vc.setDirection(dir);
 				contactLabelBB = null;
 			}
 
 		}
 		if (e instanceof PropertyChangedEvent) {
-			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals("name")||
-				pc.getPropertyName().equals("IOtype")||
-				pc.getPropertyName().equals("direction")||
-				pc.getPropertyName().equals("setFunction")||
-				pc.getPropertyName().equals("resetFunction")) {
+			PropertyChangedEvent pc = (PropertyChangedEvent) e;
+			if (pc.getPropertyName().equals("name")
+					|| pc.getPropertyName().equals("IOtype")
+					|| pc.getPropertyName().equals("direction")
+					|| pc.getPropertyName().equals("setFunction")
+					|| pc.getPropertyName().equals("resetFunction")) {
 
 				contactLabelBB = null;
 				for (Node n : getChildren()) {
 					if (n instanceof VisualFunctionContact) {
-						VisualFunctionContact c = (VisualFunctionContact)n;
+						VisualFunctionContact c = (VisualFunctionContact) n;
 						c.resetRenderedFormula();
 						c.resetNameGlyph();
 					}
@@ -576,31 +632,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			}
 		}
 	}
-
-//	public VisualContact addInput(Circuit circuit, String name, VisualContact.Direction dir) {
-//		VisualContact vc = new VisualContact(new Contact(IOType.INPUT));
-//		if (dir==null) {
-//			dir=VisualContact.Direction.WEST;
-//		}
-//		vc.setDirection(dir);
-//
-//		circuit.setName(vc.getReferencedComponent(), name);
-//
-//		addContact(vc);
-//		return vc;
-//	}
-//
-//	public VisualContact addOutput(VisualCircuit vcircuit, String name, VisualContact.Direction dir) {
-//		VisualContact vc = new VisualContact(new Contact(IOType.OUTPUT));
-//		if (dir==null) {
-//			dir=VisualContact.Direction.EAST;
-//		}
-//		vc.setDirection(dir);
-//
-//		circuit.setName(vc.getReferencedComponent(), name);
-//		addContact(vc);
-//		return vc;
-//	}
 
 	@Override
 	public void addObserver(HierarchyObserver obs) {
@@ -616,6 +647,5 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
 	}
-
 
 }

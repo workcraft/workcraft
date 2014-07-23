@@ -70,8 +70,7 @@ public class FormulaToGraphics
 		}
 	}
 
-	public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext)
-	{
+	public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext) {
 		if (text.length() < 1) text = " ";
 
 		Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
@@ -79,35 +78,31 @@ public class FormulaToGraphics
 		Font subfont = font.deriveFont(attributes);
 
 		float fontSize = font.getSize2D();
-
 		FormulaRenderingResult res = print(text.charAt(0), font, fontRenderContext);
-
-		if (!font.canDisplay(text.charAt(0))) res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
-
+		if (!font.canDisplay(text.charAt(0))) {
+			res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
+		}
 
 		int subIndex = text.lastIndexOf('_');
 		if (subIndex < 0) subIndex = text.length();
 
-		for(int i = 1; i < text.length(); i++)
-		{
+		for(int i = 1; i < text.length(); i++) {
 			if (i == subIndex) continue;
 
-			if (i < subIndex)
-			{
-				if (font.canDisplay(text.charAt(i)))
+			if (i < subIndex) {
+				if (font.canDisplay(text.charAt(i))) {
 					res.add(print(text.charAt(i), font, fontRenderContext));
-				else
+				} else {
 					res.add(print(text.charAt(i), defaultFont.deriveFont(fontSize), fontRenderContext));
-			}
-			else
-			{
-				if (subfont.canDisplay(text.charAt(i)))
+				}
+			} else {
+				if (subfont.canDisplay(text.charAt(i))) {
 					res.add(print(text.charAt(i), subfont, fontRenderContext));
-				else
+				} else {
 					res.add(print(text.charAt(i), defaultSubFont.deriveFont(fontSize), fontRenderContext));
+				}
 			}
 		}
-
 		return res;
 	}
 
@@ -122,16 +117,13 @@ public class FormulaToGraphics
 		result.boundingBox = glyphs.getVisualBounds();
 		result.boundingBox.add(new Point2D.Double(
 				glyphs.getLogicalBounds().getMaxX(),
-				glyphs.getLogicalBounds().getMinY()));
+				glyphs.getLogicalBounds().getCenterY()));
 
 		result.visualTop = glyphs.getVisualBounds().getMinY();
-
 		result.glyphs = new ArrayList<GlyphVector>();
 		result.glyphs.add(glyphs);
-
 		result.glyphCoordinates = new ArrayList<Point2D>();
 		result.glyphCoordinates.add(new Point2D.Double(0, 0));
-
 		result.inversionLines = new ArrayList<Line2D>();
 
 		return result;
@@ -140,8 +132,7 @@ public class FormulaToGraphics
 
 	public static class PrinterSuite
 	{
-		public PrinterSuite()
-		{
+		public PrinterSuite() {
 			iff = new IffPrinter();
 			imply = new ImplyPrinter();
 			or = new OrPrinter();
@@ -153,8 +144,7 @@ public class FormulaToGraphics
 			paren = new ParenthesesPrinter();
 		}
 
-		public void init(FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed)
-		{
+		public void init(FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed) {
 			init(iff, imply, fontRenderContext, font, unicodeAllowed);
 			init(imply, or, fontRenderContext, font, unicodeAllowed);
 			init(or, xor, fontRenderContext, font, unicodeAllowed);
@@ -166,8 +156,7 @@ public class FormulaToGraphics
 			init(paren, iff, fontRenderContext, font, unicodeAllowed);
 		}
 
-		public void init(DelegatingPrinter printer, DelegatingPrinter next, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed)
-		{
+		public void init(DelegatingPrinter printer, DelegatingPrinter next, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed) {
 			printer.setNext(next);
 			printer.setFontRenderContext(fontRenderContext);
 			printer.setFont(font);
@@ -186,43 +175,34 @@ public class FormulaToGraphics
 		public ParenthesesPrinter paren;
 	}
 
-	public static class DelegatingPrinter implements BooleanVisitor<FormulaRenderingResult>
-	{
+	public static class DelegatingPrinter implements BooleanVisitor<FormulaRenderingResult> {
 		public DelegatingPrinter next;
 		public boolean unicodeAllowed = false;
 
 		public FontRenderContext fontRenderContext;
 		public Font font;
 
-		public void setFontRenderContext(FontRenderContext fontRenderContext)
-		{
+		public void setFontRenderContext(FontRenderContext fontRenderContext) {
 			this.fontRenderContext = fontRenderContext;
 		}
 
-		public void setFont(Font font)
-		{
+		public void setFont(Font font) {
 			this.font = font;
 		}
 
-		public void setNext(DelegatingPrinter next)
-		{
+		public void setNext(DelegatingPrinter next) {
 			this.next = next;
 		}
 
-		public FormulaRenderingResult print(String text)
-		{
+		public FormulaRenderingResult print(String text) {
 			return FormulaToGraphics.print(text, font, fontRenderContext);
 		}
 
 
-		protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node)
-		{
+		protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node) {
 			FormulaRenderingResult res = node.getX().accept(printer);
-
 			res.add(print(opSymbol));
-
 			res.add(node.getY().accept(printer));
-
 			return res;
 		}
 
@@ -312,73 +292,99 @@ public class FormulaToGraphics
 		}
 	}
 
-	public static class NotPrinter extends DelegatingPrinter
-	{
+	public static class NotPrinter extends DelegatingPrinter {
 		private final IffPrinter iff;
 
-		public NotPrinter(IffPrinter iff)
-		{
+		public NotPrinter(IffPrinter iff) {
 			this.iff = iff;
 		}
 
 		@Override
-		public FormulaRenderingResult visit(Not node)
-		{
+		public FormulaRenderingResult visit(Not node) {
 			FormulaRenderingResult res = node.getX().accept(iff);
 
 			res.visualTop -= font.getSize2D() / 8.0;
 
-			res.inversionLines.add(new Line2D.Double(
-				res.boundingBox.getMinX(), res.visualTop,
-				res.boundingBox.getMaxX(), res.visualTop));
+			res.inversionLines.add(new Line2D.Double(res.boundingBox.getMinX(),
+					res.visualTop, res.boundingBox.getMaxX(), res.visualTop));
 
-			res.boundingBox.add(new Point2D.Double(res.boundingBox.getMaxX(), res.boundingBox.getMinY() - font.getSize2D() / 8.0));
+			res.boundingBox.add(new Point2D.Double(res.boundingBox.getMaxX(),
+					res.boundingBox.getMinY() - font.getSize2D() / 8.0));
 			return res;
 		}
 	}
 
-	public static class ConstantPrinter extends DelegatingPrinter
-	{
+	public static class ConstantPrinter extends DelegatingPrinter {
 		@Override
-		public FormulaRenderingResult visit(One one)
-		{
+		public FormulaRenderingResult visit(One one) {
 			return print("1");
 		}
+
 		@Override
 		public FormulaRenderingResult visit(Zero zero) {
 			return print("0");
 		}
 	}
 
-	public static class VariablePrinter extends DelegatingPrinter
-	{
+	public static class VariablePrinter extends DelegatingPrinter {
 		Map<String, BooleanVariable> varMap = new HashMap<String, BooleanVariable>();
 		@Override
 		public FormulaRenderingResult visit(BooleanVariable var) {
 			String label = var.getLabel();
 			BooleanVariable nameHolder = varMap.get(label);
-			if(nameHolder == null)
+			if (nameHolder == null) {
 				varMap.put(label, var);
-			else
-				if(nameHolder != var)
+			} else {
+				if(nameHolder != var) {
 					throw new RuntimeException("name conflict! duplicate name " + label);
-
+				}
+			}
 			return print(label);
 		}
 	}
 
-	public static class ParenthesesPrinter extends DelegatingPrinter
-	{
-		@Override public FormulaRenderingResult visit(Zero node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(One node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(BooleanVariable node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(And node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(Or node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(Xor node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(Iff node) { return enclose(node); }
-		@Override public FormulaRenderingResult visit(Imply node) { return enclose(node); }
-		FormulaRenderingResult enclose(BooleanFormula node)
-		{
+	public static class ParenthesesPrinter extends DelegatingPrinter {
+		@Override
+		public FormulaRenderingResult visit(Zero node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(One node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(BooleanVariable node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(And node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(Or node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(Xor node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(Iff node) {
+			return enclose(node);
+		}
+
+		@Override
+		public FormulaRenderingResult visit(Imply node) {
+			return enclose(node);
+		}
+
+		FormulaRenderingResult enclose(BooleanFormula node) {
 			FormulaRenderingResult res = print("(");
 			res.add(node.accept(next));
 			res.add(print(")"));
@@ -386,16 +392,13 @@ public class FormulaToGraphics
 		}
 	}
 
-	public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font)
-	{
+	public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font) {
 		return render(formula, fontRenderContext, font, true);
 	}
 
-	public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed)
-	{
+	public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed) {
 		PrinterSuite ps = new PrinterSuite();
 		ps.init(fontRenderContext, font, unicodeAllowed);
-
 		return formula.accept(ps.iff);
 	}
 }

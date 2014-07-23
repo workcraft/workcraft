@@ -39,7 +39,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.Hierarchy;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
 	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
