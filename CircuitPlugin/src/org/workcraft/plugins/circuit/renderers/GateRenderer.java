@@ -23,7 +23,7 @@ public class GateRenderer {
 	public static final double bubbleSize = 0.3;
 	public static final double ANDGateAspectRatio = 0.8125;
 	public static final double XORGateAspectRatio = 1.15;
-	public static final double contactMargin = 0.8;
+	public static final double contactMargin = 0.5;
 	public static Color foreground = Color.BLACK;
 	public static Color background = Color.WHITE;
 

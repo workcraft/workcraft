@@ -10,9 +10,7 @@ import java.util.Map;
 public interface ComponentRenderingResult {
 	public enum RenderType {
 		BOX("Box"),
-		GATE("Gate"),
-		BUFFER("Buffer"),
-		C_ELEMENT("C-element");
+		GATE("Gate");
 
 		private final String name;
 

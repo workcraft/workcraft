@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
