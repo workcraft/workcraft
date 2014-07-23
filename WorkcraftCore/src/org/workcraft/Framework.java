@@ -173,6 +173,7 @@ public class Framework {
 	private PluginManager pluginManager;
 	private ModelManager modelManager;
 	private TaskManager taskManager;
+	private CompatibilityManager compatibilityManager;
 	private Config config ;
 	private Workspace workspace;
 
@@ -216,6 +217,7 @@ public class Framework {
 			};
 		};
 		modelManager = new ModelManager();
+		compatibilityManager = new CompatibilityManager();
 		config = new Config();
 		workspace = new Workspace(this);
 	}
@@ -492,6 +494,10 @@ public class Framework {
 		return taskManager;
 	}
 
+	public CompatibilityManager getCompatibilityManager() {
+		return compatibilityManager;
+	}
+
 	public Workspace getWorkspace() {
 		return workspace;
 	}
@@ -517,7 +523,8 @@ public class Framework {
 	public ModelEntry loadFile(File file) throws DeserialisationException {
 		try {
 			FileInputStream fis = new FileInputStream(file);
-			return load(fis);
+			ByteArrayInputStream bis = compatibilityManager.process(fis);
+			return load(bis);
 		} catch (FileNotFoundException e) {
 			throw new DeserialisationException(e);
 		}
