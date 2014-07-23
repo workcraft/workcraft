@@ -6,10 +6,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -19,6 +23,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -98,10 +103,33 @@ public class CircuitSimulationTool extends STGSimulationTool {
 	}
 
 	@Override
+	protected boolean isContainerExcited(Container container) {
+		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		boolean ret = false;
+
+		for (Node node: container.getChildren()) {
+
+			if (node instanceof VisualContact) {
+				ret=ret || isContactExcited((VisualContact)node) != null;
+			}
+
+			if (node instanceof Container) {
+				ret = ret || isContainerExcited((Container)node);
+			}
+
+			if (ret) break;
+		}
+
+		excitedContainers.put(container, ret);
+		return ret;
+	}
+
+	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
+
 				if (node instanceof VisualContact) {
 					VisualContact contact = (VisualContact) node;
 					String transitionId = null;
@@ -201,7 +229,32 @@ public class CircuitSimulationTool extends STGSimulationTool {
 							return null;
 						}
 					};
+				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
+
+					final boolean ret = isContainerExcited((Container)node);
+
+					return new ContainerDecoration() {
+
+						@Override
+						public Color getColorisation() {
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+
+						@Override
+						public boolean isContainerExcited() {
+							return ret;
+						}
+					};
+
 				}
+
+
+
 				return null;
 			}
 		};

@@ -19,6 +19,7 @@ public interface Decorator {
 
 		@Override
 		public Decoration getDecoration(Node node) {
+
 			return null;
 		}
 
