@@ -1,16 +1,14 @@
 package org.workcraft.plugins.son.verify;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -18,29 +16,65 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SONMainTask implements Task<VerificationResult>{
 
-	private SONModel net;
+	private WorkspaceEntry we;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private StructureVerifySettings settings;
 	private int totalErrNum = 0;
 	private int totalWarningNum = 0;
 
-	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
-	private Collection<Node> relationErrors= new HashSet<Node>();
-	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<String> groupErrors = new HashSet<String>();
+	private Collection<String> relationErrors= new HashSet<String>();
+	private Collection<ArrayList<String>> cycleErrors = new ArrayList<ArrayList<String>>();
 
-	public SONMainTask(StructureVerifySettings settings, SONModel net){
+	public SONMainTask(StructureVerifySettings settings, WorkspaceEntry we){
 		this.settings = settings;
-		this.net = net;
+		this.we = we;
 	}
 
 	@Override
 	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
 		clearConsole();
 		//all tasks
+
+		SONModel net=(SONModel)we.getModelEntry().getMathModel();
+		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+
+		//TSON structure tasks
+		if(settings.getType() == 0){
+			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			groupErrors.addAll(tsonSTask.getGroupErrors());
+			relationErrors.addAll(tsonSTask.getRelationErrors());
+			cycleErrors.addAll(tsonSTask.getCycleErrors());
+
+			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
+			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+		}
+
+		if(settings.getType() == 4){
+			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			groupErrors.addAll(tsonSTask.getGroupErrors());
+			relationErrors.addAll(tsonSTask.getRelationErrors());
+			cycleErrors.addAll(tsonSTask.getCycleErrors());
+
+			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
+			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+		}
+
+		//save current workspace
+		we.captureMemento();
+		//Change connections from block bounding box to inside.
+		if(!vnet.connectToBlocks()){
+			return new Result<VerificationResult>(Outcome.FINISHED);
+		}
 
 		if(settings.getType() == 0){
 
@@ -75,10 +109,7 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 
 			if(settings.getOuputBefore())
-				outputBefore();
-
-			//continue TSON verification
-
+				outputBefore(net);
 		}
 
 		//group structure tasks
@@ -123,9 +154,15 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 
 			if(settings.getOuputBefore())
-				outputBefore();
+				outputBefore(net);
 		}
+		//load memory for reconnecting from block bounding to its inside.
+		we.cancelMemento();
 
+		net=(SONModel)we.getModelEntry().getMathModel();
+		vnet = (VisualSON)we.getModelEntry().getVisualModel();
+
+		errNodesHighlight(settings.getErrNodesHighlight(), net);
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
@@ -150,7 +187,7 @@ public class SONMainTask implements Task<VerificationResult>{
 	    }
 	}
 
-	private void outputBefore(){
+	private void outputBefore(SONModel net){
 		if(totalErrNum > 0){
 			totalWarningNum++;
 			logger.info("WARNING : Structure error exist, cannot output before(e).");
@@ -171,6 +208,22 @@ public class SONMainTask implements Task<VerificationResult>{
 		}
 	}
 
+	private void errNodesHighlight(boolean b, SONModel net){
+		if(b){
+			for(String group : groupErrors){
+				net.setFillColor(net.getNodeByReference(group), SONSettings.getRelationErrColor());
+			}
+
+			for(String node : relationErrors){
+				net.setFillColor(net.getNodeByReference(node), SONSettings.getRelationErrColor());
+			}
+
+			for (ArrayList<String> list : cycleErrors)
+				for (String node : list)
+					net.setForegroundColor(net.getNodeByReference(node), SONSettings.getCyclePathColor());
+		}
+	}
+
 	public int getTotalErrNum(){
 		return this.totalErrNum;
 	}
@@ -179,15 +232,15 @@ public class SONMainTask implements Task<VerificationResult>{
 		return this.totalWarningNum;
 	}
 
-	public Collection<Node> getRelationErrors() {
+	public Collection<String> getRelationErrors() {
 		return this.relationErrors;
 	}
 
-	public Collection<ArrayList<Node>> getCycleErrors() {
+	public Collection<ArrayList<String>> getCycleErrors() {
 		return this.cycleErrors;
 	}
 
-	public Collection<ONGroup> getGroupErrors() {
+	public Collection<String> getGroupErrors() {
 		return this.groupErrors;
 	}
 

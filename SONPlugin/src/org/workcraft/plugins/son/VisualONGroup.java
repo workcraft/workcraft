@@ -58,10 +58,13 @@ public class VisualONGroup extends VisualPage{
 	@Override
 	public void draw(DrawRequest r)
 	{
+		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
+			component.cacheRenderedText(r);
+		}
+
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 
-//		Rectangle2D bb = getContentsBoundingBox();
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
 		if (bb != null && getParent() != null)

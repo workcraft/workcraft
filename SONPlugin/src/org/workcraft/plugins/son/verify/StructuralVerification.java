@@ -3,7 +3,6 @@ package org.workcraft.plugins.son.verify;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 
 public interface StructuralVerification {
@@ -12,11 +11,11 @@ public interface StructuralVerification {
 
 	public void errNodesHighlight();
 
-	public Collection<Node> getRelationErrors();
+	public Collection<String> getRelationErrors();
 
-	public Collection<ArrayList<Node>> getCycleErrors();
+	public Collection<ArrayList<String>> getCycleErrors();
 
-	public Collection<ONGroup> getGroupErrors();
+	public Collection<String> getGroupErrors();
 
 	public boolean hasErr();
 

@@ -9,18 +9,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
 
-public class CSONStructureTask implements StructuralVerification{
+public class CSONStructureTask extends AbstractStructuralVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-
-	private RelationAlgorithm relationAlg;
-	private CSONPathAlg csonPathAlg;
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
 	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
@@ -31,9 +26,8 @@ public class CSONStructureTask implements StructuralVerification{
 	private int warningNumber = 0;
 
 	public CSONStructureTask(SONModel net){
+		super(net);
 		this.net = net;
-		relationAlg = new RelationAlgorithm(net);
-		csonPathAlg = new CSONPathAlg(net);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -51,7 +45,7 @@ public class CSONStructureTask implements StructuralVerification{
 		logger.info("Group Components = " + components.size());
 
 		ArrayList<ChannelPlace> relatedcPlaces = new ArrayList<ChannelPlace>();
-		relatedcPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
+		relatedcPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
 		components.addAll(relatedcPlaces);
 
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
@@ -103,7 +97,7 @@ public class CSONStructureTask implements StructuralVerification{
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
-		cycleErrors.addAll(csonPathAlg.cycleTask(components));
+		cycleErrors.addAll(getCSONPathAlg().cycleTask(components));
 
 		if (cycleErrors.isEmpty() )
 			logger.info("Acyclic structure correct");
@@ -232,13 +226,18 @@ public class CSONStructureTask implements StructuralVerification{
 	}
 
 	@Override
-	public Collection<Node> getRelationErrors() {
-		return this.relationErrors;
+	public Collection<String> getRelationErrors() {
+		return getRelationErrorsSetReferences(relationErrors);
 	}
 
 	@Override
-	public Collection<ArrayList<Node>> getCycleErrors() {
-		return this.cycleErrors;
+	public Collection<ArrayList<String>> getCycleErrors() {
+		return getcycleErrorsSetReferences(cycleErrors);
+	}
+
+	@Override
+	public Collection<String> getGroupErrors() {
+		return getGroupErrorsSetReferences(groupErrors);
 	}
 
 	@Override
@@ -254,11 +253,6 @@ public class CSONStructureTask implements StructuralVerification{
 	@Override
 	public int getWarningNumber(){
 		return this.warningNumber;
-	}
-
-	@Override
-	public Collection<ONGroup> getGroupErrors() {
-		return this.groupErrors;
 	}
 
 }

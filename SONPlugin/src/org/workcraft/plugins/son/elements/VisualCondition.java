@@ -18,7 +18,6 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -40,7 +39,6 @@ public class VisualCondition extends VisualComponent implements VisualPlaceNode{
 	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
 	private String value = "";
-	private ConnectionGraphic graphic;
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();

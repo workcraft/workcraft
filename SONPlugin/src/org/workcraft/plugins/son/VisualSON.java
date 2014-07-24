@@ -54,7 +54,6 @@ public class VisualSON extends AbstractVisualModel{
 	public VisualSON (SON model, VisualGroup root){
 		super (model, root);
 	//	currentmathLevel = getCurrentLevel();
-
 		if (root == null)
 			try {
 				createDefaultFlatStructure();
@@ -63,6 +62,7 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		this.net = model;
+		blockConnectionChecker();
 	}
 
 
@@ -523,41 +523,6 @@ public class VisualSON extends AbstractVisualModel{
 		return result;
 	}
 
-//	@Override
-//	public void ungroupSelection(){
-//		ArrayList<Node> toSelect = new ArrayList<Node>();
-//		for(Node node : getOrderedCurrentLevelSelection()) {
-//
-//			if(node instanceof VisualONGroup) {
-//
-//				VisualONGroup group = (VisualONGroup)node;
-//				for(Node subNode : group.unGroup(getMathModel().getReferenceManager())) {
-//					toSelect.add(subNode);
-//				}
-//				getCurrentLevel().remove(group);
-//			} else if(node instanceof VisualPage) {
-//
-//				VisualPage page = (VisualPage)node;
-//
-//				for(Node subNode : page.unGroup(getMathModel().getReferenceManager())) {
-//					toSelect.add(subNode);
-//				}
-//				getCurrentLevel().remove(page);
-//
-//			} else if(node instanceof VisualSuperGroup){
-//				VisualSuperGroup sGroup = (VisualSuperGroup)node;
-//				for(Node subNode : sGroup.unGroup()){
-//					toSelect.add(subNode);
-//				}
-//				getCurrentLevel().remove(sGroup);
-//			}
-//			else {
-//				toSelect.add(node);
-//			}
-//		}
-//		select(toSelect);
-//	}
-
 	public Collection<VisualONGroup> getVisualONGroups()
 	{
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualONGroup.class);
@@ -622,6 +587,10 @@ public class VisualSON extends AbstractVisualModel{
 		return result;
 	}
 
+	/**
+	 * reconnect block interface to its bounding.
+	 * have to use with captureMemento() & cancelMemento().
+	 */
 	public boolean connectToBlocks(){
 		if(!beforeConToBlock())
 			return false;
@@ -698,7 +667,6 @@ public class VisualSON extends AbstractVisualModel{
 		return true;
 	}
 
-
 	private boolean beforeConToBlock(){
 		Collection<String> errBlocks = new ArrayList<String>();
 		for(VisualPlaceNode c : this.getVisualPlaceNode())
@@ -719,7 +687,10 @@ public class VisualSON extends AbstractVisualModel{
 		return err;
 	}
 
-	public boolean connectToBlocksInside(){
+	/**
+	 * reconnect from block bounding to its inside
+	 */
+	public void blockConnectionChecker(){
 		ArrayList<String> incompatible = new ArrayList<String>();
 		for(VisualPlaceNode p : getVisualPlaceNode()){
 			if(p.getInterface() != ""){
@@ -795,6 +766,6 @@ public class VisualSON extends AbstractVisualModel{
 			JOptionPane.showMessageDialog(null, "Incompatible connections. Error may due to lost block information, " +
 					"reconnect block components again)"+ incompatible.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
 		}
-		return true;
+		beforeConToBlock();
 	}
 }

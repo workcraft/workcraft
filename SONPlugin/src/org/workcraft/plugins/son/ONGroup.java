@@ -134,5 +134,4 @@ public class ONGroup extends PageNode{
 	public String getLabel(){
 		return label;
 	}
-
 }

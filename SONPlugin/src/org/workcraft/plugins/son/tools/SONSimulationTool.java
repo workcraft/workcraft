@@ -82,10 +82,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 	private SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 
-	private Collection<ONGroup> abstractGroups = null;
-	private Collection<ArrayList<Node>> syncSet = null;
-	private Map<Condition, Collection<Condition>> phases = null;
-	protected Map<Node, Boolean>initialMarking = null;
+	private Collection<ONGroup> abstractGroups = new ArrayList<ONGroup>();
+	private Collection<ArrayList<Node>> syncSet = new ArrayList<ArrayList<Node>>();
+	private Map<Condition, Collection<Condition>> phases = new HashMap<Condition, Collection<Condition>>();
+	protected Map<Node, Boolean>initialMarking = new HashMap<Node, Boolean>();
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -322,8 +322,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		super.activated(editor);
 
 		visualNet = (VisualSON)editor.getModel();
-		framework = editor.getFramework();
 		net = (SONModel)visualNet.getMathModel();
+		framework = editor.getFramework();
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
 		simuAlg = new SimulationAlg(net);
@@ -334,7 +334,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		}
 		editor.getWorkspaceEntry().setCanModify(false);
 
-		initialMarking = autoInitalMarking();
+		initialMarking.putAll(autoInitalMarking());
 		mainTrace.clear();
 		branchTrace.clear();
 
@@ -342,25 +342,29 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 			conToBlock = false;
 			return;
 		}
-
-		syncSet = getSyncCycles();
-		abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
-		phases = new HashMap<Condition, Collection<Condition>>();
-		for(ONGroup group : abstractGroups){
-			for(Condition c : group.getConditions())
-				phases.put(c, bsonAlg.getPhase(c));
+		try{
+			syncSet.addAll(getSyncCycles());
+			abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
+			for(ONGroup group : abstractGroups){
+				for(Condition c : group.getConditions())
+					phases.put(c, bsonAlg.getPhase(c));
+			}
+		}catch(IndexOutOfBoundsException ex){
+			JOptionPane.showMessageDialog(null, "Unable to run simulator, error may due to incorrect SON structure."
+					, "Invalid structural", JOptionPane.WARNING_MESSAGE);
+			deactivated(editor);
+			return;
 		}
+
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
 		}
-
 		updateState(editor);
 	}
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
-		//super.deactivated(editor);
-		visualNet.connectToBlocksInside();
+		super.deactivated(editor);
 		if (timer != null) {
 			timer.stop();
 			timer = null;
@@ -997,19 +1001,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 						};
 
 					}
-					if (simuAlg.isEnabled(event, syncSet, phases)&& !reverse)
-						return new Decoration(){
-							@Override
-							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledForegroundColor();
-							}
-
-							@Override
-							public Color getBackground() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
-							}
-						};
-					if (simuAlg.isUnfireEnabled(event, syncSet, phases)&& reverse)
+					try{
+						if (simuAlg.isEnabled(event, syncSet, phases)&& !reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {
@@ -1021,6 +1014,19 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 									return CommonVisualSettings.getEnabledBackgroundColor();
 								}
 							};
+						if (simuAlg.isUnfireEnabled(event, syncSet, phases)&& reverse)
+								return new Decoration(){
+									@Override
+									public Color getColorisation() {
+										return CommonVisualSettings.getEnabledForegroundColor();
+									}
+
+									@Override
+									public Color getBackground() {
+										return CommonVisualSettings.getEnabledBackgroundColor();
+									}
+								};
+					}catch(NullPointerException ex){}
 				}
 				return null;
 			}
