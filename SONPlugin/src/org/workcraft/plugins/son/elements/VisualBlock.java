@@ -8,8 +8,6 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -18,20 +16,15 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.util.Hierarchy;
 
-public class VisualBlock extends VisualPage implements VisualEventNode{
-	private Map<VisualComponent[], SONConnectionType> inputRelations;
-	private Map<VisualComponent[], SONConnectionType> outputRelations;
+public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private Block mathBlock;
 
 	public VisualBlock(Block refNode) {
 		super(refNode);
 		this.mathBlock = refNode;
-		inputRelations = new HashMap<VisualComponent[], SONConnectionType>();
-		outputRelations = new HashMap<VisualComponent[], SONConnectionType>();
 	}
 
 	@Override
@@ -56,7 +49,7 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
 				g.fill(bb);
 
-				g.setBackground(new Color(190, 230, 240));
+			//	g.setBackground(new Color(190, 230, 240));
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
@@ -72,7 +65,7 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 				Graphics2D g = r.getGraphics();
 
 //				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-				g.setBackground(new Color(190, 230, 240));
+			//	g.setBackground(new Color(190, 230, 240));
 				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
@@ -123,11 +116,13 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 
 	public void setLabel(String label)
 	{
+		super.setLabel(label);
 		this.getReferencedComponent().setLabel(label);
 	}
 
 	public String getLabel()
 	{
+		super.getLabel();
 		return this.getReferencedComponent().getLabel();
 	}
 
@@ -159,27 +154,8 @@ public class VisualBlock extends VisualPage implements VisualEventNode{
 		return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
 	}
 
-	public void setInputRelations(Map<VisualComponent[], SONConnectionType> inputRelations){
-		this.inputRelations = inputRelations;
-	}
-
-	public void setOutputRelations(Map<VisualComponent[], SONConnectionType> outputRelations){
-		this.outputRelations = outputRelations;
-	}
-
-	public Map<VisualComponent[], SONConnectionType> getInputRelations(){
-		return this.inputRelations;
-	}
-
-	public Map<VisualComponent[], SONConnectionType> getOutputRelations(){
-		return this.outputRelations;
-	}
-
 	@Override
 	public Block getMathEventNode() {
 		return getReferencedComponent();
 	}
-
-
-
 }

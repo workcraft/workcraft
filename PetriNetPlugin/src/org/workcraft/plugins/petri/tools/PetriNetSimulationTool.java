@@ -355,9 +355,16 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			timer.stop();
 			timer = null;
 		}
+
+		editor.getWorkspaceEntry().setCanModify(true);
+		for(VisualPlace p : ((VisualPetriNet)visualNet).getVisualPlaces())
+			p.setFillColor(Color.red);
+
 		if (visualNet == editor.getModel()) {
 			editor.getWorkspaceEntry().cancelMemento();
 		}
+
+
 		this.visualNet = null;
 		this.net = null;
 	}

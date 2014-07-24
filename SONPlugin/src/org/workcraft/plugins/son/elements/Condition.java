@@ -9,7 +9,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
-public class Condition extends MathNode {
+public class Condition extends MathNode implements PlaceNode{
 
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();

@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends MathNode implements EventNode{
+public class Event extends MathNode implements TransitionNode{
 
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();

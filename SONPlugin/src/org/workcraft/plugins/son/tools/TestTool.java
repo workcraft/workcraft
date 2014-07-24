@@ -5,6 +5,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.ONGroup;
@@ -15,7 +16,9 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
+import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.VisualBlock;
+import org.workcraft.plugins.son.elements.VisualCondition;
 
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -48,11 +51,15 @@ public class TestTool implements Tool{
 		System.out.println("================================================================================");
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-
-		blockMathLevelTest(net, vnet);
-		mathLevelTest(net, vnet);
+		for(Condition c : net.getConditions()){
+			c.setLabel("afashfadf /n fsaddfas \nasdfa");
+		}
+		//blockMathLevelTest(net, vnet);
+		//mathLevelTest(net, vnet);
+		//connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
+		conditionOutputTest(vnet);
 	}
 
 	private void relation(SONModel net, VisualSON vnet){
@@ -60,6 +67,10 @@ public class TestTool implements Tool{
 			System.out.println("node name: "+net.getName(node) + "  node pre size:" + net.getPreset(node).size()
 					+ "  node post size:" + net.getPostset(node).size());
 		}
+	}
+
+	private void conditionOutputTest(VisualSON vnet){
+		vnet.connectToBlocks();
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){
@@ -116,6 +127,12 @@ public class TestTool implements Tool{
 			System.out.println();
 			System.out.println("visual page parent  "+ page.getParent().toString());
 		}*/
+	}
+
+	private void connectionTypeTest(SONModel net, VisualSON vnet){
+		for(SONConnection con : net.getSONConnections()){
+			System.out.println("con type "+ con.getType());
+		}
 	}
 }
 

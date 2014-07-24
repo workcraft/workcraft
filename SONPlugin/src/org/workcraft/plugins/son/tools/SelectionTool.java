@@ -11,7 +11,6 @@ import java.util.Collection;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -21,7 +20,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -61,15 +59,29 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		JPanel groupPanel = new JPanel(new FlowLayout());
 		controlPanel.add(groupPanel);
 
+		//Create GroupButton
+		final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/son-selection-group.svg"), "Group selection (Ctrl+G)");
 
-		JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
-		groupButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectionGroup(editor);
-			}
-		});
+        //Create the popup menu.
+        final JPopupMenu groupPopup = new JPopupMenu();
+        groupPopup.add(new JMenuItem(new AbstractAction("Group") {
+            public void actionPerformed(ActionEvent e) {
+            	selectionGroup(editor);
+            }
+        }));
+        groupPopup.addSeparator();
+        groupPopup.add(new JMenuItem(new AbstractAction("Super Group") {
+            public void actionPerformed(ActionEvent e) {
+            	selectionSupergroup(editor);
+            }
+        }));
+
+		groupButton.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+            	groupPopup.show(groupButton, 0, groupButton.getHeight());
+            }
+        });
 		groupPanel.add(groupButton);
 
 		//Create GroupPageButton
@@ -77,34 +89,24 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				"images/icons/svg/son-selection-page.svg"), "Group selection into a page/block");
 
         //Create the popup menu.
-        final JPopupMenu popup = new JPopupMenu();
-        popup.add(new JMenuItem(new AbstractAction("Block") {
+        final JPopupMenu pagePopup = new JPopupMenu();
+        pagePopup.add(new JMenuItem(new AbstractAction("Block") {
             public void actionPerformed(ActionEvent e) {
             	selectionBlock(editor);
             }
         }));
-        popup.addSeparator();
-        popup.add(new JMenuItem(new AbstractAction("Page") {
+        pagePopup.addSeparator();
+        pagePopup.add(new JMenuItem(new AbstractAction("Page") {
             public void actionPerformed(ActionEvent e) {
 				selectionPageGroup(editor);
             }
         }));
         groupPageButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                popup.show(groupPageButton, 0, groupPageButton.getHeight());
+            	pagePopup.show(groupPageButton, 0, groupPageButton.getHeight());
             }
         });
 		groupPanel.add(groupPageButton);
-
-		JButton supergroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/son-supergroup.svg"), "Merge selected nodes into supergroup (Ctrl+B)");
-		supergroupButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectionSupergroup(editor);
-			}
-		});
-		groupPanel.add(supergroupButton);
 
 		JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
@@ -210,10 +212,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
-					if (vc.hasToken() == false)
-						vc.setToken(true);
-					else if (vc.hasToken() == true)
-						vc.setToken(false);
+					if (vc.isMarked() == false)
+						vc.setMarked(true);
+					else if (vc.isMarked() == true)
+						vc.setMarked(false);
 				}
 
 				if (selectedNode instanceof VisualEvent) {

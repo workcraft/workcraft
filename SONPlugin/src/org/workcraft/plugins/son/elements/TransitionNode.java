@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import org.workcraft.dom.Node;
 
-public interface EventNode extends Node{
+public interface TransitionNode extends Node{
 
 	public boolean isFaulty();
 

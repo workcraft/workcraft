@@ -6,28 +6,22 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.connections.PartialCurveInfo;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.util.Geometry;
 
 public class BhvLine extends Polyline{
 
-	private Rectangle2D boundingBox = null;
 	private GlyphVector glyphVector;
 	private static Font labelFont;
 
-	private VisualConnectionProperties connectionInfo;
-	private PartialCurveInfo curveInfo;
 
 	static {
 		try {
@@ -42,21 +36,29 @@ public class BhvLine extends Polyline{
 
 	public BhvLine(VisualConnection parent){
 		super(parent);
-		connectionInfo = parent;
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 
-		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
+		if (!valid)
+			update();
 
 		Path2D connectionPath = new Path2D.Double();
+
+		int start = getSegmentIndex(curveInfo.tStart);
+		int end = getSegmentIndex(curveInfo.tEnd);
 
 		Point2D startPt = getPointOnCurve(curveInfo.tStart);
 		Point2D endPt = getPointOnCurve(curveInfo.tEnd);
 
 		connectionPath.moveTo(startPt.getX(), startPt.getY());
+
+		for (int i=start; i<end; i++) {
+			Line2D segment = getSegment(i);
+			connectionPath.lineTo(segment.getX2(), segment.getY2());
+		}
 
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
@@ -73,25 +75,9 @@ public class BhvLine extends Polyline{
 		g.drawGlyphVector(glyphVector, (float)this.getCenter().getX(), (float)this.getCenter().getY());
 
 
-		boundingBox = connectionPath.getBounds2D();
-		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
-		boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
-		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
-		boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
-
 		if (connectionInfo.hasArrow())
 			DrawHelper.drawArrowHead(g, curveInfo.headPosition,	curveInfo.headOrientation,
 					connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
-
-	}
-
-	@Override
-	public Rectangle2D getBoundingBox() {
-		return boundingBox;
-	}
-
-	@Override
-	public void createControlPoint(Point2D userLocation){
 
 	}
 
