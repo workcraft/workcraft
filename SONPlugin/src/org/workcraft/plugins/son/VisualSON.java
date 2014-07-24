@@ -1,4 +1,4 @@
-	package org.workcraft.plugins.son;
+package org.workcraft.plugins.son;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

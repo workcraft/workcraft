@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
 
@@ -207,23 +206,6 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 
 		return result;
 	}*/
-
-	@Override
-	public void errNodesHighlight(){
-
-		for(Node cPlace : relationErrors){
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
-		}
-
-/*		for(List<ChannelPlace> list : cPlaceStructureResult)
-			for(ChannelPlace cPlace : list)
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());*/
-
-
-		for (ArrayList<Node> list : this.cycleErrors)
-			for (Node node : list)
-				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
-	}
 
 	@Override
 	public Collection<String> getRelationErrors() {

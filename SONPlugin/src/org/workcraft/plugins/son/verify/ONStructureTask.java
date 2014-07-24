@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -173,16 +172,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				if(getRelationAlg().hasPreConflictEvents(node))
 					result.add(node);
 		return result;
-	}
-	@Override
-	public void errNodesHighlight(){
-		for(Node node : this.relationErrors){
-			this.net.setFillColor(node, SONSettings.getRelationErrColor());
-		}
-
-		for (ArrayList<Node> list : this.cycleErrors)
-			for (Node node : list)
-				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 	}
 
 	@Override

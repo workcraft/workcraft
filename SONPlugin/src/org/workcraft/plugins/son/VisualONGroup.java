@@ -82,15 +82,14 @@ public class VisualONGroup extends VisualPage{
 			// draw label
 			Font labelFont = new Font("Calibri", Font.PLAIN, 1).deriveFont(0.65f);
 			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
-
 			labelBB = glyphVector.getVisualBounds();
-
 			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
-
 			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
-
 			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
+
+			drawNameInLocalSpace(r);
 		}
+
 	}
 
 	public void setLabel(String label)

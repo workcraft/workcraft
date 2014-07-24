@@ -49,7 +49,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
 				g.fill(bb);
 
-				g.setBackground(new Color(190, 230, 240));
+			//	g.setBackground(new Color(190, 230, 240));
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
@@ -65,7 +65,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 				Graphics2D g = r.getGraphics();
 
 //				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-				g.setBackground(new Color(190, 230, 240));
+			//	g.setBackground(new Color(190, 230, 240));
 				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
@@ -116,11 +116,13 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 	public void setLabel(String label)
 	{
+		super.setLabel(label);
 		this.getReferencedComponent().setLabel(label);
 	}
 
 	public String getLabel()
 	{
+		super.getLabel();
 		return this.getReferencedComponent().getLabel();
 	}
 

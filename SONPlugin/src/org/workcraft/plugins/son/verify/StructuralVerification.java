@@ -9,8 +9,6 @@ public interface StructuralVerification {
 
 	public void task(Collection<ONGroup> selectedGroups);
 
-	public void errNodesHighlight();
-
 	public Collection<String> getRelationErrors();
 
 	public Collection<ArrayList<String>> getCycleErrors();

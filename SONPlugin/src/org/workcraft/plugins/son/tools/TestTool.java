@@ -51,7 +51,9 @@ public class TestTool implements Tool{
 		System.out.println("================================================================================");
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-
+		for(Condition c : net.getConditions()){
+			c.setLabel("afashfadf /n fsaddfas \nasdfa");
+		}
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
 		//connectionTypeTest(net, vnet);

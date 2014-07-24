@@ -40,7 +40,6 @@ public class SONMainTask implements Task<VerificationResult>{
 	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
 		clearConsole();
 		//all tasks
-
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
@@ -68,6 +67,7 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
 		}
+
 
 		//save current workspace
 		we.captureMemento();
@@ -99,8 +99,8 @@ public class SONMainTask implements Task<VerificationResult>{
 			relationErrors.addAll(bsonSTask.getRelationErrors());
 			cycleErrors.addAll(bsonSTask.getCycleErrors());
 
-			totalErrNum = onSTask.getErrNumber();
-			totalWarningNum = onSTask.getWarningNumber();
+			totalErrNum = totalErrNum+onSTask.getErrNumber();
+			totalWarningNum = totalWarningNum+onSTask.getWarningNumber();
 
 			totalErrNum = totalErrNum + csonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
@@ -161,8 +161,8 @@ public class SONMainTask implements Task<VerificationResult>{
 
 		net=(SONModel)we.getModelEntry().getMathModel();
 		vnet = (VisualSON)we.getModelEntry().getVisualModel();
-
 		errNodesHighlight(settings.getErrNodesHighlight(), net);
+		System.out.println("size" + this.relationErrors.size());
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 

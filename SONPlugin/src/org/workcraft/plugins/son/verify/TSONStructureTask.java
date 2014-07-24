@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask extends AbstractStructuralVerification{
@@ -19,7 +18,6 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	private Collection<Node> relationErrors = new HashSet<Node>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
-	private Collection<Node> errNodes = new HashSet<Node>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
@@ -71,7 +69,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 			if(getPathAlg().cycleTask(block.getComponents()).isEmpty()){
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
-					errNodes.addAll(result3);
+					relationErrors.addAll(result3);
 					relationErrors.add(block);
 					errNumber = errNumber + result3.size();
 					for(Node node : result3)
@@ -101,16 +99,6 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 				result.add(input);
 		}
 		return result;
-	}
-
-	@Override
-	public void errNodesHighlight() {
-		for(Node node : this.relationErrors){
-			this.net.setFillColor(node, SONSettings.getRelationErrColor());
-			if(node instanceof Block)
-				if(((Block)node).getIsCollapsed())
-					this.net.setFillColor((Block)node, SONSettings.getRelationErrColor());
-		}
 	}
 
 	@Override

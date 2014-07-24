@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.verify;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -314,21 +312,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		}
 
 		return "";
-	}
-
-	@Override
-	public void errNodesHighlight(){
-		for(ONGroup group : groupErrors){
-			group.setForegroundColor(Color.RED);
-		}
-
-		for(Node c : relationErrors){
-			this.net.setFillColor(c, SONSettings.getRelationErrColor());
-		}
-
-		for (ArrayList<Node> list : this.cycleErrors)
-			for (Node node : list)
-				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
 	}
 
 	@Override
