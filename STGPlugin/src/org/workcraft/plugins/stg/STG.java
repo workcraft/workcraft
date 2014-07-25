@@ -191,14 +191,15 @@ public class STG extends AbstractMathModel implements STGModel {
 	private Set<String> getUniqueNames(Collection<SignalTransition> transitions) {
 		Set<String> result = new HashSet<String>();
 		for (SignalTransition st : transitions) {
-
-			String reference = referenceManager.getNodeReference(null, st);
-			String path = NamespaceHelper.getReferencePath(reference);
-
-			result.add(path+st.getSignalName());
-//			result.add(st.getSignalName());
+			result.add(getSignalFullName(st));
 		}
 		return result;
+	}
+
+	public String getSignalFullName(SignalTransition st) {
+		String reference = referenceManager.getNodeReference(null, st);
+		String path = NamespaceHelper.getReferencePath(reference);
+		return (path + st.getSignalName());
 	}
 
 	public int getInstanceNumber(Node st) {

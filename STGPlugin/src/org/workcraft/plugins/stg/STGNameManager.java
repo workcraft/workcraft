@@ -5,15 +5,12 @@ import java.util.Collection;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
-import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Func;
@@ -32,34 +29,13 @@ public class STGNameManager implements NameManager<Node> {
 	private InstanceManager<Node> instancedNameManager;
 	private UniqueNameManager<Node> defaultNameManager;
 
-	//private References existingReferences;
 	private ListMap<String, SignalTransition> signalTransitions = new ListMap<String, SignalTransition>();
 	private ListMap<String, DummyTransition> dummyTransitions = new ListMap<String, DummyTransition>();
-
-
-	public Collection<SignalTransition> getSignalTransitions(String signalName) {
-		return signalTransitions.get(signalName);
-	}
-
-	public Collection<DummyTransition> getDummyTransitions(String name) {
-		return dummyTransitions.get(name);
-	}
-
 	Func<Node, String> nodePrefix;
 
 	public STGNameManager() {
 		this(null);
 	}
-
-
-	public int getInstanceNumber (Node st) {
-		return instancedNameManager.getInstance(st).getSecond();
-	}
-
-	public void setInstanceNumber (Node st, int number) {
-		instancedNameManager.assign(st, number);
-	}
-
 
 	public STGNameManager(Func<Node, String> nodePrefix) {
 
@@ -98,7 +74,6 @@ public class STGNameManager implements NameManager<Node> {
 			};
 		}
 
-
 		this.defaultNameManager = new UniqueNameManager<Node>(this.nodePrefix);
 
 		this.instancedNameManager = new InstanceManager<Node>(new Func<Node, String>() {
@@ -114,6 +89,22 @@ public class STGNameManager implements NameManager<Node> {
 			}
 		});
 
+	}
+
+	public int getInstanceNumber (Node st) {
+		return instancedNameManager.getInstance(st).getSecond();
+	}
+
+	public void setInstanceNumber (Node st, int number) {
+		instancedNameManager.assign(st, number);
+	}
+
+	public Collection<SignalTransition> getSignalTransitions(String signalName) {
+		return signalTransitions.get(signalName);
+	}
+
+	public Collection<DummyTransition> getDummyTransitions(String name) {
+		return dummyTransitions.get(name);
 	}
 
 	private SignalTransition.Type getSignalType(String signalName) {
@@ -171,12 +162,10 @@ public class STGNameManager implements NameManager<Node> {
 
 	@Override
 	public void setDefaultNameIfUnnamed(Node node, String prefix) {
-
 		if (prefix!=null) {
 			prefix = prefix.split("/")[0];
 			prefix = prefix.replaceAll("[\\+\\-\\~]+", "");
 		}
-
 
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
@@ -362,7 +351,6 @@ public class STGNameManager implements NameManager<Node> {
 		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
 
 		if (instancedName != null)	{
-
 			if (instancedName.getSecond() == null) {
 				instancedName = Pair.of(instancedName.getFirst(), 0);
 			}
@@ -384,7 +372,5 @@ public class STGNameManager implements NameManager<Node> {
 		if (instancedNameManager.getInstance(n)!=null)
 			instancedNameManager.remove(n);
 	}
-
-
 
 }
