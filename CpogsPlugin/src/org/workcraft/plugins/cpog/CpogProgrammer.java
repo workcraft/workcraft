@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.dom.visual.RemovedNodeDeselector;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
@@ -210,7 +210,7 @@ public class CpogProgrammer {
 			Output.close();
 
 			// WRITING CUSTOM ENCODING FILE
-			if(settings.getGenMode() != generationMode.SCENCO){
+			if(settings.getGenMode() != GenerationMode.SCENCO){
 				encodingFile = File.createTempFile("custom", "enc");
 				if(settings.isCustomEncMode()){
 					    PrintStream Output1 = new PrintStream(encodingFile);
@@ -769,7 +769,7 @@ public class CpogProgrammer {
 		for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
 		int freeVariables;
-		if(settings.getGenMode() != generationMode.SCENCO)
+		if(settings.getGenMode() != GenerationMode.SCENCO)
 			freeVariables = opt_enc[0].length();
 		else
 			freeVariables = settings.getBits();
@@ -911,7 +911,7 @@ public class CpogProgrammer {
 
 		boolean[][] encoding = solution.getEncoding();
 
-		if(settings.getGenMode() == generationMode.SCENCO){
+		if(settings.getGenMode() == GenerationMode.SCENCO){
 
 			try{
 				 encodingFile = File.createTempFile("encoding", "cpog");

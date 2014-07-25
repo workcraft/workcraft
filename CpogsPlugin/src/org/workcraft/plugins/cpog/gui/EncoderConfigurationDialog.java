@@ -27,7 +27,7 @@ import javax.swing.KeyStroke;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.CpogProgrammer;
 import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.shared.presets.PresetManager;
@@ -188,7 +188,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		generationModeBox = new JComboBox();
 		generationModeBox.setEditable(false);
 		generationModeBox.setPreferredSize(dimensionBox);
-		for (generationMode mode : generationMode.modes) {
+		for (GenerationMode mode : GenerationMode.modes) {
 			generationModeBox.addItem(mode.name);
 		}
 		generationModeBox.setSelectedIndex(settings.getGenMode().ordinal());

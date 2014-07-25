@@ -86,7 +86,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -341,9 +341,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		initialMarking = readMarking();
 		mainTrace.clear();
 		branchTrace.clear();
-		if (visualNet == editor.getModel()) {
-			editor.getWorkspaceEntry().captureMemento();
-		}
+		editor.getWorkspaceEntry().captureMemento();
 		editor.getWorkspaceEntry().setCanModify(false);
 		updateState(editor);
 	}
@@ -355,9 +353,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			timer.stop();
 			timer = null;
 		}
-		if (visualNet == editor.getModel()) {
-			editor.getWorkspaceEntry().cancelMemento();
-		}
+		editor.getWorkspaceEntry().cancelMemento();
 		this.visualNet = null;
 		this.net = null;
 	}
@@ -814,11 +810,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
 					}
@@ -827,11 +823,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 						};
 					}

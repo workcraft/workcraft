@@ -216,7 +216,7 @@ public class DotLayoutTool implements Tool {
 			saveGraph((VisualModel)model, original);
 
 			List<String> args = new ArrayList<String>();
-			args.add(DotLayoutSettings.dotCommand);
+			args.add(DotLayoutSettings.getCommand());
 			args.add("-Tdot");
 			args.add("-o");
 			args.add(layout.getAbsolutePath());

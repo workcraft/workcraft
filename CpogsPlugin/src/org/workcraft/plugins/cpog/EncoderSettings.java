@@ -1,16 +1,11 @@
 package org.workcraft.plugins.cpog;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.workcraft.util.FileUtils;
-
 public class EncoderSettings {
 
-	public enum generationMode{
+	public enum GenerationMode{
 		OPTIMAL_ENCODING("Simulated annealing"),
 		RECURSIVE("Exhaustive search"),
 		RANDOM("Random search"),
@@ -19,7 +14,7 @@ public class EncoderSettings {
 
 		public final String name;
 
-		public static final generationMode[] modes =
+		public static final GenerationMode[] modes =
 			{
 				OPTIMAL_ENCODING,
 				RECURSIVE,
@@ -28,13 +23,13 @@ public class EncoderSettings {
 				OLD_SYNT
 			};
 
-		private generationMode(String name){
+		private GenerationMode(String name){
 			this.name = name;
 		}
 
-		static public Map<String, generationMode> getChoice() {
-			LinkedHashMap<String, generationMode> choice = new LinkedHashMap<String, generationMode>();
-			for (generationMode item : generationMode.values()) {
+		static public Map<String, GenerationMode> getChoice() {
+			LinkedHashMap<String, GenerationMode> choice = new LinkedHashMap<String, GenerationMode>();
+			for (GenerationMode item : GenerationMode.values()) {
 				choice.put(item.name, item);
 			}
 			return choice;
@@ -48,7 +43,7 @@ public class EncoderSettings {
 	}
 
 	private int solutionNumber = 10, numPO,bits;
-	private generationMode genMode = generationMode.OPTIMAL_ENCODING;
+	private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
 	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc;
 	private String[] customEnc;
 	private String espressoPath,abcPath,libPath;
@@ -108,7 +103,7 @@ public class EncoderSettings {
 		this.abcPath = abcPath;
 	}
 
-	public EncoderSettings(int solutionNumber, generationMode genMode, boolean verboseMode,
+	public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
 			boolean customEncMode, String[] customEnc, int numPO) {
 		this.solutionNumber = solutionNumber;
 		this.genMode = genMode;
@@ -118,7 +113,7 @@ public class EncoderSettings {
 		this.customEnc = customEnc;
 	}
 
-	public EncoderSettings(int solutionNumber, generationMode genMode, boolean verboseMode,
+	public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
 			boolean customEncMode) {
 		this.solutionNumber = solutionNumber;
 		this.genMode = genMode;
@@ -137,19 +132,19 @@ public class EncoderSettings {
 	public void setGenerationModeInt(int index){
 		switch(index){
 		case 0:
-			genMode = generationMode.OPTIMAL_ENCODING;
+			genMode = GenerationMode.OPTIMAL_ENCODING;
 			break;
 		case 1:
-			genMode = generationMode.RECURSIVE;
+			genMode = GenerationMode.RECURSIVE;
 			break;
 		case 2:
-			genMode = generationMode.RANDOM;
+			genMode = GenerationMode.RANDOM;
 			break;
 		case 3:
-			genMode = generationMode.SCENCO;
+			genMode = GenerationMode.SCENCO;
 			break;
 		case 4:
-			genMode = generationMode.OLD_SYNT;
+			genMode = GenerationMode.OLD_SYNT;
 			break;
 		default:
 			System.out.println("Error.");
@@ -164,11 +159,11 @@ public class EncoderSettings {
 		this.numPO = numPO;
 	}
 
-	public generationMode getGenMode() {
+	public GenerationMode getGenMode() {
 		return genMode;
 	}
 
-	public void setGenMode(generationMode genMode) {
+	public void setGenMode(GenerationMode genMode) {
 		this.genMode = genMode;
 	}
 

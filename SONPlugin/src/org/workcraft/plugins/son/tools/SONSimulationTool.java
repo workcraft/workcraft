@@ -49,18 +49,15 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONToolProvider;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
@@ -1098,12 +1095,12 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
 
@@ -1112,24 +1109,24 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 						};
 					if (simuAlg.isUnfireEnabled(event, syncSet, phases)&& reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {
-									return CommonVisualSettings.getEnabledForegroundColor();
+									return CommonSimulationSettings.getEnabledForegroundColor();
 								}
 
 								@Override
 								public Color getBackground() {
-									return CommonVisualSettings.getEnabledBackgroundColor();
+									return CommonSimulationSettings.getEnabledBackgroundColor();
 								}
 							};
 				} else if (node instanceof VisualPage || node instanceof VisualGroup) {

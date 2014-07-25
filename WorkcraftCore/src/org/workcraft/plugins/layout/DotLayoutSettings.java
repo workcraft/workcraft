@@ -30,21 +30,26 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class DotLayoutSettings implements SettingsPage {
-	protected static boolean importConnectionsShape = false;
-	protected static String dotCommand = "dot";
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "DotLayout";
 
-	private static LinkedList<PropertyDescriptor> properties;
+	private static final String keyImportConnectionsShape  = prefix + ".importConnectionsShape";
+	private static final String keyDotCommand  = prefix + ".dotCommand";
+
+	private static final String defaultDotCommand = "dot";
+	private static final boolean defaultImportConnectionsShape = false;
+
+	private static String dotCommand = defaultDotCommand;
+	private static boolean importConnectionsShape = defaultImportConnectionsShape;
 
 	public DotLayoutSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<DotLayoutSettings, String>(
 				this, "Dot command", String.class) {
 			protected void setter(DotLayoutSettings object, String value) {
-				DotLayoutSettings.setDotCommand(value);
+				DotLayoutSettings.setCommand(value);
 			}
 			protected String getter(DotLayoutSettings object) {
-				return DotLayoutSettings.getDotCommand();
+				return DotLayoutSettings.getCommand();
 			}
 		});
 
@@ -58,18 +63,40 @@ public class DotLayoutSettings implements SettingsPage {
 			}
 		});
 	}
+
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		dotCommand = config.getString("DotLayout.dotCommand", "dot");
-		importConnectionsShape = config.getBoolean("DotLayout.importConnectionsShape", false);
+		setCommand(config.getString(keyDotCommand, defaultDotCommand));
+		setImportConnectionsShape(config.getBoolean(keyImportConnectionsShape, defaultImportConnectionsShape));
 	}
 
+	@Override
 	public void save(Config config) {
-		config.set("DotLayout.dotCommand", dotCommand)	;
-		config.setBoolean("DotLayout.importConnectionsShape", importConnectionsShape);
+		config.set(keyDotCommand, getCommand());
+		config.setBoolean(keyImportConnectionsShape, getImportConnectionsShape());
+	}
+
+	@Override
+	public String getSection() {
+		return "Layout";
+	}
+
+	@Override
+	public String getName() {
+		return "Dot";
+	}
+
+	public static String getCommand() {
+		return dotCommand;
+	}
+
+	public static void setCommand(String value) {
+		dotCommand = value;
 	}
 
 	public static Boolean getImportConnectionsShape() {
@@ -78,21 +105,5 @@ public class DotLayoutSettings implements SettingsPage {
 
 	public static void setImportConnectionsShape(Boolean value) {
 		importConnectionsShape = value;
-	}
-
-	public static String getDotCommand() {
-		return DotLayoutSettings.dotCommand;
-	}
-
-	public static void setDotCommand(String dotCommand) {
-		DotLayoutSettings.dotCommand = dotCommand;
-	}
-
-	public String getSection() {
-		return "Layout";
-	}
-	@Override
-	public String getName() {
-		return "Dot";
 	}
 }

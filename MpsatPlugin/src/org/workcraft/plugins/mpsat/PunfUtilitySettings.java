@@ -29,34 +29,36 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class PunfUtilitySettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "Tools.punf";
 
-	private static final String commandKey = "Tools.punf.command";
-	private static final String extraArgsKey = "Tools.punf.args";
+	private static final String keyCommand = prefix + ".command";
+	private static final String keyExtraArgs = prefix + ".args";
 
-	private static String command = "punf";
-	private static String extraArgs = "-r";
+	private static final String defaultCommand = "punf";
+	private static final String defaultExtraArgs = "-r";
+
+	private static String command = defaultCommand;
+	private static String extraArgs = defaultExtraArgs;
 
 	public PunfUtilitySettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
 				this, "Punf command", String.class) {
 			protected void setter(PunfUtilitySettings object, String value) {
-				PunfUtilitySettings.setPunfCommand(value);
+				PunfUtilitySettings.setCommand(value);
 			}
 			protected String getter(PunfUtilitySettings object) {
-				return PunfUtilitySettings.getPunfCommand();
+				return PunfUtilitySettings.getCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
 				this, "Additional arguments", String.class) {
 			protected void setter(PunfUtilitySettings object, String value) {
-				PunfUtilitySettings.setPunfExtraArgs(value);
+				PunfUtilitySettings.setExtraArgs(value);
 			}
 			protected String getter(PunfUtilitySettings object) {
-				return PunfUtilitySettings.getPunfExtraArgs();
+				return PunfUtilitySettings.getExtraArgs();
 			}
 		});
 	}
@@ -68,14 +70,14 @@ public class PunfUtilitySettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		command = config.getString(commandKey, "punf");
-		extraArgs = config.getString(extraArgsKey, "-r");
+		setCommand(config.getString(keyCommand, defaultCommand));
+		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.set(commandKey, command);
-		config.set(extraArgsKey, extraArgs);
+		config.set(keyCommand, getCommand());
+		config.set(keyExtraArgs, getExtraArgs());
 	}
 
 	@Override
@@ -88,20 +90,20 @@ public class PunfUtilitySettings implements SettingsPage {
 		return "Punf";
 	}
 
-	public static String getPunfCommand() {
+	public static String getCommand() {
 		return command;
 	}
 
-	public static void setPunfCommand(String value) {
-		PunfUtilitySettings.command = value;
+	public static void setCommand(String value) {
+		command = value;
 	}
 
-	public static String getPunfExtraArgs() {
+	public static String getExtraArgs() {
 		return extraArgs;
 	}
 
-	public static void setPunfExtraArgs(String value) {
-		PunfUtilitySettings.extraArgs = value;
+	public static void setExtraArgs(String value) {
+		extraArgs = value;
 	}
 
 }

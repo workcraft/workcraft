@@ -35,7 +35,7 @@ import org.workcraft.plugins.dfs.stg.LogicStg;
 import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.STGSimulationTool;
 import org.workcraft.util.Func;
@@ -148,15 +148,15 @@ public class SimulationTool extends STGSimulationTool {
 					return new LogicDecoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 
@@ -173,15 +173,15 @@ public class SimulationTool extends STGSimulationTool {
 					return new RegisterDecoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 
@@ -208,15 +208,15 @@ public class SimulationTool extends STGSimulationTool {
 					return new CounterflowLogicDecoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 
@@ -248,15 +248,15 @@ public class SimulationTool extends STGSimulationTool {
 					return new CounterflowRegisterDecoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 
@@ -313,15 +313,15 @@ public class SimulationTool extends STGSimulationTool {
 					return new BinaryRegisterDecoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 

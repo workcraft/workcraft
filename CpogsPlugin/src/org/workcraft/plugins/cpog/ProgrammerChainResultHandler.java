@@ -3,7 +3,7 @@ package org.workcraft.plugins.cpog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.tasks.ProgrammerChainResult;
 import org.workcraft.plugins.cpog.tasks.ProgrammerChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -22,7 +22,7 @@ public class ProgrammerChainResultHandler extends DummyProgressMonitor<Programme
 	@Override
 	public void finished(final Result<? extends ProgrammerChainResult> result, String description) {
 		if (result.getOutcome() == Outcome.FINISHED) {
-			final generationMode programmerMode = result.getReturnValue().getProgrammerSettings().getGenMode();
+			final GenerationMode programmerMode = result.getReturnValue().getProgrammerSettings().getGenMode();
 			switch (programmerMode) {
 			case OPTIMAL_ENCODING:
 			case RECURSIVE:
