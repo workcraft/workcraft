@@ -30,25 +30,28 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class CommonCommentSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "CommonVisualSettings";
 
-	protected static double baseSize = 1.0;
-	protected static double strokeWidth = 0.02;
-	protected static Color textColor = Color.BLACK;
-	protected static Color borderColor = Color.GRAY;
-	protected static Color fillColor = new Color(255, 255, 200);
+	private static final String keyBaseSize  = prefix + ".baseSize";
+	private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+	private static final String keyTextColor  = prefix + ".textColor";
+	private static final String keyBorderColor  = prefix + ".borderColor";
+	private static final String keyFillColor  = prefix + ".fillColor";
 
-	public String getSection() {
-		return "Common";
-	}
+	private static final double defaultBaseSize = 1.0;
+	private static final double defaultStrokeWidth = 0.02;
+	private static final Color defaultTextColor = Color.BLACK;
+	private static final Color defaultBorderColor = Color.GRAY;
+	private static final Color defaultFillColor = new Color(255, 255, 200);
 
-	public String getName() {
-		return "Comment";
-	}
+	private static double baseSize = defaultBaseSize;
+	private static double strokeWidth = defaultStrokeWidth;
+	private static Color textColor = defaultTextColor;
+	private static Color borderColor = defaultBorderColor;
+	private static Color fillColor = defaultFillColor;
 
 	public CommonCommentSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
 				this, "Base size (cm)", Double.class) {
 			protected void setter(CommonCommentSettings object, Double value) {
@@ -100,24 +103,37 @@ public class CommonCommentSettings implements SettingsPage {
 		});
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		baseSize = config.getDouble("CommonCommentSettings.baseSize", 1.0);
-		strokeWidth = config.getDouble("CommonCommentSettings.strokeWidth", 0.02);
-		textColor = config.getColor("CommonCommentSettings.textColor", Color.BLACK);
-		borderColor = config.getColor("CommonCommentSettings.foregroundColor", Color.GRAY);
-		fillColor = config.getColor("CommonCommentSettings.fillColor", new Color(255, 255, 200));
+		setBaseSize(config.getDouble(keyBaseSize, defaultBaseSize));
+		setStrokeWidth(config.getDouble(keyStrokeWidth, defaultStrokeWidth));
+		setTextColor(config.getColor(keyTextColor, defaultTextColor));
+		setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
+		setFillColor(config.getColor(keyFillColor, defaultFillColor));
 	}
 
+	@Override
 	public void save(Config config) {
-		config.setDouble("CommonCommentSettings.baseSize", baseSize);
-		config.setDouble("CommonCommentSettings.strokeWidth", strokeWidth);
-		config.setColor("CommonCommentSettings.textColor", textColor);
-		config.setColor("CommonCommentSettings.borderColor", borderColor);
-		config.setColor("CommonCommentSettings.fillColor", fillColor);
+		config.setDouble(keyBaseSize, getBaseSize());
+		config.setDouble(keyStrokeWidth, getStrokeWidth());
+		config.setColor(keyTextColor, getTextColor());
+		config.setColor(keyBorderColor, getBorderColor());
+		config.setColor(keyFillColor, getFillColor());
+	}
+
+	@Override
+	public String getSection() {
+		return "Common";
+	}
+
+	@Override
+	public String getName() {
+		return "Comment";
 	}
 
 	public static double getBaseSize() {
@@ -125,7 +141,7 @@ public class CommonCommentSettings implements SettingsPage {
 	}
 
 	public static void setBaseSize(double value) {
-		CommonCommentSettings.baseSize = value;
+		baseSize = value;
 	}
 
 	public static double getStrokeWidth() {
@@ -133,7 +149,7 @@ public class CommonCommentSettings implements SettingsPage {
 	}
 
 	public static void setStrokeWidth(double value) {
-		CommonCommentSettings.strokeWidth = value;
+		strokeWidth = value;
 	}
 
 	public static Color getTextColor() {
@@ -141,7 +157,7 @@ public class CommonCommentSettings implements SettingsPage {
 	}
 
 	public static void setTextColor(Color value) {
-		CommonCommentSettings.textColor = value;
+		textColor = value;
 	}
 
 	public static Color getBorderColor() {
@@ -149,7 +165,7 @@ public class CommonCommentSettings implements SettingsPage {
 	}
 
 	public static void setBorderColor(Color value) {
-		CommonCommentSettings.borderColor = value;
+		borderColor = value;
 	}
 
 	public static Color getFillColor() {
@@ -157,7 +173,7 @@ public class CommonCommentSettings implements SettingsPage {
 	}
 
 	public static void setFillColor(Color value) {
-		CommonCommentSettings.fillColor = value;
+		fillColor = value;
 	}
 
 }

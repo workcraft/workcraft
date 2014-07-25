@@ -11,27 +11,31 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class SONSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
-	private static Color relationErrColor = new Color(255, 204, 204);
-	private static Color cyclePathColor = new Color(255, 102, 102);
-	private static Color connectionErrColor = new  Color(255, 102, 102);
-	private static Color errLabelColor = Color.GREEN.darker();
-	private static Color defaultBlockColor = new  Color(255, 255, 255, 0);
-	private static Positioning errLabelPositioning = Positioning.BOTTOM;
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "SONSettings";
 
+	private static final String keyRelationErrColor = prefix + ".relationErrColor";
+	private static final String keyCyclePathColor = prefix + ".cyclePathColor";
+	private static final String keyConnectionErrColor = prefix + ".connectionErrColor";
+	private static final String keyErrLabelColor = prefix + ".errLabelColor";
+	private static final String keyBlockColor = prefix + ".blockColor";
+	private static final String keyErrLabelPositioning = prefix + ".errLabelPositioning";
 
-	@Override
-	public String getName() {
-		return "Structured Occurrence Nets";
-	}
+	private static final Color defaultRelationErrColor = new Color(255, 204, 204);
+	private static final Color defaultCyclePathColor = new Color(255, 102, 102);
+	private static final Color defaultConnectionErrColor = new  Color(255, 102, 102);
+	private static final Color defaultErrLabelColor = Color.GREEN.darker();
+	private static final Color defaultBlockColor = new  Color(255, 255, 255, 0);
+	private static final Positioning defaultErrLabelPositioning = Positioning.BOTTOM;
 
-	public String getSection() {
-		return "Models";
-	}
+	private static Color relationErrColor = defaultRelationErrColor;
+	private static Color cyclePathColor = defaultCyclePathColor;
+	private static Color connectionErrColor = defaultConnectionErrColor;
+	private static Color errLabelColor = defaultErrLabelColor;
+	private static Color blockColor = defaultBlockColor;
+	private static Positioning errLabelPositioning = defaultErrLabelPositioning;
 
 	public SONSettings(){
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
 				this, "Erroneous node color(relation)", Color.class) {
 			protected void setter(SONSettings object, Color value) {
@@ -85,10 +89,10 @@ public class SONSettings implements SettingsPage {
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
 				this, "Default Block color", Color.class) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setDefaultBlockColor(value);
+				SONSettings.setBlockColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getDefaultBlockColor();
+				return SONSettings.getBlockColor();
 			}
 		});
 	}
@@ -99,44 +103,52 @@ public class SONSettings implements SettingsPage {
 	}
 
 	@Override
-	public void save(Config config) {
-		config.setColor("SONSettings.relationErrColor", relationErrColor);
-		config.setColor("SONSettings.cyclePathColor", cyclePathColor);
-		config.setColor("SONSettings.connectionErrColor", connectionErrColor);
-		config.setColor("SONSettings.defaultBlockColor", defaultBlockColor);
-
-		config.setTextPositioning("SONSettings.errLabelPositioning", errLabelPositioning);
-		config.setColor("SONSettings.errLabelColor", errLabelColor);
+	public void load(Config config) {
+		setRelationErrColor(config.getColor(keyRelationErrColor, defaultRelationErrColor));
+		setCyclePathColor(config.getColor(keyCyclePathColor, defaultCyclePathColor));
+		setConnectionErrColor(config.getColor(keyConnectionErrColor, defaultConnectionErrColor));
+		setErrLabelPositioning(config.getTextPositioning(keyErrLabelPositioning, defaultErrLabelPositioning));
+		setErrLabelColor(config.getColor(keyErrLabelColor, defaultErrLabelColor));
 	}
 
 	@Override
-	public void load(Config config) {
-		relationErrColor = config.getColor("SONSettings.relationErrColor", new Color(255, 204, 204));
-		cyclePathColor = config.getColor("SONSettings.cyclePathColor", new Color(255, 102, 102));
-		connectionErrColor = config.getColor("SONSettings.connectionErrColor", new Color(255, 102, 102));
-
-		errLabelPositioning = config.getTextPositioning("SONSettings.errorPositioning", Positioning.BOTTOM);
-		errLabelColor = config.getColor("SONSettings.errLabelColor", Color.GREEN.darker());
+	public void save(Config config) {
+		config.setColor(keyRelationErrColor, getRelationErrColor());
+		config.setColor(keyCyclePathColor, getCyclePathColor());
+		config.setColor(keyConnectionErrColor, getConnectionErrColor());
+		config.setColor(keyBlockColor, getBlockColor());
+		config.setTextPositioning(keyErrLabelPositioning, getErrLabelPositioning());
+		config.setColor(keyErrLabelColor, getErrLabelColor());
 	}
 
-	public static void setRelationErrColor(Color color){
-		SONSettings.relationErrColor = color;
+	@Override
+	public String getSection() {
+		return "Models";
+	}
+
+	@Override
+	public String getName() {
+		return "Structured Occurrence Nets";
+	}
+
+	public static void setRelationErrColor(Color value){
+		relationErrColor = value;
 	}
 
 	public static Color getRelationErrColor(){
 		return relationErrColor;
 	}
 
-	public static void setCyclePathColor(Color color){
-		SONSettings.cyclePathColor = color;
+	public static void setCyclePathColor(Color value){
+		cyclePathColor = value;
 	}
 
 	public static Color getCyclePathColor(){
 		return cyclePathColor;
 	}
 
-	public static void setConnectionErrColor(Color color){
-		SONSettings.connectionErrColor = color;
+	public static void setConnectionErrColor(Color value){
+		connectionErrColor = value;
 	}
 
 	public static Color getConnectionErrColor(){
@@ -148,7 +160,7 @@ public class SONSettings implements SettingsPage {
 	}
 
 	public static void setErrLabelPositioning(Positioning value) {
-		SONSettings.errLabelPositioning = value;
+		errLabelPositioning = value;
 	}
 
 	public static Color getErrLabelColor() {
@@ -156,14 +168,14 @@ public class SONSettings implements SettingsPage {
 	}
 
 	public static void setErrLabelColor(Color value) {
-		SONSettings.errLabelColor = value;
+		errLabelColor = value;
 	}
 
-	public static Color getDefaultBlockColor() {
-		return defaultBlockColor;
+	public static Color getBlockColor() {
+		return blockColor;
 	}
 
-	public static void setDefaultBlockColor(Color value) {
-		SONSettings.defaultBlockColor = value;
+	public static void setBlockColor(Color value) {
+		blockColor = value;
 	}
 }

@@ -25,7 +25,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -141,8 +141,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 			label.setText((String) value);
 			label.setForeground(Color.BLACK);
 
-			Color fore = CommonVisualSettings.getEnabledForegroundColor();
-			Color back = CommonVisualSettings.getEnabledBackgroundColor();
+			Color fore = CommonSimulationSettings.getEnabledForegroundColor();
+			Color back = CommonSimulationSettings.getEnabledBackgroundColor();
 
 			Node node = net.getNodeByReference((String) value);
 			if (node instanceof SignalTransition) {

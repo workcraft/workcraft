@@ -31,35 +31,46 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class CommonVisualSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "CommonVisualSettings";
 
-	protected static double baseSize = 1.0;
-	protected static double strokeWidth = 0.1;
-	protected static Color borderColor = Color.BLACK;
-	protected static Color fillColor = Color.WHITE;
-	private static boolean labelVisibility = true;
-	private static Positioning labelPositioning = Positioning.TOP;
-	private static Color labelColor = Color.BLACK;
-	private static boolean nameVisibility = false;
-	private static Positioning namePositioning = Positioning.BOTTOM;
-	private static Color nameColor = Color.BLUE.darker();
-	private static boolean useEnabledForegroundColor = true;
-	private static Color enabledForegroundColor = new Color(1.0f, 0.5f, 0.0f);
-	private static boolean useEnabledBackgroundColor = false;
-	private static Color enabledBackgroundColor = new Color(0.0f, 0.0f, 0.0f);
-	private static Integer redrawInterval = 20;
+	private static final String keyBaseSize  = prefix + ".baseSize";
+	private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+	private static final String keyBorderColor = prefix + ".borderColor";
+	private static final String keyFillColor  = prefix + ".fillColor";
+	private static final String keyLabelVisibility  = prefix + ".labelVisibility";
+	private static final String keyLabelPositioning  = prefix + ".labelPositioning";
+	private static final String keyLabelColor  = prefix + ".labelColor";
+	private static final String keyNameVisibility  = prefix + ".nameVisibility";
+	private static final String keyNamePositioning  = prefix + ".namePositioning";
+	private static final String keyNameColor  = prefix + ".nameColor";
+	private static final String keyRedrawInterval  = prefix + ".redrawInterval";
 
-	public String getSection() {
-		return "Common";
-	}
+	private static final double defaultBaseSize = 1.0;
+	private static final double defaultStrokeWidth = 0.1;
+	private static final Color defaultBorderColor = Color.BLACK;
+	private static final Color defaultFillColor = Color.WHITE;
+	private static final boolean defaultLabelVisibility = true;
+	private static final Positioning defaultLabelPositioning = Positioning.TOP;
+	private static final Color defaultLabelColor = Color.BLACK;
+	private static final boolean defaultNameVisibility = false;
+	private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
+	private static final Color defaultNameColor = Color.BLUE.darker();
+	private static final Integer defaultRedrawInterval = 20;
 
-	public String getName() {
-		return "Visual";
-	}
+	private static double baseSize = defaultBaseSize;
+	private static double strokeWidth = defaultStrokeWidth;
+	private static Color borderColor = defaultBorderColor;
+	private static Color fillColor = defaultFillColor;
+	private static boolean labelVisibility = defaultLabelVisibility;
+	private static Positioning labelPositioning = defaultLabelPositioning;
+	private static Color labelColor = defaultLabelColor;
+	private static boolean nameVisibility = defaultNameVisibility;
+	private static Positioning namePositioning = defaultNamePositioning;
+	private static Color nameColor = defaultNameColor;
+	private static Integer redrawInterval = defaultRedrawInterval;
 
 	public CommonVisualSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
 				this, "Base size (cm)", Double.class) {
 			protected void setter(CommonVisualSettings object, Double value) {
@@ -160,46 +171,6 @@ public class CommonVisualSettings implements SettingsPage {
 			}
 		});
 
-		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-				this, "Use enabled component foreground", Boolean.class) {
-			protected void setter(CommonVisualSettings object, Boolean value) {
-				CommonVisualSettings.setUseEnabledForegroundColor(value);
-			}
-			protected Boolean getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getUseEnabledForegroundColor();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Enabled component foreground", Color.class) {
-			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setEnabledForegroundColor(value);
-			}
-			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getEnabledForegroundColor();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-				this, "Use enabled component background", Boolean.class) {
-			protected void setter(CommonVisualSettings object, Boolean value) {
-				CommonVisualSettings.setUseEnabledBackgroundColor(value);
-			}
-			protected Boolean getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getUseEnabledBackgroundColor();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Enabled component background", Color.class) {
-			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setEnabledBackgroundColor(value);
-			}
-			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getEnabledBackgroundColor();
-			}
-		});
-
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Integer>(
 				this, "Minimal redraw interval (ms)", Integer.class) {
 			protected void setter(CommonVisualSettings object, Integer value) {
@@ -211,54 +182,49 @@ public class CommonVisualSettings implements SettingsPage {
 		});
 	}
 
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		baseSize = config.getDouble("CommonVisualSettings.baseSize", 1.0);
-		strokeWidth = config.getDouble("CommonVisualSettings.strokeWidth", 0.1);
-		borderColor = config.getColor("CommonVisualSettings.foregroundColor", Color.BLACK);
-		fillColor = config.getColor("CommonVisualSettings.fillColor", Color.WHITE);
-
-		labelVisibility = config.getBoolean("CommonVisualSettings.labelVisibility", true);
-		labelPositioning = config.getTextPositioning("CommonVisualSettings.labelPositioning", Positioning.TOP);
-		labelColor = config.getColor("CommonVisualSettings.labelColor", Color.BLACK);
-
-		nameVisibility = config.getBoolean("CommonVisualSettings.nameVisibility", true);
-		namePositioning = config.getTextPositioning("CommonVisualSettings.namePositioning", Positioning.BOTTOM);
-		nameColor = config.getColor("CommonVisualSettings.nameColor", Color.BLUE.darker());
-
-		useEnabledForegroundColor = config.getBoolean("CommonVisualSettings.useEnabledForegroundColor", true);
-		enabledForegroundColor = config.getColor("CommonVisualSettings.enabledForegroundColor", new Color(1.0f, 0.5f, 0.0f));
-
-		useEnabledBackgroundColor = config.getBoolean("CommonVisualSettings.useEnabledBackgroundColor", false);
-		enabledBackgroundColor = config.getColor("CommonVisualSettings.enabledBackgroundColor", new Color(1.0f, 0.5f, 0.0f));
-
-		redrawInterval = config.getInt("CommonVisualSettings.redrawInterval", 20);
+		setBaseSize(config.getDouble(keyBaseSize, defaultBaseSize));
+		setStrokeWidth(config.getDouble(keyStrokeWidth, defaultStrokeWidth));
+		setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
+		setFillColor(config.getColor(keyFillColor, defaultFillColor));
+		setLabelVisibility(config.getBoolean(keyLabelVisibility, defaultLabelVisibility));
+		setLabelPositioning(config.getTextPositioning(keyLabelPositioning, defaultLabelPositioning));
+		setLabelColor(config.getColor(keyLabelColor, defaultLabelColor));
+		setNameVisibility(config.getBoolean(keyNameVisibility, defaultNameVisibility));
+		setNamePositioning(config.getTextPositioning(keyNamePositioning, defaultNamePositioning));
+		setNameColor(config.getColor(keyNameColor, defaultNameColor));
+		setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
 	}
 
+	@Override
 	public void save(Config config) {
-		config.setDouble("CommonVisualSettings.baseSize", baseSize);
-		config.setDouble("CommonVisualSettings.strokeWidth", strokeWidth);
-		config.setColor("CommonVisualSettings.borderColor", borderColor);
-		config.setColor("CommonVisualSettings.fillColor", fillColor);
+		config.setDouble(keyBaseSize, getBaseSize());
+		config.setDouble(keyStrokeWidth, getStrokeWidth());
+		config.setColor(keyBorderColor, getBorderColor());
+		config.setColor(keyFillColor, getFillColor());
+		config.setBoolean(keyLabelVisibility, getLabelVisibility());
+		config.setColor(keyLabelColor, getLabelColor());
+		config.setTextPositioning(keyLabelPositioning, getLabelPositioning());
+		config.setBoolean(keyNameVisibility, getNameVisibility());
+		config.setColor(keyNameColor, getNameColor());
+		config.setTextPositioning(keyNamePositioning, getNamePositioning());
+		config.setInt(keyRedrawInterval, getRedrawInterval());
+	}
 
-		config.setBoolean("CommonVisualSettings.labelVisibility", labelVisibility);
-		config.setColor("CommonVisualSettings.labelColor", labelColor);
-		config.setTextPositioning("CommonVisualSettings.labelPositioning", labelPositioning);
+	@Override
+	public String getSection() {
+		return "Common";
+	}
 
-		config.setBoolean("CommonVisualSettings.nameVisibility", nameVisibility);
-		config.setColor("CommonVisualSettings.nameColor", nameColor);
-		config.setTextPositioning("CommonVisualSettings.namePositioning", namePositioning);
-
-		config.setBoolean("CommonVisualSettings.useEnabledForegroundColor", useEnabledForegroundColor);
-		config.setColor("CommonVisualSettings.enabledBackgroundColor", enabledBackgroundColor);
-
-		config.setBoolean("CommonVisualSettings.useEnabledBackgroundColor", useEnabledBackgroundColor);
-		config.setColor("CommonVisualSettings.enabledForegroundColor", enabledForegroundColor);
-
-		config.setInt("CommonVisualSettings.redrawInterval", redrawInterval);
+	@Override
+	public String getName() {
+		return "Visual";
 	}
 
 	public static double getBaseSize() {
@@ -339,38 +305,6 @@ public class CommonVisualSettings implements SettingsPage {
 
 	public static void setNameColor(Color value) {
 		nameColor = value;
-	}
-
-	public static void setUseEnabledForegroundColor(Boolean value) {
-		useEnabledForegroundColor = value;
-	}
-
-	public static Boolean getUseEnabledForegroundColor() {
-		return useEnabledForegroundColor;
-	}
-
-	public static void setEnabledForegroundColor(Color value) {
-		enabledForegroundColor = value;
-	}
-
-	public static Color getEnabledForegroundColor() {
-		return useEnabledForegroundColor ? enabledForegroundColor : null;
-	}
-
-	public static void setUseEnabledBackgroundColor(Boolean value) {
-		useEnabledBackgroundColor = value;
-	}
-
-	public static Boolean getUseEnabledBackgroundColor() {
-		return useEnabledBackgroundColor;
-	}
-
-	public static void setEnabledBackgroundColor(Color value) {
-		enabledBackgroundColor = value;
-	}
-
-	public static Color getEnabledBackgroundColor() {
-		return useEnabledBackgroundColor ? enabledBackgroundColor : null;
 	}
 
 	public static void setRedrawInterval(Integer value) {

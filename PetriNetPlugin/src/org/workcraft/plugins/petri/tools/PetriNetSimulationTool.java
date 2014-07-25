@@ -82,7 +82,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -777,11 +777,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
 					}
@@ -790,11 +790,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 						};
 					}

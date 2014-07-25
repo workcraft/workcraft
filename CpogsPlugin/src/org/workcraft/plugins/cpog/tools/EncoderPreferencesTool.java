@@ -6,7 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.cpog.CpogProgrammer;
 import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.ProgrammerChainResultHandler;
 import org.workcraft.plugins.cpog.VisualCPOG;
@@ -49,7 +49,7 @@ public class EncoderPreferencesTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		if(settingPresent == false){
 			settingPresent = true;
-			settings = new EncoderSettings(10,generationMode.OPTIMAL_ENCODING,false, false);
+			settings = new EncoderSettings(10,GenerationMode.OPTIMAL_ENCODING,false, false);
 			pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
 			dialog = new EncoderConfigurationDialog(framework.getMainWindow(), pmgr, settings, we);
 		}

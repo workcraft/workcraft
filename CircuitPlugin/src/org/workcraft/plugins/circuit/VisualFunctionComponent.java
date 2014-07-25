@@ -22,7 +22,6 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.renderers.BufferRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
@@ -42,43 +41,36 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	private ComponentRenderingResult getRenderingResult() {
-		if (getRenderType()==RenderType.BOX) return null;
-		if (getChildren().isEmpty()) return null;
-		if (renderingResult==null) {
+		if (renderingResult != null) {
+			return renderingResult;
+		}
+		for (Node n: getChildren()) {
 			// derive picture from the first output contact available
-			for (Node n: getChildren()) {
-				if (n instanceof VisualFunctionContact) {
-					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (vc.getSetFunction()==null) {
-						return null;
-					}
-					if (vc.getIOType()==IOType.OUTPUT) {
-						switch (getRenderType()) {
-						case GATE:
-							GateRenderer.foreground = getForegroundColor();
-							GateRenderer.background = getFillColor();
+			if (n instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)n;
+				if (vc.getIOType() == IOType.OUTPUT) {
+					switch (getRenderType()) {
+					case BOX:
+						renderingResult = null;
+						break;
+					case GATE:
+						GateRenderer.foreground = getForegroundColor();
+						GateRenderer.background = getFillColor();
+						if (vc.getResetFunction() == null) {
 							renderingResult = GateRenderer.renderGate(vc.getSetFunction());
-							break;
-						case BUFFER:
-							renderingResult = BufferRenderer.renderGate(vc.getSetFunction());
-							break;
-						case C_ELEMENT:
-							if (vc.getResetFunction()!=null) {
-								renderingResult = CElementRenderer.renderGate(
-									vc.getSetFunction(), vc.getResetFunction());
-							}
-							break;
-						default:
-							break;
+						} else {
+							renderingResult = CElementRenderer.renderGate(vc.getSetFunction(), vc.getResetFunction());
 						}
+						break;
+					default:
+						break;
 					}
 				}
 			}
-
-			if (renderingResult != null) {
-				updateStepPositions();
-				updateTotalBB();
-			}
+		}
+		if (renderingResult != null) {
+			updateStepPositions();
+			updateTotalBB();
 		}
 		return renderingResult;
 	}
@@ -100,6 +92,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	public void setRenderType(RenderType renderType) {
 		super.setRenderType(renderType);
 		resetRenderingResult();
+		sendNotification(new PropertyChangedEvent(this, "render type"));
 	}
 
 	@Override
@@ -189,14 +182,16 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
-		GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 		ComponentRenderingResult res = getRenderingResult();
-
 		if (res == null) {
 			super.draw(r);
 		} else {
+			Graphics2D g = r.getGraphics();
+			GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
+			GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
+
+			cacheRenderedText(r); // needed to better estimate the bounding box
+
 			drawLabelInLocalSpace(r);
 			if (!getIsEnvironment()) {
 				g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));

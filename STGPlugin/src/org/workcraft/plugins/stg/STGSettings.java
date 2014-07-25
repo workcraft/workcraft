@@ -31,7 +31,9 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class STGSettings implements SettingsPage {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "StgSettings";
+
 	private static final String keyInputColor = prefix + ".inputColor";
 	private static final String keyOutputColor = prefix + ".outputColor";
 	private static final String keyInternalColor = prefix + ".internalColor";
@@ -42,15 +44,12 @@ public class STGSettings implements SettingsPage {
 	private static final Color defaultInternalColor = Color.GREEN.darker();
 	private static final Color defaultDummyColor = Color.BLACK.darker();
 
-	private static LinkedList<PropertyDescriptor> properties;
 	private static Color inputColor = defaultInputColor;
 	private static Color outputColor = defaultOutputColor;
 	private static Color internalColor = defaultInternalColor;
 	private static Color dummyColor = defaultDummyColor;
 
 	public STGSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
 				this, "Input transition color", Color.class) {
 			protected void setter(STGSettings object, Color value) {

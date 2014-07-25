@@ -154,6 +154,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 		contactLabelBB = null;
 		updateStepPositions();
 		updateTotalBB();
+		sendNotification(new PropertyChangedEvent(this, "render type"));
 	}
 
 	// updates sequential position of the contacts
@@ -232,11 +233,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
-
 	        Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
-
 			contactLabelBB = null;
 			updateSidePosition(vc);
 			updateStepPositions();
@@ -244,9 +243,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 	}
 
 	protected void updateTotalBB() {
-
 		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
-
 		if (contactLabelBB != null && totalBB != null) {
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 		}
@@ -576,31 +573,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 			}
 		}
 	}
-
-//	public VisualContact addInput(Circuit circuit, String name, VisualContact.Direction dir) {
-//		VisualContact vc = new VisualContact(new Contact(IOType.INPUT));
-//		if (dir==null) {
-//			dir=VisualContact.Direction.WEST;
-//		}
-//		vc.setDirection(dir);
-//
-//		circuit.setName(vc.getReferencedComponent(), name);
-//
-//		addContact(vc);
-//		return vc;
-//	}
-//
-//	public VisualContact addOutput(VisualCircuit vcircuit, String name, VisualContact.Direction dir) {
-//		VisualContact vc = new VisualContact(new Contact(IOType.OUTPUT));
-//		if (dir==null) {
-//			dir=VisualContact.Direction.EAST;
-//		}
-//		vc.setDirection(dir);
-//
-//		circuit.setName(vc.getReferencedComponent(), name);
-//		addContact(vc);
-//		return vc;
-//	}
 
 	@Override
 	public void addObserver(HierarchyObserver obs) {

@@ -33,8 +33,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.EventNode;
@@ -182,7 +181,7 @@ public class ParallelSimDialog  extends JDialog{
 											if(e==eventItem.getEvent()){
 												selectedEvents.remove(e);
 												eventItem.setSelected(false);
-												eventItem.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+												eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 											}
 										}
 									}
@@ -192,12 +191,12 @@ public class ParallelSimDialog  extends JDialog{
 											if(e==eventItem.getEvent()){
 												selectedEvents.remove(e);
 												eventItem.setSelected(false);
-												eventItem.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+												eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 											}
 										}
 									}
 								}
-								item.setForegroudColor(CommonVisualSettings.getEnabledForegroundColor());
+								item.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 								alg.clearAll();
 							}
 

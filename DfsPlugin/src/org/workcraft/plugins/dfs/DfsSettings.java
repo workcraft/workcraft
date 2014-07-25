@@ -33,8 +33,9 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.SettingsPage;
 
 public class DfsSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "DfsSettings";
+
 	private static final String keyComputedLogicColor  = prefix + ".computedLogicColor";
 	private static final String keySynchronisationRegisterColor = prefix + "synchronisationRegisterColor";
 	private static final String keyTokenPalette = prefix + "tokenPalette";
@@ -71,8 +72,6 @@ public class DfsSettings implements SettingsPage {
 	}
 
 	public DfsSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<DfsSettings, Color>(
 				this, "Computed logic color", Color.class) {
 			protected void setter(DfsSettings object, Color value) {

@@ -19,7 +19,7 @@ import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
 public class SimulationTool extends PetriNetSimulationTool {
@@ -83,15 +83,15 @@ public class SimulationTool extends PetriNetSimulationTool {
 					return new Decoration() {
 						@Override
 						public Color getColorisation() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledBackgroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledForegroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
 							return null;
 						}
 
 						@Override
 						public Color getBackground() {
-							if (isHighlighted) return CommonVisualSettings.getEnabledForegroundColor();
-							if (isExcited) return CommonVisualSettings.getEnabledBackgroundColor();
+							if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+							if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
 							return null;
 						}
 					};

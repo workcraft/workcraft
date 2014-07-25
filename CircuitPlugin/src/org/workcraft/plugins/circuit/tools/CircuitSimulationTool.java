@@ -19,7 +19,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.tools.STGSimulationTool;
@@ -118,11 +118,11 @@ public class CircuitSimulationTool extends STGSimulationTool {
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 							@Override
 							public Color getBackground() {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
 					}
@@ -136,14 +136,14 @@ public class CircuitSimulationTool extends STGSimulationTool {
 						@Override
 						public Color getColorisation() {
 							if (isExcited) {
-								return CommonVisualSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 							return null;
 						}
 						@Override
 						public Color getBackground() {
 							if (isExcited) {
-								return CommonVisualSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							} else {
 								if (isOne && !isZero) {
 									return CircuitSettings.getActiveWireColor();
