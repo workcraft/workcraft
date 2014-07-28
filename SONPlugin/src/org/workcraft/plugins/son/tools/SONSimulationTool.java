@@ -45,10 +45,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -66,6 +70,7 @@ import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
@@ -96,6 +101,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 	private JSlider speedSlider;
 	private JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
 	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
+
+	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
 	final double DEFAULT_SIMULATION_DELAY = 0.3;
 	final double EDGE_SPEED_MULTIPLIER = 10;
@@ -236,6 +243,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 						initialMarking = currentMarking;
 					branchTrace.clear();
 					mainTrace.clear();
+					excitedContainers.clear();
 					//clear clip board contents
 					StringSelection stringSelection = new StringSelection("");
 					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
@@ -350,12 +358,16 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 					phases.put(c, bsonAlg.getPhase(c));
 			}
 		}catch(IndexOutOfBoundsException ex){
-			JOptionPane.showMessageDialog(null, "Unable to run simulator, error may due to incorrect SON structure."
-					, "Invalid structural", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
+					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
+			deactivated(editor);
+			return;
+		}catch(NullPointerException ex){
+			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
+					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
 			deactivated(editor);
 			return;
 		}
-
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
 		}
@@ -372,9 +384,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		if (visualNet == editor.getModel()) {
 			editor.getWorkspaceEntry().cancelMemento();
 		}
-		this.visualNet = null;
-		this.net = null;
-
 	}
 
 	public void updateState(final GraphEditor editor) {
@@ -464,18 +473,20 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 					result.put(c, true);
 					((Condition) c).setMarked(true);
 					Collection<ONGroup> bhvGroup = bsonAlg.getBhvGroups((Condition) c);
-					if(bhvGroup.size() != 1)
-						JOptionPane.showMessageDialog(null, "Incorrect BSON structure (disjoint phase/empty phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
-					else
+					if(bhvGroup.size() == 1)
 						for(ONGroup group : bhvGroup){
-							//can optimize
+							//**********can optimize*************
 							Collection<Node> initial = relationAlg.getInitial(group.getComponents());
 							if(bsonAlg.getPhase((Condition)c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(group.getComponents())){
 									result.put(c1, true);
 									((Condition) c1).setMarked(true);}
-							else
-								JOptionPane.showMessageDialog(null, "Incorrect BSON structure (minimal phase), run structure verification.", "error", JOptionPane.WARNING_MESSAGE);
+							else{
+								JOptionPane.showMessageDialog(null,
+										"Fail to run simulator, error may due to incorrect BSON structure.", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+								result.clear();
+								return result;
+								}
 						}
 				}
 			}
@@ -525,6 +536,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 	}
 
 	private boolean quietStep() {
+		excitedContainers.clear();
 		boolean result = false;
 		List<TransitionNode> runList = null;
 		int mainInc = 0;
@@ -570,6 +582,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 	}
 
 	private boolean quietStepBack() {
+		excitedContainers.clear();
 		boolean result = false;
 		List<TransitionNode> runList = null;
 		int mainDec = 0;
@@ -934,6 +947,34 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 		return reverse;
 	}
 
+	protected boolean isContainerExcited(Container container) {
+		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		boolean ret = false;
+
+		for (Node node: container.getChildren()) {
+			try{
+				if (node instanceof VisualTransitionNode) {
+					TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
+					if(!reverse)
+						ret=ret || simuAlg.isEnabled(event, syncSet, phases);
+					else
+						ret=ret || simuAlg.isUnfireEnabled(event, syncSet, phases);
+				}
+			}catch(NullPointerException ex){
+
+			}
+
+			if (node instanceof Container) {
+				ret = ret || isContainerExcited((Container)node);
+			}
+
+			if (ret) break;
+		}
+
+		excitedContainers.put(container, ret);
+		return ret;
+	}
+
 	public void setReverse(final GraphEditor editor, boolean reverse){
 		this.reverse = reverse;
 		updateState(editor);
@@ -1028,6 +1069,29 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner{
 								};
 					}catch(NullPointerException ex){}
 				}
+
+				if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {
+					final boolean ret = isContainerExcited((Container)node);
+
+					return new ContainerDecoration() {
+
+						@Override
+						public Color getColorisation() {
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+
+						@Override
+						public boolean isContainerExcited() {
+							return ret;
+						}
+					};
+				}
+
 				return null;
 			}
 		};

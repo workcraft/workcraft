@@ -214,7 +214,7 @@ public class VisualSON extends AbstractVisualModel{
 			}
 		}
 
-		if(isComplete(selection)){
+		if(isPure(selection)){
 			for(Node node : getOrderedCurrentLevelSelection()){
 				if(node instanceof VisualTransformableNode){
 					if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
@@ -249,7 +249,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	}
 
-	private boolean isComplete (Collection<Node> nodes) {
+	private boolean isPure (Collection<Node> nodes) {
 		for (VisualSONConnection connect : getVisualConnections()){
 			if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
 				&& ! nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
@@ -259,7 +259,6 @@ public class VisualSON extends AbstractVisualModel{
 					&& nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
 			return false;
 		}
-
 		return true;
 	}
 

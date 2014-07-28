@@ -62,6 +62,10 @@ public class test implements Task<VerificationResult> {
 	}
 
 	public static void main(String[] arg){
+		boolean a = false;
+		boolean b = true;
+		boolean c;
+		System.out.println(c = a && b);
 /*		test t = new test();
 		t.print();*/
 		ArrayList<String> test = new ArrayList<String>();

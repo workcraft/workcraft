@@ -162,7 +162,7 @@ public class SONMainTask implements Task<VerificationResult>{
 		net=(SONModel)we.getModelEntry().getMathModel();
 		vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		errNodesHighlight(settings.getErrNodesHighlight(), net);
-		System.out.println("size" + this.relationErrors.size());
+
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 

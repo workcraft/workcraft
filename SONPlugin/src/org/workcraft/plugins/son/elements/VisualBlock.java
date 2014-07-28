@@ -38,7 +38,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		}
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
+		Color colorisation = r.getDecoration().getColorisation();
 
 		if (bb != null && getParent() != null) {
 
@@ -64,9 +64,9 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
 				Graphics2D g = r.getGraphics();
 
-//				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-			//	g.setBackground(new Color(190, 230, 240));
-				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+				g.setColor(Coloriser.colorise(new Color(245, 255, 230), colorisation));
+				g.fill(bb);
+				g.setColor(Coloriser.colorise(Color.GRAY, colorisation));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 

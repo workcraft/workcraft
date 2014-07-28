@@ -278,7 +278,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		Collection<Node> selection = model.getSelection();
 		if (selection.size() == 1) {
 			Node node = selection.iterator().next();
-			if(node instanceof Container) {
+			if(node instanceof Container && !(node instanceof VisualBlock)) {
 				model.setCurrentLevel((Container)node);
 				if(node instanceof VisualONGroup)
 					setChannelPlaceToolState(editor, false);
@@ -294,7 +294,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		VisualModel model = editor.getModel();
 		Container level = model.getCurrentLevel();
 		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-		if (parent != null) {
+		if (parent != null && !(level instanceof VisualBlock)) {
 			model.setCurrentLevel(parent);
 			if(parent instanceof VisualONGroup)
 				setChannelPlaceToolState(editor, false);
