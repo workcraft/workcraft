@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -37,6 +40,8 @@ public class MpsatSettings {
 			return choice;
 		}
 	}
+
+	private static final Pattern nodeNamePattern = Pattern.compile("\"\\s*(.+?)\\s*\"");
 
 	private final String name;
 	private final MpsatMode mode;
@@ -198,6 +203,18 @@ public class MpsatSettings {
 		return reach;
 	}
 
+	private String getFlatReach() {
+		StringBuffer sb = new StringBuffer(reach.length());
+		Matcher matcher = nodeNamePattern.matcher(reach);
+		while (matcher.find()) {
+			String reference = matcher.group(1);
+			String flatName = NamespaceHelper.getFlatName(reference);
+			matcher.appendReplacement(sb, "\"" + flatName + "\"");
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+
 	public SolutionMode getSolutionMode() {
 		return solutionMode;
 	}
@@ -214,7 +231,8 @@ public class MpsatSettings {
 			try {
 				File reach = File.createTempFile("reach", null);
 				reach.deleteOnExit();
-				FileUtils.dumpString(reach, getReach());
+
+				FileUtils.dumpString(reach, getFlatReach());
 				args.add("-d");
 				args.add("@"+reach.getCanonicalPath());
 			} catch (IOException e) {
