@@ -3,6 +3,8 @@ package org.workcraft.plugins.stg;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.serialisation.References;
@@ -26,30 +28,38 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 		super.setExistingReference(n);
 	}
 
+	private STGNameManager getNameManager(Node node) {
+		NamespaceProvider namespaceProvider = getNamespaceProvider(node);
+		STGNameManager nameManager = (STGNameManager)getNameManager(namespaceProvider);
+		return nameManager;
+	}
+
 	public Pair<String, Integer> getNamePair(Node node) {
-		return ((STGNameManager)getNameManager(getNamespaceProvider(node))).getNamePair(node);
+		return getNameManager(node).getNamePair(node);
 	}
 
-	public int getInstanceNumber (Node st) {
-		return ((STGNameManager)getNameManager(getNamespaceProvider(st))).getInstanceNumber(st);
+	public int getInstanceNumber (Node node) {
+		return getNameManager(node).getInstanceNumber(node);
 	}
 
-	public void setInstanceNumber (Node st, int number) {
-		((STGNameManager)getNameManager(getNamespaceProvider(st))).setInstanceNumber(st, number);
+	public void setInstanceNumber (Node node, int number) {
+		getNameManager(node).setInstanceNumber(node, number);
 	}
 
-	public Collection<SignalTransition> getSignalTransitions(String signalName) {
-		return ((STGNameManager)getNameManager(null)).getSignalTransitions(signalName);
-
+	public Collection<SignalTransition> getSignalTransitions(String signalReference) {
+		String parentReference = NamespaceHelper.getParentReference(signalReference);
+		Node parent = getNodeByReference(null, parentReference);
+		String signalName = NamespaceHelper.getNameFromReference(signalReference);
+		return getNameManager(parent).getSignalTransitions(signalName);
 	}
 
 	public void setDefaultNameIfUnnamed(Node node) {
-		((STGNameManager)getNameManager(getNamespaceProvider(node))).setDefaultNameIfUnnamed(node);
+		getNameManager(node).setDefaultNameIfUnnamed(node);
 	}
 
 
 	public void setName(Node node, String s, boolean forceInstance) {
-		((STGNameManager)getNameManager(getNamespaceProvider(node))).setName(node, s, forceInstance);
+		getNameManager(node).setName(node, s, forceInstance);
 	}
 
 }

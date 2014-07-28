@@ -91,7 +91,7 @@ public class MpsatSettings {
 		// Form a set of system STG places which came from the circuitStg
 		HashSet<Node> circuitPlaces = new HashSet<Node>();
 		for (Type type: Type.values()) {
-			for (String s : circuitStg.getSignalNames(type)) {
+			for (String s : circuitStg.getSignalReferences(type)) {
 				Node p0 = stg.getNodeByReference(s + "_0");
 				if (p0 == null) {
 					p0 = stg.getNodeByReference("<" + s + "-," + s + "+>");
@@ -110,11 +110,11 @@ public class MpsatSettings {
 		}
 		// Generate Reach expression
 		String result = "";
-		for (String s : circuitStg.getSignalNames(Type.OUTPUT)) {
+		for (String s : circuitStg.getSignalReferences(Type.OUTPUT)) {
 			String circuitPredicate = "";
 			String environmentPredicate = "";
-			for (SignalTransition t: stg.getSignalTransitions(Type.OUTPUT)) {
-				if (!t.getSignalName().equals(s)) continue;
+			for (SignalTransition t: stg.getSignalTransitions()) {
+				if (!t.getSignalType().equals(Type.OUTPUT) || !t.getSignalName().equals(s)) continue;
 				String circuitPreset = "";
 				String environmentPreset = "";
 				for (Node p: stg.getPreset(t)) {

@@ -36,10 +36,14 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Signal Transition Graph")
@@ -243,5 +247,21 @@ public class VisualSTG extends AbstractVisualModel {
 		return null;
 	}
 
+	@Override
+	public Properties getProperties(Node node) {
+		Properties properties = super.getProperties(node);
+		if (node == null) {
+			for (Type type : Type.values()) {
+				Container container = getMathContainer(this, getCurrentLevel());
+				for (final String signalName : stg.getSignalNames(type, container)) {
+					if (stg.getSignalTransitions(signalName, container).isEmpty() ) continue;
+					properties = Properties.Merge.add(properties,
+							new SignalNamePropertyDescriptor(stg, signalName, container),
+							new SignalTypePropertyDescriptor(stg, signalName, container));
+				}
+			}
+		}
+		return properties;
+	}
 
 }

@@ -210,8 +210,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 			Node node = net.getNodeByReference(ref);
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition)node;
-				String signalName = ((STG)net).getSignalFullName(transition);
-				SignalState signalState = stateMap.get(signalName);
+				String signalReference = ((STG)net).getSignalReference(transition);
+				SignalState signalState = stateMap.get(signalReference);
 				if (signalState != null) {
 					switch (transition.getDirection()) {
 					case MINUS:
@@ -237,8 +237,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		for(Node node: net.getTransitions()) {
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition)node;
-				String signalName = ((STG)net).getSignalFullName(transition);
-				SignalState st = stateMap.get(signalName);
+				String signalReference = ((STG)net).getSignalReference(transition);
+				SignalState st = stateMap.get(signalReference);
 				if (st != null) {
 					st.excited |= net.isEnabled(transition);
 				}
@@ -258,10 +258,10 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		for (Node node : net.getTransitions()) {
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;
-				String signalName = ((STG)net).getSignalFullName(transition);
-				if (!stateMap.containsKey(signalName)) {
+				String signalReference = ((STG)net).getSignalReference(transition);
+				if (!stateMap.containsKey(signalReference)) {
 					SignalState signalState = new SignalState();
-					signalState.name = signalName;
+					signalState.name = signalReference;
 					switch (transition.getSignalType()) {
 					case INPUT:
 						signalState.color = inputsColor;
@@ -273,7 +273,7 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 						signalState.color = internalsColor;
 						break;
 					}
-					stateMap.put(signalName, signalState);
+					stateMap.put(signalReference, signalState);
 				}
 			}
 		}
