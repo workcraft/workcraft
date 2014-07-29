@@ -348,7 +348,6 @@ public class MainMenu extends JMenuBar {
 		mnTools = new JMenu();
 		mnTools.setText("Tools");
 		mnTools.setVisible(false);
-
 		add(mnTools);
 	}
 
@@ -454,5 +453,8 @@ public class MainMenu extends JMenuBar {
 		mnTools.setVisible(false);
 		mnTools.removeAll();
 	}
-}
 
+	public JMenu getToolsMenu() {
+		return mnTools;
+	}
+}

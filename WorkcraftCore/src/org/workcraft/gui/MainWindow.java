@@ -1244,6 +1244,10 @@ public class MainWindow extends JFrame {
 	public WorkspaceWindow getWorkspaceView() {
 		return workspaceWindow;
 	}
+
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
 }
 
 class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
