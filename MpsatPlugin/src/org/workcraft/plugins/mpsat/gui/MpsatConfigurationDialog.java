@@ -336,8 +336,11 @@ public class MpsatConfigurationDialog extends JDialog {
 		if (n<0)
 			n=0;
 
-		MpsatSettings settings = new MpsatSettings(propertyNameText.getText(), (MpsatMode)modeCombo.getSelectedItem(),
-				verbosityCombo.getSelectedIndex(), m, n, reachText.getText());
+		MpsatSettings settings = new MpsatSettings(
+				propertyNameText.getText(),
+				(MpsatMode)modeCombo.getSelectedItem(),
+				verbosityCombo.getSelectedIndex(), m, n,
+				reachText.getText());
 
 		return settings;
 	}

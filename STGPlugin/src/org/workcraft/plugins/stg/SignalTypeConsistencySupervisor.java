@@ -26,6 +26,7 @@ package org.workcraft.plugins.stg;
 
 import java.util.Collection;
 
+import org.workcraft.dom.Container;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
@@ -41,19 +42,24 @@ class SignalTypeConsistencySupervisor extends StateSupervisor {
 	public void handleEvent(StateEvent e) {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pce = (PropertyChangedEvent)e;
-			if (pce.getPropertyName().equals("signalType")) {
+			if (pce.getPropertyName().equals("signalType") || pce.getPropertyName().equals("signalName")) {
 				SignalTransition t = (SignalTransition)e.getSender();
 				String signalName = t.getSignalName();
+				Container container = (Container)t.getParent();
 				SignalTransition.Type signalType = t.getSignalType();
-				for (SignalTransition tt : stg.getSignalTransitions(signalName)) {
-					tt.setSignalType(signalType);
+				final Collection<SignalTransition> transitions = stg.getSignalTransitions(signalName, container);
+				if (pce.getPropertyName().equals("signalType")) {
+					for (SignalTransition tt : transitions) {
+						tt.setSignalType(signalType);
+					}
 				}
-			} else if (pce.getPropertyName().equals("signalName")) {
-				SignalTransition t = (SignalTransition)e.getSender();
-				String signalName = t.getSignalName();
-				final Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalName);
-				if (!signalTransitions.isEmpty()) {
-					t.setSignalType(signalTransitions.iterator().next().getSignalType());
+				if (pce.getPropertyName().equals("signalName")) {
+					for (SignalTransition tt : transitions) {
+						if (tt != t) {
+							t.setSignalType(tt.getSignalType());
+							break;
+						}
+					}
 				}
 			}
 		}

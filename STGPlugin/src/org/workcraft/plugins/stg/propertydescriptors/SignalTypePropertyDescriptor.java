@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.workcraft.dom.Container;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -11,10 +12,12 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 	private final STG stg;
 	private final String signal;
+	private final Container container;
 
-	public SignalTypePropertyDescriptor(STG stg, String signal) {
+	public SignalTypePropertyDescriptor(STG stg, String signal, Container container) {
 		this.stg = stg;
 		this.signal = signal;
+		this.container = container;
 	}
 
 	@Override
@@ -24,12 +27,12 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return stg.getSignalType(signal);
+		return stg.getSignalType(signal, container);
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		stg.setSignalType(signal, (Type)value);
+		stg.setSignalType(signal, (Type)value, container);
 	}
 
 	@Override

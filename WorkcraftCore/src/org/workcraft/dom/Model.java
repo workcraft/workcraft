@@ -24,7 +24,6 @@ package org.workcraft.dom;
 import java.util.Collection;
 
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.Properties;
 

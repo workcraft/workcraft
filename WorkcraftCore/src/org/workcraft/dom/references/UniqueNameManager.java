@@ -77,7 +77,6 @@ public class UniqueNameManager<T> implements NameManager<T> {
 			throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
 		}
 
-
 		if (!Identifier.isValid(name)) {
 			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
 					+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");

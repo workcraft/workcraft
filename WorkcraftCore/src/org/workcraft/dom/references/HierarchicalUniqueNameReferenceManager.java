@@ -110,18 +110,13 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		super.attach(root);
 	}
 
-
 	protected NameManager<Node> createNameManager() {
 		return new UniqueNameManager<Node>(defaultName);
 	}
 
 	protected NameManager<Node> getNameManager(NamespaceProvider provider) {
-
-
 		if (provider==null) provider = topProvider;
-
 		NameManager<Node> man = managers.get(provider);
-
 		if (man==null) {
 			man = createNameManager();
 			managers.put(provider, man);
@@ -131,72 +126,42 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 
 	protected void setExistingReference(Node n) {
 		String reference = existing.getReference(n);
-
 		if (Identifier.isNumber(reference)) {
 			String nm = getName(n);
-			if (nm!=null)
+			if (nm != null) {
 				reference = nm;
+			}
 		}
-
 		if (reference != null) {
-
-			String name =
-					NamespaceHelper.getNameFromReference(reference);
-
+			String name = NamespaceHelper.getNameFromReference(reference);
 			setName(n, name);
 		}
 	}
 
-
-
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
-		return getNodeByReference(provider, reference, false);
-	}
-
-	public Node getNodeByReferenceQuiet(NamespaceProvider provider, String reference) {
-		return getNodeByReference(provider, reference, true);
-	}
-
-	public Node getNodeByReference(NamespaceProvider provider, String reference, boolean quiet) {
-
-		if (topProvider==null)
+		if (topProvider == null) {
 			System.err.println("HierarchicalUniqueNameReferenceManager created with topProvider==null!");
-
-		if (provider==null) provider = topProvider;
-
-		if (reference.equals("")||reference.equals(NamespaceHelper.hierarchySeparator))
+		}
+		if (provider==null) {
+			provider = topProvider;
+		}
+		if (reference.equals("")||reference.equals(NamespaceHelper.hierarchySeparator)) {
 			return (Node)provider;
-
+		}
 		String head =  NamespaceHelper.getReferenceHead(reference);
 		String tail =  NamespaceHelper.getReferenceTail(reference);
-
-//		boolean isAbsolutePath = false;
-//		if (reference.startsWith(HierarchicalNames.hierarchySeparator)) isAbsolutePath = true;
-//		if (provider==null||isAbsolutePath) {
-//			provider = topProvider;
-//		}
-
 		NameManager<Node> man = getNameManager(provider);
-
 		Node node;
-
 		node = man.get(head);
-		if (node==null) return null;
-
-		if (node instanceof NamespaceProvider) {
-			return getNodeByReference((NamespaceProvider)node, tail, quiet);
+		if ((node != null) && (node instanceof NamespaceProvider)) {
+			return getNodeByReference((NamespaceProvider)node, tail);
 		}
-
 		return node;
 	}
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-
-		//boolean isAbsolutePath = false;
-
 		if (provider==null) {
-			//isAbsolutePath = true;
 			provider = topProvider;
 		}
 
@@ -217,7 +182,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			if (name==null) return null;
 
 			// for now don't use quotes
-//			ret= HierarchicalNames.quoteType+name+ HierarchicalNames.quoteType+ret;
 			ret= name+ret;
 			node = node.getParent();
 
@@ -268,7 +232,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public void setName(Node node, String name) {
-
 		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
 		man.setName(node, name);
 	}

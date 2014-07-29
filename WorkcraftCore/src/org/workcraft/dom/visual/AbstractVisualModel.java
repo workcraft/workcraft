@@ -575,18 +575,15 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return null;
 	}
 
-	public static Collection<Node> getMathChildren( Collection<Node> sourceChildren) {
+	public static Collection<Node> getMathChildren(Collection<Node> nodes) {
 		Collection<Node> ret = new HashSet<Node>();
-
-		for (Node n: sourceChildren) {
-
-			if (n instanceof DependentNode) {
-				ret.addAll( ((DependentNode)n).getMathReferences());
-			} else if (n instanceof VisualGroup) {
-				ret.addAll(getMathChildren(n.getChildren()));
+		for (Node node: nodes) {
+			if (node instanceof DependentNode) {
+				ret.addAll( ((DependentNode)node).getMathReferences());
+			} else if (node instanceof VisualGroup) {
+				ret.addAll(getMathChildren(node.getChildren()));
 			}
 		}
-
 		return ret;
 	}
 
@@ -600,38 +597,27 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		// get appropriate math container, it will be the target container for the math model
 		Container mathTargetContainer;
 		mathTargetContainer = mmodel.getRoot();
-
-		if (vis!=null)
+		if (vis!=null) {
 			mathTargetContainer = (Container)vis.getReferencedComponent();
-
+		}
 		return mathTargetContainer;
 	}
 
 	@Override
-	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+		if (srcModel == null) srcModel = this;
+		if (srcChildren==null) srcChildren = srcRoot.getChildren();
+		Container srcMathContainer = getMathContainer((VisualModel)srcModel, srcRoot);
+		Collection<Node> srcMathChildren = getMathChildren(srcChildren);
+		MathModel srcMathModel = ((VisualModel)srcModel).getMathModel();
 
+		MathModel dstMathMmodel = getMathModel();
+		Container dstMathContainer = getMathContainer(this, dstContainer);
+		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		if (sourceModel == null) sourceModel = this;
-		if (sourceChildren==null) sourceChildren = sourceRoot.getChildren();
-
-		MathModel mmodel = getMathModel();
-
-		Container sourceMathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
-
-
-		Collection<Node> mchildren = getMathChildren(sourceChildren);
-
-		mmodel.reparent(getMathContainer(this, targetContainer),
-				((VisualModel)sourceModel).getMathModel(), sourceMathContainer,
-				mchildren);
-
-		Collection<Node> children = new HashSet<Node>();
-
-		children.addAll(sourceChildren);
-
-		sourceRoot.reparent(children, targetContainer);
-
-
+		Collection<Node> dstChildren = new HashSet<Node>();
+		dstChildren.addAll(srcChildren);
+		srcRoot.reparent(dstChildren, dstContainer);
 	}
 
 }

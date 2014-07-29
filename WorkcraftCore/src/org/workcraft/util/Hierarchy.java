@@ -173,6 +173,10 @@ public class Hierarchy {
 		return NodeHelper.filterByType(node.getChildren(), type);
 	}
 
+	public static <T> Collection<T> getChildrenOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
+		return NodeHelper.filterByType(node.getChildren(), type, filter);
+	}
+
 	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type) {
 		ArrayList<T> result = new ArrayList<T>();
 		result.addAll(getChildrenOfType(node, type));
@@ -184,11 +188,7 @@ public class Hierarchy {
 
 	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
 		ArrayList<T> result = new ArrayList<T>();
-		for (T t : getChildrenOfType(node, type)) {
-			if (filter.eval(t)) {
-				result.add(t);
-			}
-		}
+		result.addAll(getChildrenOfType(node, type, filter));
 		for(Node n : node.getChildren()) {
 			result.addAll(getDescendantsOfType(n, type, filter));
 		}
