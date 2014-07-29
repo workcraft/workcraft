@@ -5,12 +5,13 @@ import java.util.Map;
 
 public class EncoderSettings {
 
-	public enum GenerationMode{
+	public enum GenerationMode {
 		OPTIMAL_ENCODING("Simulated annealing"),
 		RECURSIVE("Exhaustive search"),
 		RANDOM("Random search"),
 		SCENCO("Old tool SCENCO"),
-		OLD_SYNT("Old synthesise");
+		OLD_SYNT("Old synthesise"),
+		SEQUENTIAL("Sequential");
 
 		public final String name;
 
@@ -20,7 +21,8 @@ public class EncoderSettings {
 				RECURSIVE,
 				RANDOM,
 				SCENCO,
-				OLD_SYNT
+				OLD_SYNT,
+				SEQUENTIAL
 			};
 
 		private GenerationMode(String name){
@@ -44,7 +46,7 @@ public class EncoderSettings {
 
 	private int solutionNumber = 10, numPO,bits;
 	private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
-	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc;
+	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
 	private String[] customEnc;
 	private String espressoPath,abcPath,libPath;
 
@@ -54,6 +56,14 @@ public class EncoderSettings {
 
 	public void setCpogSize(boolean cpogSize) {
 		this.cpogSize = cpogSize;
+	}
+
+	public boolean isAbcFlag() {
+		return abcFlag;
+	}
+
+	public void setAbcFlag(boolean abcFlag) {
+		this.abcFlag = abcFlag;
 	}
 
 	public boolean isCostFunc() {
@@ -146,6 +156,9 @@ public class EncoderSettings {
 		case 4:
 			genMode = GenerationMode.OLD_SYNT;
 			break;
+		case 5:
+			genMode = GenerationMode.SEQUENTIAL;
+			break;
 		default:
 			System.out.println("Error.");
 		}
@@ -198,6 +211,5 @@ public class EncoderSettings {
 	public void setLibPath(String libPath) {
 		this.libPath = libPath;
 	}
-
 
 }
