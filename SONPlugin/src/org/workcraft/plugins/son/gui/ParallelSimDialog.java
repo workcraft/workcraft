@@ -36,7 +36,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class ParallelSimDialog  extends JDialog{
 
@@ -46,17 +46,17 @@ public class ParallelSimDialog  extends JDialog{
 	protected SimulationAlg alg;
 
 	boolean reverse = false;
-	private List<EventNode> possibleEvents, minimalEvents;
-	private EventNode clickedEvent;
+	private List<TransitionNode> possibleEvents, minimalEvents;
+	private TransitionNode clickedEvent;
 
 	private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
 	private JButton runButton, cancelButton;
 	protected JScrollPane infoPanel;
 	private JList eventList;
 
-	private HashSet<EventNode> selectedEvents = new HashSet<EventNode>();
+	private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
 	private Collection<ArrayList<Node>> sync;
-	private Collection<EventNode> enabledEvents;
+	private Collection<TransitionNode> enabledEvents;
 
 	private int run = 0;
 	private Window owner;
@@ -65,9 +65,9 @@ public class ParallelSimDialog  extends JDialog{
 	{
 		private String label;
 		private boolean isSelected = false;
-		private EventNode event;
+		private TransitionNode event;
 
-		public EventItem(String label, EventNode event, List<EventNode> postEvents){
+		public EventItem(String label, TransitionNode event, List<TransitionNode> postEvents){
 			this.label = label;
 			this.event = event;
 		}
@@ -84,7 +84,7 @@ public class ParallelSimDialog  extends JDialog{
 			return label;
 		}
 
-		public EventNode getEvent(){
+		public TransitionNode getEvent(){
 			return event;
 		}
 
@@ -124,7 +124,7 @@ public class ParallelSimDialog  extends JDialog{
 
 		DefaultListModel listModel = new DefaultListModel();
 
-		for(EventNode event : this.possibleEvents){
+		for(TransitionNode event : this.possibleEvents){
 			EventItem item = new EventItem(net.getName(event)+"  "+event.getLabel(), event, possibleEvents);
 			listModel.addElement(item);
 		}
@@ -154,13 +154,13 @@ public class ParallelSimDialog  extends JDialog{
 						if(item instanceof EventItem){
 							if(item.isSelected() ){
 								selectedEvents.add(item.getEvent());
-								List<EventNode> set;
+								List<TransitionNode> set;
 								if(!reverse)
 									set = alg.getMinimalExeResult(item.getEvent(), sync, enabledEvents);
 								else
 									set = alg.getMinimalReverseExeResult(item.getEvent(), sync, enabledEvents);
 
-									for(EventNode e : set){
+									for(TransitionNode e : set){
 										for(EventItem eventItem : itemList){
 											if(e==eventItem.getEvent()){
 												selectedEvents.add(e);
@@ -176,7 +176,7 @@ public class ParallelSimDialog  extends JDialog{
 							if(!item.isSelected() ){
 								selectedEvents.remove(item.getEvent());
 								if(!reverse){
-									for(EventNode e : alg.getPostExeResult(item.getEvent(), sync, enabledEvents)){
+									for(TransitionNode e : alg.getPostExeResult(item.getEvent(), sync, enabledEvents)){
 										for(EventItem eventItem : itemList){
 											if(e==eventItem.getEvent()){
 												selectedEvents.remove(e);
@@ -186,7 +186,7 @@ public class ParallelSimDialog  extends JDialog{
 										}
 									}
 								}else{
-									for(EventNode e : alg.getPreExeResult(item.getEvent(), sync, enabledEvents)){
+									for(TransitionNode e : alg.getPreExeResult(item.getEvent(), sync, enabledEvents)){
 										for(EventItem eventItem : itemList){
 											if(e==eventItem.getEvent()){
 												selectedEvents.remove(e);
@@ -284,7 +284,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	public  ParallelSimDialog (Window owner, SONModel net, List<EventNode> possibleEvents, List<EventNode> minimalEvents, EventNode event, Collection<ArrayList<Node>> sync, Collection<EventNode> enabledEvents, boolean reverse){
+	public  ParallelSimDialog (Window owner, SONModel net, List<TransitionNode> possibleEvents, List<TransitionNode> minimalEvents, TransitionNode event, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents, boolean reverse){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		alg = new SimulationAlg(net);
@@ -335,9 +335,9 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	private void setEventsColor(List<EventNode> preEvents, EventNode event){
+	private void setEventsColor(List<TransitionNode> preEvents, TransitionNode event){
 		event.setForegroundColor(Color.BLUE);
-		for(EventNode e : preEvents)
+		for(TransitionNode e : preEvents)
 			e.setForegroundColor(Color.BLUE);
 	}
 
@@ -345,7 +345,7 @@ public class ParallelSimDialog  extends JDialog{
 		return this.net;
 	}
 
-	public HashSet<EventNode> getSelectedEvent(){
+	public HashSet<TransitionNode> getSelectedEvent(){
 		return this.selectedEvents;
 	}
 

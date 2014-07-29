@@ -32,12 +32,13 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/icons/svg/place_empty.svg")
-public class VisualCondition extends VisualComponent{
+public class VisualCondition extends VisualComponent implements VisualPlaceNode{
 
 	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
 	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
+	private String value = "";
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
@@ -49,7 +50,7 @@ public class VisualCondition extends VisualComponent{
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-				this, "Token", Boolean.class) {
+				this, "marked", Boolean.class) {
 			public void setter(VisualCondition object, Boolean value) {
 				((Condition)getReferencedComponent()).setMarked(value);
 			}
@@ -75,6 +76,15 @@ public class VisualCondition extends VisualComponent{
 			}
 			protected Color getter(VisualCondition object) {
 				return object.getErrLabelColor();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, String>(
+				this, "interface", String.class) {
+			protected void setter(VisualCondition object, String value) {
+			}
+			protected String getter(VisualCondition object) {
+				return object.getInterface();
 			}
 		});
 	}
@@ -176,11 +186,11 @@ public class VisualCondition extends VisualComponent{
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
 	}
 
-	public boolean hasToken() {
+	public boolean isMarked() {
 		return ((Condition)getReferencedComponent()).isMarked();
 	}
 
-	public void setToken(boolean b) {
+	public void setMarked(boolean b) {
 		((Condition)getReferencedComponent()).setMarked(b);
 	}
 
@@ -226,6 +236,15 @@ public class VisualCondition extends VisualComponent{
 		return ((Condition)getReferencedComponent()).getLabel();
 	}
 
+	public void setInterface(String value){
+		this.value = value;
+		sendNotification(new PropertyChangedEvent(this, "interface"));
+	}
+
+	public String getInterface(){
+		return value;
+	}
+
 	public Positioning getErrLabelPositioning() {
 		return errLabelPositioning;
 	}
@@ -242,4 +261,17 @@ public class VisualCondition extends VisualComponent{
 	public void setErrLabelColor(Color errLabelColor){
 		this.errLabelColor = errLabelColor;
 	}
+
+	@Override
+	public PlaceNode getMathPlaceNode() {
+		return (PlaceNode) this.getReferencedComponent();
+	}
+
+/*	public void setInterfaceGraphic(ConnectionGraphic graphic){
+		this.graphic = graphic;
+	}
+
+	public ConnectionGraphic getInterfaceGraphic(){
+		return graphic;
+	}*/
 }

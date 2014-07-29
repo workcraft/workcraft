@@ -6,7 +6,7 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.Block;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class TSONAlg extends RelationAlgorithm{
 
@@ -109,8 +109,8 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> components = block.getComponents();
 
 		for(Node node:components){
-			if(node instanceof EventNode)
-				for(Node pre : this.getPreASynEvents((EventNode)node)){
+			if(node instanceof TransitionNode)
+				for(Node pre : this.getPreASynEvents((TransitionNode)node)){
 					if(!components.contains(pre) && pre!=null)
 						result.add(pre);
 				}
@@ -126,8 +126,8 @@ public class TSONAlg extends RelationAlgorithm{
 		Collection<Node> components = block.getComponents();
 
 		for(Node node:components){
-			if(node instanceof EventNode)
-				for(Node post : this.getPostASynEvents((EventNode)node)){
+			if(node instanceof TransitionNode)
+				for(Node post : this.getPostASynEvents((TransitionNode)node)){
 					if(!components.contains(post) && post!=null)
 						result.add(post);
 				}

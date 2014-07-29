@@ -37,6 +37,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.util.GUI;
 
 public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
@@ -181,13 +182,14 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			if (first == null) {
+			//prevent manually connecting from/to visual block. But not in program level (see connectToBlock).
+			if (first == null && !(mouseOverObject instanceof VisualBlock)) {
 				if (mouseOverObject != null) {
 					first = mouseOverObject;
 					leftFirst = false;
 					mouseMoved(e);
 				}
-			} else if (mouseOverObject != null) {
+			} else if (mouseOverObject != null && !(mouseOverObject instanceof VisualBlock)) {
 				try {
 					VisualModel vNet = e.getModel();
 					if (vNet instanceof VisualSON)

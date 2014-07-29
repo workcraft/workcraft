@@ -82,43 +82,43 @@ public class VisualSuperGroup extends VisualGroup{
 		return bb;
 	}
 
-//	@Override
-//	public void draw(DrawRequest r)
-//	{
-//
-//		Graphics2D g = r.getGraphics();
-//		Color colorisation = r.getDecoration().getColorisation();
-//
-//		Rectangle2D bb = getContentsBoundingBox();
-//
-//		if (bb != null && getParent() != null)
-//		{
-//			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
-//			g.fill(bb);
-//			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
-//			g.setStroke(new BasicStroke((float)(strokeWidth * 0.5)));
-//			g.draw(bb);
-//
-//			// draw label
-//
-//			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
-//
-//			labelBB = glyphVector.getVisualBounds();
-//
-//			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
-//
-//			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
-//
-//			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
-//
-//		}
-//	}
-//
-//	@Override
-//	public boolean hitTestInLocalSpace(Point2D p)
-//	{
-//		return getContentsBoundingBox().contains(p);
-//	}
+	@Override
+	public void draw(DrawRequest r)
+	{
+
+		Graphics2D g = r.getGraphics();
+		Color colorisation = r.getDecoration().getColorisation();
+
+		Rectangle2D bb = getContentsBoundingBox();
+
+		if (bb != null && getParent() != null)
+		{
+			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+			g.fill(bb);
+			g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
+			g.setStroke(new BasicStroke((float)(strokeWidth * 0.5)));
+			g.draw(bb);
+
+			// draw label
+
+			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
+
+			labelBB = glyphVector.getVisualBounds();
+
+			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
+
+			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
+
+			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
+
+		}
+	}
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D p)
+	{
+		return getContentsBoundingBox().contains(p);
+	}
 
 	public void setLabel(String label)
 	{

@@ -9,7 +9,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class BSONAlg extends RelationAlgorithm{
 
@@ -175,7 +175,7 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition[]> before(EventNode e){
+	public Collection<Condition[]> before(TransitionNode e){
 		Collection<Condition[]> result = new ArrayList<Condition[]>();
 		Condition[] pre = new Condition[1];
 		Condition[] post = new Condition[1];
@@ -240,11 +240,11 @@ public class BSONAlg extends RelationAlgorithm{
 			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
 
 			for(Node n : preMaxI){
-				if(n instanceof EventNode)
-				PREpreMaxI.addAll(this.getPREset((EventNode)n));}
+				if(n instanceof TransitionNode)
+				PREpreMaxI.addAll(this.getPREset((TransitionNode)n));}
 			for(Node n : postMinI2){
-				if(n instanceof EventNode)
-				POSTpostMinI2.addAll(this.getPOSTset((EventNode)n));}
+				if(n instanceof TransitionNode)
+				POSTpostMinI2.addAll(this.getPOSTset((TransitionNode)n));}
 
 			for(Condition c0 : PREpreMaxI){
 				for(Condition c1 : POSTpostMinI2){

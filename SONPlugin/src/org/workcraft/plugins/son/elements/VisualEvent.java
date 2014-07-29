@@ -25,7 +25,7 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")
 
-public class VisualEvent extends VisualComponent implements VisualEventNode{
+public class VisualEvent extends VisualComponent implements VisualTransitionNode{
 	//private boolean displayName = false;
 
 	public VisualEvent(Event event) {

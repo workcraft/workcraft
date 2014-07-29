@@ -2,38 +2,31 @@ package org.workcraft.plugins.son.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
 
-public class CSONStructureTask implements StructuralVerification{
+public class CSONStructureTask extends AbstractStructuralVerification{
 
 	private SONModel net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private RelationAlgorithm relationAlg;
-	private CSONPathAlg csonPathAlg;
-
-	private Collection<ChannelPlace> cPlaceResult = new ArrayList<ChannelPlace>();
-	private Collection<ChannelPlace> cPlaceConTypeResult =  new ArrayList<ChannelPlace>();
-	private Collection<ArrayList<Node>> cycleResult = new ArrayList<ArrayList<Node>>();
-//	private Collection<List<ChannelPlace>> cPlaceStructureResult;
+	private Collection<Node> relationErrors = new ArrayList<Node>();
+	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
 	public CSONStructureTask(SONModel net){
+		super(net);
 		this.net = net;
-		relationAlg = new RelationAlgorithm(net);
-		csonPathAlg = new CSONPathAlg(net);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -51,7 +44,7 @@ public class CSONStructureTask implements StructuralVerification{
 		logger.info("Group Components = " + components.size());
 
 		ArrayList<ChannelPlace> relatedcPlaces = new ArrayList<ChannelPlace>();
-		relatedcPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
+		relatedcPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
 		components.addAll(relatedcPlaces);
 
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
@@ -63,19 +56,21 @@ public class CSONStructureTask implements StructuralVerification{
 
 		//channel place relation
 		logger.info("Running model structure and components relation check...");
-		cPlaceResult.addAll(cPlaceRelationTask(relatedcPlaces));
-		cPlaceConTypeResult.addAll(cPlaceConTypeTask(relatedcPlaces));
+		Collection<ChannelPlace> task1 = cPlaceRelationTask(relatedcPlaces);
+		Collection<ChannelPlace> task2 = cPlaceConTypeTask(relatedcPlaces);
+		relationErrors.addAll(task1);
+		relationErrors.addAll(task2);
 
-		if(cPlaceResult.isEmpty() && cPlaceConTypeResult.isEmpty())
+		if(relationErrors.isEmpty() && relationErrors.isEmpty())
 			logger.info("Correct channel place relation.");
 		else{
 			hasErr = true;
-			errNumber = errNumber + cPlaceResult.size() + cPlaceConTypeResult.size();
-			for(ChannelPlace cPlace : cPlaceResult)
+			errNumber = errNumber + relationErrors.size();
+			for(Node cPlace : task1)
 				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
 						"input/output size > 1");
 
-			for(ChannelPlace cPlace : cPlaceConTypeResult)
+			for(Node cPlace : task2)
 				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
 						"different input and output connection types");
 		}
@@ -101,14 +96,14 @@ public class CSONStructureTask implements StructuralVerification{
 
 		//global cycle detection
 		logger.info("Running cycle detection...");
-		cycleResult.addAll(csonPathAlg.cycleTask(components));
+		cycleErrors.addAll(getCSONPathAlg().cycleTask(components));
 
-		if (cycleResult.isEmpty() )
+		if (cycleErrors.isEmpty() )
 			logger.info("Acyclic structure correct");
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : global cycles = "+ cycleResult.size() + ".");
+			logger.error("ERROR : global cycles = "+ cycleErrors.size() + ".");
 		}
 
 		logger.info("Cycle detection complete.\n");
@@ -212,34 +207,32 @@ public class CSONStructureTask implements StructuralVerification{
 		return result;
 	}*/
 
-	public void errNodesHighlight(){
-
-		for(ChannelPlace cPlace : cPlaceResult){
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
-		}
-
-		for(ChannelPlace cPlace : cPlaceConTypeResult){
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());
-		}
-
-/*		for(List<ChannelPlace> list : cPlaceStructureResult)
-			for(ChannelPlace cPlace : list)
-			this.net.setFillColor(cPlace, SONSettings.getRelationErrColor());*/
-
-
-		for (ArrayList<Node> list : this.cycleResult)
-			for (Node node : list)
-				this.net.setForegroundColor(node, SONSettings.getCyclePathColor());
+	@Override
+	public Collection<String> getRelationErrors() {
+		return getRelationErrorsSetReferences(relationErrors);
 	}
 
+	@Override
+	public Collection<ArrayList<String>> getCycleErrors() {
+		return getcycleErrorsSetReferences(cycleErrors);
+	}
+
+	@Override
+	public Collection<String> getGroupErrors() {
+		return getGroupErrorsSetReferences(groupErrors);
+	}
+
+	@Override
 	public boolean hasErr(){
 		return this.hasErr;
 	}
 
+	@Override
 	public int getErrNumber(){
 		return this.errNumber;
 	}
 
+	@Override
 	public int getWarningNumber(){
 		return this.warningNumber;
 	}

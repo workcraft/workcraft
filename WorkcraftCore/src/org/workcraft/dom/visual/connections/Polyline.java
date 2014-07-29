@@ -49,12 +49,12 @@ import org.workcraft.util.Hierarchy;
 public class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
 StateObserver, HierarchyObserver, SelectionObserver {
 	private ArbitraryInsertionGroupImpl groupImpl;
-	private VisualConnectionProperties connectionInfo;
-	private PartialCurveInfo curveInfo;
+	protected VisualConnectionProperties connectionInfo;
+	protected PartialCurveInfo curveInfo;
 
-	private Rectangle2D boundingBox = null;
+	protected Rectangle2D boundingBox = null;
 
-	private boolean valid = false;
+	protected boolean valid = false;
 	private ControlPointScaler scaler = null;
 
 	public Polyline(VisualConnection parent) {
@@ -124,7 +124,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		valid = true;
 	}
 
-	private int getSegmentIndex(double t) {
+	protected int getSegmentIndex(double t) {
 		int segments = getSegmentCount();
 		double l = 1.0 / segments;
 		double t_l = t/l;
@@ -181,7 +181,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return nearest;
 	}
 
-	private int getSegmentCount() {
+	protected int getSegmentCount() {
 		return groupImpl.getChildren().size() + 1;
 	}
 
@@ -193,7 +193,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return ((ControlPoint) groupImpl.getChildren().get(index-1)).getPosition();
 	}
 
-	private Line2D getSegment(int index) {
+	protected Line2D getSegment(int index) {
 		int segments = getSegmentCount();
 
 		if (index > segments-1)
