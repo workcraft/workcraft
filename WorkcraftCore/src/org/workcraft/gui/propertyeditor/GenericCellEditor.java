@@ -22,6 +22,8 @@
 package org.workcraft.gui.propertyeditor;
 
 import java.awt.Component;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
@@ -35,17 +37,20 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 	public GenericCellEditor() {
 		textField = new JTextField();
 		textField.setFocusable(true);
+		textField.addFocusListener(new FocusAdapter() {
+			@Override
+		    public void focusLost(FocusEvent e) {
+				stopCellEditing();
+			}
+		});
 	}
 
 	public Object getCellEditorValue() {
 		return textField.getText();
 	}
 
-	public Component getTableCellEditorComponent(JTable table,
-			Object value,
-			boolean isSelected,
-			int row,
-			int column) {
+	public Component getTableCellEditorComponent(JTable table, Object value,
+			boolean isSelected,	int row, int column) {
 		textField.setText(value.toString());
 		return textField;
 	}
