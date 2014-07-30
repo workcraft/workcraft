@@ -155,7 +155,6 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public String getNodeReference(Node node) {
-
 		return getNodeReference(null, node);
 	}
 
@@ -166,7 +165,6 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-
 		return referenceManager.getNodeReference(provider, node);
 	}
 

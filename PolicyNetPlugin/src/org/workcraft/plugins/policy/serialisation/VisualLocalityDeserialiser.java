@@ -22,14 +22,18 @@ public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 			ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
 	{
 		VisualLocality visualLocality = (VisualLocality)instance;
-		visualLocality.setLocality((Locality)externalReferenceResolver.getObject(element.getAttribute("ref")));
+		String ref = element.getAttribute("ref");
+		Locality locality = (Locality)externalReferenceResolver.getObject(ref);
+		visualLocality.setLocality(locality);
 	}
 
 	@Override
 	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
 			Object... constructorParameters)
 	{
-		return new VisualLocality((Locality)externalReferenceResolver.getObject(element.getAttribute("ref")));
+		String ref = element.getAttribute("ref");
+		Locality locality = (Locality)externalReferenceResolver.getObject(ref);
+		return new VisualLocality(locality);
 	}
 
 	@Override
