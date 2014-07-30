@@ -264,6 +264,7 @@ public class MainWindow extends JFrame {
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
 				modelEntry.setModel(visualModel);
 				RandomLayoutTool layout = new RandomLayoutTool();
+//				DotLayoutTool layout = new DotLayoutTool(framework);
 				layout.run(we);
 				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
@@ -323,7 +324,7 @@ public class MainWindow extends JFrame {
 		editorWindow.setTabEventsEnabled(true);
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
-		enableWorkActions();
+		setWorkActionsEnableness(true);
 		return editor;
 	}
 
@@ -464,25 +465,27 @@ public class MainWindow extends JFrame {
 			}
 		}).start();
 
-		disableWorkActions();
+		setWorkActionsEnableness(false);
 	}
 
-	private void disableWorkActions() {
-		MainWindowActions.MERGE_WORK_ACTION.setEnabled(false);
-		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(false);
-		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(false);
-		MainWindowActions.SAVE_WORK_ACTION.setEnabled(false);
-		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(false);
-		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(false);
-		MainWindowActions.EDIT_REDO_ACTION.setEnabled(false);
-	}
-
-	private void enableWorkActions() {
-		MainWindowActions.MERGE_WORK_ACTION.setEnabled(true);
-		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(true);
-		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(true);
-		MainWindowActions.SAVE_WORK_ACTION.setEnabled(true);
-		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(true);
+	private void setWorkActionsEnableness(boolean enable) {
+		getMainMenu().getExportMenu().setEnabled(enable);
+		MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
+		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
+		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(enable);
+		MainWindowActions.SAVE_WORK_ACTION.setEnabled(enable);
+		MainWindowActions.SAVE_WORK_AS_ACTION.setEnabled(enable);
+		MainWindowActions.EDIT_DELETE_ACTION.setEnabled(enable);
+		MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(enable);
+		MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(enable);
+		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(enable);
+		if (!enable) {
+			MainWindowActions.EDIT_UNDO_ACTION.setEnabled(false);
+			MainWindowActions.EDIT_REDO_ACTION.setEnabled(false);
+			MainWindowActions.EDIT_CUT_ACTION.setEnabled(false);
+			MainWindowActions.EDIT_COPY_ACTION.setEnabled(false);
+			MainWindowActions.EDIT_PASTE_ACTION.setEnabled(false);
+		}
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
@@ -560,7 +563,7 @@ public class MainWindow extends JFrame {
 				propertyEditorWindow.removeAll();
 				toolboxWindow.removeAll();
 				toolInterfaceWindow.removeAll();
-				disableWorkActions();
+				setWorkActionsEnableness(false);
 			}
 
 			DockingManager.close(dockableWindow);
