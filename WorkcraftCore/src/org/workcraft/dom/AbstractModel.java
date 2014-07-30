@@ -33,7 +33,7 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.util.Func;
 
@@ -171,8 +171,9 @@ public abstract class AbstractModel implements Model {
 	@Override
 	public Properties getProperties(Node node) {
 		if (node != null) {
-			if (node instanceof PageNode)
-				return Properties.Mix.from(new DefaultNamePropertyDescriptor(this, node));
+			if (node instanceof PageNode) {
+				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+			}
 		}
 		return null;
 	}
@@ -190,9 +191,9 @@ public abstract class AbstractModel implements Model {
 	}
 
 	public void setName(Node node, String name) {
-
-		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
+		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager) {
 			((HierarchicalUniqueNameReferenceManager)referenceManager).setName(node, name);
+		}
 	}
 
 	public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {

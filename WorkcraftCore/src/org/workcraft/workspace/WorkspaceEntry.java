@@ -183,6 +183,11 @@ public class WorkspaceEntry implements ObservableState {
 		observableState.removeObserver(obs);
 	}
 
+	@Override
+	public void sendNotification (StateEvent e) {
+		observableState.sendNotification(e);
+	}
+
 	public void updateActionState() {
 		MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());

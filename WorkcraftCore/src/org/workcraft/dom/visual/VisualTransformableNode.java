@@ -26,6 +26,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
@@ -41,20 +42,46 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "X", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
+				Node node = object;
+				while ((node != null) && (node instanceof VisualTransformableNode)) {
+					VisualTransformableNode container = (VisualTransformableNode)node;
+					value -= container.getX();
+					node = container.getParent();
+				}
 				object.setX(value);
 			}
 			public Double getter(VisualTransformableNode object) {
-				return object.getX();
+				double result = 0.0;
+				Node node = object;
+				while ((node != null) && (node instanceof VisualTransformableNode)) {
+					VisualTransformableNode container = (VisualTransformableNode)node;
+					result += container.getX();
+					node = container.getParent();
+				}
+				return result;
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "Y", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
+				Node node = object;
+				while ((node != null) && (node instanceof VisualTransformableNode)) {
+					VisualTransformableNode container = (VisualTransformableNode)node;
+					value -= container.getY();
+					node = container.getParent();
+				}
 				object.setY(value);
 			}
 			public Double getter(VisualTransformableNode object) {
-				return object.getY();
+				double result = 0.0;
+				Node node = object;
+				while ((node != null) && (node instanceof VisualTransformableNode)) {
+					VisualTransformableNode container = (VisualTransformableNode)node;
+					result += container.getY();
+					node = container.getParent();
+				}
+				return result;
 			}
 		});
 	}

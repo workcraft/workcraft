@@ -330,13 +330,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				node = node.getParent();
 			}
 
-
 			for (Node n: newCurrentLevel.getChildren()) {
 				if (!(n instanceof Collapsible)) continue;
 				((Collapsible)n).setIsCurrentLevelInside(false);
 			}
 		}
-
 	}
 
 
@@ -407,20 +405,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				group.setPosition(groupCenter);
 				select(group);
 			}
-
 		}
 	}
 
 	@Override
 	public void groupPageSelection() {
-
 		Collection<Node> selection = getOrderedCurrentLevelSelection();
-
 		ArrayList<Node> selected = new ArrayList<Node>();
-
-
 		Collection<Node> recursiveSelection = new HashSet<Node>();
-
 		for (Node node : selection) {
 			if (!(node instanceof VisualNode)) continue;
 			recursiveSelection.add(node);
@@ -435,33 +427,24 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				VisualConnection con = (VisualConnection)node;
 				if (!recursiveSelection.contains(con.getFirst())) continue;
 				if (!recursiveSelection.contains(con.getSecond())) continue;
-
 			}
-
 			selected.add(node);
 		}
 
 		if (selected.size() >= 1) {
-
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
 
-
 			Container currentMathLevel;
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
-
+			}
 			currentMathLevel.add(pageNode);
 			getCurrentLevel().add(page);
-
-
-
 			this.reparent(page, this, getCurrentLevel(), selected);
-
-
 
 			// final touch on visual part
 			if (page != null) {
@@ -469,7 +452,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				page.setPosition(groupCenter);
 				select(page);
 			}
-
 		}
 	}
 
@@ -482,31 +464,23 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 		for(Node node : getOrderedCurrentLevelSelection()) {
-
 			if(node instanceof VisualGroup) {
-
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
 				}
 				currentLevel.remove(group);
 			} else if(node instanceof VisualPage) {
-
 				VisualPage page = (VisualPage)node;
-
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
 				toSelect.addAll(nodesToReparent);
-
 				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
-
 				AffineTransform localToParentTransform = page.getLocalToParentTransform();
-
-				for (Node n : nodesToReparent)
+				for (Node n : nodesToReparent) {
 					TransformHelper.applyTransform(n, localToParentTransform);
-
+				}
 				getMathModel().remove(page.getReferencedComponent());
 				getCurrentLevel().remove(page);
-
 			} else {
 				toSelect.add(node);
 			}

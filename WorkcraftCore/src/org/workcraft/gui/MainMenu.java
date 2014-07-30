@@ -454,7 +454,12 @@ public class MainMenu extends JMenuBar {
 		mnTools.removeAll();
 	}
 
+	public JMenu getExportMenu() {
+		return mnExport;
+	}
+
 	public JMenu getToolsMenu() {
 		return mnTools;
 	}
+
 }

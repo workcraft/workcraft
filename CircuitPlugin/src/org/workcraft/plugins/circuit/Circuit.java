@@ -33,7 +33,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
@@ -104,9 +104,9 @@ public class Circuit extends AbstractMathModel {
 	public Properties getProperties(Node node) {
 		if (node != null) {
 			if (node instanceof CircuitComponent)
-				return Properties.Mix.from(new DefaultNamePropertyDescriptor(this, node));
+				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
 			if (node instanceof Contact)
-				return Properties.Mix.from(new DefaultNamePropertyDescriptor(this, node));
+				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
 		}
 		return super.getProperties(node);
 	}

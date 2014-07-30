@@ -46,7 +46,6 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	public PropertyEditorTable(Framework framework) {
 		super();
 
-
 		model = new PropertyEditorTableModel();
 		setModel(model);
 
@@ -143,4 +142,5 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
             }
         }
     }
+
 }
