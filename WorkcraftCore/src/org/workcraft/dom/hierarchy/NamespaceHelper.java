@@ -17,6 +17,7 @@ import org.workcraft.util.Identifier;
 public class NamespaceHelper {
 	final static String quoteType = "'";
 	final public static String hierarchySeparator = "/";
+	final public static String hierarchyRoot = hierarchySeparator;
 	final public static String flatNameSeparator = "__";
 
 	// TODO: make it work with the embedded ' characters
