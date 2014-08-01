@@ -44,7 +44,12 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -78,8 +83,6 @@ public class SelectionTool extends AbstractTool {
 	static private final Color grayOutColor = Color.LIGHT_GRAY;
 	// node for the MouseOver events
 	private VisualNode mouseOverNode = null;
-
-
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -166,9 +169,6 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 
-
-
-
 		groupPanel.add(ungroupButton);
 
 		JPanel levelPanel = new JPanel(new FlowLayout());
@@ -234,7 +234,6 @@ public class SelectionTool extends AbstractTool {
 		});
 		rotatePanel.add(rotateCounterclockwiseButton);
 	}
-
 
 	private void resetState(GraphEditor editor) {
 		mouseOverNode = null;
@@ -585,29 +584,45 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
-		final JTextField text = new JTextField(initialText);
+		// Create a text pane without wrapping
+		final JTextPane textPane = new JTextPane() {
+			@Override
+			public boolean getScrollableTracksViewportWidth() {
+				return getUI().getPreferredSize(this).width	<= getParent().getSize().width;
+			}
+		};
+		textPane.setText(initialText.replace("|", "\n"));
+
+		// Align the text to centre
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		StyledDocument document = textPane.getStyledDocument();
+		document.setParagraphAttributes(0, document.getLength(), center, false);
+
+		// Set font size similar to the current editor scale
+		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+		textPane.setFont(VisualComponent.labelFont.deriveFont(fontSize));
+
+		// Add scroll vertical bar (is necessary)
+		final JScrollPane scrollPane = new JScrollPane(textPane);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		// Set the size of the scrollable text editor panel
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
 		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
-		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 0.3));
-		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
-		text.setFont(VisualComponent.labelFont.deriveFont(fontSize));
-		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-		text.setHorizontalAlignment(JTextField.CENTER);
-		text.selectAll();
-		editor.getOverlay().add(text);
-		text.requestFocusInWindow();
+		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 2.0));
+		scrollPane.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
 
-		text.addKeyListener( new KeyListener() {
+		// Show the text editor panel
+		editor.getOverlay().add(scrollPane);
+		textPane.requestFocusInWindow();
+
+		textPane.addKeyListener( new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					cancelInPlaceEdit = false;
-					text.getParent().remove(text);
-					editor.requestFocus();
-				}
-				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cancelInPlaceEdit = true;
-					text.getParent().remove(text);
 					editor.requestFocus();
 				}
 			}
@@ -621,26 +636,24 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 
-		text.addFocusListener(new FocusListener() {
+		textPane.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				editor.getWorkspaceEntry().setCanModify(false);
+				cancelInPlaceEdit = false;
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if (text.getParent() != null)
-					text.getParent().remove(text);
-				final String newName = text.getText();
+				final String newText = textPane.getText().replace("\n", "|");
+				scrollPane.getParent().remove(scrollPane);
 				if (!cancelInPlaceEdit) {
-					editor.getWorkspaceEntry().captureMemento();
 					try {
-						component.setLabel(newName);
+						component.setLabel(newText);
 						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
-						editLabelInPlace(editor, component, newName);
-						editor.getWorkspaceEntry().cancelMemento();
+						editLabelInPlace(editor, component, newText);
 					}
 				}
 				editor.getWorkspaceEntry().setCanModify(true);
@@ -648,6 +661,71 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 	}
+
+//	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
+//		final JTextField text = new JTextField(initialText);
+//		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
+//		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
+//		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 0.3));
+//		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+//		text.setFont(VisualComponent.labelFont.deriveFont(fontSize));
+//		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+//		text.setHorizontalAlignment(JTextField.CENTER);
+//		text.selectAll();
+//		editor.getOverlay().add(text);
+//		text.requestFocusInWindow();
+//
+//		text.addKeyListener( new KeyListener() {
+//			@Override
+//			public void keyPressed(KeyEvent arg0) {
+//				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+//					cancelInPlaceEdit = false;
+//					text.getParent().remove(text);
+//					editor.requestFocus();
+//				}
+//				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+//					cancelInPlaceEdit = true;
+//					text.getParent().remove(text);
+//					editor.requestFocus();
+//				}
+//			}
+//
+//			@Override
+//			public void keyReleased(KeyEvent arg0) {
+//			}
+//
+//			@Override
+//			public void keyTyped(KeyEvent arg0) {
+//			}
+//		});
+//
+//		text.addFocusListener(new FocusListener() {
+//			@Override
+//			public void focusGained(FocusEvent arg0) {
+//				editor.getWorkspaceEntry().setCanModify(false);
+//			}
+//
+//			@Override
+//			public void focusLost(FocusEvent arg0) {
+//				if (text.getParent() != null)
+//					text.getParent().remove(text);
+//				final String newName = text.getText();
+//				if (!cancelInPlaceEdit) {
+//					editor.getWorkspaceEntry().captureMemento();
+//					try {
+//						component.setLabel(newName);
+//						editor.getWorkspaceEntry().saveMemento();
+//					} catch (ArgumentException e) {
+//						JOptionPane.showMessageDialog(null, e.getMessage());
+//						editLabelInPlace(editor, component, newName);
+//						editor.getWorkspaceEntry().cancelMemento();
+//					}
+//				}
+//				editor.getWorkspaceEntry().setCanModify(true);
+//				editor.repaint();
+//			}
+//		});
+//	}
 
 	protected void changeLevelDown(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
