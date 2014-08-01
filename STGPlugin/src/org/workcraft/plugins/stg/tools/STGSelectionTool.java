@@ -66,7 +66,6 @@ public class STGSelectionTool extends SelectionTool
 	}
 
 	private void editNameInPlace (final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
-		final STG model = (STG)editor.getModel().getMathModel();
 		final JTextField text = new JTextField(initialText);
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
 		Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
@@ -83,13 +82,10 @@ public class STGSelectionTool extends SelectionTool
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					cancelInPlaceEdit = false;
-					text.getParent().remove(text);
 					editor.requestFocus();
 				}
 				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cancelInPlaceEdit = true;
-					text.getParent().remove(text);
 					editor.requestFocus();
 				}
 			}
@@ -103,27 +99,25 @@ public class STGSelectionTool extends SelectionTool
 			}
 		});
 
+		final STG model = (STG)editor.getModel().getMathModel();
 		text.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				editor.getWorkspaceEntry().setCanModify(false);
+				cancelInPlaceEdit = false;
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if (text.getParent() != null) {
-					text.getParent().remove(text);
-				}
 				final String newName = text.getText();
+				text.getParent().remove(text);
 				if (!cancelInPlaceEdit) {
-					editor.getWorkspaceEntry().captureMemento();
 					try {
 						model.setName(transition.getReferencedComponent(), newName, true);
 						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
 						editNameInPlace(editor, transition, newName);
-						editor.getWorkspaceEntry().cancelMemento();
 					}
 				}
 				editor.getWorkspaceEntry().setCanModify(true);

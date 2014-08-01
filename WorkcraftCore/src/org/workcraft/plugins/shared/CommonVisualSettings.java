@@ -38,6 +38,7 @@ public class CommonVisualSettings implements SettingsPage {
 	private static final String keyStrokeWidth  = prefix + ".strokeWidth";
 	private static final String keyBorderColor = prefix + ".borderColor";
 	private static final String keyFillColor  = prefix + ".fillColor";
+	private static final String keyLineSpacing  = prefix + ".lineSpacing";
 	private static final String keyLabelVisibility  = prefix + ".labelVisibility";
 	private static final String keyLabelPositioning  = prefix + ".labelPositioning";
 	private static final String keyLabelColor  = prefix + ".labelColor";
@@ -50,6 +51,7 @@ public class CommonVisualSettings implements SettingsPage {
 	private static final double defaultStrokeWidth = 0.1;
 	private static final Color defaultBorderColor = Color.BLACK;
 	private static final Color defaultFillColor = Color.WHITE;
+	private static final double defaultLineSpacing = 0.3;
 	private static final boolean defaultLabelVisibility = true;
 	private static final Positioning defaultLabelPositioning = Positioning.TOP;
 	private static final Color defaultLabelColor = Color.BLACK;
@@ -62,6 +64,7 @@ public class CommonVisualSettings implements SettingsPage {
 	private static double strokeWidth = defaultStrokeWidth;
 	private static Color borderColor = defaultBorderColor;
 	private static Color fillColor = defaultFillColor;
+	private static double lineSpacing = defaultLineSpacing;
 	private static boolean labelVisibility = defaultLabelVisibility;
 	private static Positioning labelPositioning = defaultLabelPositioning;
 	private static Color labelColor = defaultLabelColor;
@@ -108,6 +111,16 @@ public class CommonVisualSettings implements SettingsPage {
 			}
 			protected Color getter(CommonVisualSettings object) {
 				return CommonVisualSettings.getFillColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+				this, "Line spacing in multi-line text (ratio)", Double.class) {
+			protected void setter(CommonVisualSettings object, Double value) {
+				CommonVisualSettings.setLineSpacing(value);
+			}
+			protected Double getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getLineSpacing();
 			}
 		});
 
@@ -193,6 +206,7 @@ public class CommonVisualSettings implements SettingsPage {
 		setStrokeWidth(config.getDouble(keyStrokeWidth, defaultStrokeWidth));
 		setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
 		setFillColor(config.getColor(keyFillColor, defaultFillColor));
+		setLineSpacing(config.getDouble(keyLineSpacing, defaultLineSpacing));
 		setLabelVisibility(config.getBoolean(keyLabelVisibility, defaultLabelVisibility));
 		setLabelPositioning(config.getTextPositioning(keyLabelPositioning, defaultLabelPositioning));
 		setLabelColor(config.getColor(keyLabelColor, defaultLabelColor));
@@ -208,9 +222,10 @@ public class CommonVisualSettings implements SettingsPage {
 		config.setDouble(keyStrokeWidth, getStrokeWidth());
 		config.setColor(keyBorderColor, getBorderColor());
 		config.setColor(keyFillColor, getFillColor());
+		config.setDouble(keyLineSpacing, getLineSpacing());
 		config.setBoolean(keyLabelVisibility, getLabelVisibility());
-		config.setColor(keyLabelColor, getLabelColor());
 		config.setTextPositioning(keyLabelPositioning, getLabelPositioning());
+		config.setColor(keyLabelColor, getLabelColor());
 		config.setBoolean(keyNameVisibility, getNameVisibility());
 		config.setColor(keyNameColor, getNameColor());
 		config.setTextPositioning(keyNamePositioning, getNamePositioning());
@@ -257,6 +272,14 @@ public class CommonVisualSettings implements SettingsPage {
 
 	public static void setFillColor(Color value) {
 		fillColor = value;
+	}
+
+	public static double getLineSpacing() {
+		return lineSpacing;
+	}
+
+	public static void setLineSpacing(double value) {
+		lineSpacing = value;
 	}
 
 	public static Boolean getLabelVisibility() {
