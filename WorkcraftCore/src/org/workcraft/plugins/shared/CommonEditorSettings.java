@@ -36,6 +36,7 @@ public class CommonEditorSettings implements SettingsPage {
 	private static final String keyBackgroundColor = prefix + ".backgroundColor";
 	private static final String keyShowGrid = prefix + ".showGrid";
 	private static final String keyShowRulers = prefix + ".showRulers";
+	private static final String keyRecentCount = prefix + ".recentCount";
 	private static final String keyIconSize = prefix + ".iconSize";
 	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
 	private static final String keyDebugClipboard = prefix + ".debugClipboard";
@@ -44,6 +45,7 @@ public class CommonEditorSettings implements SettingsPage {
 	private static final boolean defaultShowGrid = true;
 	private static final boolean defaultShowRulers = true;
 	private static final int defaultIconSize = 24;
+	private static final int defaultRecentCount = 10;
 	private static final boolean defaultShowAbsolutePaths = false;
 	private static final boolean defaultDebugClipboard = false;
 
@@ -51,6 +53,7 @@ public class CommonEditorSettings implements SettingsPage {
 	private static boolean showGrid = defaultShowGrid;
 	private static boolean showRulers = defaultShowRulers;
 	private static int iconSize = defaultIconSize;
+	private static int recentCount = defaultRecentCount;
 	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
 	private static boolean debugClipboard = defaultDebugClipboard;
 
@@ -95,13 +98,13 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 		});
 
-		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Debug clipboard", Boolean.class) {
-			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setDebugClipboard(value);
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
+				this, "Number of recent files (0-99)", Integer.class) {
+			protected void setter(CommonEditorSettings object, Integer value) {
+				CommonEditorSettings.setRecentCount(value);
 			}
-			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getDebugClipboard();
+			protected Integer getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getRecentCount();
 			}
 		});
 
@@ -112,6 +115,16 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 			protected Boolean getter(CommonEditorSettings object) {
 				return CommonEditorSettings.getShowAbsolutePaths();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Debug clipboard", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setDebugClipboard(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getDebugClipboard();
 			}
 		});
 	}
@@ -127,6 +140,7 @@ public class CommonEditorSettings implements SettingsPage {
 		setShowGrid(config.getBoolean(keyShowGrid, defaultShowGrid));
 		setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
 		setIconSize(config.getInt(keyIconSize, defaultIconSize));
+		setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
 		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
 		setDebugClipboard(config.getBoolean(keyDebugClipboard, defaultDebugClipboard));
 	}
@@ -137,6 +151,7 @@ public class CommonEditorSettings implements SettingsPage {
 		config.setBoolean(keyShowGrid, getShowGrid());
 		config.setBoolean(keyShowRulers, getShowRulers());
 		config.setInt(keyIconSize, getIconSize());
+		config.setInt(keyRecentCount, getRecentCount());
 		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
 		config.setBoolean(keyDebugClipboard, getDebugClipboard());
 	}
@@ -187,6 +202,20 @@ public class CommonEditorSettings implements SettingsPage {
 			value = 256;
 		}
 		iconSize = value;
+	}
+
+	public static int getRecentCount() {
+		return recentCount;
+	}
+
+	public static void setRecentCount(int value) {
+		if(value < 0) {
+			value = 0;
+		}
+		if (value > 99) {
+			value = 99;
+		}
+		recentCount = value;
 	}
 
 	public static void setShowAbsolutePaths(boolean value) {

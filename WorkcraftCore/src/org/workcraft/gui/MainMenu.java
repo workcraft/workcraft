@@ -24,6 +24,10 @@ package org.workcraft.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +38,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -104,6 +109,7 @@ public class MainMenu extends JMenuBar {
 
 	private JMenu mnFile, mnEdit, mnView, mnUtility, mnHelp, mnWindows;
 	private JMenu mnExport;
+	private JMenu mnRecent;
 
 	private MainWindow mainWindow;
 	private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
@@ -191,9 +197,13 @@ public class MainMenu extends JMenuBar {
 		mnExport = new JMenu("Export");
 		mnExport.setEnabled(false);
 
+		mnRecent = new JMenu("Open recent");
+
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
+		mnFile.add(mnRecent);
 		mnFile.add(miMergeModel);
+		mnFile.addSeparator();
 		mnFile.add(miSaveWork);
 		mnFile.add(miSaveWorkAs);
 		mnFile.add(miCloseActive);
@@ -374,7 +384,45 @@ public class MainMenu extends JMenuBar {
 
 	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
 		we.updateActionState();
+		setToolsMenu(we);
+		setExportMenu(we);
+	}
 
+	private void setExportMenu(final WorkspaceEntry we) {
+		mnExport.removeAll();
+		mnExport.setEnabled(false);
+
+		VisualModel model = we.getModelEntry().getVisualModel();
+		Framework framework = mainWindow.getFramework();
+		PluginManager pluginManager = framework.getPluginManager();
+		Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getPlugins(Exporter.class);
+
+		boolean haveVisual = false;
+		for (PluginInfo<? extends Exporter> info : plugins) {
+			Exporter exporter = info.getSingleton();
+			if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
+				if (!haveVisual) {
+					addExportSeparator("Visual");
+				}
+				addExporter(exporter);
+				haveVisual = true;
+			}
+		}
+
+		boolean haveNonVisual = false;
+		for (PluginInfo<? extends Exporter> info : plugins) {
+			Exporter exporter = info.getSingleton();
+			if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
+				if (!haveNonVisual) {
+					addExportSeparator("Non-visual");
+				}
+				addExporter(exporter);
+				haveNonVisual = true;
+			}
+		}
+	}
+
+	private void setToolsMenu(final WorkspaceEntry we) {
 		mnTools.setVisible(true);
 		mnTools.removeAll();
 
@@ -389,42 +437,10 @@ public class MainMenu extends JMenuBar {
 				mnTools.add(sectionMenu);
 				target = sectionMenu;
 			}
-
 			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
 				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
 				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
 				target.add(miTool);
-			}
-		}
-
-		mnExport.removeAll();
-		mnExport.setEnabled(false);
-
-		VisualModel model = we.getModelEntry().getVisualModel();
-
-		boolean haveVisual = false;
-
-		for (PluginInfo<? extends Exporter> info : framework.getPluginManager().getPlugins(Exporter.class)) {
-			Exporter exporter = info.getSingleton();
-
-			if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
-				if (!haveVisual)
-					addExportSeparator("Visual");
-				addExporter(exporter);
-				haveVisual = true;
-			}
-		}
-
-		boolean haveNonVisual = false;
-
-		for (PluginInfo<? extends Exporter> info : framework.getPluginManager().getPlugins(Exporter.class)) {
-			Exporter exporter = info.getSingleton();
-
-			if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
-				if (!haveNonVisual)
-					addExportSeparator("Non-visual");
-				addExporter(exporter);
-				haveNonVisual = true;
 			}
 		}
 	}
@@ -435,6 +451,42 @@ public class MainMenu extends JMenuBar {
 		miWindowItem.setSelected(!window.isClosed());
 		windowItems.put (window.getID(), miWindowItem);
 		mnWindows.add(miWindowItem);
+	}
+
+	final public void setRecentMenu(ArrayList<String> entries) {
+		mnRecent.removeAll();
+		mnRecent.setEnabled(false);
+		int index = 0;
+		Collections.reverse(entries);
+		for (final String entry: entries) {
+			if (entry != null) {
+				JMenuItem miFile = new JMenuItem();
+				if (index > 9) {
+					miFile.setText(entry);
+				} else {
+					miFile.setText(index + ". " + entry);
+					miFile.setMnemonic(index + '0');
+					index++;
+				}
+				miFile.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mainWindow.openWork(new File(entry));
+					}
+				});
+				mnRecent.add(miFile);
+				mnRecent.setEnabled(true);
+			}
+		}
+		mnRecent.addSeparator();
+		JMenuItem miClear = new JMenuItem("Clear the list");
+		miClear.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mainWindow.clearRecentFiles();
+			}
+		});
+		mnRecent.add(miClear);
 	}
 
 	final public void utilityWindowClosed (int ID) {
@@ -452,6 +504,10 @@ public class MainMenu extends JMenuBar {
 	public void reset() {
 		mnTools.setVisible(false);
 		mnTools.removeAll();
+	}
+
+	public JMenu getRecentMenu() {
+		return mnRecent;
 	}
 
 	public JMenu getExportMenu() {

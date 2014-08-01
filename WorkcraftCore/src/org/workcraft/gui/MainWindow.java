@@ -88,6 +88,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.layout.RandomLayoutTool;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -118,8 +119,6 @@ public class MainWindow extends JFrame {
 	}
 
 	private OutputWindow outputWindow;
-
-
 	private ErrorWindow errorWindow;
 	private JavaScriptWindow jsWindow;
 	private PropertyEditorWindow propertyEditorWindow;
@@ -141,6 +140,7 @@ public class MainWindow extends JFrame {
 
 	private String lastSavePath = null;
 	private String lastOpenPath = null;
+	private LinkedHashSet<String> recentFiles = new LinkedHashSet<String>();
 
 	private int dockableIDCounter = 0;
 	private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
@@ -343,19 +343,22 @@ public class MainWindow extends JFrame {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
 				TabContentPaneBorderKind.SINGLE_FULL);
-		// SwingUtilities.updateComponentTreeUI(MainWindow.this);
+
+		setTitle("Workcraft");
+		mainMenu = new MainMenu(this);
+		setJMenuBar(mainMenu);
 
 		String laf = framework.getConfigVar("gui.lookandfeel");
-		if (laf == null)
+		if (laf == null) {
 			laf = UIManager.getCrossPlatformLookAndFeelClassName();
+		}
 		LAF.setLAF(laf);
 		SwingUtilities.updateComponentTreeUI(this);
 
 		content = new JPanel(new BorderLayout(0, 0));
 		setContentPane(content);
 
-		PerspectiveManager pm = (PerspectiveManager) DockingManager
-				.getLayoutManager();
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		pm.add(new Perspective("defaultWorkspace", "defaultWorkspace"));
 		pm.setCurrentPerspective("defaultWorkspace", true);
 
@@ -371,16 +374,17 @@ public class MainWindow extends JFrame {
 
 		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
 		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
+		for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
+			String entry = framework.getConfigVar("gui.main.recentFile" + i);
+			pushRecentFile(entry, false);
+		}
+		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
 
 		this.setSize(width, height);
 
-		if (maximised)
+		if (maximised) {
 			setExtendedState(MAXIMIZED_BOTH);
-
-		mainMenu = new MainMenu(this);
-		setJMenuBar(mainMenu);
-
-		setTitle("Workcraft");
+		}
 
 		createWindows();
 
@@ -431,14 +435,10 @@ public class MainWindow extends JFrame {
 				framework), "Tasks", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		// workspaceWindow.startup();
-
 		setVisible(true);
-
 		loadDockingLayout();
 
-		DockableWindow.updateHeaders(rootDockingPort,
-				getDefaultActionListener());
+		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
 		registerUtilityWindow(outputDockable);
 		registerUtilityWindow(problems);
@@ -513,13 +513,11 @@ public class MainWindow extends JFrame {
 					+ " was not found.");
 	}
 
-	public void closeDockableWindow(DockableWindow dockableWindow)
-			throws OperationCancelledException {
-		if (dockableWindow == null)
+	public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
+		if (dockableWindow == null) {
 			throw new NullPointerException();
-
+		}
 		int ID = dockableWindow.getID();
-
 		GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
 		if (editor != null) {
 			// handle editor window close
@@ -705,24 +703,49 @@ public class MainWindow extends JFrame {
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
 
-		if (lastSavePath != null)
+		if (lastSavePath != null) {
 			framework.setConfigVar("gui.main.lastSavePath", lastSavePath);
-		if (lastOpenPath != null)
+		}
+		if (lastOpenPath != null) {
 			framework.setConfigVar("gui.main.lastOpenPath", lastOpenPath);
+		}
+		int recentCount = CommonEditorSettings.getRecentCount();
+		String[] tmp = recentFiles.toArray(new String[recentCount]);
+		for (int i = 0; i < recentCount; i++) {
+			framework.setConfigVar("gui.main.recentFile" + i, tmp[i]);
+		}
 
 		outputWindow.releaseStream();
 		errorWindow.releaseStream();
-
-		// workspaceWindow.shutdown();
-
 		setVisible(false);
 	}
 
-	/*
-	 * private void unregisterUtilityWindows() { for (DockableWindow w :
-	 * utilityWindows) { DockingManager.close(w);
-	 * DockingManager.unregisterDockable(w); } utilityWindows.clear(); }
-	 */
+	public void pushRecentFile(String fileName, boolean updateMenu) {
+		if ((fileName != null) && (new File(fileName).exists())) {
+			// Remove previous entry of the fileName
+			recentFiles.remove(fileName);
+			// Make sure there is not too many entries
+			int recentCount = CommonEditorSettings.getRecentCount();
+			for (String entry: new ArrayList<String>(recentFiles)) {
+				if (recentFiles.size() < recentCount) {
+					break;
+				}
+				recentFiles.remove(entry);
+			}
+			// Add the fileName if possible
+			if (recentFiles.size() < recentCount) {
+				recentFiles.add(fileName);
+			}
+		}
+		if (updateMenu) {
+			mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
+		}
+	}
+
+	public void clearRecentFiles() {
+		recentFiles.clear();
+		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
+	}
 
 	public void createWork() throws OperationCancelledException {
 		createWork(Path.<String> empty());
@@ -790,8 +813,9 @@ public class MainWindow extends JFrame {
 	private void printCause(Throwable e) {
 		e.printStackTrace();
 		System.err.println("-------------" + e);
-		if (e.getCause() != null)
+		if (e.getCause() != null) {
 			printCause(e.getCause());
+		}
 	}
 
 	public boolean checkFile(File f) {
@@ -815,17 +839,91 @@ public class MainWindow extends JFrame {
 		return result;
 	}
 
-	public void openWork() throws OperationCancelledException {
+	private JFileChooser createOpenDialog(String title, boolean multiSelection, Importer[] importers) {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
+		fc.setMultiSelectionEnabled(multiSelection);
+		fc.setDialogTitle(title);
+		// Set working directory
 		if (lastOpenPath != null) {
 			fc.setCurrentDirectory(new File(lastOpenPath));
+		} else if (lastSavePath != null) {
+			fc.setCurrentDirectory(new File(lastSavePath));
 		}
-		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-		fc.setMultiSelectionEnabled(true);
-		fc.setDialogTitle("Open work file(s)");
+		// Set file filters
+		fc.setAcceptAllFileFilterUsed(false);
+		if (importers == null) {
+			fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+		} else {
+			for (Importer importer : importers) {
+				fc.addChoosableFileFilter(new ImporterFileFilter(importer));
+			}
+		}
+		return fc;
+	}
+
+	private JFileChooser createSaveDialog(String title, File file, Exporter exporter) {
+		JFileChooser fc = new JFileChooser();
+		fc.setDialogType(JFileChooser.SAVE_DIALOG);
+		fc.setDialogTitle(title);
+		// Set working directory
+		fc.setSelectedFile(file);
+		if (file.exists()) {
+			fc.setCurrentDirectory(file.getParentFile());
+		} else if (lastSavePath != null) {
+			fc.setCurrentDirectory(new File(lastSavePath));
+		} else if (lastOpenPath != null) {
+			fc.setCurrentDirectory(new File(lastOpenPath));
+		}
+		// Set file filters
+		fc.setAcceptAllFileFilterUsed(false);
+		if (exporter == null) {
+			fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+		} else {
+			fc.setFileFilter(new ExporterFileFilter(exporter));
+		}
+		return fc;
+	}
+
+	private String getValidSavePath(JFileChooser fc, Exporter exporter) throws OperationCancelledException {
+		String path = null;
+		while (true) {
+			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+				path = fc.getSelectedFile().getPath();
+				if (exporter == null) {
+					if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+						path += FileFilters.DOCUMENT_EXTENSION;
+					}
+				} else {
+					if (!path.endsWith(exporter.getExtenstion())) {
+						path += exporter.getExtenstion();
+					}
+				}
+				File f = new File(path);
+				if (!f.exists()) {
+					break;
+				}
+				if (JOptionPane.showConfirmDialog(this,
+						"The file \"" + f.getName() + "\" already exists. Do you want to overwrite it?",
+						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					break;
+				}
+			} else {
+				throw new OperationCancelledException("Save operation cancelled by user.");
+			}
+		}
+		return path;
+	}
+
+	public void openWork() throws OperationCancelledException {
+		JFileChooser fc = createOpenDialog("Open work file(s)", true, null);
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
+				String path = f.getPath();
+				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+					path += FileFilters.DOCUMENT_EXTENSION;
+					f = new File(path);
+				}
 				openWork(f);
 			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();
@@ -841,6 +939,7 @@ public class MainWindow extends JFrame {
 				if (we.getModelEntry().isVisual()) {
 					createEditorWindow(we);
 				}
+				pushRecentFile(f.getPath(), true);
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(this,
 					"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
@@ -852,17 +951,14 @@ public class MainWindow extends JFrame {
 	}
 
 	public void mergeWork() throws OperationCancelledException {
-		JFileChooser fc = new JFileChooser();
-		fc.setDialogType(JFileChooser.OPEN_DIALOG);
-		if (lastOpenPath != null) {
-			fc.setCurrentDirectory(new File(lastOpenPath));
-		}
-		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-		fc.setMultiSelectionEnabled(true);
-		fc.setDialogTitle("Merge work file(s)");
-
+		JFileChooser fc = createOpenDialog("Merge work file(s)", true, null);
 		if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
+				String path = f.getPath();
+				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+					path += FileFilters.DOCUMENT_EXTENSION;
+					f = new File(path);
+				}
 				mergeWork(f);
 			}
 			lastOpenPath = fc.getCurrentDirectory().getPath();
@@ -907,21 +1003,22 @@ public class MainWindow extends JFrame {
 	public void save(WorkspaceEntry we) throws OperationCancelledException {
 		if (!we.getFile().exists()) {
 			saveAs(we);
-		}
-
-		try {
-			if (we.getModelEntry() != null) {
-				framework.save(we.getModelEntry(), we.getFile().getPath());
-			} else {
-				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+		} else {
+			try {
+				if (we.getModelEntry() != null) {
+					framework.save(we.getModelEntry(), we.getFile().getPath());
+				} else {
+					throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+				}
+			} catch (SerialisationException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
 			}
-		} catch (SerialisationException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
+			we.setChanged(false);
+			refreshTitle(we);
+			lastSavePath = we.getFile().getParent();
+			pushRecentFile(we.getFile().getPath(), true);
 		}
-		we.setChanged(false);
-		refreshTitle(we);
-		lastSavePath = we.getFile().getParent();
 	}
 
 	private static String removeSpecialFileNameCharacters(String fileName) {
@@ -930,54 +1027,27 @@ public class MainWindow extends JFrame {
 				.replace('|', '_');
 	}
 
-	public void resetLayout() {
-		if (JOptionPane.showConfirmDialog(this,
-				"This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?",
-				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			if (JOptionPane.showConfirmDialog(this,
-					"This action requires GUI restart.\n\n"
-					+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-					"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-				try {
-					framework.shutdownGUI();
-					new File(UILAYOUT_PATH).delete();
-					framework.startGUI();
-				} catch (OperationCancelledException e) {
-				}
+	private String getFileNameForCurrentWork() {
+		String fileName = "";
+		if (editorInFocus != null) {
+			WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+			if (we != null) {
+				fileName = we.getTitle();
 			}
 		}
+		if (fileName.isEmpty()) {
+			fileName = "Untitled";
+		}
+		return removeSpecialFileNameCharacters(fileName);
 	}
 
 	public void saveAs(WorkspaceEntry we) throws OperationCancelledException {
-		JFileChooser fc = new JFileChooser();
-		fc.setDialogType(JFileChooser.SAVE_DIALOG);
-		String title = we.getTitle();
-		title = removeSpecialFileNameCharacters(title);
-
-		fc.setSelectedFile(new File(title));
-		fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-		fc.setCurrentDirectory(we.getFile().getParentFile());
-		String path;
-		while (true) {
-			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				path = fc.getSelectedFile().getPath();
-				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-					path += FileFilters.DOCUMENT_EXTENSION;
-				}
-				File f = new File(path);
-				if (!f.exists()) {
-					break;
-				}
-				if (JOptionPane.showConfirmDialog(this, "The file \"" + f.getName()
-						+ "\" already exists. Do you want to overwrite it?",
-						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-					break;
-				}
-			} else {
-				throw new OperationCancelledException("Save operation cancelled by user.");
-			}
+		File file = we.getFile();
+		if (file == null) {
+			file = new File(getFileNameForCurrentWork());
 		}
-
+		JFileChooser fc = createSaveDialog("Save work as", file, null);
+		String path = getValidSavePath(fc, null);
 		try {
 			File destination = new File(path);
 			Workspace ws = framework.getWorkspace();
@@ -994,10 +1064,10 @@ public class MainWindow extends JFrame {
 			} else {
 				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
 			}
-			refreshTitle(we);
-
 			we.setChanged(false);
-			lastSavePath = fc.getCurrentDirectory().getPath();
+			refreshTitle(we);
+			lastSavePath = we.getFile().getParent();
+			pushRecentFile(we.getFile().getPath(), true);
 		} catch (SerialisationException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage(),
@@ -1008,28 +1078,14 @@ public class MainWindow extends JFrame {
 	}
 
 	public void importFrom() {
-		JFileChooser fc = new JFileChooser();
-		fc.setDialogType(JFileChooser.OPEN_DIALOG);
-
-		if (lastOpenPath != null) {
-			fc.setCurrentDirectory(new File(lastOpenPath));
-		}
-		Collection<PluginInfo<? extends Importer>> importerInfo = framework
-				.getPluginManager().getPlugins(Importer.class);
+		Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager().getPlugins(Importer.class);
 		Importer[] importers = new Importer[importerInfo.size()];
-
 		int cnt = 0;
 		for (PluginInfo<? extends Importer> info : importerInfo) {
 			importers[cnt++] = info.getSingleton();
 		}
 
-		fc.setAcceptAllFileFilterUsed(false);
-		for (Importer importer : importers) {
-			fc.addChoosableFileFilter(new ImporterFileFilter(importer));
-		}
-
-		fc.setMultiSelectionEnabled(true);
-		fc.setDialogTitle("Import model(s)");
+		JFileChooser fc = createOpenDialog("Import model(s)", true, importers);
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 			for (File f : fc.getSelectedFiles()) {
 				importFrom(f, importers);
@@ -1066,46 +1122,10 @@ public class MainWindow extends JFrame {
 	}
 
 	void export(Exporter exporter) throws OperationCancelledException {
-		JFileChooser fc = new JFileChooser();
-		fc.setDialogType(JFileChooser.SAVE_DIALOG);
-		fc.setDialogTitle("Export as " + exporter.getDescription());
-		fc.setAcceptAllFileFilterUsed(false);
-
-		String title = "";
-		if (editorInFocus != null) {
-			WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-			if (we != null)
-				title = we.getTitle();
-		}
-		if (title.isEmpty())
-			title = "Untitled";
-		title = removeSpecialFileNameCharacters(title);
-
-		fc.setSelectedFile(new File(title));
-		fc.setFileFilter(new ExporterFileFilter(exporter));
-
-		if (lastSavePath != null)
-			fc.setCurrentDirectory(new File(lastSavePath));
-
-		String path;
-		while (true) {
-			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				path = fc.getSelectedFile().getPath();
-				if (!path.endsWith(exporter.getExtenstion()))
-					path += exporter.getExtenstion();
-
-				File f = new File(path);
-
-				if (!f.exists())
-					break;
-				else if (JOptionPane.showConfirmDialog(this,
-							"The file \"" + f.getName() + "\" already exists. Do you want to overwrite it?",
-							"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-					break;
-			} else
-				throw new OperationCancelledException("Save operation cancelled by user.");
-		}
-
+		String title = "Export as " + exporter.getDescription();
+		File file = new File(getFileNameForCurrentWork());
+		JFileChooser fc = createSaveDialog(title, file, exporter);
+		String path = getValidSavePath(fc, exporter);
 		Task<Object> exportTask = new Export.ExportTask(exporter, editorInFocus.getModel(), path);
 		framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
 		lastSavePath = fc.getCurrentDirectory().getPath();
@@ -1239,9 +1259,27 @@ public class MainWindow extends JFrame {
 
 	public void editSettings() {
 		SettingsEditorDialog dlg = new SettingsEditorDialog(this);
-		dlg.setModal(false);
+		dlg.setModal(true);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
+	}
+
+	public void resetLayout() {
+		if (JOptionPane.showConfirmDialog(this,
+				"This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?",
+				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+			if (JOptionPane.showConfirmDialog(this,
+					"This action requires GUI restart.\n\n"
+					+ "This will cause the visual editor windows to be closed.\n\nProceed?",
+					"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				try {
+					framework.shutdownGUI();
+					new File(UILAYOUT_PATH).delete();
+					framework.startGUI();
+				} catch (OperationCancelledException e) {
+				}
+			}
+		}
 	}
 
 	public WorkspaceWindow getWorkspaceView() {
