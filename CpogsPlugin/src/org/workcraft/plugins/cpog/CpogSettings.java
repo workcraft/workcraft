@@ -38,6 +38,7 @@ public class CpogSettings implements SettingsPage {
 	private static final String keyCircuitSize = prefix + ".circuitSize";
 	private static final String keyClaspCommand = prefix + ".claspCommand";
 	private static final String keyMinisatCommand = prefix + ".minisatCommand";
+	private static final String keyProgrammerCommand = prefix + ".programmerCommand";
 	private static final String keyEspressoCommand = prefix + ".espressoCommand";
 	private static final String keyAbcFolder = prefix + ".abcFolder";
 	private static final String keyGatesLibrary = prefix + ".gatesLibrary";
@@ -46,6 +47,7 @@ public class CpogSettings implements SettingsPage {
 	private static final int defaultCircuitSize = 4;
 	private static final String defaultClaspCommand = "clasp";
 	private static final String defaultMinisatCommand = "minisat";
+	private static final String defaultProgrammerCommand = "programmer";
 	private static final String defaultEspressoCommand = "espresso";
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
@@ -54,6 +56,7 @@ public class CpogSettings implements SettingsPage {
 	private static int circuitSize = defaultCircuitSize;
 	private static String claspCommand = defaultClaspCommand;
 	private static String minisatCommand = defaultMinisatCommand;
+	private static String programmerCommand = defaultProgrammerCommand;
 	private static String espressoCommand = defaultEspressoCommand;
 	private static String abcFolder = defaultAbcFolder;
 	private static String gatesLibrary = defaultGatesLibrary;
@@ -100,7 +103,17 @@ public class CpogSettings implements SettingsPage {
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Espresso solver", String.class) {
+				this, "Programmer command", String.class) {
+			protected void setter(CpogSettings object, String value) {
+				CpogSettings.setProgrammerCommand(value);
+			}
+			protected String getter(CpogSettings object) {
+				return CpogSettings.getProgrammerCommand();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CpogSettings, String>(
+				this, "Espresso command", String.class) {
 			protected void setter(CpogSettings object, String value) {
 				CpogSettings.setEspressoCommand(value);
 			}
@@ -136,6 +149,7 @@ public class CpogSettings implements SettingsPage {
 		setCircuitSize(config.getInt(keyCircuitSize, defaultCircuitSize));
 		setClaspCommand(config.getString(keyClaspCommand, defaultClaspCommand));
 		setMinisatCommand(config.getString(keyMinisatCommand, defaultMinisatCommand));
+		setProgrammerCommand(config.getString(keyProgrammerCommand, defaultProgrammerCommand));
 		setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
 		setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
 		setGatesLibrary(config.getString(keyGatesLibrary, defaultGatesLibrary));
@@ -147,6 +161,7 @@ public class CpogSettings implements SettingsPage {
 		config.setInt(keyCircuitSize, getCircuitSize());
 		config.set(keyClaspCommand, getClaspCommand());
 		config.set(keyMinisatCommand, getMinisatCommand());
+		config.set(keyProgrammerCommand, getProgrammerCommand());
 		config.set(keyEspressoCommand, getEspressoCommand());
 		config.set(keyAbcFolder, getAbcFolder());
 		config.set(keyGatesLibrary, getGatesLibrary());
@@ -197,6 +212,14 @@ public class CpogSettings implements SettingsPage {
 
 	public static void setMinisatCommand(String value) {
 		minisatCommand = value;
+	}
+
+	public static String getProgrammerCommand() {
+		return programmerCommand;
+	}
+
+	public static void setProgrammerCommand(String value) {
+		programmerCommand = value;
 	}
 
 	public static String getEspressoCommand() {

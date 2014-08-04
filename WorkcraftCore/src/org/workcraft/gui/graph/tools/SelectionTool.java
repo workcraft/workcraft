@@ -63,7 +63,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
@@ -81,8 +80,6 @@ public class SelectionTool extends AbstractTool {
 	static private final Color selectionBorderColor = new Color(200, 200, 200);
 	static private final Color selectionFillColor = new Color(99, 130, 191, 32);
 	static private final Color grayOutColor = Color.LIGHT_GRAY;
-	// node for the MouseOver events
-	private VisualNode mouseOverNode = null;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -235,29 +232,15 @@ public class SelectionTool extends AbstractTool {
 		rotatePanel.add(rotateCounterclockwiseButton);
 	}
 
-	private void resetState(GraphEditor editor) {
-		mouseOverNode = null;
-	}
-
-	private void updateState(GraphEditorMouseEvent e) {
-		Point2D mousePosition = e.getPosition();
-
-		VisualNode node = (VisualNode) HitMan.hitTestForSelection(mousePosition, e.getModel());
-		mouseOverNode = node;
-
-	}
-
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
-		resetState(editor);
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
-		resetState(editor);
 	}
 
 	@Override
@@ -334,13 +317,7 @@ public class SelectionTool extends AbstractTool {
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
 			e.getEditor().repaint();
-		} else {
-			// "mouse over" events
-
 		}
-
-		updateState(e);
-
 	}
 
 	@Override

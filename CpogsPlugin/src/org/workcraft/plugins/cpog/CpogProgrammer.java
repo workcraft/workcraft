@@ -32,19 +32,22 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogProgrammer {
+	// FIXME: Relative path to the directory with programmer results. Currently this is hard-coded in programmer.
+	private static final String genEncodingDir = "../tools/results/generated_encoding/";
 
 	private EncoderSettings settings;
 	private File scenarioFile, encodingFile ;
 	private Double minArea;
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER
-	private String programmerCommand = "programmer";
+	private String programmerCommand;
 	private String espressoCommand;
 	private String abcFolder;
 	private String gatesLibrary;
@@ -262,10 +265,6 @@ public class CpogProgrammer {
 				abcFolder = "";
 				gateLibFlag = "-lib";
 				gatesLibrary = "";
-				JOptionPane.showMessageDialog(null,
-						"You can download it at http://www.eecs.berkeley.edu/~alanmi/abc/ to improve the outcome of the encoding.",
-						"Abc tool disabled",
-						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			// FILL IN PARAMETERS FOR CALLING PROGRAMER PROPERLY
@@ -330,11 +329,10 @@ public class CpogProgrammer {
 					System.out.println("Error");
 			}
 
-			deleteDir(new File("results/"));
-			File d = new File("results/generated_encoding/");
-			d.mkdirs();
+			FileUtils.deleteDirectoryTree(new File(genEncodingDir));
+			new File(genEncodingDir).mkdirs();
 
-		// IF SCENCO MODE IS NOT SELECTED, PROGRAMMER IS CALLED ITERATIVELY
+			// IF SCENCO MODE IS NOT SELECTED, PROGRAMMER IS CALLED ITERATIVELY
 		// BECAUSE, IF CONTINUOUS OPTION IS SELECTED, TOOL IS CALLED
 		// TILL USER PRESSES STOP BUTTON
 		if(!SCENCO){
@@ -673,22 +671,6 @@ public class CpogProgrammer {
 		}
 	}
 
-	// REMOVE DIRECTORY CONTAINS ALL THE CONTROLLER SYNTHESISED
-	// FOR EACH ENCODING SOLUTION
-	private static boolean deleteDir(File dir) {
-	    if (dir.isDirectory()) {
-	        String[] children = dir.list();
-	        for (int i = 0; i < children.length; i++) {
-	            boolean success = deleteDir(new File(dir, children[i]));
-	            if (!success) {
-	                return false;
-	            }
-	        }
-	    }
-
-	    return dir.delete(); // The directory is empty now and can be deleted.
-	}
-
 	// BUILD CONSTRAINT FOR EACH ELEMENTS LOOPING ON THE SCENARIOS
 	private String generateConstraint(char [][][] constraints, int numScenarios, int event1, int event2)
 	{
@@ -856,7 +838,7 @@ public class CpogProgrammer {
 	// THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
 	private void printController(int m){
 		System.out.println();
-		String fileName = "results/generated_encoding/";
+		String fileName = genEncodingDir;
 		for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
 		fileName = fileName.concat(".prg");
 		File f = new File(fileName);
@@ -896,14 +878,14 @@ public class CpogProgrammer {
 	// TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
 	private int callingProgrammer(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
 		//Debug Printing: launching executable
-		/*System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
-				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
-				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
-				espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-				gatesLibrary);*/
+//		System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
+//				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
+//				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
+//				espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
+//				gatesLibrary);
 		process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
-				"-m",effort,genMode, numSol,customFlag,customPath,verbose,cpogSize,disableFunction,oldSynt,
-				espressoFlag,espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
+				"-m", effort, genMode, numSol, customFlag, customPath, verbose, cpogSize, disableFunction, oldSynt,
+				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
@@ -1069,6 +1051,7 @@ public class CpogProgrammer {
 		opt_formulaeArcs = new String[elements*elements];
 		truthTableArcs =  new String[elements*elements];
 		arcNames = new String[elements*elements];
+		programmerCommand = CpogSettings.getProgrammerCommand();
 		espressoCommand = CpogSettings.getEspressoCommand();
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
