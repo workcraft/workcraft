@@ -38,17 +38,17 @@ public class EncoderSettings {
 		}
 	}
 
-	public EncoderSettings(String espressoPath, String abcPath, String libPath) {
-		this.espressoPath = espressoPath;
-		this.abcPath = abcPath;
-		this.libPath = libPath;
-	}
-
 	private int solutionNumber = 10, numPO,bits;
 	private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
 	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
 	private String[] customEnc;
 	private String espressoPath,abcPath,libPath;
+
+	public EncoderSettings(String espressoPath, String abcPath, String libPath) {
+		this.espressoPath = espressoPath;
+		this.abcPath = abcPath;
+		this.libPath = libPath;
+	}
 
 	public boolean isCpogSize() {
 		return cpogSize;

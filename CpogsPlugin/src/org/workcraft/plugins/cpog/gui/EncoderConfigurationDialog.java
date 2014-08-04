@@ -18,7 +18,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,6 +35,7 @@ import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
+@SuppressWarnings("serial")
 public class EncoderConfigurationDialog extends JDialog {
 
 	private JLabel numberOfSolutionsLabel, contLabel,
@@ -45,7 +45,6 @@ public class EncoderConfigurationDialog extends JDialog {
 	private JCheckBox verboseModeCheck, customEncodings,
 					 contCheck, abcCheck;
 	private JComboBox generationModeBox,OptimiseBox, guidedModeBox;
-	private JFrame frame;
 	private JPanel generationPanel, buttonsPanel, content;
 	private JButton saveButton, closeButton;
 	private JTextField numberOfSolutionsText, bitsText;
@@ -56,13 +55,11 @@ public class EncoderConfigurationDialog extends JDialog {
 	private int m,bits;
 	private JRadioButton slow,normal,fast;
 	private ButtonGroup group;
-	private JPanel speedPanel, encodingPanel;
 
 	// Core variables
 	private CpogProgrammer encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-	private static boolean settingsPresent = false;
 
 	// sizes
 	Dimension dimensionLabel = new Dimension(270, 22);
@@ -190,7 +187,6 @@ public class EncoderConfigurationDialog extends JDialog {
 				}
 
 				// Set them on encoder
-				settingsPresent = true;
 				encoder = new CpogProgrammer(settings);
 
 				// Execute programmer
@@ -214,13 +210,12 @@ public class EncoderConfigurationDialog extends JDialog {
 	private void createGenerationPanel() {
 		setMinimumSize(new Dimension(600, 400));
 		generationPanel = new JPanel(new SimpleFlowLayout());
-		JPanel numberOfSolutionsPanel = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
 		m = scenarios.size();
 
 		// ABC TOOL DISABLE FLAG
-		abcCheck = new JCheckBox("",settings.isAbcFlag());
+		abcCheck = new JCheckBox("", !settings.isAbcFlag());
 		abcLabel = new JLabel("Disable Abc Tool");
 		abcLabel.setPreferredSize(new Dimension(150, 15));
 		abcCheck.addActionListener(new ActionListener() {
@@ -546,7 +541,6 @@ public class EncoderConfigurationDialog extends JDialog {
 		encodingTable.setFillsViewportHeight(false);
 		encodingTable.setEnabled(false);
 		encodingTable.setBackground(Color.LIGHT_GRAY);
-
 
 		// VERBOSE MODE INSTANTIATION
 		verboseModeLabel = new JLabel("Verbose mode");
