@@ -264,13 +264,14 @@ public class SelectionTool extends AbstractTool {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
 						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
+							return;
 						}
 					}
-
 					if ( model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
 						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
+							return;
 						}
 					}
 
@@ -283,9 +284,13 @@ public class SelectionTool extends AbstractTool {
 				if (e.getClickCount() > 1) {
 					if (node instanceof VisualGroup || node instanceof VisualPage) {
 						changeLevelDown(e.getEditor());
+						return;
+
 					} else if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
 						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
+						return;
+
 					}
 				} else {
 					switch (e.getKeyModifiers()) {
