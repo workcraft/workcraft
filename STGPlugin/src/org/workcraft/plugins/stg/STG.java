@@ -398,7 +398,12 @@ public class STG extends AbstractMathModel implements STGModel {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node != null) {
-			if (node instanceof SignalTransition) {
+			if (node instanceof STGPlace) {
+				STGPlace place = (STGPlace)node;
+				if (place.isImplicit()) {
+					properties.filter("Name");
+				}
+			} else if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;
 				properties.add(new TypePropertyDescriptor(this, transition));
 				properties.add(new SignalPropertyDescriptor(this, transition));
