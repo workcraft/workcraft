@@ -5,7 +5,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.xmas.tools.JsonExport;
 import org.workcraft.plugins.xmas.tools.PNetGen;
 
@@ -25,7 +25,7 @@ public class XmasModule implements Module {
 		framework.getPluginManager().registerClass(Tool.class, PNetGen.class);
 
 		pm.registerClass(ModelDescriptor.class, XmasModelDescriptor.class);
-		pm.registerClass(SettingsPage.class, XmasSettings.class);
+		pm.registerClass(Settings.class, XmasSettings.class);
 	}
 
 }

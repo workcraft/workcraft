@@ -38,7 +38,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
@@ -255,16 +255,6 @@ public class VisualCPOG extends AbstractVisualModel
 		return Hierarchy.getChildrenOfType(root, VisualArc.class);
 	}
 
-	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
-
-		if(node instanceof VisualRhoClause || node instanceof VisualVertex || node instanceof VisualArc)
-			properties = Properties.Merge.add(properties, new BooleanFormulaPropertyDescriptor(node));
-
-		return properties;
-	}
-
 	public VisualVertex createVisualVertex(Container container)
 	{
 		Vertex mathVertex = new Vertex();
@@ -296,6 +286,19 @@ public class VisualCPOG extends AbstractVisualModel
 		getRoot().add(scenario);
 
 		return scenario;
+	}
+
+	@Override
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
+		if (node != null) {
+			if (node instanceof VisualRhoClause ||
+				node instanceof VisualVertex ||
+				node instanceof VisualArc) {
+				properties.add(new BooleanFormulaPropertyDescriptor(node));
+			}
+		}
+		return properties;
 	}
 
 }

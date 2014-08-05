@@ -70,6 +70,7 @@ public class VisualRhoClause extends VisualComponent
 
 	public VisualRhoClause(RhoClause rhoClause) {
 		super(rhoClause);
+		filterPropertyDeclarations("Name positioning", "Name color");
 	}
 
 	public void draw(DrawRequest r) {

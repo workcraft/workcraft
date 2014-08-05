@@ -6,10 +6,10 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 
-public class ProgrammerUtilitySettings implements SettingsPage {
+public class ProgrammerUtilitySettings implements Settings {
 	private static LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools.encoder";
 

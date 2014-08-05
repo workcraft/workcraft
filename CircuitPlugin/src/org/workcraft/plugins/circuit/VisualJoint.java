@@ -34,6 +34,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.petri.Place;
 
 @DisplayName("Joint")
@@ -41,15 +42,18 @@ import org.workcraft.plugins.petri.Place;
 @SVGIcon("images/icons/svg/circuit-joint.svg")
 
 public class VisualJoint extends VisualComponent {
-	static public double jointSize = 0.25;
-
-	final static public Shape shape = new Ellipse2D.Double(
-			-jointSize / 2,
-			-jointSize / 2,
-			jointSize,
-			jointSize);
-
+	static public double size = 0.25;
+	final static public Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 	private Place referencedOnePlace;
+	private Place referencedZeroPlace;
+
+	public VisualJoint(Joint joint) {
+		super(joint);
+		filterPropertyDeclarations("Fill color",
+				"Label", "Label color", "Label positioning",
+				"Name color", "Name positioning");
+	}
+
 	public Place getReferencedOnePlace() {
 		return referencedOnePlace;
 	}
@@ -66,27 +70,22 @@ public class VisualJoint extends VisualComponent {
 		this.referencedZeroPlace = referencedZeroPlace;
 	}
 
-	private Place referencedZeroPlace;
-
-	public VisualJoint(Joint joint) {
-		super(joint);
-	}
-
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+		Decoration d = r.getDecoration();
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.fill(shape);
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return new Rectangle2D.Double(-jointSize/2, -jointSize/2, jointSize, jointSize);
+		return new Rectangle2D.Double(-size/2, -size/2, size, size);
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < jointSize*jointSize/4;
+		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
 	}
 
 }

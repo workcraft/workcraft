@@ -27,12 +27,11 @@ import java.util.Collection;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -100,6 +99,15 @@ public class CPOG extends AbstractMathModel {
 
 	public Collection<Vertex> getVertices() {
 		return Hierarchy.getChildrenOfType(getRoot(), Vertex.class);
+	}
+
+	@Override
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
+		if (node != null)  {
+			properties.filter("Name");
+		}
+		return properties;
 	}
 
 }

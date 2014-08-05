@@ -60,9 +60,8 @@ import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.Properties.Combine;
-import org.workcraft.gui.propertyeditor.Properties.Mix;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -388,35 +387,35 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	private Properties getPropertiesDefault() {
-		Mix mix = new Mix();
-		mix.add(getModel().getProperties(null));
-		mix.add(getModel().getMathModel().getProperties(null));
-		return mix;
+		ModelProperties properties = new ModelProperties();
+		properties.add(getModel().getProperties(null));
+		properties.add(getModel().getMathModel().getProperties(null));
+		return properties;
 	}
 
 	private Properties getPropertiesMix(Collection<Node> selection) {
-		Mix mix = new Mix();
+		ModelProperties properties = new ModelProperties();
 		for (Node selected: selection) {
-			mix.add(getModel().getProperties(selected));
+			properties.add(getModel().getProperties(selected));
 			if (selected instanceof Properties) {
-				mix.add((Properties)selected);
+				properties.add((Properties)selected);
 			}
 			if (selected instanceof DependentNode) {
 				for (Node node : ((DependentNode)selected).getMathReferences()) {
-					mix.add(getModel().getMathModel().getProperties(node));
+					properties.add(getModel().getMathModel().getProperties(node));
 					if (node instanceof Properties) {
-						mix.add((Properties)node);
+						properties.add((Properties)node);
 					}
 				}
 			}
 		}
-		return mix;
+		return properties;
 	}
 
 	private Properties getPropertiesCombo(Collection<Node> selection) {
 		Properties properties = getPropertiesMix(selection);
 		Collection<PropertyDescriptor> descriptors = properties.getDescriptors();;
-		return Combine.from(descriptors.toArray(new PropertyDescriptor[0]));
+		return new ModelProperties(descriptors);
 	}
 
 	public void updatePropertyView() {

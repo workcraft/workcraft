@@ -32,8 +32,6 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.xmas.components.ForkComponent;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.JoinComponent;
@@ -88,15 +86,6 @@ public class Xmas extends AbstractMathModel {
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
 	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
-	}
-
 
 	public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();

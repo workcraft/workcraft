@@ -31,9 +31,9 @@ import javax.swing.JPopupMenu;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
 import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.PropertySupport;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
@@ -43,36 +43,12 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public abstract class VisualNode implements Properties, Node, Touchable, ObservableState, Hidable {
 	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
-
-	public Rectangle2D getBoundingBox() {
-		return null;
-	}
-
-	@Override
-	public Point2D getCenter()
-	{
-		return new Point2D.Double(getBoundingBox().getCenterX(), getBoundingBox().getCenterY());
-	}
-
-	public Collection<Node> getChildren() {
-		return Collections.emptyList();
-	}
-
 	private Node parent = null;
 	private boolean hidden = false;
-
 	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
-	private PropertySupport propertySupport = new PropertySupport();
+	private final ModelProperties properties = new ModelProperties();
 
-	public Node getParent() {
-		return parent;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
-	protected final void addPopupMenuSegment (PopupMenuSegment segment) {
+	protected final void addPopupMenuSegment(PopupMenuSegment segment) {
 		popupMenuBuilder.addSegment(segment);
 	}
 
@@ -81,36 +57,68 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 	}
 
 	public void addPropertyDeclaration(PropertyDescriptor declaration) {
-		propertySupport.addPropertyDeclaration(declaration);
+		properties.add(declaration);
 	}
 
-	public void removePropertyDeclaration(PropertyDescriptor declaration) {
-		propertySupport.removePropertyDeclaration(declaration);
+	public void filterPropertyDeclarations(String... propertyNames) {
+		properties.filter(propertyNames);
 	}
 
+	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
-		return propertySupport.getPropertyDeclarations();
+		return properties.getDescriptors();
+	}
+
+	@Override
+	public Rectangle2D getBoundingBox() {
+		return null;
+	}
+
+	@Override
+	public Point2D getCenter() {
+		return new Point2D.Double(getBoundingBox().getCenterX(), getBoundingBox().getCenterY());
+	}
+
+	@Override
+	public Collection<Node> getChildren() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Node getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(Node parent) {
+		this.parent = parent;
 	}
 
 	@NoAutoSerialisation
+	@Override
 	public boolean isHidden() {
 		return hidden;
 	}
 
 	@NoAutoSerialisation
+	@Override
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}
 
+	@Override
 	public void addObserver(StateObserver obs) {
 		observableStateImpl.addObserver(obs);
 	}
 
+	@Override
 	public void sendNotification(StateEvent e) {
 		observableStateImpl.sendNotification(e);
 	}
 
+	@Override
 	public void removeObserver(StateObserver obs) {
 		observableStateImpl.removeObserver(obs);
 	}
+
 }

@@ -17,8 +17,6 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Block;
@@ -211,14 +209,6 @@ public class SON extends AbstractMathModel implements SONModel {
 	public void resetConditionErrStates(){
 		for(Condition con : this.getConditions())
 			con.setErrors(0);
-	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
 	}
 
 	final public ChannelPlace createChannelPlace() {

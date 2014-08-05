@@ -50,7 +50,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
@@ -545,8 +545,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		return null;
+	public ModelProperties getProperties(Node node) {
+		return new ModelProperties();
 	}
 
 	public static Collection<Node> getMathChildren(Collection<Node> nodes) {

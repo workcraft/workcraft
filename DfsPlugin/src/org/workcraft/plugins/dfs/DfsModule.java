@@ -6,7 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
@@ -111,7 +111,7 @@ public class DfsModule implements Module {
 		});
 
 		pm.registerClass(ModelDescriptor.class, DfsModelDescriptor.class);
-		pm.registerClass(SettingsPage.class, DfsSettings.class);
+		pm.registerClass(Settings.class, DfsSettings.class);
 	}
 
 	@Override

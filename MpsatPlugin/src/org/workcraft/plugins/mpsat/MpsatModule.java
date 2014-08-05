@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.tools.CscResolutionTool;
 import org.workcraft.plugins.mpsat.tools.CustomPropertyMpsatChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
@@ -33,11 +33,11 @@ public class MpsatModule implements Module {
 		p.registerClass(Tool.class, MpsatUscChecker.class, framework);
 		p.registerClass(Tool.class, CustomPropertyMpsatChecker.class, framework);
 
-		p.registerClass(SettingsPage.class, MpsatUtilitySettings.class);
-		p.registerClass(SettingsPage.class, PunfUtilitySettings.class);
+		p.registerClass(Settings.class, MpsatUtilitySettings.class);
+		p.registerClass(Settings.class, PunfUtilitySettings.class);
 
 		p.registerClass(Tool.class, PcompTool.class, framework);
-		p.registerClass(SettingsPage.class, PcompUtilitySettings.class);
+		p.registerClass(Settings.class, PcompUtilitySettings.class);
 	}
 
 	@Override

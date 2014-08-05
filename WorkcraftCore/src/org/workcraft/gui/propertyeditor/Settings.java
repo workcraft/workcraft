@@ -23,7 +23,7 @@ package org.workcraft.gui.propertyeditor;
 
 import org.workcraft.Config;
 
-public interface SettingsPage extends Properties  {
+public interface Settings extends Properties  {
 	public void save (Config config);
 	public void load (Config config);
 

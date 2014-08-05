@@ -62,9 +62,9 @@ public class SettingsEditorDialog extends JDialog {
 
 	static class SettingsPageNode
 	{
-		private SettingsPage page;
+		private Settings page;
 
-		public SettingsPageNode(SettingsPage page) {
+		public SettingsPageNode(Settings page) {
 			this.page = page;
 		}
 
@@ -73,7 +73,7 @@ public class SettingsEditorDialog extends JDialog {
 			return page.getName();
 		}
 
-		public SettingsPage getPage() {
+		public Settings getPage() {
 			return page;
 		}
 	}
@@ -142,14 +142,14 @@ public class SettingsEditorDialog extends JDialog {
 		}
 	}
 
-	private void addItem (String section, SettingsPage item) {
+	private void addItem (String section, Settings item) {
 		DefaultMutableTreeNode sectionNode = getSectionNode(sectionRoot, section);
 		sectionNode.add(new DefaultMutableTreeNode(new SettingsPageNode(item)));
 	}
 
 	private void loadSections() {
-		for (PluginInfo<? extends SettingsPage> info : framework.getPluginManager().getPlugins(SettingsPage.class)) {
-			SettingsPage e = info.getSingleton();
+		for (PluginInfo<? extends Settings> info : framework.getPluginManager().getPlugins(Settings.class)) {
+			Settings e = info.getSingleton();
 			addItem (e.getSection(), e);
 		}
 
@@ -162,7 +162,7 @@ public class SettingsEditorDialog extends JDialog {
 		}
 	}
 
-	private void setObject(SettingsPage p) {
+	private void setObject(Settings p) {
 		if (p == null)
 			propertiesTable.setObject(null);
 		else {
