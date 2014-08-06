@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tools.PetrifyCscConflictResolution;
 import org.workcraft.plugins.petrify.tools.PetrifyComplexGateSynthesis;
@@ -22,7 +22,7 @@ public class PetrifyModule implements Module {
 		PluginManager p = framework.getPluginManager();
 
 		p.registerClass(Exporter.class, PSExporter.class, framework);
-		p.registerClass(SettingsPage.class, PetrifyUtilitySettings.class);
+		p.registerClass(Settings.class, PetrifyUtilitySettings.class);
 
 		p.registerClass(Tool.class, PetrifyUntoggle.class, framework);
 		p.registerClass(Tool.class, PetrifyCscConflictResolution.class, framework);

@@ -60,9 +60,8 @@ import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.Properties.Combine;
-import org.workcraft.gui.propertyeditor.Properties.Mix;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
@@ -387,36 +386,46 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		};
 	}
 
-	private Properties getPropertiesDefault() {
-		Mix mix = new Mix();
-		mix.add(getModel().getProperties(null));
-		mix.add(getModel().getMathModel().getProperties(null));
-		return mix;
+	private Properties getModelProperties() {
+		ModelProperties properties = new ModelProperties();
+		// Properties of the visual model
+		Properties modelProperties = getModel().getProperties(null);
+		properties.addAll(modelProperties.getDescriptors());
+		// Properties of the math model
+		Properties mathModelProperties = getModel().getMathModel().getProperties(null);
+		properties.addAll(mathModelProperties.getDescriptors());
+		return properties;
 	}
 
-	private Properties getPropertiesMix(Collection<Node> selection) {
-		Mix mix = new Mix();
-		for (Node selected: selection) {
-			mix.add(getModel().getProperties(selected));
-			if (selected instanceof Properties) {
-				mix.add((Properties)selected);
-			}
-			if (selected instanceof DependentNode) {
-				for (Node node : ((DependentNode)selected).getMathReferences()) {
-					mix.add(getModel().getMathModel().getProperties(node));
-					if (node instanceof Properties) {
-						mix.add((Properties)node);
-					}
+	private Properties getNodeProperties(Node node) {
+		ModelProperties properties = new ModelProperties();
+		// Properties of the visual node
+		Properties nodeProperties = getModel().getProperties(node);
+		properties.addAll(nodeProperties.getDescriptors());
+		if (node instanceof Properties) {
+			properties.addAll(((Properties)node).getDescriptors());
+		}
+		// Properties of the math node
+		if (node instanceof DependentNode) {
+			for (Node mathNode : ((DependentNode)node).getMathReferences()) {
+				Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
+				properties.addAll(mathNodeProperties.getDescriptors());
+				if (mathNode instanceof Properties) {
+					properties.addAll(((Properties)mathNode).getDescriptors());
 				}
 			}
 		}
-		return mix;
+		return properties;
 	}
 
-	private Properties getPropertiesCombo(Collection<Node> selection) {
-		Properties properties = getPropertiesMix(selection);
-		Collection<PropertyDescriptor> descriptors = properties.getDescriptors();;
-		return Combine.from(descriptors.toArray(new PropertyDescriptor[0]));
+	private Properties getSelectionProperties(Collection<Node> nodes) {
+		ModelProperties allProperties = new ModelProperties();
+		for (Node node: nodes) {
+			Properties nodeProperties = getNodeProperties(node);
+			allProperties.addAll(nodeProperties.getDescriptors());
+		}
+		ModelProperties combinedProperties = new ModelProperties(allProperties.getDescriptors());
+		return combinedProperties;
 	}
 
 	public void updatePropertyView() {
@@ -424,11 +433,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		Properties properties;
 		Collection<Node> selection = getModel().getSelection();
 		if (selection.size() == 0) {
-			properties = getPropertiesDefault();
+			properties = getModelProperties();
 		} else	if (selection.size() == 1) {
-			properties = getPropertiesMix(selection);
+			Node node = selection.iterator().next();
+			properties = getNodeProperties(node);
 		} else {
-			properties = getPropertiesCombo(selection);
+			properties = getSelectionProperties(selection);
 		}
 
 		if(properties.getDescriptors().isEmpty()) {

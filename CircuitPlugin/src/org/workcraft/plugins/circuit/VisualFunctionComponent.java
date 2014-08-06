@@ -288,6 +288,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			drawContactLines(g, rr, at);
 			drawCelementSymbols(g, rr, at);
 			drawLabelInLocalSpace(r);
+			drawNameInLocalSpace(r);
 		}
 	}
 

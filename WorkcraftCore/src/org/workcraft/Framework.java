@@ -66,7 +66,7 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
@@ -225,13 +225,13 @@ public class Framework {
 	public void loadConfig(String fileName) {
 		config.load(fileName);
 
-		for (PluginInfo<? extends SettingsPage> info : pluginManager.getPlugins(SettingsPage.class)) {
+		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().load(config);
 		}
 	}
 
 	public void saveConfig(String fileName) {
-		for (PluginInfo<? extends SettingsPage> info : pluginManager.getPlugins(SettingsPage.class)) {
+		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().save(config);
 		}
 

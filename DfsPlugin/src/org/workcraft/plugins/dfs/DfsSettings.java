@@ -30,9 +30,9 @@ import java.util.Map;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
-public class DfsSettings implements SettingsPage {
+public class DfsSettings implements Settings {
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "DfsSettings";
 

@@ -36,8 +36,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -226,14 +224,6 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
-	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
 	}
 
 }

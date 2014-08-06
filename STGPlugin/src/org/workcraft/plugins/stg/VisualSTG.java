@@ -36,7 +36,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -248,16 +248,15 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
 			for (Type type : Type.values()) {
 				Container container = getMathContainer(this, getCurrentLevel());
 				for (final String signalName : stg.getSignalNames(type, container)) {
-					if (stg.getSignalTransitions(signalName, container).isEmpty() ) continue;
-					properties = Properties.Merge.add(properties,
-							new SignalNamePropertyDescriptor(stg, signalName, container),
-							new SignalTypePropertyDescriptor(stg, signalName, container));
+					if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
+					properties.add(new SignalNamePropertyDescriptor(stg, signalName, container));
+					properties.add(new SignalTypePropertyDescriptor(stg, signalName, container));
 				}
 			}
 		}

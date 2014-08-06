@@ -32,9 +32,7 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
@@ -55,12 +53,11 @@ public class Circuit extends AbstractMathModel {
 
 
 	public Circuit(Container root, References refs) {
-
-		super(root,
-				new CircuitReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
+		super(root,	new CircuitReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
 					@Override
 					public String eval(Node arg) {
 						if (arg instanceof CircuitComponent) return "g";
+						if (arg instanceof Joint) return "j";
 						if (arg instanceof Connection) return "con";
 						if (arg instanceof PageNode) return "pg";
 						if (arg instanceof CommentNode) return "comment";
@@ -77,39 +74,24 @@ public class Circuit extends AbstractMathModel {
 						return "v";
 					}
 				}
-
 			));
-
-		if (root==null) {
-			Container r = getRoot();
-			getReferenceManager().attach(r);
-		}
-	}
-
-
-	public void validate() throws ModelValidationException {
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-
 		Hierarchy.getNearestContainer(first, second).add(con);
-
 		return con;
 	}
 
-
 	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			if (node instanceof CircuitComponent)
-				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-			if (node instanceof Contact)
-				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
+		if (node != null)  {
+			if (node instanceof Joint) {
+				properties.removeByName("Name");
+			}
 		}
-		return super.getProperties(node);
+		return properties;
 	}
-
 
 }

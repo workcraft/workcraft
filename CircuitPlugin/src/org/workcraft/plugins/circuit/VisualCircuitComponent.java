@@ -489,6 +489,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 		g.draw(shape);
 		drawLabelInLocalSpace(r);
+		drawNameInLocalSpace(r);
 		drawContacts(r);
 	}
 

@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -15,7 +14,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.shared.CommonCommentSettings;
 
 @Hotkey(KeyEvent.VK_N)
@@ -31,17 +29,9 @@ public class VisualComment extends VisualComponent implements Container {
 		setForegroundColor(CommonCommentSettings.getBorderColor());
 		setFillColor(CommonCommentSettings.getFillColor());
 		setLabelColor(CommonCommentSettings.getTextColor());
-		modifyPropertyDeclarations();
-	}
-
-	private void modifyPropertyDeclarations() {
-		for (PropertyDescriptor declaration:  new LinkedList<PropertyDescriptor>(getDescriptors())) {
-			if (declaration.getName() == "Label positioning"
-			 || declaration.getName() == "Name color"
-			 || declaration.getName() == "Name positioning") {
-				removePropertyDeclaration(declaration);
-			}
-		}
+		removePropertyDeclarationByName("Label positioning");
+		removePropertyDeclarationByName("Name color");
+		removePropertyDeclarationByName("Name positioning");
 	}
 
 	@Override

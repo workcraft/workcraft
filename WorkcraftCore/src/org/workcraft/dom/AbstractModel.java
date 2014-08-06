@@ -33,8 +33,8 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.util.Func;
 
 /**
@@ -69,9 +69,7 @@ public abstract class AbstractModel implements Model {
 								if (arg instanceof Connection) return "c";
 								if (arg instanceof PageNode) return "pg";
 								if (arg instanceof CommentNode) return "comment";
-
 								if (arg instanceof Container) return "gr";
-
 								return "v";
 							}
 						});
@@ -169,13 +167,12 @@ public abstract class AbstractModel implements Model {
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			if (node instanceof PageNode) {
-				return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-			}
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = new ModelProperties();
+		if ((node != null) && !(node instanceof Connection)) {
+			properties.add(new NamePropertyDescriptor(this, node));
 		}
-		return null;
+		return properties;
 	}
 
 	public ReferenceManager getReferenceManager() {

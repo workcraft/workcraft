@@ -8,9 +8,9 @@ import java.util.Map;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
-public class CpogSettings implements SettingsPage {
+public class CpogSettings implements Settings {
 
 	public enum SatSolver {
 		MINISAT("MiniSat"),

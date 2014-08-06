@@ -37,8 +37,7 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -396,27 +395,23 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
 		if (node != null) {
 			if (node instanceof STGPlace) {
-				STGPlace place = (STGPlace) node;
-				if (!place.isImplicit()) {
-					properties = Properties.Merge.add(properties,
-							new NamePropertyDescriptor(this, place));
+				STGPlace place = (STGPlace)node;
+				if (place.isImplicit()) {
+					properties.removeByName("Name");
 				}
 			} else if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;
-				properties = Properties.Merge.add(properties,
-						new TypePropertyDescriptor(this, transition),
-						new SignalPropertyDescriptor(this, transition),
-						new DirectionPropertyDescriptor(this, transition),
-						new InstancePropertyDescriptor(this, transition));
+				properties.add(new TypePropertyDescriptor(this, transition));
+				properties.add(new SignalPropertyDescriptor(this, transition));
+				properties.add(new DirectionPropertyDescriptor(this, transition));
+				properties.add(new InstancePropertyDescriptor(this, transition));
 			} else if (node instanceof DummyTransition) {
 				DummyTransition dummy = (DummyTransition) node;
-				properties = Properties.Merge.add(properties,
-						new NamePropertyDescriptor(this, dummy),
-						new InstancePropertyDescriptor(this, dummy));
+				properties.add(new InstancePropertyDescriptor(this, dummy));
 			}
 		}
 		return properties;

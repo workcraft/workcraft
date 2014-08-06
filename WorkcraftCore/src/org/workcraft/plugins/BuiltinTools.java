@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.layout.DotLayoutSettings;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.plugins.layout.NullLayoutTool;
@@ -21,13 +21,13 @@ public class BuiltinTools implements Module {
 	public void init(final Framework framework) {
 		final PluginManager p = framework.getPluginManager();
 
-		p.registerClass(SettingsPage.class, CommonEditorSettings.class);
-		p.registerClass(SettingsPage.class, CommonVisualSettings.class);
-		p.registerClass(SettingsPage.class, CommonSimulationSettings.class);
-		p.registerClass(SettingsPage.class, CommonCommentSettings.class);
+		p.registerClass(Settings.class, CommonEditorSettings.class);
+		p.registerClass(Settings.class, CommonVisualSettings.class);
+		p.registerClass(Settings.class, CommonSimulationSettings.class);
+		p.registerClass(Settings.class, CommonCommentSettings.class);
 
-		p.registerClass(SettingsPage.class, DotLayoutSettings.class);
-		p.registerClass(SettingsPage.class, RandomLayoutSettings.class);
+		p.registerClass(Settings.class, DotLayoutSettings.class);
+		p.registerClass(Settings.class, RandomLayoutSettings.class);
 
 		p.registerClass(Tool.class, DotLayoutTool.class, framework);
 		p.registerClass(Tool.class, NullLayoutTool.class);
