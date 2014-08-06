@@ -57,7 +57,7 @@ public class ConnectionTool extends AbstractTool {
 	private String warningMessage = null;
 	private boolean mouseLeftFirstNode = false;
 
-	private static Color highlightColor = new Color(99, 130, 191).brighter();
+	private static Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
 	public ConnectionTool () {
 	}
