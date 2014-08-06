@@ -29,7 +29,9 @@ public class VisualComment extends VisualComponent implements Container {
 		setForegroundColor(CommonCommentSettings.getBorderColor());
 		setFillColor(CommonCommentSettings.getFillColor());
 		setLabelColor(CommonCommentSettings.getTextColor());
-		filterPropertyDeclarations("Label positioning", "Name color", "Name positioning");
+		removePropertyDeclarationByName("Label positioning");
+		removePropertyDeclarationByName("Name color");
+		removePropertyDeclarationByName("Name positioning");
 	}
 
 	@Override

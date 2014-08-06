@@ -401,7 +401,7 @@ public class STG extends AbstractMathModel implements STGModel {
 			if (node instanceof STGPlace) {
 				STGPlace place = (STGPlace)node;
 				if (place.isImplicit()) {
-					properties.filter("Name");
+					properties.removeByName("Name");
 				}
 			} else if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;

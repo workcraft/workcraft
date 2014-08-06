@@ -88,7 +88,7 @@ public class Circuit extends AbstractMathModel {
 		ModelProperties properties = super.getProperties(node);
 		if (node != null)  {
 			if (node instanceof Joint) {
-				properties.filter("Name");
+				properties.removeByName("Name");
 			}
 		}
 		return properties;

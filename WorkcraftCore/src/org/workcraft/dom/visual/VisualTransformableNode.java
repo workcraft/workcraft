@@ -42,7 +42,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "X", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
-				Node node = object;
+				Node node = object.getParent();
 				while ((node != null) && (node instanceof VisualTransformableNode)) {
 					VisualTransformableNode container = (VisualTransformableNode)node;
 					value -= container.getX();
@@ -65,7 +65,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "Y", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
-				Node node = object;
+				Node node = object.getParent();
 				while ((node != null) && (node instanceof VisualTransformableNode)) {
 					VisualTransformableNode container = (VisualTransformableNode)node;
 					value -= container.getY();

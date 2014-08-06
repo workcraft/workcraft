@@ -49,9 +49,12 @@ public class VisualJoint extends VisualComponent {
 
 	public VisualJoint(Joint joint) {
 		super(joint);
-		filterPropertyDeclarations("Fill color",
-				"Label", "Label color", "Label positioning",
-				"Name color", "Name positioning");
+		removePropertyDeclarationByName("Fill color");
+		removePropertyDeclarationByName("Label");
+		removePropertyDeclarationByName("Label color");
+		removePropertyDeclarationByName("Label positioning");
+		removePropertyDeclarationByName("Name color");
+		removePropertyDeclarationByName("Name positioning");
 	}
 
 	public Place getReferencedOnePlace() {

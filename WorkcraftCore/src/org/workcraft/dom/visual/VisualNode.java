@@ -60,8 +60,8 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 		properties.add(declaration);
 	}
 
-	public void filterPropertyDeclarations(String... propertyNames) {
-		properties.filter(propertyNames);
+	public void removePropertyDeclarationByName(String propertyName) {
+		properties.removeByName(propertyName);
 	}
 
 	@Override

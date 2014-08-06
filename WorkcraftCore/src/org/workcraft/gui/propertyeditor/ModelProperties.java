@@ -1,6 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,17 +13,10 @@ public class ModelProperties implements Properties {
 
 	private final LinkedList<PropertyDescriptor> propertyDescriptors = new LinkedList<PropertyDescriptor>();
 
-	public ModelProperties(PropertyDescriptor... descriptors) {
-		for (PropertyDescriptor descriptor : descriptors) {
-			propertyDescriptors.add(descriptor);
-		}
+	public ModelProperties() {
 	}
 
-	public ModelProperties(Properties properties1, Properties properties2) {
-		propertyDescriptors.addAll(properties1.getDescriptors());
-		propertyDescriptors.addAll(properties2.getDescriptors());
-	}
-
+	// Combine descriptors, so several object refer to one property descriptor
 	public ModelProperties(Collection<PropertyDescriptor> descriptors) {
 		LinkedHashMap<Pair<String, Class<?>>, Set<PropertyDescriptor>> categories =
 				new LinkedHashMap<Pair<String, Class<?>>, Set<PropertyDescriptor>>();
@@ -50,21 +42,15 @@ public class ModelProperties implements Properties {
 		}
 	}
 
-	public Collection<PropertyDescriptor> getDescriptors() {
-		return Collections.unmodifiableList(propertyDescriptors);
-	}
-
-	public void add(final Properties properties) {
-		if (properties != null) {
-			for (PropertyDescriptor descriptor : properties.getDescriptors()) {
-				propertyDescriptors.add(descriptor);
-			}
+	public void add(final PropertyDescriptor descriptor) {
+		if (descriptor != null) {
+			propertyDescriptors.add(descriptor);
 		}
 	}
 
-	public void add(final PropertyDescriptor descriptor) {
-		if (descriptor != null) {
-			add(new ModelProperties(descriptor));
+	public void addAll(final Collection<PropertyDescriptor> descriptors) {
+		if (descriptors != null) {
+			propertyDescriptors.addAll(descriptors);
 		}
 	}
 
@@ -74,13 +60,19 @@ public class ModelProperties implements Properties {
 		}
 	}
 
-	public void filter(String... propertyNames) {
-		HashSet<String> propertyNameSet = new HashSet<String>(Arrays.asList(propertyNames));
-		for (PropertyDescriptor descriptor: new LinkedList<PropertyDescriptor>(propertyDescriptors)) {
-			if ((descriptor != null) && propertyNameSet.contains(descriptor.getName())) {
-				remove(descriptor);
+	public void removeByName(final String propertyName) {
+		if (propertyName != null) {
+			for (PropertyDescriptor descriptor: new LinkedList<PropertyDescriptor>(propertyDescriptors)) {
+				if ((descriptor != null) && propertyName.equals(descriptor.getName())) {
+					remove(descriptor);
+				}
 			}
 		}
+	}
+
+	@Override
+	public Collection<PropertyDescriptor> getDescriptors() {
+		return Collections.unmodifiableList(propertyDescriptors);
 	}
 
 }

@@ -105,7 +105,7 @@ public class CPOG extends AbstractMathModel {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node != null)  {
-			properties.filter("Name");
+			properties.removeByName("Name");
 		}
 		return properties;
 	}
