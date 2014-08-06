@@ -63,6 +63,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
@@ -76,6 +77,7 @@ public class SelectionTool extends AbstractTool {
 	private enum DrugState {NONE, MOVE, SELECT};
 	private enum SelectionMode {NONE, ADD, REMOVE, REPLACE};
 
+	static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 	static private final Color selectionColor = new Color(99, 130, 191).brighter();
 	static private final Color selectionBorderColor = new Color(200, 200, 200);
 	static private final Color selectionFillColor = new Color(99, 130, 191, 32);
@@ -96,6 +98,8 @@ public class SelectionTool extends AbstractTool {
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
 	private SelectionMode selectionMode = SelectionMode.NONE;
 	private Rectangle2D selectionBox = null;
+
+	private VisualNode currentNode = null;
 
 	private boolean cancelInPlaceEdit = false;
 
@@ -236,11 +240,13 @@ public class SelectionTool extends AbstractTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
+		currentNode = null;
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
+		currentNode = null;
 	}
 
 	@Override
@@ -312,16 +318,23 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
+		GraphEditor editor = e.getEditor();
+		VisualModel model = editor.getModel();
 		if (dragState == DrugState.MOVE) {
-			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
-			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			selectionOffset(e.getEditor(), p2.getX()-p1.getX(), p2.getY()-p1.getY());
+			Point2D p1 = editor.snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
+			Point2D p2 = editor.snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
+			selectionOffset(editor, p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
-			e.getEditor().repaint();
+			editor.repaint();
+		} else {
+			VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), editor.getModel());
+			if (currentNode != node) {
+				currentNode = node;
+				editor.repaint();
+			}
 		}
 	}
 
@@ -520,11 +533,24 @@ public class SelectionTool extends AbstractTool {
 
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node == editor.getModel().getCurrentLevel()) {
+				if (node == currentNode) {
+					return new Decoration(){
+						@Override
+						public Color getColorisation() {
+							return highlightColor;
+						}
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+					};
+				}
+
+				if (node == editor.getModel().getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
 
-				if(node == editor.getModel().getRoot()) {
+				if (node == editor.getModel().getRoot()) {
 					return new Decoration(){
 						@Override
 						public Color getColorisation() {
@@ -643,71 +669,6 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 	}
-
-//	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
-//		final JTextField text = new JTextField(initialText);
-//		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
-//		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
-//		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 0.3));
-//		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
-//		text.setFont(VisualComponent.labelFont.deriveFont(fontSize));
-//		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-//		text.setHorizontalAlignment(JTextField.CENTER);
-//		text.selectAll();
-//		editor.getOverlay().add(text);
-//		text.requestFocusInWindow();
-//
-//		text.addKeyListener( new KeyListener() {
-//			@Override
-//			public void keyPressed(KeyEvent arg0) {
-//				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-//					cancelInPlaceEdit = false;
-//					text.getParent().remove(text);
-//					editor.requestFocus();
-//				}
-//				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-//					cancelInPlaceEdit = true;
-//					text.getParent().remove(text);
-//					editor.requestFocus();
-//				}
-//			}
-//
-//			@Override
-//			public void keyReleased(KeyEvent arg0) {
-//			}
-//
-//			@Override
-//			public void keyTyped(KeyEvent arg0) {
-//			}
-//		});
-//
-//		text.addFocusListener(new FocusListener() {
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				editor.getWorkspaceEntry().setCanModify(false);
-//			}
-//
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				if (text.getParent() != null)
-//					text.getParent().remove(text);
-//				final String newName = text.getText();
-//				if (!cancelInPlaceEdit) {
-//					editor.getWorkspaceEntry().captureMemento();
-//					try {
-//						component.setLabel(newName);
-//						editor.getWorkspaceEntry().saveMemento();
-//					} catch (ArgumentException e) {
-//						JOptionPane.showMessageDialog(null, e.getMessage());
-//						editLabelInPlace(editor, component, newName);
-//						editor.getWorkspaceEntry().cancelMemento();
-//					}
-//				}
-//				editor.getWorkspaceEntry().setCanModify(true);
-//				editor.repaint();
-//			}
-//		});
-//	}
 
 	protected void changeLevelDown(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
