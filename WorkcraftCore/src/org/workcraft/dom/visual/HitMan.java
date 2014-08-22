@@ -139,13 +139,13 @@ public class HitMan
 		return (T) hitFirst(point, node, Hierarchy.getTypeFilter(type));
 	}
 
-	public static Node hitFirstChild(Point2D point,
-			Node node, Func<Node, Boolean> filter) {
+	public static Node hitFirstChild(Point2D point, Node node, Func<Node, Boolean> filter) {
 		Point2D transformedPoint = transformToChildSpace(point, node);
 		for (Node n : getFilteredChildren(transformedPoint, node)) {
 			Node hit = hitFirst(transformedPoint, n, filter);
-			if (hit != null)
+			if (hit != null) {
 				return hit;
+			}
 		}
 		return null;
 	}
@@ -200,7 +200,7 @@ public class HitMan
 
 
 	public static Node hitTestForSelection(Point2D point, Node node) {
-		Node nd = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
+		Node result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
 				if (!(n instanceof Movable))
 					return false;
@@ -212,8 +212,8 @@ public class HitMan
 			}
 		});
 
-		if (nd == null)
-			nd = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
+		if (result == null)
+			result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
 				public Boolean eval(Node n) {
 					if (n instanceof VisualConnection) {
 						if (n instanceof Hidable)
@@ -226,7 +226,7 @@ public class HitMan
 				}
 			});
 
-		return nd;
+		return result;
 	}
 
 	public static Node hitTestForConnection(Point2D point, Node node) {

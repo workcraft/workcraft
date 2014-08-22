@@ -80,10 +80,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 				break;
 			}
 		}
-		if (renderingResult != null) {
-			updateStepPositions();
-			updateTotalBB();
-		}
 		return renderingResult;
 	}
 
@@ -93,10 +89,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (getRenderingResult()!=null) {
-			return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-		} else {
+		ComponentRenderingResult res = getRenderingResult();
+		if (res == null) {
 			return super.hitTestInLocalSpace(pointInLocalSpace);
+		} else {
+			//updateStepPositions();
+			//updateTotalBB();
+			return res.boundingBox().contains(pointInLocalSpace);
 		}
 	}
 

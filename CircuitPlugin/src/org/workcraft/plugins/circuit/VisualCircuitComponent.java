@@ -256,8 +256,9 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	protected void updateTotalBB() {
-		totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy
-				.getChildrenOfType(this, Touchable.class));
+		totalBB = BoundingBoxHelper.mergeBoundingBoxes(
+				Hierarchy.getChildrenOfType(this, Touchable.class));
+
 		if (contactLabelBB != null && totalBB != null) {
 			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
 		}
@@ -498,15 +499,17 @@ public class VisualCircuitComponent extends VisualComponent implements
 		if (totalBB == null) {
 			updateTotalBB();
 		}
-		if (totalBB != null)
+		if (totalBB != null) {
 			return totalBB;
+		}
 		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
 	}
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (contactLabelBB != null)
+		if (contactLabelBB != null) {
 			return contactLabelBB.contains(pointInLocalSpace);
+		}
 		return false;
 	}
 
@@ -570,17 +573,20 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	@Override
 	public Node customHitTest(Point2D point) {
-		Point2D pointInLocalSpace = getParentToLocalTransform().transform(
-				point, null);
-		for (Node vn : getChildren())
-			if (vn instanceof VisualNode)
-				if (((VisualNode) vn).hitTest(pointInLocalSpace))
+		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+		for (Node vn : getChildren()) {
+			if (vn instanceof VisualNode) {
+				if (((VisualNode) vn).hitTest(pointInLocalSpace)) {
 					return vn;
+				}
+			}
+		}
 
-		if (hitTest(point))
+		if (hitTest(point)) {
 			return this;
-		else
+		} else {
 			return null;
+		}
 	}
 
 	@Override
