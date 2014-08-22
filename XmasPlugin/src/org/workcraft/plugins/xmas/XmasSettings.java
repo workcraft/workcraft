@@ -13,32 +13,19 @@ public class XmasSettings implements Settings {
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "XmasSettings";
 
-	private static final String keyShowArrows  = prefix + ".showArrows";
 	private static final String keyBorderWidth = prefix + ".borderWidth";
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keyJasonFileName  = prefix + ".jasonFileName";
 
-	private static final boolean defaultShowArrows = true;
 	private static final double defaultBorderWidth = 0.1;
 	private static final double defaultWireWidth = 0.04;
 	private static final String defaultJasonFileName = "";
 
-	private static boolean showArrows = defaultShowArrows;
 	private static double borderWidth = defaultBorderWidth;
 	private static double wireWidth = defaultWireWidth;
 	private static String jasonFileName = defaultJasonFileName;
 
 	public XmasSettings() {
-		properties.add(new PropertyDeclaration<XmasSettings, Boolean>(
-				this, "Show arrows", Boolean.class) {
-			protected void setter(XmasSettings object, Boolean value) {
-				XmasSettings.setShowArrows(value);
-			}
-			protected Boolean getter(XmasSettings object) {
-				return XmasSettings.getShowArrows();
-			}
-		});
-
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
 				this, "Border width", Double.class) {
 			protected void setter(XmasSettings object, Double value) {
@@ -77,7 +64,6 @@ public class XmasSettings implements Settings {
 
 	@Override
 	public void load(Config config) {
-		setShowArrows(config.getBoolean(keyShowArrows, defaultShowArrows));
 		setBorderWidth (config.getDouble(keyBorderWidth, defaultBorderWidth));
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
 		setJasonFileName(config.getString(keyJasonFileName, defaultJasonFileName));
@@ -85,7 +71,6 @@ public class XmasSettings implements Settings {
 
 	@Override
 	public void save(Config config) {
-		config.setBoolean(keyShowArrows, getShowArrows());
 		config.setDouble(keyBorderWidth, getBorderWidth());
 		config.setDouble(keyWireWidth, getWireWidth());
 		config.set(keyJasonFileName, getJasonFileName());
@@ -115,14 +100,6 @@ public class XmasSettings implements Settings {
 
 	public static void setWireWidth(double value) {
 		wireWidth = value;
-	}
-
-	public static boolean getShowArrows() {
-		return showArrows;
-	}
-
-	public static void setShowArrows(boolean value) {
-		showArrows = value;
 	}
 
 	public static String getJasonFileName() {
