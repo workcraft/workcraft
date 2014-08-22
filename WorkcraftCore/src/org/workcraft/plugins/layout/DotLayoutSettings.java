@@ -37,7 +37,7 @@ public class DotLayoutSettings implements Settings {
 	private static final String keyDotCommand  = prefix + ".dotCommand";
 
 	private static final String defaultDotCommand = "dot";
-	private static final boolean defaultImportConnectionsShape = false;
+	private static final boolean defaultImportConnectionsShape = true;
 
 	private static String dotCommand = defaultDotCommand;
 	private static boolean importConnectionsShape = defaultImportConnectionsShape;
