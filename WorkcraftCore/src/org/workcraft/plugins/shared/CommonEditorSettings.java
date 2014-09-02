@@ -27,50 +27,37 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
-public class CommonEditorSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
-
+public class CommonEditorSettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "CommonEditorSettings";
-	private static final String backgroundColorKey = prefix + ".backgroundColor";
-	private static final String showGridKey = prefix + ".showGrid";
-	private static final String showRulersKey = prefix + ".showRulers";
-	private static final String iconSizeKey = prefix + ".iconSize";
-	private static final String debugClipboardKey = prefix + ".debugClipboard";
+
+	private static final String keyBackgroundColor = prefix + ".backgroundColor";
+	private static final String keyShowGrid = prefix + ".showGrid";
+	private static final String keyShowRulers = prefix + ".showRulers";
+	private static final String keyRecentCount = prefix + ".recentCount";
+	private static final String keyIconSize = prefix + ".iconSize";
+	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
+	private static final String keyDebugClipboard = prefix + ".debugClipboard";
 
 	private static final Color defaultBackgroundColor = Color.WHITE;
 	private static final boolean defaultShowGrid = true;
 	private static final boolean defaultShowRulers = true;
 	private static final int defaultIconSize = 24;
+	private static final int defaultRecentCount = 10;
+	private static final boolean defaultShowAbsolutePaths = false;
 	private static final boolean defaultDebugClipboard = false;
-	private static boolean showAbsolutePaths = false;
-
-	public static boolean getShowAbsolutePaths() {
-		return showAbsolutePaths;
-	}
-
 
 	private static Color backgroundColor = defaultBackgroundColor;
 	private static boolean showGrid = defaultShowGrid;
 	private static boolean showRulers = defaultShowRulers;
 	private static int iconSize = defaultIconSize;
+	private static int recentCount = defaultRecentCount;
+	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
 	private static boolean debugClipboard = defaultDebugClipboard;
-	public static void setShowAbsolutePaths(boolean showAbsolutePaths) {
-		CommonEditorSettings.showAbsolutePaths = showAbsolutePaths;
-	}
-
-	public String getSection() {
-		return "Common";
-	}
-
-	public String getName() {
-		return "Editor";
-	}
 
 	public CommonEditorSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
 				this, "Background color", Color.class) {
 			protected void setter(CommonEditorSettings object, Color value) {
@@ -111,13 +98,13 @@ public class CommonEditorSettings implements SettingsPage {
 			}
 		});
 
-		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Debug clipboard", Boolean.class) {
-			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setDebugClipboard(value);
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
+				this, "Number of recent files (0-99)", Integer.class) {
+			protected void setter(CommonEditorSettings object, Integer value) {
+				CommonEditorSettings.setRecentCount(value);
 			}
-			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getDebugClipboard();
+			protected Integer getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getRecentCount();
 			}
 		});
 
@@ -130,36 +117,53 @@ public class CommonEditorSettings implements SettingsPage {
 				return CommonEditorSettings.getShowAbsolutePaths();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Debug clipboard", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setDebugClipboard(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getDebugClipboard();
+			}
+		});
 	}
 
-	public static Boolean getDebugClipboard() {
-		return CommonEditorSettings.debugClipboard;
-	}
-
-	public static void setDebugClipboard(Boolean value) {
-		CommonEditorSettings.debugClipboard = value;
-	}
-
+	@Override
 	public List<PropertyDescriptor> getDescriptors() {
 		return properties;
 	}
 
+	@Override
 	public void load(Config config) {
-		setBackgroundColor(config.getColor(backgroundColorKey, defaultBackgroundColor));
-		setShowGrid(config.getBoolean(showGridKey, defaultShowGrid));
-		setShowRulers(config.getBoolean(showRulersKey, defaultShowRulers));
-		setIconSize(config.getInt(iconSizeKey, defaultIconSize));
-		setDebugClipboard(config.getBoolean(debugClipboardKey, defaultDebugClipboard));
-		showAbsolutePaths = config.getBoolean("CommonEditorSettings.showAbsolutePaths", false);
+		setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
+		setShowGrid(config.getBoolean(keyShowGrid, defaultShowGrid));
+		setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
+		setIconSize(config.getInt(keyIconSize, defaultIconSize));
+		setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
+		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
+		setDebugClipboard(config.getBoolean(keyDebugClipboard, defaultDebugClipboard));
 	}
 
+	@Override
 	public void save(Config config) {
-		config.setColor(backgroundColorKey, getBackgroundColor());
-		config.setBoolean(showGridKey, getShowGrid());
-		config.setBoolean(showRulersKey, getShowRulers());
-		config.setInt(iconSizeKey, getIconSize());
-		config.setBoolean(debugClipboardKey, getDebugClipboard());
-		config.setBoolean("CommonEditorSettings.showAbsolutePaths", showAbsolutePaths);
+		config.setColor(keyBackgroundColor, getBackgroundColor());
+		config.setBoolean(keyShowGrid, getShowGrid());
+		config.setBoolean(keyShowRulers, getShowRulers());
+		config.setInt(keyIconSize, getIconSize());
+		config.setInt(keyRecentCount, getRecentCount());
+		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
+		config.setBoolean(keyDebugClipboard, getDebugClipboard());
+	}
+
+	@Override
+	public String getSection() {
+		return "Common";
+	}
+
+	@Override
+	public String getName() {
+		return "Editor";
 	}
 
 	public static Color getBackgroundColor() {
@@ -198,6 +202,37 @@ public class CommonEditorSettings implements SettingsPage {
 			value = 256;
 		}
 		iconSize = value;
+	}
+
+	public static int getRecentCount() {
+		return recentCount;
+	}
+
+	public static void setRecentCount(int value) {
+		if(value < 0) {
+			value = 0;
+		}
+		if (value > 99) {
+			value = 99;
+		}
+		recentCount = value;
+	}
+
+	public static void setShowAbsolutePaths(boolean value) {
+		showAbsolutePaths = value;
+	}
+
+	public static boolean getShowAbsolutePaths() {
+		return showAbsolutePaths;
+	}
+
+
+	public static Boolean getDebugClipboard() {
+		return debugClipboard;
+	}
+
+	public static void setDebugClipboard(Boolean value) {
+		debugClipboard = value;
 	}
 
 }

@@ -7,13 +7,13 @@ import java.util.LinkedList;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
 
-public class CircuitSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
-
+public class CircuitSettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "CircuitSettings";
+
 	private static final String keyShowContacts  = prefix + ".showContacts";
 	private static final String keyActiveWireColor  = prefix + ".activeWireColor";
 	private static final String keyInactiveWireColor  = prefix + ".inactiveWireColor";
@@ -32,14 +32,7 @@ public class CircuitSettings implements SettingsPage {
 	private static Double borderWidth = defaultBorderWidth;
 	private static Double wireWidth = defaultWireWidth;
 
-	@Override
-	public Collection<PropertyDescriptor> getDescriptors() {
-		return properties;
-	}
-
 	public CircuitSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
 				this, "Show contacts", Boolean.class) {
 			protected void setter(CircuitSettings object, Boolean value) {
@@ -92,13 +85,18 @@ public class CircuitSettings implements SettingsPage {
 	}
 
 	@Override
-	public String getName() {
-		return "Digital Circuit";
+	public Collection<PropertyDescriptor> getDescriptors() {
+		return properties;
 	}
 
 	@Override
 	public String getSection() {
 		return "Models";
+	}
+
+	@Override
+	public String getName() {
+		return "Digital Circuit";
 	}
 
 	@Override

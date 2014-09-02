@@ -6,67 +6,26 @@ import java.util.LinkedList;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
 
-public class XmasSettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+public class XmasSettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "XmasSettings";
 
-	private static boolean showArrows = true;
-	private static Double borderWidth=0.1;
-	private static Double wireWidth=0.04;
-	private static String jasonFileName = "";
+	private static final String keyBorderWidth = prefix + ".borderWidth";
+	private static final String keyWireWidth  = prefix + ".wireWidth";
+	private static final String keyJasonFileName  = prefix + ".jasonFileName";
 
-	public static double getBorderWidth() {
-		return borderWidth;
-	}
+	private static final double defaultBorderWidth = 0.1;
+	private static final double defaultWireWidth = 0.04;
+	private static final String defaultJasonFileName = "";
 
-	public static void setBorderWidth(double borderWidth) {
-		XmasSettings.borderWidth = borderWidth;
-	}
-
-	public static double getWireWidth() {
-		return wireWidth;
-	}
-
-	public static void setWireWidth(double wireWidth) {
-		XmasSettings.wireWidth = wireWidth;
-	}
-
-	public static boolean getShowArrows() {
-		return XmasSettings.showArrows;
-	}
-
-	public static void setShowArrows(boolean showArrows) {
-		XmasSettings.showArrows = showArrows;
-	}
-
-	public static String getJasonFileName() {
-		return XmasSettings.jasonFileName;
-	}
-
-	public static void setJasonFileName(String value) {
-		XmasSettings.jasonFileName = value;
-	}
-
-	@Override
-	public Collection<PropertyDescriptor> getDescriptors() {
-		return properties;
-	}
+	private static double borderWidth = defaultBorderWidth;
+	private static double wireWidth = defaultWireWidth;
+	private static String jasonFileName = defaultJasonFileName;
 
 	public XmasSettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
-		properties.add(new PropertyDeclaration<XmasSettings, Boolean>(
-				this, "Show arrows", Boolean.class) {
-			protected void setter(XmasSettings object, Boolean value) {
-				XmasSettings.setShowArrows(value);
-			}
-			protected Boolean getter(XmasSettings object) {
-				return XmasSettings.getShowArrows();
-			}
-		});
-
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
 				this, "Border width", Double.class) {
 			protected void setter(XmasSettings object, Double value) {
@@ -99,8 +58,22 @@ public class XmasSettings implements SettingsPage {
 	}
 
 	@Override
-	public String getName() {
-		return "xMAS Circuit";
+	public Collection<PropertyDescriptor> getDescriptors() {
+		return properties;
+	}
+
+	@Override
+	public void load(Config config) {
+		setBorderWidth (config.getDouble(keyBorderWidth, defaultBorderWidth));
+		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
+		setJasonFileName(config.getString(keyJasonFileName, defaultJasonFileName));
+	}
+
+	@Override
+	public void save(Config config) {
+		config.setDouble(keyBorderWidth, getBorderWidth());
+		config.setDouble(keyWireWidth, getWireWidth());
+		config.set(keyJasonFileName, getJasonFileName());
 	}
 
 	@Override
@@ -109,23 +82,32 @@ public class XmasSettings implements SettingsPage {
 	}
 
 	@Override
-	public void load(Config config) {
-		showArrows = config.getBoolean("XmasSettings.showArrows", true);
-
-		borderWidth  = config.getDouble("XmasSettings.borderWidth", 0.1);
-		wireWidth = config.getDouble("XmasSettings.wireWidth", 0.04);
-
-		jasonFileName = config.getString("XmasSettings.jasonFileName", "");
+	public String getName() {
+		return "xMAS Circuit";
 	}
 
-	@Override
-	public void save(Config config) {
-		config.setBoolean("XmasSettings.showArrows", showArrows);
+	public static double getBorderWidth() {
+		return borderWidth;
+	}
 
-		config.setDouble("XmasSettings.borderWidth", borderWidth);
-		config.setDouble("XmasSettings.wireWidth", wireWidth);
+	public static void setBorderWidth(double value) {
+		borderWidth = value;
+	}
 
-		config.set("XmasSettings.jasonFileName", jasonFileName);
+	public static double getWireWidth() {
+		return wireWidth;
+	}
+
+	public static void setWireWidth(double value) {
+		wireWidth = value;
+	}
+
+	public static String getJasonFileName() {
+		return jasonFileName;
+	}
+
+	public static void setJasonFileName(String value) {
+		jasonFileName = value;
 	}
 
 }

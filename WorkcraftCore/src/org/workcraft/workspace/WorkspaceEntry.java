@@ -183,13 +183,23 @@ public class WorkspaceEntry implements ObservableState {
 		observableState.removeObserver(obs);
 	}
 
+	@Override
+	public void sendNotification (StateEvent e) {
+		observableState.sendNotification(e);
+	}
+
 	public void updateActionState() {
+		MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
 		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
 		MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify);
+		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify);
+		framework.getMainWindow().getMainMenu().getToolsMenu().setEnabled(canModify);
 	}
 
 	public void setCanModify(boolean canModify) {

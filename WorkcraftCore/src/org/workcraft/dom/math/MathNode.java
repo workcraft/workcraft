@@ -53,10 +53,6 @@ public abstract class MathNode implements Node, ObservableState {
 		this.parent = parent;
 	}
 
-	final public void sendNotification(StateEvent e) {
-		observableStateImpl.sendNotification(e);
-	}
-
 	@Override
 	public void addObserver(StateObserver obs) {
 		observableStateImpl.addObserver(obs);
@@ -65,6 +61,11 @@ public abstract class MathNode implements Node, ObservableState {
 	@Override
 	public void removeObserver(StateObserver obs) {
 		observableStateImpl.removeObserver(obs);
+	}
+
+	@Override
+	final public void sendNotification(StateEvent e) {
+		observableStateImpl.sendNotification(e);
 	}
 
 	public boolean requireReferenceConflictResolution() {

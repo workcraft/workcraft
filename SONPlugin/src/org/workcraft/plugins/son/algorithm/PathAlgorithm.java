@@ -42,28 +42,28 @@ public class PathAlgorithm{
 		return result;
 	}
 
-	public void getAllPath(Node start, Node end, List<Node[]> adj){
+	public void getAllPath(Node s, Node v, List<Node[]> adj){
 
-		history.add(start);
+		history.add(s);
 
-		if(start == end){
+		if(s == v){
 			ArrayList<Node> path = new ArrayList<Node>();
-			path.add(start);
+			path.add(s);
 			pathResult.add(path);
 		}
 
 		for (int i=0; i< adj.size(); i++){
-			if (((Node)adj.get(i)[0]).equals(start)){
-				if(((Node)adj.get(i)[1]).equals(end)){
+			if (((Node)adj.get(i)[0]).equals(s)){
+				if(((Node)adj.get(i)[1]).equals(v)){
 					ArrayList<Node> path= new ArrayList<Node>();
 
 					path.addAll(history);
-					path.add(end);
+					path.add(v);
 					pathResult.add(path);
 					continue;
 				}
 				else if(!history.contains((Node)adj.get(i)[1])){
-					getAllPath((Node)adj.get(i)[1], end, adj);
+					getAllPath((Node)adj.get(i)[1], v, adj);
 				}
 				else {
 					ArrayList<Node> cycle=new ArrayList<Node>();
@@ -77,7 +77,7 @@ public class PathAlgorithm{
 				}
 			}
 		}
-		history.remove(start);
+		history.remove(s);
 	}
 
 	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){

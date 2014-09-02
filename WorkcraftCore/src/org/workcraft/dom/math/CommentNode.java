@@ -10,4 +10,5 @@ public class CommentNode extends MathNode {
 	public CommentNode() {
 
 	}
+
 }

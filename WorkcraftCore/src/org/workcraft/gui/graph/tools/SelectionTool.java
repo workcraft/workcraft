@@ -44,7 +44,12 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -72,14 +77,11 @@ public class SelectionTool extends AbstractTool {
 	private enum DrugState {NONE, MOVE, SELECT};
 	private enum SelectionMode {NONE, ADD, REMOVE, REPLACE};
 
+	static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 	static private final Color selectionColor = new Color(99, 130, 191).brighter();
 	static private final Color selectionBorderColor = new Color(200, 200, 200);
 	static private final Color selectionFillColor = new Color(99, 130, 191, 32);
 	static private final Color grayOutColor = Color.LIGHT_GRAY;
-	// node for the MouseOver events
-	private VisualNode mouseOverNode = null;
-
-
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -96,6 +98,8 @@ public class SelectionTool extends AbstractTool {
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
 	private SelectionMode selectionMode = SelectionMode.NONE;
 	private Rectangle2D selectionBox = null;
+
+	private VisualNode currentNode = null;
 
 	private boolean cancelInPlaceEdit = false;
 
@@ -166,9 +170,6 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 
-
-
-
 		groupPanel.add(ungroupButton);
 
 		JPanel levelPanel = new JPanel(new FlowLayout());
@@ -235,30 +236,17 @@ public class SelectionTool extends AbstractTool {
 		rotatePanel.add(rotateCounterclockwiseButton);
 	}
 
-
-	private void resetState(GraphEditor editor) {
-		mouseOverNode = null;
-	}
-
-	private void updateState(GraphEditorMouseEvent e) {
-		Point2D mousePosition = e.getPosition();
-
-		VisualNode node = (VisualNode) HitMan.hitTestForSelection(mousePosition, e.getModel());
-		mouseOverNode = node;
-
-	}
-
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
-		resetState(editor);
+		currentNode = null;
 	}
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		editor.getModel().selectNone();
-		resetState(editor);
+		currentNode = null;
 	}
 
 	@Override
@@ -282,13 +270,14 @@ public class SelectionTool extends AbstractTool {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
 						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
+							return;
 						}
 					}
-
 					if ( model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
 						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
+							return;
 						}
 					}
 
@@ -301,9 +290,13 @@ public class SelectionTool extends AbstractTool {
 				if (e.getClickCount() > 1) {
 					if (node instanceof VisualGroup || node instanceof VisualPage) {
 						changeLevelDown(e.getEditor());
+						return;
+
 					} else if (node instanceof VisualComment) {
 						VisualComment comment = (VisualComment) node;
 						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
+						return;
+
 					}
 				} else {
 					switch (e.getKeyModifiers()) {
@@ -325,23 +318,24 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
+		GraphEditor editor = e.getEditor();
+		VisualModel model = editor.getModel();
 		if (dragState == DrugState.MOVE) {
-			Point2D p1 = e.getEditor().snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
-			Point2D p2 = e.getEditor().snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			selectionOffset(e.getEditor(), p2.getX()-p1.getX(), p2.getY()-p1.getY());
+			Point2D p1 = editor.snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
+			Point2D p2 = editor.snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
+			selectionOffset(editor, p2.getX()-p1.getX(), p2.getY()-p1.getY());
 		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
-			e.getEditor().repaint();
+			editor.repaint();
 		} else {
-			// "mouse over" events
-
+			VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), editor.getModel());
+			if (currentNode != node) {
+				currentNode = node;
+				editor.repaint();
+			}
 		}
-
-		updateState(e);
-
 	}
 
 	@Override
@@ -539,11 +533,24 @@ public class SelectionTool extends AbstractTool {
 
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node == editor.getModel().getCurrentLevel()) {
+				if (node == currentNode) {
+					return new Decoration(){
+						@Override
+						public Color getColorisation() {
+							return highlightColor;
+						}
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+					};
+				}
+
+				if (node == editor.getModel().getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
 
-				if(node == editor.getModel().getRoot()) {
+				if (node == editor.getModel().getRoot()) {
 					return new Decoration(){
 						@Override
 						public Color getColorisation() {
@@ -585,29 +592,45 @@ public class SelectionTool extends AbstractTool {
 	}
 
 	private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
-		final JTextField text = new JTextField(initialText);
+		// Create a text pane without wrapping
+		final JTextPane textPane = new JTextPane() {
+			@Override
+			public boolean getScrollableTracksViewportWidth() {
+				return getUI().getPreferredSize(this).width	<= getParent().getSize().width;
+			}
+		};
+		textPane.setText(initialText.replace("|", "\n"));
+
+		// Align the text to centre
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		StyledDocument document = textPane.getStyledDocument();
+		document.setParagraphAttributes(0, document.getLength(), center, false);
+
+		// Set font size similar to the current editor scale
+		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+		textPane.setFont(VisualComponent.labelFont.deriveFont(fontSize));
+
+		// Add scroll vertical bar (is necessary)
+		final JScrollPane scrollPane = new JScrollPane(textPane);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		// Set the size of the scrollable text editor panel
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
 		Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
-		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 0.3));
-		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
-		text.setFont(VisualComponent.labelFont.deriveFont(fontSize));
-		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-		text.setHorizontalAlignment(JTextField.CENTER);
-		text.selectAll();
-		editor.getOverlay().add(text);
-		text.requestFocusInWindow();
+		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 2.0));
+		scrollPane.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
 
-		text.addKeyListener( new KeyListener() {
+		// Show the text editor panel
+		editor.getOverlay().add(scrollPane);
+		textPane.requestFocusInWindow();
+
+		textPane.addKeyListener( new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					cancelInPlaceEdit = false;
-					text.getParent().remove(text);
-					editor.requestFocus();
-				}
-				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cancelInPlaceEdit = true;
-					text.getParent().remove(text);
 					editor.requestFocus();
 				}
 			}
@@ -621,26 +644,24 @@ public class SelectionTool extends AbstractTool {
 			}
 		});
 
-		text.addFocusListener(new FocusListener() {
+		textPane.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				editor.getWorkspaceEntry().setCanModify(false);
+				cancelInPlaceEdit = false;
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if (text.getParent() != null)
-					text.getParent().remove(text);
-				final String newName = text.getText();
+				final String newText = textPane.getText().replace("\n", "|");
+				scrollPane.getParent().remove(scrollPane);
 				if (!cancelInPlaceEdit) {
-					editor.getWorkspaceEntry().captureMemento();
 					try {
-						component.setLabel(newName);
+						component.setLabel(newText);
 						editor.getWorkspaceEntry().saveMemento();
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
-						editLabelInPlace(editor, component, newName);
-						editor.getWorkspaceEntry().cancelMemento();
+						editLabelInPlace(editor, component, newText);
 					}
 				}
 				editor.getWorkspaceEntry().setCanModify(true);

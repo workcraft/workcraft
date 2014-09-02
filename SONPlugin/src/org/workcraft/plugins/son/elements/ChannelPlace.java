@@ -25,7 +25,7 @@ public class ChannelPlace extends MathNode {
 		return label;
 	}
 
-	public boolean hasToken() {
+	public boolean isMarked() {
 		return token;
 	}
 
@@ -37,9 +37,9 @@ public class ChannelPlace extends MathNode {
 		return errors;
 	}
 
-	public void setToken(boolean token) {
+	public void setMarked(boolean token) {
 		this.token=token;
-		sendNotification( new PropertyChangedEvent(this, "token") );
+		sendNotification( new PropertyChangedEvent(this, "marked") );
 	}
 
 	public Color getForegroundColor() {

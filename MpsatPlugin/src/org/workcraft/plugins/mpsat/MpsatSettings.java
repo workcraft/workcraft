@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -37,6 +40,8 @@ public class MpsatSettings {
 			return choice;
 		}
 	}
+
+	private static final Pattern nodeNamePattern = Pattern.compile("\"\\s*(.+?)\\s*\"");
 
 	private final String name;
 	private final MpsatMode mode;
@@ -91,7 +96,7 @@ public class MpsatSettings {
 		// Form a set of system STG places which came from the circuitStg
 		HashSet<Node> circuitPlaces = new HashSet<Node>();
 		for (Type type: Type.values()) {
-			for (String s : circuitStg.getSignalNames(type)) {
+			for (String s : circuitStg.getSignalReferences(type)) {
 				Node p0 = stg.getNodeByReference(s + "_0");
 				if (p0 == null) {
 					p0 = stg.getNodeByReference("<" + s + "-," + s + "+>");
@@ -110,11 +115,11 @@ public class MpsatSettings {
 		}
 		// Generate Reach expression
 		String result = "";
-		for (String s : circuitStg.getSignalNames(Type.OUTPUT)) {
+		for (String s : circuitStg.getSignalReferences(Type.OUTPUT)) {
 			String circuitPredicate = "";
 			String environmentPredicate = "";
-			for (SignalTransition t: stg.getSignalTransitions(Type.OUTPUT)) {
-				if (!t.getSignalName().equals(s)) continue;
+			for (SignalTransition t: stg.getSignalTransitions()) {
+				if (!t.getSignalType().equals(Type.OUTPUT) || !t.getSignalName().equals(s)) continue;
 				String circuitPreset = "";
 				String environmentPreset = "";
 				for (Node p: stg.getPreset(t)) {
@@ -198,6 +203,18 @@ public class MpsatSettings {
 		return reach;
 	}
 
+	private String getFlatReach() {
+		StringBuffer sb = new StringBuffer(reach.length());
+		Matcher matcher = nodeNamePattern.matcher(reach);
+		while (matcher.find()) {
+			String reference = matcher.group(1);
+			String flatName = NamespaceHelper.getFlatName(reference);
+			matcher.appendReplacement(sb, "\"" + flatName + "\"");
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+
 	public SolutionMode getSolutionMode() {
 		return solutionMode;
 	}
@@ -214,7 +231,8 @@ public class MpsatSettings {
 			try {
 				File reach = File.createTempFile("reach", null);
 				reach.deleteOnExit();
-				FileUtils.dumpString(reach, getReach());
+
+				FileUtils.dumpString(reach, getFlatReach());
 				args.add("-d");
 				args.add("@"+reach.getCanonicalPath());
 			} catch (IOException e) {

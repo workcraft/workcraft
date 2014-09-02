@@ -35,7 +35,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.xmas.components.VisualForkComponent;
 import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
 import org.workcraft.plugins.xmas.components.VisualJoinComponent;
@@ -110,11 +109,6 @@ public class VisualXmas extends AbstractVisualModel {
 			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
 			nearestAncestor.add(connection);
 		}
-	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		return super.getProperties(node);
 	}
 
 	public Collection<Node> getNodes() {

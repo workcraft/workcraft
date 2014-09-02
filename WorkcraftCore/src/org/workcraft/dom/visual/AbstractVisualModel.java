@@ -50,7 +50,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
@@ -330,13 +330,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				node = node.getParent();
 			}
 
-
 			for (Node n: newCurrentLevel.getChildren()) {
 				if (!(n instanceof Collapsible)) continue;
 				((Collapsible)n).setIsCurrentLevelInside(false);
 			}
 		}
-
 	}
 
 
@@ -407,20 +405,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				group.setPosition(groupCenter);
 				select(group);
 			}
-
 		}
 	}
 
 	@Override
 	public void groupPageSelection() {
-
 		Collection<Node> selection = getOrderedCurrentLevelSelection();
-
 		ArrayList<Node> selected = new ArrayList<Node>();
-
-
 		Collection<Node> recursiveSelection = new HashSet<Node>();
-
 		for (Node node : selection) {
 			if (!(node instanceof VisualNode)) continue;
 			recursiveSelection.add(node);
@@ -435,33 +427,24 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				VisualConnection con = (VisualConnection)node;
 				if (!recursiveSelection.contains(con.getFirst())) continue;
 				if (!recursiveSelection.contains(con.getSecond())) continue;
-
 			}
-
 			selected.add(node);
 		}
 
 		if (selected.size() >= 1) {
-
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
 
-
 			Container currentMathLevel;
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
-
+			}
 			currentMathLevel.add(pageNode);
 			getCurrentLevel().add(page);
-
-
-
 			this.reparent(page, this, getCurrentLevel(), selected);
-
-
 
 			// final touch on visual part
 			if (page != null) {
@@ -469,7 +452,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				page.setPosition(groupCenter);
 				select(page);
 			}
-
 		}
 	}
 
@@ -482,31 +464,23 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 		for(Node node : getOrderedCurrentLevelSelection()) {
-
 			if(node instanceof VisualGroup) {
-
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
 				}
 				currentLevel.remove(group);
 			} else if(node instanceof VisualPage) {
-
 				VisualPage page = (VisualPage)node;
-
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
 				toSelect.addAll(nodesToReparent);
-
 				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
-
 				AffineTransform localToParentTransform = page.getLocalToParentTransform();
-
-				for (Node n : nodesToReparent)
+				for (Node n : nodesToReparent) {
 					TransformHelper.applyTransform(n, localToParentTransform);
-
+				}
 				getMathModel().remove(page.getReferencedComponent());
 				getCurrentLevel().remove(page);
-
 			} else {
 				toSelect.add(node);
 			}
@@ -571,22 +545,19 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		return null;
+	public ModelProperties getProperties(Node node) {
+		return new ModelProperties();
 	}
 
-	public static Collection<Node> getMathChildren( Collection<Node> sourceChildren) {
+	public static Collection<Node> getMathChildren(Collection<Node> nodes) {
 		Collection<Node> ret = new HashSet<Node>();
-
-		for (Node n: sourceChildren) {
-
-			if (n instanceof DependentNode) {
-				ret.addAll( ((DependentNode)n).getMathReferences());
-			} else if (n instanceof VisualGroup) {
-				ret.addAll(getMathChildren(n.getChildren()));
+		for (Node node: nodes) {
+			if (node instanceof DependentNode) {
+				ret.addAll( ((DependentNode)node).getMathReferences());
+			} else if (node instanceof VisualGroup) {
+				ret.addAll(getMathChildren(node.getChildren()));
 			}
 		}
-
 		return ret;
 	}
 
@@ -600,38 +571,27 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		// get appropriate math container, it will be the target container for the math model
 		Container mathTargetContainer;
 		mathTargetContainer = mmodel.getRoot();
-
-		if (vis!=null)
+		if (vis!=null) {
 			mathTargetContainer = (Container)vis.getReferencedComponent();
-
+		}
 		return mathTargetContainer;
 	}
 
 	@Override
-	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+		if (srcModel == null) srcModel = this;
+		if (srcChildren==null) srcChildren = srcRoot.getChildren();
+		Container srcMathContainer = getMathContainer((VisualModel)srcModel, srcRoot);
+		Collection<Node> srcMathChildren = getMathChildren(srcChildren);
+		MathModel srcMathModel = ((VisualModel)srcModel).getMathModel();
 
+		MathModel dstMathMmodel = getMathModel();
+		Container dstMathContainer = getMathContainer(this, dstContainer);
+		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		if (sourceModel == null) sourceModel = this;
-		if (sourceChildren==null) sourceChildren = sourceRoot.getChildren();
-
-		MathModel mmodel = getMathModel();
-
-		Container sourceMathContainer = getMathContainer((VisualModel)sourceModel, sourceRoot);
-
-
-		Collection<Node> mchildren = getMathChildren(sourceChildren);
-
-		mmodel.reparent(getMathContainer(this, targetContainer),
-				((VisualModel)sourceModel).getMathModel(), sourceMathContainer,
-				mchildren);
-
-		Collection<Node> children = new HashSet<Node>();
-
-		children.addAll(sourceChildren);
-
-		sourceRoot.reparent(children, targetContainer);
-
-
+		Collection<Node> dstChildren = new HashSet<Node>();
+		dstChildren.addAll(srcChildren);
+		srcRoot.reparent(dstChildren, dstContainer);
 	}
 
 }

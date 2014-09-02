@@ -131,10 +131,10 @@ public class DotGSerialiser implements ModelSerialiser {
 	}
 
 	private void writeSTG(STGModel stg, PrintWriter out) {
-		writeSignalsHeader(out, stg.getSignalNames(Type.INTERNAL), ".internal");
-		writeSignalsHeader(out, stg.getSignalNames(Type.INPUT), ".inputs");
-		writeSignalsHeader(out, stg.getSignalNames(Type.OUTPUT), ".outputs");
-		writeSignalsHeader(out, stg.getDummyNames(), ".dummy");
+		writeSignalsHeader(out, stg.getSignalReferences(Type.INTERNAL), ".internal");
+		writeSignalsHeader(out, stg.getSignalReferences(Type.INPUT), ".inputs");
+		writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), ".outputs");
+		writeSignalsHeader(out, stg.getDummyReferences(), ".dummy");
 
 		out.print(".graph\n");
 
@@ -144,7 +144,7 @@ public class DotGSerialiser implements ModelSerialiser {
 		//out.println();
 
 		//out.print("# Dummy transitions");
-		for (Node n : sortNodes (stg.getDummies(), stg))
+		for (Node n : sortNodes (stg.getDummyTransitions(), stg))
 			writeGraphEntry (out, stg, n);
 		//out.println();
 

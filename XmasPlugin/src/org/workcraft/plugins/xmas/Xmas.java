@@ -26,15 +26,12 @@ import java.util.Collection;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.plugins.xmas.components.ForkComponent;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.JoinComponent;
@@ -44,6 +41,7 @@ import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.XmasConnection;
+import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -88,15 +86,6 @@ public class Xmas extends AbstractMathModel {
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
 	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
-	}
-
 
 	public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();

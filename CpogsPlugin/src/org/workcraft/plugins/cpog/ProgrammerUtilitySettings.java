@@ -1,29 +1,31 @@
 package org.workcraft.plugins.cpog;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
-import org.workcraft.plugins.cpog.EncoderSettings.generationMode;
+import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 
-public class ProgrammerUtilitySettings implements SettingsPage {
-private static LinkedList<PropertyDescriptor> properties;
+public class ProgrammerUtilitySettings implements Settings {
+	private static LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "Tools.encoder";
 
-	private static final String commandKey = "Tools.encoder.command";
-	private static final String solutionModeKey = "Tools.encoder.solutionMode";
-	private static final String extraArgsKey = "Tools.encoder.args";
+	private static final String keyCommand = prefix + ".command";
+	private static final String keySolutionMode = prefix + ".solutionMode";
+	private static final String keyExtraArgs = prefix + ".args";
 
-	private static String command = "scenco";
-	private static generationMode genMode = generationMode.OPTIMAL_ENCODING;
-	private static String extraArgs = "";
+	private static final String defaultCommand = "scenco";
+	private static final GenerationMode defaultSolutionMode = GenerationMode.OPTIMAL_ENCODING;
+	private static final String defaultExtraArgs = "";
+
+	private static String command = defaultCommand;
+	private static GenerationMode solutionMode = defaultSolutionMode;
+	private static String extraArgs = defaultExtraArgs;
 
 	public ProgrammerUtilitySettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<ProgrammerUtilitySettings, String>(
 				this, "Scenco command", String.class) {
 			protected void setter(ProgrammerUtilitySettings object, String value) {
@@ -34,13 +36,13 @@ private static LinkedList<PropertyDescriptor> properties;
 			}
 		});
 
-		properties.add(new PropertyDeclaration<ProgrammerUtilitySettings, generationMode>(
-				this, "Check mode", generationMode.class, generationMode.getChoice()) {
-			protected void setter(ProgrammerUtilitySettings object, generationMode value) {
-				ProgrammerUtilitySettings.setGenerationMode(value);
+		properties.add(new PropertyDeclaration<ProgrammerUtilitySettings, GenerationMode>(
+				this, "Check mode", GenerationMode.class, GenerationMode.getChoice()) {
+			protected void setter(ProgrammerUtilitySettings object, GenerationMode value) {
+				ProgrammerUtilitySettings.setSolutionMode(value);
 			}
-			protected generationMode getter(ProgrammerUtilitySettings object) {
-				return ProgrammerUtilitySettings.getGenerationMode();
+			protected GenerationMode getter(ProgrammerUtilitySettings object) {
+				return ProgrammerUtilitySettings.getSolutionMode();
 			}
 		});
 
@@ -62,16 +64,16 @@ private static LinkedList<PropertyDescriptor> properties;
 
 	@Override
 	public void load(Config config) {
-		command = config.getString(commandKey, "scenco");
-		genMode = config.getEnum(solutionModeKey, generationMode.class, generationMode.OPTIMAL_ENCODING);
-		extraArgs = config.getString(extraArgsKey, "");
+		setCommand(config.getString(keyCommand, defaultCommand));
+		setSolutionMode(config.getEnum(keySolutionMode, GenerationMode.class, defaultSolutionMode));
+		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.set(commandKey, command);
-		config.setEnum(solutionModeKey, generationMode.class, genMode);
-		config.set(extraArgsKey, extraArgs);
+		config.set(keyCommand, getCommand());
+		config.setEnum(keySolutionMode, GenerationMode.class, getSolutionMode());
+		config.set(keyExtraArgs, getExtraArgs());
 	}
 
 	@Override
@@ -89,7 +91,7 @@ private static LinkedList<PropertyDescriptor> properties;
 	}
 
 	public static void setCommand(String value) {
-		ProgrammerUtilitySettings.command = value;
+		command = value;
 	}
 
 	public static String getExtraArgs() {
@@ -97,14 +99,14 @@ private static LinkedList<PropertyDescriptor> properties;
 	}
 
 	public static void setExtraArgs(String value) {
-		ProgrammerUtilitySettings.extraArgs = value;
+		extraArgs = value;
 	}
 
-	public static void setGenerationMode(generationMode value) {
-		ProgrammerUtilitySettings.genMode = value;
+	public static void setSolutionMode(GenerationMode value) {
+		solutionMode = value;
 	}
 
-	public static generationMode getGenerationMode() {
-		return genMode;
+	public static GenerationMode getSolutionMode() {
+		return solutionMode;
 	}
 }

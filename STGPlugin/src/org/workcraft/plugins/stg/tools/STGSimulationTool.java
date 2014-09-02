@@ -25,7 +25,8 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -141,8 +142,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 			label.setText((String) value);
 			label.setForeground(Color.BLACK);
 
-			Color fore = CommonVisualSettings.getEnabledForegroundColor();
-			Color back = CommonVisualSettings.getEnabledBackgroundColor();
+			Color fore = CommonSimulationSettings.getEnabledForegroundColor();
+			Color back = CommonSimulationSettings.getEnabledBackgroundColor();
 
 			Node node = net.getNodeByReference((String) value);
 			if (node instanceof SignalTransition) {
@@ -209,7 +210,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 			Node node = net.getNodeByReference(ref);
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition)node;
-				SignalState signalState = stateMap.get(transition.getSignalName());
+				String signalReference = ((STG)net).getSignalReference(transition);
+				SignalState signalState = stateMap.get(signalReference);
 				if (signalState != null) {
 					switch (transition.getDirection()) {
 					case MINUS:
@@ -235,7 +237,8 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		for(Node node: net.getTransitions()) {
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition)node;
-				SignalState st = stateMap.get(transition.getSignalName());
+				String signalReference = ((STG)net).getSignalReference(transition);
+				SignalState st = stateMap.get(signalReference);
 				if (st != null) {
 					st.excited |= net.isEnabled(transition);
 				}
@@ -255,9 +258,10 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 		for (Node node : net.getTransitions()) {
 			if (node instanceof SignalTransition) {
 				SignalTransition transition = (SignalTransition) node;
-				if (!stateMap.containsKey(transition.getSignalName())) {
+				String signalReference = ((STG)net).getSignalReference(transition);
+				if (!stateMap.containsKey(signalReference)) {
 					SignalState signalState = new SignalState();
-					signalState.name = transition.getSignalName();
+					signalState.name = signalReference;
 					switch (transition.getSignalType()) {
 					case INPUT:
 						signalState.color = inputsColor;
@@ -269,7 +273,7 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 						signalState.color = internalsColor;
 						break;
 					}
-					stateMap.put(signalState.name, signalState);
+					stateMap.put(signalReference, signalState);
 				}
 			}
 		}

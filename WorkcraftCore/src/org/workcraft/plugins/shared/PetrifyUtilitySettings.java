@@ -26,30 +26,34 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
-public class PetrifyUtilitySettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+public class PetrifyUtilitySettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "Tools";
 
-	private static final String petrifyCommandKey = "Tools.petrify.command";
-	private static final String petrifyArgsKey = "Tools.petrify.args";
-	private static final String drawAstgCommandKey = "Tools.draw_astg.command";
-	private static final String drawAstgArgsKey = "Tools.draw_astg.args";
-	private static final String writeSgCommandKey = "Tools.write_sg.command";
-	private static final String writeSgArgsKey = "Tools.write_sg.args";
+	private static final String keyPetrifyCkeyPmmand = prefix + ".petrify.command";
+	private static final String keyPetrifyArgs = prefix + ".petrify.args";
+	private static final String keyDrawAstgCommand = prefix + ".draw_astg.command";
+	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
+	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
+	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
 
-	private static String petrifyCommand = "petrify";
-	private static String petrifyArgs = "";
-	private static String drawAstgCommand = "draw_astg";
-	private static String drawAstgArgs = "";
-	private static String writeSgCommand = "write_sg";
-	private static String writeSgArgs = "";
+	private static final String defaultPetrifyCommand = "petrify";
+	private static final String defaultPetrifyArgs = "-lib tools/petrify.lib";
+	private static final String defaultDrawAstgCommand = "draw_astg";
+	private static final String defaultDrawAstgArgs = "";
+	private static final String defaultWriteSgCommand = "write_sg";
+	private static final String defaultWriteSgArgs = "";
 
-
+	private static String petrifyCommand = defaultPetrifyCommand;
+	private static String petrifyArgs = defaultPetrifyArgs;
+	private static String drawAstgCommand = defaultDrawAstgCommand;
+	private static String drawAstgArgs = defaultDrawAstgArgs;
+	private static String writeSgCommand = defaultWriteSgCommand;
+	private static String writeSgArgs = defaultWriteSgArgs;
 
 	public PetrifyUtilitySettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
 				this, "petrify command", String.class) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
@@ -118,23 +122,23 @@ public class PetrifyUtilitySettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		petrifyCommand = config.getString(petrifyCommandKey, "petrify");
-		petrifyArgs = config.getString(petrifyArgsKey, "-nosi -lib tools/petrify.lib");
-		drawAstgCommand = config.getString(drawAstgCommandKey, "draw_astg");
-		drawAstgArgs= config.getString(drawAstgArgsKey, "");
-		writeSgCommand = config.getString(writeSgCommandKey, "write_sg");
-		writeSgArgs= config.getString(writeSgArgsKey, "");
+		setPetrifyCommand(config.getString(keyPetrifyCkeyPmmand, defaultPetrifyCommand));
+		setPetrifyArgs(config.getString(keyPetrifyArgs, defaultPetrifyArgs));
+		setDrawAstgCommand(config.getString(keyDrawAstgCommand, defaultDrawAstgCommand));
+		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
+		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
+		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
 
 	}
 
 	@Override
 	public void save(Config config) {
-		config.set(petrifyCommandKey, petrifyCommand);
-		config.set(petrifyArgsKey, petrifyArgs);
-		config.set(drawAstgCommandKey, drawAstgCommand);
-		config.set(drawAstgArgsKey, drawAstgArgs);
-		config.set(writeSgCommandKey, writeSgCommand);
-		config.set(writeSgArgsKey, writeSgArgs);
+		config.set(keyPetrifyCkeyPmmand, getPetrifyCommand());
+		config.set(keyPetrifyArgs, getPetrifyArgs());
+		config.set(keyDrawAstgCommand, getDrawAstgCommand());
+		config.set(keyDrawAstgArgs, getDrawAstgArgs());
+		config.set(keyWriteSgCommand, getWriteSgCommand());
+		config.set(keyWriteSgArgs, getWriteSgArgs());
 	}
 
 	@Override
@@ -151,8 +155,8 @@ public class PetrifyUtilitySettings implements SettingsPage {
 		return petrifyCommand;
 	}
 
-	public static void setPetrifyCommand(String petrifyCommand) {
-		PetrifyUtilitySettings.petrifyCommand = petrifyCommand;
+	public static void setPetrifyCommand(String value) {
+		petrifyCommand = value;
 	}
 
 	public static String getPetrifyArgs() {
@@ -160,7 +164,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 	}
 
 	public static void setPetrifyArgs(String value) {
-		PetrifyUtilitySettings.petrifyArgs = value;
+		petrifyArgs = value;
 	}
 
 	public static String getDrawAstgCommand() {
@@ -168,7 +172,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 	}
 
 	public static void setDrawAstgCommand(String value) {
-		PetrifyUtilitySettings.drawAstgCommand = value;
+		drawAstgCommand = value;
 	}
 
 	public static String getDrawAstgArgs() {
@@ -176,7 +180,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 	}
 
 	public static void setDrawAstgArgs(String value) {
-		PetrifyUtilitySettings.drawAstgArgs = value;
+		drawAstgArgs = value;
 	}
 
 	public static String getWriteSgCommand() {
@@ -184,7 +188,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 	}
 
 	public static void setWriteSgCommand(String value) {
-		PetrifyUtilitySettings.writeSgCommand = value;
+		writeSgCommand = value;
 	}
 
 	public static String getWriteSgArgs() {
@@ -192,7 +196,7 @@ public class PetrifyUtilitySettings implements SettingsPage {
 	}
 
 	public static void setWriteSgArgs(String value) {
-		PetrifyUtilitySettings.writeSgArgs = value;
+		writeSgArgs = value;
 	}
 
 }

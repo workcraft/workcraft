@@ -26,13 +26,11 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -75,14 +73,6 @@ public class Dfs extends AbstractMathModel {
 		ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
-	}
-
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
 	}
 
 }

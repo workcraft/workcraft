@@ -26,25 +26,29 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 
-public class MpsatUtilitySettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+public class MpsatUtilitySettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "Tools.mpsat";
 
-	private static final String commandKey = "Tools.mpsat.command";
-	private static final String solutionModeKey = "Tools.mpsat.solutionMode";
-	private static final String extraArgsKey = "Tools.mpsat.args";
-	private static final String debugReachKey = "Tools.mpsat.debugReach";
+	private static final String keyCommand = prefix + ".command";
+	private static final String keySolutionMode = prefix + ".solutionMode";
+	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyDebugReach = prefix + ".debugReach";
 
-	private static String command = "mpsat";
-	private static SolutionMode solutionMode = SolutionMode.MINIMUM_COST;
-	private static String extraArgs = "";
-	private static Boolean debugReach = false;
+	private static final String defaultCommand = "mpsat";
+	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
+	private static final String defaultExtraArgs = "";
+	private static final Boolean defaultDebugReach = false;
+
+	private static String command = defaultCommand;
+	private static SolutionMode solutionMode = defaultSolutionMode;
+	private static String extraArgs = defaultExtraArgs;
+	private static Boolean debugReach = defaultDebugReach;
 
 	public MpsatUtilitySettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
 				this, "MPSat command", String.class) {
 			protected void setter(MpsatUtilitySettings object, String value) {
@@ -93,18 +97,18 @@ public class MpsatUtilitySettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		command = config.getString(commandKey, "mpsat");
-		solutionMode = config.getEnum(solutionModeKey, SolutionMode.class, SolutionMode.FIRST);
-		extraArgs = config.getString(extraArgsKey, "");
-		debugReach = config.getBoolean(debugReachKey, false);
+		setCommand(config.getString(keyCommand, defaultCommand));
+		setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
+		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.set(commandKey, command);
-		config.setEnum(solutionModeKey, SolutionMode.class, solutionMode);
-		config.set(extraArgsKey, extraArgs);
-		config.setBoolean(debugReachKey, debugReach);
+		config.set(keyCommand, getCommand());
+		config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
+		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyDebugReach, getDebugReach());
 	}
 
 	@Override
@@ -122,7 +126,7 @@ public class MpsatUtilitySettings implements SettingsPage {
 	}
 
 	public static void setCommand(String value) {
-		MpsatUtilitySettings.command = value;
+		command = value;
 	}
 
 	public static String getExtraArgs() {
@@ -130,11 +134,11 @@ public class MpsatUtilitySettings implements SettingsPage {
 	}
 
 	public static void setExtraArgs(String value) {
-		MpsatUtilitySettings.extraArgs = value;
+		extraArgs = value;
 	}
 
 	public static void setSolutionMode(SolutionMode value) {
-		MpsatUtilitySettings.solutionMode = value;
+		solutionMode = value;
 	}
 
 	public static SolutionMode getSolutionMode() {
@@ -142,14 +146,15 @@ public class MpsatUtilitySettings implements SettingsPage {
 	}
 
 	public static int getSolutionCount() {
-		return (MpsatUtilitySettings.solutionMode == SolutionMode.ALL) ? 10 : 1;
+		return (solutionMode == SolutionMode.ALL) ? 10 : 1;
 	}
 
 	public static Boolean getDebugReach() {
 		return debugReach;
 	}
 
-	public static void setDebugReach(Boolean debug) {
-		MpsatUtilitySettings.debugReach = debug;
+	public static void setDebugReach(Boolean value) {
+		debugReach = value;
 	}
+
 }

@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -265,19 +265,17 @@ public class VisualPolicyNet extends VisualPetriNet {
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
 			for (VisualBundle vb: getVisualBundles()) {
-				properties = Properties.Merge.add(properties,
-						new BundleNamePropertyDescriptor(this, vb),
-						new BundleColorPropertyDescriptor(this, vb),
-						new TransitionsOfBundlePropertyDescriptor(this, vb));
+				properties.add(new BundleNamePropertyDescriptor(this, vb));
+				properties.add(new BundleColorPropertyDescriptor(this, vb));
+				properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
 			}
 		} else if (node instanceof VisualBundledTransition) {
 			VisualBundledTransition t = (VisualBundledTransition)node;
-			properties = Properties.Merge.add(properties,
-					new BundlesOfTransitionPropertyDescriptor(this, t));
+			properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
 		}
 		return properties;
 	}

@@ -26,20 +26,22 @@ import java.util.List;
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 
-public class PcompUtilitySettings implements SettingsPage {
-	private static LinkedList<PropertyDescriptor> properties;
+public class PcompUtilitySettings implements Settings {
+	private static final LinkedList<PropertyDescriptor> properties  = new LinkedList<PropertyDescriptor>();
+	private static final String prefix = "Tools.pcomp";
 
-	private static final String commandKey = "Tools.pcomp.command";
-	private static final String extraArgsKey = "Tools.pcomp.args";
+	private static final String ketCommand = prefix + ".command";
+	private static final String keyExtraArgs = prefix + ".args";
 
-	private static String command = "pcomp";
-	private static String extraArgs = "";
+	private static final String defaultCommand = "pcomp";
+	private static final String defaultExtraArgs = "";
+
+	private static String command = defaultCommand;
+	private static String extraArgs = defaultExtraArgs;
 
 	public PcompUtilitySettings() {
-		properties = new LinkedList<PropertyDescriptor>();
-
 		properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
 				this, "PComp command", String.class) {
 			protected void setter(PcompUtilitySettings object, String value) {
@@ -68,14 +70,14 @@ public class PcompUtilitySettings implements SettingsPage {
 
 	@Override
 	public void load(Config config) {
-		command = config.getString(commandKey, "pcomp");
-		extraArgs = config.getString(extraArgsKey, "");
+		setCommand(config.getString(ketCommand, defaultCommand));
+		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
 	}
 
 	@Override
 	public void save(Config config) {
-		config.set(commandKey, command);
-		config.set(extraArgsKey, extraArgs);
+		config.set(ketCommand, getCommand());
+		config.set(keyExtraArgs, getExtraArgs());
 	}
 
 	@Override
@@ -93,7 +95,7 @@ public class PcompUtilitySettings implements SettingsPage {
 	}
 
 	public static void setCommand(String value) {
-		PcompUtilitySettings.command = value;
+		command = value;
 	}
 
 	public static String getExtraArgs() {
@@ -101,7 +103,7 @@ public class PcompUtilitySettings implements SettingsPage {
 	}
 
 	public static void setExtraArgs(String value) {
-		PcompUtilitySettings.extraArgs = value;
+		extraArgs = value;
 	}
 
 }

@@ -9,24 +9,21 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.UniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.EventNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -53,6 +50,8 @@ public class SON extends AbstractMathModel implements SONModel {
 					return "q";
 				if (arg instanceof Block)
 					return "b";
+				if (arg instanceof ONGroup)
+					return "group";
 				return "node";
 			}
 		}));
@@ -212,14 +211,6 @@ public class SON extends AbstractMathModel implements SONModel {
 			con.setErrors(0);
 	}
 
-	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			return Properties.Mix.from(new NamePropertyDescriptor(this, node));
-		}
-		return null;
-	}
-
 	final public ChannelPlace createChannelPlace() {
 		return createChannelPlace(null);
 	}
@@ -333,9 +324,9 @@ public class SON extends AbstractMathModel implements SONModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
 
-	public Collection<EventNode> getEventNodes(){
-		ArrayList<EventNode> result = new ArrayList<EventNode>();
-		for(EventNode node :  Hierarchy.getDescendantsOfType(getRoot(), EventNode.class)){
+	public Collection<TransitionNode> getEventNodes(){
+		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
+		for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
 				if(node instanceof Block){
 					if(((Block)node).getIsCollapsed())
 						result.add(node);

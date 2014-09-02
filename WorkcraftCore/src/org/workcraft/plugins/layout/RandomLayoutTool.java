@@ -47,8 +47,8 @@ public class RandomLayoutTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		for (Node n : WorkspaceUtils.getAs(we, VisualModel.class).getRoot().getChildren()) {
 			if (n instanceof VisualTransformableNode) {
-				((VisualTransformableNode)n).setX(RandomLayoutSettings.startX + r.nextDouble()*RandomLayoutSettings.rangeX);
-				((VisualTransformableNode)n).setY(RandomLayoutSettings.startY + r.nextDouble()*RandomLayoutSettings.rangeY);
+				((VisualTransformableNode)n).setX(RandomLayoutSettings.getStartX() + r.nextDouble()*RandomLayoutSettings.getRangeX());
+				((VisualTransformableNode)n).setY(RandomLayoutSettings.getStartY() + r.nextDouble()*RandomLayoutSettings.getRangeY());
 			}
 		}
 	}

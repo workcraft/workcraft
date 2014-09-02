@@ -69,6 +69,8 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public VisualVertex(Vertex vertex) {
 		super(vertex);
+		removePropertyDeclarationByName("Name positioning");
+		removePropertyDeclarationByName("Name color");
 	}
 
 	@Override

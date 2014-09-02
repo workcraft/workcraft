@@ -34,8 +34,8 @@ public class SignalMirrorTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final STG stg = (STG)we.getModelEntry().getMathModel();
 		we.saveMemento();
-		Set<String> inputSignals = stg.getSignalNames(Type.INPUT);
-		Set<String> outputSignals = stg.getSignalNames(Type.OUTPUT);
+		Set<String> inputSignals = stg.getSignalReferences(Type.INPUT);
+		Set<String> outputSignals = stg.getSignalReferences(Type.OUTPUT);
 		for (String signalName: inputSignals) {
 			stg.setSignalType(signalName, Type.OUTPUT);
 		}

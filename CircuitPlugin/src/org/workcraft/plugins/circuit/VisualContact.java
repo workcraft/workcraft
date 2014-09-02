@@ -167,17 +167,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 		});
 
-//		addPropertyDeclaration(new PropertyDeclaration<VisualContact, String>(
-//				this, "Name", String.class) {
-//			protected void setter(VisualContact object, String value) {
-//				object.setName(value);
-//			}
-//			protected String getter(VisualContact object) {
-//				return object.getName();
-//			}
-//		});
-
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
 				this, "Init to one", Boolean.class) {
 			protected void setter(VisualContact object, Boolean value) {
@@ -247,7 +236,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			if (getDirection() == Direction.SOUTH || getDirection() == Direction.WEST) {
 				xx = (float)(-cur.getWidth() - size);
 			}
-			g.drawGlyphVector(gv, xx, (float)-size);
+			g.drawGlyphVector(gv,xx, (float)size/2);
 		}
 	}
 
@@ -344,22 +333,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		getReferencedContact().setName(name);
 	}
 
-
-////
-//	public void updateLocalName(String name) {
-//		resetNameGlyph();
-//		getReferencedContact().setName(name);
-//		sendNotification(new PropertyChangedEvent(this, "name"));
-//	}
-
 	public Contact getReferencedContact() {
 		return (Contact)getReferencedComponent();
 	}
 
 
-	/*
-	 * returns true if
-	 */
 	public static boolean isDriver(Node node) {
 		if (node instanceof VisualContact) {
 			VisualContact contact = (VisualContact)node;

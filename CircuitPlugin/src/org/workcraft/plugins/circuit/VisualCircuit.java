@@ -37,7 +37,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -208,19 +208,15 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		Properties properties = super.getProperties(node);
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
-			properties = Properties.Merge.add(properties, new EnvironmentFilePropertyDescriptor(this));
-		}
-
-		if (node instanceof VisualFunctionContact) {
+			properties.add(new EnvironmentFilePropertyDescriptor(this));
+		} else if (node instanceof VisualFunctionContact) {
 			VisualFunctionContact contact = (VisualFunctionContact)node;
 			VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
-
-			properties = Properties.Merge.add(properties,
-					props.getSetProperty(contact),
-					props.getResetProperty(contact));
+			properties.add(props.getSetProperty(contact));
+			properties.add(props.getResetProperty(contact));
 		}
 		return properties;
 	}

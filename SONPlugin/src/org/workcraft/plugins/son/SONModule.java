@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.SettingsPage;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.son.serialisation.SONConnectionDeserialiser;
 import org.workcraft.plugins.son.serialisation.SONConnectionSerialiser;
 import org.workcraft.plugins.son.serialisation.VisualONGroupDeserialiser;
@@ -26,7 +26,7 @@ public class SONModule implements Module{
 
 	public void init(Framework framework) {
 		framework.getPluginManager().registerClass(ModelDescriptor.class, SONModelDescriptor.class);
-		framework.getPluginManager().registerClass(SettingsPage.class, SONSettings.class);
+		framework.getPluginManager().registerClass(Settings.class, SONSettings.class);
 		framework.getPluginManager().registerClass(Tool.class, TestTool.class, framework);
 		//structural verification
 		framework.getPluginManager().registerClass(Tool.class, StructurePropertyChecker.class, framework);

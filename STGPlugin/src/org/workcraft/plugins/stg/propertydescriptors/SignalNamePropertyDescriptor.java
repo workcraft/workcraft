@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg.propertydescriptors;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.workcraft.dom.Container;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -10,10 +11,12 @@ import org.workcraft.plugins.stg.SignalTransition;
 public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 	private final STG stg;
 	private final String signal;
+	private final Container container;
 
-	public SignalNamePropertyDescriptor(STG stg, String signal) {
+	public SignalNamePropertyDescriptor(STG stg, String signal, Container container) {
 		this.stg = stg;
 		this.signal = signal;
+		this.container = container;
 	}
 
 	@Override
@@ -44,7 +47,7 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		if ( !signal.equals(value) ) {
-			for (SignalTransition transition : stg.getSignalTransitions(signal)) {
+			for (SignalTransition transition : stg.getSignalTransitions(signal, container)) {
 				stg.setName(transition, (String)value);
 			}
 		}

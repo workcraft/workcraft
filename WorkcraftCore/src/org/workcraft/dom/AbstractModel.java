@@ -33,8 +33,8 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.propertyeditor.DefaultNamePropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
 
 /**
@@ -69,9 +69,7 @@ public abstract class AbstractModel implements Model {
 								if (arg instanceof Connection) return "c";
 								if (arg instanceof PageNode) return "pg";
 								if (arg instanceof CommentNode) return "comment";
-
 								if (arg instanceof Container) return "gr";
-
 								return "v";
 							}
 						});
@@ -155,7 +153,6 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public String getNodeReference(Node node) {
-
 		return getNodeReference(null, node);
 	}
 
@@ -164,37 +161,23 @@ public abstract class AbstractModel implements Model {
 		return referenceManager.getNodeByReference(provider, reference);
 	}
 
-	public Node getNodeByReferenceQuiet(NamespaceProvider provider, String reference) {
-
-		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager) {
-			HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)referenceManager;
-			return manager.getNodeByReferenceQuiet(provider, reference);
-		}
-
-
-		return referenceManager.getNodeByReference(provider, reference);
-	}
-
-
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-
 		return referenceManager.getNodeReference(provider, node);
 	}
 
 	@Override
-	public Properties getProperties(Node node) {
-		if (node != null) {
-			if (node instanceof PageNode)
-				return Properties.Mix.from(new DefaultNamePropertyDescriptor(this, node));
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = new ModelProperties();
+		if ((node != null) && !(node instanceof Connection)) {
+			properties.add(new NamePropertyDescriptor(this, node));
 		}
-		return null;
+		return properties;
 	}
 
 	public ReferenceManager getReferenceManager() {
 		return referenceManager;
 	}
-
 
 	public String getName(Node node) {
 
@@ -205,9 +188,9 @@ public abstract class AbstractModel implements Model {
 	}
 
 	public void setName(Node node, String name) {
-
-		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
+		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager) {
 			((HierarchicalUniqueNameReferenceManager)referenceManager).setName(node, name);
+		}
 	}
 
 	public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {

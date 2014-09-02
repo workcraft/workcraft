@@ -1,23 +1,20 @@
-package org.workcraft.plugins.dfs;
+package org.workcraft.gui.propertyeditor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.observation.ObservableState;
+import org.workcraft.observation.PropertyChangedEvent;
 
 public class NamePropertyDescriptor implements PropertyDescriptor {
-	private final Dfs model;
+	private final AbstractModel model;
 	private final Node node;
 
-	public NamePropertyDescriptor(Dfs model, Node node) {
+	public NamePropertyDescriptor(AbstractModel model, Node node) {
 		this.model = model;
 		this.node = node;
-	}
-
-	@Override
-	public boolean isWritable() {
-		return true;
 	}
 
 	@Override
@@ -28,10 +25,13 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		model.setName(node, (String)value);
+		if (node instanceof ObservableState) {
+			((ObservableState)node).sendNotification(new PropertyChangedEvent(node, "name"));
+		}
 	}
 
 	@Override
-	public Map<Object, String> getChoice() {
+	public Map<? extends Object, String> getChoice() {
 		return null;
 	}
 
@@ -43,6 +43,11 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 	@Override
 	public Class<?> getType() {
 		return String.class;
+	}
+
+	@Override
+	public boolean isWritable() {
+		return true;
 	}
 
 	@Override

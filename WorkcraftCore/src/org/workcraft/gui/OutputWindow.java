@@ -42,6 +42,21 @@ public class OutputWindow extends JPanel {
 	private JScrollPane scrollStdOut;
 	private JTextArea txtStdOut;
 
+	public OutputWindow(Framework framework) {
+		txtStdOut = new JTextArea();
+		txtStdOut.setLineWrap(true);
+		txtStdOut.setEditable(false);
+		txtStdOut.setWrapStyleWord(true);
+		txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		txtStdOut.addMouseListener(new LogAreaMouseListener());
+
+		scrollStdOut = new JScrollPane();
+		scrollStdOut.setViewportView(txtStdOut);
+
+		setLayout(new BorderLayout(0,0));
+		this.add(scrollStdOut, BorderLayout.CENTER);
+	}
+
 	class OutputStreamView extends FilterOutputStream {
 		JTextArea target;
 
@@ -63,45 +78,26 @@ public class OutputWindow extends JPanel {
 			systemOut.write(b, off, len);
 			String s = new String(b , off , len);
 			txtStdOut.append(s);
-		//	txtStdOut.setCaretPosition(txtStdOut.getDocument().getLength());
 		}
 	}
 
 	public void captureStream() {
-		if (streamCaptured)
-			return;
+		if (!streamCaptured) {
+			PrintStream outPrintStream = new PrintStream(new OutputStreamView(
+					new ByteArrayOutputStream(), txtStdOut));
 
-		PrintStream outPrintStream = new PrintStream(
-				new OutputStreamView(
-						new ByteArrayOutputStream(), txtStdOut));
-
-		systemOut = System.out;
-
-		System.setOut(outPrintStream);
-
-		streamCaptured = true;
+			systemOut = System.out;
+			System.setOut(outPrintStream);
+			streamCaptured = true;
+		}
 	}
 
 	public void releaseStream() {
-		if (!streamCaptured)
-			return;
-
-		System.setOut(systemOut);
-		systemOut = null;
-		streamCaptured = false;
+		if (streamCaptured) {
+			System.setOut(systemOut);
+			systemOut = null;
+			streamCaptured = false;
+		}
 	}
 
-	public OutputWindow (Framework framework) {
-		txtStdOut = new JTextArea();
-		txtStdOut.setLineWrap(true);
-		txtStdOut.setEditable(false);
-		txtStdOut.setWrapStyleWord(true);
-		txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-
-		scrollStdOut = new JScrollPane();
-		scrollStdOut.setViewportView(txtStdOut);
-
-		setLayout(new BorderLayout(0,0));
-		this.add(scrollStdOut, BorderLayout.CENTER);
-	}
 }
