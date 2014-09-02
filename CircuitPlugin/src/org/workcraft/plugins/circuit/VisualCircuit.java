@@ -24,6 +24,7 @@ package org.workcraft.plugins.circuit;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -103,10 +104,16 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualComponent c1 = (VisualComponent) first;
 			VisualComponent c2 = (VisualComponent) second;
 			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+
 			VisualCircuitConnection connection = new VisualCircuitConnection(con, c1, c2);
 			Node parent = Hierarchy.getCommonParent(c1, c2);
+
 			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
 			nearestAncestor.add(connection);
+
+			LinkedList<Node> list = new LinkedList<Node>();
+			list.add(con);
+			((Container)(con.getParent())).reparent(list, getMathContainer(this, nearestAncestor));
 		}
 	}
 
