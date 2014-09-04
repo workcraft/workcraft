@@ -81,13 +81,11 @@ public class Hierarchy {
 		return result;
 	}
 
-
 	public static Node getTopParent(Node node) {
 		Node top = node;
 		while (top.getParent()!=null) top=top.getParent();
 		return top;
 	}
-
 
 	public static Node getCommonParent(Node... nodes) {
 		ArrayList<Node[]> paths = new ArrayList<Node[]>(nodes.length);

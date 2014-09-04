@@ -24,6 +24,7 @@ package org.workcraft.plugins.circuit;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -31,6 +32,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -99,14 +101,25 @@ public class VisualCircuit extends AbstractVisualModel {
 	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
-		if (first instanceof VisualComponent && second instanceof VisualComponent) {
-			VisualComponent c1 = (VisualComponent) first;
-			VisualComponent c2 = (VisualComponent) second;
-			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			VisualCircuitConnection connection = new VisualCircuitConnection(con, c1, c2);
-			Node parent = Hierarchy.getCommonParent(c1, c2);
-			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
-			nearestAncestor.add(connection);
+		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
+			VisualComponent vComponent1 = (VisualComponent)first;
+			MathNode mComponent1 = vComponent1.getReferencedComponent();
+
+			VisualComponent vComponent2 = (VisualComponent)second;
+			MathNode mComponent2 = vComponent2.getReferencedComponent();
+
+			MathConnection mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
+			VisualCircuitConnection vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
+
+			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
+			VisualGroup vGroup = Hierarchy.getNearestAncestor(vParent, VisualGroup.class);
+			vGroup.add(vConnection);
+
+			Container mParent = (Container)(mConnection.getParent());
+			Container mContainer = getMathContainer(this, vGroup);
+			LinkedList<Node> mConnections = new LinkedList<Node>();
+			mConnections.add(mConnection);
+			mParent.reparent(mConnections, mContainer);
 		}
 	}
 
