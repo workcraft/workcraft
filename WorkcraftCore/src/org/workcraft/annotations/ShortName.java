@@ -19,16 +19,15 @@
 *
 */
 
-package org.workcraft.plugins.circuit;
+package org.workcraft.annotations;
 
-import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.math.MathNode;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-
-@VisualClass(org.workcraft.plugins.circuit.VisualJoint.class)
-public class Joint extends MathNode {
-
-	public Joint() {
-	}
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface ShortName {
+	String value();
 }

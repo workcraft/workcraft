@@ -200,41 +200,40 @@ public class MainWindow extends JFrame {
 
 	private DockableWindow createDockableWindow(JComponent component,
 			String name, int options, String relativeRegion, float split) {
-		return createDockableWindow(component, name, null, options,
+		return createDockableWindow(component, name, null, null, options,
 				relativeRegion, split, name);
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options,
-			String relativeRegion, float split) {
-		return createDockableWindow(component, name, neighbour, options,
+			String name, Dockable neighbour, int options, String relativeRegion, float split) {
+		return createDockableWindow(component, name, null, neighbour, options,
 				relativeRegion, split, name);
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options,
+			String title, Dockable neighbour, int options,
 			String relativeRegion, String persistentID) {
-		int ID = getNextDockableID();
 
+		int ID = getNextDockableID();
 		DockableWindowContentPanel panel = new DockableWindowContentPanel(this,
-				ID, name, component, options);
+				ID, title, component, options);
+
 		DockableWindow dockable = new DockableWindow(this, panel, persistentID);
 		DockingManager.registerDockable(dockable);
-
 		IDToDockableWindowMap.put(ID, dockable);
 
-		if (neighbour != null)
+		if (neighbour != null) {
 			DockingManager.dock(dockable, neighbour, relativeRegion);
-		else
+		} else {
 			DockingManager.dock(dockable, rootDockingPort, relativeRegion);
-
+		}
 		return dockable;
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options,
+			String title, String tooltip, Dockable neighbour, int options,
 			String relativeRegion, float split, String persistentID) {
-		DockableWindow dockable = createDockableWindow(component, name,
+		DockableWindow dockable = createDockableWindow(component, title,
 				neighbour, options, relativeRegion, persistentID);
 		DockingManager.setSplitProportion(dockable, split);
 		return dockable;
@@ -244,7 +243,6 @@ public class MainWindow extends JFrame {
 		if (we.getModelEntry() == null) {
 			throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
 		}
-
 		ModelEntry modelEntry = we.getModelEntry();
 		ModelDescriptor descriptor = modelEntry.getDescriptor();
 		VisualModel visualModel = null;
@@ -321,7 +319,6 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		editorWindow.setTabEventsEnabled(true);
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
 		setWorkActionsEnableness(true);
@@ -424,7 +421,7 @@ public class MainWindow extends JFrame {
 				DockingManager.SOUTH_REGION, 0.5f);
 
 		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(),
-				"", outputDockable, 0, DockingManager.NORTH_REGION, 0.8f,
+				"", null, outputDockable, 0, DockingManager.NORTH_REGION, 0.8f,
 				"DocumentPlaceholder");
 
 		DockingManager.display(outputDockable);
@@ -788,26 +785,27 @@ public class MainWindow extends JFrame {
 
 	public void requestFocus(GraphEditorPanel sender) {
 		sender.requestFocusInWindow();
-		if (editorInFocus == sender) return;
+		if (editorInFocus != sender) {
+			editorInFocus = sender;
 
-		editorInFocus = sender;
+			toolboxWindow.setContent(sender.getToolBox());
+			toolInterfaceWindow.setContent(sender.getToolBox().getControlPanel());
 
-		toolboxWindow.setContent(sender.getToolBox());
-		toolInterfaceWindow.setContent(sender.getToolBox().getControlPanel());
+			mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 
-		mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
+			mainMenu.revalidate();
+			mainMenu.repaint();
+			sender.updatePropertyView();
 
-		mainMenu.revalidate();
-		mainMenu.repaint();
-		sender.updatePropertyView();
+			framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
+			framework.setJavaScriptProperty("visualModel", sender.getModel(),
+					framework.getJavaScriptGlobalScope(), true);
 
-		framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
-		framework.setJavaScriptProperty("visualModel", sender.getModel(),
-				framework.getJavaScriptGlobalScope(), true);
-
-		framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
-		framework.setJavaScriptProperty("model", sender.getModel().getMathModel(),
-				framework.getJavaScriptGlobalScope(), true);
+			framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
+			framework.setJavaScriptProperty("model", sender.getModel().getMathModel(),
+					framework.getJavaScriptGlobalScope(), true);
+		}
+		editorInFocus.requestFocus();
 	}
 
 	private void printCause(Throwable e) {
@@ -1132,18 +1130,27 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getTitle(WorkspaceEntry we, VisualModel model) {
-		return we.getTitle() + " - " + model.getDisplayName();
+		switch (CommonEditorSettings.getTitleStyle()) {
+		case LONG: return we.getTitle() + " - " + model.getDisplayName();
+		case SHORT:	return we.getTitle() + " [" + model.getShortName() + "]";
+		default: return we.getTitle();
+		}
 	}
 
 	public void refreshTitle(WorkspaceEntry we) {
 		for (DockableWindow w : editorWindows.get(we)) {
-			final GraphEditorPanel editor = new GraphEditorPanel(
-					MainWindow.this, we);
+			final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
 			String title = getTitle(we, editor.getModel());
 			w.getContentPanel().setTitle(title);
 			w.setTabText(title);
 		}
 		DockableWindow.updateHeaders(rootDockingPort,getDefaultActionListener());
+	}
+
+	public void refreshAllTitles() {
+		for (WorkspaceEntry we : editorWindows.keySet()) {
+			refreshTitle(we);
+		}
 	}
 
 	public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
@@ -1159,8 +1166,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void repaintCurrentEditor() {
-		if (editorInFocus != null)
+		if (editorInFocus != null) {
 			editorInFocus.repaint();
+		}
 	}
 
 	public PropertyEditorWindow getPropertyView() {
@@ -1172,35 +1180,40 @@ public class MainWindow extends JFrame {
 	}
 
 	public void closeActiveEditor() throws OperationCancelledException {
-		for (WorkspaceEntry k : editorWindows.keySet())
-			for (DockableWindow w : editorWindows.get(k))
+		for (WorkspaceEntry k : editorWindows.keySet()) {
+			for (DockableWindow w : editorWindows.get(k)) {
 				if (w.getContentPanel().getContent() == editorInFocus) {
 					closeDockableWindow(w);
 					return;
 				}
+			}
+		}
 	}
 
 	public void closeEditorWindows() throws OperationCancelledException {
 		LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>();
 
-		for (WorkspaceEntry k : editorWindows.keySet())
-			for (DockableWindow w : editorWindows.get(k))
+		for (WorkspaceEntry k : editorWindows.keySet()) {
+			for (DockableWindow w : editorWindows.get(k)) {
 				windowsToClose.add(w);
-
-		for (DockableWindow w : windowsToClose) {
-			if (DockingManager.isMaximized(w))
-				toggleDockableWindowMaximized(w.getID());
+			}
 		}
 
-		for (DockableWindow w : windowsToClose)
+		for (DockableWindow w : windowsToClose) {
+			if (DockingManager.isMaximized(w)) {
+				toggleDockableWindowMaximized(w.getID());
+			}
+		}
+
+		for (DockableWindow w : windowsToClose) {
 			closeDockableWindow(w);
+		}
 	}
 
-	public void closeEditors(WorkspaceEntry openFile)
-			throws OperationCancelledException {
-		for (DockableWindow w : new ArrayList<DockableWindow>(
-				editorWindows.get(openFile)))
+	public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException {
+		for (DockableWindow w : new ArrayList<DockableWindow>(editorWindows.get(openFile))) {
 			closeDockableWindow(w);
+		}
 	}
 
 	public void undo()  {
@@ -1262,6 +1275,7 @@ public class MainWindow extends JFrame {
 		dlg.setModal(true);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
+		refreshAllTitles();
 	}
 
 	public void resetLayout() {

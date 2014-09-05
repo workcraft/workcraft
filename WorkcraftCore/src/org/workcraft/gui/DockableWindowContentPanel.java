@@ -26,8 +26,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -36,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import org.flexdock.docking.Dockable;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -46,6 +43,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableWindowContentPanel extends JPanel {
+
 	static public class ViewAction extends Action {
 		public static final int CLOSE_ACTION = 1;
 		public static final int MINIMIZE_ACTION = 2;
@@ -99,13 +97,12 @@ public class DockableWindowContentPanel extends JPanel {
 			setLayout(new BorderLayout());
 
 			Color c;
-
 			if (UIManager.getLookAndFeel().getName().contains("Substance")) {
 				c = getBackground();
 				c = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
-			} else
+			} else {
 				c = UIManager.getColor("InternalFrame.activeTitleBackground");
-
+			}
 			setBackground(c);
 
 			if  (options != 0) {
@@ -117,10 +114,9 @@ public class DockableWindowContentPanel extends JPanel {
 			}
 
 			int icons = 0;
-
 			if ( (options & MINIMIZE_BUTTON) != 0) {
 				btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
-						new ViewAction(ID, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
+						new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				btnMin.setToolTipText("Toggle minimized");
 				buttonPanel.add(btnMin);
 				icons ++;
@@ -128,7 +124,7 @@ public class DockableWindowContentPanel extends JPanel {
 
 			if ( (options & MAXIMIZE_BUTTON) != 0) {
 				btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
-						new ViewAction(ID, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
+						new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
 				buttonPanel.add(btnMax);
 				icons ++;
 			}
@@ -136,7 +132,7 @@ public class DockableWindowContentPanel extends JPanel {
 			if ( (options & CLOSE_BUTTON) != 0) {
 				//System.out.println (UIManager.getColor("InternalFrame.activeTitleGradient"));
 				btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
-						new ViewAction(ID, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
+						new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
 				btnClose.setToolTipText("Close window");
 				buttonPanel.add(btnClose);
 				icons ++;
@@ -144,15 +140,12 @@ public class DockableWindowContentPanel extends JPanel {
 
 			if (icons != 0) {
 				buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
-
 			}
-
 
 			titleLabel = new JLabel(" "+ title);
 			titleLabel.setOpaque(false);
 			titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
 			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-
 			add(titleLabel, BorderLayout.WEST);
 
 			setMaximized(false);
@@ -191,44 +184,25 @@ public class DockableWindowContentPanel extends JPanel {
 	private JPanel contentPane;
 	public final DockableViewHeader header;
 	private MainWindow mainWindow;
-	private int ID;
+	private int id;
 	private int options;
-	private Dockable dockable = null;
 
-	public boolean isMaximized() {
-		if (header != null)
-			return header.isMaximized();
-		else
-			return false;
-	}
+	public DockableWindowContentPanel (MainWindow mainWindow,
+			int id, String title, JComponent content, int options) {
 
-	public void setMaximized(boolean maximized) {
-		if (header != null)
-			header.setMaximized(maximized);
-	}
-
-	public Dockable getDockable() {
-		return dockable;
-	}
-
-	public void setDockable(Dockable dockable) {
-		this.dockable = dockable;
-	}
-
-	public DockableWindowContentPanel (MainWindow mainWindow, int ID, String title, JComponent content, int options) {
 		super();
 		setLayout(new BorderLayout(0, 0));
 
 		this.title = title;
 		this.mainWindow = mainWindow;
-		this.ID = ID;
+		this.id = id;
 		this.content = content;
 
-		if ( (options & ~HEADER) > 0)
+		if ( (options & ~HEADER) > 0) {
 			this.options = options | HEADER;
-		else
+		} else {
 			this.options = options;
-
+		}
 		header = new DockableViewHeader(title, options);
 
 		contentPane = new JPanel();
@@ -236,23 +210,34 @@ public class DockableWindowContentPanel extends JPanel {
 		contentPane.add(content,BorderLayout.CENTER);
 		contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), 2));
 
-		if ((options & HEADER) > 0)
+		if ((options & HEADER) > 0) {
 			contentPane.add(header, BorderLayout.NORTH);
-
+		}
 		add(contentPane, BorderLayout.CENTER);
-
 		setFocusable(false);
+	}
 
+	public boolean isMaximized() {
+		if (header != null) {
+			return header.isMaximized();
+		} else {
+			return false;
+		}
+	}
+
+	public void setMaximized(boolean maximized) {
+		if (header != null)
+			header.setMaximized(maximized);
 	}
 
 	public void setHeaderVisible(boolean headerVisible) {
 		if (headerVisible && ((options & HEADER) > 0)) {
-			if (header.getParent() != contentPane)
+			if (header.getParent() != contentPane) {
 				contentPane.add(header, BorderLayout.NORTH);
-		}
-		else
+			}
+		} else {
 			contentPane.remove(header);
-
+		}
 		contentPane.doLayout();
 	}
 
@@ -261,12 +246,12 @@ public class DockableWindowContentPanel extends JPanel {
 	}
 
 	public void setTitle(String title) {
+		this.title = title;
 		header.setTitle(title);
-
 	}
 
 	public int getID() {
-		return ID;
+		return id;
 	}
 
 	public JComponent getContent() {

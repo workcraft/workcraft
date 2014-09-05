@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
@@ -55,13 +56,9 @@ public abstract class AbstractModel implements Model {
 
 	public AbstractModel(Container root, ReferenceManager referenceManager) {
 		this.root = root;
-
 		this.referenceManager = referenceManager;
-
 		if (this.referenceManager==null) {
-
 			if (root instanceof NamespaceProvider) {
-
 				this.referenceManager =
 						new HierarchicalUniqueNameReferenceManager(null, new Func<Node, String>() {
 							@Override
@@ -73,14 +70,10 @@ public abstract class AbstractModel implements Model {
 								return "v";
 							}
 						});
-
 			} else {
-
 				this.referenceManager = new DefaultReferenceManager();
 			}
 		}
-
-
 		nodeContextTracker.attach(root);
 		this.referenceManager.attach(root);
 	}
@@ -116,10 +109,30 @@ public abstract class AbstractModel implements Model {
 
 	public String getDisplayName() {
 		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
-		if (name == null)
+		if (name == null) {
 			return this.getClass().getSimpleName();
-		else
+		} else {
 			return name.value();
+		}
+	}
+
+	public String getShortName() {
+		ShortName name = this.getClass().getAnnotation(ShortName.class);
+		if (name != null) {
+			return name.value();
+		} else {
+			String result = "";
+			String s = getDisplayName();
+			boolean b = true;
+			for (int i = 0; i < s.length(); i++) {
+				char c = s.charAt(i);
+				if (b && !Character.isSpaceChar(c) || Character.isUpperCase(c)) {
+					result += c;
+				}
+				b = Character.isSpaceChar(c);
+			}
+			return result;
+		}
 	}
 
 	final public String getTitle() {

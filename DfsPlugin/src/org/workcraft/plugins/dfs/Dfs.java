@@ -35,7 +35,6 @@ import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
-@DisplayName ("Dataflow Structure")
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
 public class Dfs extends AbstractMathModel {
 

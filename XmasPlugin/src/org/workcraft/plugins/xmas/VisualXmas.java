@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -49,7 +50,8 @@ import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 import org.workcraft.util.Hierarchy;
 
 
-@DisplayName("xMAS")
+@DisplayName("xMAS Circuit")
+@ShortName("xMAS")
 @CustomTools ( XmasToolsProvider.class )
 public class VisualXmas extends AbstractVisualModel {
 

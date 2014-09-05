@@ -21,15 +21,11 @@
 
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-
-@DisplayName("FunctionContact")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
-
 public class FunctionContact extends Contact {
 	private BooleanFormula setFunction = null;
 	private BooleanFormula resetFunction = null;

@@ -27,6 +27,7 @@ import java.util.HashSet;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -49,6 +50,7 @@ import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Policy Net")
+@ShortName("policy")
 @CustomTools ( PolicyNetToolProvider.class )
 public class VisualPolicyNet extends VisualPetriNet {
 	private final ColorGenerator bundleColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(5, 5, 5, 0.5f, 1.0f));

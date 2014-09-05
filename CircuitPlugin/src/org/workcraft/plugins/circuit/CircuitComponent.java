@@ -24,7 +24,6 @@ package org.workcraft.plugins.circuit;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
@@ -36,9 +35,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.util.Hierarchy;
 
-@DisplayName("Component")
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
-
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
