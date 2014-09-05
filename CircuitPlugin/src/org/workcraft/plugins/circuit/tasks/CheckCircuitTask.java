@@ -129,7 +129,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 				// Generating .g for the whole system (circuit and environment)
 				stgFile = File.createTempFile(title + "-system-", stgExporter.getExtenstion());
-				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, false);
+				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, true, false);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
 

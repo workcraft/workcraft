@@ -32,9 +32,10 @@ public class PcompDialog extends JDialog {
 	private Set<Path<String>> sourcePaths;
 	private JCheckBox showInEditor;
 
-	JRadioButton leaveOutputs;
-	JRadioButton internalize;
-	JRadioButton dummify;
+	private JRadioButton leaveOutputs;
+	private JRadioButton internalize;
+	private JRadioButton dummify;
+	private JCheckBox sharedOutputs;
 	private JCheckBox improvedPcomp;
 
 	public PcompDialog(Window owner, Framework framework) {
@@ -53,17 +54,21 @@ public class PcompDialog extends JDialog {
 		return showInEditor.isSelected();
 	}
 
+	public boolean isSharedOutputsChecked() {
+		return sharedOutputs.isSelected();
+	}
+
 	public boolean isImprovedPcompChecked() {
 		return improvedPcomp.isSelected();
 	}
 
 	public PCompOutputMode getMode()
 	{
-		if(leaveOutputs.isSelected())
+		if (leaveOutputs.isSelected())
 			return PCompOutputMode.OUTPUT;
-		if(internalize.isSelected())
+		if (internalize.isSelected())
 			return PCompOutputMode.INTERNAL;
-		if(dummify.isSelected())
+		if (dummify.isSelected())
 			return PCompOutputMode.DUMMY;
 		throw new NotSupportedException("No button is selected. Cannot proceed.");
 	}
@@ -107,7 +112,10 @@ public class PcompDialog extends JDialog {
 		dummify = new JRadioButton("Make dummy");
 		leaveOutputs.setSelected(true);
 
+		sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
+
 		improvedPcomp = new JCheckBox("Improved parallel composition");
+
 
 		dummifyGroup.add(leaveOutputs);
 		dummifyGroup.add(dummify);
@@ -119,7 +127,8 @@ public class PcompDialog extends JDialog {
 		outputOptions.add(dummify);
 
 		options.add(outputOptions, 1);
-		options.add(improvedPcomp, 2);
+		options.add(sharedOutputs,2);
+		options.add(improvedPcomp, 3);
 
 		content.add(options, "1 0");
 
