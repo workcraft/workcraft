@@ -59,55 +59,53 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		JPanel groupPanel = new JPanel(new FlowLayout());
 		controlPanel.add(groupPanel);
 
-		//Create GroupButton
+		//Create groupButton
 		final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/son-selection-group.svg"), "Group selection (Ctrl+G)");
-
-        //Create the popup menu.
-        final JPopupMenu groupPopup = new JPopupMenu();
-        groupPopup.add(new JMenuItem(new AbstractAction("Group") {
-            public void actionPerformed(ActionEvent e) {
-            	selectionGroup(editor);
-            }
-        }));
-        groupPopup.addSeparator();
-        groupPopup.add(new JMenuItem(new AbstractAction("Super Group") {
-            public void actionPerformed(ActionEvent e) {
-            	selectionSupergroup(editor);
-            }
-        }));
-
-		groupButton.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-            	groupPopup.show(groupButton, 0, groupButton.getHeight());
-            }
-        });
+				"images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
+		groupButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectionGroup(editor);
+			}
+		});
 		groupPanel.add(groupButton);
 
-		//Create GroupPageButton
-		final JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/son-selection-page.svg"), "Group selection into a page/block");
+		//Create superGroupButton
+		final JButton superGroupButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/son-super-group.svg"), "Super group selection (Gtrl+V)");
+		superGroupButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectionSupergroup(editor);
+			}
+		});
+		groupPanel.add(superGroupButton);
 
-        //Create the popup menu.
-        final JPopupMenu pagePopup = new JPopupMenu();
-        pagePopup.add(new JMenuItem(new AbstractAction("Block") {
-            public void actionPerformed(ActionEvent e) {
-            	selectionBlock(editor);
-            }
-        }));
-        pagePopup.addSeparator();
-        pagePopup.add(new JMenuItem(new AbstractAction("Page") {
-            public void actionPerformed(ActionEvent e) {
+		//Create blockButton
+		JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/son-block.svg"), "Group selection into a block (Alt+B)");
+		blockButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectionBlock(editor);
+			}
+		});
+
+		groupPanel.add(blockButton);
+
+		//Create pageButton
+		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/page.svg"), "Group selection into a page (Alt+G)");
+		groupPageButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				selectionPageGroup(editor);
-            }
-        }));
-        groupPageButton.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-            	pagePopup.show(groupPageButton, 0, groupPageButton.getHeight());
-            }
-        });
+			}
+		});
+
 		groupPanel.add(groupPageButton);
 
+		//Create ungroupButton
 		JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
 		ungroupButton.addActionListener(new ActionListener(){
@@ -116,7 +114,6 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				selectionUngroup(editor);
 			}
 		});
-
 
 		groupPanel.add(ungroupButton);
 
@@ -263,9 +260,17 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 	{
 		super.keyPressed(e);
 
-		if(e.isCtrlDown()){
-			switch (e.getKeyCode()){
+		if (e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+			switch (e.getKeyCode()) {
 			case KeyEvent.VK_B:
+				selectionBlock(e.getEditor());
+				break;
+			}
+		}
+
+		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
+			switch (e.getKeyCode()){
+			case KeyEvent.VK_V:
 				selectionSupergroup(e.getEditor());
 				break;
 			}

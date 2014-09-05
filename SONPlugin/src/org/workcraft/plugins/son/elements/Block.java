@@ -7,14 +7,14 @@ import java.util.Collection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
 public class Block extends PageNode implements TransitionNode{
 	private String label="";
-	private Color foregroundColor = CommonVisualSettings.getBorderColor();
-	private Color fillColor  = CommonVisualSettings.getFillColor();
+	private Color foregroundColor = SONSettings.getGroupForegroundColor();
+	private Color fillColor  = SONSettings.getBlockFillColor();
 	private boolean isCollapsed = false;
 
 	public Collection<Node> getComponents(){

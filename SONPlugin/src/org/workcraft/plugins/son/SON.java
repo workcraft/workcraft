@@ -185,16 +185,19 @@ public class SON extends AbstractMathModel implements SONModel {
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
 		}
 		for (ONGroup group : this.getGroups()){
-			setForegroundColor(group, CommonVisualSettings.getBorderColor());
+			setForegroundColor(group, SONSettings.getGroupForegroundColor());
 		}
 
 		for (SONConnection con : this.getSONConnections())
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
 
 		for (Block block : this.getBlocks()){
-			if(block.getIsCollapsed()){
+			if(!block.getIsCollapsed()){
+				this.setFillColor(block, SONSettings.getBlockFillColor());
+				this.setForegroundColor(block,  SONSettings.getGroupForegroundColor());
+			}else{
 				this.setFillColor(block, CommonVisualSettings.getFillColor());
-				this.setForegroundColor(block, CommonVisualSettings.getBorderColor());
+				this.setForegroundColor(block,  CommonVisualSettings.getBorderColor());
 			}
 		}
 	}

@@ -35,6 +35,8 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 
 	}
 
+	public abstract void task(Collection<ONGroup> groups);
+
 	public Collection<String> getRelationErrorsSetReferences(Collection<Node> set){
 		Collection<String> result = new ArrayList<String>();
 		for(Node node : set)

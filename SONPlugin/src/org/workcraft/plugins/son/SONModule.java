@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.serialisation.VisualONGroupDeserialiser;
 import org.workcraft.plugins.son.serialisation.VisualONGroupSerialiser;
 import org.workcraft.plugins.son.serialisation.VisualSONConnectionDeserialiser;
 import org.workcraft.plugins.son.serialisation.VisualSONConnectionSerialiser;
-import org.workcraft.plugins.son.tools.ColorRefreshTool;
+import org.workcraft.plugins.son.tools.ColorResetTool;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
@@ -31,7 +31,7 @@ public class SONModule implements Module{
 		//structural verification
 		framework.getPluginManager().registerClass(Tool.class, StructurePropertyChecker.class, framework);
 		//Custom tools
-		framework.getPluginManager().registerClass(Tool.class, ColorRefreshTool.class);
+		framework.getPluginManager().registerClass(Tool.class, ColorResetTool.class);
 		framework.getPluginManager().registerClass(Tool.class, TokenRefreshTool.class);
 		//error tracing
 		framework.getPluginManager().registerClass(Tool.class, ErrTracingReset.class);

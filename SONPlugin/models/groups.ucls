@@ -37,18 +37,18 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <association id="5">    
+  <dependency id="5">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <association id="6">    
     <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="6" name="mathGroup"/>      
-      <multiplicity id="7" minimum="0" maximum="1"/>    
+      <attribute id="7" name="mathGroup"/>      
+      <multiplicity id="8" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="8">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="false" private="false" static="true"/>    

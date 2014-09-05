@@ -2,9 +2,7 @@ package org.workcraft.plugins.son;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -15,7 +13,6 @@ import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
@@ -25,34 +22,39 @@ import org.workcraft.util.Hierarchy;
 public class VisualONGroup extends VisualPage{
 
 	private static final float strokeWidth = 0.03f;
-
-	private GlyphVector glyphVector;
-	private Rectangle2D labelBB = null;
+	private RenderedGroupText groupLabelRenderedText = new RenderedGroupText("", labelFont, getLabelOffset());
 
 	private ONGroup mathGroup = null;
 
 	public VisualONGroup(ONGroup mathGroup)	{
 		super(mathGroup);
 		this.mathGroup = mathGroup;
-		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, String>(
-				this, "Label", String.class) {
-			public void setter(VisualONGroup object, String value) {
-				object.setLabel(value);
-			}
-			public String getter(VisualONGroup object) {
-				return object.getLabel();
-			}
-		});
+		removePropertyDeclarationByName("Fill color");
+		removePropertyDeclarationByName("Label positioning");
+		removePropertyDeclarationByName("Is collapsed");
+	}
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualONGroup, Color>(
-				this, "Foreground color", Color.class) {
-			public void setter(VisualONGroup object, Color value) {
-				object.setForegroundColor(value);
-			}
-			public Color getter(VisualONGroup object) {
-				return object.getForegroundColor();
-			}
-		});
+	public Point2D getGroupLabelOffset() {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+	    double xOffset = bb.getMaxX();
+        double yOffset = bb.getMinY();
+        return new Point2D.Double(xOffset, yOffset);
+	}
+
+	@Override
+	protected void cacheLabelRenderedText(DrawRequest r) {
+		if (groupLabelRenderedText.isDifferent(getLabel(), labelFont, getGroupLabelOffset())) {
+			groupLabelRenderedText = new RenderedGroupText(getLabel(), labelFont, getGroupLabelOffset());
+		}
+	}
+
+	@Override
+	protected void drawLabelInLocalSpace(DrawRequest r) {
+		if (getLabelVisibility()) {
+			cacheLabelRenderedText(r);
+			Graphics2D g = r.getGraphics();
+			groupLabelRenderedText.draw(g);
+		}
 	}
 
 	@Override
@@ -69,36 +71,58 @@ public class VisualONGroup extends VisualPage{
 
 		if (bb != null && getParent() != null)
 		{
-//			g.setColor(Coloriser.colorise(fillColor, colorisation));
-//			g.fill(bb);
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-			g.setStroke(new BasicStroke( 2 * strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
-					3.0f, new float[]{ 2 * strokeWidth , 5 * strokeWidth,}, 0f));
+
+
+			//draw label
+			g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+			g.fill(getLabelBB());
+			//g.setStroke(new BasicStroke(strokeWidth));
+			g.setStroke(new BasicStroke( strokeWidth-0.005f , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
+			3.0f, new float[]{  0.1f ,  0.05f,}, 0f));
+			g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
+			g.draw(getLabelBB());
+			drawLabelInLocalSpace(r);
+
+			//draw group
+			g.setColor(Coloriser.colorise(this.getForegroundColor(), colorisation));
+			g.setStroke(new BasicStroke(strokeWidth));
 
 			bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
 
 			g.draw(bb);
-
-			// draw label
-			Font labelFont = new Font("Calibri", Font.PLAIN, 1).deriveFont(0.65f);
-			glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), getLabel());
-			labelBB = glyphVector.getVisualBounds();
-			labelBB = BoundingBoxHelper.expand(labelBB, 0.4, 0.2);
-			Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
-			g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
-
 			drawNameInLocalSpace(r);
 		}
 
 	}
 
+	private Rectangle2D getLabelBB() {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		Rectangle2D labelBB = null;
+		labelBB = BoundingBoxHelper.expand(groupLabelRenderedText.getBoundingBox(), 0.4, 0.2);
+		return new Rectangle2D.Double(bb.getMaxX() - labelBB.getWidth() + margin, bb.getMinY() - labelBB.getHeight() - margin, labelBB.getWidth(), labelBB.getHeight());
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		if (getLabelVisibility()&&groupLabelRenderedText!=null) {
+			bb = BoundingBoxHelper.union(bb, groupLabelRenderedText.getBoundingBox());
+		}
+		if (getNameVisibility()&&nameRenderedText!=null) {
+			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
+		}
+		return bb;
+	}
+
 	public void setLabel(String label)
 	{
+		super.setLabel(label);
 		this.getMathGroup().setLabel(label);
 	}
 
 	public String getLabel()
 	{
+		super.getLabel();
 		return this.getMathGroup().getLabel();
 	}
 

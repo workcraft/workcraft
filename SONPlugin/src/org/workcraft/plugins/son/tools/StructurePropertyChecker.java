@@ -38,7 +38,6 @@ public class StructurePropertyChecker implements Tool {
 	public void run(WorkspaceEntry we){
 
 		SONModel net=(SONModel)we.getModelEntry().getMathModel();
-
 		StructureVerifyDialog dialog = new StructureVerifyDialog(framework.getMainWindow(), net);
 		GUI.centerToParent(dialog, framework.getMainWindow());
 		dialog.setVisible(true);

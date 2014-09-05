@@ -6,7 +6,7 @@ import org.workcraft.plugins.son.SONModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ColorRefreshTool implements Tool {
+public class ColorResetTool implements Tool {
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);
@@ -17,7 +17,7 @@ public class ColorRefreshTool implements Tool {
 	}
 
 	public String getDisplayName(){
-		return "Refresh color";
+		return "Reset color to default";
 	}
 
 	public void run(WorkspaceEntry we){

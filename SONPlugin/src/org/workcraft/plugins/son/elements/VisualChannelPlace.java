@@ -20,7 +20,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
-@SVGIcon("images/icons/svg/channel-place.svg")
+@SVGIcon("images/icons/svg/son-channel-place.svg")
 public class VisualChannelPlace extends VisualComponent implements VisualPlaceNode{
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
