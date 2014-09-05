@@ -129,7 +129,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 				// Generating .g for the whole system (circuit and environment)
 				stgFile = File.createTempFile(title + "-system-", stgExporter.getExtenstion());
-				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, false);
+				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, true, false);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
 
@@ -148,14 +148,14 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File mciFile = File.createTempFile(title+"-unfolding-", ".mci");
-			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), mciFile.getCanonicalPath());
+			File unfoldingFile = File.createTempFile(title+"-unfolding-", MpsatUtilitySettings.getUnfoldingExtension());
+			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
 			stgFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -175,7 +175,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
 						MpsatUtilitySettings.getSolutionCount(), reachConformation);
 
-				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 						mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -190,7 +190,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 				MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
 				if (!mpsatConformationParser.getSolutions().isEmpty()) {
-					mciFile.delete();
+					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
 									"Circuit does not conform to the environment after the following trace:"));
@@ -200,7 +200,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for deadlock
 			if (checkDeadlock) {
-				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
 						mpsatDeadlockTask, "Running deadlock check [MPSat]", subtaskMonitor);
 
@@ -215,7 +215,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 				MpsatResultParser mpsatDeadlockParser = new MpsatResultParser(mpsatDeadlockResult.getReturnValue());
 				if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
-					mciFile.delete();
+					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
 									"Circuit has a deadlock after the following trace:"));
@@ -225,7 +225,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for hazards
 			if (checkHazard) {
-				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());
@@ -244,7 +244,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 				MpsatResultParser mpsatHazardParser = new MpsatResultParser(mpsatHazardResult.getReturnValue());
 				if (!mpsatHazardParser.getSolutions().isEmpty()) {
-					mciFile.delete();
+					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings,
 									"Circuit has a hazard  after the following trace:"));
@@ -253,7 +253,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(1.0);
 
 			// Success
-			mciFile.delete();
+			unfoldingFile.delete();
 			String message = "";
 			if (hasEnvironment) {
 				message = "Under the given environment (" + environmentFile.getName() + ")";

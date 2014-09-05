@@ -45,8 +45,11 @@ public class PcompTool implements Tool {
 				inputs.add(dotGProvider.getDotG(p));
 			}
 
-			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(), dialog.isImprovedPcompChecked());
+			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(),
+					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked());
+
 			PcompResultHandler pcompResult = new PcompResultHandler(framework, dialog.showInEditor());
+
 			framework.getTaskManager().queue(pcompTask,	"Running pcomp", pcompResult);
 		}
 	}

@@ -67,14 +67,14 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File mciFile = File.createTempFile("unfolding", ".mci");
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
+			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension());
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
 			netFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -83,7 +83,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.40);
 
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
@@ -98,13 +98,13 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
-			mciFile.delete();
+			unfoldingFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
 					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
 

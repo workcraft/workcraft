@@ -17,37 +17,43 @@ import org.workcraft.util.FileUtils;
 public class PcompTask implements Task<ExternalProcessResult> {
 	private File[] inputs;
 	private final PCompOutputMode mode;
+	private final boolean sharedOutputs;
 	private final boolean improved;
 
-	public PcompTask(File[] inputs, PCompOutputMode mode, boolean improved)
-	{
+	public PcompTask(File[] inputs, PCompOutputMode mode, boolean sharedOutputs, boolean improved) {
 		this.inputs = inputs;
 		this.mode = mode;
+		this.sharedOutputs = sharedOutputs;
 		this.improved = improved;
 	}
 
 	@Override
-	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
-	{
+	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PcompUtilitySettings.getCommand());
 
-		for (String arg : PcompUtilitySettings.getExtraArgs().split(" "))
-			if (!arg.isEmpty())
+		for (String arg : PcompUtilitySettings.getExtraArgs().split(" ")) {
+			if (!arg.isEmpty()) {
 				command.add(arg);
+			}
+		}
 
-		if(mode == PCompOutputMode.DUMMY)
-		{
+		if (mode == PCompOutputMode.DUMMY) {
 			command.add("-d");
 			command.add("-r");
 		}
 
-		if(mode == PCompOutputMode.INTERNAL)
+		if (mode == PCompOutputMode.INTERNAL) {
 			command.add("-i");
+		}
 
-		if(improved)
+		if (sharedOutputs) {
+			command.add("-o");
+		}
+
+		if (improved) {
 			command.add("-p");
-
+		}
 
 		File listFile;
 

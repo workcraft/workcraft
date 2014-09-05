@@ -36,16 +36,19 @@ public class MpsatUtilitySettings implements Settings {
 	private static final String keyCommand = prefix + ".command";
 	private static final String keySolutionMode = prefix + ".solutionMode";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 	private static final String keyDebugReach = prefix + ".debugReach";
 
 	private static final String defaultCommand = "mpsat";
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
 	private static final String defaultExtraArgs = "";
+	private static final Boolean defaultUsePnmlUnfolding = false;
 	private static final Boolean defaultDebugReach = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
 	private static Boolean debugReach = defaultDebugReach;
 
 	public MpsatUtilitySettings() {
@@ -80,6 +83,16 @@ public class MpsatUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "Use PNML-based unfolding (where possible)", Boolean.class) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				MpsatUtilitySettings.setUsePnmlUnfolding(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return MpsatUtilitySettings.getUsePnmlUnfolding();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
 				this, "Debug Reach expressions", Boolean.class) {
 			protected void setter(MpsatUtilitySettings object, Boolean value) {
 				MpsatUtilitySettings.setDebugReach(value);
@@ -100,6 +113,7 @@ public class MpsatUtilitySettings implements Settings {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
 		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
 	}
 
@@ -108,6 +122,7 @@ public class MpsatUtilitySettings implements Settings {
 		config.set(keyCommand, getCommand());
 		config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
 		config.setBoolean(keyDebugReach, getDebugReach());
 	}
 
@@ -149,12 +164,28 @@ public class MpsatUtilitySettings implements Settings {
 		return (solutionMode == SolutionMode.ALL) ? 10 : 1;
 	}
 
+	public static Boolean getUsePnmlUnfolding() {
+		return usePnmlUnfolding;
+	}
+
+	public static void setUsePnmlUnfolding(Boolean value) {
+		usePnmlUnfolding = value;
+	}
+
 	public static Boolean getDebugReach() {
 		return debugReach;
 	}
 
 	public static void setDebugReach(Boolean value) {
 		debugReach = value;
+	}
+
+	public static String getUnfoldingExtension() {
+		return (getUsePnmlUnfolding() ? ".pnml" : ".mci");
+	}
+
+	public static String getCommandSuffix() {
+		return (getUsePnmlUnfolding() ? "_pnml" : "");
 	}
 
 }

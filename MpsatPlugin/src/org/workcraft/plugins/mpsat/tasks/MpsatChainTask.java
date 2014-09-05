@@ -5,6 +5,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
@@ -48,33 +49,36 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g", mon);
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				netFile.delete();
-				if (exportResult.getOutcome() == Outcome.CANCELLED)
+				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+				}
 				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, null, null, settings));
 			}
 			monitor.progressUpdate(0.33);
 
-			File mciFile = File.createTempFile("unfolding", ".mci");
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
+			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension());
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
 			netFile.delete();
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				mciFile.delete();
-				if (punfResult.getOutcome() == Outcome.CANCELLED)
+				unfoldingFile.delete();
+				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+				}
 				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, punfResult, null, settings));
 			}
 
 			monitor.progressUpdate(0.66);
 
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), mciFile.getCanonicalPath());
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running mpsat model-checking", mon);
-			mciFile.delete();
+			unfoldingFile.delete();
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-				if (mpsatResult.getOutcome() == Outcome.CANCELLED)
+				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+				}
 				return new Result<MpsatChainResult>(Outcome.FAILED, new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings ));
 			}
 

@@ -28,14 +28,17 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(MpsatUtilitySettings.getCommand());
+		command.add(MpsatUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix());
 
-		for (String arg : MpsatUtilitySettings.getExtraArgs().split(" "))
-			if (!arg.isEmpty())
+		for (String arg : MpsatUtilitySettings.getExtraArgs().split(" ")) {
+			if (!arg.isEmpty()) {
 				command.add(arg);
+			}
+		}
 
-		for (String arg : args)
+		for (String arg : args) {
 			command.add(arg);
+		}
 
 		command.add(inputFileName);
 
@@ -51,13 +54,15 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 
 		try {
-			File mci = new File(workingDir, "mpsat.mci");
-			if(mci.exists())
-				outputFiles.put("mpsat.mci", FileUtils.readAllBytes(mci));
-
+			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension();
+			File unfoldingFile = new File(workingDir, unfoldingFileName);
+			if(unfoldingFile.exists()) {
+				outputFiles.put(unfoldingFileName, FileUtils.readAllBytes(unfoldingFile));
+			}
 			File g = new File(workingDir, "mpsat.g");
-			if(g.exists())
+			if(g.exists()) {
 				outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
+			}
 		} catch (IOException e) {
 			return new Result<ExternalProcessResult>(e);
 		}
