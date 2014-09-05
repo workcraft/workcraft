@@ -6,16 +6,15 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
@@ -55,33 +54,9 @@ public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
 			}
 			monitor.progressUpdate(0.33);
 
-//			File mciFile = File.createTempFile("unfolding", ".mci");
-//			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
-//			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
-//			netFile.delete();
-//
-//			if (punfResult.getOutcome() != Outcome.FINISHED) {
-//				mciFile.delete();
-//				if (punfResult.getOutcome() == Outcome.CANCELLED)
-//					return new Result<ProgrammerChainResult>(Outcome.CANCELLED);
-//				return new Result<ProgrammerChainResult>(Outcome.FAILED, new ProgrammerChainResult(exportResult, punfResult, null, settings));
-//			}
-//
-//			monitor.progressUpdate(0.66);
-//
-//			ProgrammerTask programmerTask = new ProgrammerTask(null, mciFile.getCanonicalPath());
-//			Result<? extends ExternalProcessResult> encoderResult = framework.getTaskManager().execute(programmerTask, "Running scenco model-checking", mon);
-//			mciFile.delete();
-//
-//			if (encoderResult.getOutcome() != Outcome.FINISHED) {
-//				if (encoderResult.getOutcome() == Outcome.CANCELLED)
-//					return new Result<ProgrammerChainResult>(Outcome.CANCELLED);
-//				return new Result<ProgrammerChainResult>(Outcome.FAILED, new ProgrammerChainResult(exportResult, punfResult, encoderResult, settings ));
-//			}
 
 			monitor.progressUpdate(1.0);
 
-//			return new Result<ProgrammerChainResult>(Outcome.FINISHED, new ProgrammerChainResult(exportResult, punfResult, encoderResult, settings));
 			return new Result<ProgrammerChainResult>(Outcome.FINISHED, null);
 		} catch (Throwable e) {
 			return new Result<ProgrammerChainResult>(e);

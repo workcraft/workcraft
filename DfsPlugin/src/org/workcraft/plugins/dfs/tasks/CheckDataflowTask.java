@@ -72,14 +72,14 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File mciFile = File.createTempFile("unfolding", ".mci");
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), mciFile.getCanonicalPath());
+			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension());
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
 			netFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -88,7 +88,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.40);
 
-			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -103,13 +103,13 @@ public class CheckDataflowTask extends MpsatChainTask {
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, deadlockSettings, "Dataflow has a deadlock"));
 			}
 			monitor.progressUpdate(0.70);
 
-			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), mciFile.getCanonicalPath());
+			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
 			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
@@ -122,13 +122,13 @@ public class CheckDataflowTask extends MpsatChainTask {
 
 			mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				mciFile.delete();
+				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
-			mciFile.delete();
+			unfoldingFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
 					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow is deadlock-free and hazard-free"));
 

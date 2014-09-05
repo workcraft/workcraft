@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat.tasks;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.PunfUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -24,24 +25,28 @@ public class PunfTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PunfUtilitySettings.getCommand());
+		command.add(PunfUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix());
 
-		for (String arg : PunfUtilitySettings.getExtraArgs().split(" "))
-			if (!arg.isEmpty())
+		for (String arg : PunfUtilitySettings.getExtraArgs().split(" ")) {
+			if (!arg.isEmpty()) {
 				command.add(arg);
+			}
+		}
 
-		command.add("-m="+outputPath);
+		command.add("-m=" + outputPath);
 		command.add(inputPath);
 
 		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
 
-		if (res.getOutcome() != Outcome.FINISHED)
+		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;
+		}
 
 		ExternalProcessResult retVal = res.getReturnValue();
-		if (retVal.getReturnCode() < 2)
+		if (retVal.getReturnCode() < 2) {
 			return Result.finished(retVal);
-		else
+		} else {
 			return Result.failed(retVal);
+		}
 	}
 }
