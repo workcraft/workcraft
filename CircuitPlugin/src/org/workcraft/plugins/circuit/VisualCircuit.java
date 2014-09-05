@@ -28,6 +28,7 @@ import java.util.LinkedList;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -45,9 +46,9 @@ import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
-
 @DisplayName("Digital Circuit")
-@CustomTools ( CircuitToolsProvider.class )
+@ShortName("circuit")
+@CustomTools(CircuitToolsProvider.class)
 public class VisualCircuit extends AbstractVisualModel {
 
 	private Circuit circuit;

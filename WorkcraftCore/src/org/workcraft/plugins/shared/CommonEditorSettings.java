@@ -21,8 +21,10 @@
 
 package org.workcraft.plugins.shared;
 import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -30,6 +32,27 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class CommonEditorSettings implements Settings {
+
+	public enum TitleStyle {
+		MINIMAL("minimal: Title"),
+		SHORT("short: Title [MN]"),
+		LONG("long: Title - Model Name");
+
+		public final String name;
+
+		private TitleStyle(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, TitleStyle> getChoice() {
+			LinkedHashMap<String, TitleStyle> choice = new LinkedHashMap<String, TitleStyle>();
+			for (TitleStyle item : TitleStyle.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	}
+
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "CommonEditorSettings";
 
@@ -38,6 +61,7 @@ public class CommonEditorSettings implements Settings {
 	private static final String keyShowRulers = prefix + ".showRulers";
 	private static final String keyRecentCount = prefix + ".recentCount";
 	private static final String keyIconSize = prefix + ".iconSize";
+	private static final String keyTitleStyle = prefix + ".titleStyle";
 	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
 	private static final String keyDebugClipboard = prefix + ".debugClipboard";
 
@@ -46,6 +70,7 @@ public class CommonEditorSettings implements Settings {
 	private static final boolean defaultShowRulers = true;
 	private static final int defaultIconSize = 24;
 	private static final int defaultRecentCount = 10;
+	private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
 	private static final boolean defaultShowAbsolutePaths = false;
 	private static final boolean defaultDebugClipboard = false;
 
@@ -54,6 +79,7 @@ public class CommonEditorSettings implements Settings {
 	private static boolean showRulers = defaultShowRulers;
 	private static int iconSize = defaultIconSize;
 	private static int recentCount = defaultRecentCount;
+	private static TitleStyle titleStyle = defaultTitleStyle;
 	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
 	private static boolean debugClipboard = defaultDebugClipboard;
 
@@ -108,6 +134,16 @@ public class CommonEditorSettings implements Settings {
 			}
 		});
 
+		properties.add(new PropertyDeclaration<CommonEditorSettings, TitleStyle>(
+				this, "Model title style", TitleStyle.class, TitleStyle.getChoice()) {
+			protected void setter(CommonEditorSettings object, TitleStyle value) {
+				CommonEditorSettings.setTitleStyle(value);
+			}
+			protected TitleStyle getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getTitleStyle();
+			}
+		});
+
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
 				this, "Names shown with absolute paths", Boolean.class) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
@@ -141,6 +177,7 @@ public class CommonEditorSettings implements Settings {
 		setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
 		setIconSize(config.getInt(keyIconSize, defaultIconSize));
 		setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
+		setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
 		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
 		setDebugClipboard(config.getBoolean(keyDebugClipboard, defaultDebugClipboard));
 	}
@@ -152,6 +189,7 @@ public class CommonEditorSettings implements Settings {
 		config.setBoolean(keyShowRulers, getShowRulers());
 		config.setInt(keyIconSize, getIconSize());
 		config.setInt(keyRecentCount, getRecentCount());
+		config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
 		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
 		config.setBoolean(keyDebugClipboard, getDebugClipboard());
 	}
@@ -216,6 +254,14 @@ public class CommonEditorSettings implements Settings {
 			value = 99;
 		}
 		recentCount = value;
+	}
+
+	public static TitleStyle getTitleStyle() {
+		return titleStyle;
+	}
+
+	public static void setTitleStyle(TitleStyle value) {
+		titleStyle = value;
 	}
 
 	public static void setShowAbsolutePaths(boolean value) {

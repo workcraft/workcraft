@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
@@ -41,7 +42,8 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Dataflow Structure")
-@CustomTools( DfsToolsProvider.class )
+@ShortName("DFS")
+@CustomTools(DfsToolsProvider.class)
 public class VisualDfs extends AbstractVisualModel {
 
 	public VisualDfs(Dfs model) throws VisualModelInstantiationException {

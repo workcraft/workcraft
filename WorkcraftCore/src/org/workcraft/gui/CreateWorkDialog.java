@@ -73,12 +73,8 @@ public class CreateWorkDialog extends JDialog {
 	private int modalResult = 0;
 	private Framework framework;
 
-	/**
-	 * @param owner
-	 */
 	public CreateWorkDialog(MainWindow owner) {
 		super(owner);
-
 		framework = owner.getFramework();
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -86,18 +82,15 @@ public class CreateWorkDialog extends JDialog {
 		setTitle("New work");
 
 		GUI.centerAndSizeToParent(this, owner);
-
 		initComponents();
 	}
 
-	static class ListElement implements Comparable<ListElement>
-	{
-		public ListElement(ModelDescriptor descriptor)
-		{
+	static class ListElement implements Comparable<ListElement> {
+		public ModelDescriptor descriptor;
+
+		public ListElement(ModelDescriptor descriptor) {
 			this.descriptor = descriptor;
 		}
-
-		public ModelDescriptor descriptor;
 
 		@Override
 		public String toString() {
@@ -117,34 +110,40 @@ public class CreateWorkDialog extends JDialog {
 		modelScroll = new JScrollPane();
 		DefaultListModel listModel = new DefaultListModel();
 
-
 		modelList = new JList(listModel);
 		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		modelList.setVisibleRowCount(0);
 
 		modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+			@Override
 			public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-				if (modelList.getSelectedIndex() == -1)
+				if (modelList.getSelectedIndex() == -1) {
 					okButton.setEnabled(false);
-				else
+				} else {
 					okButton.setEnabled(true);
+				}
 			}
 		}
 		);
 
 		modelList.addMouseListener(new MouseListener() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount()==2)
-					if (modelList.getSelectedIndex() != -1)
-						ok();
+				if ((e.getClickCount() == 2 ) && (modelList.getSelectedIndex() != -1)) {
+					ok();
+				}
 			}
+			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
+			@Override
 			public void mouseExited(MouseEvent e) {
 			}
+			@Override
 			public void mousePressed(MouseEvent e) {
 			}
+			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
 		});
@@ -152,13 +151,14 @@ public class CreateWorkDialog extends JDialog {
 		final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
 		ArrayList<ListElement> elements = new ArrayList<ListElement>();
 
-		for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors)
+		for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
 			elements.add(new ListElement(plugin.newInstance()));
+		}
 
 		Collections.sort(elements);
-
-		for (ListElement element : elements)
+		for (ListElement element : elements) {
 			listModel.addElement(element);
+		}
 
 		modelScroll.setViewportView(modelList);
 		modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));

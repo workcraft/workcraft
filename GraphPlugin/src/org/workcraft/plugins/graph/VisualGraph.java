@@ -22,6 +22,7 @@
 package org.workcraft.plugins.graph;
 
 import org.workcraft.annotations.CustomTools;
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -34,6 +35,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
+@DisplayName("Directed Graph")
 @CustomTools(ToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
 	private Graph graph;

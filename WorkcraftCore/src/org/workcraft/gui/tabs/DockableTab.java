@@ -24,7 +24,6 @@ package org.workcraft.gui.tabs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -54,19 +53,18 @@ public class DockableTab extends JPanel {
 		buttonsPanel.setFocusable(false);
 
 		String title = dockableWindow.getTabText();
-
 		String trimmedTitle;
-
-		if (title.length() > 64)
+		if (title.length() > 64) {
 			trimmedTitle = title.substring(0, 31) + "..." + title.substring(title.length()-32, title.length());
-		else
+		} else {
 			trimmedTitle = title;
+		}
 
 		label = new JLabel(trimmedTitle);
 		label.setFocusable(false);
+		label.setOpaque(false);
 
 		TabButton close = null;
-
 		if ((dockableWindow.getOptions() & DockableWindowContentPanel.MAXIMIZE_BUTTON) != 0) {
 			TabButton max = new TabButton("\u2191", "Maximize window", new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION), actionListener);
 			buttonsPanel.add(max);
@@ -78,8 +76,6 @@ public class DockableTab extends JPanel {
 			buttonsPanel.add(close);
 		}
 
-		label.setOpaque(false);
-
 		Dimension x = label.getPreferredSize();
 		Dimension y = (close != null)? close.getPreferredSize() : x;
 
@@ -89,26 +85,22 @@ public class DockableTab extends JPanel {
 		setPreferredSize(new Dimension(x.width + y.width + 30, Math.max(y.height, x.height) + 4));
 	}
 
+	private JLabel getLabel() {
+		if (label == null) {
+			label = new JLabel();
+		}
+		return label;
+	}
+
 	@Override
 	public void setForeground(Color fg) {
 		getLabel().setForeground(fg);
-	}
-
-	private JLabel getLabel() {
-		if (label == null)
-			label = new JLabel();
-		return label;
 	}
 
 	@Override
 	public Color getForeground() {
 		return getLabel().getForeground();
 	}
-	public void setSelected(boolean selected) {
-		if (selected)
-			label.setFont(label.getFont().deriveFont(Font.BOLD));
-		else
-			label.setFont(label.getFont().deriveFont(Font.PLAIN));
-	}
+
 
 }

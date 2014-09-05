@@ -40,7 +40,6 @@ import org.workcraft.plugins.petri.Place;
 @DisplayName("Joint")
 @Hotkey(KeyEvent.VK_J)
 @SVGIcon("images/icons/svg/circuit-joint.svg")
-
 public class VisualJoint extends VisualComponent {
 	static public double size = 0.25;
 	final static public Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);

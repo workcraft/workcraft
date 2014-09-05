@@ -39,6 +39,12 @@ public interface Model extends NodeContext {
 	 */
 	public String getDisplayName();
 
+	/**
+	 * @return a short name for this model, which is either read from
+	 * <type>ShortName</type> annotation, or, if the annotation is
+	 * missing, made as an acronym from the geDisplayName.
+	 */
+	public String getShortName();
 
 	/// methods for work with referenced component names
 	public ReferenceManager getReferenceManager();
@@ -49,7 +55,6 @@ public interface Model extends NodeContext {
 	public String getName(Node node);
 	public void setName(Node node, String name);
 
-	//
 	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren);
 
 	public Container getRoot();

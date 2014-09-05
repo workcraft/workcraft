@@ -24,16 +24,13 @@ package org.workcraft.plugins.circuit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-@DisplayName("Contact")
 @VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
-
 public class Contact extends MathNode implements BooleanVariable {
 
 	public enum IOType {
