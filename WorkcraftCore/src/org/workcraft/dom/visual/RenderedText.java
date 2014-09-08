@@ -43,9 +43,14 @@ public class RenderedText {
 			textBounds = BoundingBoxHelper.union(textBounds, lineBounds);
 		}
 		spacing = (lines.length < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lines.length - 1));
+
 		textBounds = BoundingBoxHelper.transform(textBounds, AffineTransform.getScaleInstance(1.0, 1.0 + spacingRatio));
-		double x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
-		double y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();
+		double x = 0.0;
+		double y = 0.0;
+		if (text.length() > 0) {
+			x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
+			y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();
+		}
 		boundingBox = BoundingBoxHelper.move(textBounds, x, y);
 	}
 

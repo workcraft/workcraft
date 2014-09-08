@@ -106,6 +106,9 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	}
 
 	public Rectangle2D getBoundingBox() {
+		if (!valid) {
+			update();
+		}
 		return boundingBox;
 	}
 
@@ -143,7 +146,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	public boolean hitTest(Point2D point) {
 		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
 	}
-
 
 	public void update() {
 		curve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());

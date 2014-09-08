@@ -116,9 +116,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public void draw(DrawRequest r) {
 
 		Decoration dec = r.getDecoration();
-		if (dec instanceof ContainerDecoration)
+		if (dec instanceof ContainerDecoration) {
 			setIsExcited(((ContainerDecoration)dec).isContainerExcited());
-
+		}
 
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn
@@ -127,22 +127,18 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		}
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
+		System.out.println(bb);
 
 		if (bb != null && getParent() != null) {
-
-
 			if (getIsCollapsed()&&!isCurrentLevelInside()) {
 				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
 				Graphics2D g = r.getGraphics();
-
 
 				g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 				g.draw(bb);
-
 			} else {
-
 				bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
 				Graphics2D g = r.getGraphics();
 
@@ -150,25 +146,23 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 				float[] pattern = {0.2f, 0.2f};
 				g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 				g.draw(bb);
-
 			}
-
-//			// draw the collapse button
-//			Rectangle2D sb = new Rectangle2D.Double();
-//			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
-//			g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f));
-//			g.draw(sb);
 		}
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (getIsCollapsed()&&!isCurrentLevelInside()) {
+		if (getIsCollapsed() && !isCurrentLevelInside()) {
 			Rectangle2D sb = new Rectangle2D.Double();
 			sb.setRect(-0.5, -0.5, 1, 1);
 			return sb;
-		} else
-			return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
+		} else {
+			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
+			for (Touchable child: children) {
+				System.out.println("  " + child + ": " + child.getBoundingBox());
+			}
+			return BoundingBoxHelper.mergeBoundingBoxes(children);
+		}
 	}
 
 	public final Collection<VisualComponent> getComponents() {
@@ -186,9 +180,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 		groupImpl.reparent(nodesToReparent, newParent);
 
-		for (Node node : nodesToReparent)
+		for (Node node : nodesToReparent) {
 			TransformHelper.applyTransform(node, localToParentTransform);
-
+		}
 		return nodesToReparent;
 	}
 

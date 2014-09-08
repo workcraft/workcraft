@@ -359,7 +359,7 @@ public class VisualSONConnection extends VisualConnection
 		invalidate();
 	}
 
-	private void invalidate() {
+	public void invalidate() {
 		if (graphic != null)
 			graphic.invalidate();
 	}

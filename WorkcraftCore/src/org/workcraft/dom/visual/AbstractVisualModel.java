@@ -299,8 +299,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Collection<Node> getOrderedCurrentLevelSelection() {
 		List<Node> result = new ArrayList<Node>();
 		for(Node node : currentLevel.getChildren())	{
-			if(selection.contains(node) && node instanceof VisualNode)
+			if(selection.contains(node) && node instanceof VisualNode) {
 				result.add((VisualNode)node);
+			}
 		}
 		return result;
 	}
@@ -386,25 +387,20 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			}
 		}
 
+		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
+			if (selected.contains(connection.getFirst()) && selected.contains(connection.getSecond())) {
+				selected.add(connection);
+				connection.invalidate();
+			}
+		}
+
 		if(selected.size() > 1) {
 			VisualGroup group = new VisualGroup();
+			Point2D groupCenter = centralizeComponents(selected);
+			group.setPosition(groupCenter);
 			currentLevel.add(group);
 			currentLevel.reparent(selected, group);
-
-			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-			for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
-						Hierarchy.isDescendant(connection.getSecond(), group)) {
-					connectionsToGroup.add(connection);
-				}
-			}
-			currentLevel.reparent(connectionsToGroup, group);
-
-			if (group != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				group.setPosition(groupCenter);
-				select(group);
-			}
+			select(group);
 		}
 	}
 
@@ -420,13 +416,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 
 		for (Node node : selection) {
-
 			if (!(node instanceof VisualNode)) continue;
-
 			if ((node instanceof VisualConnection)) {
-				VisualConnection con = (VisualConnection)node;
-				if (!recursiveSelection.contains(con.getFirst())) continue;
-				if (!recursiveSelection.contains(con.getSecond())) continue;
+				VisualConnection connection = (VisualConnection)node;
+				if (!recursiveSelection.contains(connection.getFirst())) continue;
+				if (!recursiveSelection.contains(connection.getSecond())) continue;
+				connection.invalidate();
 			}
 			selected.add(node);
 		}
