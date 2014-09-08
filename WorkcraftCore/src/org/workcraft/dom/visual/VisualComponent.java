@@ -56,7 +56,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	protected RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
+	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {

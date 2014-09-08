@@ -1,7 +1,6 @@
 package org.workcraft.plugins.son;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -10,22 +9,18 @@ import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.RenderedText;
 
-public class RenderedGroupText {
-	private final double spacingRatio = CommonVisualSettings.getLineSpacing();
-	private final String text;
-	private final Font font;
+public class RenderedGroupText extends RenderedText{
+
 	private final double xOffset;
 	private final double yOffset;
-	private final double margin = 0.35f;
-	private final LinkedList<GlyphVector> glyphVectors;
-	private final Rectangle2D boundingBox;
-	private final double spacing;
+	private double margin = 0.10f;
 
-	public RenderedGroupText(String text, Font font, Point2D offset) {
-		this.text = text;
-		this.font = font;
+	public RenderedGroupText(String text, Font font, Positioning positioning,
+			Point2D offset) {
+		super(text, font, positioning, offset);
 		this.xOffset = offset.getX();
 		this.yOffset = offset.getY();
 
@@ -44,35 +39,8 @@ public class RenderedGroupText {
 		}
 		spacing = (lines.length < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lines.length - 1));
 		textBounds = BoundingBoxHelper.transform(textBounds, AffineTransform.getScaleInstance(1.0, 1.0 + spacingRatio));
-		double x = xOffset - textBounds.getMaxX();
-		double y = yOffset - margin - 0.5 * textBounds.getHeight() - textBounds.getCenterY();
+		double x = xOffset + positioning.xOffset - margin - 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
+		double y = yOffset + positioning.yOffset - margin + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();
 		boundingBox = BoundingBoxHelper.move(textBounds, x, y);
-	}
-
-	public boolean isDifferent(String text, Font font, Point2D offset) {
-		if (text == null) {
-			text = "";
-		}
-		return (!text.equals(this.text) || !font.equals(this.font)
-				|| offset.getX() != this.xOffset || offset.getY() != this.yOffset);
-	}
-
-	public void draw (Graphics2D g) {
-		g.setFont(font);
-		float y = (float)boundingBox.getMinY();
-		for (GlyphVector glyphVector: glyphVectors) {
-			final Rectangle2D lineBoundingBox = glyphVector.getVisualBounds();
-			y += lineBoundingBox.getHeight();
-			g.drawGlyphVector(glyphVector, (float)boundingBox.getX(), y);
-			y += spacing;
-		}
-	}
-
-	public boolean hitTest(Point2D point) {
-		return boundingBox.contains(point);
-	}
-
-	public Rectangle2D getBoundingBox() {
-		return boundingBox;
 	}
 }

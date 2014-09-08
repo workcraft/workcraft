@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
@@ -22,7 +23,8 @@ import org.workcraft.util.Hierarchy;
 public class VisualONGroup extends VisualPage{
 
 	private static final float strokeWidth = 0.03f;
-	private RenderedGroupText groupLabelRenderedText = new RenderedGroupText("", labelFont, getLabelOffset());
+	private Positioning labelPositioning = Positioning.TOP_RIGHT;
+	private RenderedGroupText groupLabelRenderedText = new RenderedGroupText("", labelFont, labelPositioning, getGroupLabelOffset());
 
 	private ONGroup mathGroup = null;
 
@@ -36,15 +38,15 @@ public class VisualONGroup extends VisualPage{
 
 	public Point2D getGroupLabelOffset() {
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-	    double xOffset = bb.getMaxX();
-        double yOffset = bb.getMinY();
+	    double xOffset = (labelPositioning.xSign<0) ? bb.getMinX() : (labelPositioning.xSign>0) ? bb.getMaxX() : bb.getCenterX();
+        double yOffset = (labelPositioning.ySign<0) ? bb.getMinY() : (labelPositioning.ySign>0) ? bb.getMaxY() : bb.getCenterY();
         return new Point2D.Double(xOffset, yOffset);
 	}
 
 	@Override
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		if (groupLabelRenderedText.isDifferent(getLabel(), labelFont, getGroupLabelOffset())) {
-			groupLabelRenderedText = new RenderedGroupText(getLabel(), labelFont, getGroupLabelOffset());
+		if (groupLabelRenderedText.isDifferent(getLabel(), labelFont, labelPositioning, getGroupLabelOffset())) {
+			groupLabelRenderedText = new RenderedGroupText(getLabel(), labelFont, labelPositioning, getGroupLabelOffset());
 		}
 	}
 
@@ -102,27 +104,13 @@ public class VisualONGroup extends VisualPage{
 		return new Rectangle2D.Double(bb.getMaxX() - labelBB.getWidth() + margin, bb.getMinY() - labelBB.getHeight() - margin, labelBB.getWidth(), labelBB.getHeight());
 	}
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		if (getLabelVisibility()&&groupLabelRenderedText!=null) {
-			bb = BoundingBoxHelper.union(bb, groupLabelRenderedText.getBoundingBox());
-		}
-		if (getNameVisibility()&&nameRenderedText!=null) {
-			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
-		}
-		return bb;
-	}
-
 	public void setLabel(String label)
 	{
-		super.setLabel(label);
 		this.getMathGroup().setLabel(label);
 	}
 
 	public String getLabel()
 	{
-		super.getLabel();
 		return this.getMathGroup().getLabel();
 	}
 

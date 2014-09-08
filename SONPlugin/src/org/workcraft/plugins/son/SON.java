@@ -52,6 +52,8 @@ public class SON extends AbstractMathModel implements SONModel {
 					return "b";
 				if (arg instanceof ONGroup)
 					return "group";
+				if (arg instanceof PageNode && !(arg instanceof ONGroup) && !(arg instanceof Block))
+					return "page";
 				return "node";
 			}
 		}));
