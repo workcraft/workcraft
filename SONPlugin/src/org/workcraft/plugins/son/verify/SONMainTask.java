@@ -230,6 +230,7 @@ public class SONMainTask implements Task<VerificationResult>{
 
 	public int getTotalWarningNum(){
 		return this.totalWarningNum;
+
 	}
 
 	public Collection<String> getRelationErrors() {

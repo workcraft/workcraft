@@ -205,6 +205,13 @@ public class VisualSON extends AbstractVisualModel{
 		Collection<Node> selection = new HashSet<Node>();
 		boolean validate = false;
 
+		if(getCurrentLevel() instanceof VisualONGroup){
+			JOptionPane.showMessageDialog(null,
+					"Grouping inside a group is invalid",group, JOptionPane.WARNING_MESSAGE);
+			result.clear();
+			return result;
+		}
+
 		for(Node node : getOrderedCurrentLevelSelection()){
 			if(node instanceof VisualPage){
 				selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
@@ -237,6 +244,9 @@ public class VisualSON extends AbstractVisualModel{
 		for (Node node : result){
 			if (node instanceof VisualCondition)
 				validate = true;
+			if (node instanceof VisualPage && !Hierarchy.getDescendantsOfType(node, VisualCondition.class).isEmpty()){
+				validate = true;
+			}
 		}
 		if (!validate) {
 			JOptionPane.showMessageDialog(null,

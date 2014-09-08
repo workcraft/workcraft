@@ -12,15 +12,15 @@ import java.util.LinkedList;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class RenderedText {
-	private final double spacingRatio = CommonVisualSettings.getLineSpacing();
+	protected final double spacingRatio = CommonVisualSettings.getLineSpacing();
 	private final String text;
 	private final Font font;
 	private final Positioning positioning;
 	private final double xOffset;
 	private final double yOffset;
-	private final LinkedList<GlyphVector> glyphVectors;
-	private final Rectangle2D boundingBox;
-	private final double spacing;
+	protected LinkedList<GlyphVector> glyphVectors;
+	protected Rectangle2D boundingBox;
+	protected double spacing;
 
 	public RenderedText(String text, Font font, Positioning positioning, Point2D offset) {
 		this.text = text;

@@ -3,12 +3,10 @@ package org.workcraft.plugins.son;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -32,19 +30,7 @@ public class VisualSuperGroup extends VisualGroup{
 	private Rectangle2D labelBB = null;
 	private String label="";
 
-	private static Font labelFont;
-
-	static {
-		try {
-			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.75f);
-		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	private static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	public VisualSuperGroup(){
 		addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(
@@ -56,6 +42,7 @@ public class VisualSuperGroup extends VisualGroup{
 				return object.getLabel();
 			}
 		});
+		removePropertyDeclarationByName("Is collapsed");
 	}
 
 	private Rectangle2D getContentsBoundingBox(){

@@ -329,14 +329,6 @@ public class StructureVerifyDialog extends JDialog{
 		content.add(this.settingPanel);
 		content.add(this.buttonsPanel);
 
-		this.addWindowListener(new WindowAdapter()
-		{
-		  public void windowClosing(WindowEvent e)
-		  {
-			  getSONModel().refreshColor();
-		  }
-		});
-
 		this.setSize(new Dimension(500, 600));
 		this.add(content);
 		this.setResizable(false);

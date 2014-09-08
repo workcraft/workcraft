@@ -127,8 +127,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		}
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		System.out.println(bb);
-
 		if (bb != null && getParent() != null) {
 			if (getIsCollapsed()&&!isCurrentLevelInside()) {
 				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
@@ -158,9 +156,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 			return sb;
 		} else {
 			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
-			for (Touchable child: children) {
-				System.out.println("  " + child + ": " + child.getBoundingBox());
-			}
 			return BoundingBoxHelper.mergeBoundingBoxes(children);
 		}
 	}

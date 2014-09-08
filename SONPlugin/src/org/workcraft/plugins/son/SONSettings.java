@@ -25,14 +25,16 @@ public class SONSettings implements Settings {
 	private static final Color defaultCyclePathColor = new Color(255, 102, 102);
 	private static final Color defaultConnectionErrColor = new  Color(255, 102, 102);
 	private static final Color defaultErrLabelColor = Color.GREEN.darker();
-	private static final Color defaultBlockColor = new  Color(255, 255, 255, 0);
+	private static final Color defaultGroupForegroundColor = Color.GRAY;
+	private static final Color defaultBlockFillColor = new Color(245, 255, 230);
 	private static final Positioning defaultErrLabelPositioning = Positioning.BOTTOM;
 
 	private static Color relationErrColor = defaultRelationErrColor;
 	private static Color cyclePathColor = defaultCyclePathColor;
 	private static Color connectionErrColor = defaultConnectionErrColor;
 	private static Color errLabelColor = defaultErrLabelColor;
-	private static Color blockColor = defaultBlockColor;
+	private static Color groupForegroundColor = defaultGroupForegroundColor;
+	private static Color blockFillColor = defaultBlockFillColor;
 	private static Positioning errLabelPositioning = defaultErrLabelPositioning;
 
 	public SONSettings(){
@@ -87,12 +89,22 @@ public class SONSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Default Block color", Color.class) {
+				this, "Group Foreground color", Color.class) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setBlockColor(value);
+				SONSettings.setGroupForegroundColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getBlockColor();
+				return SONSettings.getGroupForegroundColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Color>(
+				this, "Block fill color", Color.class) {
+			protected void setter(SONSettings object, Color value) {
+				SONSettings.setGroupForegroundColor(value);
+			}
+			protected Color getter(SONSettings object) {
+				return SONSettings.getGroupForegroundColor();
 			}
 		});
 	}
@@ -116,7 +128,7 @@ public class SONSettings implements Settings {
 		config.setColor(keyRelationErrColor, getRelationErrColor());
 		config.setColor(keyCyclePathColor, getCyclePathColor());
 		config.setColor(keyConnectionErrColor, getConnectionErrColor());
-		config.setColor(keyBlockColor, getBlockColor());
+		config.setColor(keyBlockColor, getGroupForegroundColor());
 		config.setTextPositioning(keyErrLabelPositioning, getErrLabelPositioning());
 		config.setColor(keyErrLabelColor, getErrLabelColor());
 	}
@@ -171,11 +183,19 @@ public class SONSettings implements Settings {
 		errLabelColor = value;
 	}
 
-	public static Color getBlockColor() {
-		return blockColor;
+	public static Color getGroupForegroundColor() {
+		return groupForegroundColor;
 	}
 
-	public static void setBlockColor(Color value) {
-		blockColor = value;
+	public static void setGroupForegroundColor(Color value) {
+		groupForegroundColor = value;
+	}
+
+	public static Color getBlockFillColor() {
+		return blockFillColor;
+	}
+
+	public static void setBlockFillColor(Color value) {
+		blockFillColor = value;
 	}
 }

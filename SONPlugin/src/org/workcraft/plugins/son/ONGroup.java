@@ -9,7 +9,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
@@ -21,7 +20,7 @@ import org.workcraft.util.Hierarchy;
 public class ONGroup extends PageNode{
 
 	private String label="";
-	private Color color = CommonVisualSettings.getBorderColor();
+	private Color color = SONSettings.getGroupForegroundColor();
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();

@@ -34,7 +34,7 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
 
-	protected final double margin = 0.05;
+	protected final double margin = 0.20;
 
 	private boolean isCollapsed = false;
 	@Override
@@ -225,6 +225,8 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			Rectangle2D ret = BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
 			if (ret==null)
 				ret = super.getInternalBoundingBoxInLocalSpace();
+			ret.setRect(ret.getMinX() - margin, ret.getMinY() - margin,
+					ret.getWidth() + 2.0 * margin, ret.getHeight() + 2.0 * margin);
 			return ret;
 		}
 	}
