@@ -358,7 +358,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		invalidate();
 	}
 
-	private void invalidate() {
+	public void invalidate() {
 		if (graphic != null) {
 			graphic.invalidate();
 		}

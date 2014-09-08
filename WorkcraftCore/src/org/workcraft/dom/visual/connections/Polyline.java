@@ -65,11 +65,10 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	public void draw(DrawRequest r) {
-
 		Graphics2D g = r.getGraphics();
-
-		if (!valid)
+		if (!valid) {
 			update();
+		}
 
 		Path2D connectionPath = new Path2D.Double();
 
@@ -106,19 +105,21 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	public Rectangle2D getBoundingBox() {
+		if (!valid) {
+			update();
+		}
 		return boundingBox;
 	}
 
 	public void update() {
 		int segments = getSegmentCount();
-
 		for (int i=0; i < segments; i++) {
 			Line2D seg = getSegment(i);
-
-			if (i==0)
+			if (i==0) {
 				boundingBox = getSegmentBoundsWithThreshold(seg);
-			else
+			} else {
 				boundingBox.add(getSegmentBoundsWithThreshold(seg));
+			}
 		}
 		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
 		valid = true;
@@ -358,10 +359,9 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void componentsTransformChanged() {
-		if(scaler == null)
+		if(scaler == null) {
 			System.err.print("error @ Polyline.componentsTransformChanged(): scaler == null");
-		else
-		{
+		} else {
 			scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
 				.getSecondCenter(), Hierarchy.filterNodesByType(getChildren(),
 				ControlPoint.class), connectionInfo.getScaleMode());

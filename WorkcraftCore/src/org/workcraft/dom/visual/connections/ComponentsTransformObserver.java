@@ -30,7 +30,6 @@ import org.workcraft.dom.visual.Collapsible;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformDispatcher;
 import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
