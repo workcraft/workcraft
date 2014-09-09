@@ -17,9 +17,11 @@ public class PolicyNetToolProvider implements CustomToolsProvider {
 	@Override
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
-		result.add(new SelectionTool());
+
+		result.add(new SelectionTool(false));
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
+
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(BundledTransition.class)));
 		result.add(new SimulationTool());

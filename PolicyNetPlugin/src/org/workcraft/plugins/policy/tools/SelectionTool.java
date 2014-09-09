@@ -20,6 +20,14 @@ import org.workcraft.util.GUI;
 
 public class SelectionTool extends PetriNetSelectionTool {
 
+	public SelectionTool() {
+		super();
+	}
+
+	public SelectionTool(boolean enablePages) {
+		super(false);
+	}
+
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);

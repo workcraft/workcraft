@@ -11,6 +11,13 @@ import org.workcraft.plugins.petri.VisualPlace;
 
 public class PetriNetSelectionTool extends SelectionTool {
 
+	public PetriNetSelectionTool() {
+		super();
+	}
+
+	public PetriNetSelectionTool(boolean enablePages) {
+		super(enablePages);
+	}
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
 	{
