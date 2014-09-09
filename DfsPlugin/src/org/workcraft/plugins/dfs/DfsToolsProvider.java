@@ -18,7 +18,7 @@ public class DfsToolsProvider implements CustomToolsProvider {
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new SelectionTool());
+		result.add(new SelectionTool(false));
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));

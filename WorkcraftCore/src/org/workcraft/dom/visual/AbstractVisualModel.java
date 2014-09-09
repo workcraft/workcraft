@@ -374,26 +374,37 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 
+	private ArrayList<Node> getSelectedComponentsAndConnections() {
+		Collection<Node> selection = getOrderedCurrentLevelSelection();
+
+		Collection<Node> recursiveSelection = new HashSet<Node>();
+		for (Node node : selection) {
+			if (!(node instanceof VisualNode)) continue;
+			recursiveSelection.add(node);
+			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
+		}
+
+		ArrayList<Node> selected = new ArrayList<Node>();
+		for (Node node : selection) {
+			if (!(node instanceof VisualNode)) continue;
+			if ((node instanceof VisualConnection)) {
+				VisualConnection connection = (VisualConnection)node;
+				if (!recursiveSelection.contains(connection.getFirst())) continue;
+				if (!recursiveSelection.contains(connection.getSecond())) continue;
+				connection.invalidate();
+			}
+			selected.add(node);
+		}
+		return selected;
+	}
+
 	/**
 	 * Groups the selection, and selects the newly created group.
 	 * @author Arseniy Alekseyev
 	 */
 	@Override
 	public void groupSelection() {
-		ArrayList<Node> selected = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualTransformableNode) {
-				selected.add((VisualTransformableNode)node);
-			}
-		}
-
-		for(VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-			if (selected.contains(connection.getFirst()) && selected.contains(connection.getSecond())) {
-				selected.add(connection);
-				connection.invalidate();
-			}
-		}
-
+		ArrayList<Node> selected = getSelectedComponentsAndConnections();
 		if(selected.size() > 1) {
 			VisualGroup group = new VisualGroup();
 			Point2D groupCenter = centralizeComponents(selected);
@@ -406,26 +417,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public void groupPageSelection() {
-		Collection<Node> selection = getOrderedCurrentLevelSelection();
-		ArrayList<Node> selected = new ArrayList<Node>();
-		Collection<Node> recursiveSelection = new HashSet<Node>();
-		for (Node node : selection) {
-			if (!(node instanceof VisualNode)) continue;
-			recursiveSelection.add(node);
-			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
-		}
-
-		for (Node node : selection) {
-			if (!(node instanceof VisualNode)) continue;
-			if ((node instanceof VisualConnection)) {
-				VisualConnection connection = (VisualConnection)node;
-				if (!recursiveSelection.contains(connection.getFirst())) continue;
-				if (!recursiveSelection.contains(connection.getSecond())) continue;
-				connection.invalidate();
-			}
-			selected.add(node);
-		}
-
+		ArrayList<Node> selected = getSelectedComponentsAndConnections();
 		if (selected.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
@@ -449,7 +441,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			}
 		}
 	}
-
 
 	/**
 	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.

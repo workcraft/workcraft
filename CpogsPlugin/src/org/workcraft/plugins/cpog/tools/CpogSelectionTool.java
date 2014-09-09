@@ -39,6 +39,14 @@ public class CpogSelectionTool extends SelectionTool {
 
 	private JTextArea expressionText;
 
+	public CpogSelectionTool() {
+		super();
+	}
+
+	public CpogSelectionTool(boolean enablePages) {
+		super(enablePages);
+	}
+
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
