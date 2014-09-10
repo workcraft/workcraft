@@ -37,9 +37,22 @@ public class DoubleProperty implements PropertyClass {
 		return new DefaultCellRenderer();
 	}
 
+//	public Object fromCellEditorValue(Object editorComponentValue) {
+//		try {
+//			String s = (String)editorComponentValue;
+//			Locale locale = Locale.getDefault();
+//			NumberFormat numberFormat = NumberFormat.getInstance(locale);
+//			Number parse = numberFormat.parse(s);
+//			return parse.doubleValue();
+//		} catch (ParseException e) {
+//			return 0.0;
+//		}
+//	}
+
 	public Object fromCellEditorValue(Object editorComponentValue) {
 		try {
-			return Double.parseDouble((String)editorComponentValue);
+			String s = (String)editorComponentValue;
+			return Double.parseDouble(s.replace(",", "."));
 		} catch (NumberFormatException e) {
 			return 0.0;
 		}
