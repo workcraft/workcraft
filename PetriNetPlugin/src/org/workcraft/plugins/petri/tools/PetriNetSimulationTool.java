@@ -339,8 +339,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		visualNet = getUnderlyingModel(editor.getModel());
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();
-		mainTrace.clear();
-		branchTrace.clear();
 		editor.getWorkspaceEntry().captureMemento();
 		editor.getWorkspaceEntry().setCanModify(false);
 		updateState(editor);
@@ -760,19 +758,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return interfacePanel;
 	}
 
-	public void setTrace(Trace t) {
+	public void setTrace(Trace t, GraphEditor editor) {
 		mainTrace.clear();
 		mainTrace.addAll(t);
 		branchTrace.clear();
+		updateState(editor);
 	}
 
 
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
-
 		for (Node node: container.getChildren()) {
-
 			if (node instanceof VisualTransition) {
 				ret=ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
 			}
@@ -780,10 +777,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			if (node instanceof Container) {
 				ret = ret || isContainerExcited((Container)node);
 			}
-
 			if (ret) break;
 		}
-
 		excitedContainers.put(container, ret);
 		return ret;
 	}

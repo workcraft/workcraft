@@ -60,7 +60,7 @@ public class SolutionPanel extends JPanel {
 				final ToolboxPanel toolbox = currentEditor.getToolBox();
 				final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
 				toolbox.selectTool(tool);
-				tool.setTrace(trace);
+				tool.setTrace(trace, currentEditor);
 				closeAction.actionPerformed(null);
 			}
 		});

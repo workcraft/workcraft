@@ -23,27 +23,19 @@ public class MpsatResultParser {
 		}
 
 		solutions = new LinkedList<Trace>();
-
 		Pattern solution = Pattern.compile("SOLUTION.*\n(.*?)\n", Pattern.UNIX_LINES);
-		Matcher m = solution.matcher(mpsatOutput);
-
-		while (m.find()) {
+		Matcher matcher = solution.matcher(mpsatOutput);
+		while (matcher.find()) {
 			Trace trace = new Trace();
-
-			String mpsatTrace = m.group(1);
+			String mpsatTrace = matcher.group(1);
 			if (!mpsatTrace.isEmpty()) {
-				String[] ss = mpsatTrace.split(",");
-
-				for (String k: ss) {
-					k=k.replace(NamespaceHelper.flatNameSeparator, NamespaceHelper.hierarchySeparator);
-
-					if (k.charAt(1) == '.')
-						trace.add(k.substring(2).trim());
-					else
-						trace.add(k.trim());
+				String[] mpsatFlatTransitions = mpsatTrace.replaceAll("\\s","").split(",");
+				for (String mpsatFlatTransition: mpsatFlatTransitions) {
+					String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.flatNameSeparator, NamespaceHelper.hierarchySeparator);
+					String transition = mpsatTransition.substring(mpsatTransition.indexOf('.') + 1);
+					trace.add(transition);
 				}
 			}
-
 			solutions.add(trace);
 		}
 	}
