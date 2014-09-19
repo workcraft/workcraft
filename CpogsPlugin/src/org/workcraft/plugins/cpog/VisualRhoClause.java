@@ -33,6 +33,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
@@ -47,6 +48,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 @Hotkey(KeyEvent.VK_R)
+@DisplayName("RhoClause")
 @SVGIcon("images/icons/svg/rho.svg")
 public class VisualRhoClause extends VisualComponent
 {

@@ -1,24 +1,24 @@
-package org.workcraft.plugins.graph;
+package org.workcraft.plugins.fsm;
 
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
-public class GraphModelDescriptor implements ModelDescriptor {
+public class FsmModelDescriptor  implements ModelDescriptor {
 
 	@Override
 	public String getDisplayName() {
-		return "Directed Graph";
+		return "Finite State Machine";
 	}
 
 	@Override
 	public MathModel createMathModel() {
-		return new Graph();
+		return new Fsm();
 	}
 
 	@Override
 	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualGraphModelDescriptor();
+		return new VisualFsmModelDescriptor();
 	}
 
 }

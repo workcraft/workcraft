@@ -54,13 +54,11 @@ public class BezierControlPoint extends ControlPoint {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-
 		g.setColor(Color.LIGHT_GRAY);
 		g.setStroke(new BasicStroke(0.02f));
-
 		Line2D l = new Line2D.Double(0, 0, origin.getX(), origin.getY());
 		g.draw(l);
-
 		super.draw(r);
 	}
+
 }

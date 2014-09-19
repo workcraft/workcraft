@@ -41,13 +41,11 @@ public class VisualGraph extends AbstractVisualModel {
 	private Graph graph;
 
 	public VisualGraph(Graph model) throws VisualModelInstantiationException {
-		super(model);
-		this.graph = model;
+		this(model, null);
 	}
 
 	public VisualGraph(Graph model, VisualGroup root) {
 		super(model, root);
-
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
@@ -66,7 +64,6 @@ public class VisualGraph extends AbstractVisualModel {
 	@Override
 	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
-
 
 		VisualComponent c1 = (VisualComponent) first;
 		VisualComponent c2 = (VisualComponent) second;

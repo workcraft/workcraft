@@ -43,20 +43,22 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				this, "X", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
 				Node node = object.getParent();
-				while ((node != null) && (node instanceof VisualTransformableNode)) {
-					VisualTransformableNode container = (VisualTransformableNode)node;
-					value -= container.getX();
-					node = container.getParent();
+				while (node != null) {
+					if (node instanceof VisualTransformableNode) {
+						value -= ((VisualTransformableNode)node).getX();
+					}
+					node = node.getParent();
 				}
 				object.setX(value);
 			}
 			public Double getter(VisualTransformableNode object) {
 				double result = 0.0;
 				Node node = object;
-				while ((node != null) && (node instanceof VisualTransformableNode)) {
-					VisualTransformableNode container = (VisualTransformableNode)node;
-					result += container.getX();
-					node = container.getParent();
+				while (node != null) {
+					if (node instanceof VisualTransformableNode) {
+						result += ((VisualTransformableNode)node).getX();
+					}
+					node = node.getParent();
 				}
 				return result;
 			}
@@ -66,20 +68,22 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				this, "Y", Double.class) {
 			public void setter(VisualTransformableNode object, Double value) {
 				Node node = object.getParent();
-				while ((node != null) && (node instanceof VisualTransformableNode)) {
-					VisualTransformableNode container = (VisualTransformableNode)node;
-					value -= container.getY();
-					node = container.getParent();
+				while (node != null) {
+					if (node instanceof VisualTransformableNode) {
+						value -= ((VisualTransformableNode)node).getY();
+					}
+					node = node.getParent();
 				}
 				object.setY(value);
 			}
 			public Double getter(VisualTransformableNode object) {
 				double result = 0.0;
 				Node node = object;
-				while ((node != null) && (node instanceof VisualTransformableNode)) {
-					VisualTransformableNode container = (VisualTransformableNode)node;
-					result += container.getY();
-					node = container.getParent();
+				while (node != null) {
+					if (node instanceof VisualTransformableNode) {
+						result += ((VisualTransformableNode)node).getY();
+					}
+					node = node.getParent();
 				}
 				return result;
 			}
@@ -109,34 +113,24 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public void setX(double x, boolean notify) {
-		transformChanging(notify);
-		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
-		transformChanged(notify);
-	}
-
-	@NoAutoSerialisation
 	public void setX(double x) {
-		setX(x, true);
-	}
-
-	@NoAutoSerialisation
-	public void setY(double y, boolean notify) {
-		transformChanging(notify);
-		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
-		transformChanged(notify);
+		transformChanging();
+		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
+		transformChanged();
 	}
 
 	@NoAutoSerialisation
 	public void setY(double y) {
-		setY(y, true);
+		transformChanging();
+		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
+		transformChanged();
 	}
 
 	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
-		transformChanging(true);
+		transformChanging();
 		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
-		transformChanged(true);
+		transformChanged();
 	}
 
 	@NoAutoSerialisation
@@ -144,17 +138,13 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return new Point2D.Double(getX(), getY());
 	}
 
-	protected void transformChanged(boolean notify) {
-		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
-		if (notify) {
-			sendNotification(new TransformChangedEvent(this));
-		}
+	protected void transformChanging() {
+		sendNotification(new TransformChangingEvent(this));
 	}
 
-	protected void transformChanging(boolean notify) {
-		if (notify) {
-			sendNotification(new TransformChangingEvent(this));
-		}
+	protected void transformChanged() {
+		parentToLocalTransform = Geometry.optimisticInverse(localToParentTransform);
+		sendNotification(new TransformChangedEvent(this));
 	}
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
@@ -202,11 +192,10 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return parentToLocalTransform;
 	}
 
-	public void applyTransform(AffineTransform transform)
-	{
-		transformChanging(true);
+	public void applyTransform(AffineTransform transform) {
+		transformChanging();
 		localToParentTransform.preConcatenate(transform);
-		transformChanged(true);
+		transformChanged();
 	}
 
 	@NoAutoSerialisation
@@ -245,13 +234,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	public void setTransform(AffineTransform transform) {
-		setTransform(transform, true);
-	}
-
-	public void setTransform(AffineTransform transform, boolean notify) {
-		transformChanging(notify);
+		transformChanging();
 		localToParentTransform.setTransform(transform);
-		transformChanged(notify);
+		transformChanged();
 	}
 
 }

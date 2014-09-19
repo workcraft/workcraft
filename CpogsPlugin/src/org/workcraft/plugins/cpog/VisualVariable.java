@@ -32,6 +32,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
+import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -46,6 +47,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
+@DisplayName("Variable")
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent {
 	private static Font variableFont;

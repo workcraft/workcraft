@@ -43,11 +43,7 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 		setHidden(true);
 	}
 
-	Shape shape = new Ellipse2D.Double(
-			-size / 2,
-			-size / 2,
-			size,
-			size);
+	Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return new Rectangle2D.Double(-size, -size, size*2, size*2);
@@ -66,8 +62,7 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
 	}
 
 	@Override
-	public Point2D getCenterInLocalSpace()
-	{
+	public Point2D getCenterInLocalSpace() {
 		return new Point2D.Double(0, 0);
 	}
 

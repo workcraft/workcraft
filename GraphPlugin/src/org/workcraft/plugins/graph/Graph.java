@@ -33,7 +33,7 @@ import org.workcraft.util.Hierarchy;
 public class Graph extends AbstractMathModel {
 
 	public Graph() {
-		super(null);
+		super();
 	}
 
 	public Graph(Container root) {
@@ -45,4 +45,5 @@ public class Graph extends AbstractMathModel {
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
 	}
+
 }

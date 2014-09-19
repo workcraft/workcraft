@@ -134,19 +134,23 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private ComponentsTransformObserver componentsTransformObserver = null;
 
 	public VisualConnection() {
+		this(null, null, null);
 	}
 
-	public VisualConnection(MathConnection refConnection,
-			VisualComponent first, VisualComponent second) {
+	public VisualConnection(MathConnection refConnection) {
+		this(null, null, null);
+	}
+
+	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
 		this.first = first;
 		this.second = second;
 		this.graphic = new Polyline(this);
-
 		initialise();
+		addPropertyDeclarations();
 	}
 
-	protected void initialise() {
+	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
 				this, "Line width", Double.class) {
 			protected void setter(VisualConnection object, Double value) {
@@ -192,7 +196,6 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			}
 		});
 
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
 				this, "Scale mode", ScaleMode.class, ScaleMode.getChoice()) {
 			protected void setter(VisualConnection object, ScaleMode value) {
@@ -202,16 +205,20 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				return object.getScaleMode();
 			}
 		});
+	}
 
-		componentsTransformObserver = new ComponentsTransformObserver(this);
-		children.add(componentsTransformObserver);
-		children.add(graphic);
-		if (refConnection instanceof ObservableState) {
-			((ObservableState)refConnection).addObserver(new StateObserver() {
-				public void notify(StateEvent e) {
-					observableStateImpl.sendNotification(e);
-				}
-			});
+	protected void initialise() {
+		if (refConnection != null) {
+			componentsTransformObserver = new ComponentsTransformObserver(this);
+			children.add(componentsTransformObserver);
+			children.add(graphic);
+			if (refConnection instanceof ObservableState) {
+				((ObservableState)refConnection).addObserver(new StateObserver() {
+					public void notify(StateEvent e) {
+						observableStateImpl.sendNotification(e);
+					}
+				});
+			}
 		}
 	}
 
@@ -341,7 +348,6 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		if (value > 1)	value = 1;
 		if (value < 0.0) value = 0.0;
 		this.arrowWidth = value;
-
 		invalidate();
 	}
 
@@ -461,7 +467,6 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	public void removeAllObservers() {
 		observableHierarchyImpl.removeAllObservers();
 	}
-
 
 	@Override
 	public Point2D getFirstCenter() {

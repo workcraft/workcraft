@@ -104,9 +104,9 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	protected void updateRenderedText() {
 		Point2D offset = getRenderedTextOffset();
 		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
-			transformChanging(true);
+			transformChanging();
 			renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
-			transformChanged(true);
+			transformChanged();
 		}
 	}
 

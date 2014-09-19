@@ -26,8 +26,8 @@ public class RenderedText {
 		this.text = text;
 		this.font = font;
 		this.positioning = positioning;
-		this.xOffset = offset.getX();
-		this.yOffset = offset.getY();
+		this.xOffset = (offset == null ? 0.0 : offset.getX());
+		this.yOffset = (offset == null ? 0.0 : offset.getY());
 
 		Rectangle2D textBounds = null;
 		glyphVectors = new LinkedList<GlyphVector>();
@@ -62,7 +62,7 @@ public class RenderedText {
 				|| offset.getX() != this.xOffset || offset.getY() != this.yOffset);
 	}
 
-	public void draw (Graphics2D g) {
+	public void draw(Graphics2D g) {
 		g.setFont(font);
 		float y = (float)boundingBox.getMinY();
 		for (GlyphVector glyphVector: glyphVectors) {

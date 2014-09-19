@@ -45,6 +45,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -365,7 +366,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		//
 
 		for (Node n: components) {
-			if (n instanceof VisualTransformableNode) {
+			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
 				VisualTransformableNode tn = (VisualTransformableNode)n;
 				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
 			}
@@ -373,51 +374,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return new Point2D.Double(deltaX, deltaY);
 	}
 
-
-	private ArrayList<Node> getSelectedComponentsAndConnections() {
-		Collection<Node> selection = getOrderedCurrentLevelSelection();
-
-		Collection<Node> recursiveSelection = new HashSet<Node>();
-		for (Node node : selection) {
-			if (!(node instanceof VisualNode)) continue;
-			recursiveSelection.add(node);
-			recursiveSelection.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
-		}
-
-		ArrayList<Node> selected = new ArrayList<Node>();
-		for (Node node : selection) {
-			if (!(node instanceof VisualNode)) continue;
-			if ((node instanceof VisualConnection)) {
-				VisualConnection connection = (VisualConnection)node;
-				if (!recursiveSelection.contains(connection.getFirst())) continue;
-				if (!recursiveSelection.contains(connection.getSecond())) continue;
-				connection.invalidate();
-			}
-			selected.add(node);
-		}
-		return selected;
-	}
-
-	/**
-	 * Groups the selection, and selects the newly created group.
-	 * @author Arseniy Alekseyev
-	 */
 	@Override
 	public void groupSelection() {
-		ArrayList<Node> selected = getSelectedComponentsAndConnections();
-		if(selected.size() > 1) {
+		Collection<Node> selected = getOrderedCurrentLevelSelection();
+		if(selected.size() >= 1) {
 			VisualGroup group = new VisualGroup();
-			Point2D groupCenter = centralizeComponents(selected);
-			group.setPosition(groupCenter);
-			currentLevel.add(group);
-			currentLevel.reparent(selected, group);
+			getCurrentLevel().add(group);
+			getCurrentLevel().reparent(selected, group);
+			group.setPosition(centralizeComponents(selected));
 			select(group);
 		}
 	}
 
 	@Override
 	public void groupPageSelection() {
-		ArrayList<Node> selected = getSelectedComponentsAndConnections();
+		Collection<Node> selected = getOrderedCurrentLevelSelection();
 		if (selected.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			VisualPage page = new VisualPage(pageNode);
@@ -432,20 +403,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			currentMathLevel.add(pageNode);
 			getCurrentLevel().add(page);
 			this.reparent(page, this, getCurrentLevel(), selected);
-
-			// final touch on visual part
-			if (page != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				page.setPosition(groupCenter);
-				select(page);
-			}
+			page.setPosition(centralizeComponents(selected));
+			select(page);
 		}
 	}
 
-	/**
-	 * Ungroups all groups in the current selection and adds the ungrouped components to the selection.
-	 * @author Arseniy Alekseyev
-	 */
 	@Override
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
