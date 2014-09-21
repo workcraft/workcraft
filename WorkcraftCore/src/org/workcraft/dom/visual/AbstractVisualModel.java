@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.workcraft.NodeFactory;
@@ -289,22 +288,35 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return this;
 	}
 
-	/**
-	 * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
-	 */
-	@Override
-	public Collection<Node> getSelection() {
-		return Collections.unmodifiableSet(selection);
-	}
-
-	public Collection<Node> getOrderedCurrentLevelSelection() {
-		List<Node> result = new ArrayList<Node>();
-		for(Node node : currentLevel.getChildren())	{
-			if(selection.contains(node) && node instanceof VisualNode) {
-				result.add((VisualNode)node);
+	public static Point2D centralizeComponents(Collection<Node> components) {
+		// find weighted center
+		double deltaX = 0.0;
+		double deltaY = 0.0;
+		int num = 0;
+		for (Node n: components) {
+			if (n instanceof VisualTransformableNode) {
+				VisualTransformableNode tn = (VisualTransformableNode)n;
+				deltaX+= tn.getX();
+				deltaY+= tn.getY();
+				num++;
 			}
 		}
-		return result;
+		if (num>0) {
+			deltaX /=num;
+			deltaY /=num;
+		}
+		// round numbers
+		deltaX = Math.round(deltaX*2)/2;
+		deltaY = Math.round(deltaY*2)/2;
+		//
+
+		for (Node n: components) {
+			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
+				VisualTransformableNode tn = (VisualTransformableNode)n;
+				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
+			}
+		}
+		return new Point2D.Double(deltaX, deltaY);
 	}
 
 	@Override
@@ -339,71 +351,87 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 	}
 
+	private Container getCurrentMathLevel() {
+		Container currentMathLevel;
+		VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+		if (visualContainer == null) {
+			currentMathLevel = getMathModel().getRoot();
+		} else {
+			currentMathLevel = (Container)visualContainer.getReferencedComponent();
+		}
+		return currentMathLevel;
+	}
 
 	/**
-	 * Centralize components
+	 * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
 	 */
-	public static Point2D centralizeComponents(Collection<Node> components) {
-		// find weighted center
-		double deltaX = 0.0;
-		double deltaY = 0.0;
-		int num = 0;
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
-				deltaX+= tn.getX();
-				deltaY+= tn.getY();
-				num++;
-			}
-		}
-		if (num>0) {
-			deltaX /=num;
-			deltaY /=num;
-		}
-		// round numbers
-		deltaX = Math.round(deltaX*2)/2;
-		deltaY = Math.round(deltaY*2)/2;
-		//
+	@Override
+	public Collection<Node> getSelection() {
+		return Collections.unmodifiableSet(selection);
+	}
 
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
-				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
+	public Collection<Node> getOrderedCurrentLevelSelection() {
+		HashSet<Node> result = new HashSet<Node>();
+		for(Node node : getCurrentLevel().getChildren()) {
+			if ((node instanceof VisualNode) && selection.contains(node)) {
+				result.add((VisualNode)node);
 			}
 		}
-		return new Point2D.Double(deltaX, deltaY);
+		return result;
+	}
+
+	public Collection<Node> getRecursiveSelection() {
+		HashSet<Node> result = new HashSet<Node>();
+		for (Node node : selection) {
+			if (node instanceof VisualNode) {
+				result.add(node);
+				result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
+			}
+		}
+		return result;
+	}
+
+	public Collection<Node> getGroupableCurrentLevelSelection() {
+		HashSet<Node> result = new HashSet<Node>();
+		Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection();
+		Collection<Node> recursiveSelection = getRecursiveSelection();
+        for (Node node : currentLevelSelection) {
+            if ((node instanceof VisualConnection)) {
+                VisualConnection connection = (VisualConnection)node;
+                VisualComponent first = connection.getFirst();
+				VisualComponent second = connection.getSecond();
+				if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
+                	result.add(connection);
+                }
+            } else if (node instanceof VisualNode) {
+            	result.add(node);
+            }
+        }
+		return result;
 	}
 
 	@Override
 	public void groupSelection() {
-		Collection<Node> selected = getOrderedCurrentLevelSelection();
-		if(selected.size() >= 1) {
+		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		if (nodes.size() >= 1) {
 			VisualGroup group = new VisualGroup();
 			getCurrentLevel().add(group);
-			getCurrentLevel().reparent(selected, group);
-			group.setPosition(centralizeComponents(selected));
+			getCurrentLevel().reparent(nodes, group);
+//			group.setPosition(centralizeComponents(nodes));
 			select(group);
 		}
 	}
 
 	@Override
 	public void groupPageSelection() {
-		Collection<Node> selected = getOrderedCurrentLevelSelection();
-		if (selected.size() >= 1) {
+		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		if (nodes.size() >= 1) {
 			PageNode pageNode = new PageNode();
+			getCurrentMathLevel().add(pageNode);
 			VisualPage page = new VisualPage(pageNode);
-
-			Container currentMathLevel;
-			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
-			if (visualContainer == null) {
-				currentMathLevel = getMathModel().getRoot();
-			} else {
-				currentMathLevel = (Container)visualContainer.getReferencedComponent();
-			}
-			currentMathLevel.add(pageNode);
 			getCurrentLevel().add(page);
-			this.reparent(page, this, getCurrentLevel(), selected);
-			page.setPosition(centralizeComponents(selected));
+			this.reparent(page, this, getCurrentLevel(), nodes);
+//			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}
 	}
@@ -417,7 +445,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
 				}
-				currentLevel.remove(group);
+				getCurrentLevel().remove(group);
 			} else if(node instanceof VisualPage) {
 				VisualPage page = (VisualPage)node;
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
