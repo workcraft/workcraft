@@ -47,7 +47,8 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	private VisualConnectionProperties connectionInfo;
 
 	private Node parent;
-	private BezierControlPoint cp1, cp2;
+	private BezierControlPoint cp1;
+	private BezierControlPoint cp2;
 	private ControlPointScaler scaler = null;
 
 	private Rectangle2D boundingBox = null;
@@ -60,10 +61,8 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	public void setDefaultControlPoints() {
 		initControlPoints (new BezierControlPoint(), new BezierControlPoint());
-
 		cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
 		cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
-
 		finaliseControlPoints();
 	}
 
@@ -112,8 +111,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		return boundingBox;
 	}
 
-	private CubicCurve2D getPartialCurve(double tStart, double tEnd)
-	{
+	private CubicCurve2D getPartialCurve(double tStart, double tEnd) {
 		CubicCurve2D fullCurve = new CubicCurve2D.Double();
 		fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
@@ -254,8 +252,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	}
 
 	@Override
-	public Point2D getCenter()
-	{
+	public Point2D getCenter() {
 		return getPointOnCurve(0.5);
 	}
 }

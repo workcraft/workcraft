@@ -6,6 +6,7 @@ set CLASSPATH=^
 %WORKCRAFT_HOME%\CircuitPlugin\bin;^
 %WORKCRAFT_HOME%\CpogsPlugin\bin;^
 %WORKCRAFT_HOME%\DfsPlugin\bin;^
+%WORKCRAFT_HOME%\FsmPlugin\bin;^
 %WORKCRAFT_HOME%\GraphPlugin\bin;^
 %WORKCRAFT_HOME%\MpsatPlugin\bin;^
 %WORKCRAFT_HOME%\PetriNetPlugin\bin;^

@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.workcraft.annotations.CustomTools;
-import org.workcraft.annotations.DefaultCreateButtons;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -46,8 +45,7 @@ import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
-@DefaultCreateButtons( { Vertex.class, Variable.class, RhoClause.class })
-@CustomTools ( CustomToolsProvider.class )
+@CustomTools(CustomToolsProvider.class)
 public class VisualCPOG extends AbstractVisualModel
 {
 	private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {

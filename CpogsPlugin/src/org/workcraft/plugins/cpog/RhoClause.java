@@ -21,14 +21,12 @@
 
 package org.workcraft.plugins.cpog;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
-@DisplayName("RhoClause")
 @VisualClass(org.workcraft.plugins.cpog.VisualRhoClause.class)
 public class RhoClause extends MathNode
 {

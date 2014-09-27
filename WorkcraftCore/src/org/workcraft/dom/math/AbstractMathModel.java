@@ -37,16 +37,15 @@ import org.workcraft.util.Hierarchy;
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 
 	public AbstractMathModel() {
-		this (null, null);
+		this(null, null);
 	}
 
-	public AbstractMathModel (Container root) {
-		this (root, null);
+	public AbstractMathModel(Container root) {
+		this(root, null);
 	}
 
 	public AbstractMathModel(Container root, ReferenceManager referenceManager) {
 		super((root == null) ? new MathGroup() : root, referenceManager);
-
 		new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
 	}
 

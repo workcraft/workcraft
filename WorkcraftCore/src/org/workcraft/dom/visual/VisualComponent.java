@@ -282,7 +282,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 
 	private void cacheNameRenderedText(DrawRequest r) {
-
 		String name = null;
 		if (CommonEditorSettings.getShowAbsolutePaths()) {
 			name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());

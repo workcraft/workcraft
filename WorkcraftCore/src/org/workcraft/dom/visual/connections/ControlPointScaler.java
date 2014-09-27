@@ -38,57 +38,54 @@ public class ControlPointScaler {
 		if (mode == VisualConnection.ScaleMode.NONE)
 			return;
 
-		if (mode == VisualConnection.ScaleMode.LOCK_RELATIVELY)
-		{
+		if (mode == VisualConnection.ScaleMode.LOCK_RELATIVELY) {
 			Point2D dC1 = subtract(newC1, oldC1);
 			Point2D dC2 = subtract(newC2, oldC2);
 
 			int n = controlPoints.size();
-			int i=0;
-			for (ControlPoint cp : controlPoints)
-			{
+			int i = 0;
+			for (ControlPoint cp : controlPoints) {
+if (cp instanceof BezierControlPoint) {
+	System.out.println(cp);
+	System.out.println(">> " + cp.getPosition());
+}
 				Point2D delta;
-				if(i<n/2)
+				if (i < n/2) {
 					delta = dC1;
-				else
-					if(i>(n-1)/2)
+				} else {
+					if (i > (n - 1) / 2) {
 						delta = dC2;
-					else
+					} else {
 						delta = multiply(add(dC1, dC2), 0.5);
-
+					}
+				}
 				cp.setPosition(add(cp.getPosition(), delta));
-
 				i++;
+if (cp instanceof BezierControlPoint) {
+	System.out.println("<< " + cp.getPosition());
+}
 			}
 			return;
 		}
 
 		Point2D v0 = subtract(oldC2, oldC1);
-
-		if (v0.distanceSq(0, 0) < THRESHOLD)
+		if (v0.distanceSq(0, 0) < THRESHOLD) {
 			v0.setLocation(0.001, 0);
-
+		}
 		Point2D up0 = getUpVector(mode, v0);
 
 		Point2D v = subtract(newC2, newC1);
 
-		if (v.distanceSq(0, 0) < THRESHOLD)
+		if (v.distanceSq(0, 0) < THRESHOLD) {
 			v.setLocation(0.001, 0);
-
+		}
 		Point2D up = getUpVector(mode, v);
-
 		for (ControlPoint cp : controlPoints) {
 			Point2D p = subtract(cp.getPosition(), oldC1);
-
 			Point2D dp = changeBasis (p, v0, up0);
-
-			cp.setPosition(
-					add(
-							add(
-									multiply (v, dp.getX()),
-									multiply (up, dp.getY())),
-									newC1
-					));
+			Point2D mP1 = multiply(v, dp.getX());
+			Point2D mP2 = multiply(up, dp.getY());
+			cp.setPosition(add(add(mP1, mP2),	newC1));
 		}
 	}
 

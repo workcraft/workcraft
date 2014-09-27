@@ -5,6 +5,7 @@ model_plugin_dirs="
     CircuitPlugin 
     CpogsPlugin 
     DfsPlugin 
+    FsmPlugin 
     GraphPlugin 
     PetriNetPlugin 
     PolicyNetPlugin 

@@ -243,7 +243,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		stopButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				reset(editor);
+				clearTraces(editor);
 			}
 		});
 
@@ -341,7 +341,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		initialMarking = readMarking();
 		editor.getWorkspaceEntry().captureMemento();
 		editor.getWorkspaceEntry().setCanModify(false);
-		updateState(editor);
+		resetTraces(editor);
 	}
 
 	@Override
@@ -429,7 +429,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private boolean stepBack(final GraphEditor editor) {
-
 		boolean ret = quietStepBack();
 		updateState(editor);
 		return ret;
@@ -520,7 +519,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return true;
 	}
 
-	private void reset(final GraphEditor editor) {
+	private void resetTraces(final GraphEditor editor) {
+		applyMarking(initialMarking);
+		mainTrace.setPosition(0);
+		branchTrace.setPosition(0);
+		updateState(editor);
+	}
+
+	private void clearTraces(final GraphEditor editor) {
 		applyMarking(initialMarking);
 		mainTrace.clear();
 		branchTrace.clear();
@@ -660,16 +666,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		@Override
 		public Object getValueAt(int row, int column) {
+			String ref = null;
 			if (column == 0) {
 				if (!mainTrace.isEmpty() && (row < mainTrace.size())) {
-					return mainTrace.get(row);
+					ref = mainTrace.get(row);
 				}
 			} else {
 				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
-					return branchTrace.get(row - mainTrace.getPosition());
+					ref = branchTrace.get(row - mainTrace.getPosition());
 				}
 			}
-			return "";
+			return getTraceLabelByReference(ref);
 		}
 	};
 
@@ -693,7 +700,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	public void executeTransition(final GraphEditor editor, Transition t) {
 		if (t == null) return;
-
 
 		String transitionId = null;
 		// if clicked on the trace event, do the step forward
@@ -860,6 +866,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	@Override
 	public void lostOwnership(Clipboard clip, Transferable arg) {
+	}
+
+	public String getTraceLabelByReference(String ref) {
+		return ref;
 	}
 
 }
