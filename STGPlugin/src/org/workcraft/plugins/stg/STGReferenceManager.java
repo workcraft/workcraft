@@ -6,26 +6,29 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Pair;
 
-public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager implements ReferenceManager {
+public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager {
 
-	public STGReferenceManager(References existing, Func<Node, String> defaultName) {
-		super(existing, defaultName);
+	public STGReferenceManager(References refs) {
+		super(refs);
 	}
 
 	@Override
 	protected STGNameManager createNameManager() {
-		return new STGNameManager(defaultName);
+		return new STGNameManager() {
+			@Override
+			public String getPrefix(Node node) {
+				return STGReferenceManager.this.getPrefix(node);
+			}
+		};
 	}
 
 	@Override
-	protected void setExistingReference(Node n) {
-		if (n instanceof STGPlace && ((STGPlace)n).isImplicit()) return;
-		super.setExistingReference(n);
+	protected void setExistingReference(Node node) {
+		if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) return;
+		super.setExistingReference(node);
 	}
 
 	private STGNameManager getNameManager(Node node) {
@@ -54,12 +57,13 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 	}
 
 	public void setDefaultNameIfUnnamed(Node node) {
-		getNameManager(node).setDefaultNameIfUnnamed(node);
+		STGNameManager mgr = getNameManager(node);
+		mgr.setDefaultNameIfUnnamed(node);
 	}
 
-
 	public void setName(Node node, String s, boolean forceInstance) {
-		getNameManager(node).setName(node, s, forceInstance);
+		STGNameManager mgr = getNameManager(node);
+		mgr.setName(node, s, forceInstance);
 	}
 
 }

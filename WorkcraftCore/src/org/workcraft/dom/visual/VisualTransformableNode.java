@@ -41,6 +41,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "X", Double.class) {
+			@Override
 			public void setter(VisualTransformableNode object, Double value) {
 				Node node = object.getParent();
 				while (node != null) {
@@ -51,6 +52,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				}
 				object.setX(value);
 			}
+			@Override
 			public Double getter(VisualTransformableNode object) {
 				double result = 0.0;
 				Node node = object;
@@ -66,6 +68,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
 				this, "Y", Double.class) {
+			@Override
 			public void setter(VisualTransformableNode object, Double value) {
 				Node node = object.getParent();
 				while (node != null) {
@@ -76,6 +79,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				}
 				object.setY(value);
 			}
+			@Override
 			public Double getter(VisualTransformableNode object) {
 				double result = 0.0;
 				Node node = object;
@@ -149,25 +153,26 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	public abstract boolean hitTestInLocalSpace(Point2D pointInLocalSpace);
 
+	@Override
 	public boolean hitTest(Point2D point) {
 		return hitTestInLocalSpace(parentToLocalTransform.transform(point, null));
 	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
 
+	@Override
     public final Rectangle2D getBoundingBox() {
     	return transformToParentSpace(getBoundingBoxInLocalSpace());
     }
 
 	public abstract Point2D getCenterInLocalSpace();
 
-    public final Point2D getCenter()
-    {
+	@Override
+    public final Point2D getCenter() {
     	return getLocalToParentTransform().transform(getCenterInLocalSpace(), null);
     }
 
-	protected Rectangle2D transformToParentSpace(Rectangle2D rect)
-	{
+	protected Rectangle2D transformToParentSpace(Rectangle2D rect) {
 		if(rect == null)
     		return null;
 
@@ -192,6 +197,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		return parentToLocalTransform;
 	}
 
+	@Override
 	public void applyTransform(AffineTransform transform) {
 		transformChanging();
 		localToParentTransform.preConcatenate(transform);

@@ -111,7 +111,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	}
 
 	protected void drawConditionInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			cacheConditionRenderedFormula(r);
@@ -160,7 +160,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
 			bb = BoundingBoxHelper.union(bb, conditionRenderedFormula.getBoundingBox());
 		}
 		return bb;

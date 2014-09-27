@@ -28,50 +28,54 @@ import java.util.Collection;
 
 public class BoundingBoxHelper {
 
-	public static Rectangle2D union(Rectangle2D rect1, Rectangle2D rect2)
-	{
-		if (rect1 == null) return rect2;
-		if (rect2 == null) return rect1;
+	public static Rectangle2D copy(Rectangle2D rect) {
+		if(rect == null) {
+    		return null;
+		}
+		Rectangle2D result = new Rectangle2D.Double();
+		result.setRect(rect);
+		return result;
+	}
+
+	public static Rectangle2D union(Rectangle2D rect1, Rectangle2D rect2) {
+		if (rect1 == null) return copy(rect2);
+		if (rect2 == null) return copy(rect1);
 
 		Rectangle2D result = new Rectangle2D.Double();
-
 		result.setRect(rect1);
 		result.add(rect2);
-
 		return result;
 	}
 
 	public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
 		Rectangle2D bb = null;
-		for(Touchable node : nodes)
+		for(Touchable node : nodes) {
 			bb = union(bb, node.getBoundingBox());
+		}
 		return bb;
 	}
 
-	public static Rectangle2D expand(Rectangle2D rect, double x, double y)
-	{
-		Rectangle2D res = new Rectangle2D.Double();
-		res.setRect(rect);
+	public static Rectangle2D expand(Rectangle2D rect, double x, double y) {
+		Rectangle2D result = new Rectangle2D.Double();
+		result.setRect(rect);
 
 		x /= 2.0f;
 		y /= 2.0f;
 
-		res.add(rect.getMinX() - x, rect.getMinY() - y);
-		res.add(rect.getMaxX() + x, rect.getMaxY() + y);
+		result.add(rect.getMinX() - x, rect.getMinY() - y);
+		result.add(rect.getMaxX() + x, rect.getMaxY() + y);
 
-		return res;
+		return result;
 	}
 
-	public static Rectangle2D move(Rectangle2D rect, double x, double y)
-	{
+	public static Rectangle2D move(Rectangle2D rect, double x, double y) {
 		return new Rectangle2D.Double(rect.getX()+x, rect.getY()+y, rect.getWidth(), rect.getHeight());
 	}
 
-	public static Rectangle2D transform(Rectangle2D rect, AffineTransform transform)
-	{
-		if(rect == null)
+	public static Rectangle2D transform(Rectangle2D rect, AffineTransform transform) {
+		if(rect == null) {
     		return null;
-
+		}
 		Point2D p0 = new Point2D.Double(rect.getMinX(), rect.getMinY());
 		Point2D p1 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
 
@@ -83,4 +87,5 @@ public class BoundingBoxHelper {
 
 		return result;
 	}
+
 }

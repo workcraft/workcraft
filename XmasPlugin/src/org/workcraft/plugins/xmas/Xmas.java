@@ -43,42 +43,31 @@ import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.XmasConnection;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class Xmas extends AbstractMathModel {
 
 	public Xmas() {
-		this(new MathGroup(), null);
+		this(new MathGroup(), (References)null);
 	}
 
 	public Xmas(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				if (arg instanceof SourceComponent)
-					return "Src";
-				if (arg instanceof FunctionComponent)
-					return "Fun";
-				if (arg instanceof QueueComponent)
-					return "Qu";
-				if (arg instanceof ForkComponent)
-					return "Frk";
-				if (arg instanceof JoinComponent)
-					return "Jn";
-				if (arg instanceof SwitchComponent)
-					return "Sw";
-				if (arg instanceof MergeComponent)
-					return "Mrg";
-				if (arg instanceof SinkComponent)
-					return "Snk";
-				if (arg instanceof XmasContact)
-					return "Contact";
-				if (arg instanceof XmasConnection)
-					return "Con";
-				return "node";
+			public String getPrefix(Node node) {
+				if (node instanceof SourceComponent) return "src";
+				if (node instanceof FunctionComponent) return "fun";
+				if (node instanceof QueueComponent) return "qu";
+				if (node instanceof ForkComponent) return "frk";
+				if (node instanceof JoinComponent) return "jn";
+				if (node instanceof SwitchComponent) return "sw";
+				if (node instanceof MergeComponent) return "mrg";
+				if (node instanceof SinkComponent) return "snk";
+				if (node instanceof XmasContact) return "contact";
+				if (node instanceof XmasConnection) return "con";
+				return super.getPrefix(node);
 			}
-		}));
+		});
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {

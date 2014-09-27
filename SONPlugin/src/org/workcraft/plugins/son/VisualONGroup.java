@@ -10,6 +10,7 @@ import java.util.Collection;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
@@ -24,7 +25,7 @@ public class VisualONGroup extends VisualPage{
 
 	private static final float strokeWidth = 0.03f;
 	private Positioning labelPositioning = Positioning.TOP_RIGHT;
-	private RenderedGroupText groupLabelRenderedText = new RenderedGroupText("", labelFont, labelPositioning, getGroupLabelOffset());
+	private RenderedText groupLabelRenderedText = new RenderedText("", labelFont, labelPositioning, getGroupLabelOffset());
 
 	private ONGroup mathGroup = null;
 
@@ -46,13 +47,13 @@ public class VisualONGroup extends VisualPage{
 	@Override
 	protected void cacheLabelRenderedText(DrawRequest r) {
 		if (groupLabelRenderedText.isDifferent(getLabel(), labelFont, labelPositioning, getGroupLabelOffset())) {
-			groupLabelRenderedText = new RenderedGroupText(getLabel(), labelFont, labelPositioning, getGroupLabelOffset());
+			groupLabelRenderedText = new RenderedText(getLabel(), labelFont, labelPositioning, getGroupLabelOffset());
 		}
 	}
 
 	@Override
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (groupLabelRenderedText != null) && !groupLabelRenderedText.isEmpty()) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			groupLabelRenderedText.draw(g);

@@ -12,7 +12,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.fsm.VisualFsm.class)
@@ -27,14 +26,14 @@ public class Fsm extends AbstractMathModel {
 	}
 
 	public Fsm(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				if (arg instanceof State) return "s";
-				if (arg instanceof Event) return "t";
-				return "node";
+			public String getPrefix(Node node) {
+                if (node instanceof State) return "s";
+                if (node instanceof Event) return "t";
+				return super.getPrefix(node);
 			}
-		}));
+		});
 
 		// Move the initial property to another state on state removal
 		new HierarchySupervisor() {

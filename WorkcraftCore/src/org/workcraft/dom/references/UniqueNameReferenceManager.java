@@ -8,84 +8,82 @@ import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
-public class UniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager
-{
-	final private UniqueNameManager<Node> manager;
-	private References existing;
+public class UniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager {
+	private References refs;
+	final private UniqueNameManager mgr;
 
-	public UniqueNameReferenceManager(References existing, Func<Node, String> defaultName) {
-		this (null, existing, defaultName);
+	public UniqueNameReferenceManager(References refs) {
+		this.refs = refs;
+		this.mgr = new UniqueNameManager() {
+			@Override
+			public String getPrefix(Node node) {
+				return UniqueNameReferenceManager.this.getPrefix(node);
+			}
+		};
 	}
-
-	public UniqueNameReferenceManager(UniqueNameManager<Node> manager, References existing, Func<Node, String> defaultName) {
-		this.existing = existing;
-		if (manager == null) {
-			this.manager = new UniqueNameManager<Node>(defaultName);
-		} else {
-			this.manager = manager;
-		}
-	}
-
 
 	@Override
 	public void attach(Node root) {
-		if (existing != null) {
+		if (refs != null) {
 			setExistingReference(root);
 			for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
 				setExistingReference(n);
 			}
-			existing = null;
+			refs = null;
 		}
 		super.attach(root);
 	}
 
 	private void setExistingReference(Node n) {
-		final String reference = existing.getReference(n);
+		final String reference = refs.getReference(n);
 		if (reference != null) {
-			manager.setName(n, reference);
+			mgr.setName(n, reference);
 		}
 	}
 
 	@Override
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
-		return manager.get(reference);
+		return mgr.get(reference);
 	}
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-		return manager.getName(node);
+		return mgr.getName(node);
 	}
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
 		if(e instanceof NodesAddedEvent) {
 			for(Node node : e.getAffectedNodes()) {
-
-				manager.setDefaultNameIfUnnamed(node);
+				mgr.setDefaultNameIfUnnamed(node);
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
-					manager.setDefaultNameIfUnnamed(node2);
+					mgr.setDefaultNameIfUnnamed(node2);
 				}
 			}
 		}
 		if(e instanceof NodesDeletedEvent) {
 			for(Node node : e.getAffectedNodes()) {
-				manager.remove(node);
+				mgr.remove(node);
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
-					manager.remove(node2);
+					mgr.remove(node2);
 				}
 			}
 		}
 	}
 
+	@Override
+	public String getPrefix(Node node) {
+		return ReferenceHelper.getDefaultPrefix(node);
+	}
+
 	public void setName(Node node, String name) {
-		manager.setName(node, name);
+		mgr.setName(node, name);
 	}
 
 	public String getName(Node node) {
-		return manager.getName(node);
+		return mgr.getName(node);
 	}
 
 }

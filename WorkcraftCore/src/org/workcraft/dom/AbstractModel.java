@@ -29,53 +29,39 @@ import java.util.Set;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.math.CommentNode;
-import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.DefaultReferenceManager;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.util.Func;
 
 /**
  * A base class for all interpreted graph models.
- * @author Ivan Poliakov
- *
  */
 public abstract class AbstractModel implements Model {
-	final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
-	private ReferenceManager referenceManager;
-	private String title = "Untitled";
 	private Container root;
+	private ReferenceManager mgr;
+	private String title = "Untitled";
+	final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 
-
-	public AbstractModel (Container root) {
-		this (root, null);
+	public AbstractModel(Container root) {
+		this(root, null);
 	}
 
-	public AbstractModel(Container root, ReferenceManager referenceManager) {
+	public AbstractModel(Container root, ReferenceManager man) {
 		this.root = root;
-		this.referenceManager = referenceManager;
-		if (this.referenceManager==null) {
+		if (man != null) {
+			this.mgr = man;
+		} else {
 			if (root instanceof NamespaceProvider) {
-				this.referenceManager =
-						new HierarchicalUniqueNameReferenceManager(null, new Func<Node, String>() {
-							@Override
-							public String eval(Node arg) {
-								if (arg instanceof Connection) return "c";
-								if (arg instanceof PageNode) return "pg";
-								if (arg instanceof CommentNode) return "comment";
-								if (arg instanceof Container) return "gr";
-								return "v";
-							}
-						});
+				this.mgr = new HierarchicalUniqueNameReferenceManager();
 			} else {
-				this.referenceManager = new DefaultReferenceManager();
+				this.mgr = new DefaultReferenceManager();
 			}
 		}
-		nodeContextTracker.attach(root);
-		this.referenceManager.attach(root);
+		this.nodeContextTracker.attach(root);
+		this.mgr.attach(root);
 	}
 
 	public Model getMathModel() {
@@ -171,12 +157,12 @@ public abstract class AbstractModel implements Model {
 
 	@Override
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
-		return referenceManager.getNodeByReference(provider, reference);
+		return mgr.getNodeByReference(provider, reference);
 	}
 
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
-		return referenceManager.getNodeReference(provider, node);
+		return mgr.getNodeReference(provider, node);
 	}
 
 	@Override
@@ -189,20 +175,20 @@ public abstract class AbstractModel implements Model {
 	}
 
 	public ReferenceManager getReferenceManager() {
-		return referenceManager;
+		return mgr;
 	}
 
 	public String getName(Node node) {
 
-		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager)
-			return ((HierarchicalUniqueNameReferenceManager)referenceManager).getName(node);
+		if (mgr instanceof HierarchicalUniqueNameReferenceManager)
+			return ((HierarchicalUniqueNameReferenceManager)mgr).getName(node);
 
-		return referenceManager.getNodeReference(null, node);
+		return mgr.getNodeReference(null, node);
 	}
 
 	public void setName(Node node, String name) {
-		if (referenceManager instanceof HierarchicalUniqueNameReferenceManager) {
-			((HierarchicalUniqueNameReferenceManager)referenceManager).setName(node, name);
+		if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
+			((HierarchicalUniqueNameReferenceManager)mgr).setName(node, name);
 		}
 	}
 

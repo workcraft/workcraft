@@ -31,57 +31,35 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.petri.VisualPetriNet.class)
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
 	public PetriNet() {
-		this(new MathGroup(), null);
-	}
-
-	public PetriNet(Container root) {
-		this(root, null);
+		this(null, (References)null);
 	}
 
 	public PetriNet(Container root, References refs) {
-		this(root, refs, new Func<Node, String>() {
+		this(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				return null;
+			public String getPrefix(Node node) {
+				if (node instanceof Place) return "p";
+				if (node instanceof Transition) return "t";
+				return super.getPrefix(node);
 			}
 		});
 	}
 
-	public PetriNet(Container root, References refs, final Func<Node, String> nodePrefixFunc) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
-			@Override
-			public String eval(Node arg) {
-				String result = nodePrefixFunc.eval(arg);
-				if (result == null) {
-					if (arg instanceof Place) {
-						result = "p";
-					} else if (arg instanceof Transition) {
-						result = "t";
-					} else if (arg instanceof Connection) {
-						result = "con";
-					} else {
-						result = "node";
-					}
-				}
-				return result;
-			}
-		}));
-
+	public PetriNet(Container root, ReferenceManager man) {
+		super(root, man);
 	}
-
 
 	final public Place createPlace(String name) {
 		Place newPlace = new Place();

@@ -75,9 +75,9 @@ public class IDGenerator
 		final Pair<Integer, Integer> range = takenRanges.floor(emptyRange(id));
 
 		if(range == null || range.getSecond() <= id)
-			throw new RuntimeException("you are idiots, sorry");
+			throw new RuntimeException("ID is above the range");
 		if(range.getFirst() > id)
-			throw new RuntimeException("we are idiots, sorry");
+			throw new RuntimeException("ID is below the range");
 
 		Pair<Integer, Integer> r1 = Pair.of(range.getFirst(), id);
 		Pair<Integer, Integer> r2 = Pair.of(id+1, range.getSecond());
@@ -94,7 +94,7 @@ public class IDGenerator
 
 	private void tryAddRange(Pair<Integer, Integer> r2) {
 		if(takenRanges.floor(emptyRange(r2.getFirst())) != takenRanges.floor(emptyRange(r2.getSecond())))
-			throw new RuntimeException("we are idiots, sorry");
+			throw new RuntimeException("taken range error");
 
 		if(!r2.getSecond().equals(r2.getFirst()))
 			takenRanges.add(r2);

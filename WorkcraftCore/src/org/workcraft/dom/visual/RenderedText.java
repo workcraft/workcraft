@@ -12,22 +12,22 @@ import java.util.LinkedList;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class RenderedText {
-	protected final double spacingRatio = CommonVisualSettings.getLineSpacing();
+	private final double spacingRatio = CommonVisualSettings.getLineSpacing();
 	private final String text;
 	private final Font font;
 	private final Positioning positioning;
 	private final double xOffset;
 	private final double yOffset;
-	protected LinkedList<GlyphVector> glyphVectors;
-	protected Rectangle2D boundingBox;
-	protected double spacing;
+	private final LinkedList<GlyphVector> glyphVectors;
+	private final Rectangle2D boundingBox;
+	private final double spacing;
 
 	public RenderedText(String text, Font font, Positioning positioning, Point2D offset) {
 		this.text = text;
 		this.font = font;
 		this.positioning = positioning;
-		this.xOffset = (offset == null ? 0.0 : offset.getX());
-		this.yOffset = (offset == null ? 0.0 : offset.getY());
+		this.xOffset = offset.getX();
+		this.yOffset = offset.getY();
 
 		Rectangle2D textBounds = null;
 		glyphVectors = new LinkedList<GlyphVector>();
@@ -43,14 +43,9 @@ public class RenderedText {
 			textBounds = BoundingBoxHelper.union(textBounds, lineBounds);
 		}
 		spacing = (lines.length < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lines.length - 1));
-
 		textBounds = BoundingBoxHelper.transform(textBounds, AffineTransform.getScaleInstance(1.0, 1.0 + spacingRatio));
-		double x = 0.0;
-		double y = 0.0;
-		if (text.length() > 0) {
-			x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
-			y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();
-		}
+		double x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
+		double y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();
 		boundingBox = BoundingBoxHelper.move(textBounds, x, y);
 	}
 
@@ -62,7 +57,7 @@ public class RenderedText {
 				|| offset.getX() != this.xOffset || offset.getY() != this.yOffset);
 	}
 
-	public void draw(Graphics2D g) {
+	public void draw (Graphics2D g) {
 		g.setFont(font);
 		float y = (float)boundingBox.getMinY();
 		for (GlyphVector glyphVector: glyphVectors) {
@@ -81,6 +76,10 @@ public class RenderedText {
 
 	public Rectangle2D getBoundingBox() {
 		return boundingBox;
+	}
+
+	public boolean isEmpty() {
+		return ((text == null) || text.isEmpty());
 	}
 
 }

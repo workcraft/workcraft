@@ -74,4 +74,8 @@ public class RenderedFormula implements Touchable {
 		return new Point2D.Double(boundingBox.getCenterX(), boundingBox.getCenterY());
 	}
 
+	public boolean isEmpty() {
+		return ((text == null) || text.isEmpty());
+	}
+
 }

@@ -44,10 +44,10 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 		this(root, null);
 	}
 
-	public AbstractMathModel(Container root, ReferenceManager referenceManager) {
-		super((root == null) ? new MathGroup() : root, referenceManager);
-		new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
-	}
+	public AbstractMathModel(Container root, ReferenceManager man) {
+        super((root == null) ? new MathGroup() : root, man);
+        new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
+ 	}
 
 	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager manager, Container targetContainer,
 			Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
@@ -79,8 +79,10 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 		}
 
 		for (Node node: nodes) {
-			if (!(node instanceof Container)) continue;
-			setNamespaceRecursively(manager, (Container)node, sourceModel, (Container)node, null);
+			if (node instanceof Container) {
+				Container container = (Container)node;
+				setNamespaceRecursively(manager, container, sourceModel, container, null);
+			}
 		}
 	}
 

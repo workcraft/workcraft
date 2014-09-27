@@ -27,17 +27,25 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.graph.VisualGraph.class)
 public class Graph extends AbstractMathModel {
 
 	public Graph() {
-		super();
+		this(null, null);
 	}
 
-	public Graph(Container root) {
-		super(root);
+	public Graph(Container root, References refs) {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+			@Override
+			public String getPrefix(Node node) {
+				if (node instanceof Vertex) return "v";
+				return super.getPrefix(node);
+			}
+		});
 	}
 
 	public MathConnection connect(Node first, Node second) {

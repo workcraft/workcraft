@@ -24,11 +24,9 @@ package org.workcraft.plugins.cpog;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -38,31 +36,26 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CPOG extends AbstractMathModel {
 
 	public CPOG() {
-		this(new MathGroup(), null);
+		this(null, null);
 	}
 
 	public CPOG(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				if (arg instanceof Vertex)
-					return "v";
-				if (arg instanceof Variable)
-					return "var";
-				if ((arg instanceof RhoClause))
-					return "rho";
-				if (arg instanceof Connection)
-					return "con";
-				return "node";
+			public String getPrefix(Node node) {
+				if (node instanceof Vertex) return "v";
+				if (node instanceof Variable) return "var";
+				if (node instanceof RhoClause) return "rho";
+				return super.getPrefix(node);
 			}
-		}));
-		// update all vertex conditions when a variable is removed
+		});
+
+		// Update all vertex conditions when a variable is removed
 		new HierarchySupervisor() {
 			@Override
 			public void handleEvent(HierarchyEvent e) {
@@ -78,7 +71,6 @@ public class CPOG extends AbstractMathModel {
 				}
 			}
 		}.attach(getRoot());
-
 	}
 
 	public Arc connect(Vertex first, Vertex second) {

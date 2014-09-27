@@ -3,33 +3,18 @@ package org.workcraft.plugins.stg;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.util.Func;
 import org.workcraft.util.GeneralTwoWayMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
-
-/**
- * @author mech
- *
- * @param <T>
- */
-public class InstanceManager<T> {
-	private GeneralTwoWayMap<T, Pair<String,Integer>> instances = new TwoWayMap<T, Pair<String, Integer>>();
-
+public class InstanceManager {
+	private GeneralTwoWayMap<Node, Pair<String,Integer>> instances = new TwoWayMap<Node, Pair<String, Integer>>();
 	private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
-	private final Func<T, String> labelGetter;
-
-	public InstanceManager (Func<T, String> labelGetter) {
-		if(labelGetter == null) {
-			throw new NullPointerException();
-		}
-		this.labelGetter = labelGetter;
-	}
 
 	private IDGenerator getGenerator(String label)	{
 		IDGenerator result = generators.get(label);
@@ -44,47 +29,45 @@ public class InstanceManager<T> {
 		return generators.get(name)!=null;
 	}
 
-
-	public boolean contains(T t) {
-		return instances.containsKey(t);
+	public boolean contains(Node node) {
+		return instances.containsKey(node);
 	}
-
 
 	/**
 	 * Automatically assign a new name to <i>t</i>, taking the name from label getter and auto-generating instance number.
 	 */
-	public void assign (T t) {
-		final Pair<String, Integer> assigned = instances.getValue(t);
+	public void assign (Node node) {
+		final Pair<String, Integer> assigned = instances.getValue(node);
 		final Integer instance;
 		if (assigned != null) {
 			throw new ArgumentException ("Instance already assigned to \""
-					+ labelGetter.eval(t) + "/" + assigned.getSecond() +"\"");
+					+ getLabel(node) + "/" + assigned.getSecond() +"\"");
 		}
-		final String label = labelGetter.eval(t);
+		final String label = getLabel(node);
 		instance = getGenerator(label).getNextID();
-		instances.put(t, new Pair<String, Integer>(label, instance));
+		instances.put(node, new Pair<String, Integer>(label, instance));
 	}
 
 	/**
 	 * Manually assign a new name to <i>t</i>, auto-generating instance number.
 	 */
-	public void assign (T t, String name) {
-		assign (t, Pair.of(name, (Integer)null), false);
+	public void assign (Node node, String name) {
+		assign(node, Pair.of(name, (Integer)null), false);
 	}
 
 	/**
 	 * Manually assign an instance number to <i>t</i>.
 	 */
-	public void assign (T t, int instance) {
-		assign (t, Pair.of(labelGetter.eval(t), instance), true);
+	public void assign (Node node, int instance) {
+		assign(node, Pair.of(getLabel(node), instance), true);
 	}
 
 	/**
 	 * Manually assign a full reference to <i>t</i>, either auto-generating (<i>forceInstance = false</i>)
 	 * or forcing (<i>forceInstance = true</i>) the instance number.
 	 */
-	public void assign (T t, Pair<String, Integer> reference, boolean forceInstance) {
-		final Pair<String, Integer> assigned = instances.getValue(t);
+	public void assign (Node node, Pair<String, Integer> reference, boolean forceInstance) {
+		final Pair<String, Integer> assigned = instances.getValue(node);
 		if (reference.getSecond() == null || !forceInstance) {
 			if (assigned != null) {
 				if (assigned.getFirst().equals(reference.getFirst())) {
@@ -92,15 +75,15 @@ public class InstanceManager<T> {
 					return;
 				} else {
 					// release old instance
-					remove(t);
+					remove(node);
 				}
 			}
-			instances.put(t, Pair.of(reference.getFirst(),
+			instances.put(node, Pair.of(reference.getFirst(),
 					getGenerator(reference.getFirst()).getNextID()));
 		} else {
 			// check if desired instance is already taken
-			final T refHolder = instances.getKey(reference);
-			if (refHolder == t) {
+			final Node refHolder = instances.getKey(reference);
+			if (refHolder == node) {
 				// requested instance already taken by t, do nothing
 				return;
 			} else if(refHolder != null) {
@@ -108,28 +91,40 @@ public class InstanceManager<T> {
 				throw new DuplicateIDException(reference.getSecond());
 			} else if (assigned != null) {
 				// release old instance
-				remove(t);
+				remove(node);
 			}
-			instances.put(t, reference);
+			instances.put(node, reference);
 			getGenerator(reference.getFirst()).reserveID(reference.getSecond());
 		}
 	}
 
-	public Pair<String, Integer> getInstance (T t) {
-		return instances.getValue(t);
+	public Pair<String, Integer> getInstance (Node node) {
+		return instances.getValue(node);
 	}
 
-	public T getObject(Pair<String, Integer> ref) {
+	public Node getObject(Pair<String, Integer> ref) {
 		return instances.getKey(ref);
 	}
 
-	public void remove(T T) {
-		final Pair<String, Integer> assignment = instances.getValue(T);
+	public void remove(Node node) {
+		final Pair<String, Integer> assignment = instances.getValue(node);
 		if(assignment == null) {
 			throw new NotFoundException("Instance not assigned");
 		}
 		generators.get(assignment.getFirst()).releaseID(assignment.getSecond());
-		instances.removeKey(T);
+		instances.removeKey(node);
+	}
+
+	public String getLabel(Node node) {
+		if (node instanceof SignalTransition) {
+			SignalTransition st = (SignalTransition) node;
+			return st.getSignalName() + st.getDirection();
+		} else if (node instanceof DummyTransition) {
+			DummyTransition dum = (DummyTransition)node;
+			return dum.getName();
+		} else {
+			throw new RuntimeException ("Unexpected class " + node.getClass().getName());
+		}
 	}
 
 }

@@ -217,41 +217,27 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
-
-		if (getIsCollapsed()&&!isCurrentLevelInside()) {
+		if (groupImpl == null) {
 			return super.getInternalBoundingBoxInLocalSpace();
-		} else {
-			Rectangle2D ret = BoundingBoxHelper.union(null, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
-			if (ret==null)
-				ret = super.getInternalBoundingBoxInLocalSpace();
-			ret.setRect(ret.getMinX() - margin, ret.getMinY() - margin,
-					ret.getWidth() + 2.0 * margin, ret.getHeight() + 2.0 * margin);
-			return ret;
 		}
-	}
-
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (groupImpl==null) return super.getInternalBoundingBoxInLocalSpace();
-
-		Rectangle2D ret = super.getBoundingBoxInLocalSpace();
-
-		if (getIsCollapsed()&&!isCurrentLevelInside()) {
-			return ret;
+		if (getIsCollapsed() && !isCurrentLevelInside()) {
+	        return super.getInternalBoundingBoxInLocalSpace();
 		} else {
-			ret = BoundingBoxHelper.union(ret, BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class)));
-			return ret;
+			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
+			Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes(children);
+			if (bb == null) {
+				bb = super.getInternalBoundingBoxInLocalSpace();
+			}
+			return BoundingBoxHelper.expand(bb, margin, margin);
 		}
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
-
 		Decoration dec = r.getDecoration();
-		if (dec instanceof ContainerDecoration)
+		if (dec instanceof ContainerDecoration) {
 			setIsExcited(((ContainerDecoration)dec).isContainerExcited());
-
+		}
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn
 		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
@@ -259,39 +245,19 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		}
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
-		if (bb != null && getParent() != null) {
-
-			if (getIsCollapsed()&&!isCurrentLevelInside()) {
-
-				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
-				Graphics2D g = r.getGraphics();
+		if ((bb != null) && (getParent() != null)) {
+			Graphics2D g = r.getGraphics();
+			bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
+			if (getIsCollapsed() && !isCurrentLevelInside()) {
 				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
 				g.fill(bb);
-
-				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-				g.draw(bb);
-
-				drawNameInLocalSpace(r);
-				drawLabelInLocalSpace(r);
-
-			} else {
-
-				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
-				Graphics2D g = r.getGraphics();
-
-//				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-
-				g.draw(bb);
-				drawNameInLocalSpace(r);
-				drawLabelInLocalSpace(r);
-
 			}
+			float[] pattern = {0.2f, 0.2f};
+			g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+			g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+			g.draw(bb);
+			drawNameInLocalSpace(r);
+			drawLabelInLocalSpace(r);
 		}
 	}
 }

@@ -29,12 +29,12 @@ public class ControlPointScaler {
 	private static double THRESHOLD = 0.00001;
 	private Point2D oldC1, oldC2;
 
-	public ControlPointScaler (Point2D oldC1, Point2D oldC2) {
+	public ControlPointScaler(Point2D oldC1, Point2D oldC2) {
 		this.oldC1 = oldC1;
 		this.oldC2 = oldC2;
 	}
 
-	public void scale (Point2D newC1, Point2D newC2, Collection<ControlPoint> controlPoints, VisualConnection.ScaleMode mode) {
+	public void scale(Point2D newC1, Point2D newC2, Collection<ControlPoint> controlPoints, VisualConnection.ScaleMode mode) {
 		if (mode == VisualConnection.ScaleMode.NONE)
 			return;
 
@@ -45,10 +45,6 @@ public class ControlPointScaler {
 			int n = controlPoints.size();
 			int i = 0;
 			for (ControlPoint cp : controlPoints) {
-if (cp instanceof BezierControlPoint) {
-	System.out.println(cp);
-	System.out.println(">> " + cp.getPosition());
-}
 				Point2D delta;
 				if (i < n/2) {
 					delta = dC1;
@@ -61,9 +57,6 @@ if (cp instanceof BezierControlPoint) {
 				}
 				cp.setPosition(add(cp.getPosition(), delta));
 				i++;
-if (cp instanceof BezierControlPoint) {
-	System.out.println("<< " + cp.getPosition());
-}
 			}
 			return;
 		}
@@ -101,4 +94,5 @@ if (cp instanceof BezierControlPoint) {
 			throw new RuntimeException ("Unexpected value of scale mode");
 		}
 	}
+
 }

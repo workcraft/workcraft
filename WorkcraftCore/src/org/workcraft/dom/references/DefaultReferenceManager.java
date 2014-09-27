@@ -19,21 +19,18 @@
 *
 */
 
-package org.workcraft.dom;
+package org.workcraft.dom.references;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.IDGenerator;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.util.TwoWayMap;
 
 public class DefaultReferenceManager extends HierarchySupervisor implements ReferenceManager {
 	private IDGenerator idGenerator = new IDGenerator();
-
 	private TwoWayMap<String, Node> nodes = new TwoWayMap<String, Node>();
 
 	@Override
@@ -49,18 +46,18 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 		}
 	}
 
-	private void nodeRemoved(Node n) {
-		nodes.removeValue(n);
-		for (Node nn: n.getChildren()) {
-			nodeRemoved(nn);
+	private void nodeRemoved(Node node) {
+		nodes.removeValue(node);
+		for (Node n: node.getChildren()) {
+			nodeRemoved(n);
 		}
 	}
 
-	private void nodeAdded(Node n) {
+	private void nodeAdded(Node node) {
 		String id = Integer.toString(idGenerator.getNextID());
-		nodes.put(id, n);
-		for (Node nn : n.getChildren()) {
-			nodeAdded(nn);
+		nodes.put(id, node);
+		for (Node n : node.getChildren()) {
+			nodeAdded(n);
 		}
 	}
 
@@ -72,6 +69,11 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
 	@Override
 	public String getNodeReference(NamespaceProvider provider, Node node) {
 		return nodes.getKey(node);
+	}
+
+	@Override
+	public String getPrefix(Node node) {
+		return ReferenceHelper.getDefaultPrefix(node);
 	}
 
 }

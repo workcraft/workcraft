@@ -11,7 +11,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
@@ -25,7 +24,6 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 
@@ -33,30 +31,23 @@ import org.workcraft.util.Hierarchy;
 public class SON extends AbstractMathModel implements SONModel {
 
 	public SON(){
-		this(new MathGroup(), null);
+		this(null, null);
 	}
 
 	public SON(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				if (arg instanceof Condition)
-					return "c";
-				if (arg instanceof Event)
-					return "e";
-				if (arg instanceof SONConnection)
-					return "con";
-				if (arg instanceof ChannelPlace)
-					return "q";
-				if (arg instanceof Block)
-					return "b";
-				if (arg instanceof ONGroup)
-					return "group";
-				if (arg instanceof PageNode && !(arg instanceof ONGroup) && !(arg instanceof Block))
-					return "page";
-				return "node";
+			public String getPrefix(Node node) {
+				if (node instanceof Condition) return "c";
+				if (node instanceof Event) return "e";
+				if (node instanceof ChannelPlace) return "q";
+				if (node instanceof Block) return "b";
+				if (node instanceof SONConnection) return "con";
+				if (node instanceof ONGroup) return "group";
+				if (node instanceof PageNode) return "page";
+				return super.getPrefix(node);
 			}
-		}));
+		});
 	}
 
 	public void validate() throws ModelValidationException {
