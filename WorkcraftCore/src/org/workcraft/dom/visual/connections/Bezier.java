@@ -220,9 +220,10 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	@Override
 	public void componentsTransformChanged() {
 		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
-				.getSecondCenter(), Arrays
-				.asList(new ControlPoint[] { cp1, cp2 }),
+				.getSecondCenter(), Arrays.asList(new ControlPoint[] {cp1, cp2}),
 				connectionInfo.getScaleMode());
+
+		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
 		invalidate();
 	}
 

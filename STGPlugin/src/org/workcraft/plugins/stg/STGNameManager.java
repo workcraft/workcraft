@@ -2,93 +2,32 @@ package org.workcraft.plugins.stg;
 
 import java.util.Collection;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.CommentNode;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.util.Func;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
-public class STGNameManager implements NameManager<Node> {
-
-	private static final String inputTransitionName = "in";
-	private static final String outputTransitionName = "out";
-	private static final String internalTransitionName = "t";
-	private static final String dummyTransitionName = "dum";
-
-	private InstanceManager<Node> instancedNameManager;
-	private UniqueNameManager<Node> defaultNameManager;
-
+public class STGNameManager implements NameManager {
+	private UniqueNameManager defaultNameManager;
+	private InstanceManager instancedNameManager = new InstanceManager();
 	private ListMap<String, SignalTransition> signalTransitions = new ListMap<String, SignalTransition>();
 	private ListMap<String, DummyTransition> dummyTransitions = new ListMap<String, DummyTransition>();
-	Func<Node, String> nodePrefix;
 
 	public STGNameManager() {
-		this(null);
-	}
-
-	public STGNameManager(Func<Node, String> nodePrefix) {
-
-		if (nodePrefix != null)
-			this.nodePrefix = nodePrefix;
-		else {
-			this.nodePrefix = new Func<Node, String>() {
-
-				@Override
-				public String eval(Node arg) {
-					if (arg instanceof STGPlace) {
-						return "p";
-					}
-					if (arg instanceof Connection) {
-						return "con";
-					}
-					if (arg instanceof PageNode) {
-						return "pg";
-					}
-					if (arg instanceof CommentNode) return "comment";
-					if (arg instanceof Container) {
-						return "g";
-					}
-					if (arg instanceof SignalTransition) {
-						switch ( ((SignalTransition)arg).getSignalType() ) {
-						case INPUT: return inputTransitionName;
-						case OUTPUT: return outputTransitionName;
-						case INTERNAL: return internalTransitionName;
-						}
-					}
-					if (arg instanceof DummyTransition) {
-						return dummyTransitionName;
-					}
-					return "v";
-				}
-			};
-		}
-
-		this.defaultNameManager = new UniqueNameManager<Node>(this.nodePrefix);
-
-		this.instancedNameManager = new InstanceManager<Node>(new Func<Node, String>() {
+		defaultNameManager = new UniqueNameManager() {
 			@Override
-			public String eval(Node arg) {
-				if (arg instanceof SignalTransition) {
-					return ((SignalTransition) arg).getSignalName() + ((SignalTransition) arg).getDirection();
-				} else if (arg instanceof DummyTransition) {
-					return ((DummyTransition)arg).getName();
-				} else {
-					throw new RuntimeException ("Unexpected class " + arg.getClass().getName());
-				}
+			public String getPrefix(Node node) {
+				return STGNameManager.this.getPrefix(node);
 			}
-		});
-
+		};
 	}
 
 	public int getInstanceNumber (Node st) {
@@ -155,24 +94,12 @@ public class STGNameManager implements NameManager<Node> {
 	}
 
 	@Override
-	public void setDefaultNameIfUnnamed(Node t) {
-		setDefaultNameIfUnnamed(t, null);
-	}
-
-	@Override
-	public void setDefaultNameIfUnnamed(Node node, String prefix) {
-		if (prefix!=null) {
-			prefix = prefix.split("/")[0];
-			prefix = prefix.replaceAll("[\\+\\-\\~]+", "");
-		}
+	public void setDefaultNameIfUnnamed(Node node) {
+		String prefix = getPrefix(node);
 		if (node instanceof SignalTransition) {
 			final SignalTransition st = (SignalTransition)node;
 			if (instancedNameManager.contains(st)) {
 				return;
-			}
-
-			if (prefix == null) {
-				prefix = defaultNameManager.getNodePrefix((Node) node);
 			}
 			Integer count = defaultNameManager.getPrefixCount(prefix);
 			String name = prefix;
@@ -191,9 +118,6 @@ public class STGNameManager implements NameManager<Node> {
 			if (instancedNameManager.contains(dt)) {
 				return;
 			}
-			if (prefix==null) {
-				prefix = defaultNameManager.getNodePrefix((Node) node);
-			}
 			Integer count = defaultNameManager.getPrefixCount(prefix);
 			String name;
 			do {
@@ -205,10 +129,10 @@ public class STGNameManager implements NameManager<Node> {
 		} else if (node instanceof STGPlace) {
 			STGPlace p = (STGPlace)node;
 			if (!p.isImplicit()) {
-				defaultNameManager.setDefaultNameIfUnnamed((Node) node);
+				defaultNameManager.setDefaultNameIfUnnamed(node);
 			}
 		} else {
-			defaultNameManager.setDefaultNameIfUnnamed((Node) node);
+			defaultNameManager.setDefaultNameIfUnnamed(node);
 		}
 	}
 
@@ -325,6 +249,7 @@ public class STGNameManager implements NameManager<Node> {
 	}
 
 
+	@Override
 	public Node get (String name) {
 		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
 		if (instancedName != null)	{
@@ -341,6 +266,7 @@ public class STGNameManager implements NameManager<Node> {
 
 	}
 
+	@Override
 	public void remove (Node n) {
 		if (defaultNameManager.isNamed(n)) {
 			defaultNameManager.remove(n);
@@ -348,6 +274,11 @@ public class STGNameManager implements NameManager<Node> {
 		if (instancedNameManager.getInstance(n) != null) {
 			instancedNameManager.remove(n);
 		}
+	}
+
+	@Override
+	public String getPrefix(Node node) {
+		return ReferenceHelper.getDefaultPrefix(node);
 	}
 
 }

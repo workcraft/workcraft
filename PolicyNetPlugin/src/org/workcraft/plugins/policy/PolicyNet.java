@@ -30,39 +30,36 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
-@VisualClass (org.workcraft.plugins.policy.VisualPolicyNet.class)
+@VisualClass(org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
 
 	public PolicyNet() {
-		this(null, null);
-	}
-
-	public PolicyNet(Container root) {
-		this(root, null);
+		this(new Locality(), null);
 	}
 
 	public PolicyNet(Container root, References refs) {
-		super((root == null ? new Locality() : root), refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				String result = null;
-				if (arg instanceof Bundle) {
-					result = "b";
-				} else if (arg instanceof Locality) {
-					result = "loc";
-				}
-				return result;
+			public String getPrefix(Node node) {
+				if (node instanceof Bundle) return "b";
+				if (node instanceof Locality) return "loc";
+				if (node instanceof Place) return "p";
+				if (node instanceof Transition) return "t";
+				return super.getPrefix(node);
 			}
 		});
-		// update all bundles when a transition is removed or re-parented
+
+		// Update all bundles when a transition is removed or re-parented
 		new HierarchySupervisor() {
 			@Override
 			public void handleEvent(HierarchyEvent e) {

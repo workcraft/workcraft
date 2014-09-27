@@ -7,63 +7,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.workcraft.dom.DefaultNodeImpl;
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.stg.InstanceManager;
-import org.workcraft.util.Func;
 import org.workcraft.util.Pair;
 
 public class InstanceManagerTests
 {
-	@Test(expected=NullPointerException.class)
-	public void testConstructorNull()
-	{
-		new InstanceManager<Object>(null);
-	}
 
 	@Test
 	public void testConstructor()
 	{
-		new InstanceManager<Object>(new Func<Object, String>()
-				{
-					@Override public String eval(Object arg) {
-						throw new RuntimeException("this method should not be called");
-					}
-				});
+		new InstanceManager() {
+			@Override public String getLabel(Node node) {
+				throw new RuntimeException("this method should not be called");
+			}
+		};
 	}
 
-	InstanceManager<Object> make(final Map<Object, String> expectedRequests)
+	InstanceManager make(final Map<Node, String> expectedRequests)
 	{
-		return new InstanceManager<Object>(new Func<Object, String>()
-				{
-			@Override public String eval(Object arg) {
-				final String label = expectedRequests.get(arg);
+		return new InstanceManager() {
+			@Override public String getLabel(Node node) {
+				final String label = expectedRequests.get(node);
 				if(label==null)
-					throw new RuntimeException("unexpected request: " + arg);
+					throw new RuntimeException("unexpected request: " + node);
 				return label;
 			}
-		});
+		};
 	}
 
 	@Test
 	public void testGetReferenceUnknown()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		final InstanceManager<Object> mgr = make(expectedRequests);
-		assertNull(mgr.getInstance(new Object()));
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		final InstanceManager mgr = make(expectedRequests);
+		assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
 	}
 
 	@Test
 	public void testAssign()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		Object o2 = new Object();
-		Object o3 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
+		Node o2 = new DefaultNodeImpl(null);
+		Node o3 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
 		expectedRequests.put(o3, "qwe");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o2);
 		mgr.assign(o3);
@@ -75,16 +69,16 @@ public class InstanceManagerTests
 	@Test
 	public void testAssignAfterRemove()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		Object o2 = new Object();
-		Object o3 = new Object();
-		Object o4 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
+		Node o2 = new DefaultNodeImpl(null);
+		Node o3 = new DefaultNodeImpl(null);
+		Node o4 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
 		expectedRequests.put(o3, "qwe");
 		expectedRequests.put(o4, "abc");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o2);
 		mgr.assign(o3);
@@ -102,12 +96,12 @@ public class InstanceManagerTests
 	@Test
 	public void testRemove()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		Object o2 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
+		Node o2 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.remove(o1);
 		mgr.assign(o2);
@@ -119,10 +113,10 @@ public class InstanceManagerTests
 	@Test(expected=ArgumentException.class)
 	public void testDoubleAssign()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1);
 		mgr.assign(o1);
 	}
@@ -130,10 +124,10 @@ public class InstanceManagerTests
 	@Test
 	public void testAssignForced()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1, 8);
 		assertEquals(Pair.of("abc",8), mgr.getInstance(o1));
 	}
@@ -141,12 +135,12 @@ public class InstanceManagerTests
 	@Test(expected=DuplicateIDException.class)
 	public void testAssignForcedExistingId()
 	{
-		Map<Object, String> expectedRequests = new HashMap<Object, String>();
-		Object o1 = new Object();
-		Object o2 = new Object();
+		Map<Node, String> expectedRequests = new HashMap<Node, String>();
+		Node o1 = new DefaultNodeImpl(null);
+		Node o2 = new DefaultNodeImpl(null);
 		expectedRequests.put(o1, "abc");
 		expectedRequests.put(o2, "abc");
-		final InstanceManager<Object> mgr = make(expectedRequests);
+		final InstanceManager mgr = make(expectedRequests);
 		mgr.assign(o1, 8);
 		mgr.assign(o2, 8);
 	}
@@ -154,11 +148,12 @@ public class InstanceManagerTests
 	@Test
 	public void testNotFound()
 	{
-		InstanceManager<Object> mgr = new InstanceManager<Object>(new Func<Object, String>() {
+		InstanceManager mgr = new InstanceManager() {
 			@Override
-			public String eval(Object arg) {
+			public String getLabel(Node node) {
 				return "O_O";
-			} });
+			}
+		};
 
 		assertNull(mgr.getObject(Pair.of("o_O", 8)));
 	}

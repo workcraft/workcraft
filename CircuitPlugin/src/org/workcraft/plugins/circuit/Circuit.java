@@ -21,60 +21,46 @@
 
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 
 public class Circuit extends AbstractMathModel {
 
-
 	public Circuit() {
-		this(new MathGroup());
+		this(null, null);
 	}
 
 	public Circuit(MathGroup root) {
 		this(root, null);
 	}
 
-
 	public Circuit(Container root, References refs) {
-		super(root,	new CircuitReferenceManager((NamespaceProvider)root, refs, new Func<Node, String>() {
-					@Override
-					public String eval(Node arg) {
-						if (arg instanceof CircuitComponent) return "g";
-						if (arg instanceof Joint) return "j";
-						if (arg instanceof Connection) return "con";
-						if (arg instanceof PageNode) return "pg";
-						if (arg instanceof CommentNode) return "comment";
-						if (arg instanceof Container) return "gr";
-						if (arg instanceof Contact) {
-							Contact cont = (Contact)arg;
-							if (cont.getParent() instanceof CircuitComponent)
-								return "z";
-							if (cont.getIOType()==IOType.INPUT)
-								return "in";
-							else
-								return "out";
-						}
-						return "v";
-					}
+		super(root, new CircuitReferenceManager((NamespaceProvider)root, refs) {
+			@Override
+			public String getPrefix(Node node) {
+				if (node instanceof CircuitComponent) return "g";
+				if (node instanceof Joint) return "j";
+				if (node instanceof Contact) {
+					Contact contact = (Contact)node;
+					if (contact.getParent() instanceof CircuitComponent) return "z";
+					if (contact.getIOType() == IOType.INPUT) return "in";
+					if (contact.getIOType() == IOType.OUTPUT) return "out";
 				}
-			));
+				return super.getPrefix(node);
+			}
+		});
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {

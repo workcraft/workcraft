@@ -346,7 +346,6 @@ public class WorkspaceEntry implements ObservableState {
 			} finally {
 				cancelMemento();
 			}
-
 		}
 	}
 

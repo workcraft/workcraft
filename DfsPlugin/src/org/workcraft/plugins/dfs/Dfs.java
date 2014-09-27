@@ -21,45 +21,34 @@
 
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
 public class Dfs extends AbstractMathModel {
 
 	public Dfs() {
-		this(new MathGroup(), null);
+		this(null, null);
 	}
 
 	public Dfs(Container root, References refs) {
-
-		super(root, new HierarchicalUniqueNameReferenceManager(refs, new Func<Node, String>() {
+		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
-			public String eval(Node arg) {
-				if ((arg instanceof Logic) || (arg instanceof CounterflowLogic))
-					return "l";
-				if ((arg instanceof Register) || (arg instanceof CounterflowRegister))
-					return "r";
-				if ((arg instanceof ControlRegister))
-					return "c";
-				if ((arg instanceof PushRegister) || (arg instanceof PopRegister))
-					return "p";
-				if (arg instanceof Connection)
-					return "con";
-				return "node";
+			public String getPrefix(Node node) {
+				if ((node instanceof Logic) || (node instanceof CounterflowLogic)) return "l";
+				if ((node instanceof Register) || (node instanceof CounterflowRegister)) return "r";
+				if ((node instanceof ControlRegister)) return "c";
+				if ((node instanceof PushRegister) || (node instanceof PopRegister)) return "p";
+				return super.getPrefix(node);
 			}
-		}));
+		});
 	}
 
 	public MathConnection connect(Node first, Node second) {

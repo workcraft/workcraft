@@ -42,6 +42,7 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 
@@ -49,6 +50,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
+
+	protected double size = CommonVisualSettings.getBaseSize();
+	protected final double margin = 0.20;
 
 	private boolean isCollapsed = false;
 	@Override
@@ -127,37 +131,26 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		}
 
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if (bb != null && getParent() != null) {
-			if (getIsCollapsed()&&!isCurrentLevelInside()) {
-				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
-				Graphics2D g = r.getGraphics();
-
-				g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-				g.draw(bb);
-			} else {
-				bb.setRect(bb.getX() - 0.1, bb.getY() - 0.1, bb.getWidth() + 0.2, bb.getHeight() + 0.2);
-				Graphics2D g = r.getGraphics();
-
-				g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-				g.draw(bb);
-			}
+		if ((bb != null) && (getParent() != null)) {
+			Graphics2D g = r.getGraphics();
+			g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+			float[] pattern = {0.2f, 0.2f};
+			g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+			g.draw(bb);
 		}
 	}
 
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (getIsCollapsed() && !isCurrentLevelInside()) {
-			Rectangle2D sb = new Rectangle2D.Double();
-			sb.setRect(-0.5, -0.5, 1, 1);
-			return sb;
-		} else {
+		Rectangle2D bb = null;
+		if (!getIsCollapsed() || isCurrentLevelInside()) {
 			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
-			return BoundingBoxHelper.mergeBoundingBoxes(children);
+			bb = BoundingBoxHelper.mergeBoundingBoxes(children);
 		}
+		if (bb == null) {
+	        bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+		}
+		return BoundingBoxHelper.expand(bb, margin, margin);
 	}
 
 	public final Collection<VisualComponent> getComponents() {
@@ -170,11 +163,8 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	public List<Node> unGroup() {
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
-
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-
 		groupImpl.reparent(nodesToReparent, newParent);
-
 		for (Node node : nodesToReparent) {
 			TransformHelper.applyTransform(node, localToParentTransform);
 		}
@@ -184,17 +174,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-
-		if (bb != null && getParent() != null) {
-
-			if (getIsCollapsed()&&!isCurrentLevelInside()) return bb.contains(pointInLocalSpace);
-
-			Rectangle2D sb = new Rectangle2D.Double();
-
-			sb.setRect(bb.getMaxX()-0.5, bb.getMinY(), 0.5, 0.5);
-			return sb.contains(pointInLocalSpace);
+		if ((bb != null) && (getParent() != null)) {
+			return bb.contains(pointInLocalSpace);
 		}
-
 		return false;
 	}
 
@@ -266,9 +248,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	@Override
 	public Point2D getCenterInLocalSpace() {
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if (bb != null)
+		if (bb != null) {
 			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
-
+		}
 		return new Point2D.Double(0, 0);
 	}
 

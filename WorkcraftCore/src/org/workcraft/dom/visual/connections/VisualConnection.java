@@ -102,9 +102,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
-	private MathConnection refConnection;
-	private VisualComponent first;
-	private VisualComponent second;
+	private MathConnection refConnection = null;
+	private VisualComponent first = null;
+	private VisualComponent second = null;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
 	private ScaleMode scaleMode = ScaleMode.LOCK_RELATIVELY;
@@ -138,14 +138,16 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	}
 
 	public VisualConnection(MathConnection refConnection) {
-		this(null, null, null);
+		this(refConnection, null, null);
 	}
 
 	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
 		this.refConnection = refConnection;
-		this.first = first;
-		this.second = second;
-		this.graphic = new Polyline(this);
+		if ((first != null) && (second != null)) {
+			this.first = first;
+			this.second = second;
+			this.graphic = new Polyline(this);
+		}
 		initialise();
 		addPropertyDeclarations();
 	}
@@ -208,17 +210,18 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	}
 
 	protected void initialise() {
-		if (refConnection != null) {
-			componentsTransformObserver = new ComponentsTransformObserver(this);
-			children.add(componentsTransformObserver);
+		children.clear();
+		componentsTransformObserver = new ComponentsTransformObserver(this);
+		children.add(componentsTransformObserver);
+		if (graphic != null) {
 			children.add(graphic);
-			if (refConnection instanceof ObservableState) {
-				((ObservableState)refConnection).addObserver(new StateObserver() {
-					public void notify(StateEvent e) {
-						observableStateImpl.sendNotification(e);
-					}
-				});
-			}
+		}
+		if (refConnection instanceof ObservableState) {
+			((ObservableState)refConnection).addObserver(new StateObserver() {
+				public void notify(StateEvent e) {
+					observableStateImpl.sendNotification(e);
+				}
+			});
 		}
 	}
 
@@ -236,11 +239,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.refConnection = refConnection;
 		this.graphic = graphic;
 
-		if (graphic instanceof Polyline)
+		if (graphic instanceof Polyline) {
 			this.connectionType = ConnectionType.POLYLINE;
-		else if (graphic instanceof Bezier)
+		} else if (graphic instanceof Bezier) {
 			this.connectionType = ConnectionType.BEZIER;
-
+		}
 		initialise();
 	}
 
@@ -263,8 +266,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 			if (t == ConnectionType.POLYLINE) {
 				this.graphic = new Polyline(this);
-				VisualComponent v = this.getFirst();
-				if (v == this.getSecond()) {
+				if (getFirst() == getSecond()) {
+					VisualComponent v = getFirst();
 					addPolylinePoint(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5), hiddenControlPoints);
 					addPolylinePoint(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5), hiddenControlPoints);
 				}
@@ -275,8 +278,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				BezierControlPoint[] cp = bezier.getControlPoints();
 				cp[0].setHidden(hiddenControlPoints);
 				cp[1].setHidden(hiddenControlPoints);
-				VisualComponent v = this.getFirst();
-				if (v == this.getSecond()) {
+				if (getFirst() == this.getSecond()) {
+					VisualComponent v = getFirst();
 					cp[0].setPosition(new Point2D.Double(v.getX() - 2.0, v.getY() + 2.0));
 					cp[1].setPosition(new Point2D.Double(v.getX() + 2.0, v.getY() + 2.0));
 				}

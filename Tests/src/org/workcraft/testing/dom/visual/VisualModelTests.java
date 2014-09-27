@@ -175,7 +175,8 @@ public class VisualModelTests {
 		model.addToSelection(node1);
 		model.groupSelection();
 		Assert.assertEquals(1, root.getChildren().toArray(new VisualNode[0]).length);
-		Assert.assertEquals(node1, root.getChildren().toArray(new VisualNode[0])[0]);
+		VisualNode group = root.getChildren().toArray(new VisualNode[0])[0];
+		Assert.assertEquals(node1, group.getChildren().toArray(new VisualNode[0])[0]);
 		Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
 	}
 

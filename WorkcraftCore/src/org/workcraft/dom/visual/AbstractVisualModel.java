@@ -62,18 +62,13 @@ import org.workcraft.util.Hierarchy;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
-
 	private MathModel mathModel;
 	private Container currentLevel;
 	private Set<Node> selection = new HashSet<Node>();
 	private ObservableStateImpl observableState = new ObservableStateImpl();
 
-	public AbstractVisualModel(VisualGroup root) {
-		this (null, root);
-	}
-
 	public AbstractVisualModel() {
-		this ((MathModel)null);
+		this (null, null);
 	}
 
 	public AbstractVisualModel(MathModel mathModel) {
@@ -81,21 +76,20 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
-		super(root == null? new VisualGroup() : root);
+		super((root == null) ? new VisualGroup() : root);
 		this.mathModel = mathModel;
-
-		currentLevel = (VisualGroup)getRoot();
+		this.currentLevel = (VisualGroup)getRoot();
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
 		new DefaultHangingConnectionRemover(this, "Visual").attach(getRoot());
 		new DefaultMathNodeRemover().attach(getRoot());
+
 		new StateSupervisor() {
 			@Override
 			public void handleHierarchyEvent(HierarchyEvent e) {
 				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
 			}
-
 			@Override
 			public void handleEvent(StateEvent e) {
 				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
@@ -135,7 +129,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public void draw (Graphics2D g, Decorator decorator) {
-
 		DrawMan.draw(this, g, decorator, getRoot());
 	}
 
@@ -374,7 +367,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		HashSet<Node> result = new HashSet<Node>();
 		for(Node node : getCurrentLevel().getChildren()) {
 			if ((node instanceof VisualNode) && selection.contains(node)) {
-				result.add((VisualNode)node);
+				result.add(node);
 			}
 		}
 		return result;
@@ -391,21 +384,26 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return result;
 	}
 
+	public Collection<VisualConnection> getCurrentLevelConnections() {
+		return Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class);
+	}
+
 	public Collection<Node> getGroupableCurrentLevelSelection() {
 		HashSet<Node> result = new HashSet<Node>();
 		Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection();
-		Collection<Node> recursiveSelection = getRecursiveSelection();
         for (Node node : currentLevelSelection) {
-            if ((node instanceof VisualConnection)) {
-                VisualConnection connection = (VisualConnection)node;
-                VisualComponent first = connection.getFirst();
-				VisualComponent second = connection.getSecond();
-				if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
-                	result.add(connection);
-                }
-            } else if (node instanceof VisualNode) {
+        	if ((node instanceof VisualNode) && !(node instanceof VisualConnection)) {
             	result.add(node);
             }
+        }
+        Collection<Node> recursiveSelection = getRecursiveSelection();
+		Collection<VisualConnection> currentLevelConnections = getCurrentLevelConnections();
+        for (VisualConnection connection : currentLevelConnections) {
+        	VisualComponent first = connection.getFirst();
+        	VisualComponent second = connection.getSecond();
+        	if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
+        		result.add(connection);
+        	}
         }
 		return result;
 	}
@@ -417,7 +415,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			VisualGroup group = new VisualGroup();
 			getCurrentLevel().add(group);
 			getCurrentLevel().reparent(nodes, group);
-//			group.setPosition(centralizeComponents(nodes));
+			group.setPosition(centralizeComponents(nodes));
 			select(group);
 		}
 	}
@@ -431,7 +429,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			VisualPage page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
 			this.reparent(page, this, getCurrentLevel(), nodes);
-//			page.setPosition(centralizeComponents(nodes));
+			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}
 	}
@@ -440,13 +438,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
 		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualGroup) {
+			if (node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {
 					toSelect.add(subNode);
 				}
 				getCurrentLevel().remove(group);
-			} else if(node instanceof VisualPage) {
+			} else if (node instanceof VisualPage) {
 				VisualPage page = (VisualPage)node;
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
 				toSelect.addAll(nodesToReparent);

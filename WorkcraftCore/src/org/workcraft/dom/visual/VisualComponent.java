@@ -263,7 +263,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (labelRenderedText != null) && !labelRenderedText.isEmpty()) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -301,7 +301,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	protected void drawNameInLocalSpace(DrawRequest r) {
-		if (getNameVisibility()) {
+		if (getNameVisibility() && (nameRenderedText != null) && !nameRenderedText.isEmpty()) {
 			cacheNameRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -327,10 +327,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		if (getLabelVisibility()&&labelRenderedText!=null) {
+		if (getLabelVisibility() && (labelRenderedText != null) && !labelRenderedText.isEmpty()) {
 			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
 		}
-		if (getNameVisibility()&&nameRenderedText!=null) {
+		if (getNameVisibility() && (nameRenderedText != null) && !nameRenderedText.isEmpty()) {
 			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
 		}
 		return bb;

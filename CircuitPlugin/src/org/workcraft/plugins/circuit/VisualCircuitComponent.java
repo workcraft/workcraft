@@ -80,7 +80,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	RenderType renderType = RenderType.BOX;
 
 	public VisualCircuitComponent(CircuitComponent component) {
-		super(component, true, true, false);
+		super(component, true, true, true);
 		component.addObserver(this);
 		addPropertyDeclarations();
 	}
@@ -235,8 +235,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 	}
 
-	public void updateDirection(VisualCircuit vcircuit, VisualContact vc,
-			VisualContact.Direction dir) {
+	public void updateDirection(VisualCircuit vcircuit, VisualContact vc, VisualContact.Direction dir) {
 		vc.setDirection(dir);
 		contactLabelBB = null;
 		updateSidePosition(vc);
@@ -245,8 +244,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
-			Container container = AbstractVisualModel.getMathContainer(
-					vcircuit, this);
+			Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
 			contactLabelBB = null;
@@ -256,11 +254,13 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	protected void updateTotalBB() {
-		totalBB = BoundingBoxHelper.mergeBoundingBoxes(
-				Hierarchy.getChildrenOfType(this, Touchable.class));
-
-		if (contactLabelBB != null && totalBB != null) {
-			Rectangle2D.union(totalBB, contactLabelBB, totalBB);
+		totalBB = null;
+		if (groupImpl != null) {
+			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
+			totalBB = BoundingBoxHelper.mergeBoundingBoxes(children);
+			if ((contactLabelBB != null) && (totalBB != null)) {
+				Rectangle2D.union(totalBB, contactLabelBB, totalBB);
+			}
 		}
 	}
 
@@ -450,17 +450,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		if (groupImpl == null) {
-			return super.getInternalBoundingBoxInLocalSpace();
+		Rectangle2D bb = null;
+		if (groupImpl != null) {
+			if (totalBB == null) {
+				updateTotalBB();
+			}
+			bb = BoundingBoxHelper.copy(totalBB);
 		}
-		Rectangle2D rect = BoundingBoxHelper.union(totalBB, BoundingBoxHelper
-				.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this,
-						Touchable.class)));
+		if (bb == null) {
+			bb = super.getInternalBoundingBoxInLocalSpace();
+		}
+		return bb;
+	}
 
-		if (rect == null)
-			return super.getInternalBoundingBoxInLocalSpace();
-
-		return rect;
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		if (contactLabelBB != null) {
+			return contactLabelBB.contains(pointInLocalSpace);
+		}
+		return false;
 	}
 
 	@Override
@@ -492,25 +500,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
 		drawContacts(r);
-	}
-
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		if (totalBB == null) {
-			updateTotalBB();
-		}
-		if (totalBB != null) {
-			return totalBB;
-		}
-		return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-	}
-
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (contactLabelBB != null) {
-			return contactLabelBB.contains(pointInLocalSpace);
-		}
-		return false;
 	}
 
 	@Override

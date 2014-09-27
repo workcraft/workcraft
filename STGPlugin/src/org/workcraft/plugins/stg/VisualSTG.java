@@ -52,7 +52,7 @@ public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 
 	public VisualSTG(STG model) {
-		this (model, null);
+		this(model, null);
 	}
 
 	public VisualSTG(STG model, VisualGroup root) {

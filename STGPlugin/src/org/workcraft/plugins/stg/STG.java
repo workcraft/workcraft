@@ -33,7 +33,6 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
@@ -59,7 +58,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	private STGReferenceManager referenceManager;
 
 	public STG() {
-		this(new MathGroup());
+		this(null, null);
 	}
 
 	public STG(Container root) {
@@ -67,10 +66,8 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	public STG(Container root, References refs) {
-
-		super(root, new STGReferenceManager(refs, null));
-
-		referenceManager = (STGReferenceManager) getReferenceManager();
+		super(root, new STGReferenceManager(refs));
+		referenceManager = (STGReferenceManager)getReferenceManager();
 		new SignalTypeConsistencySupervisor(this).attach(getRoot());
 	}
 

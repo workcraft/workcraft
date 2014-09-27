@@ -131,7 +131,7 @@ public class VisualVariable extends VisualComponent {
 	}
 
 	protected void drawVariableInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			cacheVariableRenderedFormula(r);
@@ -156,7 +156,7 @@ public class VisualVariable extends VisualComponent {
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && (variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
 			bb = BoundingBoxHelper.union(bb, variableRenderedFormula.getBoundingBox());
 		}
 		return bb;

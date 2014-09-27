@@ -10,23 +10,24 @@ import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager {
 
-	final private HashMap<NamespaceProvider, NameManager<Node>> managers = new HashMap<NamespaceProvider, NameManager<Node>>();
+	final private HashMap<NamespaceProvider, NameManager> managers = new HashMap<NamespaceProvider, NameManager>();
 
 	// every node belongs to some name space provider (except the main root node of the model)
 	final private HashMap<Node, NamespaceProvider> node2namespace = new HashMap<Node, NamespaceProvider>();
 	private NamespaceProvider topProvider; // namespace provided by root
-	protected Func<Node, String> defaultName;
-	private References existing;
+	private References refs;
 
-	public HierarchicalUniqueNameReferenceManager(References existing, Func<Node, String> defaultName) {
-		this.existing = existing;
-		this.defaultName = defaultName;
+	public HierarchicalUniqueNameReferenceManager() {
+		this(null);
+	}
+
+	public HierarchicalUniqueNameReferenceManager(References refs) {
+		this.refs = refs;
 	}
 
 	public NamespaceProvider getNamespaceProvider(Node node) {
@@ -59,16 +60,16 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			sourceReferenceManager.node2namespace.remove(node);
 
 			// Do not assign name if it wasn't assigned in the first place (eg. the implicit place)
-			if (name!=null&&(provider!=oldProvider||node2namespace!=sourceReferenceManager.node2namespace)) {
-				NameManager<Node> oldMan = sourceReferenceManager.getNameManager(oldProvider);
-				NameManager<Node> newMan = getNameManager(provider);
+			if ((name != null) && ((provider != oldProvider) || (node2namespace != sourceReferenceManager.node2namespace))) {
+				NameManager oldMan = sourceReferenceManager.getNameManager(oldProvider);
+				NameManager newMan = getNameManager(provider);
 				oldMan.remove(node);
 				Node checkNode = newMan.get(name);
 				// We must assign some name in any case, be it an old or a new one
 				if (checkNode == null) {
 					newMan.setName(node, name);
 				} else {
-					newMan.setDefaultNameIfUnnamed(node, name);
+					newMan.setDefaultNameIfUnnamed(node);
 					// The node was not added yet as a child of the target container,
 					// so using setName from the reference manager is not possible yet
 				}
@@ -80,24 +81,29 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	public void attach(Node root) {
 		// root must be a namespace provider
 		topProvider = (NamespaceProvider)root;
-		if (existing != null) {
+		if (refs != null) {
 			for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
 				setExistingReference(n);
 			}
-			existing = null;
+			refs = null;
 		}
 		super.attach(root);
 	}
 
-	protected NameManager<Node> createNameManager() {
-		return new UniqueNameManager<Node>(defaultName);
+	protected NameManager createNameManager() {
+		return new UniqueNameManager() {
+			@Override
+			public String getPrefix(Node node) {
+				return HierarchicalUniqueNameReferenceManager.this.getPrefix(node);
+			}
+		};
 	}
 
-	protected NameManager<Node> getNameManager(NamespaceProvider provider) {
+	protected NameManager getNameManager(NamespaceProvider provider) {
 		if (provider==null) {
 			provider = topProvider;
 		}
-		NameManager<Node> man = managers.get(provider);
+		NameManager man = managers.get(provider);
 		if (man==null) {
 			man = createNameManager();
 			managers.put(provider, man);
@@ -105,17 +111,17 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		return man;
 	}
 
-	protected void setExistingReference(Node n) {
-		String reference = existing.getReference(n);
+	protected void setExistingReference(Node node) {
+		String reference = refs.getReference(node);
 		if (Identifier.isNumber(reference)) {
-			String nm = getName(n);
-			if (nm != null) {
-				reference = nm;
+			String name = getName(node);
+			if (name != null) {
+				reference = name;
 			}
 		}
 		if (reference != null) {
 			String name = NamespaceHelper.getNameFromReference(reference);
-			setName(n, name);
+			setName(node, name);
 		}
 	}
 
@@ -131,7 +137,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		}
 		String head =  NamespaceHelper.getReferenceHead(reference);
 		String tail =  NamespaceHelper.getReferenceTail(reference);
-		NameManager<Node> man = getNameManager(provider);
+		NameManager man = getNameManager(provider);
 		Node node;
 		node = man.get(head);
 		if ((node != null) && (node instanceof NamespaceProvider)) {
@@ -173,16 +179,18 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 				if (node.getParent()!=null) {
 					// if it is not a root node
 					NamespaceProvider provider = getNamespaceProvider(node);
-					NameManager<Node> man = getNameManager(provider);
+					NameManager man = getNameManager(provider);
 					man.setDefaultNameIfUnnamed(node);
 					String name = man.getName(node);
 					// additional call to propagate the name data after calling setDefaultNameIfUnnamed
 					setName(node, name);
 				}
 				for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
-					getNameManager(getNamespaceProvider(node2)).setDefaultNameIfUnnamed(node2, null);
+					NamespaceProvider provider2 = getNamespaceProvider(node2);
+					NameManager mgr2 = getNameManager(provider2);
+					mgr2.setDefaultNameIfUnnamed(node2);
 					// additional call to propagate the name data after calling setDefaultNameIfUnnamed
-					setName(node2, getNameManager(getNamespaceProvider(node2)).getName(node2));
+					setName(node2, mgr2.getName(node2));
 				}
 			}
 		}
@@ -200,19 +208,26 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public void setName(Node node, String name) {
-		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
-		man.setName(node, name);
+		NamespaceProvider provider = getNamespaceProvider(node);
+		NameManager mgr = getNameManager(provider);
+		mgr.setName(node, name);
 	}
 
-
 	public boolean isNamed(Node node) {
-		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
-		return man.isNamed(node);
+		NamespaceProvider provider = getNamespaceProvider(node);
+		NameManager mgr = getNameManager(provider);
+		return mgr.isNamed(node);
 	}
 
 	public String getName(Node node) {
-		NameManager<Node> man = getNameManager(getNamespaceProvider(node));
-		return man.getName(node);
+		NamespaceProvider provider = getNamespaceProvider(node);
+		NameManager mgr = getNameManager(provider);
+		return mgr.getName(node);
+	}
+
+	@Override
+	public String getPrefix(Node node) {
+		return ReferenceHelper.getDefaultPrefix(node);
 	}
 
 }

@@ -24,6 +24,7 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
@@ -79,6 +80,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -1216,57 +1218,74 @@ public class MainWindow extends JFrame {
 		}
 	}
 
+	public void redraw() {
+		if (editorInFocus != null) {
+			Graphics2D g = (Graphics2D)editorInFocus.getGraphics();
+			VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
+			visualModel.draw(g, Decorator.Empty.INSTANCE);
+		}
+	}
+
 	public void undo()  {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
+			redraw();
 		}
 	}
 
 	public void redo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().redo();
+			redraw();
 		}
 	}
 
 	public void cut() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().cut();
+			redraw();
 		}
 	}
 
 	public void copy() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().copy();
+			redraw();
 		}
 	}
 
 	public void paste() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().paste();
+			redraw();
 		}
 	}
 
 	public void delete() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().delete();
+			redraw();
 		}
 	}
 
 	public void selectAll() {
 		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectAll();
+			VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
+			visualModel.selectAll();
 		}
 	}
 
 	public void selectNone() {
 		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectNone();
+			VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
+			visualModel.selectNone();
 		}
 	}
 
 	public void selectInverse() {
 		if (editorInFocus != null) {
-			editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel().selectInverse();
+			VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
+			visualModel.selectInverse();
 		}
 	}
 
