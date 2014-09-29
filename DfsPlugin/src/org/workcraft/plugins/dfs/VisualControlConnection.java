@@ -9,17 +9,19 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 public class VisualControlConnection extends VisualConnection {
 
 	public VisualControlConnection () {
+		this(null, null, null);
 	}
 
 	public VisualControlConnection(ControlConnection refConnection) {
+		this(refConnection, null, null);
 	}
 
 	public VisualControlConnection(ControlConnection refConnection, VisualComponent first, VisualComponent second) {
 		super(refConnection, first, second);
+		addPropertyDeclarations();
 	}
 
-	@Override
-	protected void initialise() {
+	private void addPropertyDeclarations() {
 		super.initialise();
 		addPropertyDeclaration(new PropertyDeclaration<VisualControlConnection, Boolean>(
 				this, "Inverting", Boolean.class) {
