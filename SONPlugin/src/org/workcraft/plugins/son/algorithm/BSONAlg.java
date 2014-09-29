@@ -6,16 +6,17 @@ import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class BSONAlg extends RelationAlgorithm{
 
-	private SONModel net;
+	private SON net;
 
-	public BSONAlg(SONModel net) {
+	public BSONAlg(SON net) {
 		super(net);
 		this.net = net;
 	}
@@ -27,7 +28,7 @@ public class BSONAlg extends RelationAlgorithm{
 		HashSet<SONConnection> result = new HashSet<SONConnection>();
 
 		for(SONConnection con : net.getSONConnections()){
-			if (con.getType() == "BHVLINE")
+			if (con.getSemantics() == Semantics.BHVLINE)
 				for(ONGroup group : groups){
 					if(group.contains(con.getFirst())){
 						for (ONGroup nextGroup : groups){
@@ -63,7 +64,7 @@ public class BSONAlg extends RelationAlgorithm{
 		PathAlgorithm alg = new PathAlgorithm(net);
 
 		for(SONConnection con : net.getSONConnections()){
-			if(con.getSecond()==c && con.getType()=="BHVLINE")
+			if(con.getSecond()==c && con.getSemantics()==Semantics.BHVLINE)
 				connectedNodes.add((Condition)con.getFirst());
 		}
 		if (connectedNodes.isEmpty())
@@ -99,7 +100,7 @@ public class BSONAlg extends RelationAlgorithm{
 	public Collection<ONGroup> getBhvGroups(Condition c){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(SONConnection con : net.getInputSONConnections(c))
-			if(con.getType()=="BHVLINE")
+			if(con.getSemantics() == Semantics.BHVLINE)
 				for(ONGroup group : net.getGroups())
 					if(group.getConditions().contains(con.getFirst()))
 						result.add(group);

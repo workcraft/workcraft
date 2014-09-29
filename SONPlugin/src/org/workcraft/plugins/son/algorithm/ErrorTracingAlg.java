@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class ErrorTracingAlg extends RelationAlgorithm{
 
-	private SONModel net;
+	private SON net;
 	private BSONAlg bsonAlg;
 
-	public ErrorTracingAlg(SONModel net){
+	public ErrorTracingAlg(SON net){
 		super(net);
 		bsonAlg = new BSONAlg(net);
 		this.net = net;

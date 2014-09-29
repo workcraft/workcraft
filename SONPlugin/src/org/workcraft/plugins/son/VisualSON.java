@@ -24,8 +24,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
@@ -69,8 +69,8 @@ public class VisualSON extends AbstractVisualModel{
 	public void validateConnection (Node first, Node second) throws InvalidConnectionException{
 	}
 
-	public void validateConnection (Node first, Node second, SONConnectionType type) throws InvalidConnectionException{
-		if (first instanceof VisualCondition && second instanceof VisualCondition && type == VisualSONConnection.SONConnectionType.POLYLINE)
+	public void validateConnection (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
+		if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (semantics == Semantics.PNLINE))
 			throw new InvalidConnectionException ("Connections between conditions are not valid(PN Connection)");
 		if (first instanceof VisualEvent && second instanceof VisualEvent)
 			throw new InvalidConnectionException ("Connections between events are not valid (PN Connection)");
@@ -79,9 +79,9 @@ public class VisualSON extends AbstractVisualModel{
 
 		//asyn type
 		if (!(first instanceof VisualChannelPlace) && !(second instanceof VisualChannelPlace)
-				&& (type == VisualSONConnection.SONConnectionType.ASYNLINE || type == VisualSONConnection.SONConnectionType.SYNCLINE))
+				&& ((semantics == Semantics.ASYNLINE) || (semantics == Semantics.SYNCLINE))) {
 			throw new InvalidConnectionException ("Invalid connection (A/Syn Communication)");
-
+		}
 		//Group
 		if (first instanceof VisualChannelPlace && !isGrouped(second))
 			throw new InvalidConnectionException ("Connections between channel places and un-grouped nodes are not valid (Group)");
@@ -94,8 +94,7 @@ public class VisualSON extends AbstractVisualModel{
 			throw new InvalidConnectionException ("Connections between channel place and condition are not valid (A/Syn Communication)");
 
 		if(isGrouped(first) && isGrouped(second) && !isInSameGroup(first, second)  &&
-				(type == VisualSONConnection.SONConnectionType.POLYLINE || type == VisualSONConnection.SONConnectionType.ASYNLINE ||
-					type == VisualSONConnection.SONConnectionType.SYNCLINE) )
+				(semantics == Semantics.PNLINE || semantics == Semantics.ASYNLINE || semantics == Semantics.SYNCLINE) )
 			throw new InvalidConnectionException ("Direct connections between two different groups are not valid (PN Connection, A/Syn Communication)");
 
 		if(!(first instanceof VisualChannelPlace) &&  !(second instanceof VisualChannelPlace)){
@@ -103,7 +102,7 @@ public class VisualSON extends AbstractVisualModel{
 			throw new InvalidConnectionException ("Connections between grouped node and un-grouped nodes are not valid (Group)");
 
 		//Bhv Type
-		if(type == VisualSONConnection.SONConnectionType.BHVLINE){
+		if (semantics == Semantics.BHVLINE) {
 			if (first instanceof VisualEvent || second instanceof VisualEvent)
 				throw new InvalidConnectionException ("Connections between non-conditions are not valid (Behavioural Abstraction)");
 			if (!isGrouped(first) || !isGrouped(second) )
@@ -169,33 +168,19 @@ public class VisualSON extends AbstractVisualModel{
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 
-	public void connect (Node first, Node second, SONConnectionType type) throws InvalidConnectionException{
-		validateConnection(first, second, type);
+	public void connect (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
+		validateConnection(first, second, semantics);
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
 
-		SONConnection con=(SONConnection)net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), type.toString());
-
-		VisualSONConnection ret =new VisualSONConnection(con,c1,c2);
-
-		if (type == VisualSONConnection.SONConnectionType.POLYLINE)
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.POLYLINE);
-
-		if (type == VisualSONConnection.SONConnectionType.SYNCLINE)
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.SYNCLINE);
-
-		if (type == VisualSONConnection.SONConnectionType.ASYNLINE)
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
-
-		if (type == VisualSONConnection.SONConnectionType.BHVLINE)
-			ret.setSONConnectionType(VisualSONConnection.SONConnectionType.BHVLINE);
-
-		if (c1 instanceof VisualChannelPlace || c2 instanceof VisualChannelPlace ){
-			if(type != VisualSONConnection.SONConnectionType.SYNCLINE){
-				ret.setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
-				con.setType("ASYNLINE");
+		if ((c1 instanceof VisualChannelPlace) || (c2 instanceof VisualChannelPlace)) {
+			if (semantics != Semantics.SYNCLINE) {
+				semantics = Semantics.ASYNLINE;
 			}
 		}
+
+		SONConnection con = (SONConnection)net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
+		VisualSONConnection ret = new VisualSONConnection(con, c1, c2);
 
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
 	}
@@ -491,7 +476,7 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		for (VisualSONConnection connect : getVisualConnections()){
-			if(connect.getReferencedConnection().getType()=="POLYLINE"){
+			if(connect.getReferencedSONConnection().getSemantics() == Semantics.PNLINE){
 				if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
 					if(connect.getSecond() instanceof VisualEvent)
 						errorType = 3;
@@ -502,7 +487,7 @@ public class VisualSON extends AbstractVisualModel{
 						errorType = 3;
 				}
 			}
-			if(connect.getReferencedConnection().getType()=="BHVLINE"){
+			if(connect.getReferencedSONConnection().getSemantics() == Semantics.BHVLINE){
 				if(result.contains(connect.getFirst()) || result.contains(connect.getSecond()))
 					errorType =4;
 			}
@@ -614,7 +599,7 @@ public class VisualSON extends AbstractVisualModel{
 						if(first instanceof VisualPlaceNode){
 							 //set input value
 							String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
-							String type = "-"+con.getSONConnectionType().toString();
+							String type = "-"+con.getReferencedSONConnection().getSemantics();
 							String value = "";
 							if(((VisualPlaceNode)first).getInterface() == ""){
 								value = "to-"+name+type;
@@ -627,13 +612,13 @@ public class VisualSON extends AbstractVisualModel{
 							 Container parent = (Container)con.getParent();
 							 parent.remove(con);
 							 //remove math connection
-							 SONConnection mathCon = con.getReferencedConnection();
+							 SONConnection mathCon = con.getReferencedSONConnection();
 							 Container mathParent = (Container)mathCon.getParent();
 							 if(mathParent != null)
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-								this.connect(first, vBlock, con.getSONConnectionType());
+								this.connect(first, vBlock, con.getReferencedSONConnection().getSemantics());
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -644,7 +629,7 @@ public class VisualSON extends AbstractVisualModel{
 						if(second instanceof VisualPlaceNode){
 							 //set output value
 							String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
-							String type = "-"+con.getSONConnectionType().toString();
+							String type = "-"+con.getReferencedSONConnection().getSemantics();
 							String value = "";
 							if(((VisualPlaceNode)second).getInterface() == ""){
 								value = "from-"+name+type;
@@ -657,13 +642,13 @@ public class VisualSON extends AbstractVisualModel{
 							 Container parent = (Container)con.getParent();
 							 parent.remove(con);
 							 //remove math connection
-							 SONConnection mathCon = con.getReferencedConnection();
+							 SONConnection mathCon = con.getReferencedSONConnection();
 							 Container mathParent = (Container)mathCon.getParent();
 							 if(mathParent != null)
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-								this.connect(vBlock, second, con.getSONConnectionType());
+								this.connect(vBlock, second, con.getReferencedSONConnection().getSemantics());
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -718,7 +703,7 @@ public class VisualSON extends AbstractVisualModel{
 				for(VisualSONConnection con :connections){
 					//remove visual connection
 					Container parent = (Container)con.getParent();
-					SONConnection mathCon = con.getReferencedConnection();
+					SONConnection mathCon = con.getReferencedSONConnection();
 					parent.remove(con);
 
 					//remove math connection
@@ -737,14 +722,14 @@ public class VisualSON extends AbstractVisualModel{
 					//c is an input
 					if(piece[0].equals("to") && e!=null){
 						try {
-							if(piece[2].equals("POLYLINE")){
-								this.connect(p, e, VisualSONConnection.SONConnectionType.POLYLINE);}
+							if(piece[2].equals("POLYLINE"))
+								this.connect(p, e, Semantics.PNLINE);
 							else if(piece[2].equals("SYNCLINE"))
-								this.connect(p, e, VisualSONConnection.SONConnectionType.SYNCLINE);
+								this.connect(p, e, Semantics.SYNCLINE);
 							else if(piece[2].equals("ASYNLINE"))
-								this.connect(p, e, VisualSONConnection.SONConnectionType.ASYNLINE);
+								this.connect(p, e, Semantics.ASYNLINE);
 							else if(piece[2].equals("BHVLINE"))
-								this.connect(p, e, VisualSONConnection.SONConnectionType.BHVLINE);
+								this.connect(p, e, Semantics.BHVLINE);
 
 						} catch (InvalidConnectionException ex) {
 							// TODO Auto-generated catch block
@@ -754,14 +739,13 @@ public class VisualSON extends AbstractVisualModel{
 					}else if(piece[0].equals("from") && e!=null){
 						try {
 							if(piece[2].equals("POLYLINE"))
-								this.connect(e, p, VisualSONConnection.SONConnectionType.POLYLINE);
+								this.connect(e, p, Semantics.PNLINE);
 							else if(piece[2].equals("SYNCLINE"))
-								this.connect(e, p, VisualSONConnection.SONConnectionType.SYNCLINE);
+								this.connect(e, p, Semantics.SYNCLINE);
 							else if(piece[2].equals("ASYNLINE"))
-								this.connect(e, p, VisualSONConnection.SONConnectionType.ASYNLINE);
+								this.connect(e, p, Semantics.ASYNLINE);
 							else if(piece[2].equals("BHVLINE"))
-								this.connect(e, p, VisualSONConnection.SONConnectionType.BHVLINE);
-
+								this.connect(e, p, Semantics.BHVLINE);
 						} catch (InvalidConnectionException ex) {
 							// TODO Auto-generated catch block
 							ex.printStackTrace();

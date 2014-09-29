@@ -207,6 +207,17 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				return object.getScaleMode();
 			}
 		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Color>(
+				this, "Color", Color.class) {
+			protected void setter(VisualConnection object, Color value) {
+				object.setColor(value);
+			}
+			protected Color getter(VisualConnection object) {
+				return object.getColor();
+			}
+		});
+
 	}
 
 	protected void initialise() {

@@ -37,13 +37,13 @@ public class SONModule implements Module{
 		framework.getPluginManager().registerClass(Tool.class, ErrTracingReset.class);
 		framework.getPluginManager().registerClass(Tool.class, ErrTracingDisable.class);
 
-		framework.getPluginManager().registerClass(XMLSerialiser.class, SONConnectionSerialiser.class);
-		framework.getPluginManager().registerClass(XMLSerialiser.class, VisualSONConnectionSerialiser.class);
+//		framework.getPluginManager().registerClass(XMLSerialiser.class, SONConnectionSerialiser.class);
+//		framework.getPluginManager().registerClass(XMLSerialiser.class, VisualSONConnectionSerialiser.class);
 		framework.getPluginManager().registerClass(XMLSerialiser.class, VisualONGroupSerialiser.class);
 
 		framework.getPluginManager().registerClass(XMLDeserialiser.class,VisualONGroupDeserialiser.class);
-		framework.getPluginManager().registerClass(XMLDeserialiser.class, SONConnectionDeserialiser.class);
-		framework.getPluginManager().registerClass(XMLDeserialiser.class, VisualSONConnectionDeserialiser.class);
+//		framework.getPluginManager().registerClass(XMLDeserialiser.class, SONConnectionDeserialiser.class);
+//		framework.getPluginManager().registerClass(XMLDeserialiser.class, VisualSONConnectionDeserialiser.class);
 
 	}
 

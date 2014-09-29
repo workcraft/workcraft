@@ -59,7 +59,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.Trace;
 import org.workcraft.plugins.son.VisualSON;
@@ -78,7 +78,7 @@ import org.workcraft.util.GUI;
 
 public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
-	private SONModel net;
+	private SON net;
 	protected VisualSON visualNet;
 	private Framework framework;
 
@@ -330,7 +330,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		super.activated(editor);
 
 		visualNet = (VisualSON)editor.getModel();
-		net = (SONModel)visualNet.getMathModel();
+		net = (SON)visualNet.getMathModel();
 		framework = editor.getFramework();
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);

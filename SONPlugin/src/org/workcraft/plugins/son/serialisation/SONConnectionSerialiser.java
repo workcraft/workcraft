@@ -40,6 +40,6 @@ public class SONConnectionSerialiser implements CustomXMLSerialiser {
 		SONConnection con = (SONConnection)object;
 		element.setAttribute("first", internalReferences.getReference(con.getFirst()));
 		element.setAttribute("second", internalReferences.getReference(con.getSecond()));
-		element.setAttribute("contype", internalReferences.getReference(con.getType()));
+//		element.setAttribute("contype", internalReferences.getReference(con.getType()));
 	}
 }

@@ -60,14 +60,14 @@ public class VisualSONConnectionDeserialiser extends VisualConnectionDeserialise
 		);
 		nodeFinaliser.finaliseInstance(vcon.getGraphic());
 
-		if(vcon.getGraphic() instanceof Polyline || vcon.getGraphic() instanceof Bezier)
-			vcon.getReferencedConnection().setType("POLYLINE");
-		if(vcon.getGraphic() instanceof AsynLine)
-			vcon.getReferencedConnection().setType("ASYNLINE");
-		if(vcon.getGraphic() instanceof SyncLine)
-			vcon.getReferencedConnection().setType("SYNCLINE");
-		if(vcon.getGraphic() instanceof BhvLine)
-			vcon.getReferencedConnection().setType("BHVLINE");
+//		if(vcon.getGraphic() instanceof Polyline || vcon.getGraphic() instanceof Bezier)
+//			vcon.getReferencedConnection().setType("POLYLINE");
+//		if(vcon.getGraphic() instanceof AsynLine)
+//			vcon.getReferencedConnection().setType("ASYNLINE");
+//		if(vcon.getGraphic() instanceof SyncLine)
+//			vcon.getReferencedConnection().setType("SYNCLINE");
+//		if(vcon.getGraphic() instanceof BhvLine)
+//			vcon.getReferencedConnection().setType("BHVLINE");
 	}
 
 	@Override

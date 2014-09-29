@@ -46,8 +46,8 @@ public class SONConnectionDeserialiser implements CustomXMLDeserialiser {
 		MathNode second = (MathNode)internalReferenceResolver.getObject(element.getAttribute("second"));
 		String type = (String)internalReferenceResolver.getObject(element.getAttribute("contype"));
 
-		con.setDependencies(first, second, type);
-		con.setType(type);
+//		con.setDependencies(first, second, type);
+//		con.setType(type);
 	}
 
 	@Override

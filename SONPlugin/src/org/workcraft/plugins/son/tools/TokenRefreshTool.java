@@ -2,7 +2,6 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.SONModel;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -23,7 +22,7 @@ public class TokenRefreshTool implements Tool{
 	}
 
 	public void run(WorkspaceEntry we){
-		SONModel net=(SONModel)we.getModelEntry().getMathModel();
+		SON net=(SON)we.getModelEntry().getMathModel();
 		for(Condition con : net.getConditions())
 			con.setMarked(false);
 	}

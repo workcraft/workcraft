@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -14,9 +14,9 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class RelationAlgorithm{
 
-	private SONModel net;
+	private SON net;
 
-	public RelationAlgorithm(SONModel net) {
+	public RelationAlgorithm(SON net) {
 		this.net = net;
 	}
 

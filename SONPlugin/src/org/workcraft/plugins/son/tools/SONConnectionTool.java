@@ -35,8 +35,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection.SONConnectionType;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.util.GUI;
 
@@ -212,15 +211,15 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 		e.getEditor().repaint();
 	}
 
-	private SONConnectionType getSONConnectionType(){
+	private Semantics getSONConnectionType(){
 		if(this.conType == 1)
-			return VisualSONConnection.SONConnectionType.POLYLINE;
+			return Semantics.PNLINE;
 		if(this.conType == 2)
-			return VisualSONConnection.SONConnectionType.ASYNLINE;
+			return Semantics.ASYNLINE;
 		if(this.conType == 3)
-			return VisualSONConnection.SONConnectionType.SYNCLINE;
+			return Semantics.SYNCLINE;
 		if(this.conType == 4)
-			return VisualSONConnection.SONConnectionType.BHVLINE;
+			return Semantics.BHVLINE;
 		return null;
 	}
 
