@@ -23,6 +23,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
@@ -64,7 +65,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		});
 		groupPanel.add(groupButton);
 
-		//Create superGroupButton
+/*		//Create superGroupButton
 		final JButton superGroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/son-super-group.svg"), "Super group selection (Gtrl+V)");
 		superGroupButton.addActionListener(new ActionListener(){
@@ -73,7 +74,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				selectionSupergroup(editor);
 			}
 		});
-		groupPanel.add(superGroupButton);
+		groupPanel.add(superGroupButton);*/
 
 		//Create blockButton
 		JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -220,26 +221,24 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				if(selectedNode instanceof VisualChannelPlace) {
 					VisualChannelPlace cPlace = (VisualChannelPlace) node;
 					for (Connection con : model.getConnections(cPlace)){
-						if (((VisualSONConnection) con).getSONConnectionType() == VisualSONConnection.SONConnectionType.ASYNLINE)
+
+						if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE)
 							this.sync = false;
-						if (((VisualSONConnection) con).getSONConnectionType() == VisualSONConnection.SONConnectionType.SYNCLINE)
+						if (((VisualSONConnection) con).getSemantics() == Semantics.SYNCLINE)
 							this.asyn = false;
 					}
 					if (sync && !asyn)
 						for (Connection con : model.getConnections(cPlace)){
-						((VisualSONConnection) con).setSONConnectionType(VisualSONConnection.SONConnectionType.ASYNLINE);
-						((VisualSONConnection) con).setMathConnectionType("ASYNLINE");
+							((VisualSONConnection) con).setSemantics(Semantics.ASYNLINE);
 						}
 
 					if (!sync && asyn)
 						for (Connection con : model.getConnections(cPlace)){
-						((VisualSONConnection) con).setSONConnectionType(VisualSONConnection.SONConnectionType.SYNCLINE);
-						((VisualSONConnection) con).setMathConnectionType("SYNCLINE");
+							((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
 						}
 					if (!sync && !asyn)
 						for (Connection con : model.getConnections(cPlace)){
-						((VisualSONConnection) con).setSONConnectionType(VisualSONConnection.SONConnectionType.SYNCLINE);
-						((VisualSONConnection) con).setMathConnectionType("SYNCLINE");
+							((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
 						}
 					asyn = true;
 					sync = true;
@@ -262,13 +261,13 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			}
 		}
 
-		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
+/*		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
 			switch (e.getKeyCode()){
 			case KeyEvent.VK_V:
 				selectionSupergroup(e.getEditor());
 				break;
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -304,10 +303,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		}
 	}
 
-	private void selectionSupergroup(final GraphEditor editor) {
+/*	private void selectionSupergroup(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).superGroupSelection();
 		editor.repaint();
-	}
+	}*/
 
 	private void selectionBlock(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).groupBlockSelection();

@@ -5,15 +5,16 @@ import java.util.Collection;
 import java.util.List;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class BSONPathAlg extends PathAlgorithm{
 
-	private SONModel net;
+	private SON net;
 	private BSONAlg bsonAlg;
 
-	public BSONPathAlg(SONModel net){
+	public BSONPathAlg(SON net){
 		super(net);
 		this.net = net;
 		bsonAlg =new BSONAlg(net);
@@ -26,13 +27,13 @@ public class BSONPathAlg extends PathAlgorithm{
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n))
-				if(nodes.contains(next) && net.getSONConnectionType(n, next) != "BHVLINE"){
+				if(nodes.contains(next) && net.getSONConnectionType(n, next) != Semantics.BHVLINE){
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
 					result.add(adjoin);
 
-					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+					if(net.getSONConnectionType(n, next) == Semantics.SYNCLINE){
 						Node[] reAdjoin = new Node[2];
 						reAdjoin[0] = next;
 						reAdjoin[1] = n;
@@ -64,12 +65,12 @@ public class BSONPathAlg extends PathAlgorithm{
 		for(ArrayList<Node> cycle : result){
 			int outputBhvLine = 0;
 			int inputBhvLine = 0;
-			if(!net.getSONConnectionTypes(cycle).contains("POLYLINE"))
+			if(!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE))
 				delList.add(cycle);
 			for(Node n : cycle){
-				if(net.getOutputSONConnections(n).contains("BHVLINE"))
+				if(net.getOutputSONConnections(n).contains(Semantics.BHVLINE))
 					outputBhvLine ++;
-				if(net.getInputSONConnections(n).contains("BHVLINE"))
+				if(net.getInputSONConnections(n).contains(Semantics.BHVLINE))
 					inputBhvLine ++;
 			if(inputBhvLine==0 || outputBhvLine==0)
 				delList.add(cycle);

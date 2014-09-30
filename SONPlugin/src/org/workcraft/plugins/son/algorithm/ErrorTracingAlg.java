@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class ErrorTracingAlg extends RelationAlgorithm{
 
-	private SONModel net;
+	private SON net;
 	private BSONAlg bsonAlg;
 
-	public ErrorTracingAlg(SONModel net){
+	public ErrorTracingAlg(SON net){
 		super(net);
 		bsonAlg = new BSONAlg(net);
 		this.net = net;
@@ -26,7 +27,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			boolean b = false;
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 			for(TransitionNode e : runList){
-				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
+				if(!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE))
 					if(this.getPreAsynEvents(e).isEmpty() || !this.hasCommonElements(runList, this.getPreAsynEvents(e))){
 						this.setAsyncErrNum(e, isBhv);
 						removeList.add(e);
@@ -158,7 +159,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			boolean b = false;
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 			for(TransitionNode e : runList){
-				if(!net.getSONConnectionTypes(e).contains("SYNCLINE"))
+				if(!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE))
 					if(this.getPostAsynEvents(e).isEmpty()
 							|| !this.hasCommonElements(runList, this.getPostAsynEvents(e))){
 						this.setReverseAsyncErrNum(e, isBhv);

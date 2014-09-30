@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
@@ -15,7 +15,7 @@ import org.workcraft.plugins.son.algorithm.TSONAlg;
 
 abstract class AbstractStructuralVerification implements StructuralVerification{
 
-	private SONModel net;
+	private SON net;
 
 	private RelationAlgorithm relationAlg;
 	private CSONPathAlg csonPathAlg;
@@ -24,7 +24,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private PathAlgorithm pathAlg;
 	private TSONAlg tsonAlg;
 
-	public AbstractStructuralVerification(SONModel net){
+	public AbstractStructuralVerification(SON net){
 		this.net = net;
 		relationAlg = new RelationAlgorithm(net);
 		csonPathAlg = new CSONPathAlg(net);

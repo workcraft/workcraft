@@ -18,6 +18,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -28,7 +29,7 @@ import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
-public class SON extends AbstractMathModel implements SONModel {
+public class SON extends AbstractMathModel {
 
 	public SON(){
 		this(null, null);
@@ -43,8 +44,8 @@ public class SON extends AbstractMathModel implements SONModel {
 				if (node instanceof ChannelPlace) return "q";
 				if (node instanceof Block) return "b";
 				if (node instanceof SONConnection) return "con";
-				if (node instanceof ONGroup) return "group";
-				if (node instanceof PageNode) return "page";
+				if (node instanceof ONGroup) return "g";
+				if (node instanceof PageNode) return "p";
 				return super.getPrefix(node);
 			}
 		});
@@ -58,22 +59,12 @@ public class SON extends AbstractMathModel implements SONModel {
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 
-	public SONConnection connect(Node first, Node second, String conType) throws InvalidConnectionException {
-		/*if (first instanceof Condition && second instanceof Condition)
-			throw new InvalidConnectionException ("Connections between places are not valid");
-		*/
+	public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
 		if (this.getSONConnection(first, second) != null){
-			System.out.println("first "+ this.getName(first) + " second " + this.getName(second));
 			throw new InvalidConnectionException ("Duplicate Connections");
 		}
-		if (first instanceof Event && second instanceof Event)
-			throw new InvalidConnectionException ("Connections between transitions are not valid");
-		if (first instanceof ChannelPlace && second instanceof ChannelPlace)
-			throw new InvalidConnectionException ("Connections between channel places are not valid");
-		if ((first instanceof ChannelPlace && second instanceof Condition) || (first instanceof Condition && second instanceof ChannelPlace))
-			throw new InvalidConnectionException ("Connections between channel place and condition are not valid");
 
-		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, conType);
+		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
 		Hierarchy.getNearestContainer(first, second).add(con);
 
 		return con;
@@ -148,9 +139,6 @@ public class SON extends AbstractMathModel implements SONModel {
 		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
-
-		if (n instanceof SONConnection)
-			((SONConnection)n).setColor(nodeColor);
 
 		if(n instanceof Block)
 			((Block)n).setForegroundColor(nodeColor);
@@ -230,6 +218,7 @@ public class SON extends AbstractMathModel implements SONModel {
 		for (Connection con : this.getConnections(node))
 			if(con instanceof SONConnection)
 				result.add((SONConnection)con);
+
 		return result;
 	}
 
@@ -269,53 +258,52 @@ public class SON extends AbstractMathModel implements SONModel {
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getSONConnectionTypes (Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : getSONConnections(node)){
-			result.add(con.getType());
+			result.add(con.getSemantics());
 		}
 
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Collection<Node> nodes){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getSONConnectionTypes (Collection<Node> nodes){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for(Node node : nodes){
 			for (SONConnection con : getSONConnections(node)){
 				if (nodes.contains(con.getFirst()) && nodes.contains(con.getSecond()))
-					result.add(con.getType());
+					result.add(con.getSemantics());
 			}
 		}
 		return result;
 	}
 
-	public String getSONConnectionType (Node first, Node second){
-
-		return getSONConnection(first, second).getType();
+	public Semantics getSONConnectionType (Node first, Node second){
+		SONConnection con = getSONConnection(first, second);
+		return con.getSemantics();
 	}
 
-	public Collection<String> getInputSONConnectionTypes(Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getInputSONConnectionTypes(Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)
 				if (con.getSecond() == node)
-					result.add(con.getType());
+					result.add(con.getSemantics());
 		}
 		return result;
 	}
 
-	public Collection<String> getOutputSONConnectionTypes(Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getOutputSONConnectionTypes(Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)
 				if (con.getFirst() == node)
-					result.add(con.getType());
+					result.add(con.getSemantics());
 		}
 		return result;
 	}
 
 	//Group Methods
-
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
@@ -323,12 +311,12 @@ public class SON extends AbstractMathModel implements SONModel {
 	public Collection<TransitionNode> getEventNodes(){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
-				if(node instanceof Block){
-					if(((Block)node).getIsCollapsed())
-						result.add(node);
-				}
-				if(node instanceof Event)
+			if(node instanceof Block){
+				if(((Block)node).getIsCollapsed())
 					result.add(node);
+			}
+			if(node instanceof Event)
+				result.add(node);
 		}
 		return result;
 	}

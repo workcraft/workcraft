@@ -5,13 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 
 public class CSONPathAlg extends PathAlgorithm{
 
-	private SONModel net;
+	private SON net;
 
-	public CSONPathAlg(SONModel net) {
+	public CSONPathAlg(SON net) {
 		super(net);
 		this.net = net;
 	}
@@ -30,7 +31,7 @@ public class CSONPathAlg extends PathAlgorithm{
 					if(!result.contains(adjoin))
 						result.add(adjoin);
 
-					if(net.getSONConnectionType(n, next) == "SYNCLINE"){
+					if(net.getSONConnectionType(n, next) == Semantics.SYNCLINE){
 						Node[] reAdjoin = new Node[2];
 						reAdjoin[0] = next;
 						reAdjoin[1] = n;
@@ -56,9 +57,9 @@ public class CSONPathAlg extends PathAlgorithm{
 	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> pathResult){
 		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
 		for (ArrayList<Node> path : pathResult){
-			if(!net.getSONConnectionTypes(path).contains("POLYLINE"))
+			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
 				delList.add(path);
-			if(!net.getSONConnectionTypes(path).contains("SYNCLINE") && !net.getSONConnectionTypes(path).contains("ASYNLINE"))
+			if(!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE) && !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
 				delList.add(path);
 		}
 		pathResult.removeAll(delList);

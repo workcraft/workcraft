@@ -1,48 +1,52 @@
 package org.workcraft.plugins.son.connections;
 
-import java.awt.Color;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
 public class SONConnection extends MathConnection{
 
-	private String conType;
-	private static Color defaultColor = Color.BLACK;
+	public enum Semantics {
+		PNLINE("Petri net connection"),
+		SYNCLINE("Synchronous communication"),
+		ASYNLINE("Asynchronous communication"),
+		BHVLINE("Behavioural abstraction");
 
-	private Color color = defaultColor;
+		private final String name;
+
+		private Semantics(String name) {
+			this.name = name;
+		}
+
+		static public Map<String, Semantics> getChoice() {
+			LinkedHashMap<String, Semantics> choice = new LinkedHashMap<String, Semantics>();
+			for (Semantics item : Semantics.values()) {
+				choice.put(item.name, item);
+			}
+			return choice;
+		}
+	};
+
+	private Semantics semantics;
 
 	public SONConnection(){
 	}
 
-	public SONConnection(MathNode first, MathNode second, String conType){
-		super();
-		this.conType = conType;
-		setDependencies(first, second, conType);
+	public SONConnection(MathNode first, MathNode second, Semantics semantics) {
+		super(first, second);
+		this.setSemantics(semantics);
 	}
 
-	public String getType(){
-		return this.conType;
+	public Semantics getSemantics() {
+		return semantics;
 	}
 
-	public void setType(String type){
-		this.conType = type;
-	}
-
-	final public void setDependencies(MathNode first, MathNode second, String type) {
-		super.setDependencies(first, second);
-		this.conType = type;
-	}
-	/* (non-Javadoc)
-	 * @see org.workcraft.dom.visual.connections.VisualConnectionInfo#getColor()
-	 */
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
+	public void setSemantics(Semantics semantics) {
+		this.semantics = semantics;
+		sendNotification(new PropertyChangedEvent(this, "semantics"));
 	}
 
 }

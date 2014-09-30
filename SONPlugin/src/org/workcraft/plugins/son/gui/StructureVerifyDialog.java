@@ -11,11 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -32,7 +29,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.util.GUI;
 
@@ -40,7 +37,7 @@ import org.workcraft.util.GUI;
 
 public class StructureVerifyDialog extends JDialog{
 
-	private SONModel net;
+	private SON net;
 	private static final long serialVersionUID = 1L;
 
 	private JPanel  buttonsPanel, GroupPanel, groupPanelContent, ArcTypePanel, settingPanel;
@@ -308,7 +305,7 @@ public class StructureVerifyDialog extends JDialog{
 		buttonsPanel.add(runButton);
 	}
 
-	public StructureVerifyDialog (Window owner, SONModel net){
+	public StructureVerifyDialog (Window owner, SON net){
 		super(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL);
 		this.net = net;
 		this.owner = owner;
@@ -335,7 +332,7 @@ public class StructureVerifyDialog extends JDialog{
 		this.pack();
 	}
 
-	public SONModel getSONModel(){
+	public SON getSONModel(){
 		return this.net;
 	}
 

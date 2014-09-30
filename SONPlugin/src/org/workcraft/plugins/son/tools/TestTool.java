@@ -4,22 +4,13 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.SONModel;
-import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.VisualBlock;
-import org.workcraft.plugins.son.elements.VisualCondition;
-
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -49,20 +40,18 @@ public class TestTool implements Tool{
 
 	public void run(WorkspaceEntry we){
 		System.out.println("================================================================================");
-		SONModel net=(SONModel)we.getModelEntry().getMathModel();
+		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		for(Condition c : net.getConditions()){
-			c.setLabel("afashfadf /n fsaddfas \nasdfa");
-		}
+
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
-		//connectionTypeTest(net, vnet);
+		connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
-		conditionOutputTest(vnet);
+		//conditionOutputTest(vnet);
 	}
 
-	private void relation(SONModel net, VisualSON vnet){
+	private void relation(SON net, VisualSON vnet){
 		for(Node node : net.getComponents()){
 			System.out.println("node name: "+net.getName(node) + "  node pre size:" + net.getPreset(node).size()
 					+ "  node post size:" + net.getPostset(node).size());
@@ -85,7 +74,7 @@ public class TestTool implements Tool{
 	}
 	*/
 
-	private void blockMathLevelTest(SONModel net, VisualSON vnet){
+	private void blockMathLevelTest(SON net, VisualSON vnet){
 		for(Block block : net.getBlocks()){
 			System.out.println("block name :" + net.getName(block));
 			System.out.println("connection size : " + block.getSONConnections().size());
@@ -99,7 +88,7 @@ public class TestTool implements Tool{
 
 	}
 
-	private void mathLevelTest(SONModel net, VisualSON vnet){
+	private void mathLevelTest(SON net, VisualSON vnet){
 		for(ONGroup group: net.getGroups()){
 			System.out.println(group.toString());
 			System.out.println("Page size = " + group.getPageNodes().size());
@@ -129,9 +118,16 @@ public class TestTool implements Tool{
 		}*/
 	}
 
-	private void connectionTypeTest(SONModel net, VisualSON vnet){
+	private void connectionTypeTest(SON net, VisualSON vnet){
 		for(SONConnection con : net.getSONConnections()){
-			System.out.println("con type "+ con.getType());
+			System.out.println("con type "+ con.getSemantics());
+			System.out.println("con fisrt "+ con.getFirst());
+			System.out.println("con fisrt "+ con.getSecond());
+		}
+		for(VisualSONConnection con : vnet.getVisualSONConnections()){
+			System.out.println("con type "+ con.getSemantics());
+			System.out.println("con fisrt "+ con.getFirst());
+			System.out.println("con fisrt "+ con.getSecond());
 		}
 	}
 }

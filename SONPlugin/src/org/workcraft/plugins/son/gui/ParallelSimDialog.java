@@ -34,7 +34,7 @@ import javax.swing.table.TableColumn;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
@@ -42,7 +42,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	private static final long serialVersionUID = 1L;
 
-	private SONModel net;
+	private SON net;
 	protected SimulationAlg alg;
 
 	boolean reverse = false;
@@ -284,7 +284,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	public  ParallelSimDialog (Window owner, SONModel net, List<TransitionNode> possibleEvents, List<TransitionNode> minimalEvents, TransitionNode event, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents, boolean reverse){
+	public  ParallelSimDialog (Window owner, SON net, List<TransitionNode> possibleEvents, List<TransitionNode> minimalEvents, TransitionNode event, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents, boolean reverse){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		alg = new SimulationAlg(net);
@@ -341,7 +341,7 @@ public class ParallelSimDialog  extends JDialog{
 			e.setForegroundColor(Color.BLUE);
 	}
 
-	public SONModel getSONModel(){
+	public SON getSONModel(){
 		return this.net;
 	}
 

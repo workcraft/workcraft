@@ -7,14 +7,15 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 
 public class BSONStructureTask extends AbstractStructuralVerification{
 
-	private SONModel net;
+	private SON net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
@@ -25,7 +26,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public BSONStructureTask(SONModel net){
+	public BSONStructureTask(SON net){
 		super(net);
 		this.net = net;
 	}
@@ -45,7 +46,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		logger.info("Selected Groups = " +  groups.size());
 		logger.info("Group Components = " + components.size());
 
-		if(!net.getSONConnectionTypes(components).contains("BHVLINE")){
+		if(!net.getSONConnectionTypes(components).contains(Semantics.BHVLINE)){
 			logger.info("Task terminated: no behavioural connections in selected groups.");
 			return;
 		}
@@ -151,9 +152,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				boolean isOutput = false;
 
 				for(Node node : group.getComponents()){
-					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						isInput = true;
-					if(net.getOutputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						isOutput = true;
 				}
 
@@ -162,7 +163,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			}
 			else{
 				for(Node node : group.getComponents()){
-					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						result.add(group);
 				}
 			}
@@ -237,7 +238,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			boolean isInput = false;
 			if(getBSONAlg().isLineLikeGroup(group) && !groupErrors.contains(group)){
 				for(Node node : group.getComponents()){
-					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						isInput = true;
 				}
 				if(isInput)

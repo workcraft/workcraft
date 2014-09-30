@@ -59,7 +59,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.Trace;
 import org.workcraft.plugins.son.VisualSON;
@@ -67,6 +67,7 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -78,7 +79,7 @@ import org.workcraft.util.GUI;
 
 public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
-	private SONModel net;
+	private SON net;
 	protected VisualSON visualNet;
 	private Framework framework;
 
@@ -330,7 +331,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		super.activated(editor);
 
 		visualNet = (VisualSON)editor.getModel();
-		net = (SONModel)visualNet.getMathModel();
+		net = (SON)visualNet.getMathModel();
 		framework = editor.getFramework();
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
@@ -502,7 +503,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		for(ONGroup group : net.getGroups()){
 			boolean hasBhvLine = false;
 			for(Condition c : group.getConditions())
-				if(net.getSONConnectionTypes(c).contains("BHVLINE"))
+				if(net.getSONConnectionTypes(c).contains(Semantics.BHVLINE))
 					hasBhvLine = true;
 			if(!hasBhvLine){
 				for(Node c : relationAlg.getInitial(group.getComponents())){

@@ -7,12 +7,12 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask extends AbstractStructuralVerification{
 
-	private SONModel net;
+	private SON net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new HashSet<Node>();
@@ -23,7 +23,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public TSONStructureTask(SONModel net){
+	public TSONStructureTask(SON net){
 		super(net);
 		this.net = net;
 	}

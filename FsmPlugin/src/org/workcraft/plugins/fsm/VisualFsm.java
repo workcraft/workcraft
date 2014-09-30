@@ -66,10 +66,10 @@ public class VisualFsm extends AbstractVisualModel {
 		if (!(first instanceof VisualState) || !(second instanceof VisualState)) {
 			throw new InvalidConnectionException ("Invalid connection");
 		}
-		if (getPostset(first).contains(second) || getPreset(second).contains(first)) {
-			throw new InvalidConnectionException ("There is already an arc from " +
-				getStateName((VisualState)first) + " to " + getStateName((VisualState)second));
-		}
+//		if (getPostset(first).contains(second) || getPreset(second).contains(first)) {
+//			throw new InvalidConnectionException ("There is already an arc from " +
+//				getStateName((VisualState)first) + " to " + getStateName((VisualState)second));
+//		}
 	}
 
 	public String getStateName(VisualState state) {

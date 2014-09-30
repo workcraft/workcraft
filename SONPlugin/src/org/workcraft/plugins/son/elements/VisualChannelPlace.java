@@ -16,7 +16,6 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-//import java.awt.event.KeyEvent;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
@@ -26,7 +25,6 @@ public class VisualChannelPlace extends VisualComponent implements VisualPlaceNo
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
 	private String value = "";
-	//private boolean displayName = false;
 
 	public VisualChannelPlace(ChannelPlace cplace) {
 		super(cplace);
@@ -91,37 +89,6 @@ public class VisualChannelPlace extends VisualComponent implements VisualPlaceNo
 		}
 	}
 
-	/*
-	public void drawName(DrawRequest r){
-		if (SONSettings.getDisplayName()) {
-			Graphics2D g = r.getGraphics();
-			GlyphVector glyphVector=null;
-			Rectangle2D labelBB=null;
-
-			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.4f);
-			String name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
-			if (name != null) {
-				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), name);
-
-				labelBB = glyphVector.getVisualBounds();
-				Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-				if(!this.hasToken()) {
-					g.drawGlyphVector(glyphVector, -(float)labelPosition.getX(), -(float)labelPosition.getY());
-				} else {
-					g.drawGlyphVector(glyphVector, -(float)this.getLabelPositioning().xOffset, -(float)this.getLabelPositioning().yOffset);
-				}
-			}
-		}
-	}
-
-	public void setDisplayName(boolean showName){
-		this.displayName = showName;
-	}
-
-	public boolean isDisplayName(){
-		return displayName;
-	}
-	*/
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
 	{
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
