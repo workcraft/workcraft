@@ -257,8 +257,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		if (labelRenderedText.isDifferent(label, labelFont, labelPositioning, getLabelOffset())) {
-			labelRenderedText = new RenderedText(label, labelFont, labelPositioning, getLabelOffset());
+		if (labelRenderedText.isDifferent(getLabel(), labelFont, labelPositioning, getLabelOffset())) {
+			labelRenderedText = new RenderedText(getLabel(), labelFont, labelPositioning, getLabelOffset());
 		}
 	}
 
@@ -327,13 +327,29 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		if (getLabelVisibility() && (labelRenderedText != null) && !labelRenderedText.isEmpty()) {
-			bb = BoundingBoxHelper.union(bb, labelRenderedText.getBoundingBox());
+		if (getLabelVisibility()) {
+			bb = BoundingBoxHelper.union(bb, getLabelBoundingBox());
 		}
-		if (getNameVisibility() && (nameRenderedText != null) && !nameRenderedText.isEmpty()) {
-			bb = BoundingBoxHelper.union(bb, nameRenderedText.getBoundingBox());
+		if (getNameVisibility()) {
+			bb = BoundingBoxHelper.union(bb, getNameBoundingBox());
 		}
 		return bb;
+	}
+
+	public Rectangle2D getLabelBoundingBox() {
+		if ((labelRenderedText != null) && !labelRenderedText.isEmpty()) {
+			return labelRenderedText.getBoundingBox();
+		} else {
+			return null;
+		}
+	}
+
+	public Rectangle2D getNameBoundingBox() {
+		if ((nameRenderedText != null) && !nameRenderedText.isEmpty()) {
+			return nameRenderedText.getBoundingBox();
+		} else {
+			return null;
+		}
 	}
 
 	@Override

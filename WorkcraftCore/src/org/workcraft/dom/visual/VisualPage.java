@@ -3,6 +3,7 @@ package org.workcraft.dom.visual;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +34,8 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Page")
 @SVGIcon("images/icons/svg/page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
+	private boolean isInside = false;
 
-	protected final double margin = 0.20;
 
 	private boolean isCollapsed = false;
 	@Override
@@ -71,17 +72,12 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	}
 
 	public Collection<VisualComponent> getComponents(){
-
 		return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
-
 	}
 
 	public Collection<VisualConnection> getConnections(){
-
 		return Hierarchy.getDescendantsOfType(this, VisualConnection.class);
-
 	}
-
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
@@ -111,8 +107,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		});
 	}
 
-
-	private boolean isInside = false;
 	@Override
 	public void setIsCurrentLevelInside(boolean isInside) {
 		sendNotification(new TransformChangingEvent(this));
@@ -228,8 +222,12 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			if (bb == null) {
 				bb = super.getInternalBoundingBoxInLocalSpace();
 			}
-			return BoundingBoxHelper.expand(bb, margin, margin);
+			return BoundingBoxHelper.expand(bb, getExpansion().getX(), getExpansion().getY());
 		}
+	}
+
+	public Point2D getExpansion() {
+		return new Point2D.Double(0.2,  0.2);
 	}
 
 	@Override
@@ -247,7 +245,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 		if ((bb != null) && (getParent() != null)) {
 			Graphics2D g = r.getGraphics();
-			bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
 			if (getIsCollapsed() && !isCurrentLevelInside()) {
 				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
 				g.fill(bb);

@@ -37,60 +37,32 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 	@Override
 	public void draw(DrawRequest r){
-
-
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn
 		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
 			component.cacheRenderedText(r);
 		}
+		cacheRenderedText(r);
 
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 		Color colorisation = r.getDecoration().getColorisation();
-
-		if (bb != null && getParent() != null) {
-
-			if (getIsCollapsed()&&!isCurrentLevelInside()) {
-
-				bb.setRect(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
-				Graphics2D g = r.getGraphics();
-				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
-				g.fill(bb);
-
-			//	g.setBackground(new Color(190, 230, 240));
-				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
-				//float[] pattern = {0.2f, 0.2f};
-				//g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-				g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
-						3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
-				g.draw(bb);
-
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		if ((bb != null) && (getParent() != null)) {
+			Graphics2D g = r.getGraphics();
+			g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+			g.fill(bb);
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
+					3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
+			g.draw(bb);
+			if (getIsCollapsed() && !isCurrentLevelInside()) {
 				drawFault(r);
-				drawNameInLocalSpace(r);
-				drawLabelInLocalSpace(r);
-
-			} else {
-
-				bb.setRect(bb.getX() - margin, bb.getY() - margin, bb.getWidth() + 2*margin, bb.getHeight() + 2*margin);
-				Graphics2D g = r.getGraphics();
-
-				g.setColor(Coloriser.colorise(getFillColor(), colorisation));
-				g.fill(bb);
-				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-				//float[] pattern = {0.2f, 0.2f};
-				//g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-				g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
-						3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
-
-				g.draw(bb);
-				drawNameInLocalSpace(r);
-				drawLabelInLocalSpace(r);
-
 			}
+			drawNameInLocalSpace(r);
+			drawLabelInLocalSpace(r);
 		}
-
 	}
 
+	@Override
 	public void drawFault(DrawRequest r){
 		if (ErrTracingDisable.showErrorTracing()) {
 			Graphics2D g = r.getGraphics();
@@ -98,12 +70,11 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 			Rectangle2D labelBB=null;
 
 			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-
-			if (isFaulty())
+			if (isFaulty()) {
 				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "1");
-			else
+			} else {
 				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "0");
-
+			}
 			labelBB = glyphVector.getVisualBounds();
 			Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
 			g.drawGlyphVector(glyphVector, -(float)bitPosition.getX(), -(float)bitPosition.getY());
@@ -122,18 +93,19 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		return  this.getReferencedComponent().getIsCollapsed();
 	}
 
+	@Override
 	public boolean isFaulty(){
 		return ((Block)getReferencedComponent()).isFaulty();
 	}
 
-	public void setLabel(String label)
-	{
+	@Override
+	public void setLabel(String label) {
 		super.setLabel(label);
 		this.getReferencedComponent().setLabel(label);
 	}
 
-	public String getLabel()
-	{
+	@Override
+	public String getLabel() {
 		super.getLabel();
 		return this.getReferencedComponent().getLabel();
 	}
