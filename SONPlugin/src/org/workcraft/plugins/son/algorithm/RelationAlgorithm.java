@@ -8,6 +8,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -28,7 +29,7 @@ public class RelationAlgorithm{
 			if(net.getPostset(c).size() > 1){
 				int count = 0;
 				for (SONConnection con : net.getOutputSONConnections(c)){
-					if (con.getType() == "POLYLINE")
+					if (con.getSemantics() == Semantics.PNLINE)
 						count++;
 				}
 				if(count > 1){
@@ -52,7 +53,7 @@ public class RelationAlgorithm{
 			if(net.getPreset(c).size() > 1){
 				int count = 0;
 				for (SONConnection con : net.getInputSONConnections(c)){
-					if (con.getType() == "POLYLINE")
+					if (con.getSemantics() == Semantics.PNLINE)
 						count++;
 				}
 				if(count > 1){
@@ -79,7 +80,7 @@ public class RelationAlgorithm{
 		else{
 			if (n instanceof Condition){
 				for(SONConnection con : net.getInputSONConnections(n)){
-					if (con.getType() == "POLYLINE")
+					if (con.getSemantics() == Semantics.PNLINE)
 						conType = false;
 				}
 				if(conType)
@@ -101,7 +102,7 @@ public class RelationAlgorithm{
 		else{
 			if (n instanceof Condition){
 				for(SONConnection con : net.getOutputSONConnections(n)){
-					if (con.getType() == "POLYLINE")
+					if (con.getSemantics() == Semantics.PNLINE)
 						conType = false;
 				}
 				if(conType)
@@ -186,9 +187,9 @@ public class RelationAlgorithm{
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node pre : net.getPreset(c))
 			if(pre instanceof TransitionNode)
-				if(net.getSONConnectionType(c, pre) == "POLYLINE")
+				if(net.getSONConnectionType(c, pre) == Semantics.PNLINE)
 					for(Node n2 : net.getPreset(pre))
-						if(n2 instanceof Condition && net.getSONConnectionType(pre, n2)== "POLYLINE")
+						if((n2 instanceof Condition) && net.getSONConnectionType(pre, n2)== Semantics.PNLINE)
 							result.add((Condition)n2);
 
 		return result;
@@ -201,9 +202,9 @@ public class RelationAlgorithm{
 		Collection<Condition> result = new ArrayList<Condition>();
 		for(Node post : net.getPostset(c))
 			if(post instanceof TransitionNode)
-				if(net.getSONConnectionType(c, post)=="POLYLINE")
+				if(net.getSONConnectionType(c, post)== Semantics.PNLINE)
 					for(Node n2 : net.getPostset(post))
-						if(n2 instanceof Condition && net.getSONConnectionType(post, n2) == "POLYLINE")
+						if((n2 instanceof Condition) && net.getSONConnectionType(post, n2) == Semantics.PNLINE)
 							result.add((Condition)n2);
 
 		return result;
@@ -215,7 +216,7 @@ public class RelationAlgorithm{
 	public Collection<TransitionNode> getPreAsynEvents (TransitionNode e){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : net.getPreset(e)){
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
+			if((node instanceof ChannelPlace) && net.getSONConnectionType(node, e) == Semantics.ASYNLINE){
 				TransitionNode node2 = (TransitionNode)net.getPreset(node).iterator().next();
 				result.add(node2);
 			}
@@ -229,7 +230,7 @@ public class RelationAlgorithm{
 	public Collection<TransitionNode> getPostAsynEvents (TransitionNode e){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : net.getPostset(e) )
-			if(node instanceof ChannelPlace && net.getSONConnectionType(node, e) == "ASYNLINE"){
+			if((node instanceof ChannelPlace) && net.getSONConnectionType(node, e) == Semantics.ASYNLINE){
 				TransitionNode node2 = (TransitionNode)net.getPostset(node).iterator().next();
 				result.add(node2);
 				}
@@ -249,7 +250,7 @@ public class RelationAlgorithm{
 			}
 		}
 		for(Node post : net.getPostset(node)){
-			if(post instanceof ChannelPlace && net.getSONConnectionType(post, node) == "SYNCLINE"){
+			if((post instanceof ChannelPlace) && net.getSONConnectionType(post, node) == Semantics.SYNCLINE){
 				TransitionNode post2 = (TransitionNode)net.getPostset(post).iterator().next();
 				result.add(post2);
 			}
@@ -271,7 +272,7 @@ public class RelationAlgorithm{
 			}
 		}
 		for(Node pre : net.getPreset(node)){
-			if(pre instanceof ChannelPlace && net.getSONConnectionType(pre, node) == "SYNCLINE"){
+			if(pre instanceof ChannelPlace && net.getSONConnectionType(pre, node) == Semantics.SYNCLINE){
 				TransitionNode pre2 = (TransitionNode)net.getPreset(pre).iterator().next();
 				result.add(pre2);
 			}
@@ -297,7 +298,7 @@ public class RelationAlgorithm{
 		}
 
 		for(Node n : net.getPostset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n) == "SYNCLINE"){
+			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n) == Semantics.SYNCLINE){
 				Node post = (Node)net.getPostset(n).iterator().next();
 				for(Node preCondition : net.getPreset(post))
 					if(preCondition instanceof Condition)
@@ -326,7 +327,7 @@ public class RelationAlgorithm{
 		}
 
 		for(Node n : net.getPreset(e)){
-			if(n instanceof ChannelPlace && net.getSONConnectionType(e, n) =="SYNCLINE"){
+			if((n instanceof ChannelPlace) && net.getSONConnectionType(e, n) == Semantics.SYNCLINE){
 				Node pre = (Node)net.getPreset(n).iterator().next();
 				for(Node postCondition : net.getPostset(pre))
 					if(postCondition instanceof Condition)
@@ -343,7 +344,7 @@ public class RelationAlgorithm{
 	public Collection<Node> getPrePNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPreset(node)){
-			if(net.getSONConnectionType(node, n)=="POLYLINE" )
+			if(net.getSONConnectionType(node, n) == Semantics.PNLINE)
 			result.add(n);
 		}
 		return result;
@@ -355,7 +356,7 @@ public class RelationAlgorithm{
 	public Collection<Node> getPostPNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPostset(node)){
-			if(net.getSONConnectionType(node, n) =="POLYLINE")
+			if(net.getSONConnectionType(node, n) == Semantics.PNLINE)
 			result.add(n);
 		}
 		return result;

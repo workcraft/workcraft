@@ -116,9 +116,9 @@ public class BSONAlg extends RelationAlgorithm{
 			boolean isInput = false;
 			boolean isOutput = false;
 			for(Node node : group.getComponents()){
-				if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+				if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 					isInput = true;
-				if(net.getOutputSONConnectionTypes(node).contains("BHVLINE"))
+				if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 					isOutput = true;
 			}
 			if(!isInput && isOutput)
@@ -138,9 +138,9 @@ public class BSONAlg extends RelationAlgorithm{
 			boolean isOutput = false;
 			if(this.isLineLikeGroup(group)){
 				for(Node node : group.getComponents()){
-					if(net.getInputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						isInput = true;
-					if(net.getOutputSONConnectionTypes(node).contains("BHVLINE"))
+					if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 						isOutput = true;
 				}
 				if(isInput && !isOutput)

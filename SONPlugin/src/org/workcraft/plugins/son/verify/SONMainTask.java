@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.plugins.son.VisualSON;
@@ -40,7 +40,7 @@ public class SONMainTask implements Task<VerificationResult>{
 	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
 		clearConsole();
 		//all tasks
-		SONModel net=(SONModel)we.getModelEntry().getMathModel();
+		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
 		//TSON structure tasks
@@ -159,7 +159,7 @@ public class SONMainTask implements Task<VerificationResult>{
 		//load memory for reconnecting from block bounding to its inside.
 		we.cancelMemento();
 
-		net=(SONModel)we.getModelEntry().getMathModel();
+		net=(SON)we.getModelEntry().getMathModel();
 		vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		errNodesHighlight(settings.getErrNodesHighlight(), net);
 
@@ -187,7 +187,7 @@ public class SONMainTask implements Task<VerificationResult>{
 	    }
 	}
 
-	private void outputBefore(SONModel net){
+	private void outputBefore(SON net){
 		if(totalErrNum > 0){
 			totalWarningNum++;
 			logger.info("WARNING : Structure error exist, cannot output before(e).");
@@ -208,7 +208,7 @@ public class SONMainTask implements Task<VerificationResult>{
 		}
 	}
 
-	private void errNodesHighlight(boolean b, SONModel net){
+	private void errNodesHighlight(boolean b, SON net){
 		if(b){
 			for(String group : groupErrors){
 				net.setFillColor(net.getNodeByReference(group), SONSettings.getRelationErrColor());

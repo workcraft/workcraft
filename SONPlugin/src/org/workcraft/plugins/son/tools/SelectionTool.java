@@ -65,7 +65,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		});
 		groupPanel.add(groupButton);
 
-		//Create superGroupButton
+/*		//Create superGroupButton
 		final JButton superGroupButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/son-super-group.svg"), "Super group selection (Gtrl+V)");
 		superGroupButton.addActionListener(new ActionListener(){
@@ -74,7 +74,7 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 				selectionSupergroup(editor);
 			}
 		});
-		groupPanel.add(superGroupButton);
+		groupPanel.add(superGroupButton);*/
 
 		//Create blockButton
 		JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -261,13 +261,13 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 			}
 		}
 
-		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
+/*		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
 			switch (e.getKeyCode()){
 			case KeyEvent.VK_V:
 				selectionSupergroup(e.getEditor());
 				break;
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -303,10 +303,10 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 		}
 	}
 
-	private void selectionSupergroup(final GraphEditor editor) {
+/*	private void selectionSupergroup(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).superGroupSelection();
 		editor.repaint();
-	}
+	}*/
 
 	private void selectionBlock(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).groupBlockSelection();

@@ -8,6 +8,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.util.WorkspaceUtils;
@@ -41,15 +42,13 @@ public class TestTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		for(Condition c : net.getConditions()){
-			c.setLabel("afashfadf /n fsaddfas \nasdfa");
-		}
+
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
-		//connectionTypeTest(net, vnet);
+		connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
-		conditionOutputTest(vnet);
+		//conditionOutputTest(vnet);
 	}
 
 	private void relation(SON net, VisualSON vnet){
@@ -122,6 +121,13 @@ public class TestTool implements Tool{
 	private void connectionTypeTest(SON net, VisualSON vnet){
 		for(SONConnection con : net.getSONConnections()){
 			System.out.println("con type "+ con.getSemantics());
+			System.out.println("con fisrt "+ con.getFirst());
+			System.out.println("con fisrt "+ con.getSecond());
+		}
+		for(VisualSONConnection con : vnet.getVisualSONConnections()){
+			System.out.println("con type "+ con.getSemantics());
+			System.out.println("con fisrt "+ con.getFirst());
+			System.out.println("con fisrt "+ con.getSecond());
 		}
 	}
 }

@@ -179,7 +179,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n)){
-				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == "ASYNLINE"){
+				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == Semantics.ASYNLINE){
 					Node[] adjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
 						if(n2 instanceof TransitionNode){
@@ -189,7 +189,7 @@ public class SimulationAlg extends RelationAlgorithm {
 						}
 				}
 
-				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) =="SYNCLINE"){
+				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == Semantics.SYNCLINE){
 					Node[] adjoin = new Node[2];
 					Node[] reAdjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
@@ -477,7 +477,7 @@ public class SimulationAlg extends RelationAlgorithm {
 							//structure such that condition fin has more than one high-level states
 							int tokens = 0;
 							for(Node post : net.getPostset(fin)){
-								if(post instanceof Condition && net.getSONConnectionType(post, fin) == "BHVLINE")
+								if(post instanceof Condition && net.getSONConnectionType(post, fin) == Semantics.BHVLINE)
 									if(((Condition)post).isMarked())
 										tokens++;
 							}
@@ -496,7 +496,7 @@ public class SimulationAlg extends RelationAlgorithm {
 							int tokens = 0;
 							int size = 0;
 							for(Node post : net.getPostset(ini)){
-								if(post instanceof Condition && net.getSONConnectionType(post, ini) == "BHVLINE"){
+								if(post instanceof Condition && net.getSONConnectionType(post, ini) == Semantics.BHVLINE){
 									size++;
 									if(((Condition)post).isMarked())
 										tokens++;
@@ -652,7 +652,7 @@ public class SimulationAlg extends RelationAlgorithm {
 									//structure such that condition fin has more than one high-level states
 									int tokens = 0;
 									for(Node post : net.getPostset(ini)){
-										if(post instanceof Condition && net.getSONConnectionType(post, ini) == "BHVLINE")
+										if(post instanceof Condition && net.getSONConnectionType(post, ini) == Semantics.BHVLINE)
 											if(((Condition)post).isMarked())
 												tokens++;
 									}
@@ -672,7 +672,7 @@ public class SimulationAlg extends RelationAlgorithm {
 								int tokens = 0;
 								int size = 0;
 								for(Node post : net.getPostset(fin)){
-									if(post instanceof Condition && net.getSONConnectionType(post, fin)== "BHVLINE"){
+									if(post instanceof Condition && net.getSONConnectionType(post, fin)== Semantics.BHVLINE){
 										size++;
 										if(((Condition)post).isMarked())
 											tokens++;

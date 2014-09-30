@@ -28,16 +28,6 @@ public class SONConnection extends MathConnection{
 			}
 			return choice;
 		}
-
-		public String toString() {
-			switch (this) {
-			case PNLINE: return "POLYLINE";
-			case SYNCLINE: return "SYNCLINE";
-			case ASYNLINE: return "ASYNLINE";
-			case BHVLINE: return "BHVLINE";
-			default: return "";
-			}
-		}
 	};
 
 	private Semantics semantics;
@@ -46,7 +36,7 @@ public class SONConnection extends MathConnection{
 	}
 
 	public SONConnection(MathNode first, MathNode second, Semantics semantics) {
-		super();
+		super(first, second);
 		this.setSemantics(semantics);
 	}
 

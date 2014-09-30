@@ -44,8 +44,8 @@ public class SON extends AbstractMathModel {
 				if (node instanceof ChannelPlace) return "q";
 				if (node instanceof Block) return "b";
 				if (node instanceof SONConnection) return "con";
-				if (node instanceof ONGroup) return "group";
-				if (node instanceof PageNode) return "page";
+				if (node instanceof ONGroup) return "g";
+				if (node instanceof PageNode) return "p";
 				return super.getPrefix(node);
 			}
 		});
@@ -60,19 +60,9 @@ public class SON extends AbstractMathModel {
 	}
 
 	public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
-		/*if (first instanceof Condition && second instanceof Condition)
-			throw new InvalidConnectionException ("Connections between places are not valid");
-		*/
 		if (this.getSONConnection(first, second) != null){
-			System.out.println("first "+ this.getName(first) + " second " + this.getName(second));
 			throw new InvalidConnectionException ("Duplicate Connections");
 		}
-		if (first instanceof Event && second instanceof Event)
-			throw new InvalidConnectionException ("Connections between transitions are not valid");
-		if (first instanceof ChannelPlace && second instanceof ChannelPlace)
-			throw new InvalidConnectionException ("Connections between channel places are not valid");
-		if ((first instanceof ChannelPlace && second instanceof Condition) || (first instanceof Condition && second instanceof ChannelPlace))
-			throw new InvalidConnectionException ("Connections between channel place and condition are not valid");
 
 		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
 		Hierarchy.getNearestContainer(first, second).add(con);
@@ -228,6 +218,7 @@ public class SON extends AbstractMathModel {
 		for (Connection con : this.getConnections(node))
 			if(con instanceof SONConnection)
 				result.add((SONConnection)con);
+
 		return result;
 	}
 
@@ -267,53 +258,52 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getSONConnectionTypes (Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : getSONConnections(node)){
-			result.add(con.getSemantics().toString());
+			result.add(con.getSemantics());
 		}
 
 		return result;
 	}
 
-	public Collection<String> getSONConnectionTypes (Collection<Node> nodes){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getSONConnectionTypes (Collection<Node> nodes){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for(Node node : nodes){
 			for (SONConnection con : getSONConnections(node)){
 				if (nodes.contains(con.getFirst()) && nodes.contains(con.getSecond()))
-					result.add(con.getSemantics().toString());
+					result.add(con.getSemantics());
 			}
 		}
 		return result;
 	}
 
-	public String getSONConnectionType (Node first, Node second){
-		SONConnection sonConnection = getSONConnection(first, second);
-		return sonConnection.getSemantics().toString();
+	public Semantics getSONConnectionType (Node first, Node second){
+		SONConnection con = getSONConnection(first, second);
+		return con.getSemantics();
 	}
 
-	public Collection<String> getInputSONConnectionTypes(Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getInputSONConnectionTypes(Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)
 				if (con.getSecond() == node)
-					result.add(con.getSemantics().toString());
+					result.add(con.getSemantics());
 		}
 		return result;
 	}
 
-	public Collection<String> getOutputSONConnectionTypes(Node node){
-		Collection<String> result =  new HashSet<String>();
+	public Collection<Semantics> getOutputSONConnectionTypes(Node node){
+		Collection<Semantics> result =  new HashSet<Semantics>();
 		for (SONConnection con : this.getSONConnections(node)){
 			if (node instanceof MathNode)
 				if (con.getFirst() == node)
-					result.add(con.getSemantics().toString());
+					result.add(con.getSemantics());
 		}
 		return result;
 	}
 
 	//Group Methods
-
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
@@ -321,12 +311,12 @@ public class SON extends AbstractMathModel {
 	public Collection<TransitionNode> getEventNodes(){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
-				if(node instanceof Block){
-					if(((Block)node).getIsCollapsed())
-						result.add(node);
-				}
-				if(node instanceof Event)
+			if(node instanceof Block){
+				if(((Block)node).getIsCollapsed())
 					result.add(node);
+			}
+			if(node instanceof Event)
+				result.add(node);
 		}
 		return result;
 	}

@@ -32,7 +32,6 @@ import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
-import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.util.Hierarchy;
 
 
@@ -42,7 +41,6 @@ import org.workcraft.util.Hierarchy;
 public class VisualSON extends AbstractVisualModel{
 
 	private String group="Invalid Group Selection";
-	private String superGroup="Invalid Super Group Selection";
 	private String block="Invalid Block Selection";
 	private String blockConnection="Block Connection Error";
 	private SON net;
@@ -72,9 +70,9 @@ public class VisualSON extends AbstractVisualModel{
 	public void validateConnection (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
 		if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (semantics == Semantics.PNLINE))
 			throw new InvalidConnectionException ("Connections between conditions are not valid(PN Connection)");
-		if (first instanceof VisualEvent && second instanceof VisualEvent)
+		if ((first instanceof VisualEvent) && (second instanceof VisualEvent))
 			throw new InvalidConnectionException ("Connections between events are not valid (PN Connection)");
-		if (second instanceof VisualSONConnection || first instanceof VisualSONConnection)
+		if ((second instanceof VisualSONConnection) || (first instanceof VisualSONConnection))
 			throw new InvalidConnectionException ("Invalid connection (Connection)");
 
 		//asyn type
@@ -83,14 +81,14 @@ public class VisualSON extends AbstractVisualModel{
 			throw new InvalidConnectionException ("Invalid connection (A/Syn Communication)");
 		}
 		//Group
-		if (first instanceof VisualChannelPlace && !isGrouped(second))
+		if ((first instanceof VisualChannelPlace) && !isGrouped(second))
 			throw new InvalidConnectionException ("Connections between channel places and un-grouped nodes are not valid (Group)");
-		if (second instanceof VisualChannelPlace && !isGrouped(first))
+		if ((second instanceof VisualChannelPlace) && !isGrouped(first))
 			throw new InvalidConnectionException ("Connections between channel places and un-grouped nodes are not valid (Group)");
-		if (first instanceof VisualChannelPlace && second instanceof VisualChannelPlace)
+		if ((first instanceof VisualChannelPlace) && (second instanceof VisualChannelPlace))
 			throw new InvalidConnectionException ("Connections between channel places are not valid (A/Syn Communication)");
-		if ((first instanceof VisualChannelPlace && second instanceof VisualCondition)
-				|| (first instanceof VisualCondition && second instanceof VisualChannelPlace))
+		if (((first instanceof VisualChannelPlace) && (second instanceof VisualCondition))
+				|| ((first instanceof VisualCondition) && (second instanceof VisualChannelPlace)))
 			throw new InvalidConnectionException ("Connections between channel place and condition are not valid (A/Syn Communication)");
 
 		if(isGrouped(first) && isGrouped(second) && !isInSameGroup(first, second)  &&
@@ -103,7 +101,7 @@ public class VisualSON extends AbstractVisualModel{
 
 		//Bhv Type
 		if (semantics == Semantics.BHVLINE) {
-			if (first instanceof VisualEvent || second instanceof VisualEvent)
+			if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
 				throw new InvalidConnectionException ("Connections between non-conditions are not valid (Behavioural Abstraction)");
 			if (!isGrouped(first) || !isGrouped(second) )
 				throw new InvalidConnectionException ("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
@@ -130,10 +128,10 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		//block
-		if(first instanceof VisualEvent && isInBlock(second))
+		if((first instanceof VisualEvent) && isInBlock(second))
 			throw new InvalidConnectionException ("Block inputs must be conditions (Block)");
 
-		if(second instanceof VisualEvent && isInBlock(first))
+		if((second instanceof VisualEvent) && isInBlock(first))
 			throw new InvalidConnectionException ("Block outputs must be conditions (Block)");
 	}
 
@@ -245,7 +243,7 @@ public class VisualSON extends AbstractVisualModel{
 	}
 
 	private boolean isPure (Collection<Node> nodes) {
-		for (VisualSONConnection connect : getVisualConnections()){
+		for (VisualSONConnection connect : getVisualSONConnections()){
 			if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
 				&& ! nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
 			return false;
@@ -325,7 +323,7 @@ public class VisualSON extends AbstractVisualModel{
 		}
 	}
 
-	public void superGroupSelection(){
+/*	public void superGroupSelection(){
 		ArrayList<Node> selected = new ArrayList<Node>();
 		for(Node node : getOrderedCurrentLevelSelection()) {
 			if(node instanceof VisualTransformableNode){
@@ -367,7 +365,7 @@ public class VisualSON extends AbstractVisualModel{
 			}
 
 		}
-	}
+	}*/
 
 	//Block
 	public void groupBlockSelection() {
@@ -446,7 +444,7 @@ public class VisualSON extends AbstractVisualModel{
 		int errorType = 0;
 
 		for(Node node : getOrderedCurrentLevelSelection()){
-			if((node instanceof VisualCondition || node instanceof VisualEvent)) {
+			if((node instanceof VisualCondition) || (node instanceof VisualEvent)) {
 				if(relationAlg.isFinal(((VisualComponent)node).getReferencedComponent())
 						|| relationAlg.isInitial(((VisualComponent)node).getReferencedComponent()))
 					errorType = 1;
@@ -475,7 +473,7 @@ public class VisualSON extends AbstractVisualModel{
 			return result;
 			}
 
-		for (VisualSONConnection connect : getVisualConnections()){
+		for (VisualSONConnection connect : getVisualSONConnections()){
 			if(connect.getReferencedSONConnection().getSemantics() == Semantics.PNLINE){
 				if(result.contains(connect.getFirst()) && !result.contains(connect.getSecond())){
 					if(connect.getSecond() instanceof VisualEvent)
@@ -543,7 +541,7 @@ public class VisualSON extends AbstractVisualModel{
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class);
 	}
 
-	public Collection<VisualSONConnection> getVisualConnections()
+	public Collection<VisualSONConnection> getVisualSONConnections()
 	{
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualSONConnection.class);
 	}
@@ -562,7 +560,7 @@ public class VisualSON extends AbstractVisualModel{
 	{
 		//input value
 		ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
-		for (VisualSONConnection con : this.getVisualConnections()){
+		for (VisualSONConnection con : this.getVisualSONConnections()){
 			if (con.getFirst() == node)
 				result.add(con);
 			if (con.getSecond() == node)
@@ -574,7 +572,7 @@ public class VisualSON extends AbstractVisualModel{
 	public Collection<VisualSONConnection> getVisualConnections(VisualComponent first, VisualComponent second)
 	{
 		ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
-		for (VisualSONConnection con : this.getVisualConnections()){
+		for (VisualSONConnection con : this.getVisualSONConnections()){
 			if (con.getFirst() == first && con.getSecond() == second)
 				result.add(con);
 		}
@@ -592,7 +590,7 @@ public class VisualSON extends AbstractVisualModel{
 		for(VisualBlock vBlock : this.getVisualBlocks()){
 			if(vBlock.getIsCollapsed()){
 				 Collection<VisualComponent> components = vBlock.getComponents();
-				 for(VisualSONConnection con : this.getVisualConnections()){
+				 for(VisualSONConnection con : this.getVisualSONConnections()){
 					 Node first = con.getFirst();
 					 Node second = con.getSecond();
 					 if(!components.contains(first) && components.contains(second)){
@@ -685,20 +683,20 @@ public class VisualSON extends AbstractVisualModel{
 	 * reconnect from block bounding to its inside
 	 */
 	public void blockConnectionChecker(){
-		ArrayList<String> incompatible = new ArrayList<String>();
+		ArrayList<String> compatibility = new ArrayList<String>();
 		for(VisualPlaceNode p : getVisualPlaceNode()){
 			if(p.getInterface() != ""){
 				String[] infos = p.getInterface().trim().split(";");
 				//interface information checking
 				ArrayList<VisualSONConnection> connections = new ArrayList<VisualSONConnection>();
-				for(VisualSONConnection con : this.getVisualConnections()){
-					if(con.getFirst()==p && con.getSecond() instanceof VisualBlock)
+				for(VisualSONConnection con : this.getVisualSONConnections()){
+					if(con.getFirst()==p && (con.getSecond() instanceof VisualBlock))
 						connections.add(con);
-					if(con.getSecond()==p && con.getFirst() instanceof VisualBlock)
+					if(con.getSecond()==p && (con.getFirst() instanceof VisualBlock))
 						connections.add(con);
 				}
 				if(connections.size() != infos.length)
-					incompatible.add(net.getNodeReference(p.getMathPlaceNode()));
+					compatibility.add(net.getNodeReference(p.getMathPlaceNode()));
 
 				for(VisualSONConnection con :connections){
 					//remove visual connection
@@ -722,7 +720,7 @@ public class VisualSON extends AbstractVisualModel{
 					//c is an input
 					if(piece[0].equals("to") && e!=null){
 						try {
-							if(piece[2].equals("POLYLINE"))
+							if(piece[2].equals("PNLINE"))
 								this.connect(p, e, Semantics.PNLINE);
 							else if(piece[2].equals("SYNCLINE"))
 								this.connect(p, e, Semantics.SYNCLINE);
@@ -738,7 +736,7 @@ public class VisualSON extends AbstractVisualModel{
 						//c is an output
 					}else if(piece[0].equals("from") && e!=null){
 						try {
-							if(piece[2].equals("POLYLINE"))
+							if(piece[2].equals("PNLINE"))
 								this.connect(e, p, Semantics.PNLINE);
 							else if(piece[2].equals("SYNCLINE"))
 								this.connect(e, p, Semantics.SYNCLINE);
@@ -755,9 +753,9 @@ public class VisualSON extends AbstractVisualModel{
 				p.setInterface("");
 			}
 		}
-		if(!incompatible.isEmpty()){
+		if(!compatibility.isEmpty()){
 			JOptionPane.showMessageDialog(null, "Incompatible connections. Error may due to lost block information, " +
-					"reconnect block components again)"+ incompatible.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
+					"reconnect block components again)"+ compatibility.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
 		}
 		beforeConToBlock();
 	}

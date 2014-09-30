@@ -52,9 +52,17 @@ public class VisualSONConnection extends VisualConnection {
 	@Override
 	public double getArrowWidth() {
 		if (getSemantics() == Semantics.ASYNLINE) {
-			return 0.5;
+			return 0.3;
 		}
 		return super.getArrowWidth();
+	}
+
+	@Override
+	public double getArrowLength() {
+		if (getSemantics() == Semantics.ASYNLINE) {
+			return 0.7;
+		}
+		return super.getArrowLength();
 	}
 
 	@Override

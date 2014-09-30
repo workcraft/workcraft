@@ -28,6 +28,7 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/son-block.svg")
 public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private Block mathBlock;
+	private static final float strokeWidth = 0.06f;
 
 	public VisualBlock(Block refNode) {
 		super(refNode);
@@ -58,8 +59,10 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 			//	g.setBackground(new Color(190, 230, 240));
 				g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				//float[] pattern = {0.2f, 0.2f};
+				//g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
+						3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
 				g.draw(bb);
 
 				drawFault(r);
@@ -74,8 +77,10 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 				g.setColor(Coloriser.colorise(getFillColor(), colorisation));
 				g.fill(bb);
 				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-				float[] pattern = {0.2f, 0.2f};
-				g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				//float[] pattern = {0.2f, 0.2f};
+				//g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
+						3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
 
 				g.draw(bb);
 				drawNameInLocalSpace(r);

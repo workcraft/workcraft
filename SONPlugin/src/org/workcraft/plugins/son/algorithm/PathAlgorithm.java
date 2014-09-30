@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SONModel;
+import org.workcraft.plugins.son.SON;
 
 public class PathAlgorithm{
 
-	protected SONModel net;
+	protected SON net;
 	protected RelationAlgorithm relationAlg;
 
 	protected Collection<Node> history;
@@ -18,7 +18,7 @@ public class PathAlgorithm{
 	protected Collection<ArrayList<Node>> cycleResult;
 
 
-	public PathAlgorithm(SONModel net){
+	public PathAlgorithm(SON net){
 		this.net = net;
 		relationAlg = new RelationAlgorithm(net);
 		history = new ArrayList<Node>();

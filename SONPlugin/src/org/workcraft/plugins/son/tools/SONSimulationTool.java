@@ -67,6 +67,7 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -502,7 +503,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		for(ONGroup group : net.getGroups()){
 			boolean hasBhvLine = false;
 			for(Condition c : group.getConditions())
-				if(net.getSONConnectionTypes(c).contains("BHVLINE"))
+				if(net.getSONConnectionTypes(c).contains(Semantics.BHVLINE))
 					hasBhvLine = true;
 			if(!hasBhvLine){
 				for(Node c : relationAlg.getInitial(group.getComponents())){
