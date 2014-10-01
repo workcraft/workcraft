@@ -116,13 +116,13 @@ public class CircuitModule implements Module {
 	private void initCompatibilityManager(final Framework framework) {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
-		cm.registerEntryReplacement(VisualCircuit.class.getName(),
-				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" name=\"renderType\" value=\"C_ELEMENT\"/>",
-				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" name=\"renderType\" value=\"GATE\"/>");
+		cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",
+				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"C_ELEMENT\"/>",
+				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"GATE\"/>");
 
-		cm.registerEntryReplacement(VisualCircuit.class.getName(),
-				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" name=\"renderType\" value=\"BUFFER\"/>",
-				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult$RenderType\" name=\"renderType\" value=\"GATE\"/>");
+		cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",
+				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"BUFFER\"/>",
+				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"GATE\"/>");
 	}
 
 }
