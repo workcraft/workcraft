@@ -28,9 +28,9 @@ public class SONConnection extends MathConnection{
 			}
 			return choice;
 		}
-	};
+	}
 
-	private Semantics semantics;
+	private Semantics semantics = Semantics.PNLINE;
 
 	public SONConnection(){
 	}
