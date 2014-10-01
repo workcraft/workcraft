@@ -13,17 +13,17 @@ public class PathAlgorithm{
 	protected SON net;
 	protected RelationAlgorithm relationAlg;
 
-	protected Collection<Node> history;
-	protected Collection<ArrayList<Node>> pathResult;
-	protected Collection<ArrayList<Node>> cycleResult;
+	private Collection<Node> history;
+	protected Collection<Path> pathResult;
+	protected Collection<Path> cycleResult;
 
 
 	public PathAlgorithm(SON net){
 		this.net = net;
 		relationAlg = new RelationAlgorithm(net);
-		history = new ArrayList<Node>();
-		pathResult =new  HashSet<ArrayList<Node>>();
-		cycleResult = new HashSet<ArrayList<Node>>();
+		history = new Path();
+		pathResult =new  HashSet<Path>();
+		cycleResult = new HashSet<Path>();
 	}
 
 	public List<Node[]> createAdj(Collection<Node> nodes){
@@ -42,12 +42,34 @@ public class PathAlgorithm{
 		return result;
 	}
 
+	public static Collection<Path> getCycles(Node s, Node v, List<Node[]> adj, Path history, Collection<Path> result){
+		history.add(s);
+		for (int i=0; i< adj.size(); i++){
+			if (((Node)adj.get(i)[0]).equals(s)){
+				if(!history.contains((Node)adj.get(i)[1])){
+					getCycles((Node)adj.get(i)[1], v, adj, history, result);
+				}
+				else {
+					Path cycle=new Path();
+					cycle.addAll(history);
+					int n=cycle.indexOf(((Node)adj.get(i)[1]));
+					for (int m = 0; m < n; m++ ){
+						cycle.remove(0);
+					}
+					result.add(cycle);
+				}
+			}
+		}
+		history.remove(s);
+		return result;
+	}
+
 	public void getAllPath(Node s, Node v, List<Node[]> adj){
 
 		history.add(s);
 
 		if(s == v){
-			ArrayList<Node> path = new ArrayList<Node>();
+			Path path = new Path();
 			path.add(s);
 			pathResult.add(path);
 		}
@@ -55,7 +77,7 @@ public class PathAlgorithm{
 		for (int i=0; i< adj.size(); i++){
 			if (((Node)adj.get(i)[0]).equals(s)){
 				if(((Node)adj.get(i)[1]).equals(v)){
-					ArrayList<Node> path= new ArrayList<Node>();
+					Path path= new Path();
 
 					path.addAll(history);
 					path.add(v);
@@ -66,7 +88,7 @@ public class PathAlgorithm{
 					getAllPath((Node)adj.get(i)[1], v, adj);
 				}
 				else {
-					ArrayList<Node> cycle=new ArrayList<Node>();
+					Path cycle=new Path();
 
 						cycle.addAll(history);
 						int n=cycle.indexOf(((Node)adj.get(i)[1]));
@@ -80,8 +102,7 @@ public class PathAlgorithm{
 		history.remove(s);
 	}
 
-	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
-
+	public Collection<Path> cycleTask (Collection<Node> nodes){
 		this.clearAll();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
@@ -90,8 +111,7 @@ public class PathAlgorithm{
 		 return cycleResult;
 	}
 
-	public Collection<ArrayList<Node>> pathTask (Collection<Node> nodes){
-
+	public Collection<Path> pathTask (Collection<Node> nodes){
 		this.clearAll();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
@@ -105,7 +125,7 @@ public class PathAlgorithm{
 		pathResult.clear();
 	}
 
-	public Collection<ArrayList<Node>> getPathSet(){
+	public Collection<Path> getPathSet(){
 		return this.pathResult;
 	}
 
@@ -129,7 +149,7 @@ public class PathAlgorithm{
 		return result;
 	}
 
-	public Collection<ArrayList<Node>> backwardCycleTask (Collection<Node> nodes){
+	public Collection<Path> backwardCycleTask (Collection<Node> nodes){
 
 		this.clearAll();
 		for(Node start : relationAlg.getFinal(nodes))
@@ -139,7 +159,7 @@ public class PathAlgorithm{
 		 return cycleResult;
 	}
 
-	public Collection<ArrayList<Node>> backwardPathTask (Collection<Node> nodes){
+	public Collection<Path> backwardPathTask (Collection<Node> nodes){
 		this.clearAll();
 		for(Node start : relationAlg.getFinal(nodes))
 			for(Node end : relationAlg.getInitial(nodes))

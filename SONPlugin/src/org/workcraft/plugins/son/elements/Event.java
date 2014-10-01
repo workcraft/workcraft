@@ -15,38 +15,46 @@ public class Event extends MathNode implements TransitionNode{
 	private String label="";
 	private Boolean faulty = false;
 
+	@Override
 	public void setLabel(String label){
 		this.label=label;
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
+	@Override
 	public String getLabel(){
 		return label;
 	}
 
+	@Override
 	public Color getForegroundColor() {
 		return foregroundColor;
 	}
 
+	@Override
 	public void setFaulty(boolean fault){
 		this.faulty = fault;
 		sendNotification( new PropertyChangedEvent(this, "fault") );
 	}
 
+	@Override
 	public boolean isFaulty(){
 		return faulty;
 	}
 
+	@Override
 	public void setForegroundColor(Color foregroundColor) {
 		this.foregroundColor = foregroundColor;
 		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
 	}
 
+	@Override
 	public void setFillColor (Color fillColor){
 		this.fillColor = fillColor;
 		sendNotification(new PropertyChangedEvent(this, "fillColor"));
 	}
 
+	@Override
 	public Color getFillColor() {
 		return fillColor;
 	}

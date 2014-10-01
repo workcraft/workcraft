@@ -49,7 +49,7 @@ public class BSONPathAlg extends PathAlgorithm{
 	}
 
 	@Override
-	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
+	public Collection<Path> cycleTask (Collection<Node> nodes){
 
 		this.clearAll();
 		for(Node start : relationAlg.getInitial(nodes))
@@ -60,9 +60,9 @@ public class BSONPathAlg extends PathAlgorithm{
 		 return cyclePathFilter(cycleResult);
 	}
 
-	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> result){
-		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
-		for(ArrayList<Node> cycle : result){
+	private Collection<Path> cyclePathFilter(Collection<Path> result){
+		List<Path> delList = new ArrayList<Path>();
+		for(Path cycle : result){
 			int outputBhvLine = 0;
 			int inputBhvLine = 0;
 			if(!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE))

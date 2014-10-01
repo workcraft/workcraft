@@ -60,7 +60,7 @@ public class BSONAlg extends RelationAlgorithm{
 	public Collection<Condition> getPhase(Condition c){
 		Collection<Condition> result = new HashSet<Condition>();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
-		Collection<ArrayList<Node>> paths = null;
+		Collection<Path> paths = null;
 		PathAlgorithm alg = new PathAlgorithm(net);
 
 		for(SONConnection con : net.getSONConnections()){
@@ -75,7 +75,7 @@ public class BSONAlg extends RelationAlgorithm{
 						alg.getAllPath(start, end, alg.createAdj(this.getBhvGroup(connectedNodes).getComponents()));
 			paths = alg.getPathSet();
 
-			for(ArrayList<Node> path : paths){
+			for(Path path : paths){
 				for(Node n : path)
 					if(n instanceof Condition)
 						result.add((Condition)n);

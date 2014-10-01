@@ -57,20 +57,24 @@ public class Block extends PageNode implements TransitionNode{
 		return false;
 	}
 
+	@Override
 	public void setForegroundColor(Color color){
 		this.foregroundColor = color;
 		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
 	}
 
+	@Override
 	public Color getForegroundColor(){
 		return foregroundColor;
 	}
 
+	@Override
 	public void setFillColor(Color color){
 		this.fillColor = color;
 		sendNotification(new PropertyChangedEvent(this, "fill color"));
 	}
 
+	@Override
 	public Color getFillColor(){
 		return fillColor;
 	}
@@ -79,13 +83,19 @@ public class Block extends PageNode implements TransitionNode{
 		return isCollapsed;
 	}
 
+	@Override
 	public void setLabel(String label){
 		this.label = label;
 		sendNotification(new PropertyChangedEvent(this, "label"));
 	}
 
+	@Override
 	public String getLabel(){
 		return label;
+	}
+
+	@Override
+	public void setFaulty(boolean fault) {
 	}
 
 }
