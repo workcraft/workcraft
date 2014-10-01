@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -253,9 +254,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
 		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
-		PathAlgorithm alg = new PathAlgorithm(net);
+		ONPathAlg alg = new ONPathAlg(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
-		Collection<ArrayList<Node>> paths = alg.pathTask(bhvGroup.getComponents());
+		Collection<Path> paths = alg.pathTask(bhvGroup.getComponents());
 
 		for(ArrayList<Node> path : paths){
 			int minNodeInPath = 0;

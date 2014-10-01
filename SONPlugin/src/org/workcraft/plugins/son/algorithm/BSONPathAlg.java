@@ -9,7 +9,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
-public class BSONPathAlg extends PathAlgorithm{
+public class BSONPathAlg extends ONPathAlg{
 
 	private SON net;
 	private BSONAlg bsonAlg;
@@ -50,14 +50,13 @@ public class BSONPathAlg extends PathAlgorithm{
 
 	@Override
 	public Collection<Path> cycleTask (Collection<Node> nodes){
-
-		this.clearAll();
+		Collection<Path> result = new ArrayList<Path>();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
-				getAllPath(start, end, createAdj(nodes));
+				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
 
 
-		 return cyclePathFilter(cycleResult);
+		 return cyclePathFilter(result);
 	}
 
 	private Collection<Path> cyclePathFilter(Collection<Path> result){

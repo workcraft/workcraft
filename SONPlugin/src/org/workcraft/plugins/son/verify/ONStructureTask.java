@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -47,7 +48,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : groups){
 
 		Collection<Node> task1, task2, task3, task4;
-		Collection<ArrayList<Node>> cycleResult, backwardCycleResult;
+		Collection<Path> cycleResult, backwardCycleResult;
 
 		//group info
 			logger.info("Initialising group components...");
@@ -121,7 +122,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 			cycleResult = getPathAlg().cycleTask(groupComponents);
 
-			backwardCycleResult = new ArrayList<ArrayList<Node>>();
+			backwardCycleResult = new ArrayList<Path>();
 			backwardCycleResult.addAll(getPathAlg().backwardCycleTask(groupComponents));
 
 			cycleErrors.addAll(cycleResult);
