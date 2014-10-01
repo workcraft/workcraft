@@ -15,61 +15,103 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class CompatibilityManager {
-	private static final Pattern modelNamePattern = Pattern.compile("<model class=\"\\s*(.+?)\\s*\" ref=\"\">");
+	private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
+	private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
 	@SuppressWarnings("serial")
 	private class CompatibilityMap extends HashMap<String, String> { };
 
-	private final CompatibilityMap modelReplacementMap = new CompatibilityMap();
-	private final Map<String, CompatibilityMap> entryReplacementMap = new HashMap<String, CompatibilityMap>();
+	private final CompatibilityMap modelCompatibilityMap = new CompatibilityMap();
+	private final HashMap<String, CompatibilityMap> globalReplacementMap = new HashMap<String, CompatibilityMap>();
+	private final HashMap<String, HashMap<String, CompatibilityMap>> contextualReplacementMap = new HashMap<String, HashMap<String, CompatibilityMap>>();
 
 	public void registerModelReplacement(String oldModelName, String modelName) {
-		modelReplacementMap.put(oldModelName, modelName);
+		modelCompatibilityMap.put(oldModelName, modelName);
 	}
 
-	public void registerEntryReplacement(String modelName, String oldEntry, String entry) {
-		CompatibilityMap replacementMap = entryReplacementMap.get(modelName);
+	public void registerGlobalReplacement(String modelName, String pattern, String replacement) {
+		CompatibilityMap replacementMap = globalReplacementMap.get(modelName);
 		if (replacementMap == null) {
 			replacementMap = new CompatibilityMap();
-			entryReplacementMap.put(modelName, replacementMap);
+			globalReplacementMap.put(modelName, replacementMap);
 		}
-		replacementMap.put(oldEntry, entry);
+		replacementMap.put(pattern, replacement);
+	}
+
+	public void registerContextualReplacement(String modelName, String className, String pattern, String replacement) {
+		HashMap<String, CompatibilityMap> contextualMap = contextualReplacementMap.get(modelName);
+		if (contextualMap == null) {
+			contextualMap = new HashMap<String, CompatibilityMap>();
+			contextualReplacementMap.put(modelName, contextualMap);
+		}
+		CompatibilityMap replacementMap = contextualMap.get(className);
+		if (replacementMap == null) {
+			replacementMap = new CompatibilityMap();
+			contextualMap.put(className, replacementMap);
+		}
+		replacementMap.put(pattern, replacement);
 	}
 
 	private String replace(String line, Map.Entry<String, String> replacement, String message) {
-		if (line.contains(replacement.getKey())) {
-			if (message != null) {
-				System.out.println(message);
-				System.out.println("  old: " + replacement.getKey());
-				System.out.println("  new: " + replacement.getValue());
-			}
-			line = line.replace(replacement.getKey(), replacement.getValue());
+		String newline = line.replaceAll(replacement.getKey(), replacement.getValue());
+		if ((message != null) && !line.equals(newline)) {
+			System.out.println(message);
+			System.out.println("  old: " + replacement.getKey());
+			System.out.println("  new: " + replacement.getValue());
 		}
-		return line;
+		return newline;
 	}
 
-	private String processModelLine(String line) {
-		for (Map.Entry<String, String> replacement: modelReplacementMap.entrySet()) {
+	private String replaceModelName(String line) {
+		for (Map.Entry<String, String> replacement: modelCompatibilityMap.entrySet()) {
 			if (line.contains(replacement.getKey())) {
-				replace(line, replacement, "Compatibility management of legacy model class:");
+				replace(line, replacement, "Compatibility management: legacy model class");
 			}
 		}
 		return line;
 	}
 
-	private String processEntryLine(String modelName, String line) {
-		CompatibilityMap replacementMap = entryReplacementMap.get(modelName);
+	private String replaceGlobalEntry(String modelName, String line) {
+		CompatibilityMap replacementMap = globalReplacementMap.get(modelName);
 		if (replacementMap != null) {
 			for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
-				line = replace(line, replacement, "Compatibility management of legacy entry:");
+				line = replace(line, replacement, "Compatibility management: global replacement");
 			}
 		}
 		return line;
 	}
 
-	private String parseModelLine(String line) {
+	private String replaceContextualEntry(String modelName, String className, String line) {
+		HashMap<String, CompatibilityMap> contextualMap = contextualReplacementMap.get(modelName);
+		if (contextualMap != null) {
+			CompatibilityMap replacementMap = contextualMap.get(className);
+			if (replacementMap != null) {
+				for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
+					line = replace(line, replacement, "Compatibility management: contextual replacement for " + className);
+				}
+			}
+		}
+		return line;
+	}
+
+	private String replaceEntry(String modelName, String className, String line) {
+		line = replaceGlobalEntry(modelName, line);
+		line = replaceContextualEntry(modelName, className, line);
+		return line;
+	}
+
+	private String extractModelName(String line) {
 		String result = null;
 		Matcher matcher = modelNamePattern.matcher(line);
+		if (matcher.find()) {
+			result = matcher.group(1);
+		}
+		return result;
+	}
+
+	private String extractClassName(String line) {
+		String result = null;
+		Matcher matcher = classNamePattern.matcher(line);
 		if (matcher.find()) {
 			result = matcher.group(1);
 		}
@@ -87,14 +129,19 @@ public class CompatibilityManager {
 				ZipEntry zeo = new ZipEntry(zei);
 			    zos.putNextEntry(zeo);
 			    String modelName = null;
+			    String className = null;
 			    String line = null;
 			    while ((line = br.readLine()) != null) {
 			    	if (modelName == null) {
-			    		byte[] data = processModelLine(line).getBytes();
+			    		byte[] data = replaceModelName(line).getBytes();
 			    		zos.write(data, 0, data.length);
-			    		modelName = parseModelLine(line);
+			    		modelName = extractModelName(line);
 			    	} else {
-			    		byte[] data = processEntryLine(modelName, line).getBytes();
+			    		String s = extractClassName(line);
+			    		if (s != null) {
+			    			className = s;
+			    		}
+			    		byte[] data = replaceEntry(modelName, className, line).getBytes();
 			    		zos.write(data, 0, data.length);
 			    	}
 			    }
