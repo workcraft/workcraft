@@ -59,6 +59,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.Trace;
@@ -90,7 +91,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	private Collection<ONGroup> abstractGroups = new ArrayList<ONGroup>();
 	private Collection<ArrayList<Node>> syncSet = new ArrayList<ArrayList<Node>>();
-	private Map<Condition, Collection<Condition>> phases = new HashMap<Condition, Collection<Condition>>();
+	private Map<Condition, Phase> phases = new HashMap<Condition, Phase>();
 	protected Map<Node, Boolean>initialMarking = new HashMap<Node, Boolean>();
 
 	protected JPanel interfacePanel;

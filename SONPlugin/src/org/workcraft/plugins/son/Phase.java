@@ -1,5 +1,10 @@
 package org.workcraft.plugins.son;
 
-public class Phase {
+import java.util.ArrayList;
+
+import org.workcraft.plugins.son.elements.Condition;
+
+@SuppressWarnings("serial")
+public class Phase extends ArrayList<Condition>{
 
 }

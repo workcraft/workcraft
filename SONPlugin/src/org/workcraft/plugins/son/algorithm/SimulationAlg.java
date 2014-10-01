@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -24,8 +25,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	private Collection<Node> checkedEvents = new HashSet<Node>();
 
 	private Collection<Node> history;
-	private List<ArrayList<Node>> syncCycles;
-	private Collection<ArrayList<Node>> cycleResult;
+	private List<Path> syncCycles;
+	private Collection<Path> cycleResult;
 
 	private Collection<Node> minimalExeEvents = new HashSet<Node>();
 	private Collection<Node> minimalReverseExeEvents = new HashSet<Node>();
@@ -39,8 +40,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		super(net);
 		this.net = net;
 		history = new ArrayList<Node>();
-		syncCycles= new ArrayList<ArrayList<Node>>();
-		cycleResult = new HashSet<ArrayList<Node>>();
+		syncCycles= new ArrayList<Path>();
+		cycleResult = new HashSet<Path>();
 		bsonAlg = new BSONAlg(net);
 
 		abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
@@ -230,14 +231,14 @@ public class SimulationAlg extends RelationAlgorithm {
 					getAllPath((Node)adj.get(i)[1], end, adj);
 				}
 				else {
-					ArrayList<Node> cycle=new ArrayList<Node>();
+					Path cycle=new Path();
 
-						cycle.addAll(history);
-						int n=cycle.indexOf(((Node)adj.get(i)[1]));
-						for (int m = 0; m < n; m++ ){
-							cycle.remove(0);
-						}
-						cycleResult.add(cycle);
+					cycle.addAll(history);
+					int n=cycle.indexOf(((Node)adj.get(i)[1]));
+					for (int m = 0; m < n; m++ ){
+						cycle.remove(0);
+					}
+					cycleResult.add(cycle);
 				}
 			}
 		}
@@ -247,10 +248,10 @@ public class SimulationAlg extends RelationAlgorithm {
 	/**
 	 * get synchronous cycle for a set of node.
 	 */
-	public Collection<ArrayList<Node>> getSyncCycles(Collection<Node> nodes){
+	public Collection<Path> getSyncCycles(Collection<Node> nodes){
 
-		List<ArrayList<Node>> subResult = new ArrayList<ArrayList<Node>>();
-		Collection<ArrayList<Node>> result = new ArrayList<ArrayList<Node>>();
+		List<Path> subResult = new ArrayList<Path>();
+		Collection<Path> result = new ArrayList<Path>();
 
 		this.clearAll();
 
@@ -259,13 +260,13 @@ public class SimulationAlg extends RelationAlgorithm {
 				getAllPath(start, end, createAdj(nodes));
 
 		if(!cycleResult.isEmpty()){
-			for(ArrayList<Node> cycle : cycleResult){
+			for(Path path : cycleResult){
 				boolean hasCondition = false;
-				for(Node n : cycle)
+				for(Node n : path)
 					if(n instanceof Condition)
 						hasCondition = true;
 				if(!hasCondition)
-					subResult.add(cycle);
+					subResult.add(path);
 			}
 
 			getLongestCycle(subResult);
@@ -273,7 +274,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(ArrayList<Node> list : getLongestCycle(subResult)){
 				HashSet<Node> filter = new HashSet<Node>();
 				filter.addAll(list);
-				ArrayList<Node> cycle = new ArrayList<Node>();
+				Path cycle = new Path();
 				cycle.addAll(filter);
 				result.add(cycle);
 			}
@@ -281,7 +282,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
-	private List<ArrayList<Node>> getLongestCycle(List<ArrayList<Node>> cycles){
+	private List<Path> getLongestCycle(List<Path> cycles){
 
 		if(syncCycles.isEmpty())
 			syncCycles.add(cycles.get(0));
@@ -289,7 +290,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			boolean hasMerged = false;
 			int i = syncCycles.size()-1;
 			Collection<Node> merge = new HashSet<Node>();
-			ArrayList<Node> cycle = new ArrayList<Node>();
+			Path cycle = new Path();
 
 
 		for(int j=0; j < cycles.size(); j++){
@@ -345,7 +346,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isSyncEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+	private boolean isSyncEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
 		for(ArrayList<Node> cycle : sync){
@@ -371,7 +372,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isAsynEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+	private boolean isAsynEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
 
 		for (Node n : net.getPreset(e)){
 			if(n instanceof ChannelPlace)
@@ -387,12 +388,12 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isBhvEnabled(TransitionNode e, Map<Condition, Collection<Condition>> phases){
+	private boolean isBhvEnabled(TransitionNode e, Map<Condition, Phase> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e))
 					if(pre instanceof Condition){
-						Collection<Condition> phase = phases.get((Condition)pre);
+						Phase phase = phases.get((Condition)pre);
 						for(Condition max : bsonAlg.getMaximalPhase(phase))
 							if(!max.isMarked())
 								return false;
@@ -417,7 +418,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	final public boolean isEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+	final public boolean isEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
 		checkedEvents.clear();
 		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases) && this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
 			return true;
@@ -460,8 +461,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : abstractGroups){
 			if(group.getEvents().contains(e)){
-				Collection<Condition> preMax = new HashSet<Condition>();
-				Collection<Condition> postMin = new HashSet<Condition>();
+				Phase preMax = new Phase();
+				Phase postMin = new Phase();
 				for(Node pre : getPrePNSet(e))
 					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
 				for(Node post : getPostPNSet(e))
@@ -516,7 +517,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	//reverse simulation
 
-	final public boolean isUnfireEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases) {
+	final public boolean isUnfireEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases) {
 		checkedEvents.clear();
 		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync, phases) && this.isAsynUnEnabled(e, sync, phases) && isBhvUnEnabled(e, phases))
 			return true;
@@ -535,7 +536,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isSyncUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+	private boolean isSyncUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
 		for(ArrayList<Node> cycle : sync){
@@ -560,7 +561,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isAsynUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Collection<Condition>> phases){
+	private boolean isAsynUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
 
 		for (Node n : net.getPostset(e)){
 			if(n instanceof ChannelPlace)
@@ -576,12 +577,12 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isBhvUnEnabled(TransitionNode e, Map<Condition, Collection<Condition>> phases){
+	private boolean isBhvUnEnabled(TransitionNode e, Map<Condition, Phase> phases){
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPostPNSet(e))
 					if(pre instanceof Condition){
-						Collection<Condition> phase = bsonAlg.getPhase((Condition)pre);
+						Phase phase = bsonAlg.getPhase((Condition)pre);
 						for(Condition min : bsonAlg.getMinimalPhase(phase))
 							if(!min.isMarked())
 								return false;
@@ -635,8 +636,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
 			for(ONGroup group : abstractGroups){
 				if(group.getEvents().contains(e)){
-					Collection<Condition> preMax = new HashSet<Condition>();
-					Collection<Condition> postMin = new HashSet<Condition>();
+					Phase preMax = new Phase();
+					Phase postMin = new Phase();
 					for(Node pre : getPrePNSet(e))
 						preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
 					for(Node post : getPostPNSet(e))

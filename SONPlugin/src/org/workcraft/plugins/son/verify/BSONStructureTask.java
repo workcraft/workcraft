@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.Path;
@@ -214,13 +215,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : abstractGroups)
 			for(Condition c : group.getConditions()){
 				if(getRelationAlg().getPrePNSet(c).isEmpty()){
-					Collection<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
+					Phase min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : min)
 						if(!getRelationAlg().isInitial(c2))
 							result.add(c);
 				}
 				if(getRelationAlg().getPostPNSet(c).isEmpty()){
-					Collection<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
+					Phase max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : max)
 						if(!getRelationAlg().isFinal(c2))
 							result.add(c);
@@ -250,9 +251,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	}
 
 	//task3: if min/max phase is a cut
-	private String phaseTask3(Collection<Condition> phase, Condition c){
-		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
-		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
+	private String phaseTask3(Phase phase, Condition c){
+		Phase minimal = getBSONAlg().getMinimalPhase(phase);
+		Phase maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
 		ONPathAlg alg = new ONPathAlg(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
@@ -300,8 +301,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		//Joint checking
 		Collection<Condition> preConditions = getRelationAlg().getPrePNCondition(c);
 		for(Condition pre : preConditions){
-			Collection<Condition> prePhase = getBSONAlg().getPhase(pre);
-			Collection<Condition> preMaximal = getBSONAlg().getMaximalPhase(prePhase);
+			Phase prePhase = getBSONAlg().getPhase(pre);
+			Phase preMaximal = getBSONAlg().getMaximalPhase(prePhase);
 			ONGroup preBhvGroup = getBSONAlg().getBhvGroup(prePhase);
 
 			if(!preMaximal.containsAll(minimal)){

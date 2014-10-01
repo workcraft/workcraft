@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -57,8 +58,8 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get phase of a given (high-level) condition
 	 */
-	public Collection<Condition> getPhase(Condition c){
-		Collection<Condition> result = new HashSet<Condition>();
+	public Phase getPhase(Condition c){
+		Phase result = new Phase();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
 		Collection<Path> paths = new ArrayList<Path>();
 		ONPathAlg alg = new ONPathAlg(net);
@@ -149,8 +150,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition> getMinimalPhase(Collection<Condition> phase){
-		Collection<Condition> result = new ArrayList<Condition>();
+	public Phase getMinimalPhase(Phase phase){
+		Phase result = new Phase();
 		for(Condition c : phase){
 			boolean isMinimal = true;
 			for(Condition pre : this.getPrePNCondition(c))
@@ -162,8 +163,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition> getMaximalPhase(Collection<Condition> phase){
-		Collection<Condition> result = new ArrayList<Condition>();
+	public Phase getMaximalPhase(Phase phase){
+		Phase result = new Phase();
 		for(Condition c : phase){
 			boolean isMaximal = true;
 			for(Condition pre : this.getPostPNCondition(c))
@@ -189,8 +190,8 @@ public class BSONAlg extends RelationAlgorithm{
 		for(Node node : this.getPostPNSet(e))
 			post[0] = (Condition)node;
 
-		Collection<Condition> phaseI = getPhase(pre[0]);
-		Collection<Condition> phaseI2 = getPhase(post[0]);
+		Phase phaseI = getPhase(pre[0]);
+		Phase phaseI2 = getPhase(post[0]);
 		if(phaseI.isEmpty() && phaseI2.isEmpty()){
 			//System.out.println(net.getNodeLabel(e)+"  is empty");
 			return result;
