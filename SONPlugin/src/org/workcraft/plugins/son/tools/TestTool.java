@@ -1,12 +1,15 @@
 package org.workcraft.plugins.son.tools;
 
 
+import java.util.HashSet;
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
@@ -42,10 +45,10 @@ public class TestTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-
+		syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
-		connectionTypeTest(net, vnet);
+		//connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
 		//conditionOutputTest(vnet);
@@ -60,6 +63,15 @@ public class TestTool implements Tool{
 
 	private void conditionOutputTest(VisualSON vnet){
 		vnet.connectToBlocks();
+	}
+
+	private void syncCycleTest(SON net){
+		SimulationAlg simuAlg = new SimulationAlg(net);
+		HashSet<Node> nodes = new HashSet<Node>();
+		nodes.addAll(net.getConditions());
+		nodes.addAll(net.getEventNodes());
+
+		simuAlg.getSyncCycles(nodes);
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){

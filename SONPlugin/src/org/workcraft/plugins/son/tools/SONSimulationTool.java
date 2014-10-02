@@ -66,6 +66,7 @@ import org.workcraft.plugins.son.Trace;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -90,7 +91,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	private ErrorTracingAlg	errAlg;
 
 	private Collection<ONGroup> abstractGroups = new ArrayList<ONGroup>();
-	private Collection<ArrayList<Node>> syncSet = new ArrayList<ArrayList<Node>>();
+	private Collection<Path> sync = new ArrayList<Path>();
 	private Map<Condition, Phase> phases = new HashMap<Condition, Phase>();
 	protected Map<Node, Boolean>initialMarking = new HashMap<Node, Boolean>();
 
@@ -353,12 +354,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			return;
 		}
 		try{
-			syncSet.addAll(getSyncCycles());
-			abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
-			for(ONGroup group : abstractGroups){
-				for(Condition c : group.getConditions())
-					phases.put(c, bsonAlg.getPhase(c));
-			}
+			sync = getSyncCycles();
+			phases = getPhases();
 		}catch(IndexOutOfBoundsException ex){
 			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
 					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
@@ -386,6 +383,24 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		if (visualNet == editor.getModel()) {
 			editor.getWorkspaceEntry().cancelMemento();
 		}
+	}
+
+	private Collection<Path> getSyncCycles(){
+		HashSet<Node> nodes = new HashSet<Node>();
+		nodes.addAll(net.getConditions());
+		nodes.addAll(net.getEventNodes());
+
+		return simuAlg.getSyncCycles(nodes);
+	}
+
+	private Map<Condition, Phase> getPhases(){
+		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
+		abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
+		for(ONGroup group : abstractGroups){
+			for(Condition c : group.getConditions())
+				result.put(c, bsonAlg.getPhase(c));
+		}
+		return result;
 	}
 
 	public void updateState(final GraphEditor editor) {
@@ -474,22 +489,25 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				if(c instanceof Condition){
 					result.put(c, true);
 					((Condition) c).setMarked(true);
-					Collection<ONGroup> bhvGroup = bsonAlg.getBhvGroups((Condition) c);
-					if(bhvGroup.size() == 1)
-						for(ONGroup group : bhvGroup){
-							//**********can optimize*************
-							Collection<Node> initial = relationAlg.getInitial(group.getComponents());
-							if(bsonAlg.getPhase((Condition)c).containsAll(initial))
-								for(Node c1 : relationAlg.getInitial(group.getComponents())){
+					Collection<ONGroup> bhvGroups = bsonAlg.getBhvGroups((Condition)c);
+					if(bhvGroups.size() == 1){
+						for(ONGroup bhvGroup : bhvGroups){
+							Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
+							if(phases.get(c).containsAll(initial))
+								for(Node c1 : relationAlg.getInitial(bhvGroup.getComponents())){
 									result.put(c1, true);
 									((Condition) c1).setMarked(true);}
 							else{
-								JOptionPane.showMessageDialog(null,
-										"Fail to run simulator, error may due to incorrect BSON structure.", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+								errorMsg();
 								result.clear();
 								return result;
 								}
 						}
+					}else{
+						errorMsg();
+						result.clear();
+						return result;
+					}
 				}
 			}
 		}
@@ -517,6 +535,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return result;
 	}
 
+	private void errorMsg(){
+		JOptionPane.showMessageDialog(null,
+				"Fail to run simulator, error may due to incorrect BSON structure.", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+	}
+
 	protected Map<Node, Boolean> readMarking() {
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 		for (Condition c : net.getConditions()) {
@@ -526,15 +549,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			result.put(cp, cp.isMarked());
 		}
 		return result;
-	}
-
-	private Collection<ArrayList<Node>> getSyncCycles(){
-
-		HashSet<Node> nodes = new HashSet<Node>();
-		nodes.addAll(net.getConditions());
-		nodes.addAll(net.getEventNodes());
-
-		return simuAlg.getSyncCycles(nodes);
 	}
 
 	private boolean quietStep() {
@@ -714,12 +728,12 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			//get low level events
 			runList.removeAll(abstractEvents);
 			if(!reverse){
-				errAlg.setErrNum(abstractEvents, syncSet, false);
-				errAlg.setErrNum(runList, syncSet, true);
+				errAlg.setErrNum(abstractEvents, sync, false);
+				errAlg.setErrNum(runList, sync, true);
 			}
 			else{
-				errAlg.setReverseErrNum(abstractEvents, syncSet, false);
-				errAlg.setReverseErrNum(runList, syncSet, true);
+				errAlg.setReverseErrNum(abstractEvents, sync, false);
+				errAlg.setReverseErrNum(runList, sync, true);
 			}
 		}
 	}
@@ -780,6 +794,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return result;
 	}
 
+	public void autoSimulator(){
+
+	}
+
 	@SuppressWarnings("serial")
 	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
 		JLabel label = new JLabel() {
@@ -830,10 +848,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			@Override
 			public Boolean eval(Node node) {
 
-				if(node instanceof VisualTransitionNode && simuAlg.isEnabled(((VisualTransitionNode)node).getMathEventNode(), syncSet, phases) && !reverse){
+				if((node instanceof VisualTransitionNode) && simuAlg.isEnabled(((VisualTransitionNode)node).getMathEventNode(), sync, phases) && !reverse){
 					return true;
 				}
-				if(node instanceof VisualTransitionNode && simuAlg.isUnfireEnabled(((VisualTransitionNode)node).getMathEventNode(), syncSet, phases) && reverse){
+				if((node instanceof VisualTransitionNode) && simuAlg.isUnfireEnabled(((VisualTransitionNode)node).getMathEventNode(), sync, phases) && reverse){
 					return true;
 				}
 				return false;
@@ -848,43 +866,46 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 			if(reverse){
 				for(TransitionNode enable : net.getEventNodes())
-					if(simuAlg.isUnfireEnabled(enable, syncSet, phases))
+					if(simuAlg.isUnfireEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}else{
 				for(TransitionNode enable : net.getEventNodes())
-					if(simuAlg.isEnabled(enable, syncSet, phases))
+					if(simuAlg.isEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}
 
-			List<TransitionNode> minimalEvents = simuAlg.getMinimalExeResult(event, syncSet, enabledEvents);
-			List<TransitionNode> minimalReverseEvents = simuAlg.getMinimalReverseExeResult(event, syncSet, enabledEvents);
+			List<TransitionNode> minFires = simuAlg.getMinFires(event, sync, enabledEvents);
+			List<TransitionNode> maxFires = simuAlg.getMaxFires(event, sync, enabledEvents);
 
 			if(!reverse){
-				List<TransitionNode> possibleEvents = new ArrayList<TransitionNode>();
-				for(TransitionNode psbE : enabledEvents)
-					if(!minimalEvents.contains(psbE))
-						possibleEvents.add(psbE);
+				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
+				for(TransitionNode pe : enabledEvents)
+					if(!minFires.contains(pe))
+						possibleFires.add(pe);
 
-				minimalEvents.remove(event);
+				minFires.remove(event);
 
-				List<TransitionNode> runList = new ArrayList<TransitionNode>();
+				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
-				if(possibleEvents.isEmpty() && minimalEvents.isEmpty()){
-					runList.add(event);
-					executeEvent(e.getEditor(),runList);
+				if(possibleFires.isEmpty() && minFires.isEmpty()){
+					fireList.add(event);
+					executeEvent(e.getEditor(),fireList);
 
 				}else{
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalEvents, event, syncSet, enabledEvents, reverse);
+					ParallelSimDialog dialog = new ParallelSimDialog(
+							this.getFramework().getMainWindow(),
+							net, possibleFires, minFires, maxFires,
+							event, sync, enabledEvents, reverse);
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
-					runList.addAll(minimalEvents);
-					runList.add(event);
+					fireList.addAll(minFires);
+					fireList.add(event);
 
 					if (dialog.getRun() == 1){
-						runList.addAll(dialog.getSelectedEvent());
-						executeEvent(e.getEditor(),runList);
+						fireList.addAll(dialog.getSelectedEvent());
+						executeEvent(e.getEditor(),fireList);
 					}
 					if(dialog.getRun()==2){
 						simuAlg.clearAll();
@@ -898,27 +919,30 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			}else{
 				//reverse simulation
 
-				List<TransitionNode> possibleEvents = new ArrayList<TransitionNode>();
-				for(TransitionNode psbE : enabledEvents)
-					if(!minimalReverseEvents.contains(psbE))
-						possibleEvents.add(psbE);
+				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
+				for(TransitionNode pe : enabledEvents)
+					if(!maxFires.contains(pe))
+						possibleFires.add(pe);
 
-						minimalReverseEvents.remove(event);
+						maxFires.remove(event);
 
 				List<TransitionNode> runList = new ArrayList<TransitionNode>();
 
-				if(possibleEvents.isEmpty() && minimalReverseEvents.isEmpty()){
+				if(possibleFires.isEmpty() && maxFires.isEmpty()){
 					runList.add(event);
 					executeEvent(e.getEditor(),runList);
 					simuAlg.clearAll();
 				} else {
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(this.getFramework().getMainWindow(), net, possibleEvents, minimalReverseEvents, event, syncSet, enabledEvents, reverse);
+					ParallelSimDialog dialog = new ParallelSimDialog(
+							this.getFramework().getMainWindow(),
+							net, possibleFires, maxFires, minFires,
+							event, sync, enabledEvents, reverse);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
-					runList.addAll(minimalReverseEvents);
+					runList.addAll(maxFires);
 					runList.add(event);
 
 					if (dialog.getRun() == 1){
@@ -958,9 +982,9 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				if (node instanceof VisualTransitionNode) {
 					TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
 					if(!reverse)
-						ret=ret || simuAlg.isEnabled(event, syncSet, phases);
+						ret=ret || simuAlg.isEnabled(event, sync, phases);
 					else
-						ret=ret || simuAlg.isUnfireEnabled(event, syncSet, phases);
+						ret=ret || simuAlg.isUnfireEnabled(event, sync, phases);
 				}
 			}catch(NullPointerException ex){
 
@@ -1045,7 +1069,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 					}
 					try{
-						if (simuAlg.isEnabled(event, syncSet, phases)&& !reverse)
+						if (simuAlg.isEnabled(event, sync, phases)&& !reverse)
 							return new Decoration(){
 								@Override
 								public Color getColorisation() {
@@ -1057,7 +1081,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 									return CommonSimulationSettings.getEnabledBackgroundColor();
 								}
 							};
-						if (simuAlg.isUnfireEnabled(event, syncSet, phases)&& reverse)
+						if (simuAlg.isUnfireEnabled(event, sync, phases)&& reverse)
 								return new Decoration(){
 									@Override
 									public Color getColorisation() {

@@ -24,14 +24,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	private Collection<TransitionNode> syncEventSet = new HashSet<TransitionNode>();
 	private Collection<Node> checkedEvents = new HashSet<Node>();
 
-	private Collection<Node> history;
-	private List<Path> syncCycles;
-	private Collection<Path> cycleResult;
-
-	private Collection<Node> minimalExeEvents = new HashSet<Node>();
-	private Collection<Node> minimalReverseExeEvents = new HashSet<Node>();
+	private Collection<Node> minFire = new HashSet<Node>();
 	private Collection<Node> postEventSet = new HashSet<Node>();
-	private Collection<Node> preEventSet = new HashSet<Node>();
 
 	private Collection<ONGroup> abstractGroups;
 	private Collection<ONGroup> bhvGroups;
@@ -39,35 +33,30 @@ public class SimulationAlg extends RelationAlgorithm {
 	public SimulationAlg(SON net){
 		super(net);
 		this.net = net;
-		history = new ArrayList<Node>();
-		syncCycles= new ArrayList<Path>();
-		cycleResult = new HashSet<Path>();
 		bsonAlg = new BSONAlg(net);
 
 		abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
 		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
-
-	private void getMinimalExeEventSet (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
+	private void getMinFireSet (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
-		for(ArrayList<Node> cycle : sync){
+		for(Path cycle : sync){
 			if(cycle.contains(e))
 				syncEvents.addAll(cycle);
 		}
 
 		if(!syncEvents.isEmpty()){
 			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !minimalExeEvents.contains(n)){
-					minimalExeEvents.add(n);
+				if(enabledEvents.contains(n) && !minFire.contains(n)){
+					minFire.add(n);
 
 					for(TransitionNode pre : this.getPreAsynEvents((TransitionNode)n)){
 						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
-							getMinimalExeEventSet((TransitionNode)n, sync, enabledEvents);
+							getMinFireSet((TransitionNode)n, sync, enabledEvents);
 					}
-
 				}
 				if(!enabledEvents.contains(n))
 					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getName(n));
@@ -75,40 +64,41 @@ public class SimulationAlg extends RelationAlgorithm {
 		}
 
 		if(!this.getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!minimalExeEvents.contains(e))
-				minimalExeEvents.add(e);
+			if(!minFire.contains(e))
+				minFire.add(e);
 
 			for(TransitionNode n : this.getPreAsynEvents(e))
-				if(!minimalExeEvents.contains(n) && enabledEvents.contains(n)){
-					minimalExeEvents.add(n);
-					getMinimalExeEventSet((TransitionNode)n, sync, enabledEvents);
+				if(!minFire.contains(n) && enabledEvents.contains(n)){
+					minFire.add(n);
+					getMinFireSet((TransitionNode)n, sync, enabledEvents);
 				}
 		}
 		else
-			minimalExeEvents.add(e);
+			minFire.add(e);
 	}
 
 	/**
 	 * return minimal execution set of a given node.
 	 * This may contain other nodes which have synchronous with the target node.
 	 */
-	public List<TransitionNode> getMinimalExeResult (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
+	public List<TransitionNode> getMinFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		List<TransitionNode> result = new ArrayList<TransitionNode>();
 
-		getMinimalExeEventSet(e, sync, enabledEvents);
+		getMinFireSet(e, sync, enabledEvents);
 
-		for(Node n : this.minimalExeEvents)
+		for(Node n : this.minFire)
 			if(n instanceof TransitionNode)
 				result.add((TransitionNode)n);;
 
 		return result;
 	}
 
-	private void getSynEventSet(TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
+
+	private void getMaxFireSet(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 
 		Collection<Node> syncEvents = new HashSet<Node>();
 
-		for(ArrayList<Node> cycle : sync){
+		for(Path cycle : sync){
 			if(cycle.contains(e))
 				syncEvents.addAll(cycle);
 		}
@@ -120,7 +110,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 					for(TransitionNode post : this.getPostAsynEvents((TransitionNode)n)){
 						if(!syncEvents.contains(post) && enabledEvents.contains(post))
-							getSynEventSet((TransitionNode)n, sync, enabledEvents);
+							getMaxFireSet((TransitionNode)n, sync, enabledEvents);
 					}
 
 				}
@@ -136,16 +126,16 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(TransitionNode n : this.getPostAsynEvents(e))
 				if(!postEventSet.contains(n) && enabledEvents.contains(n)){
 					postEventSet.add(n);
-					getSynEventSet((TransitionNode)n, sync, enabledEvents);
+					getMaxFireSet((TransitionNode)n, sync, enabledEvents);
 				}
 		}
 		else
 			postEventSet.add(e);
 	}
 
-	public List<TransitionNode> getPostExeResult (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
+	public List<TransitionNode> getMaxFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		List<TransitionNode> result = new ArrayList<TransitionNode>();
-		getSynEventSet(e, sync, enabledEvents);
+		getMaxFireSet(e, sync, enabledEvents);
 
 		for(Node n : this.postEventSet)
 			if(n instanceof TransitionNode)
@@ -161,26 +151,18 @@ public class SimulationAlg extends RelationAlgorithm {
 			syncEventSet.clear();
 			checkedEvents.clear();
 
-			history.clear();
-			syncCycles.clear();
-			cycleResult.clear();
-
-			minimalExeEvents.clear();
-			minimalReverseExeEvents.clear();
+			minFire.clear();
 			postEventSet.clear();
-			preEventSet.clear();
 	}
 
-	/**
-	 * create a adjacency matrix.
-	 */
-	public List<Node[]> createAdj(Collection<Node> nodes){
+	private List<Node[]> createAdj(Collection<Node> nodes){
 
 		List<Node[]> result = new ArrayList<Node[]>();
 
 		for (Node n: nodes){
 			for (Node next: net.getPostset(n)){
-				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == Semantics.ASYNLINE){
+				if((next instanceof ChannelPlace) &&
+						net.getSONConnectionType(next, n) == Semantics.ASYNLINE){
 					Node[] adjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
 						if(n2 instanceof TransitionNode){
@@ -190,7 +172,8 @@ public class SimulationAlg extends RelationAlgorithm {
 						}
 				}
 
-				if(next instanceof ChannelPlace && net.getSONConnectionType(next, n) == Semantics.SYNCLINE){
+				if((next instanceof ChannelPlace) &&
+						net.getSONConnectionType(next, n) == Semantics.SYNCLINE){
 					Node[] adjoin = new Node[2];
 					Node[] reAdjoin = new Node[2];
 					for(Node n2 : net.getPostset(next))
@@ -204,7 +187,7 @@ public class SimulationAlg extends RelationAlgorithm {
 						}
 				}
 
-				if(next instanceof TransitionNode || next instanceof Condition){
+				if((next instanceof TransitionNode) || (next instanceof Condition)){
 					Node[] adjoin = new Node[2];
 					adjoin[0] = n;
 					adjoin[1] = next;
@@ -216,111 +199,72 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	/**
-	 * get all paths between two given nodes. They may contain cyclic path.
-	 */
-	public void getAllPath(Node start, Node end, List<Node[]> adj){
-
-		history.add(start);
-
-		for (int i=0; i< adj.size(); i++){
-			if (((Node)adj.get(i)[0]).equals(start)){
-				if(((Node)adj.get(i)[1]).equals(end)){
-					continue;
-				}
-				if(!history.contains((Node)adj.get(i)[1])){
-					getAllPath((Node)adj.get(i)[1], end, adj);
-				}
-				else {
-					Path cycle=new Path();
-
-					cycle.addAll(history);
-					int n=cycle.indexOf(((Node)adj.get(i)[1]));
-					for (int m = 0; m < n; m++ ){
-						cycle.remove(0);
-					}
-					cycleResult.add(cycle);
-				}
-			}
-		}
-		history.remove(start);
-	}
-
-	/**
 	 * get synchronous cycle for a set of node.
 	 */
 	public Collection<Path> getSyncCycles(Collection<Node> nodes){
-
-		List<Path> subResult = new ArrayList<Path>();
-		Collection<Path> result = new ArrayList<Path>();
+		Collection<Path> cycles = new ArrayList<Path>();
+		List<Path> filter = new ArrayList<Path>();
 
 		this.clearAll();
-
-		for(Node start : getInitial(nodes))
-			for(Node end : getFinal(nodes))
-				getAllPath(start, end, createAdj(nodes));
-
-		if(!cycleResult.isEmpty()){
-			for(Path path : cycleResult){
+		//get all cycle set
+		for(Node s : getInitial(nodes))
+			for(Node v : getFinal(nodes))
+				cycles.addAll(PathAlgorithm.getCycles(s, v, createAdj(nodes)));
+		//get synchronous cycle set
+		if(!cycles.isEmpty()){
+			for(Path path : cycles){
 				boolean hasCondition = false;
 				for(Node n : path)
-					if(n instanceof Condition)
+					if(n instanceof Condition){
 						hasCondition = true;
+						continue;
+					}
 				if(!hasCondition)
-					subResult.add(path);
+					filter.add(path);
+			}
+		}
+		//get longest synchronous cycle set
+		return 	merging(filter);
+	}
+
+	private List<Path> merging (List<Path> cycles){
+		List<Path> result = new ArrayList<Path>();
+
+		while (cycles.size() > 0){
+			Path first = cycles.get(0);
+			List<Path> rest = cycles;
+			rest.remove(0);
+
+			int i = -1;
+			while (first.size() > i){
+				i = first.size();
+
+				List<Path> rest2 = new ArrayList<Path>();
+				for(Path path : rest){
+					if(hasCommonElements(first, path)){
+						first.addAll(path);
+					}
+					else{
+						rest2.add(path);
+					}
+				}
+				rest = rest2;
 			}
 
-			getLongestCycle(subResult);
-
-			for(ArrayList<Node> list : getLongestCycle(subResult)){
-				HashSet<Node> filter = new HashSet<Node>();
-				filter.addAll(list);
-				Path cycle = new Path();
-				cycle.addAll(filter);
-				result.add(cycle);
+			HashSet<Node> filter = new HashSet<Node>();
+			for(Node node : first){
+				filter.add(node);
 			}
+
+			Path subResult = new Path();
+			subResult.addAll(filter);
+			result.add(subResult);
+			cycles = rest;
 		}
 		return result;
 	}
 
-	private List<Path> getLongestCycle(List<Path> cycles){
 
-		if(syncCycles.isEmpty())
-			syncCycles.add(cycles.get(0));
-
-			boolean hasMerged = false;
-			int i = syncCycles.size()-1;
-			Collection<Node> merge = new HashSet<Node>();
-			Path cycle = new Path();
-
-
-		for(int j=0; j < cycles.size(); j++){
-				if(!syncCycles.get(i).containsAll(cycles.get(j)) && this.hasCommonElements(syncCycles.get(i), cycles.get(j))){
-					hasMerged = true;
-					merge.addAll(syncCycles.get(i));
-					merge.addAll(cycles.get(j));
-					syncCycles.remove(i);
-					cycle.addAll(merge);
-					syncCycles.add(cycle);
-					}
-			}
-
-			if(hasMerged)
-				getLongestCycle(cycles);
-			else{
-				for(int m=0; m<cycles.size(); m++){
-					boolean b = true;
-					for(int n=0; n<syncCycles.size();n++){
-						if(syncCycles.get(n).containsAll(cycles.get(m)))
-							b = false;
-					}
-					if(b){
-						syncCycles.add(cycles.get(m));
-						getLongestCycle(cycles);
-					}
-				}
-			}
-		return syncCycles;
-	}
 
 	private boolean hasCommonElements(Collection<Node> cycle1, Collection<Node> cycle2){
 		for(Node n : cycle1)
@@ -346,10 +290,10 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isSyncEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
+	private boolean isSyncEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
-		for(ArrayList<Node> cycle : sync){
+		for(Path cycle : sync){
 			if(cycle.contains(e))
 				syncEvents.addAll(cycle);
 		}
@@ -372,7 +316,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isAsynEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
+	private boolean isAsynEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 
 		for (Node n : net.getPreset(e)){
 			if(n instanceof ChannelPlace)
@@ -418,7 +362,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	final public boolean isEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
+	final public boolean isEnabled (TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 		checkedEvents.clear();
 		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases) && this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
 			return true;
@@ -517,7 +461,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	//reverse simulation
 
-	final public boolean isUnfireEnabled (TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases) {
+	final public boolean isUnfireEnabled (TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases) {
 		checkedEvents.clear();
 		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync, phases) && this.isAsynUnEnabled(e, sync, phases) && isBhvUnEnabled(e, phases))
 			return true;
@@ -536,10 +480,10 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isSyncUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
+	private boolean isSyncUnEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 		HashSet<Node> syncEvents = new HashSet<Node>();
 
-		for(ArrayList<Node> cycle : sync){
+		for(Path cycle : sync){
 			if(cycle.contains(e))
 				syncEvents.addAll(cycle);
 		}
@@ -561,7 +505,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isAsynUnEnabled(TransitionNode e, Collection<ArrayList<Node>> sync, Map<Condition, Phase> phases){
+	private boolean isAsynUnEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 
 		for (Node n : net.getPostset(e)){
 			if(n instanceof ChannelPlace)
@@ -688,107 +632,6 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 		}
-	}
-
-	private void getMinimalReverseExeEventSet (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
-
-		HashSet<Node> syncEvents = new HashSet<Node>();
-
-		for(ArrayList<Node> cycle : sync){
-			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
-		}
-
-		if(!syncEvents.isEmpty()){
-			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !minimalReverseExeEvents.contains(n)){
-					minimalReverseExeEvents.add(n);
-
-					for(TransitionNode pre : this.getPostAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
-							getMinimalReverseExeEventSet((TransitionNode)n, sync, enabledEvents);
-					}
-
-				}
-				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getName(n));
-			}
-		}
-
-		if(!this.getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!minimalReverseExeEvents.contains(e))
-				minimalReverseExeEvents.add(e);
-
-			for(TransitionNode n : this.getPostAsynEvents(e))
-				if(!minimalReverseExeEvents.contains(n) && enabledEvents.contains(n)){
-					minimalReverseExeEvents.add(n);
-					getMinimalReverseExeEventSet((TransitionNode)n, sync, enabledEvents);
-				}
-		}
-		else
-			minimalReverseExeEvents.add(e);
-	}
-
-	public List<TransitionNode> getMinimalReverseExeResult (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
-
-		getMinimalReverseExeEventSet(e, sync, enabledEvents);
-
-		for(Node n : this.minimalReverseExeEvents)
-			if(n instanceof TransitionNode)
-				result.add((TransitionNode)n);;
-
-		return result;
-	}
-
-	private void getPreEventsSet(TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
-
-		HashSet<Node> syncEvents = new HashSet<Node>();
-
-		for(ArrayList<Node> cycle : sync){
-			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
-		}
-
-		if(!syncEvents.isEmpty()){
-			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !preEventSet.contains(n)){
-					preEventSet.add(n);
-
-					for(TransitionNode pre : this.getPreAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
-							getPreEventsSet((TransitionNode)n, sync, enabledEvents);
-					}
-
-				}
-				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenabled event in sync cycle");
-			}
-		}
-
-		if(!this.getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!preEventSet.contains(e))
-				preEventSet.add(e);
-
-			for(TransitionNode n : this.getPreAsynEvents(e))
-				if(!preEventSet.contains(n) && enabledEvents.contains(n)){
-					preEventSet.add(n);
-					getPreEventsSet((TransitionNode)n, sync, enabledEvents);
-				}
-		}
-		else
-			preEventSet.add(e);
-	}
-
-	public List<TransitionNode> getPreExeResult (TransitionNode e, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
-		getPreEventsSet(e, sync, enabledEvents);
-
-		for(Node n : this.preEventSet)
-			if(n instanceof TransitionNode)
-				result.add((TransitionNode)n);
-
-		return result;
 	}
 
 	//others

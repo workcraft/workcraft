@@ -35,6 +35,7 @@ import javax.swing.table.TableColumn;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
@@ -43,10 +44,9 @@ public class ParallelSimDialog  extends JDialog{
 	private static final long serialVersionUID = 1L;
 
 	private SON net;
-	protected SimulationAlg alg;
 
 	boolean reverse = false;
-	private List<TransitionNode> possibleEvents, minimalEvents;
+	private List<TransitionNode> possibleFires, minFires, maxFires;
 	private TransitionNode clickedEvent;
 
 	private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
@@ -55,7 +55,7 @@ public class ParallelSimDialog  extends JDialog{
 	private JList eventList;
 
 	private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
-	private Collection<ArrayList<Node>> sync;
+	private Collection<Path> sync;
 	private Collection<TransitionNode> enabledEvents;
 
 	private int run = 0;
@@ -124,8 +124,8 @@ public class ParallelSimDialog  extends JDialog{
 
 		DefaultListModel listModel = new DefaultListModel();
 
-		for(TransitionNode event : this.possibleEvents){
-			EventItem item = new EventItem(net.getName(event)+"  "+event.getLabel(), event, possibleEvents);
+		for(TransitionNode event : this.possibleFires){
+			EventItem item = new EventItem(net.getName(event)+"  "+event.getLabel(), event, possibleFires);
 			listModel.addElement(item);
 		}
 
@@ -143,66 +143,59 @@ public class ParallelSimDialog  extends JDialog{
 
 				int index = list.locationToIndex(event.getPoint());
 				try{
-						EventItem item = (EventItem)list.getModel().getElementAt(index);
-						item.setSelected(!item.isSelected());
+					EventItem item = (EventItem)list.getModel().getElementAt(index);
+					item.setSelected(!item.isSelected());
 
-						ArrayList<EventItem> itemList = new ArrayList<EventItem>();
-						for(int i=0; i<list.getModel().getSize(); i++){
-							itemList.add((EventItem)list.getModel().getElementAt(i));
+					ArrayList<EventItem> itemList = new ArrayList<EventItem>();
+					for(int i=0; i<list.getModel().getSize(); i++){
+						itemList.add((EventItem)list.getModel().getElementAt(i));
+					}
+
+					if(item instanceof EventItem){
+						if(item.isSelected() ){
+							selectedEvents.add(item.getEvent());
+
+							for(TransitionNode e : minFires){
+								for(EventItem eventItem : itemList){
+									if(e==eventItem.getEvent()){
+										selectedEvents.add(e);
+										eventItem.setSelected(true);
+										eventItem.setForegroudColor(Color.BLUE);
+									}
+								}
+							}
+							item.setForegroudColor(Color.BLUE);
 						}
 
-						if(item instanceof EventItem){
-							if(item.isSelected() ){
-								selectedEvents.add(item.getEvent());
-								List<TransitionNode> set;
-								if(!reverse)
-									set = alg.getMinimalExeResult(item.getEvent(), sync, enabledEvents);
-								else
-									set = alg.getMinimalReverseExeResult(item.getEvent(), sync, enabledEvents);
-
-									for(TransitionNode e : set){
-										for(EventItem eventItem : itemList){
-											if(e==eventItem.getEvent()){
-												selectedEvents.add(e);
-												eventItem.setSelected(true);
-												eventItem.setForegroudColor(Color.BLUE);
-											}
-										}
-									}
-								item.setForegroudColor(Color.BLUE);
-								alg.clearAll();
-							}
-
-							if(!item.isSelected() ){
-								selectedEvents.remove(item.getEvent());
-								if(!reverse){
-									for(TransitionNode e : alg.getPostExeResult(item.getEvent(), sync, enabledEvents)){
-										for(EventItem eventItem : itemList){
-											if(e==eventItem.getEvent()){
-												selectedEvents.remove(e);
-												eventItem.setSelected(false);
-												eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
-											}
-										}
-									}
-								}else{
-									for(TransitionNode e : alg.getPreExeResult(item.getEvent(), sync, enabledEvents)){
-										for(EventItem eventItem : itemList){
-											if(e==eventItem.getEvent()){
-												selectedEvents.remove(e);
-												eventItem.setSelected(false);
-												eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
-											}
+						if(!item.isSelected() ){
+							selectedEvents.remove(item.getEvent());
+							if(!reverse){
+								for(TransitionNode e : maxFires){
+									for(EventItem eventItem : itemList){
+										if(e==eventItem.getEvent()){
+											selectedEvents.remove(e);
+											eventItem.setSelected(false);
+											eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 										}
 									}
 								}
-								item.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
-								alg.clearAll();
+							}else{
+								for(TransitionNode e : minFires){
+									for(EventItem eventItem : itemList){
+										if(e==eventItem.getEvent()){
+											selectedEvents.remove(e);
+											eventItem.setSelected(false);
+											eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
+										}
+									}
+								}
 							}
-
-							for(int i=0; i<list.getModel().getSize(); i++)
-								list.repaint(list.getCellBounds(i, i));
+							item.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 						}
+
+						for(int i=0; i<list.getModel().getSize(); i++)
+							list.repaint(list.getCellBounds(i, i));
+					}
 				}catch (ArrayIndexOutOfBoundsException e){}
 			}
 	});
@@ -268,36 +261,38 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	private String[][] createData(){
-		String dataVal[][] = new String[this.minimalEvents.size()+1][2];
+		String dataVal[][] = new String[this.minFires.size()+1][2];
 
 		dataVal[0][0] = net.getName(clickedEvent)+ "(clicked)";
 		dataVal[0][1] = this.clickedEvent.getLabel();
 
-		if(!this.minimalEvents.isEmpty()){
-			for(int i=1 ; i<this.minimalEvents.size()+1; i++)
-				dataVal[i][0]=net.getName(this.minimalEvents.get(i-1));
-			for(int i=1 ; i<this.minimalEvents.size()+1; i++)
-				dataVal[i][1]=this.minimalEvents.get(i-1).getLabel();
+		if(!this.minFires.isEmpty()){
+			for(int i=1 ; i<this.minFires.size()+1; i++)
+				dataVal[i][0]=net.getName(this.minFires.get(i-1));
+			for(int i=1 ; i<this.minFires.size()+1; i++)
+				dataVal[i][1]=this.minFires.get(i-1).getLabel();
 		}
 
 		return dataVal;
 
 	}
 
-	public  ParallelSimDialog (Window owner, SON net, List<TransitionNode> possibleEvents, List<TransitionNode> minimalEvents, TransitionNode event, Collection<ArrayList<Node>> sync, Collection<TransitionNode> enabledEvents, boolean reverse){
+	public  ParallelSimDialog (Window owner, SON net,
+			List<TransitionNode> possibleFires, List<TransitionNode> minFires,
+			List<TransitionNode> maxFires, TransitionNode event, Collection<Path> sync,
+			Collection<TransitionNode> enabledEvents, boolean reverse){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
-
-		alg = new SimulationAlg(net);
 
 		this.net = net;
 		this.reverse = reverse;
-		this.possibleEvents = possibleEvents;
-		this.minimalEvents = minimalEvents;
+		this.possibleFires = possibleFires;
+		this.minFires = minFires;
+		this.maxFires = maxFires;
 		this.clickedEvent = event;
 		this.sync = sync;
 		this.enabledEvents = enabledEvents;
 
-		setEventsColor(minimalEvents, event);
+		setEventsColor(minFires, event);
 
 		//this.setSize(new Dimension(280, 260));
 		createButtonsPanel();

@@ -53,17 +53,17 @@ public class CSONPathAlg extends ONPathAlg{
 		 return cyclePathFilter(result);
 	}
 
-	private Collection<Path> cyclePathFilter(Collection<Path> pathResult){
+	private Collection<Path> cyclePathFilter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
-		for (Path path : pathResult){
+		for (Path path : paths){
 			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
 				delList.add(path);
 			if(!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE) && !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
 				delList.add(path);
 		}
-		pathResult.removeAll(delList);
+		paths.removeAll(delList);
 
-		return pathResult;
+		return paths;
 	}
 
 }

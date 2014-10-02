@@ -42,13 +42,8 @@ public class PathAlgorithm{
 					for (int m = 0; m < n; m++ ){
 						cycle.remove(0);
 					}
-					boolean repeat = false;
-					for(Path path : cycleResult){
-						if(path.containsAll(path));
-							repeat = true;
-					}
-					if(!repeat)
-						cycleResult.add(cycle);
+
+					cycleResult.add(cycle);
 				}
 			}
 		}

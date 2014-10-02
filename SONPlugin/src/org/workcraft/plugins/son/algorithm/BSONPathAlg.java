@@ -59,9 +59,9 @@ public class BSONPathAlg extends ONPathAlg{
 		 return cyclePathFilter(result);
 	}
 
-	private Collection<Path> cyclePathFilter(Collection<Path> result){
+	private Collection<Path> cyclePathFilter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
-		for(Path cycle : result){
+		for(Path cycle : paths){
 			int outputBhvLine = 0;
 			int inputBhvLine = 0;
 			if(!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE))
@@ -75,8 +75,8 @@ public class BSONPathAlg extends ONPathAlg{
 				delList.add(cycle);
 			}
 		}
-		result.removeAll(delList);
-		return result;
+		paths.removeAll(delList);
+		return paths;
 	}
 
 }
