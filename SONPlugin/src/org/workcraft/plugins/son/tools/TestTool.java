@@ -69,7 +69,7 @@ public class TestTool implements Tool{
 		SimulationAlg simuAlg = new SimulationAlg(net);
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getConditions());
-		nodes.addAll(net.getEventNodes());
+		nodes.addAll(net.getTransitionNodes());
 
 		simuAlg.getSyncCycles(nodes);
 	}

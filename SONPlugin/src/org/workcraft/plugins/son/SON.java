@@ -303,12 +303,12 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	//Group Methods
+	//Group based
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
 
-	public Collection<TransitionNode> getEventNodes(){
+	public Collection<TransitionNode> getTransitionNodes(){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
 			if(node instanceof Block){

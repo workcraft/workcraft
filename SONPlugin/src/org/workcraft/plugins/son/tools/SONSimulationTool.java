@@ -102,7 +102,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	protected JTable traceTable;
 
 	private JSlider speedSlider;
-	private JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
+	private JButton playButton, stopButton, backwardButton, forwardButton, reverseButton, autoSimuButton;
 	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
 
 	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
@@ -127,6 +127,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
 		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"), "Reverse simulation");
+		autoSimuButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Auto simulation");
 
 		speedSlider = new JSlider(-1000, 1000, 0);
 		speedSlider.setToolTipText("Simulation playback speed");
@@ -137,7 +138,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
-		Dimension panelSize = new Dimension(buttonWidth * 5, buttonHeight);
+		Dimension panelSize = new Dimension(buttonWidth * 6, buttonHeight);
 
 		JPanel simulationControl = new JPanel();
 		simulationControl.setLayout(new FlowLayout());
@@ -148,6 +149,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		simulationControl.add(backwardButton);
 		simulationControl.add(forwardButton);
 		simulationControl.add(reverseButton);
+		simulationControl.add(autoSimuButton);
 
 		JPanel speedControl = new JPanel();
 		speedControl.setLayout(new BorderLayout());
@@ -256,6 +258,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			}
 		});
 
+		autoSimuButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				autoSimulator(editor, readMarking());
+			}
+		});
+
 		copyStateButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -345,7 +354,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 		editor.getWorkspaceEntry().setCanModify(false);
 
-		initialMarking.putAll(autoInitalMarking());
 		mainTrace.clear();
 		branchTrace.clear();
 
@@ -353,20 +361,23 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			conToBlock = false;
 			return;
 		}
-		try{
+//		try{
 			sync = getSyncCycles();
 			phases = getPhases();
-		}catch(IndexOutOfBoundsException ex){
-			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
-					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
-			deactivated(editor);
-			return;
-		}catch(NullPointerException ex){
-			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
-					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
-			deactivated(editor);
-			return;
-		}
+//		}catch(IndexOutOfBoundsException ex){
+//			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
+//					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
+//			deactivated(editor);
+//			return;
+//		}catch(NullPointerException ex){
+//			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
+//					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
+//			deactivated(editor);
+//			return;
+//		}
+
+		initialMarking.putAll(autoInitialMarking());
+
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
 		}
@@ -388,7 +399,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	private Collection<Path> getSyncCycles(){
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getConditions());
-		nodes.addAll(net.getEventNodes());
+		nodes.addAll(net.getTransitionNodes());
 
 		return simuAlg.getSyncCycles(nodes);
 	}
@@ -472,7 +483,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	};
 
 	//set initial marking
-	protected Map<Node, Boolean> autoInitalMarking(){
+	protected Map<Node, Boolean> autoInitialMarking(){
 		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
 
 		for (Condition c : net.getConditions()) {
@@ -483,6 +494,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			cp.setMarked(false);
 			result.put(cp, false);
 		}
+
 		//initial marking for abstract groups and behavioral groups
 		for(ONGroup abstractGroup : bsonAlg.getAbstractGroups(net.getGroups())){
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
@@ -496,7 +508,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 							if(phases.get(c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(bhvGroup.getComponents())){
 									result.put(c1, true);
-									((Condition) c1).setMarked(true);}
+									((Condition) c1).setMarked(true);
+									}
 							else{
 								errorMsg();
 								result.clear();
@@ -511,6 +524,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				}
 			}
 		}
+
 		//initial marking for channel places
 		for(Node c : relationAlg.getInitial(net.getComponents())){
 			if(c instanceof ChannelPlace){
@@ -753,6 +767,28 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 	}
 
+	private void autoSimulator(final GraphEditor editor, Map<Node, Boolean> marking){
+		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
+		ArrayList< Map<Node, Boolean>> markings = new ArrayList< Map<Node, Boolean>>();
+		markings.add(marking);
+		for(TransitionNode node : net.getTransitionNodes()){
+			if(simuAlg.isEnabled(node, sync, phases)){
+				fireList.add(node);
+			}
+		}
+		if(!fireList.isEmpty()){
+			executeEvent(editor, fireList);
+			Map<Node, Boolean> currentMarking = readMarking();
+			for(Map<Node, Boolean> m : markings){
+				if(m.equals(currentMarking)){
+					errorMsg();
+					return;
+				}
+			}
+			autoSimulator(editor, readMarking());
+		}
+	}
+
 
 	public void executeEvent(final GraphEditor editor, List<TransitionNode> runList) {
 		if (runList.isEmpty()) return;
@@ -792,10 +828,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				result.add((TransitionNode)node);
 		}
 		return result;
-	}
-
-	public void autoSimulator(){
-
 	}
 
 	@SuppressWarnings("serial")
@@ -865,11 +897,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
 
 			if(reverse){
-				for(TransitionNode enable : net.getEventNodes())
+				for(TransitionNode enable : net.getTransitionNodes())
 					if(simuAlg.isUnfireEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}else{
-				for(TransitionNode enable : net.getEventNodes())
+				for(TransitionNode enable : net.getTransitionNodes())
 					if(simuAlg.isEnabled(enable, sync, phases))
 						enabledEvents.add(enable);
 				}
