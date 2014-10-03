@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
@@ -72,7 +73,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			if (direction==Direction.NORTH) return Direction.SOUTH;
 			return null;
 		}
-
 
 		static public AffineTransform getDirectionTransform(Direction dir) {
 			AffineTransform at = new AffineTransform();
@@ -192,7 +192,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
-		Circuit circuit = (Circuit)r.getModel().getMathModel();
 
 		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
 		Color colorisation = d.getColorisation();
@@ -228,7 +227,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 			g.transform(at);
 
-			GlyphVector gv = getNameGlyphs(circuit, g);
+			GlyphVector gv = getNameGlyphs(r);
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
@@ -284,19 +283,18 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
-	public GlyphVector getNameGlyphs(Circuit circuit, Graphics2D g) {
+	public GlyphVector getNameGlyphs(DrawRequest r) {
 		if (nameGlyph == null) {
-			if (getDirection() == VisualContact.Direction.NORTH || getDirection() == VisualContact.Direction.SOUTH) {
+			if (getDirection().equals(Direction.NORTH) || getDirection().equals(Direction.SOUTH)) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
-			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), circuit.getName(this.getReferencedContact()));
+			FontRenderContext fontRenderContext = r.getGraphics().getFontRenderContext();
+			Circuit circuit = (Circuit)r.getModel().getMathModel();
+			String name = circuit.getName(this.getReferencedContact());
+			nameGlyph = nameFont.createGlyphVector(fontRenderContext, name);
 		}
 		return nameGlyph;
-	}
-
-	public Rectangle2D getNameBB(Circuit circuit, Graphics2D g) {
-		return getNameGlyphs(circuit, g).getVisualBounds();
 	}
 
 	public void setDirection(VisualContact.Direction dir) {

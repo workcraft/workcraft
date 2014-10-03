@@ -8,15 +8,12 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -26,7 +23,6 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
-import org.workcraft.util.Hierarchy;
 
 
 @DisplayName("Function")
@@ -93,8 +89,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		if (res == null) {
 			return super.hitTestInLocalSpace(pointInLocalSpace);
 		} else {
-			//updateStepPositions();
-			//updateTotalBB();
 			return res.boundingBox().contains(pointInLocalSpace);
 		}
 	}
@@ -104,30 +98,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		super.setRenderType(renderType);
 		resetRenderingResult();
 		sendNotification(new PropertyChangedEvent(this, "render type"));
-	}
-
-	@Override
-	protected void updateTotalBB() {
-		ComponentRenderingResult res = getRenderingResult();
-		if (res == null) {
-			super.updateTotalBB();
-		} else {
-            Rectangle2D bb = new Rectangle2D.Double();
-			bb.setRect(res.boundingBox());
-			Point2D p1 = new Point2D.Double(bb.getMinX(), bb.getMinY());
-			Point2D p2 = new Point2D.Double(bb.getMaxX(), bb.getMaxY());
-			AffineTransform at = VisualContact.Direction.getDirectionTransform(getMainContact().getDirection());
-			at.transform(p1, p1);
-			at.transform(p2, p2);
-			double x1 = Math.min(p1.getX(), p2.getX());
-			double y1 = Math.min(p1.getY(), p2.getY());
-			double x2 = Math.max(p1.getX(), p2.getX());
-			double y2 = Math.max(p1.getY(), p2.getY());
-			bb.setRect(x1, y1, x2-x1, y2-y1);
-
-			totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
-			totalBB = BoundingBoxHelper.union(bb, totalBB);
-		}
 	}
 
 	private boolean firstUpdate = true;
