@@ -113,7 +113,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		getReferencedFunctionContact().setResetFunction(resetFunction);
 	}
 
-	public void resetRenderedFormula() {
+	public void invalidateRenderedFormula() {
 		renderedSetFormula = null;
 		renderedResetFormula = null;
 	}
@@ -247,12 +247,12 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("setFunction")
 			 || pc.getPropertyName().equals("resetFunction")) {
-				resetRenderedFormula();
+				invalidateRenderedFormula();
 			}
 			if (pc.getPropertyName().equals("name")) {
 				Node root = Hierarchy.getRoot(this);
 				for (VisualFunctionContact c : Hierarchy.getDescendantsOfType(root, VisualFunctionContact.class)) {
-					c.resetRenderedFormula();
+					c.invalidateRenderedFormula();
 				}
 			}
 		}

@@ -54,6 +54,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public class VisualContact extends VisualComponent implements StateObserver {
+
 	public enum Direction {
 		NORTH("North"),
 		SOUTH("South"),
@@ -121,10 +122,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		setDirection(contact.getIOType()==IOType.INPUT ? Direction.WEST : Direction.EAST);
 		contact.addObserver(this);
 		addPropertyDeclarations();
-	}
-
-	public void resetNameGlyph() {
-		nameGlyph = null;
 	}
 
 	private Shape getShape() {
@@ -283,13 +280,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
+	public void invalidateNameGlyph() {
+		nameGlyph = null;
+	}
+
 	public GlyphVector getNameGlyphs(DrawRequest r) {
 		if (nameGlyph == null) {
-			if (getDirection().equals(Direction.NORTH) || getDirection().equals(Direction.SOUTH)) {
+			if ((getDirection() == Direction.NORTH) || (getDirection() == Direction.SOUTH)) {
 				AffineTransform at = new AffineTransform();
 				at.quadrantRotate(1);
 			}
-			FontRenderContext fontRenderContext = r.getGraphics().getFontRenderContext();
+			FontRenderContext fontRenderContext = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
 			Circuit circuit = (Circuit)r.getModel().getMathModel();
 			String name = circuit.getName(this.getReferencedContact());
 			nameGlyph = nameFont.createGlyphVector(fontRenderContext, name);
@@ -297,17 +298,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return nameGlyph;
 	}
 
-	public void setDirection(VisualContact.Direction dir) {
+	public void setDirection(Direction dir) {
 		if (dir != direction) {
 			sendNotification(new TransformChangingEvent(this));
-			resetNameGlyph();
+			invalidateNameGlyph();
 			this.direction = dir;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
 		}
 	}
 
-	public VisualContact.Direction getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
@@ -355,7 +356,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("name")) {
-				resetNameGlyph();
+				invalidateNameGlyph();
 			}
 		}
 	}
