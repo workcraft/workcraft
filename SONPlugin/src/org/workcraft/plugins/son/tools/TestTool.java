@@ -45,9 +45,9 @@ public class TestTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		syncCycleTest(net);
+		//syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
-		//mathLevelTest(net, vnet);
+		mathLevelTest(net, vnet);
 		//connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);

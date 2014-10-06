@@ -88,7 +88,7 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
-	public Event getMathEventNode(){
+	public Event getMathTransitionNode(){
 		return (Event)this.getReferencedComponent();
 	}
 

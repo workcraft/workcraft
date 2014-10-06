@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualChannelPlace.class)
-public class ChannelPlace extends MathNode {
+public class ChannelPlace extends MathNode implements PlaceNode{
 
 	private String label="";
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();

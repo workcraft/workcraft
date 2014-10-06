@@ -12,7 +12,7 @@ public interface VisualTransitionNode extends Node{
 
 	public void setForegroundColor(Color foregroundColor);
 
-	public TransitionNode getMathEventNode();
+	public TransitionNode getMathTransitionNode();
 
 	public void drawFault(DrawRequest r);
 

@@ -72,6 +72,7 @@ import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
@@ -93,7 +94,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	private Collection<ONGroup> abstractGroups = new ArrayList<ONGroup>();
 	private Collection<Path> sync = new ArrayList<Path>();
 	private Map<Condition, Phase> phases = new HashMap<Condition, Phase>();
-	protected Map<Node, Boolean>initialMarking = new HashMap<Node, Boolean>();
+	protected Map<PlaceNode, Boolean>initialMarking = new HashMap<PlaceNode, Boolean>();
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -127,7 +128,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
 		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"), "Reverse simulation");
-		autoSimuButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Auto simulation");
+		autoSimuButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation (maximum parallelism)");
 
 		speedSlider = new JSlider(-1000, 1000, 0);
 		speedSlider.setToolTipText("Simulation playback speed");
@@ -240,7 +241,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		reverseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				 Map<Node, Boolean> currentMarking = readMarking();
+				 Map<PlaceNode, Boolean> currentMarking = readMarking();
 					setReverse(editor, !reverse);
 					if(!reverse)
 						initialMarking = currentMarking;
@@ -261,7 +262,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		autoSimuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				autoSimulator(editor, readMarking());
+				Collection<Map<PlaceNode, Boolean>> history = new ArrayList<Map<PlaceNode, Boolean>>();
+				autoSimulator(editor, readMarking(), history);
 			}
 		});
 
@@ -483,23 +485,19 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	};
 
 	//set initial marking
-	protected Map<Node, Boolean> autoInitialMarking(){
-		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
+	protected Map<PlaceNode, Boolean> autoInitialMarking(){
+		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
 
-		for (Condition c : net.getConditions()) {
-			c.setMarked(false);
-			result.put(c, false);
-		}
-		for(ChannelPlace cp : net.getChannelPlace()){
-			cp.setMarked(false);
-			result.put(cp, false);
+		for(PlaceNode pn : net.getPlaceNodes()){
+			pn.setMarked(false);
+			result.put(pn, false);
 		}
 
 		//initial marking for abstract groups and behavioral groups
 		for(ONGroup abstractGroup : bsonAlg.getAbstractGroups(net.getGroups())){
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
 				if(c instanceof Condition){
-					result.put(c, true);
+					result.put((Condition)c, true);
 					((Condition) c).setMarked(true);
 					Collection<ONGroup> bhvGroups = bsonAlg.getBhvGroups((Condition)c);
 					if(bhvGroups.size() == 1){
@@ -507,7 +505,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 							Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
 							if(phases.get(c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(bhvGroup.getComponents())){
-									result.put(c1, true);
+									result.put((Condition)c1, true);
 									((Condition) c1).setMarked(true);
 									}
 							else{
@@ -528,7 +526,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		//initial marking for channel places
 		for(Node c : relationAlg.getInitial(net.getComponents())){
 			if(c instanceof ChannelPlace){
-				result.put(c, true);
+				result.put((ChannelPlace)c, true);
 				((ChannelPlace)c).setMarked(true);}
 		}
 
@@ -541,7 +539,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			if(!hasBhvLine){
 				for(Node c : relationAlg.getInitial(group.getComponents())){
 					if(c instanceof Condition){
-						result.put(c, true);
+						result.put((Condition)c, true);
 						((Condition)c).setMarked(true);}
 				}
 			}
@@ -554,14 +552,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				"Fail to run simulator, error may due to incorrect BSON structure.", "Invalid structure", JOptionPane.WARNING_MESSAGE);
 	}
 
-	protected Map<Node, Boolean> readMarking() {
-		HashMap<Node, Boolean> result = new HashMap<Node, Boolean>();
-		for (Condition c : net.getConditions()) {
+	protected Map<PlaceNode, Boolean> readMarking() {
+		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+		for (PlaceNode c : net.getPlaceNodes())
 			result.put(c, c.isMarked());
-		}
-		for(ChannelPlace cp : net.getChannelPlace()){
-			result.put(cp, cp.isMarked());
-		}
+
 		return result;
 	}
 
@@ -752,25 +747,15 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 	}
 
-	private void applyMarking(Map<Node, Boolean> marking){
-		for (Node c: marking.keySet()) {
-			if(c instanceof Condition)
-				if (net.getConditions().contains(c)) {
-					((Condition)c).setMarked(marking.get((Condition)c));
-				} else {
-					//ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
-				}
-			if(c instanceof ChannelPlace)
-				if (net.getChannelPlace().contains(c)){
-					((ChannelPlace)c).setMarked(marking.get((ChannelPlace)c));
-				}
-		}
+	private void applyMarking(Map<PlaceNode, Boolean> marking){
+		for (PlaceNode c: marking.keySet())
+			c.setMarked(marking.get(c));
 	}
 
-	private void autoSimulator(final GraphEditor editor, Map<Node, Boolean> marking){
+	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history){
 		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
-		ArrayList< Map<Node, Boolean>> markings = new ArrayList< Map<Node, Boolean>>();
-		markings.add(marking);
+
+		history.add(marking);
 		for(TransitionNode node : net.getTransitionNodes()){
 			if(simuAlg.isEnabled(node, sync, phases)){
 				fireList.add(node);
@@ -778,17 +763,17 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 		if(!fireList.isEmpty()){
 			executeEvent(editor, fireList);
-			Map<Node, Boolean> currentMarking = readMarking();
-			for(Map<Node, Boolean> m : markings){
+			Map<PlaceNode, Boolean> currentMarking = readMarking();
+
+			for(Map<PlaceNode, Boolean> m : history){
 				if(m.equals(currentMarking)){
 					errorMsg();
 					return;
 				}
 			}
-			autoSimulator(editor, readMarking());
+			autoSimulator(editor, readMarking(), history);
 		}
 	}
-
 
 	public void executeEvent(final GraphEditor editor, List<TransitionNode> runList) {
 		if (runList.isEmpty()) return;
@@ -880,10 +865,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			@Override
 			public Boolean eval(Node node) {
 
-				if((node instanceof VisualTransitionNode) && simuAlg.isEnabled(((VisualTransitionNode)node).getMathEventNode(), sync, phases) && !reverse){
+				if((node instanceof VisualTransitionNode) && simuAlg.isEnabled(((VisualTransitionNode)node).getMathTransitionNode(), sync, phases) && !reverse){
 					return true;
 				}
-				if((node instanceof VisualTransitionNode) && simuAlg.isUnfireEnabled(((VisualTransitionNode)node).getMathEventNode(), sync, phases) && reverse){
+				if((node instanceof VisualTransitionNode) && simuAlg.isUnfireEnabled(((VisualTransitionNode)node).getMathTransitionNode(), sync, phases) && reverse){
 					return true;
 				}
 				return false;
@@ -894,7 +879,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		if (node instanceof VisualTransitionNode && conToBlock){
 
 			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
-			TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
+			TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
 
 			if(reverse){
 				for(TransitionNode enable : net.getTransitionNodes())
@@ -1012,7 +997,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		for (Node node: container.getChildren()) {
 			try{
 				if (node instanceof VisualTransitionNode) {
-					TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
+					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
 					if(!reverse)
 						ret=ret || simuAlg.isEnabled(event, sync, phases);
 					else
@@ -1073,7 +1058,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			@Override
 			public Decoration getDecoration(Node node) {
 				if(node instanceof VisualTransitionNode && conToBlock) {
-					TransitionNode event = ((VisualTransitionNode)node).getMathEventNode();
+					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
 					Node event2 = null;
 					if (branchTrace.canProgress()) {
 						Step step = branchTrace.get(branchTrace.getPosition());

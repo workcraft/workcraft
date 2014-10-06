@@ -139,7 +139,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	}
 
 	@Override
-	public Block getMathEventNode() {
+	public Block getMathTransitionNode() {
 		return getReferencedComponent();
 	}
 }
