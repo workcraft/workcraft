@@ -248,110 +248,166 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 	}
 
-	private int countContacts(VisualContact.Direction dir) {
-		int result = 0;
-		for (Node node : this.getChildren()) {
-			if (node instanceof VisualContact) {
-				VisualContact vc = (VisualContact)node;
-				if (vc.getDirection() == dir) {
-					result++;
-				}
-			}
-		}
-		return result;
-	}
-
-	private double measureContactLabel(DrawRequest r, VisualContact.Direction dir) {
-		double result = 0;
-		for (Node node : this.getChildren()) {
-			if (node instanceof VisualContact) {
-				VisualContact vc = (VisualContact)node;
-				if (vc.getDirection() == dir) {
-					Rectangle2D labelBB = vc.getNameGlyphs(r).getVisualBounds();
-					double labelW = (double) (Math.round(labelBB.getWidth() * 4)) / 4;
-					result = Math.max(labelW, result);
-				}
-			}
-		}
-		return result;
-	}
-
 	private void invalidateBoundingBox() {
 		internalBB = null;
 	}
 
 	private void updateBoundingBox(DrawRequest r) {
 		if (internalBB != null) return;
-
-		int northCount = countContacts(Direction.NORTH);
-		int eastCount = countContacts(Direction.EAST);
-		int southCount = countContacts(Direction.SOUTH);
-		int westCount = countContacts(Direction.WEST);
-
-		double northSize = measureContactLabel(r, Direction.NORTH);
-		double eastSize = measureContactLabel(r, Direction.EAST);
-		double southSize = measureContactLabel(r, Direction.SOUTH);
-		double westSize = measureContactLabel(r, Direction.WEST);
-
-		double w = Math.max(northCount, southCount) * contactStep + eastSize + westSize	+ marginSize * 4;
-		double h = Math.max(eastCount, westCount) * contactStep + northSize + southSize + marginSize * 4;
-		double x = - w / 2;
-		double y = - h / 2;
-
-		Rectangle2D  minimalBoundinBox = new Rectangle2D.Double(x, y, w, h);
-		Rectangle2D contactInscribedBox = getContactInscribedBox();
-		minimalBoundinBox = BoundingBoxHelper.union(minimalBoundinBox, contactInscribedBox);
-		if (minimalBoundinBox != null) {
-			double expW = minimalBoundinBox.getWidth();
-			if (eastCount > 0) expW -= contactLength;
-			if (westCount > 0) expW -= contactLength;
-			if (expW > w) {
-				w = expW;
-				x = minimalBoundinBox.getX();
-				if (westCount > 0) x += contactLength;
-			}
-			double expH = minimalBoundinBox.getHeight();
-			if (northCount > 0) expH -= contactLength;
-			if (southCount > 0) expH -= contactLength;
-			if (expH > h) {
-				h = expH;
-				y = minimalBoundinBox.getY();
-				if (northCount > 0) y += contactLength;
-			}
-		}
-		internalBB = new Rectangle2D.Double(x, y, w, h);
+		Rectangle2D bb = getContactBestBox();
+		double dx = Math.max(0.0, size - bb.getWidth());
+		double dy = Math.max(0.0, size - bb.getHeight());
+		internalBB = BoundingBoxHelper.expand(bb, dx, dy);
 	}
 
-	private Rectangle2D getContactInscribedBox() {
-		Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
-		Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
-		if (bb != null) {
-			double x1 = bb.getMinX();
-			double y1 = bb.getMinY();
-			double x2 = bb.getMaxX();
-			double y2 = bb.getMaxY();
-			for (Node vn : getChildren()) {
-				if (vn instanceof VisualContact) {
-					VisualContact vc = (VisualContact)vn;
-					switch (vc.getDirection()) {
-					case NORTH:
-						y1 = Math.max(y1, vc.getBoundingBox().getMaxY());
-						break;
-					case EAST:
-						x2 = Math.min(x2, vc.getBoundingBox().getMinX());
-						break;
-					case SOUTH:
-						y2 = Math.min(y2, vc.getBoundingBox().getMinY());
-						break;
-					case WEST:
-						x1 = Math.max(x1, vc.getBoundingBox().getMaxX());
-						break;
-					}
+
+	private Rectangle2D getContactMinimalBox() {
+		double x1 = 0.0;
+		double y1 = 0.0;
+		double x2 = 0.0;
+		double y2 = 0.0;
+
+		boolean westFirst = true;
+		boolean northFirst = true;
+		boolean eastFirst = true;
+		boolean southFirst = true;
+
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			double x = vc.getBoundingBox().getCenterX();
+			double y = vc.getBoundingBox().getCenterY();
+			switch (vc.getDirection()) {
+			case WEST:
+				if (westFirst && eastFirst) {
+					y1 = y - contactStep / 2;
+					y2 = y + contactStep / 2;
+				} else {
+					y1 = Math.min(y1, y - contactStep / 2);
+					y2 = Math.max(y2, y + contactStep / 2);
 				}
+				if (westFirst && northFirst && southFirst) {
+					x1 = x + contactLength;
+				}
+				westFirst = false;
+				break;
+			case NORTH:
+				if (northFirst && southFirst) {
+					x1 = x - contactStep / 2;
+					x2 = x + contactStep / 2;
+				} else {
+					x1 = Math.min(x1, x - contactStep / 2);
+					x2 = Math.max(x2, x + contactStep / 2);
+				}
+				if (northFirst && westFirst && eastFirst) {
+					y1 = y + contactLength;
+				}
+				northFirst = false;
+				break;
+			case EAST:
+				if (eastFirst && westFirst) {
+					y1 = y - contactStep / 2;
+					y2 = y + contactStep / 2;
+				} else {
+					y1 = Math.min(y1, y - contactStep / 2);
+					y2 = Math.max(y2, y + contactStep / 2);
+				}
+				if (eastFirst && northFirst && southFirst) {
+					x2 = x - contactLength;
+				}
+				eastFirst = false;
+				break;
+			case SOUTH:
+				if (southFirst && northFirst) {
+					x1 = x - contactStep / 2;
+					x2 = x + contactStep / 2;
+				} else {
+					x1 = Math.min(x1, x - contactStep / 2);
+					x2 = Math.max(x2, x + contactStep / 2);
+				}
+				if (southFirst && westFirst && eastFirst) {
+					y2 = y - contactLength;
+				}
+				southFirst = false;
+				break;
 			}
-			bb = new Rectangle2D.Double(x1, y1, x2-x1, y2-y1);
 		}
-		return bb;
+
+		if (x1 > x2) {
+			double x = (x1 + x2) / 2;
+			x1 = x;
+			x2 = x;
+		}
+		if (y1 > y2) {
+			double y = (y1 + y2) / 2;
+			y1 = y;
+			y2 = y;
+		}
+
+		return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	private Rectangle2D getContactBestBox() {
+		Rectangle2D minBox = getContactMinimalBox();
+		double x1 = minBox.getMinX();
+		double y1 = minBox.getMinY();
+		double x2 = minBox.getMaxX();
+		double y2 = minBox.getMaxY();
+
+		boolean westFirst = true;
+		boolean northFirst = true;
+		boolean eastFirst = true;
+		boolean southFirst = true;
+
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			double x = vc.getBoundingBox().getCenterX();
+			double y = vc.getBoundingBox().getCenterY();
+			switch (vc.getDirection()) {
+			case WEST:
+				if (westFirst) {
+					x1 = x + contactLength;
+				} else {
+					x1 = Math.max(x1, x + contactLength);
+				}
+				westFirst = false;
+				break;
+			case NORTH:
+				if (northFirst) {
+					y1 = y + contactLength;
+				} else {
+					y1 = Math.max(y1, y + contactLength);
+				}
+				northFirst = false;
+				break;
+			case EAST:
+				if (eastFirst) {
+					x2 = x - contactLength;
+				} else {
+					x2 = Math.min(x2, x - contactLength);
+				}
+				eastFirst = false;
+				break;
+			case SOUTH:
+				if (southFirst) {
+					y2 = y - contactLength;
+				} else {
+					y2 = Math.min(y2, y - contactLength);
+				}
+				southFirst = false;
+				break;
+			}
+		}
+
+		if (x1 > x2) {
+			double x = (x1 + x2) / 2;
+			x1 = x;
+			x2 = x;
+		}
+		if (y1 > y2) {
+			double y = (y1 + y2) / 2;
+			y1 = y;
+			y2 = y;
+		}
+		Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+		return BoundingBoxHelper.union(minBox, maxBox);
 	}
 
 	private void drawContactLines(DrawRequest r) {
@@ -382,7 +438,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 			}
 		}
 	}
-
 
 	private void drawContactLabel(DrawRequest r, VisualContact vc) {
 		Graphics2D g = r.getGraphics();
