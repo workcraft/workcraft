@@ -32,7 +32,7 @@ public class RenderedFormula implements Touchable {
 		this.positioning = positioning;
 		this.xOffset = offset.getX();
 		this.yOffset = offset.getY();
-		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
+		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
 		renderingResult = FormulaToGraphics.print(text, font, context);
 		if (formula != One.instance()) {
 			renderingResult.add(FormulaToGraphics.render(formula, context, font));

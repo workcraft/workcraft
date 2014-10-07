@@ -60,6 +60,8 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.util.Hierarchy;
 
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
+
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
 	private MathModel mathModel;

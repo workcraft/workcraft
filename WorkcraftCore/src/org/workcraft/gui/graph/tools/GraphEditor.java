@@ -41,6 +41,7 @@ public interface GraphEditor {
 	public int getHeight();
 	public Point2D snap(Point2D pos);
 	public void repaint();
+	public void forceRedraw();
 	public boolean hasFocus();
 	public void requestFocus();
 }

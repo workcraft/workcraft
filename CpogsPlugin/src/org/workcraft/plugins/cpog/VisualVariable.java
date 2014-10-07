@@ -131,12 +131,14 @@ public class VisualVariable extends VisualComponent {
 	}
 
 	protected void drawVariableInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility() && (variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
+		if (getLabelVisibility()) {
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			cacheVariableRenderedFormula(r);
-			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
-			variableRenderedFormula.draw(g);
+			if ((variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
+				g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+				variableRenderedFormula.draw(g);
+			}
 		}
 	}
 

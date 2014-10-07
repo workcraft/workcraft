@@ -288,10 +288,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
 		getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
 
@@ -315,6 +315,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		paintChildren(g2d);
 	}
+
+	@Override
+	public void forceRedraw() {
+		super.paintImmediately(0, 0, 1, 1);
+	}
+
 
 	public VisualModel getModel() {
 		return workspaceEntry.getModelEntry().getVisualModel();
@@ -478,4 +484,5 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public Framework getFramework() {
 		return mainWindow.getFramework();
 	}
+
 }

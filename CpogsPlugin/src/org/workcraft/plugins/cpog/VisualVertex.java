@@ -111,12 +111,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	}
 
 	protected void drawConditionInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility() && (conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
+		if (getLabelVisibility()) {
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			cacheConditionRenderedFormula(r);
-			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
-			conditionRenderedFormula.draw(g);
+			if ((conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
+				g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+				conditionRenderedFormula.draw(g);
+			}
 		}
 	}
 

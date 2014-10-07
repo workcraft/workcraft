@@ -24,7 +24,6 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
@@ -80,7 +79,6 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -1218,53 +1216,54 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void redraw() {
+	public void forceRedraw() {
 		if (editorInFocus != null) {
-			Graphics2D g = (Graphics2D)editorInFocus.getGraphics();
-			VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
-			visualModel.draw(g, Decorator.Empty.INSTANCE);
+			// Redraw one pixel to force redrawing of the whole model. This is usually necessary
+			// to recalculate bounding boxes of children components and correctly estimate the
+			// bounding boxes of their parents.
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void undo()  {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
-			redraw();
+			forceRedraw();
 		}
 	}
 
 	public void redo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().redo();
-			redraw();
+			forceRedraw();
 		}
 	}
 
 	public void cut() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().cut();
-			redraw();
+			forceRedraw();
 		}
 	}
 
 	public void copy() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().copy();
-			redraw();
+			forceRedraw();
 		}
 	}
 
 	public void paste() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().paste();
-			redraw();
+			forceRedraw();
 		}
 	}
 
 	public void delete() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().delete();
-			redraw();
+			forceRedraw();
 		}
 	}
 

@@ -722,7 +722,7 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = editor.getModel();
 		if (model.getSelection().size() > 0) {
 			editor.getMainWindow().selectNone();
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -731,7 +731,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.groupSelection();
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -740,7 +740,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -749,7 +749,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.groupPageSelection();
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -758,7 +758,8 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupPageSelection();
-			editor.repaint();
+			editor.getMainWindow().forceRedraw();
+			editor.forceRedraw();
 		}
 	}
 
@@ -767,7 +768,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -776,7 +777,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -785,7 +786,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, -1, 1);
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
@@ -794,7 +795,7 @@ public class SelectionTool extends AbstractTool {
 		if (model.getSelection().size() > 0) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, 1, -1);
-			editor.repaint();
+			editor.forceRedraw();
 		}
 	}
 
