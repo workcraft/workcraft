@@ -252,15 +252,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		internalBB = null;
 	}
 
-	private void updateBoundingBox(DrawRequest r) {
-		if (internalBB != null) return;
-		Rectangle2D bb = getContactBestBox();
-		double dx = Math.max(0.0, size - bb.getWidth());
-		double dy = Math.max(0.0, size - bb.getHeight());
-		internalBB = BoundingBoxHelper.expand(bb, dx, dy);
-	}
-
-
 	private Rectangle2D getContactMinimalBox() {
 		double x1 = 0.0;
 		double y1 = 0.0;
@@ -332,16 +323,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 
 		if (x1 > x2) {
-			double x = (x1 + x2) / 2;
-			x1 = x;
-			x2 = x;
+			x1 = x2 = (x1 + x2) / 2;
 		}
 		if (y1 > y2) {
-			double y = (y1 + y2) / 2;
-			y1 = y;
-			y2 = y;
+			y1 = y2 = (y1 + y2) / 2;
 		}
-
 		return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
 	}
 
@@ -397,14 +383,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 
 		if (x1 > x2) {
-			double x = (x1 + x2) / 2;
-			x1 = x;
-			x2 = x;
+			x1 = x2 = (x1 + x2) / 2;
 		}
 		if (y1 > y2) {
-			double y = (y1 + y2) / 2;
-			y1 = y;
-			y2 = y;
+			y1 = y2 = (y1 + y2) / 2;
 		}
 		Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
 		return BoundingBoxHelper.union(minBox, maxBox);
@@ -511,11 +493,8 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 		// Cache rendered text to better estimate the bounding box
 		cacheRenderedText(r);
-		// Calculate the bounding box if needed
-		updateBoundingBox(r);
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(bb);
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
@@ -528,6 +507,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 		g.draw(bb);
 
+		if (d.getColorisation() != null) {
+			drawPivot(r);
+		}
+
 		drawContactLines(r);
 		drawContactLabels(r);
 		drawLabelInLocalSpace(r);
@@ -536,6 +519,12 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		if ((groupImpl != null) && (internalBB == null)) {
+			Rectangle2D bb = getContactBestBox();
+			double dx = Math.max(0.0, size - bb.getWidth());
+			double dy = Math.max(0.0, size - bb.getHeight());
+			internalBB = BoundingBoxHelper.expand(bb, dx, dy);
+		}
 		Rectangle2D bb = BoundingBoxHelper.copy(internalBB);
 		if (bb == null) {
 			bb = super.getInternalBoundingBoxInLocalSpace();
@@ -636,7 +625,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 			AffineTransform at = t.sender.getTransform();
 			double x = at.getTranslateX();
 			double y = at.getTranslateY();
-
 			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 			if ((x < bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
 				vc.setDirection(Direction.WEST);

@@ -25,8 +25,7 @@ public class CircuitSelectionTool extends SelectionTool {
 	VisualNode selectedNode = null;
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e)
-	{
+	public void mouseClicked(GraphEditorMouseEvent e) {
 		boolean processed = false;
 		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 			VisualModel model = e.getEditor().getModel();
@@ -53,9 +52,8 @@ public class CircuitSelectionTool extends SelectionTool {
 			popup.add(new JLabel("Function Component"));
 			popup.addSeparator();
 
-			JMenuItem addFunction = new JMenuItem("Add function");
-
-			addFunction.addActionListener(new ActionListener() {
+			JMenuItem addOutput = new JMenuItem("Add output");
+			addOutput.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
@@ -63,8 +61,19 @@ public class CircuitSelectionTool extends SelectionTool {
 					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0, 0);
 				}
 			});
+			popup.add(addOutput);
 
-			popup.add(addFunction);
+			JMenuItem addInput = new JMenuItem("Add input");
+			addInput.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					editor.getWorkspaceEntry().saveMemento();
+					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0, 0);
+				}
+			});
+			popup.add(addInput);
+
 			return popup;
 		}
 
@@ -82,7 +91,7 @@ public class CircuitSelectionTool extends SelectionTool {
 					editor.getWorkspaceEntry().saveMemento();
 					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
 
-					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0, 0);
+					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0.0, 0.0);
 				}
 			});
 
@@ -93,7 +102,7 @@ public class CircuitSelectionTool extends SelectionTool {
 					editor.getWorkspaceEntry().saveMemento();
 					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
 
-					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0, 0);
+					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0.0, 0.0);
 				}
 			});
 

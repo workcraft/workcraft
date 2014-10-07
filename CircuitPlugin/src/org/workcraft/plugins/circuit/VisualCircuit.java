@@ -37,6 +37,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -59,38 +60,37 @@ public class VisualCircuit extends AbstractVisualModel {
 			throw new InvalidConnectionException ("Connections are only valid between different objects");
 		}
 
-		if (first instanceof VisualCircuitConnection || second instanceof VisualCircuitConnection) {
-			throw new InvalidConnectionException ("Connecting with connections is not implemented yet");
+		if (second instanceof VisualConnection) {
+			throw new InvalidConnectionException ("Merging connections is not allowed");
 		}
-		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 
-
+		if (second instanceof VisualComponent) {
 			for (Connection c: this.getConnections(second)) {
-				if (c.getSecond()==second)
+				if (c.getSecond() == second)
 					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
 			}
+		}
 
-			if (second instanceof VisualContact) {
-				Node toParent = ((VisualComponent)second).getParent();
-				Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
+		if (second instanceof VisualContact) {
+			Node toParent = ((VisualComponent)second).getParent();
+			Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
 
-				if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
-					throw new InvalidConnectionException ("Outputs of the components cannot be driven");
+			if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
+				throw new InvalidConnectionException ("Outputs of the components cannot be driven");
 
-				if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
-					throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
-			}
+			if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
+				throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
 		}
 	}
 
 	public VisualCircuit(Circuit model, VisualGroup root) {
 		super(model, root);
-		circuit=model;
+		circuit = model;
 	}
 
 	public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
 		super(model);
-		circuit=model;
+		circuit = model;
 		try {
 			createDefaultFlatStructure();
 		} catch (NodeCreationException e) {
@@ -101,6 +101,17 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public void connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
+
+		if (first instanceof VisualConnection) {
+			VisualJoint joint = new VisualJoint(new Joint());
+			addJoint(joint);
+			VisualConnection connection = (VisualConnection)first;
+			joint.setPosition(connection.getPointOnConnection(0.5));
+			remove(connection);
+			connect(connection.getFirst(), joint);
+			connect(joint, connection.getSecond());
+			first = joint;
+		}
 
 		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
 			VisualComponent vComponent1 = (VisualComponent)first;
@@ -133,18 +144,13 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	public VisualFunctionContact getOrCreateOutput(String name, double x, double y) {
-
 		VisualFunctionContact vc = getOrCreateContact(getCurrentLevel(), name, IOType.OUTPUT, x, y);
-
 		return vc;
-
 	}
 
 	public VisualFunctionContact  getOrCreateComponentOutput(VisualFunctionComponent component,  String name, double x, double y) {
-
 		VisualFunctionContact vc = getOrCreateContact(component, name, IOType.OUTPUT, x, y);
         vc.setPosition(new Point2D.Double(x, y));
-
 		return vc;
 	}
 

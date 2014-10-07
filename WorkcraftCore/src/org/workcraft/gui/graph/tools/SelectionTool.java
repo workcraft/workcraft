@@ -301,7 +301,6 @@ public class SelectionTool extends AbstractTool {
 						VisualComment comment = (VisualComment) node;
 						editLabelInPlace(e.getEditor(), comment, comment.getLabel());
 						return;
-
 					}
 				} else {
 					switch (e.getKeyModifiers()) {

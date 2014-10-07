@@ -21,9 +21,11 @@
 
 package org.workcraft.dom.visual;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -271,6 +273,19 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			labelRenderedText.draw(g);
 		}
 	}
+
+	protected void drawPivot(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+		float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
+		Path2D p = new Path2D.Double();
+		p.moveTo(-s2, 0);
+		p.lineTo(s2, 0);
+		p.moveTo(0, -s2);
+		p.lineTo(0, s2);
+		g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
+		g.draw(p);
+	}
+
 
 	public boolean getNameVisibility() {
 		return CommonVisualSettings.getNameVisibility();

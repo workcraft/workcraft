@@ -54,9 +54,14 @@ public class Circuit extends AbstractMathModel {
 				if (node instanceof Joint) return "j";
 				if (node instanceof Contact) {
 					Contact contact = (Contact)node;
-					if (contact.getParent() instanceof CircuitComponent) return "z";
-					if (contact.getIOType() == IOType.INPUT) return "in";
-					if (contact.getIOType() == IOType.OUTPUT) return "out";
+					if (contact.getIOType() == IOType.INPUT) {
+						if (contact.getParent() instanceof CircuitComponent) return "i";
+						else return "in";
+					}
+					if (contact.getIOType() == IOType.OUTPUT) {
+						if (contact.getParent() instanceof CircuitComponent) return "z";
+						else return "out";
+					}
 				}
 				return super.getPrefix(node);
 			}
