@@ -146,9 +146,9 @@
      borderopacity="0.19607843"
      inkscape:pageopacity="0.0000000"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="20.683792"
-     inkscape:cy="7.9925206"
+     inkscape:zoom="7.9999999"
+     inkscape:cx="-16.25111"
+     inkscape:cy="29.721754"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:grid-bbox="true"
@@ -159,8 +159,8 @@
      inkscape:guide-bbox="true"
      guidetolerance="1px"
      stroke="#555753"
-     inkscape:window-width="1600"
-     inkscape:window-height="838"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      showborder="true"
@@ -340,16 +340,16 @@
        sodipodi:nodetypes="cccc" />
     <text
        xml:space="preserve"
-       style="font-size:19.55657768px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#8e8e8e;stroke-width:1.10005748;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
-       x="3.6920707"
-       y="30.480145"
+       style="font-size:21.79172516px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#8e8e8e;stroke-width:1.22578454;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans"
+       x="1.4460492"
+       y="30.38352"
        id="text3026"
        sodipodi:linespacing="125%"
        transform="matrix(0.99992316,-0.0123962,0.0123962,0.99992316,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3028"
-         x="3.6920707"
-         y="30.480145"
-         style="fill:#000000;fill-opacity:1;stroke:#8e8e8e;stroke-width:1.10005748;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none">Auto</tspan></text>
+         x="1.4460492"
+         y="30.38352"
+         style="fill:#00002f;fill-opacity:1;stroke:#929292;stroke-width:1.22578454000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none">Auto</tspan></text>
   </g>
 </svg>

@@ -215,13 +215,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : abstractGroups)
 			for(Condition c : group.getConditions()){
 				if(getRelationAlg().getPrePNSet(c).isEmpty()){
-					Phase min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : min)
 						if(!getRelationAlg().isInitial(c2))
 							result.add(c);
 				}
 				if(getRelationAlg().getPostPNSet(c).isEmpty()){
-					Phase max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : max)
 						if(!getRelationAlg().isFinal(c2))
 							result.add(c);
@@ -252,14 +252,14 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 	//task3: if min/max phase is a cut
 	private String phaseTask3(Phase phase, Condition c){
-		Phase minimal = getBSONAlg().getMinimalPhase(phase);
-		Phase maximal = getBSONAlg().getMaximalPhase(phase);
+		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
+		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
 		ONPathAlg alg = new ONPathAlg(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
 		Collection<Path> paths = alg.pathTask(bhvGroup.getComponents());
 
-		for(ArrayList<Node> path : paths){
+		for(Path path : paths){
 			int minNodeInPath = 0;
 			int maxNodeInPath = 0;
 			boolean hasMinPhaseNode = false;
@@ -302,7 +302,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		Collection<Condition> preConditions = getRelationAlg().getPrePNCondition(c);
 		for(Condition pre : preConditions){
 			Phase prePhase = getBSONAlg().getPhase(pre);
-			Phase preMaximal = getBSONAlg().getMaximalPhase(prePhase);
+			ArrayList<Condition> preMaximal = getBSONAlg().getMaximalPhase(prePhase);
 			ONGroup preBhvGroup = getBSONAlg().getBhvGroup(prePhase);
 
 			if(!preMaximal.containsAll(minimal)){

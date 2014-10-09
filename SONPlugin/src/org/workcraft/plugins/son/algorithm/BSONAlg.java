@@ -2,7 +2,9 @@ package org.workcraft.plugins.son.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -85,11 +87,22 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get related ONGroup of a given phase
+	 * get the phases of every condition of an abstract group
 	 */
-	public ONGroup getBhvGroup(Collection<Condition> phase){
+	public Map<Condition, Phase> getPhases(ONGroup abstractGroup){
+		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
+		for(Condition c : abstractGroup.getConditions())
+			result.put(c, getPhase(c));
+
+		return result;
+	}
+
+	/**
+	 * get related ONGroup of a set of phase inputs and outputs
+	 */
+	public ONGroup getBhvGroup(Collection<Condition> conditions){
 		for(ONGroup group : net.getGroups())
-			if(group.getConditions().containsAll(phase))
+			if(group.getConditions().containsAll(conditions))
 				return group;
 		return null;
 	}
@@ -108,7 +121,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get unchecked behaviour groups.
+	 * get behaviour groups.
 	 */
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -129,7 +142,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get unchecked abstract groups.
+	 * get abstract groups.
 	 */
 	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -150,8 +163,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Phase getMinimalPhase(Phase phase){
-		Phase result = new Phase();
+	public ArrayList<Condition> getMinimalPhase(Phase phase){
+		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMinimal = true;
 			for(Condition pre : this.getPrePNCondition(c))
@@ -163,8 +176,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Phase getMaximalPhase(Phase phase){
-		Phase result = new Phase();
+	public ArrayList<Condition> getMaximalPhase(Phase phase){
+		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMaximal = true;
 			for(Condition pre : this.getPostPNCondition(c))

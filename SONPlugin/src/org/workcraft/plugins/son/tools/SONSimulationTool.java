@@ -6,17 +6,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -27,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -51,12 +47,12 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
@@ -76,11 +72,12 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
+import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
-public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
+public class SONSimulationTool extends PetriNetSimulationTool{
 
 	private SON net;
 	protected VisualSON visualNet;
@@ -241,21 +238,10 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		reverseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				 Map<PlaceNode, Boolean> currentMarking = readMarking();
-					setReverse(editor, !reverse);
-					if(!reverse)
-						initialMarking = currentMarking;
-					else
-						initialMarking = currentMarking;
-					branchTrace.clear();
-					mainTrace.clear();
-					excitedContainers.clear();
-					//clear clip board contents
-					StringSelection stringSelection = new StringSelection("");
-					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-					            stringSelection, null);
-					reset(editor);
-					updateState(editor);
+				Map<PlaceNode, Boolean> currentMarking = readSONMarking();
+				setReverse(editor, !reverse);
+				applyMarking(currentMarking);
+				updateState(editor);
 			}
 		});
 
@@ -263,7 +249,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Collection<Map<PlaceNode, Boolean>> history = new ArrayList<Map<PlaceNode, Boolean>>();
-				autoSimulator(editor, readMarking(), history);
+				try {
+					autoSimulator(editor, readSONMarking(), history);
+				} catch (InvalidStructureException e1) {
+					errorMsg(e1.getMessage(), editor);
+				}
 			}
 		});
 
@@ -297,23 +287,23 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					if (row < mainTrace.size()) {
 						boolean work = true;
 						while (work && (branchTrace.getPosition() > 0)) {
-							work = quietStepBack();
+							work = quietStepBack(editor);
 						}
 						while (work && (mainTrace.getPosition() > row)) {
-							work = quietStepBack();
+							work = quietStepBack(editor);
 						}
 						while (work && (mainTrace.getPosition() < row)) {
-							work = quietStep();
+							work = quietStep(editor);
 						}
 					}
 				} else {
 					if ((row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
 						boolean work = true;
 						while (work && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
-							work = quietStepBack();
+							work = quietStepBack(editor);
 						}
 						while (work && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
-							work = quietStep();
+							work = quietStep(editor);
 						}
 					}
 				}
@@ -341,7 +331,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	@Override
 	public void activated(final GraphEditor editor) {
-		super.activated(editor);
 
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
@@ -363,22 +352,14 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			conToBlock = false;
 			return;
 		}
-//		try{
-			sync = getSyncCycles();
-			phases = getPhases();
-//		}catch(IndexOutOfBoundsException ex){
-//			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
-//					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
-//			deactivated(editor);
-//			return;
-//		}catch(NullPointerException ex){
-//			JOptionPane.showMessageDialog(null, "Fail to run simulator, error may due to incorrect SON structure."
-//					, "Invalid structure", JOptionPane.WARNING_MESSAGE);
-//			deactivated(editor);
-//			return;
-//		}
-
-		initialMarking.putAll(autoInitialMarking());
+		sync = getSyncCycles();
+		phases = getPhases();
+		try {
+			initialMarking.putAll(autoInitialMarking());
+		} catch (InvalidStructureException e) {
+			errorMsg(e.getMessage(), editor);
+			return;
+		}
 
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
@@ -410,12 +391,12 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
 		abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
 		for(ONGroup group : abstractGroups){
-			for(Condition c : group.getConditions())
-				result.put(c, bsonAlg.getPhase(c));
+			result.putAll(bsonAlg.getPhases(group));
 		}
 		return result;
 	}
 
+	@Override
 	public void updateState(final GraphEditor editor) {
 		if (timer == null) {
 			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
@@ -485,7 +466,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 	};
 
 	//set initial marking
-	protected Map<PlaceNode, Boolean> autoInitialMarking(){
+	protected Map<PlaceNode, Boolean> autoInitialMarking() throws InvalidStructureException{
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
 
 		for(PlaceNode pn : net.getPlaceNodes()){
@@ -509,15 +490,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 									((Condition) c1).setMarked(true);
 									}
 							else{
-								errorMsg();
 								result.clear();
-								return result;
+								throw new InvalidStructureException("phase");
 								}
 						}
 					}else{
-						errorMsg();
 						result.clear();
-						return result;
+						throw new InvalidStructureException("bhv group size");
 					}
 				}
 			}
@@ -547,12 +526,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return result;
 	}
 
-	private void errorMsg(){
+	private void errorMsg(String message, final GraphEditor editor){
 		JOptionPane.showMessageDialog(null,
-				"Fail to run simulator, error may due to incorrect BSON structure.", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+				message, "Invalid structure", JOptionPane.WARNING_MESSAGE);
+		reset(editor);
 	}
 
-	protected Map<PlaceNode, Boolean> readMarking() {
+	protected Map<PlaceNode, Boolean> readSONMarking() {
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
 		for (PlaceNode c : net.getPlaceNodes())
 			result.put(c, c.isMarked());
@@ -560,87 +540,113 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return result;
 	}
 
-	private boolean quietStep() {
+	private boolean quietStep(final GraphEditor editor) {
 		excitedContainers.clear();
 		boolean result = false;
-		List<TransitionNode> runList = null;
+		List<TransitionNode> fireList = null;
 		int mainInc = 0;
 		int branchInc = 0;
 		if (branchTrace.canProgress()) {
 			Step step = branchTrace.getCurrent();
-			runList=this.getRunList(step);
+			fireList=this.getFireList(step);
+			setReverse(editor, step);
 			branchInc = 1;
 		} else if (mainTrace.canProgress()) {
 			Step step = mainTrace.getCurrent();
-			runList=this.getRunList(step);
+			fireList=this.getFireList(step);
+			setReverse(editor, step);
 			mainInc = 1;
 		}
 
 
-		if (runList != null && !reverse) {
-			simuAlg.fire(runList);
-			setErrNum(runList, reverse);
+		if (fireList != null && !reverse) {
+			try {
+				simuAlg.fire(fireList);
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+				return false;
+			}
+			setErrNum(fireList, reverse);
 			mainTrace.incPosition(mainInc);
 			branchTrace.incPosition(branchInc);
 			result = true;
 		}
-		if (runList!= null && reverse) {
-			simuAlg.unFire(runList);
-			setErrNum(runList, reverse);
+		if (fireList!= null && reverse) {
+			try {
+				simuAlg.unFire(fireList);
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+				return false;
+			}
+			setErrNum(fireList, reverse);
 			mainTrace.incPosition(mainInc);
 			branchTrace.incPosition(branchInc);
 			result = true;
 		}
+		Collection<Node> list = new ArrayList<Node>();
+		list.addAll(fireList);
 		return result;
 	}
 
 	private boolean step(final GraphEditor editor) {
-		boolean ret = quietStep();
+		boolean ret = quietStep(editor);
 		updateState(editor);
 		return ret;
 	}
 
 	private boolean stepBack(final GraphEditor editor) {
-		boolean ret = quietStepBack();
+		boolean ret = quietStepBack(editor);
 		updateState(editor);
 		return ret;
 	}
 
-	private boolean quietStepBack() {
+	private boolean quietStepBack(final GraphEditor editor) {
 		excitedContainers.clear();
 		boolean result = false;
-		List<TransitionNode> runList = null;
+		List<TransitionNode> fireList = null;
 		int mainDec = 0;
 		int branchDec = 0;
 		if (branchTrace.getPosition() > 0) {
 			Step step = branchTrace.get(branchTrace.getPosition()-1);
-			runList=this.getRunList(step);
+			fireList=this.getFireList(step);
+			setReverse(editor, step);
 			branchDec = 1;
 		} else if (mainTrace.getPosition() > 0) {
 			Step step = mainTrace.get(mainTrace.getPosition() - 1);
-			runList=this.getRunList(step);
+			fireList=this.getFireList(step);
+			setReverse(editor, step);
 			mainDec = 1;
 		}
 
-		if (runList != null && !reverse) {
-			simuAlg.unFire(runList);
+		if (fireList != null && !reverse) {
+			try {
+				simuAlg.unFire(fireList);
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+				return false;
+			}
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
 			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
 				branchTrace.clear();
 			}
 			result = true;
-			this.setErrNum(runList, !reverse);
+			this.setErrNum(fireList, !reverse);
 		}
-		if (runList != null && reverse) {
-			simuAlg.fire(runList);
+		if (fireList != null && reverse) {
+			try {
+				simuAlg.fire(fireList);
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+				return false;
+			}
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
 			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
 				branchTrace.clear();
 			}
 			result = true;
-			this.setErrNum(runList, !reverse);
+			this.setErrNum(fireList, !reverse);
 		}
 		return result;
 	}
@@ -694,8 +700,8 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				int mainTracePosition = mainTrace.getPosition();
 				mainTrace.setPosition(0);
 				boolean work = true;
-				while (work && (mainTrace.getPosition() < mainTracePosition)) {
-					work = quietStep();
+				while (work && (mainTrace.getPosition() < mainTracePosition) ) {
+					work = quietStep(editor);
 				}
 			} else {
 				branchTrace.fromString(s);
@@ -703,7 +709,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 				branchTrace.setPosition(0);
 				boolean work = true;
 				while (work && (branchTrace.getPosition() < branchTracePosition)) {
-					work = quietStep();
+					work = quietStep(editor);
 				}
 				break;
 			}
@@ -724,25 +730,25 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		updateState(editor);
 	}
 
-	private void setErrNum(List<TransitionNode> runList, boolean reverse){
+	private void setErrNum(List<TransitionNode> fireList, boolean reverse){
 		if (ErrTracingDisable.showErrorTracing()){
 			Collection<TransitionNode> abstractEvents = new ArrayList<TransitionNode>();
 			//get high level events
-			for(TransitionNode absEvent : runList){
+			for(TransitionNode absEvent : fireList){
 				for(ONGroup group : abstractGroups){
 					if(group.getEventNodes().contains(absEvent))
 						abstractEvents.add(absEvent);
 				}
 			}
 			//get low level events
-			runList.removeAll(abstractEvents);
+			fireList.removeAll(abstractEvents);
 			if(!reverse){
 				errAlg.setErrNum(abstractEvents, sync, false);
-				errAlg.setErrNum(runList, sync, true);
+				errAlg.setErrNum(fireList, sync, true);
 			}
 			else{
 				errAlg.setReverseErrNum(abstractEvents, sync, false);
-				errAlg.setReverseErrNum(runList, sync, true);
+				errAlg.setReverseErrNum(fireList, sync, true);
 			}
 		}
 	}
@@ -752,43 +758,45 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			c.setMarked(marking.get(c));
 	}
 
-	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history){
+	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history) throws InvalidStructureException{
 		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
-
 		history.add(marking);
 		for(TransitionNode node : net.getTransitionNodes()){
-			if(simuAlg.isEnabled(node, sync, phases)){
-				fireList.add(node);
-			}
+			if(!reverse){
+				if(simuAlg.isEnabled(node, sync, phases))
+					fireList.add(node);
+			}else{
+				if(simuAlg.isUnfireEnabled(node, sync, phases))
+					fireList.add(node);
+				}
 		}
 		if(!fireList.isEmpty()){
 			executeEvent(editor, fireList);
-			Map<PlaceNode, Boolean> currentMarking = readMarking();
+			Map<PlaceNode, Boolean> currentMarking = readSONMarking();
 
 			for(Map<PlaceNode, Boolean> m : history){
 				if(m.equals(currentMarking)){
-					errorMsg();
-					return;
+					throw new InvalidStructureException("cycle");
 				}
 			}
-			autoSimulator(editor, readMarking(), history);
+			autoSimulator(editor, readSONMarking(), history);
 		}
 	}
 
-	public void executeEvent(final GraphEditor editor, List<TransitionNode> runList) {
-		if (runList.isEmpty()) return;
+	public void executeEvent(final GraphEditor editor, List<TransitionNode> fireList) {
+		if (fireList.isEmpty()) return;
 		List<TransitionNode> traceList = new ArrayList<TransitionNode>();
 		// if clicked on the trace event, do the step forward
 		if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
 			Step step = mainTrace.get(mainTrace.getPosition());
-			traceList=getRunList(step);
+			traceList=getFireList(step);
 		}
 		// otherwise form/use the branch trace
 		if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
 			Step step = branchTrace.get(branchTrace.getPosition());
-			traceList=getRunList(step);
+			traceList=getFireList(step);
 		}
-		if (!traceList.isEmpty() && traceList.containsAll(runList) && runList.containsAll(traceList)){
+		if (!traceList.isEmpty() && traceList.containsAll(fireList) && fireList.containsAll(traceList)){
 				step(editor);
 				return;
 		}
@@ -797,7 +805,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		}
 
 		Step newStep = new Step();
-		for(TransitionNode e : runList)
+		if(!reverse)
+			newStep.add(">");
+		else
+			newStep.add("<");
+		for(TransitionNode e : fireList)
 			newStep.add(net.getNodeReference(e));
 
 		branchTrace.add(newStep);
@@ -805,7 +817,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return;
 	}
 
-	private ArrayList<TransitionNode> getRunList(Step step){
+	private ArrayList<TransitionNode> getFireList(Step step){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(int i =0; i<step.size(); i++){
 			final Node node = net.getNodeByReference(step.get(i));
@@ -847,7 +859,6 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 			label.setText(((Step)value).toString());
 
-
 			if (isActive(row, column)) {
 				label.setBackground(Color.YELLOW);
 			} else {
@@ -864,12 +875,15 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 			new Func<Node, Boolean>() {
 			@Override
 			public Boolean eval(Node node) {
-
-				if((node instanceof VisualTransitionNode) && simuAlg.isEnabled(((VisualTransitionNode)node).getMathTransitionNode(), sync, phases) && !reverse){
-					return true;
+				if(node instanceof VisualTransitionNode){
+					TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
+					if (simuAlg.isEnabled(node1, sync, phases) && !reverse)
+						return true;
 				}
-				if((node instanceof VisualTransitionNode) && simuAlg.isUnfireEnabled(((VisualTransitionNode)node).getMathTransitionNode(), sync, phases) && reverse){
-					return true;
+				if(node instanceof VisualTransitionNode){
+					TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
+					if(simuAlg.isUnfireEnabled(node1, sync, phases) && reverse)
+						return true;
 				}
 				return false;
 
@@ -943,11 +957,11 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 						maxFires.remove(event);
 
-				List<TransitionNode> runList = new ArrayList<TransitionNode>();
+				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
 				if(possibleFires.isEmpty() && maxFires.isEmpty()){
-					runList.add(event);
-					executeEvent(e.getEditor(),runList);
+					fireList.add(event);
+					executeEvent(e.getEditor(),fireList);
 					simuAlg.clearAll();
 				} else {
 					e.getEditor().requestFocus();
@@ -959,12 +973,12 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
-					runList.addAll(maxFires);
-					runList.add(event);
+					fireList.addAll(maxFires);
+					fireList.add(event);
 
 					if (dialog.getRun() == 1){
-						runList.addAll(dialog.getSelectedEvent());
-						executeEvent(e.getEditor(),runList);
+						fireList.addAll(dialog.getSelectedEvent());
+						executeEvent(e.getEditor(),fireList);
 					}
 					if(dialog.getRun()==2){
 						simuAlg.clearAll();
@@ -990,6 +1004,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		return reverse;
 	}
 
+	@Override
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
@@ -1023,33 +1038,17 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 		updateState(editor);
 	}
 
-	@Override
-	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
+	public void setReverse(final GraphEditor editor, Step step){
+
+		if(step.contains(">"))
+			this.setReverse(editor, false);
+		else
+			this.setReverse(editor, true);
 	}
 
 	@Override
 	public JPanel getInterfacePanel() {
 		return interfacePanel;
-	}
-
-	public void setTrace(Trace t) {
-		mainTrace.clear();
-		mainTrace.addAll(t);
-		branchTrace.clear();
-	}
-
-	public String getLabel() {
-		return "Simulation";
-	}
-
-	public int getHotKeyCode() {
-		return KeyEvent.VK_M;
-	}
-
-	@Override
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation: click on the highlighted transitions to fire them");
 	}
 
 	@Override

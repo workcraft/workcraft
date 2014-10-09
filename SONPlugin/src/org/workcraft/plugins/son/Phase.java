@@ -1,10 +1,10 @@
 package org.workcraft.plugins.son;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.workcraft.plugins.son.elements.Condition;
 
 @SuppressWarnings("serial")
-public class Phase extends ArrayList<Condition>{
+public class Phase extends HashSet<Condition>{
 
 }

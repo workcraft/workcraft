@@ -273,7 +273,7 @@ public class StructureVerifyDialog extends JDialog{
 		outputBefore.setSelected(false);
 
 		leftColumn.add(highLight);
-		leftColumn.add(outputBefore);
+		//leftColumn.add(outputBefore);
 
 		settingPanel.add(leftColumn, BorderLayout.WEST);
 	}

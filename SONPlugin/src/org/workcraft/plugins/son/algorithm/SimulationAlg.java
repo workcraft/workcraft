@@ -15,6 +15,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.InvalidStructureException;
 
 public class SimulationAlg extends RelationAlgorithm {
 
@@ -306,7 +307,8 @@ public class SimulationAlg extends RelationAlgorithm {
 							return false;
 					for(TransitionNode pre : this.getPreAsynEvents((TransitionNode)n)){
 						if(!syncEvents.contains(pre)){
-							if(!this.isAsynEnabled((TransitionNode)n, sync, phases) || !this.isBhvEnabled((TransitionNode)n, phases))
+							if(!this.isAsynEnabled((TransitionNode)n, sync, phases)
+									|| !this.isBhvEnabled((TransitionNode)n, phases))
 								return false;
 						}
 					}
@@ -324,7 +326,8 @@ public class SimulationAlg extends RelationAlgorithm {
 					for(Node node : net.getPreset(n)){
 						if(node instanceof TransitionNode && !checkedEvents.contains(node)){
 							if(!this.isPNEnabled((TransitionNode)node) ||!this.isSyncEnabled((TransitionNode)node, sync, phases)
-									||!this.isAsynEnabled((TransitionNode)node, sync, phases) ||!this.isBhvEnabled((TransitionNode)node, phases))
+									||!this.isAsynEnabled((TransitionNode)node, sync, phases)
+									||!this.isBhvEnabled((TransitionNode)node, phases))
 								return false;
 						}
 				}
@@ -364,25 +367,27 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	final public boolean isEnabled (TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
 		checkedEvents.clear();
-		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases) && this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
+		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases)
+				&& this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
 			return true;
 		}
 		return false;
 	}
 
-	public void fire(Collection<TransitionNode> runList){
+	public void fire(Collection<TransitionNode> runList) throws InvalidStructureException{
 		for(TransitionNode e : runList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
 					if(to.isMarked())
-						throw new RuntimeException("Token setting error: the number of token in "+net.getName(to) + " > 1");
+						throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
 					to.setMarked(true);
 				}
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition from = (Condition)c.getFirst();
+					if(!from.isMarked())
+						throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
 					from.setMarked(false);
-
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
 						ChannelPlace to = (ChannelPlace)c.getSecond();
@@ -390,7 +395,7 @@ public class SimulationAlg extends RelationAlgorithm {
 							to.setMarked(((ChannelPlace)to).isMarked());
 						else{
 							if(to.isMarked())
-								throw new RuntimeException("Token setting error: the number of token in "+net.getName(to) + " > 1");
+								throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
 							to.setMarked(true);
 						}
 				}
@@ -399,19 +404,21 @@ public class SimulationAlg extends RelationAlgorithm {
 						if(runList.containsAll(net.getPostset(from)) && runList.containsAll(net.getPreset(from)))
 							from.setMarked(((ChannelPlace)from).isMarked());
 						else
-							from.setMarked(!((ChannelPlace)from).isMarked());
+							if(!from.isMarked())
+								throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+							from.setMarked(false);
 				}
 			}
 
 		for(ONGroup group : abstractGroups){
 			if(group.getEvents().contains(e)){
-				Phase preMax = new Phase();
-				Phase postMin = new Phase();
+				Collection<Condition> preMax = new HashSet<Condition>();
+				Collection<Condition> postMin = new HashSet<Condition>();
 				for(Node pre : getPrePNSet(e))
 					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
 				for(Node post : getPostPNSet(e))
 					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
-
+				//disjoint phases
 				if(!preMax.containsAll(postMin)){
 					boolean isFinal=true;
 					for(Condition fin : preMax)
@@ -422,7 +429,8 @@ public class SimulationAlg extends RelationAlgorithm {
 							//structure such that condition fin has more than one high-level states
 							int tokens = 0;
 							for(Node post : net.getPostset(fin)){
-								if(post instanceof Condition && net.getSONConnectionType(post, fin) == Semantics.BHVLINE)
+								if((post instanceof Condition)
+										&& net.getSONConnectionType(post, fin) == Semantics.BHVLINE)
 									if(((Condition)post).isMarked())
 										tokens++;
 							}
@@ -433,15 +441,16 @@ public class SimulationAlg extends RelationAlgorithm {
 					}
 					boolean isIni = true;
 					for(Condition init : postMin)
-							if(!isInitial(init))
-								isIni=false;
+						if(!isInitial(init))
+							isIni=false;
 					if(isIni)
 						for(Condition ini : postMin){
 							//structure such that condition ini has more than one high-level states
 							int tokens = 0;
 							int size = 0;
 							for(Node post : net.getPostset(ini)){
-								if(post instanceof Condition && net.getSONConnectionType(post, ini) == Semantics.BHVLINE){
+								if((post instanceof Condition)
+										&& net.getSONConnectionType(post, ini) == Semantics.BHVLINE){
 									size++;
 									if(((Condition)post).isMarked())
 										tokens++;
@@ -526,7 +535,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPostPNSet(e))
 					if(pre instanceof Condition){
-						Phase phase = bsonAlg.getPhase((Condition)pre);
+						Phase phase = phases.get((Condition)pre);
 						for(Condition min : bsonAlg.getMinimalPhase(phase))
 							if(!min.isMarked())
 								return false;
@@ -551,30 +560,38 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	public void unFire(Collection<TransitionNode> events){
+	public void unFire(Collection<TransitionNode> events) throws InvalidStructureException{
 		for(TransitionNode e : events){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition to = (Condition)c.getFirst();
+					if(to.isMarked())
+						throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
 					to.setMarked(true);
 				}
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition from = (Condition)c.getSecond();
+					if(!from.isMarked())
+						throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
 					from.setMarked(false);
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
-						ChannelPlace to = (ChannelPlace)c.getFirst();
-						if(events.containsAll(net.getPreset(to)) && events.containsAll(net.getPostset(to)))
-							to.setMarked(((ChannelPlace)to).isMarked());
-						else
-							to.setMarked(!((ChannelPlace)to).isMarked());
+					ChannelPlace to = (ChannelPlace)c.getFirst();
+					if(events.containsAll(net.getPreset(to)) && events.containsAll(net.getPostset(to)))
+						to.setMarked(((ChannelPlace)to).isMarked());
+					else
+						if(to.isMarked())
+							throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
+						to.setMarked(!to.isMarked());
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
-						ChannelPlace from = (ChannelPlace)c.getSecond();
-						if(events.containsAll(net.getPreset(from)) && events.containsAll(net.getPostset(from)))
-							from.setMarked(((ChannelPlace)from).isMarked());
-						else
-							from.setMarked(!((ChannelPlace)from).isMarked());
+					ChannelPlace from = (ChannelPlace)c.getSecond();
+					if(events.containsAll(net.getPreset(from)) && events.containsAll(net.getPostset(from)))
+						from.setMarked(((ChannelPlace)from).isMarked());
+					else
+						if(!from.isMarked())
+							throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+						from.setMarked(!from.isMarked());
 				}
 			}
 

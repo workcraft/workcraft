@@ -44,18 +44,18 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class ConnectionTool extends AbstractTool {
-	static private final Color incompleteConnectionColor = Color.GREEN;
-	static private final Color validConnectionColor = Color.BLUE;
-	static private final Color invalidConnectionColor = Color.RED;
+	static protected final Color incompleteConnectionColor = Color.GREEN;
+	static protected final Color validConnectionColor = Color.BLUE;
+	static protected final Color invalidConnectionColor = Color.RED;
 
-	private boolean forbidConnectingArcs = true;
-	private boolean forbidSelfLoops = true;
+	protected boolean forbidConnectingArcs = true;
+	protected boolean forbidSelfLoops = true;
 
-	private Point2D mousePosition = null;
-	private VisualNode firstNode = null;
-	private VisualNode currentNode = null;
-	private String warningMessage = null;
-	private boolean mouseLeftFirstNode = false;
+	protected Point2D mousePosition = null;
+	protected VisualNode firstNode = null;
+	protected VisualNode currentNode = null;
+	protected String warningMessage = null;
+	protected boolean mouseLeftFirstNode = false;
 
 	private static Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
@@ -82,7 +82,7 @@ public class ConnectionTool extends AbstractTool {
 		return KeyEvent.VK_C;
 	}
 
-	private void resetState(GraphEditor editor) {
+	protected void resetState(GraphEditor editor) {
 		mousePosition = null;
 		firstNode = null;
 		currentNode = null;
@@ -92,7 +92,7 @@ public class ConnectionTool extends AbstractTool {
 		editor.getWorkspaceEntry().setCanModify(true);
 	}
 
-	private void updateState(GraphEditor editor) {
+	protected void updateState(GraphEditor editor) {
 		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, editor.getModel());
 		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
 			currentNode = node;
