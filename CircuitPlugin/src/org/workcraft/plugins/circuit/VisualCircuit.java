@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,9 +36,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.Polyline;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -48,6 +45,7 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Circuit")
@@ -106,14 +104,18 @@ public class VisualCircuit extends AbstractVisualModel {
 		validateConnection(first, second);
 
 		if (first instanceof VisualConnection) {
-			VisualJoint joint = new VisualJoint(new Joint());
-			addJoint(joint);
 			VisualConnection connection = (VisualConnection)first;
-			joint.setPosition(connection.getPointOnConnection(0.5));
+			Container vContainer = (Container)connection.getParent();
+			Container mParent = (Container)(connection.getReferencedConnection().getParent());
+			Joint mJoint = new Joint();
+			mParent.add(mJoint);
+			VisualJoint vJoint = new VisualJoint(mJoint);
+			vContainer.add(vJoint);
+			vJoint.setPosition(connection.getPointOnConnection(0.5));
 			remove(connection);
-			connect(connection.getFirst(), joint);
-			connect(joint, connection.getSecond());
-			first = joint;
+			connect(connection.getFirst(), vJoint);
+			connect(vJoint, connection.getSecond());
+			first = vJoint;
 		}
 
 		VisualCircuitConnection vConnection = null;
@@ -124,15 +126,20 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualComponent vComponent2 = (VisualComponent)second;
 			MathNode mComponent2 = vComponent2.getReferencedComponent();
 
+			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
+			Container vContainer = (Container)Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
+				@Override
+				public Boolean eval(Node node) {
+					return ((node instanceof VisualGroup) || (node instanceof VisualPage));
+				}
+			});
+			Container mContainer = getMathContainer(this, vContainer);
+
 			MathConnection mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
 			vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
-
-			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
-			VisualGroup vGroup = Hierarchy.getNearestAncestor(vParent, VisualGroup.class);
-			vGroup.add(vConnection);
+			vContainer.add(vConnection);
 
 			Container mParent = (Container)(mConnection.getParent());
-			Container mContainer = getMathContainer(this, vGroup);
 			LinkedList<Node> mConnections = new LinkedList<Node>();
 			mConnections.add(mConnection);
 			mParent.reparent(mConnections, mContainer);
@@ -142,10 +149,6 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	public Collection<VisualFunctionContact> getVisualFunctionContacts() {
 		return Hierarchy.getChildrenOfType(getRoot(), VisualFunctionContact.class);
-	}
-
-	public Collection<Environment> getEnvironments() {
-		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
 	}
 
 	public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
@@ -187,21 +190,11 @@ public class VisualCircuit extends AbstractVisualModel {
 		return vc;
 	}
 
-	public void addFunctionComponent(VisualFunctionComponent component) {
-		for (Node node : component.getMathReferences()) {
-			circuit.add(node);
-		}
-		super.add(component);
+	public Collection<Environment> getEnvironments() {
+		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
 	}
 
-	 public void addJoint(VisualJoint joint) {
-		 for (Node node : joint.getMathReferences()) {
-			 circuit.add(node);
-		 }
-		 super.add(joint);
-	 }
-
-	 @NoAutoSerialisation
+	@NoAutoSerialisation
 	public File getEnvironmentFile() {
 		File result = null;
 		for (Environment env: getEnvironments()) {
@@ -233,6 +226,5 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 		return properties;
 	}
-
 
 }

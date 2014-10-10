@@ -1007,7 +1007,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Simulation: click on the highlighted transitions to fire them");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlighted transitions to fire them.");
 	}
 
 	@Override

@@ -37,14 +37,12 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
-import org.apache.batik.swing.JSVGCanvas.AffineAction;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -52,7 +50,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
 
 public class ConnectionTool extends AbstractTool {
 	static private final Color incompleteConnectionColor = Color.GREEN;
@@ -222,6 +219,7 @@ public class ConnectionTool extends AbstractTool {
 	private void finishConnection(VisualModel model) {
 		try {
 			VisualConnection connection = model.connect(firstNode, currentNode);
+			AffineTransform rootToConnectionTransform = TransformHelper.getTransform(model.getRoot(), connection);
 			if (controlPoints != null) {
 				ConnectionGraphic graphic = connection.getGraphic();
 				if (graphic instanceof Polyline) {
@@ -230,10 +228,8 @@ public class ConnectionTool extends AbstractTool {
 					// Iterate in reverse
 					while(pointIterator.hasPrevious()) {
 						Point2D point = pointIterator.previous();
+						rootToConnectionTransform.transform(point, point);
 						polyline.insertControlPointInSegment(point, 0);
-//						Node commonParent = Hierarchy.getCommonParent(firstNode, currentNode);
-//						AffineTransform rootToLocalTransform = TransformHelper.getTransform(model.getRoot(), commonParent);
-//						polyline.insertControlPointInSegment(rootToLocalTransform.transform(point, null), 0);
 					}
 				}
 			}
@@ -257,9 +253,9 @@ public class ConnectionTool extends AbstractTool {
 		} else {
 			String message;
 			if (firstNode == null) {
-				message = "Click on the first component";
+				message = "Click on the first component.";
 			} else {
-				message = "Click on the second component (control+click to connect continuously)";
+				message = "Click on the second component or create a node point. Hold Ctrl to connect continuously.";
 			}
 			GUI.drawEditorMessage(editor, g, Color.BLACK, message);
 		}

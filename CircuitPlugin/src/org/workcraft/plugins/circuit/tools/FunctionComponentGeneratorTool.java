@@ -36,6 +36,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a component, then right-click on the component to add a contact");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a component, then right-click on the component to add contacts.");
 	}
 }
