@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
@@ -330,8 +331,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return view;
 	}
 
-	public Point2D snap(Point2D point) {
-		return new Point2D.Double(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
+	public Point2D snap(Point2D pos, Set<Point2D> snaps) {
+		double x = grid.snapCoordinate(pos.getX());
+		double y = grid.snapCoordinate(pos.getY());
+		if (snaps != null) {
+			for (Point2D snap: snaps) {
+				if (Math.abs(pos.getX() - snap.getX()) < Math.abs(pos.getX() - x)) {
+					x = snap.getX();
+				}
+				if (Math.abs(pos.getY() - snap.getY()) < Math.abs(pos.getY() - y)) {
+					y = snap.getY();
+				}
+			}
+		}
+		return new Point2D.Double(x, y);
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {

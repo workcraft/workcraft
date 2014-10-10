@@ -38,7 +38,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -65,7 +67,10 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.connections.BezierControlPoint;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -93,6 +98,7 @@ public class SelectionTool extends AbstractTool {
 	private boolean notClick3 = false;
 
 	private Point2D snapOffset;
+	private Set<Point2D> snaps = new HashSet<Point2D>();
 	private DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
@@ -325,9 +331,12 @@ public class SelectionTool extends AbstractTool {
 		GraphEditor editor = e.getEditor();
 		VisualModel model = editor.getModel();
 		if (dragState == DrugState.MOVE) {
-			Point2D p1 = editor.snap(new Point2D.Double(e.getPrevPosition().getX()+snapOffset.getX(), e.getPrevPosition().getY()+snapOffset.getY()));
-			Point2D p2 = editor.snap(new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY()));
-			selectionOffset(editor, p2.getX()-p1.getX(), p2.getY()-p1.getY());
+			Point2D prevPos = e.getPrevPosition();
+			Point2D.Double pos1 = new Point2D.Double(prevPos.getX() + snapOffset.getX(), prevPos.getY() + snapOffset.getY());
+			Point2D snapPos1 = editor.snap(pos1, snaps);
+			Point2D.Double pos2 = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
+			Point2D snapPos2 = editor.snap(pos2, snaps);
+			selectionOffset(editor, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
 		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
@@ -344,9 +353,11 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void startDrag(GraphEditorMouseEvent e) {
-		VisualModel model = e.getEditor().getModel();
+		GraphEditor editor = e.getEditor();
+		VisualModel model = editor.getModel();
 		if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
-			Node hitNode = HitMan.hitTestForSelection(e.getStartPosition(), model);
+			Point2D startPos = e.getStartPosition();
+			Node hitNode = HitMan.hitTestForSelection(startPos, model);
 
 			if (hitNode == null) {
 				// hit nothing, so start select-drag
@@ -376,18 +387,27 @@ public class SelectionTool extends AbstractTool {
 				}
 			} else {
 				// hit something
-				if (e.getKeyModifiers() == 0 && hitNode instanceof Movable) {
+				if ((e.getKeyModifiers() == 0) && (hitNode instanceof Movable)) {
 					// mouse down without modifiers, begin move-drag
 					dragState = DrugState.MOVE;
-					e.getEditor().getWorkspaceEntry().captureMemento();
-					if (hitNode != null && !model.getSelection().contains(hitNode)) {
+					editor.getWorkspaceEntry().captureMemento();
+					if ((hitNode != null) && !model.getSelection().contains(hitNode)) {
 						e.getModel().select(hitNode);
 					}
-					Movable node = (Movable) hitNode;
+					Movable node = (Movable)hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
-					Point2D pSnap = e.getEditor().snap(pos);
-					selectionOffset(e.getEditor(), pSnap.getX()-pos.getX(), pSnap.getY()-pos.getY());
-					snapOffset = new Point2D.Double(pSnap.getX()-e.getStartPosition().getX(), pSnap.getY()-e.getStartPosition().getY());
+					snaps.clear();
+					if ((node instanceof ControlPoint) && !(node instanceof BezierControlPoint)) {
+						ControlPoint cp = (ControlPoint)node;
+						if (cp.getParent() instanceof Polyline) {
+							Polyline polyline = (Polyline)cp.getParent();
+							snaps.add(polyline.getPrevAnchorPointLocation(cp));
+							snaps.add(polyline.getNextAnchorPointLocation(cp));
+						}
+					}
+					Point2D snapPos = editor.snap(pos, snaps);
+					snapOffset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
+					selectionOffset(editor, snapPos.getX()-pos.getX(), snapPos.getY()-pos.getY());
 				} else {
 					// do nothing if pressed on a node with modifiers
 				}

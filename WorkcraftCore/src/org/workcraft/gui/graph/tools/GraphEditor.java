@@ -22,6 +22,7 @@
 package org.workcraft.gui.graph.tools;
 
 import java.awt.geom.Point2D;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
@@ -39,7 +40,7 @@ public interface GraphEditor {
 	public VisualModel getModel();
 	public int getWidth();
 	public int getHeight();
-	public Point2D snap(Point2D pos);
+	public Point2D snap(Point2D pos, Set<Point2D> snaps);
 	public void repaint();
 	public void forceRedraw();
 	public boolean hasFocus();

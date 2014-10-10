@@ -406,4 +406,33 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return getPointOnCurve(0.5);
 	}
 
+	private int getIndex(ControlPoint cp) {
+		int index = -1;
+		for(Node node: groupImpl.getChildren()) {
+			index++;
+			if (node == cp) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	public Point2D getPrevAnchorPointLocation(ControlPoint cp) {
+		int index = getIndex(cp);
+		Point2D pos = null;
+		if (index >= 0) {
+			pos = getAnchorPointLocation(index);
+		}
+		return pos;
+	}
+
+	public Point2D getNextAnchorPointLocation(ControlPoint cp) {
+		int index = getIndex(cp);
+		Point2D pos = null;
+		if (index >= 0) {
+			pos = getAnchorPointLocation(index+2);
+		}
+		return pos;
+	}
+
 }
