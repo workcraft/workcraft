@@ -92,7 +92,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void setSetFunction(BooleanFormula setFunction) {
 		if (getParent() instanceof VisualFunctionComponent) {
 			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
+			p.invalidateRenderingResult();
 		}
 		renderedSetFormula = null;
 		getReferencedFunctionContact().setSetFunction(setFunction);
@@ -107,7 +107,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void setResetFunction(BooleanFormula resetFunction) {
 		if (getParent() instanceof VisualFunctionComponent) {
 			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
+			p.invalidateRenderingResult();
 		}
 		renderedResetFormula = null;
 		getReferencedFunctionContact().setResetFunction(resetFunction);

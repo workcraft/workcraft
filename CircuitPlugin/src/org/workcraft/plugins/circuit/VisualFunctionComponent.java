@@ -8,6 +8,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -36,6 +37,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	private ComponentRenderingResult getRenderingResult() {
+		if (groupImpl == null) return null;
 		if (renderingResult != null) {
 			return renderingResult;
 		}
@@ -79,8 +81,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		return renderingResult;
 	}
 
-	public void resetRenderingResult() {
+	public void invalidateRenderingResult() {
 		renderingResult = null;
+	}
+
+	@Override
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		ComponentRenderingResult res = getRenderingResult();
+		if (res == null) {
+			return super.getInternalBoundingBoxInLocalSpace();
+		} else {
+			return res.boundingBox();
+		}
 	}
 
 	@Override
@@ -95,21 +107,17 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public void setRenderType(RenderType renderType) {
+		if (this.renderType != renderType) {
+			invalidateRenderingResult();
+		}
 		super.setRenderType(renderType);
-		resetRenderingResult();
-		sendNotification(new PropertyChangedEvent(this, "render type"));
 	}
 
-	private boolean firstUpdate = true;
-
 	@Override
-	protected void updateStepPositions() {
+	public void setContactsDefaultPosition() {
 		ComponentRenderingResult res = getRenderingResult();
 		if (res == null) {
-			super.updateStepPositions();
-		} else if (firstUpdate) {
-  		    // suppress notifications at first recalculation of contact coordinates
-			firstUpdate = false;
+			super.setContactsDefaultPosition();
 		} else {
 			AffineTransform at = new AffineTransform();
 			AffineTransform bt = new AffineTransform();
@@ -117,23 +125,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (v != null) {
 				at = VisualContact.Direction.getDirectionTransform(v.getDirection());
 			}
+			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
+			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 			for (Node n: this.getChildren()) {
 				bt.setTransform(at);
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (vc.getIOType() == IOType.OUTPUT) {
-						bt.translate(snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin), 0);
-					}
 					if (vc.getIOType() == IOType.INPUT) {
 						String vcName = vc.getName();
 						Point2D position = res.contactPositions().get(vcName);
 						if (position != null) {
-							bt.translate(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin), position.getY());
+							bt.translate(inputPositionX, position.getY());
 						}
 					} else {
-						bt.translate(snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin), 0);
+						bt.translate(outputPositionX, 0);
 					}
-					// here we only need to change position, do not do the rotation
+					// Here we only need to change position, do not do the rotation
 					AffineTransform ct = new AffineTransform();
 					ct.translate(bt.getTranslateX(), bt.getTranslateY());
 					vc.setTransform(ct);
@@ -143,13 +150,19 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	@Override
+	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
+		super.addContact(vcircuit, vc);
+		invalidateRenderingResult();
+	}
+
+	@Override
 	public void notify(StateEvent e) {
 		super.notify(e);
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("direction")) {
-				if (getMainContact()==pc.getSender()&&getRenderingResult()!=null) {
-					updateStepPositions();
+				if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
+					setContactsDefaultPosition();
 				}
 			}
 		}

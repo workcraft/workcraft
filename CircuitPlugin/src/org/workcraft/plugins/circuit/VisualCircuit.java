@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -143,18 +142,7 @@ public class VisualCircuit extends AbstractVisualModel {
 		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
 	}
 
-	public VisualFunctionContact getOrCreateOutput(String name, double x, double y) {
-		VisualFunctionContact vc = getOrCreateContact(getCurrentLevel(), name, IOType.OUTPUT, x, y);
-		return vc;
-	}
-
-	public VisualFunctionContact  getOrCreateComponentOutput(VisualFunctionComponent component,  String name, double x, double y) {
-		VisualFunctionContact vc = getOrCreateContact(component, name, IOType.OUTPUT, x, y);
-        vc.setPosition(new Point2D.Double(x, y));
-		return vc;
-	}
-
-	public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType, double x, double y) {
+	public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
 		// here "parent" is a container of a visual model
 		if (name != null) {
 			for (Node n: container.getChildren()) {
@@ -178,7 +166,6 @@ public class VisualCircuit extends AbstractVisualModel {
 
 		VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
 		vc.setDirection(direction);
-		vc.setPosition(new Point2D.Double(x, y));
 
 		if (container instanceof VisualFunctionComponent) {
 			VisualFunctionComponent component = (VisualFunctionComponent)container;

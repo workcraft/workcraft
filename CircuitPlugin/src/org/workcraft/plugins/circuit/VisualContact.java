@@ -56,10 +56,10 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 public class VisualContact extends VisualComponent implements StateObserver {
 
 	public enum Direction {
+		WEST("West"),
 		NORTH("North"),
-		SOUTH("South"),
 		EAST("East"),
-		WEST("West");
+		SOUTH("South");
 
 		private final String name;
 
@@ -68,10 +68,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 
 		public static Direction flipDirection(Direction direction) {
-			if (direction==Direction.EAST) return Direction.WEST;
 			if (direction==Direction.WEST) return Direction.EAST;
-			if (direction==Direction.SOUTH) return Direction.NORTH;
 			if (direction==Direction.NORTH) return Direction.SOUTH;
+			if (direction==Direction.EAST) return Direction.WEST;
+			if (direction==Direction.SOUTH) return Direction.NORTH;
 			return null;
 		}
 
@@ -79,17 +79,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			AffineTransform at = new AffineTransform();
 			if (dir!=null) {
 				switch (dir) {
-				case NORTH:
-					at.quadrantRotate(3);
-					break;
-				case SOUTH:
-					at.quadrantRotate(1);
-					break;
 				case WEST:
 					at.quadrantRotate(2);
 					break;
+				case NORTH:
+					at.quadrantRotate(3);
+					break;
 				case EAST:
 					at.setToIdentity();
+					break;
+				case SOUTH:
+					at.quadrantRotate(1);
 					break;
 				}
 			}
@@ -254,17 +254,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			AffineTransform at = new AffineTransform();
 			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
-			case NORTH:
-				at.quadrantRotate(1);
-				break;
-			case SOUTH:
-				at.quadrantRotate(3);
-				break;
 			case WEST:
 				at.quadrantRotate(2);
 				break;
+			case NORTH:
+				at.quadrantRotate(1);
+				break;
 			case EAST:
 				at.setToIdentity();
+				break;
+			case SOUTH:
+				at.quadrantRotate(3);
 				break;
 			}
 			if (getIOType()==IOType.INPUT) {
@@ -286,16 +286,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public GlyphVector getNameGlyphs(DrawRequest r) {
 		if (nameGlyph == null) {
-//			Graphics2D g = r.getGraphics();
-//			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-//			g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-//			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//			g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-//
-//			FontRenderContext context = g.getFontRenderContext();
 			final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-			// FontRenderContext fontRenderContext = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
 			Circuit circuit = (Circuit)r.getModel().getMathModel();
 			String name = circuit.getName(this.getReferencedContact());
 			nameGlyph = nameFont.createGlyphVector(context, name);

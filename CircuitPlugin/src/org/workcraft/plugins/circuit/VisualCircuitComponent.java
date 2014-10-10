@@ -32,6 +32,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -70,7 +73,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	private Color outputColor = VisualContact.outputColor;
 
 	double marginSize = 0.2;
-	double contactLength = 1.0;
+	double contactLength = 0.5;
 	double contactStep = 1.0;
 
 	protected Rectangle2D internalBB = null;
@@ -117,16 +120,15 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	public VisualContact getMainContact() {
 		VisualContact ret = null;
-		if (mainContact != null)
+		if (mainContact != null) {
 			ret = mainContact.get();
+		}
 		if (ret == null) {
-			for (Node n : getChildren()) {
-				if (n instanceof VisualContact) {
-					if (((VisualContact) n).getIOType() == IOType.OUTPUT) {
-						setMainContact((VisualContact) n);
-						ret = (VisualContact) n;
-						break;
-					}
+			for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+				if (vc.getIOType() == IOType.OUTPUT) {
+					setMainContact(vc);
+					ret = vc;
+					break;
 				}
 			}
 		}
@@ -155,96 +157,139 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	public void setRenderType(RenderType renderType) {
-		this.renderType = renderType;
-		invalidateBoundingBox();
-		updateStepPositions();
-		sendNotification(new PropertyChangedEvent(this, "render type"));
+		if (this.renderType != renderType) {
+			this.renderType = renderType;
+			spreadContactsEvenly();
+			invalidateBoundingBox();
+			sendNotification(new PropertyChangedEvent(this, "render type"));
+		}
 	}
 
-	// updates sequential position of the contacts
-	protected void updateStepPositions() {
-		int northCount = 0;
-		int southCount = 0;
-		int eastCount = 0;
-		int westCount = 0;
-		for (Node n : this.getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact) n;
-				switch (vc.getDirection()) {
-				case NORTH: northCount++; break;
-				case EAST: eastCount++; break;
-				case SOUTH: southCount++; break;
-				case WEST: westCount++; break;
-				}
+	private LinkedList<VisualContact> getOrderedContacts(final Direction dir, final boolean reverse) {
+		LinkedList<VisualContact> list = new LinkedList<VisualContact>();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.getDirection() == dir) {
+				list.add(vc);
 			}
 		}
+		Collections.sort(list, new Comparator<VisualContact>() {
+			@Override
+			public int compare(VisualContact vc1, VisualContact vc2) {
+				if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+					return (reverse ? -1 : 1) * Double.compare(vc1.getX(), vc2.getX());
+				} else {
+					return (reverse ? -1 : 1) * Double.compare(vc1.getY(), vc2.getY());
+				}
+			}
+		});
+		return list;
+	}
 
-		double eastStep = -contactStep * (eastCount - 1) / 2;
-		double westStep = -contactStep * (westCount - 1) / 2;
-		double northStep = -contactStep * (northCount - 1) / 2;
-		double southStep = -contactStep * (southCount - 1) / 2;
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact) n;
-				switch (vc.getDirection()) {
-				case EAST:
-					vc.setY(eastStep);
-					eastStep += contactStep;
-					break;
-				case WEST:
-					vc.setY(westStep);
-					westStep += contactStep;
-					break;
-				case SOUTH:
-					vc.setX(southStep);
-					southStep += contactStep;
-					break;
-				case NORTH:
-					vc.setX(northStep);
-					northStep += contactStep;
-					break;
-				}
+	private int getContactCount(final Direction dir) {
+		int count = 0;
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.getDirection() == dir) {
+				count++;
 			}
 		}
+		return count;
+	}
+
+	private void spreadContactsEvenly() {
+		int westCount = getContactCount(Direction.WEST);
+		int northCount = getContactCount(Direction.NORTH);
+		int eastCount = getContactCount(Direction.EAST);
+		int southCount = getContactCount(Direction.SOUTH);
+
+		double westPosition = -contactStep * (westCount - 1) / 2;
+		double northPosition = -contactStep * (northCount - 1) / 2;
+		double eastPosition = -contactStep * (eastCount - 1) / 2;
+		double southPosition = -contactStep * (southCount - 1) / 2;
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setY(westPosition);
+				westPosition += contactStep;
+				break;
+			case NORTH:
+				vc.setX(northPosition);
+				northPosition += contactStep;
+				break;
+			case EAST:
+				vc.setY(eastPosition);
+				eastPosition += contactStep;
+				break;
+			case SOUTH:
+				vc.setX(southPosition);
+				southPosition += contactStep;
+				break;
+			}
+		}
+		invalidateBoundingBox();
+	}
+
+	public void setContactsDefaultPosition() {
+		spreadContactsEvenly();
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setX(bb.getMinX() - contactLength);
+				break;
+			case NORTH:
+				vc.setY(bb.getMinY() - contactLength);
+				break;
+			case EAST:
+				vc.setX(bb.getMaxX() + contactLength);
+				break;
+			case SOUTH:
+				vc.setY(bb.getMaxY() + contactLength);
+				break;
+			}
+		}
+		invalidateBoundingBox();
 	}
 
 	public static double snapP5(double x) {
 		return (double) (Math.round(x * 2)) / 2;
 	}
 
-	private void updateSidePosition(VisualContact vc) {
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		switch (vc.getDirection()) {
-		case EAST:
-			vc.setX(snapP5(bb.getMaxX() + contactLength));
-			break;
-		case WEST:
-			vc.setX(snapP5(bb.getMinX() - contactLength));
-			break;
-		case NORTH:
-			vc.setY(snapP5(bb.getMinY() - contactLength));
-			break;
-		case SOUTH:
-			vc.setY(snapP5(bb.getMaxY() + contactLength));
-			break;
-		}
-	}
-
-	public void updateDirection(VisualCircuit vcircuit, VisualContact vc, VisualContact.Direction dir) {
-		vc.setDirection(dir);
-		invalidateBoundingBox();
-		updateSidePosition(vc);
-		updateStepPositions();
-	}
-
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
+			LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
+			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+
 			Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
+
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setX(snapP5(bb.getMinX() - contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
+				}
+				break;
+			case NORTH:
+				vc.setY(snapP5(bb.getMinY() - contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
+				}
+				break;
+			case EAST:
+				vc.setX(snapP5(bb.getMaxX() + contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
+				}
+				break;
+			case SOUTH:
+				vc.setY(snapP5(bb.getMaxY() + contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
+				}
+				break;
+			}
 			invalidateBoundingBox();
-			updateSidePosition(vc);
-			updateStepPositions();
 		}
 	}
 

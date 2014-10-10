@@ -17,7 +17,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 
 public class CircuitSelectionTool extends SelectionTool {
@@ -46,68 +45,46 @@ public class CircuitSelectionTool extends SelectionTool {
 		JPopupMenu popup = new JPopupMenu();
 
 		if (node instanceof VisualFunctionComponent) {
-			final VisualFunctionComponent comp = (VisualFunctionComponent) node;
+			final VisualFunctionComponent component = (VisualFunctionComponent)node;
 
 			popup.setFocusable(false);
-			popup.add(new JLabel("Function Component"));
+			popup.add(new JLabel("Function component"));
 			popup.addSeparator();
 
-			JMenuItem addOutput = new JMenuItem("Add output");
+			JMenuItem addOutput = new JMenuItem("Add output (EAST)");
 			addOutput.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
 					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0, 0);
+					vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
 				}
 			});
 			popup.add(addOutput);
 
-			JMenuItem addInput = new JMenuItem("Add input");
+			JMenuItem addInput = new JMenuItem("Add input (WEST)");
 			addInput.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
 					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0, 0);
+					vcircuit.getOrCreateContact(component, null, IOType.INPUT);
 				}
 			});
 			popup.add(addInput);
 
-			return popup;
-		}
-
-		if (node instanceof VisualCircuitComponent) {
-			final VisualCircuitComponent comp = (VisualCircuitComponent) node;
-
-			popup.setFocusable(false);
-			popup.add(new JLabel("Circuit Component"));
 			popup.addSeparator();
 
-			JMenuItem addInput = new JMenuItem("Add input");
-			addInput.addActionListener(new ActionListener() {
+			JMenuItem defaultPosition = new JMenuItem("Set contacts in default position");
+			defaultPosition.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					editor.getWorkspaceEntry().saveMemento();
-					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-
-					vcircuit.getOrCreateContact(comp, null, IOType.INPUT, 0.0, 0.0);
+					component.setContactsDefaultPosition();
 				}
 			});
+			popup.add(defaultPosition);
 
-			JMenuItem addOutput = new JMenuItem("Add output");
-			addOutput.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					editor.getWorkspaceEntry().saveMemento();
-					VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-
-					vcircuit.getOrCreateContact(comp, null, IOType.OUTPUT, 0.0, 0.0);
-				}
-			});
-
-			popup.add(addInput);
-			popup.add(addOutput);
 			return popup;
 		}
 
