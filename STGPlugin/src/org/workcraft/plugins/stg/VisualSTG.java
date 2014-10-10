@@ -30,6 +30,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -105,16 +106,17 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
+		VisualConnection connection = null;
 		if (first instanceof VisualTransition) {
 			if (second instanceof VisualTransition) {
 				createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
 			} else if (second instanceof VisualImplicitPlaceArc) {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)second;
 				VisualPlace place = makeExplicit(con);
-				connect (first, place);
+				connection = connect(first, place);
 			} else if (second instanceof VisualPlace) {
 				createSimpleConnection((VisualComponent) first, (VisualComponent) second);
 			}
@@ -122,11 +124,12 @@ public class VisualSTG extends AbstractVisualModel {
 			if (second instanceof VisualTransition) {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)first;
 				VisualPlace place = makeExplicit(con);
-				connect(place, second);
+				connection = connect(place, second);
 			}
 		} else {
-			createSimpleConnection((VisualComponent) first, (VisualComponent) second);
+			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second);
 		}
+		return connection;
 	}
 
 	private void createImplicitPlaceConnection(VisualTransition t1,
@@ -145,18 +148,21 @@ public class VisualSTG extends AbstractVisualModel {
 						t2, con1, con2, implicitPlace));
 	}
 
-	private void createSimpleConnection(final VisualComponent firstComponent,
-			final VisualComponent secondComponent)	throws InvalidConnectionException {
-		ConnectionResult result = stg.connect( firstComponent.getReferencedComponent(),
-				secondComponent.getReferencedComponent());
+	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent)
+			throws InvalidConnectionException {
 
-		MathConnection con = result.getSimpleResult();
+		MathNode firstRef = firstComponent.getReferencedComponent();
+		MathNode secondRef = secondComponent.getReferencedComponent();
+		ConnectionResult result = stg.connect(firstRef, secondRef);
 
-		if (con == null)
+		MathConnection refConnection = result.getSimpleResult();
+		if (refConnection == null) {
 			throw new NullPointerException();
+		}
 
-		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(
-				new VisualConnection(con, firstComponent, secondComponent));
+		VisualConnection connection = new VisualConnection(refConnection, firstComponent, secondComponent);
+		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
+		return connection;
 	}
 
 	public VisualPlace makeExplicit(VisualImplicitPlaceArc con) {

@@ -7,6 +7,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.observation.HierarchyEvent;
@@ -42,7 +43,7 @@ public class VisualFsm extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualState vState1 = (VisualState)first;
@@ -56,6 +57,7 @@ public class VisualFsm extends AbstractVisualModel {
 		if (vState1 == vState2) {
 			vTransition.setConnectionType(ConnectionType.BEZIER, true);
 		}
+		return vTransition;
 	}
 
 	@Override

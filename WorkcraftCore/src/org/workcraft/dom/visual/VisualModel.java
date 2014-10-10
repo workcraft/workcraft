@@ -29,6 +29,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
@@ -42,7 +43,7 @@ public interface VisualModel extends Model, ObservableState {
 
 	public Collection<Node> getSelection();
 
-	public void connect(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
 
 	public void selectAll();

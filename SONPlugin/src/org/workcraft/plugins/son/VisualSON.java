@@ -162,7 +162,7 @@ public class VisualSON extends AbstractVisualModel{
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void connect (Node first, Node second) throws InvalidConnectionException{
+	public VisualConnection connect (Node first, Node second) throws InvalidConnectionException{
 		throw new org.workcraft.exceptions.NotImplementedException();
 	}
 

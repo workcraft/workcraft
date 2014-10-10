@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,6 +37,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -98,7 +102,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		if (first instanceof VisualConnection) {
@@ -112,6 +116,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			first = joint;
 		}
 
+		VisualCircuitConnection vConnection = null;
 		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
 			VisualComponent vComponent1 = (VisualComponent)first;
 			MathNode mComponent1 = vComponent1.getReferencedComponent();
@@ -120,7 +125,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			MathNode mComponent2 = vComponent2.getReferencedComponent();
 
 			MathConnection mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
-			VisualCircuitConnection vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
+			vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
 
 			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
 			VisualGroup vGroup = Hierarchy.getNearestAncestor(vParent, VisualGroup.class);
@@ -132,6 +137,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			mConnections.add(mConnection);
 			mParent.reparent(mConnections, mContainer);
 		}
+		return vConnection;
 	}
 
 	public Collection<VisualFunctionContact> getVisualFunctionContacts() {

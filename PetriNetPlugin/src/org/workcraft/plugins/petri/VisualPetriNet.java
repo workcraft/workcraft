@@ -87,7 +87,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualComponent c1 = (VisualComponent) first;
@@ -99,6 +99,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 		VisualConnection ret = new VisualConnection(con, c1, c2);
 
 		Hierarchy.getNearestContainer(c1, c2).add(ret);
+		return ret;
 	}
 
 	public Collection<VisualPlace> getVisualPlaces() {

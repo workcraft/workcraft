@@ -228,13 +228,13 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	public void createControlPoint(Point2D userLocation) {
 		Point2D pointOnConnection = new Point2D.Double();
 		int segment = getNearestSegment(userLocation, pointOnConnection);
+		insertControlPointInSegment(pointOnConnection, segment);
+	}
 
+	public void insertControlPointInSegment(Point2D location, int segment) {
 		ControlPoint ap = new ControlPoint();
-		ap.setPosition(pointOnConnection);
-		ap.setHidden(false);
-
+		ap.setPosition(location);
 		groupImpl.add(segment, ap);
-
 		controlPointsChanged();
 	}
 

@@ -396,15 +396,7 @@ public class SelectionTool extends AbstractTool {
 					}
 					Movable node = (Movable)hitNode;
 					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
-					snaps.clear();
-					if ((node instanceof ControlPoint) && !(node instanceof BezierControlPoint)) {
-						ControlPoint cp = (ControlPoint)node;
-						if (cp.getParent() instanceof Polyline) {
-							Polyline polyline = (Polyline)cp.getParent();
-							snaps.add(polyline.getPrevAnchorPointLocation(cp));
-							snaps.add(polyline.getNextAnchorPointLocation(cp));
-						}
-					}
+					snaps = calcSnapPoints(node);
 					Point2D snapPos = editor.snap(pos, snaps);
 					snapOffset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
 					selectionOffset(editor, snapPos.getX()-pos.getX(), snapPos.getY()-pos.getY());
@@ -413,6 +405,20 @@ public class SelectionTool extends AbstractTool {
 				}
 			}
 		}
+	}
+
+	protected Set<Point2D> calcSnapPoints(Node node) {
+		Set<Point2D> result = new HashSet<Point2D>();
+		if ((node instanceof ControlPoint) && !(node instanceof BezierControlPoint)) {
+			ControlPoint cp = (ControlPoint)node;
+			if (cp.getParent() instanceof Polyline) {
+				Polyline polyline = (Polyline)cp.getParent();
+				result.add(cp.getPosition());
+				result.add(polyline.getPrevAnchorPointLocation(cp));
+				result.add(polyline.getNextAnchorPointLocation(cp));
+			}
+		}
+		return result;
 	}
 
 	@Override

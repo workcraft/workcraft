@@ -70,21 +70,19 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public void validateConnection(Node first, Node second)
-				throws InvalidConnectionException {
+		public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void connect(Node first, Node second)
-				throws InvalidConnectionException {
+		public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+			return null;
 		}
 	}
 
 	@Test
-	public void TestGroupWithEmptySelection()
-			throws VisualModelInstantiationException {
+	public void TestGroupWithEmptySelection() throws VisualModelInstantiationException {
 		VisualModel model = new MockConcreteVisualModel();
 
 		model.getCurrentLevel().add(new VisualGroup());
