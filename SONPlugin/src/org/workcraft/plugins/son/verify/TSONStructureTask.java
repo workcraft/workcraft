@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask extends AbstractStructuralVerification{
@@ -17,7 +18,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
 	private Collection<Node> relationErrors = new HashSet<Node>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
-	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<Path> cycleErrors = new ArrayList<Path>();
 
 	private boolean hasErr = false;
 	private int errNumber = 0;

@@ -21,7 +21,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
-	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
@@ -131,12 +131,17 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : BSON cycles = "+ cycleErrors.size() + ".");
+			logger.error("ERROR : model invloves BSCON cycle paths = "+ cycleErrors.size() + ".");
+			for(Path cycle : cycleErrors){
+				int i = 1;
+				logger.error("Cycle " + i + ": " + cycle.toString(net));
+				i++;
+			}
 		}
 
 		logger.info("Cycle detection complete.\n");
 		}else{
-			cycleErrors = new HashSet<ArrayList<Node>>();
+			cycleErrors = new HashSet<Path>();
 			logger.info("WARNING : Relation error exist, cannot run cycle detection task.\n" );
 			warningNumber++;
 		}

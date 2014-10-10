@@ -45,7 +45,7 @@ public class CSONPathAlg extends ONPathAlg{
 
 	@Override
 	public Collection<Path> cycleTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
+		List<Path> result = new ArrayList<Path>();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
 				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
@@ -53,7 +53,7 @@ public class CSONPathAlg extends ONPathAlg{
 		 return cyclePathFilter(result);
 	}
 
-	private Collection<Path> cyclePathFilter(Collection<Path> paths){
+	private Collection<Path> cyclePathFilter(List<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
 		for (Path path : paths){
 			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
@@ -63,7 +63,7 @@ public class CSONPathAlg extends ONPathAlg{
 		}
 		paths.removeAll(delList);
 
-		return paths;
+		return PathAlgorithm.merging(paths);
 	}
 
 }

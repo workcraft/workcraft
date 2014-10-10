@@ -217,16 +217,7 @@ public class SON extends AbstractMathModel {
 		return newCP;
 	}
 
-	public String getNames(Collection<Node> nodes) {
-		String result = new String();
-		for(Node node : nodes)
-			result = result + this.getName(node) + " ";
-
-		return result;
-	}
-
 	//Connection
-
 	public Collection<SONConnection> getSONConnections(){
 		return Hierarchy.getDescendantsOfType(getRoot(), SONConnection.class);
 	}

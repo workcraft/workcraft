@@ -33,24 +33,6 @@ public class ONPathAlg{
 		return result;
 	}
 
-	public Collection<Path> cycleTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
-		for(Node start : relationAlg.getInitial(nodes))
-			for(Node end : relationAlg.getFinal(nodes))
-				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
-
-		 return result;
-	}
-
-	public Collection<Path> pathTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
-		for(Node start : relationAlg.getInitial(nodes))
-			for(Node end : relationAlg.getFinal(nodes))
-				result.addAll(PathAlgorithm.getPaths(start, end, createAdj(nodes)));
-		 return result;
-	}
-
-	//Backward Traverse
 	/**
 	 * create a backward adjacency matrix
 	 */
@@ -70,22 +52,23 @@ public class ONPathAlg{
 		return result;
 	}
 
-	public Collection<Path> backwardCycleTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
-		for(Node start : relationAlg.getFinal(nodes))
-			for(Node end : relationAlg.getInitial(nodes))
+	public Collection<Path> cycleTask (Collection<Node> nodes){
+		List<Path> result = new ArrayList<Path>();
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes)){
+				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
 				result.addAll(PathAlgorithm.getCycles(start, end, createBackwardAdj(nodes)));
-
-		 return result;
+			}
+		 return PathAlgorithm.merging(result);
 	}
 
-	public Collection<Path> backwardPathTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
-		for(Node start : relationAlg.getFinal(nodes))
-			for(Node end : relationAlg.getInitial(nodes))
-				result.addAll(PathAlgorithm.getPaths(start, end, createBackwardAdj(nodes)));
-
-		 return result;
+	public Collection<Path> pathTask (Collection<Node> nodes){
+		List<Path> result = new ArrayList<Path>();
+		for(Node start : relationAlg.getInitial(nodes))
+			for(Node end : relationAlg.getFinal(nodes)){
+				result.addAll(PathAlgorithm.getPaths(start, end, createAdj(nodes)));
+				result.addAll(PathAlgorithm.getCycles(start, end, createBackwardAdj(nodes)));
+			}
+		 return PathAlgorithm.merging(result);
 	}
-
 }

@@ -50,16 +50,15 @@ public class BSONPathAlg extends ONPathAlg{
 
 	@Override
 	public Collection<Path> cycleTask (Collection<Node> nodes){
-		Collection<Path> result = new ArrayList<Path>();
+		List<Path> result = new ArrayList<Path>();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
 				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
 
-
 		 return cyclePathFilter(result);
 	}
 
-	private Collection<Path> cyclePathFilter(Collection<Path> paths){
+	private Collection<Path> cyclePathFilter(List<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
 		for(Path cycle : paths){
 			int outputBhvLine = 0;
@@ -76,7 +75,7 @@ public class BSONPathAlg extends ONPathAlg{
 			}
 		}
 		paths.removeAll(delList);
-		return paths;
+		return PathAlgorithm.merging(paths);
 	}
 
 }
