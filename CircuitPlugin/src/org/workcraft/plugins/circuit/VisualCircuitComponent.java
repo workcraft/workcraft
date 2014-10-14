@@ -257,12 +257,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
 			LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
-			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
 			Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
 
+			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 			switch (vc.getDirection()) {
 			case WEST:
 				vc.setX(snapP5(bb.getMinX() - contactLength));
@@ -298,80 +297,61 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	private Rectangle2D getContactMinimalBox() {
-		double x1 = 0.0;
-		double y1 = 0.0;
-		double x2 = 0.0;
-		double y2 = 0.0;
-
-		boolean westFirst = true;
-		boolean northFirst = true;
-		boolean eastFirst = true;
-		boolean southFirst = true;
+		double x1 = -size/2;
+		double y1 = -size/2;
+		double x2 = size/2;
+		double y2 = size/2;
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			double x = vc.getBoundingBox().getCenterX();
-			double y = vc.getBoundingBox().getCenterY();
 			switch (vc.getDirection()) {
 			case WEST:
-				if (westFirst && eastFirst) {
-					y1 = y - contactStep / 2;
-					y2 = y + contactStep / 2;
-				} else {
-					y1 = Math.min(y1, y - contactStep / 2);
-					y2 = Math.max(y2, y + contactStep / 2);
+				double westX = vc.getX() + contactLength;
+				if ((westX < -size/2) && (westX > x1)) {
+					x1 = westX;
 				}
-				if (westFirst && northFirst && southFirst) {
-					x1 = x + contactLength;
-				}
-				westFirst = false;
 				break;
 			case NORTH:
-				if (northFirst && southFirst) {
-					x1 = x - contactStep / 2;
-					x2 = x + contactStep / 2;
-				} else {
-					x1 = Math.min(x1, x - contactStep / 2);
-					x2 = Math.max(x2, x + contactStep / 2);
+				double northY = vc.getY() + contactLength;
+				if ((northY < -size/2) && (northY > y1)) {
+					y1 = northY;
 				}
-				if (northFirst && westFirst && eastFirst) {
-					y1 = y + contactLength;
-				}
-				northFirst = false;
 				break;
 			case EAST:
-				if (eastFirst && westFirst) {
-					y1 = y - contactStep / 2;
-					y2 = y + contactStep / 2;
-				} else {
-					y1 = Math.min(y1, y - contactStep / 2);
-					y2 = Math.max(y2, y + contactStep / 2);
+				double eastX = vc.getX() - contactLength;
+				if ((eastX > size/2) && (eastX < x2)) {
+					x2 = eastX;
 				}
-				if (eastFirst && northFirst && southFirst) {
-					x2 = x - contactLength;
-				}
-				eastFirst = false;
 				break;
 			case SOUTH:
-				if (southFirst && northFirst) {
-					x1 = x - contactStep / 2;
-					x2 = x + contactStep / 2;
-				} else {
-					x1 = Math.min(x1, x - contactStep / 2);
-					x2 = Math.max(x2, x + contactStep / 2);
+				double southY = vc.getY() - contactLength;
+				if ((southY > size/2) && (southY < y2)) {
+					y2 = southY;
 				}
-				if (southFirst && westFirst && eastFirst) {
-					y2 = y - contactLength;
-				}
-				southFirst = false;
 				break;
 			}
 		}
 
-		if (x1 > x2) {
-			x1 = x2 = (x1 + x2) / 2;
-		}
-		if (y1 > y2) {
-			y1 = y2 = (y1 + y2) / 2;
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			double x = vc.getX();
+			double y = vc.getY();
+			switch (vc.getDirection()) {
+			case WEST:
+				y1 = Math.min(y1, y - contactStep / 2);
+				y2 = Math.max(y2, y + contactStep / 2);
+				break;
+			case NORTH:
+				x1 = Math.min(x1, x - contactStep / 2);
+				x2 = Math.max(x2, x + contactStep / 2);
+				break;
+			case EAST:
+				y1 = Math.min(y1, y - contactStep / 2);
+				y2 = Math.max(y2, y + contactStep / 2);
+				break;
+			case SOUTH:
+				x1 = Math.min(x1, x - contactStep / 2);
+				x2 = Math.max(x2, x + contactStep / 2);
+				break;
+			}
 		}
 		return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
 	}
@@ -389,8 +369,8 @@ public class VisualCircuitComponent extends VisualComponent implements
 		boolean southFirst = true;
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			double x = vc.getBoundingBox().getCenterX();
-			double y = vc.getBoundingBox().getCenterY();
+			double x = vc.getX();
+			double y = vc.getY();
 			switch (vc.getDirection()) {
 			case WEST:
 				if (westFirst) {
@@ -434,6 +414,9 @@ public class VisualCircuitComponent extends VisualComponent implements
 			y1 = y2 = (y1 + y2) / 2;
 		}
 		Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+		System.out.println("===");
+		System.out.println(minBox);
+		System.out.println(maxBox);
 		return BoundingBoxHelper.union(minBox, maxBox);
 	}
 
@@ -532,6 +515,26 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	@Override
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		if ((groupImpl != null) && (internalBB == null)) {
+			internalBB = getContactBestBox();
+		}
+		Rectangle2D bb = BoundingBoxHelper.copy(internalBB);
+		if (bb == null) {
+			bb = super.getInternalBoundingBoxInLocalSpace();
+		}
+		return bb;
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
+		Rectangle2D childrenBB = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
+		return BoundingBoxHelper.union(bb, childrenBB);
+	}
+
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
@@ -560,29 +563,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		drawContactLabels(r);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-	}
-
-	@Override
-	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		if ((groupImpl != null) && (internalBB == null)) {
-			Rectangle2D bb = getContactBestBox();
-			double dx = Math.max(0.0, size - bb.getWidth());
-			double dy = Math.max(0.0, size - bb.getHeight());
-			internalBB = BoundingBoxHelper.expand(bb, dx, dy);
-		}
-		Rectangle2D bb = BoundingBoxHelper.copy(internalBB);
-		if (bb == null) {
-			bb = super.getInternalBoundingBoxInLocalSpace();
-		}
-		return bb;
-	}
-
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-		Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
-		Rectangle2D childrenBB = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
-		return BoundingBoxHelper.union(bb, childrenBB);
 	}
 
 	@Override

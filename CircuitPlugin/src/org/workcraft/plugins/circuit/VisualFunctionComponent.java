@@ -43,9 +43,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 		// Find a single gate output
 		VisualFunctionContact gateOutput = null;
-		for (Node n: getChildren()) {
-			if (n instanceof VisualFunctionContact) {
-				VisualFunctionContact vc = (VisualFunctionContact)n;
+		for (Node node: getChildren()) {
+			if (node instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)node;
 				if (vc.getIOType() == IOType.OUTPUT) {
 					if (gateOutput == null) {
 						gateOutput = vc;
