@@ -33,6 +33,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -92,7 +94,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void setSetFunction(BooleanFormula setFunction) {
 		if (getParent() instanceof VisualFunctionComponent) {
 			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
+			p.invalidateRenderingResult();
 		}
 		renderedSetFormula = null;
 		getReferencedFunctionContact().setSetFunction(setFunction);
@@ -107,13 +109,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 	public void setResetFunction(BooleanFormula resetFunction) {
 		if (getParent() instanceof VisualFunctionComponent) {
 			VisualFunctionComponent p = (VisualFunctionComponent) getParent();
-			p.resetRenderingResult();
+			p.invalidateRenderingResult();
 		}
 		renderedResetFormula = null;
 		getReferencedFunctionContact().setResetFunction(resetFunction);
 	}
 
-	public void resetRenderedFormula() {
+	public void invalidateRenderedFormula() {
 		renderedSetFormula = null;
 		renderedResetFormula = null;
 	}
@@ -241,18 +243,25 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		super.draw(r);
 	}
 
+	private Collection<VisualFunctionContact> getAllContacts() {
+		HashSet<VisualFunctionContact> result = new HashSet<VisualFunctionContact>();
+		Node root = Hierarchy.getRoot(this);
+		if (root != null) {
+			result.addAll(Hierarchy.getDescendantsOfType(root, VisualFunctionContact.class));
+		}
+		return result;
+	}
+
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals("setFunction")
-			 || pc.getPropertyName().equals("resetFunction")) {
-				resetRenderedFormula();
+			if (pc.getPropertyName().equals("setFunction") || pc.getPropertyName().equals("resetFunction")) {
+				invalidateRenderedFormula();
 			}
 			if (pc.getPropertyName().equals("name")) {
-				Node root = Hierarchy.getRoot(this);
-				for (VisualFunctionContact c : Hierarchy.getDescendantsOfType(root, VisualFunctionContact.class)) {
-					c.resetRenderedFormula();
+				for (VisualFunctionContact vc : getAllContacts()) {
+					vc.invalidateRenderedFormula();
 				}
 			}
 		}

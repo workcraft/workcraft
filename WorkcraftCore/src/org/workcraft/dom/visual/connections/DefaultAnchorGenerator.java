@@ -27,21 +27,26 @@ import java.awt.geom.Point2D;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DummyMouseListener;
 
 public class DefaultAnchorGenerator extends DummyMouseListener {
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
-		if (e.getClickCount()==2) {
-			Node n = HitMan.hitTestForSelection(e.getPosition(), e.getModel());
-			if (n instanceof VisualConnection) {
-				VisualConnection con = (VisualConnection)n;
-				if (con.getGraphic() instanceof Polyline) {
-					AffineTransform t = TransformHelper.getTransform(e.getModel().getRoot(), con);
-					Point2D pt = t.transform(e.getPosition(), null);
+		if (e.getClickCount() == 2) {
+			VisualModel model = e.getModel();
+			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
+			if (node instanceof VisualConnection) {
+				VisualConnection connection = (VisualConnection)node;
+				if (connection.getGraphic() instanceof Polyline) {
 					e.getEditor().getWorkspaceEntry().saveMemento();
-					((Polyline)con.getGraphic()).createControlPoint(pt);
+					model.selectNone();
+					Polyline polyline = (Polyline)connection.getGraphic();
+					AffineTransform t = TransformHelper.getTransform(model.getRoot(), connection);
+					Point2D point = t.transform(e.getPosition(), null);
+					polyline.createControlPoint(point);
+					model.select(connection);
 				}
 			}
 		}

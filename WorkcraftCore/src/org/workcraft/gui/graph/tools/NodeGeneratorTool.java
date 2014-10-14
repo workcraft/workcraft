@@ -87,14 +87,15 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		GraphEditor editor = e.getEditor();
 		if (lastGeneratedNode != null) {
 			warningMessage = "Move the mouse outside this node before creating a new node";
-			e.getEditor().repaint();
+			editor.repaint();
 		} else {
 			try {
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					e.getEditor().getWorkspaceEntry().saveMemento();
-					lastGeneratedNode = generator.generate(e.getModel(), e.getEditor().snap(e.getPosition()));
+					editor.getWorkspaceEntry().saveMemento();
+					lastGeneratedNode = generator.generate(e.getModel(), editor.snap(e.getPosition(), null));
 				}
 			} catch (NodeCreationException e1) {
 				throw new RuntimeException (e1);

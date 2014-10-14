@@ -62,7 +62,7 @@ public class VisualGraph extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualComponent c1 = (VisualComponent) first;
@@ -74,5 +74,6 @@ public class VisualGraph extends AbstractVisualModel {
 		if (c1 == c2) {
 			ret.setConnectionType(ConnectionType.BEZIER, true);
 		}
+		return ret;
 	}
 }

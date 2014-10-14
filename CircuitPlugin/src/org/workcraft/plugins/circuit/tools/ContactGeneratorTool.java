@@ -38,7 +38,7 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create an output port (shift+click for input port)");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create an output port (hold Shift for input port).");
 	}
 
 }

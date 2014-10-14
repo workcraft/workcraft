@@ -232,9 +232,9 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	@Override
 	public void draw(DrawRequest r) {
-		Decoration dec = r.getDecoration();
-		if (dec instanceof ContainerDecoration) {
-			setIsExcited(((ContainerDecoration)dec).isContainerExcited());
+		Decoration d = r.getDecoration();
+		if (d instanceof ContainerDecoration) {
+			setIsExcited(((ContainerDecoration)d).isContainerExcited());
 		}
 		// This is to update the rendered text for names (and labels) of group children,
 		// which is necessary to calculate the bounding box before children have been drawn
@@ -246,13 +246,18 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		if ((bb != null) && (getParent() != null)) {
 			Graphics2D g = r.getGraphics();
 			if (getIsCollapsed() && !isCurrentLevelInside()) {
-				g.setColor(Coloriser.colorise(this.getFillColor(), r.getDecoration().getColorisation()));
+				g.setColor(Coloriser.colorise(this.getFillColor(), d.getColorisation()));
 				g.fill(bb);
 			}
 			float[] pattern = {0.2f, 0.2f};
 			g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-			g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 			g.draw(bb);
+
+			if (d.getColorisation() != null) {
+				drawPivot(r);
+			}
+
 			drawNameInLocalSpace(r);
 			drawLabelInLocalSpace(r);
 		}

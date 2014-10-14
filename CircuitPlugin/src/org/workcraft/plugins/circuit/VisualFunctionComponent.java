@@ -14,9 +14,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -26,7 +24,6 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
-import org.workcraft.util.Hierarchy;
 
 
 @DisplayName("Function")
@@ -40,14 +37,15 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	private ComponentRenderingResult getRenderingResult() {
+		if (groupImpl == null) return null;
 		if (renderingResult != null) {
 			return renderingResult;
 		}
 		// Find a single gate output
 		VisualFunctionContact gateOutput = null;
-		for (Node n: getChildren()) {
-			if (n instanceof VisualFunctionContact) {
-				VisualFunctionContact vc = (VisualFunctionContact)n;
+		for (Node node: getChildren()) {
+			if (node instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)node;
 				if (vc.getIOType() == IOType.OUTPUT) {
 					if (gateOutput == null) {
 						gateOutput = vc;
@@ -83,8 +81,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		return renderingResult;
 	}
 
-	public void resetRenderingResult() {
+	public void invalidateRenderingResult() {
 		renderingResult = null;
+	}
+
+	@Override
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		ComponentRenderingResult res = getRenderingResult();
+		if (res == null) {
+			return super.getInternalBoundingBoxInLocalSpace();
+		} else {
+			return res.boundingBox();
+		}
 	}
 
 	@Override
@@ -93,53 +101,23 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		if (res == null) {
 			return super.hitTestInLocalSpace(pointInLocalSpace);
 		} else {
-			//updateStepPositions();
-			//updateTotalBB();
 			return res.boundingBox().contains(pointInLocalSpace);
 		}
 	}
 
 	@Override
 	public void setRenderType(RenderType renderType) {
-		super.setRenderType(renderType);
-		resetRenderingResult();
-		sendNotification(new PropertyChangedEvent(this, "render type"));
-	}
-
-	@Override
-	protected void updateTotalBB() {
-		ComponentRenderingResult res = getRenderingResult();
-		if (res == null) {
-			super.updateTotalBB();
-		} else {
-            Rectangle2D bb = new Rectangle2D.Double();
-			bb.setRect(res.boundingBox());
-			Point2D p1 = new Point2D.Double(bb.getMinX(), bb.getMinY());
-			Point2D p2 = new Point2D.Double(bb.getMaxX(), bb.getMaxY());
-			AffineTransform at = VisualContact.Direction.getDirectionTransform(getMainContact().getDirection());
-			at.transform(p1, p1);
-			at.transform(p2, p2);
-			double x1 = Math.min(p1.getX(), p2.getX());
-			double y1 = Math.min(p1.getY(), p2.getY());
-			double x2 = Math.max(p1.getX(), p2.getX());
-			double y2 = Math.max(p1.getY(), p2.getY());
-			bb.setRect(x1, y1, x2-x1, y2-y1);
-
-			totalBB = BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(this, Touchable.class));
-			totalBB = BoundingBoxHelper.union(bb, totalBB);
+		if (this.renderType != renderType) {
+			invalidateRenderingResult();
 		}
+		super.setRenderType(renderType);
 	}
 
-	private boolean firstUpdate = true;
-
 	@Override
-	protected void updateStepPositions() {
+	public void setContactsDefaultPosition() {
 		ComponentRenderingResult res = getRenderingResult();
 		if (res == null) {
-			super.updateStepPositions();
-		} else if (firstUpdate) {
-  		    // suppress notifications at first recalculation of contact coordinates
-			firstUpdate = false;
+			super.setContactsDefaultPosition();
 		} else {
 			AffineTransform at = new AffineTransform();
 			AffineTransform bt = new AffineTransform();
@@ -147,23 +125,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (v != null) {
 				at = VisualContact.Direction.getDirectionTransform(v.getDirection());
 			}
+			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
+			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 			for (Node n: this.getChildren()) {
 				bt.setTransform(at);
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (vc.getIOType() == IOType.OUTPUT) {
-						bt.translate(snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin), 0);
-					}
 					if (vc.getIOType() == IOType.INPUT) {
 						String vcName = vc.getName();
 						Point2D position = res.contactPositions().get(vcName);
 						if (position != null) {
-							bt.translate(snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin), position.getY());
+							bt.translate(inputPositionX, position.getY());
 						}
 					} else {
-						bt.translate(snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin), 0);
+						bt.translate(outputPositionX, 0);
 					}
-					// here we only need to change position, do not do the rotation
+					// Here we only need to change position, do not do the rotation
 					AffineTransform ct = new AffineTransform();
 					ct.translate(bt.getTranslateX(), bt.getTranslateY());
 					vc.setTransform(ct);
@@ -173,13 +150,19 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	@Override
+	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
+		super.addContact(vcircuit, vc);
+		invalidateRenderingResult();
+	}
+
+	@Override
 	public void notify(StateEvent e) {
 		super.notify(e);
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("direction")) {
-				if (getMainContact()==pc.getSender()&&getRenderingResult()!=null) {
-					updateStepPositions();
+				if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
+					setContactsDefaultPosition();
 				}
 			}
 		}

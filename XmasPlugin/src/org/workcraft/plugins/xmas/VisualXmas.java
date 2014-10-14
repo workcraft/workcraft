@@ -33,6 +33,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -98,19 +99,19 @@ public class VisualXmas extends AbstractVisualModel {
 	}
 
 	@Override
-	public void connect(Node first, Node second)
-			throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
-
+		VisualXmasConnection connection = null;
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
 			VisualComponent c1 = (VisualComponent) first;
 			VisualComponent c2 = (VisualComponent) second;
 			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			VisualXmasConnection connection = new VisualXmasConnection(con, c1, c2);
+			connection = new VisualXmasConnection(con, c1, c2);
 			Node parent = Hierarchy.getCommonParent(c1, c2);
 			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
 			nearestAncestor.add(connection);
 		}
+		return connection;
 	}
 
 	public Collection<Node> getNodes() {

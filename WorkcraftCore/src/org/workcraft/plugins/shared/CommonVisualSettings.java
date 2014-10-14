@@ -36,6 +36,8 @@ public class CommonVisualSettings implements Settings {
 
 	private static final String keyBaseSize  = prefix + ".baseSize";
 	private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+	private static final String keyPivotSize = prefix + ".pivotSize";
+	private static final String keyPivotWidth  = prefix + ".pivotWidth";
 	private static final String keyBorderColor = prefix + ".borderColor";
 	private static final String keyFillColor  = prefix + ".fillColor";
 	private static final String keyLineSpacing  = prefix + ".lineSpacing";
@@ -49,6 +51,8 @@ public class CommonVisualSettings implements Settings {
 
 	private static final double defaultBaseSize = 1.0;
 	private static final double defaultStrokeWidth = 0.1;
+	private static final Double defaultPivotSize = 0.2;
+	private static final Double defaultPivotWidth = 0.02;
 	private static final Color defaultBorderColor = Color.BLACK;
 	private static final Color defaultFillColor = Color.WHITE;
 	private static final double defaultLineSpacing = 0.3;
@@ -62,6 +66,8 @@ public class CommonVisualSettings implements Settings {
 
 	private static double baseSize = defaultBaseSize;
 	private static double strokeWidth = defaultStrokeWidth;
+	private static Double pivotSize = defaultPivotSize;
+	private static Double pivotWidth = defaultPivotWidth;
 	private static Color borderColor = defaultBorderColor;
 	private static Color fillColor = defaultFillColor;
 	private static double lineSpacing = defaultLineSpacing;
@@ -91,6 +97,26 @@ public class CommonVisualSettings implements Settings {
 			}
 			protected Double getter(CommonVisualSettings object) {
 				return CommonVisualSettings.getStrokeWidth();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+				this, "Pivot size", Double.class) {
+			protected void setter(CommonVisualSettings object, Double value) {
+				CommonVisualSettings.setPivotSize(value);
+			}
+			protected Double getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getPivotSize();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+				this, "Pivot stroke width", Double.class) {
+			protected void setter(CommonVisualSettings object, Double value) {
+				CommonVisualSettings.setPivotWidth(value);
+			}
+			protected Double getter(CommonVisualSettings object) {
+				return CommonVisualSettings.getPivotWidth();
 			}
 		});
 
@@ -204,6 +230,8 @@ public class CommonVisualSettings implements Settings {
 	public void load(Config config) {
 		setBaseSize(config.getDouble(keyBaseSize, defaultBaseSize));
 		setStrokeWidth(config.getDouble(keyStrokeWidth, defaultStrokeWidth));
+		setPivotSize(config.getDouble(keyPivotSize, defaultPivotSize));
+		setPivotWidth(config.getDouble(keyPivotWidth, defaultPivotWidth));
 		setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
 		setFillColor(config.getColor(keyFillColor, defaultFillColor));
 		setLineSpacing(config.getDouble(keyLineSpacing, defaultLineSpacing));
@@ -220,6 +248,8 @@ public class CommonVisualSettings implements Settings {
 	public void save(Config config) {
 		config.setDouble(keyBaseSize, getBaseSize());
 		config.setDouble(keyStrokeWidth, getStrokeWidth());
+		config.setDouble(keyPivotSize, getPivotSize());
+		config.setDouble(keyPivotWidth, getPivotWidth());
 		config.setColor(keyBorderColor, getBorderColor());
 		config.setColor(keyFillColor, getFillColor());
 		config.setDouble(keyLineSpacing, getLineSpacing());
@@ -256,6 +286,22 @@ public class CommonVisualSettings implements Settings {
 
 	public static void setStrokeWidth(double value) {
 		strokeWidth = value;
+	}
+
+	public static double getPivotSize() {
+		return pivotSize;
+	}
+
+	public static void setPivotSize(double value) {
+		pivotSize = value;
+	}
+
+	public static double getPivotWidth() {
+		return pivotWidth;
+	}
+
+	public static void setPivotWidth(double value) {
+		pivotWidth = value;
 	}
 
 	public static Color getBorderColor() {

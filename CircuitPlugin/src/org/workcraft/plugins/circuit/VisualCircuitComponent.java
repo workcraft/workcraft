@@ -32,6 +32,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -47,6 +50,7 @@ import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
@@ -57,7 +61,7 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Abstract Component")
@@ -69,11 +73,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 	private Color outputColor = VisualContact.outputColor;
 
 	double marginSize = 0.2;
-	double contactLength = 1;
-	double contactStep = 1;
+	double contactLength = 0.5;
+	double contactStep = 1.0;
 
-	protected Rectangle2D contactLabelBB = null;
-	protected Rectangle2D totalBB = null;
+	protected Rectangle2D internalBB = null;
 	private WeakReference<VisualContact> mainContact = null;
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
@@ -86,7 +89,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	private void addPropertyDeclarations() {
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
 				this, "Treat as environment", Boolean.class) {
 			protected void setter(VisualCircuitComponent object, Boolean value) {
@@ -118,16 +120,15 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	public VisualContact getMainContact() {
 		VisualContact ret = null;
-		if (mainContact != null)
+		if (mainContact != null) {
 			ret = mainContact.get();
+		}
 		if (ret == null) {
-			for (Node n : getChildren()) {
-				if (n instanceof VisualContact) {
-					if (((VisualContact) n).getIOType() == IOType.OUTPUT) {
-						setMainContact((VisualContact) n);
-						ret = (VisualContact) n;
-						break;
-					}
+			for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+				if (vc.getIOType() == IOType.OUTPUT) {
+					setMainContact(vc);
+					ret = vc;
+					break;
 				}
 			}
 		}
@@ -156,307 +157,366 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	public void setRenderType(RenderType renderType) {
-		this.renderType = renderType;
-		contactLabelBB = null;
-		updateStepPositions();
-		updateTotalBB();
-		sendNotification(new PropertyChangedEvent(this, "render type"));
+		if (this.renderType != renderType) {
+			this.renderType = renderType;
+			spreadContactsEvenly();
+			invalidateBoundingBox();
+			sendNotification(new PropertyChangedEvent(this, "render type"));
+		}
 	}
 
-	// updates sequential position of the contacts
-	protected void updateStepPositions() {
-		int north = 0;
-		int south = 0;
-		int east = 0;
-		int west = 0;
-		for (Node n : this.getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact) n;
-				if (vc.getDirection().equals(Direction.EAST))
-					east++;
-				if (vc.getDirection().equals(Direction.SOUTH))
-					south++;
-				if (vc.getDirection().equals(Direction.NORTH))
-					north++;
-				if (vc.getDirection().equals(Direction.WEST))
-					west++;
+	private LinkedList<VisualContact> getOrderedContacts(final Direction dir, final boolean reverse) {
+		LinkedList<VisualContact> list = new LinkedList<VisualContact>();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.getDirection() == dir) {
+				list.add(vc);
 			}
 		}
+		Collections.sort(list, new Comparator<VisualContact>() {
+			@Override
+			public int compare(VisualContact vc1, VisualContact vc2) {
+				if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+					return (reverse ? -1 : 1) * Double.compare(vc1.getX(), vc2.getX());
+				} else {
+					return (reverse ? -1 : 1) * Double.compare(vc1.getY(), vc2.getY());
+				}
+			}
+		});
+		return list;
+	}
 
-		double eastStep = -contactStep * (east - 1) / 2;
-		double westStep = -contactStep * (west - 1) / 2;
-		double northStep = -contactStep * (north - 1) / 2;
-		double southStep = -contactStep * (south - 1) / 2;
+	private int getContactCount(final Direction dir) {
+		int count = 0;
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.getDirection() == dir) {
+				count++;
+			}
+		}
+		return count;
+	}
 
-		for (Node n : getChildren()) {
-			if (!(n instanceof VisualContact))
-				continue;
-			VisualContact vc = (VisualContact) n;
+	private void spreadContactsEvenly() {
+		int westCount = getContactCount(Direction.WEST);
+		int northCount = getContactCount(Direction.NORTH);
+		int eastCount = getContactCount(Direction.EAST);
+		int southCount = getContactCount(Direction.SOUTH);
+
+		double westPosition = -contactStep * (westCount - 1) / 2;
+		double northPosition = -contactStep * (northCount - 1) / 2;
+		double eastPosition = -contactStep * (eastCount - 1) / 2;
+		double southPosition = -contactStep * (southCount - 1) / 2;
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
 			switch (vc.getDirection()) {
-			case EAST:
-				vc.setY(eastStep);
-				eastStep += contactStep;
-				break;
 			case WEST:
-				vc.setY(westStep);
-				westStep += contactStep;
-				break;
-			case SOUTH:
-				vc.setX(southStep);
-				southStep += contactStep;
+				vc.setY(westPosition);
+				westPosition += contactStep;
 				break;
 			case NORTH:
-				vc.setX(northStep);
-				northStep += contactStep;
+				vc.setX(northPosition);
+				northPosition += contactStep;
+				break;
+			case EAST:
+				vc.setY(eastPosition);
+				eastPosition += contactStep;
+				break;
+			case SOUTH:
+				vc.setX(southPosition);
+				southPosition += contactStep;
 				break;
 			}
 		}
+		invalidateBoundingBox();
+	}
+
+	public void setContactsDefaultPosition() {
+		spreadContactsEvenly();
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setX(bb.getMinX() - contactLength);
+				break;
+			case NORTH:
+				vc.setY(bb.getMinY() - contactLength);
+				break;
+			case EAST:
+				vc.setX(bb.getMaxX() + contactLength);
+				break;
+			case SOUTH:
+				vc.setY(bb.getMaxY() + contactLength);
+				break;
+			}
+		}
+		invalidateBoundingBox();
 	}
 
 	public static double snapP5(double x) {
 		return (double) (Math.round(x * 2)) / 2;
 	}
 
-	private void updateSidePosition(VisualContact vc) {
-		Rectangle2D bb = getBestBB();
-		switch (vc.getDirection()) {
-		case EAST:
-			vc.setX(snapP5(bb.getMaxX() + contactLength));
-			break;
-		case WEST:
-			vc.setX(snapP5(bb.getMinX() - contactLength));
-			break;
-		case NORTH:
-			vc.setY(snapP5(bb.getMinY() - contactLength));
-			break;
-		case SOUTH:
-			vc.setY(snapP5(bb.getMaxY() + contactLength));
-			break;
-		}
-	}
-
-	public void updateDirection(VisualCircuit vcircuit, VisualContact vc, VisualContact.Direction dir) {
-		vc.setDirection(dir);
-		contactLabelBB = null;
-		updateSidePosition(vc);
-		updateStepPositions();
-	}
-
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
+			LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
 			Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
-			contactLabelBB = null;
-			updateSidePosition(vc);
-			updateStepPositions();
-		}
-	}
 
-	protected void updateTotalBB() {
-		totalBB = null;
-		if (groupImpl != null) {
-			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
-			totalBB = BoundingBoxHelper.mergeBoundingBoxes(children);
-			if ((contactLabelBB != null) && (totalBB != null)) {
-				Rectangle2D.union(totalBB, contactLabelBB, totalBB);
-			}
-		}
-	}
-
-	public Rectangle2D getBestBB() {
-		Rectangle2D result = contactLabelBB;
-		if (result == null) {
-			result = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-		}
-		return result;
-	}
-
-	public void updateContactLabelBB(Circuit circuit, Graphics2D g) {
-		int north = 0;
-		int south = 0;
-		int east = 0;
-		int west = 0;
-		for (Node n : this.getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact) n;
-				if (vc.getDirection().equals(Direction.EAST))
-					east++;
-				if (vc.getDirection().equals(Direction.SOUTH))
-					south++;
-				if (vc.getDirection().equals(Direction.NORTH))
-					north++;
-				if (vc.getDirection().equals(Direction.WEST))
-					west++;
-			}
-		}
-
-		double width_w = 0;
-		double width_e = 0;
-		double width_n = 0;
-		double width_s = 0;
-		for (Node vn : getChildren()) {
-			if (!(vn instanceof VisualContact))
-				continue;
-			VisualContact vc = (VisualContact) vn;
-			GlyphVector gv = vc.getNameGlyphs(circuit, g);
-			Rectangle2D cur = gv.getVisualBounds();
-			double xx = (double) (Math.round(cur.getWidth() * 4)) / 4;
-
+			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 			switch (vc.getDirection()) {
 			case WEST:
-				width_w = (xx > width_w) ? xx : width_w;
-				break;
-			case EAST:
-				width_e = (xx > width_e) ? xx : width_e;
+				vc.setX(snapP5(bb.getMinX() - contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
+				}
 				break;
 			case NORTH:
-				width_n = (xx > width_n) ? xx : width_n;
+				vc.setY(snapP5(bb.getMinY() - contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
+				}
+				break;
+			case EAST:
+				vc.setX(snapP5(bb.getMaxX() + contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
+				}
 				break;
 			case SOUTH:
-				width_s = (xx > width_s) ? xx : width_s;
+				vc.setY(snapP5(bb.getMaxY() + contactLength));
+				if (sameSideContacts.size() > 0) {
+					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
+				}
+				break;
+			}
+			invalidateBoundingBox();
+		}
+	}
+
+	private void invalidateBoundingBox() {
+		internalBB = null;
+	}
+
+	private Rectangle2D getContactMinimalBox() {
+		double x1 = -size/2;
+		double y1 = -size/2;
+		double x2 = size/2;
+		double y2 = size/2;
+
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			switch (vc.getDirection()) {
+			case WEST:
+				double westX = vc.getX() + contactLength;
+				if ((westX < -size/2) && (westX > x1)) {
+					x1 = westX;
+				}
+				break;
+			case NORTH:
+				double northY = vc.getY() + contactLength;
+				if ((northY < -size/2) && (northY > y1)) {
+					y1 = northY;
+				}
+				break;
+			case EAST:
+				double eastX = vc.getX() - contactLength;
+				if ((eastX > size/2) && (eastX < x2)) {
+					x2 = eastX;
+				}
+				break;
+			case SOUTH:
+				double southY = vc.getY() - contactLength;
+				if ((southY > size/2) && (southY < y2)) {
+					y2 = southY;
+				}
 				break;
 			}
 		}
 
-		double height = Math.max(east, west) * contactStep + width_n + width_s
-				+ marginSize * 4;
-		double width = Math.max(north, south) * contactStep + width_e + width_w
-				+ marginSize * 4;
-		contactLabelBB = new Rectangle2D.Double(-width / 2, -height / 2, width,
-				height);
-		updateTotalBB();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			double x = vc.getX();
+			double y = vc.getY();
+			switch (vc.getDirection()) {
+			case WEST:
+				y1 = Math.min(y1, y - contactStep / 2);
+				y2 = Math.max(y2, y + contactStep / 2);
+				break;
+			case NORTH:
+				x1 = Math.min(x1, x - contactStep / 2);
+				x2 = Math.max(x2, x + contactStep / 2);
+				break;
+			case EAST:
+				y1 = Math.min(y1, y - contactStep / 2);
+				y2 = Math.max(y2, y + contactStep / 2);
+				break;
+			case SOUTH:
+				x1 = Math.min(x1, x - contactStep / 2);
+				x2 = Math.max(x2, x + contactStep / 2);
+				break;
+			}
+		}
+		return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	protected void drawContactConnections(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-		Rectangle2D bb = getBestBB();
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact vc = (VisualContact) n;
-				if (vc.getDirection().equals(Direction.EAST)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
-							bb.getMaxX(), vc.getY());
-					g.setColor(Coloriser.colorise(
-							CommonVisualSettings.getBorderColor(), colorisation));
-					g.draw(line);
-				}
-				if (vc.getDirection().equals(Direction.WEST)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
-							bb.getMinX(), vc.getY());
-					g.setColor(Coloriser.colorise(
-							CommonVisualSettings.getBorderColor(), colorisation));
-					g.draw(line);
-				}
+	private Rectangle2D getContactBestBox() {
+		Rectangle2D minBox = getContactMinimalBox();
+		double x1 = minBox.getMinX();
+		double y1 = minBox.getMinY();
+		double x2 = minBox.getMaxX();
+		double y2 = minBox.getMaxY();
 
-				if (vc.getDirection().equals(Direction.NORTH)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
-							vc.getX(), bb.getMinY());
-					g.setColor(Coloriser.colorise(
-							CommonVisualSettings.getBorderColor(), colorisation));
-					g.draw(line);
-				}
+		boolean westFirst = true;
+		boolean northFirst = true;
+		boolean eastFirst = true;
+		boolean southFirst = true;
 
-				if (vc.getDirection().equals(Direction.SOUTH)) {
-					Line2D line = new Line2D.Double(vc.getX(), vc.getY(),
-							vc.getX(), bb.getMaxY());
-					g.setColor(Coloriser.colorise(
-							CommonVisualSettings.getBorderColor(), colorisation));
-					g.draw(line);
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			double x = vc.getX();
+			double y = vc.getY();
+			switch (vc.getDirection()) {
+			case WEST:
+				if (westFirst) {
+					x1 = x + contactLength;
+				} else {
+					x1 = Math.max(x1, x + contactLength);
 				}
+				westFirst = false;
+				break;
+			case NORTH:
+				if (northFirst) {
+					y1 = y + contactLength;
+				} else {
+					y1 = Math.max(y1, y + contactLength);
+				}
+				northFirst = false;
+				break;
+			case EAST:
+				if (eastFirst) {
+					x2 = x - contactLength;
+				} else {
+					x2 = Math.min(x2, x - contactLength);
+				}
+				eastFirst = false;
+				break;
+			case SOUTH:
+				if (southFirst) {
+					y2 = y - contactLength;
+				} else {
+					y2 = Math.min(y2, y - contactLength);
+				}
+				southFirst = false;
+				break;
+			}
+		}
+
+		if (x1 > x2) {
+			x1 = x2 = (x1 + x2) / 2;
+		}
+		if (y1 > y2) {
+			y1 = y2 = (y1 + y2) / 2;
+		}
+		Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+		return BoundingBoxHelper.union(minBox, maxBox);
+	}
+
+	private void drawContactLines(DrawRequest r) {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			Line2D contactLine = null;
+			switch (vc.getDirection()) {
+			case NORTH:
+				contactLine = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMinY());
+				break;
+			case EAST:
+				contactLine = new Line2D.Double(vc.getX(), vc.getY(), bb.getMaxX(), vc.getY());
+				break;
+			case SOUTH:
+				contactLine = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMaxY());
+				break;
+			case WEST:
+				contactLine = new Line2D.Double(vc.getX(), vc.getY(), bb.getMinX(), vc.getY());
+				break;
+			}
+			if (contactLine != null) {
+				Graphics2D g = r.getGraphics();
+				Decoration d = r.getDecoration();
+				Color colorisation = d.getColorisation();
+				g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+				g.draw(contactLine);
 			}
 		}
 	}
 
-	protected void drawContacts(DrawRequest r) {
+	private void drawContactLabel(DrawRequest r, VisualContact vc) {
 		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		Circuit circuit = (Circuit) r.getModel().getMathModel();
+		Decoration d = r.getDecoration();
+		Color colorisation = d.getColorisation();
+		Color color = (vc.getIOType() == IOType.INPUT) ? inputColor : outputColor;
+		g.setColor(Coloriser.colorise(color, colorisation));
 
-		Rectangle2D bb = getBestBB();
-		double step_pos;
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact) n;
-				if (!c.getDirection().equals(Direction.WEST))
-					continue;
-				GlyphVector gv = c.getNameGlyphs(circuit, g);
-				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise(
-						(c.getIOType() == IOType.INPUT) ? inputColor
-								: outputColor, colorisation));
-				step_pos = c.getY();
-				g.drawGlyphVector(gv, (float) (bb.getMinX() + marginSize),
-						(float) (step_pos + (cur.getHeight()) / 2));
-			}
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		GlyphVector gv = vc.getNameGlyphs(r);
+		Rectangle2D labelBB = gv.getVisualBounds();
+
+		float labelX = 0.0f;
+		float labelY = 0.0f;
+		switch (vc.getDirection()) {
+		case NORTH:
+			labelX = (float) (-bb.getMinY() - marginSize - labelBB.getWidth());
+			labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
+			break;
+		case EAST:
+			labelX = (float) (bb.getMaxX() - marginSize - labelBB.getWidth());
+			labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
+			break;
+		case SOUTH:
+			labelX = (float) (-bb.getMaxY() + marginSize);
+			labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
+			break;
+		case WEST:
+			labelX = (float) (bb.getMinX() + marginSize);
+			labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
+			break;
 		}
+		g.drawGlyphVector(gv, labelX, labelY);
+	}
 
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact) n;
-				if (!c.getDirection().equals(Direction.EAST))
-					continue;
-				GlyphVector gv = c.getNameGlyphs(circuit, g);
-				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise(
-						(c.getIOType() == IOType.INPUT) ? inputColor
-								: outputColor, colorisation));
-				step_pos = c.getY();
-				g.drawGlyphVector(gv,
-						(float) (bb.getMaxX() - marginSize - cur.getWidth()),
-						(float) (step_pos + (cur.getHeight()) / 2));
-			}
+	protected void drawContactLabels(DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+		AffineTransform oldTransform = g.getTransform();
+
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
+				new Func<VisualContact, Boolean>() {
+					@Override
+					public Boolean eval(VisualContact arg) {
+						return ((arg.getDirection() == Direction.WEST) || (arg.getDirection() == Direction.EAST));
+					}
+				})) {
+			drawContactLabel(r, vc);
 		}
 
 		AffineTransform at = new AffineTransform();
 		at.quadrantRotate(-1);
 		g.transform(at);
 
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact) n;
-				if (!c.getDirection().equals(Direction.NORTH))
-					continue;
-				GlyphVector gv = c.getNameGlyphs(circuit, g);
-				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise(
-						(c.getIOType() == IOType.INPUT) ? inputColor
-								: outputColor, colorisation));
-				step_pos = c.getX();
-				g.drawGlyphVector(gv,
-						(float) (bb.getMaxY() - marginSize - cur.getWidth()),
-						(float) (step_pos + (cur.getHeight()) / 2));
-			}
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
+				new Func<VisualContact, Boolean>() {
+					@Override
+					public Boolean eval(VisualContact arg) {
+						return ((arg.getDirection() == Direction.NORTH) || (arg.getDirection() == Direction.SOUTH));
+					}
+				})) {
+			drawContactLabel(r, vc);
 		}
 
-		for (Node n : getChildren()) {
-			if (n instanceof VisualContact) {
-				VisualContact c = (VisualContact) n;
-				if (!c.getDirection().equals(Direction.SOUTH))
-					continue;
-				GlyphVector gv = c.getNameGlyphs(circuit, g);
-				Rectangle2D cur = gv.getVisualBounds();
-				g.setColor(Coloriser.colorise(
-						(c.getIOType() == IOType.INPUT) ? inputColor
-								: outputColor, colorisation));
-				step_pos = c.getX();
-				g.drawGlyphVector(gv, (float) (bb.getMinY() + marginSize),
-						(float) (step_pos + (cur.getHeight()) / 2));
-			}
-		}
+		g.setTransform(oldTransform);
 	}
 
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		Rectangle2D bb = null;
-		if (groupImpl != null) {
-			if (totalBB == null) {
-				updateTotalBB();
-			}
-			bb = BoundingBoxHelper.copy(totalBB);
+		if ((groupImpl != null) && (internalBB == null)) {
+			internalBB = getContactBestBox();
 		}
+		Rectangle2D bb = BoundingBoxHelper.copy(internalBB);
 		if (bb == null) {
 			bb = super.getInternalBoundingBoxInLocalSpace();
 		}
@@ -464,42 +524,42 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		if (contactLabelBB != null) {
-			return contactLabelBB.contains(pointInLocalSpace);
-		}
-		return false;
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
+		Rectangle2D childrenBB = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
+		return BoundingBoxHelper.union(bb, childrenBB);
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Circuit circuit = (Circuit) r.getModel().getMathModel();
+		Decoration d = r.getDecoration();
 
-		cacheRenderedText(r); // needed to better estimate the bounding box
-		updateContactLabelBB(circuit, g);
-		drawContactConnections(r);
+		// Cache rendered text to better estimate the bounding box
+		cacheRenderedText(r);
 
-		Rectangle2D shape = getBestBB();
-		g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration()
-				.getBackground()));
-		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration()
-				.getColorisation()));
-
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+		g.fill(bb);
+		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		if (!getIsEnvironment()) {
-			g.setStroke(new BasicStroke((float) CircuitSettings
-					.getBorderWidth()));
+			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
 		} else {
 			float dash[] = { 0.25f, 0.25f };
-			g.setStroke(new BasicStroke((float) CircuitSettings
-					.getBorderWidth(), BasicStroke.CAP_BUTT,
-					BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 		}
-		g.draw(shape);
+		g.draw(bb);
+
+		if (d.getColorisation() != null) {
+			drawPivot(r);
+		}
+
+		drawContactLines(r);
+		drawContactLabels(r);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
-		drawContacts(r);
 	}
 
 	@Override
@@ -528,7 +588,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void remove(Node node) {
 		if (node instanceof VisualContact) {
-			contactLabelBB = null;
+			invalidateBoundingBox();
 		}
 		groupImpl.remove(node);
 	}
@@ -563,14 +623,14 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public Node customHitTest(Point2D point) {
 		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
-		for (Node vn : getChildren()) {
-			if (vn instanceof VisualNode) {
-				if (((VisualNode) vn).hitTest(pointInLocalSpace)) {
+		for (Node node : getChildren()) {
+			if (node instanceof VisualNode) {
+				VisualNode vn = (VisualNode)node;
+				if (vn.hitTest(pointInLocalSpace)) {
 					return vn;
 				}
 			}
 		}
-
 		if (hitTest(point)) {
 			return this;
 		} else {
@@ -587,44 +647,39 @@ public class VisualCircuitComponent extends VisualComponent implements
 			AffineTransform at = t.sender.getTransform();
 			double x = at.getTranslateX();
 			double y = at.getTranslateY();
-
-			totalBB = null;
-			Rectangle2D bb = getBestBB();
-			VisualContact.Direction dir = vc.getDirection();
-			if (x < bb.getMinX() && y > bb.getMinY() && y < bb.getMaxY()) {
-				dir = Direction.WEST;
+			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+			if ((x < bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+				vc.setDirection(Direction.WEST);
 			}
-			if (x > bb.getMaxX() && y > bb.getMinY() && y < bb.getMaxY()) {
-				dir = Direction.EAST;
+			if ((x > bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+				vc.setDirection(Direction.EAST);
 			}
-			if (y < bb.getMinY() && x > bb.getMinX() && x < bb.getMaxX()) {
-				dir = Direction.NORTH;
+			if ((y < bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+				vc.setDirection(Direction.NORTH);
 			}
-			if (y > bb.getMaxY() && x > bb.getMinX() && x < bb.getMaxX()) {
-				dir = Direction.SOUTH;
+			if ((y > bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+				vc.setDirection(Direction.SOUTH);
 			}
-			if (dir != vc.getDirection()) {
-				vc.setDirection(dir);
-				contactLabelBB = null;
-			}
-
+			invalidateBoundingBox();
 		}
+
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent) e;
-			if (pc.getPropertyName().equals("name")
-					|| pc.getPropertyName().equals("IOtype")
-					|| pc.getPropertyName().equals("direction")
-					|| pc.getPropertyName().equals("setFunction")
-					|| pc.getPropertyName().equals("resetFunction")) {
+			String propertyName = pc.getPropertyName();
+			if (propertyName.equals("name")
+				|| propertyName.equals("IOtype")
+				|| propertyName.equals("direction")
+				|| propertyName.equals("setFunction")
+				|| propertyName.equals("resetFunction")) {
 
-				contactLabelBB = null;
-				for (Node n : getChildren()) {
-					if (n instanceof VisualFunctionContact) {
-						VisualFunctionContact c = (VisualFunctionContact) n;
-						c.resetRenderedFormula();
-						c.resetNameGlyph();
+				for (Node node : getChildren()) {
+					if (node instanceof VisualFunctionContact) {
+						VisualFunctionContact vc = (VisualFunctionContact) node;
+						vc.invalidateRenderedFormula();
+						vc.invalidateNameGlyph();
 					}
 				}
+				invalidateBoundingBox();
 			}
 		}
 	}

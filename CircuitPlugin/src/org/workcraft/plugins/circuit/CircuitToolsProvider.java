@@ -22,7 +22,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
 
 		result.add(new CircuitSelectionTool());
 		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool());
+		result.add(new ConnectionTool(false, true));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Joint.class)));
 		result.add(new FunctionComponentGeneratorTool());
 		result.add(new ContactGeneratorTool());

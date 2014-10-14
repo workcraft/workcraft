@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
@@ -53,11 +54,12 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public class VisualContact extends VisualComponent implements StateObserver {
+
 	public enum Direction {
+		WEST("West"),
 		NORTH("North"),
-		SOUTH("South"),
 		EAST("East"),
-		WEST("West");
+		SOUTH("South");
 
 		private final String name;
 
@@ -66,29 +68,28 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 
 		public static Direction flipDirection(Direction direction) {
-			if (direction==Direction.EAST) return Direction.WEST;
 			if (direction==Direction.WEST) return Direction.EAST;
-			if (direction==Direction.SOUTH) return Direction.NORTH;
 			if (direction==Direction.NORTH) return Direction.SOUTH;
+			if (direction==Direction.EAST) return Direction.WEST;
+			if (direction==Direction.SOUTH) return Direction.NORTH;
 			return null;
 		}
-
 
 		static public AffineTransform getDirectionTransform(Direction dir) {
 			AffineTransform at = new AffineTransform();
 			if (dir!=null) {
 				switch (dir) {
-				case NORTH:
-					at.quadrantRotate(3);
-					break;
-				case SOUTH:
-					at.quadrantRotate(1);
-					break;
 				case WEST:
 					at.quadrantRotate(2);
 					break;
+				case NORTH:
+					at.quadrantRotate(3);
+					break;
 				case EAST:
 					at.setToIdentity();
+					break;
+				case SOUTH:
+					at.quadrantRotate(1);
 					break;
 				}
 			}
@@ -121,10 +122,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		setDirection(contact.getIOType()==IOType.INPUT ? Direction.WEST : Direction.EAST);
 		contact.addObserver(this);
 		addPropertyDeclarations();
-	}
-
-	public void resetNameGlyph() {
-		nameGlyph = null;
 	}
 
 	private Shape getShape() {
@@ -192,7 +189,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
-		Circuit circuit = (Circuit)r.getModel().getMathModel();
 
 		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
 		Color colorisation = d.getColorisation();
@@ -228,7 +224,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 			g.transform(at);
 
-			GlyphVector gv = getNameGlyphs(circuit, g);
+			GlyphVector gv = getNameGlyphs(r);
 			Rectangle2D cur = gv.getVisualBounds();
 			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
 
@@ -258,17 +254,17 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			AffineTransform at = new AffineTransform();
 			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
-			case NORTH:
-				at.quadrantRotate(1);
-				break;
-			case SOUTH:
-				at.quadrantRotate(3);
-				break;
 			case WEST:
 				at.quadrantRotate(2);
 				break;
+			case NORTH:
+				at.quadrantRotate(1);
+				break;
 			case EAST:
 				at.setToIdentity();
+				break;
+			case SOUTH:
+				at.quadrantRotate(3);
 				break;
 			}
 			if (getIOType()==IOType.INPUT) {
@@ -284,32 +280,31 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
-	public GlyphVector getNameGlyphs(Circuit circuit, Graphics2D g) {
+	public void invalidateNameGlyph() {
+		nameGlyph = null;
+	}
+
+	public GlyphVector getNameGlyphs(DrawRequest r) {
 		if (nameGlyph == null) {
-			if (getDirection() == VisualContact.Direction.NORTH || getDirection() == VisualContact.Direction.SOUTH) {
-				AffineTransform at = new AffineTransform();
-				at.quadrantRotate(1);
-			}
-			nameGlyph = nameFont.createGlyphVector(g.getFontRenderContext(), circuit.getName(this.getReferencedContact()));
+			final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
+			Circuit circuit = (Circuit)r.getModel().getMathModel();
+			String name = circuit.getName(this.getReferencedContact());
+			nameGlyph = nameFont.createGlyphVector(context, name);
 		}
 		return nameGlyph;
 	}
 
-	public Rectangle2D getNameBB(Circuit circuit, Graphics2D g) {
-		return getNameGlyphs(circuit, g).getVisualBounds();
-	}
-
-	public void setDirection(VisualContact.Direction dir) {
+	public void setDirection(Direction dir) {
 		if (dir != direction) {
 			sendNotification(new TransformChangingEvent(this));
-			resetNameGlyph();
+			invalidateNameGlyph();
 			this.direction = dir;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
 		}
 	}
 
-	public VisualContact.Direction getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
@@ -357,7 +352,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
 			if (pc.getPropertyName().equals("name")) {
-				resetNameGlyph();
+				invalidateNameGlyph();
 			}
 		}
 	}

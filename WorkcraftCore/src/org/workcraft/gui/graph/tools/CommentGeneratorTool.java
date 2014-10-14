@@ -24,6 +24,6 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a text label");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a text label.");
 	}
 }

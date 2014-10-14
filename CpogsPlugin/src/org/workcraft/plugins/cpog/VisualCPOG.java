@@ -139,47 +139,38 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	@Override
-	public void connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
-
-		if (first instanceof VisualVertex && second instanceof VisualVertex)
-		{
+		VisualConnection ret = null;
+		if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
 			VisualVertex v = (VisualVertex) first;
 			VisualVertex u = (VisualVertex) second;
-
-			connect(v, u);
-		}
-		else
-		{
+			ret = connect(v, u);
+		} else {
 			VisualVertex v;
 			VisualVariable u;
-
-			if (first instanceof VisualVertex)
-			{
+			if (first instanceof VisualVertex) {
 				v = (VisualVertex) first;
 				u = (VisualVariable) second;
-			}
-			else
-			{
+			} else {
 				v = (VisualVertex) second;
 				u = (VisualVariable) first;
 			}
-
 			DynamicVariableConnection con = mathModel.connect(v.getMathVertex(), u.getMathVariable());
-			Hierarchy.getNearestContainer(v, u).add(new VisualDynamicVariableConnection(con, v, u));
+			ret = new VisualDynamicVariableConnection(con, v, u);
+			Hierarchy.getNearestContainer(v, u).add(ret);
 		}
+		return ret;
 	}
 
-	public VisualArc connect(VisualVertex v, VisualVertex u)
-	{
+	public VisualArc connect(VisualVertex v, VisualVertex u) {
 		Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
 		VisualArc arc = new VisualArc(con, v, u);
 		Hierarchy.getNearestContainer(v, u).add(arc);
 		return arc;
 	}
 
-	public Collection<Node> getGroupableSelection()
-	{
+	public Collection<Node> getGroupableSelection() {
 		HashSet<Node> result = new HashSet<Node>();
 
 		for(Node node : getOrderedCurrentLevelSelection())
@@ -190,83 +181,63 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	@Override
-	public void groupSelection()
-	{
+	public void groupSelection() {
 		Collection<Node> selected = getGroupableSelection();
 		if (selected.size() < 1) return;
 
 		VisualGroup group = new VisualScenario();
-
 		Container currentLevel = getCurrentLevel();
-
 		currentLevel.add(group);
-
 		currentLevel.reparent(selected, group);
-
 		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-
-		for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class))
-		{
+		for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
 			if (Hierarchy.isDescendant(connection.getFirst(), group) &&
-				Hierarchy.isDescendant(connection.getSecond(), group))
-			{
+				Hierarchy.isDescendant(connection.getSecond(), group)) {
 				connectionsToGroup.add(connection);
 			}
 		}
-
 		currentLevel.reparent(connectionsToGroup, group);
-
 		select(group);
 	}
 
 	// TODO: Add safe versions of these methods; see getVertices(Container root).
 	@Deprecated
-	public Collection<VisualScenario> getGroups()
-	{
+	public Collection<VisualScenario> getGroups() {
 		return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
 	}
 
 	@Deprecated
-	public Collection<VisualVariable> getVariables()
-	{
+	public Collection<VisualVariable> getVariables() {
 		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
 	}
 
 	@Deprecated
-	public Collection<VisualVertex> getVertices()
-	{
+	public Collection<VisualVertex> getVertices() {
 		return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
 	}
 
-	public Collection<VisualVertex> getVertices(Container root)
-	{
+	public Collection<VisualVertex> getVertices(Container root) {
 		return Hierarchy.getChildrenOfType(root, VisualVertex.class);
 	}
 
-	public Collection<VisualVariable> getVariables(Container root)
-	{
+	public Collection<VisualVariable> getVariables(Container root) {
 		return Hierarchy.getChildrenOfType(root, VisualVariable.class);
 	}
 
-	public Collection<VisualArc> getArcs(Container root)
-	{
+	public Collection<VisualArc> getArcs(Container root) {
 		return Hierarchy.getChildrenOfType(root, VisualArc.class);
 	}
 
-	public VisualVertex createVisualVertex(Container container)
-	{
+	public VisualVertex createVisualVertex(Container container) {
 		Vertex mathVertex = new Vertex();
 		mathModel.add(mathVertex);
 
 		VisualVertex vertex = new VisualVertex(mathVertex);
-
 		container.add(vertex);
-
 		return vertex;
 	}
 
-	public VisualVariable createVisualVariable()
-	{
+	public VisualVariable createVisualVariable() {
 		Variable mathVariable = new Variable();
 		mathModel.add(mathVariable);
 
@@ -277,12 +248,9 @@ public class VisualCPOG extends AbstractVisualModel
 		return variable;
 	}
 
-	public VisualScenario createVisualScenario()
-	{
+	public VisualScenario createVisualScenario() {
 		VisualScenario scenario = new VisualScenario();
-
 		getRoot().add(scenario);
-
 		return scenario;
 	}
 

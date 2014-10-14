@@ -228,13 +228,13 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	public void createControlPoint(Point2D userLocation) {
 		Point2D pointOnConnection = new Point2D.Double();
 		int segment = getNearestSegment(userLocation, pointOnConnection);
+		insertControlPointInSegment(pointOnConnection, segment);
+	}
 
+	public void insertControlPointInSegment(Point2D location, int segment) {
 		ControlPoint ap = new ControlPoint();
-		ap.setPosition(pointOnConnection);
-		ap.setHidden(false);
-
+		ap.setPosition(location);
 		groupImpl.add(segment, ap);
-
 		controlPointsChanged();
 	}
 
@@ -404,6 +404,35 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	@Override
 	public Point2D getCenter() {
 		return getPointOnCurve(0.5);
+	}
+
+	private int getIndex(ControlPoint cp) {
+		int index = -1;
+		for(Node node: groupImpl.getChildren()) {
+			index++;
+			if (node == cp) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	public Point2D getPrevAnchorPointLocation(ControlPoint cp) {
+		int index = getIndex(cp);
+		Point2D pos = null;
+		if (index >= 0) {
+			pos = getAnchorPointLocation(index);
+		}
+		return pos;
+	}
+
+	public Point2D getNextAnchorPointLocation(ControlPoint cp) {
+		int index = getIndex(cp);
+		Point2D pos = null;
+		if (index >= 0) {
+			pos = getAnchorPointLocation(index+2);
+		}
+		return pos;
 	}
 
 }

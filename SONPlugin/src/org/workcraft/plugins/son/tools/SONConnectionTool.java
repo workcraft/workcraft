@@ -231,9 +231,9 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 			message = warningMessage;
 		else
 			if (first == null)
-				message = "Click on the first component";
+				message = "Click on the first component.";
 			else
-				message = "Click on the second component (control+click to connect continuously)";
+				message = "Click on the second component. Hold Ctrl to connect continuously.";
 
 		GUI.drawEditorMessage(editor, g, warningMessage!=null ? Color.RED : Color.BLACK, message);
 	}

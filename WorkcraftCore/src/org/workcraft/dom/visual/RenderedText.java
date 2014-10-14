@@ -33,7 +33,7 @@ public class RenderedText {
 		glyphVectors = new LinkedList<GlyphVector>();
 		String[] lines = text.split("\\|");
 		for (String line: lines) {
-			final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000, 1000), true, true);
+			final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
 			final GlyphVector glyphVector = font.createGlyphVector(context, line.trim());
 			glyphVectors.add(glyphVector);
 			Rectangle2D lineBounds = glyphVector.getVisualBounds();

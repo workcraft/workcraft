@@ -30,18 +30,6 @@ import org.workcraft.util.Hierarchy;
 
 public class TransformHelper {
 
-	private static Node getRoot(Node node) {
-		Node root = null;
-		Node parent = node;
-		do {
-			parent = parent.getParent();
-			if (parent != null) {
-				root = parent;
-			}
-		} while (parent != null);
-		return root;
-	}
-
 	public static void applyTransform(Node node, AffineTransform transform) {
 		if(node instanceof Movable) {
 			((Movable) node).applyTransform(transform);
@@ -70,7 +58,7 @@ public class TransformHelper {
 	}
 
 	public static AffineTransform getTransformToRoot(Node node) {
-		return getTransformToAncestor(node, getRoot(node));
+		return getTransformToAncestor(node, Hierarchy.getRoot(node));
 	}
 
 	public static AffineTransform getTransform(Node node1, Node node2) {

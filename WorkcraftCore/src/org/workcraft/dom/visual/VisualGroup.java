@@ -24,6 +24,7 @@ package org.workcraft.dom.visual;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -133,10 +134,22 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		Rectangle2D bb = getBoundingBoxInLocalSpace();
 		if ((bb != null) && (getParent() != null)) {
 			Graphics2D g = r.getGraphics();
-			g.setColor(Coloriser.colorise(Color.GRAY, r.getDecoration().getColorisation()));
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(Color.GRAY, d.getColorisation()));
 			float[] pattern = {0.2f, 0.2f};
 			g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 			g.draw(bb);
+
+			if (d.getColorisation() != null) {
+				float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
+				Path2D p = new Path2D.Double();
+				p.moveTo(-s2, 0);
+				p.lineTo(s2, 0);
+				p.moveTo(0, -s2);
+				p.lineTo(0, s2);
+				g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
+				g.draw(p);
+			}
 		}
 	}
 

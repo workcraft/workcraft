@@ -25,19 +25,18 @@ public class VisualContactFormulaProperties {
 					new Func<String, BooleanFormula>() {
 						@Override
 						public BooleanFormula eval(String name) {
-
-
-							if (contact.getParent() instanceof VisualFunctionComponent) {
-								return
-									(BooleanFormula)
-									vcircuit.getOrCreateContact(
-											(Container)contact.getParent(),
-											name,
-											IOType.INPUT, 0, 0
-										).getReferencedContact();
-							} else
-								return (BooleanFormula)
-										vcircuit.getOrCreateOutput(name, contact.getX()+1, contact.getY()+1).getReferencedContact();
+							BooleanFormula result = null;
+							Container container = (Container)contact.getParent();
+							VisualFunctionContact vc = null;
+							if (container instanceof VisualFunctionComponent) {
+								vc = vcircuit.getOrCreateContact(container, name, IOType.INPUT);
+							} else {
+								vc = vcircuit.getOrCreateContact(container, name, IOType.OUTPUT);
+							}
+							if ((vc != null) && (vc.getReferencedContact() instanceof BooleanFormula)) {
+								result = (BooleanFormula)vc.getReferencedContact();
+							}
+							return result;
 						}
 					});
 		} catch (ParseException e) {

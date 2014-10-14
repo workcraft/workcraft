@@ -119,14 +119,14 @@ public class Hierarchy {
 	}
 
 	public static Node getRoot(Node node) {
-		Node root = node;
-		while (root != null) {
-			if (root.getParent() == null) {
-				return root;
-			} else {
-				root = root.getParent();
+		Node root = null;
+		Node parent = node;
+		do {
+			parent = parent.getParent();
+			if (parent != null) {
+				root = parent;
 			}
-		}
+		} while (parent != null);
 		return root;
 	}
 

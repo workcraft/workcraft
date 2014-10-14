@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
@@ -288,10 +289,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
 		getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
 
@@ -316,6 +317,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		paintChildren(g2d);
 	}
 
+	@Override
+	public void forceRedraw() {
+		super.paintImmediately(0, 0, 1, 1);
+	}
+
+
 	public VisualModel getModel() {
 		return workspaceEntry.getModelEntry().getVisualModel();
 	}
@@ -324,8 +331,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return view;
 	}
 
-	public Point2D snap(Point2D point) {
-		return new Point2D.Double(grid.snapCoordinate(point.getX()), grid.snapCoordinate(point.getY()));
+	public Point2D snap(Point2D pos, Set<Point2D> snaps) {
+		double x = grid.snapCoordinate(pos.getX());
+		double y = grid.snapCoordinate(pos.getY());
+		if (snaps != null) {
+			for (Point2D snap: snaps) {
+				if (Math.abs(pos.getX() - snap.getX()) < Math.abs(pos.getX() - x)) {
+					x = snap.getX();
+				}
+				if (Math.abs(pos.getY() - snap.getY()) < Math.abs(pos.getY() - y)) {
+					y = snap.getY();
+				}
+			}
+		}
+		return new Point2D.Double(x, y);
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {
@@ -478,4 +497,5 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public Framework getFramework() {
 		return mainWindow.getFramework();
 	}
+
 }
