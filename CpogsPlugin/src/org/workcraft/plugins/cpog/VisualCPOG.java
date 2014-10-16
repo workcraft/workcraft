@@ -22,9 +22,7 @@
 package org.workcraft.plugins.cpog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.workcraft.annotations.CustomTools;
@@ -170,34 +168,28 @@ public class VisualCPOG extends AbstractVisualModel
 		return arc;
 	}
 
-	public Collection<Node> getGroupableSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-
-		for(Node node : getOrderedCurrentLevelSelection())
-			if(node instanceof VisualVertex || node instanceof VisualVariable)
-				result.add(node);
-
-		return result;
+	@Override
+	public boolean isGroupable(Node node) {
+		return ((node instanceof VisualVertex) || (node instanceof VisualVariable));
 	}
 
 	@Override
 	public void groupSelection() {
-		Collection<Node> selected = getGroupableSelection();
-		if (selected.size() < 1) return;
+		groupSelection(null);
+	}
 
-		VisualGroup group = new VisualScenario();
-		Container currentLevel = getCurrentLevel();
-		currentLevel.add(group);
-		currentLevel.reparent(selected, group);
-		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-		for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
-			if (Hierarchy.isDescendant(connection.getFirst(), group) &&
-				Hierarchy.isDescendant(connection.getSecond(), group)) {
-				connectionsToGroup.add(connection);
+	public void groupSelection(String graphName) {
+		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		if (nodes.size() >= 1) {
+			VisualScenario scenario = new VisualScenario();
+			if (graphName != null) {
+				scenario.setLabel(graphName);
 			}
+			getCurrentLevel().add(scenario);
+			getCurrentLevel().reparent(nodes, scenario);
+			scenario.setPosition(centralizeComponents(nodes));
+			select(scenario);
 		}
-		currentLevel.reparent(connectionsToGroup, group);
-		select(group);
 	}
 
 	// TODO: Add safe versions of these methods; see getVertices(Container root).

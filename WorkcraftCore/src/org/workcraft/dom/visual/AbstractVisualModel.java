@@ -366,11 +366,15 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Collection<Node> getOrderedCurrentLevelSelection() {
 		HashSet<Node> result = new HashSet<Node>();
 		for(Node node : getCurrentLevel().getChildren()) {
-			if ((node instanceof VisualNode) && selection.contains(node)) {
+			if (isGroupable(node) && selection.contains(node)) {
 				result.add(node);
 			}
 		}
 		return result;
+	}
+
+	public boolean isGroupable(Node node) {
+		return (node instanceof VisualNode);
 	}
 
 	public Collection<Node> getRecursiveSelection() {
@@ -392,7 +396,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		HashSet<Node> result = new HashSet<Node>();
 		Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection();
         for (Node node : currentLevelSelection) {
-        	if ((node instanceof VisualNode) && !(node instanceof VisualConnection)) {
+        	if (isGroupable(node) && !(node instanceof VisualConnection)) {
             	result.add(node);
             }
         }

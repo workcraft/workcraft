@@ -23,6 +23,7 @@ package org.workcraft.dom;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,7 +31,6 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesReparentedEvent;
 import org.workcraft.observation.NodesReparentingEvent;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
@@ -126,16 +126,14 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 
 	public Set<Connection> getConnections(Node node) {
 		Set<Connection> ret = connections.get(node);
-
-		if (ret==null)
-			System.out.println("Node "+node+" is not inside NodeContextTracker");
+		if (ret==null) {
+			ret = new HashSet<Connection>();
+		}
 		return Collections.unmodifiableSet(ret);
 	}
 
 	@Override
 	public void handleEvent(HierarchyEvent e) {
-
-
 		if (e instanceof NodesReparentingEvent) {
 			for (Node n : e.getAffectedNodes())
 				nodeAdded(n);

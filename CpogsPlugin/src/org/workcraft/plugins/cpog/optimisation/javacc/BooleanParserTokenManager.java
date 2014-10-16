@@ -10,7 +10,6 @@ import org.workcraft.plugins.cpog.optimisation.*;
 import org.workcraft.util.Func;
 
 /** Token Manager. */
-@SuppressWarnings("all")
 public class BooleanParserTokenManager implements BooleanParserConstants
 {
 

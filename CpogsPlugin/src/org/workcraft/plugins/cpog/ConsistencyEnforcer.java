@@ -19,30 +19,27 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
 	}
 
 	@Override
-	public void handleEvent(HierarchyEvent e)
-	{
-		if (e instanceof NodesAddedEvent  || e instanceof NodesReparentedEvent)
-		{
-			updateEncoding();
+	public void handleEvent(HierarchyEvent e) {
+		if ((e instanceof NodesAddedEvent) || (e instanceof NodesReparentedEvent)) {
 			createDefaultLabels(e);
-		}
-		else
-		if (e instanceof NodesDeletedEvent)
-		{
+			updateEncoding();
+		} else if (e instanceof NodesDeletedEvent) {
 			updateEncoding();
 		}
 	}
 
 	private void createDefaultLabels(HierarchyEvent e) {
-		for(Node node : e.getAffectedNodes())
-		{
-			if (node instanceof VisualVertex)
-			{
-				((VisualVertex) node).setLabel("v_" + vertexCount++);
+		for(Node node : e.getAffectedNodes()) {
+			if (node instanceof VisualVertex) {
+				VisualVertex vertex = (VisualVertex) node;
+				if (vertex.getLabel().isEmpty())
+				vertex.setLabel("v_" + vertexCount++);
 			}
-			if (node instanceof VisualVariable)
-			{
-				((VisualVariable) node).setLabel("x_" + variableCount++);
+			if (node instanceof VisualVariable) {
+				VisualVariable variable = (VisualVariable) node;
+				if (variable.getLabel().isEmpty()) {
+					variable.setLabel("x_" + variableCount++);
+				}
 			}
 		}
 	}
