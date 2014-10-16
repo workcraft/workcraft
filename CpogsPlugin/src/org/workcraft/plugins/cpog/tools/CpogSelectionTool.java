@@ -61,13 +61,12 @@ public class CpogSelectionTool extends SelectionTool {
 	private JTextArea expressionText;
 	HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
 	final HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
-	private HashSet<VisualArc> transitives = new HashSet<VisualArc>();
 	private HashMap<String, String> refMap = new HashMap<String, String>();
 	private Checkbox insertTransitives;
 
 	private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
-	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap, transitives);
+	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap);
 
 	public CpogSelectionTool() {
 		super();
@@ -375,12 +374,9 @@ public class CpogSelectionTool extends SelectionTool {
 				second = false;
 			}
 
-			transitives = parsingTool.findTransitives(visualCpog, roots);
-
 			if (!insertTransitives.getState()) {
-				parsingTool.removeTransitives(visualCpog);
+				parsingTool.removeTransitives(visualCpog, roots);
 			}
-			transitives.clear();
 
 			if (roots.isEmpty()) {
 				double y = maxY + 2;

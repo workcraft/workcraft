@@ -34,14 +34,13 @@ import sun.misc.Queue;
 
 public class CpogParsingTool {
 
-	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap, HashSet<VisualArc> transitives)
+	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap)
 	 {
 		 this.variableMap = variableMap;
 		 this.xpos = xpos;
 		 this.maxX = maxX;
 		 this.maxY = maxY;
 		 this.refMap = refMap;
-		 this.transitives = transitives;
 	 }
 
 	private HashMap<String, Variable> variableMap;
@@ -49,7 +48,6 @@ public class CpogParsingTool {
 	private double maxX;
 	private double maxY;
 	private HashMap<String, String> refMap;
-	private HashSet<VisualArc> transitives;
 
 	 public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
 	 {
@@ -177,9 +175,7 @@ public class CpogParsingTool {
 					 maxX = x;
 				 }
 			 }
-
 		 }
-
 	 }
 
 	 public ArrayList<VisualVertex> getChildren(VisualCPOG visualCpog, VisualVertex vertex)
@@ -479,10 +475,11 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog) {
-				for (VisualArc t : transitives) {
-					visualCpog.remove(t);
-				}
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<VisualVertex> roots) {
+		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
+		 for (VisualArc t : transitives) {
+			 visualCpog.remove(t);
+		 }
 	 }
 
 	 public String replaceReferences(String text)
