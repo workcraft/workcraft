@@ -199,134 +199,133 @@ public class CpogSelectionTool extends SelectionTool {
 			f = CpogExpressionParser.parse(text,
 					PGF = new GraphFunc<String, CpogFormula>() {
 
-						String name;
-						boolean ref;
-						@Override
-						public CpogFormula eval(String label) {
-							if (vertexMap.containsKey(label))
-								return vertexMap.get(label);
+				String name;
+				boolean ref;
+				@Override
+				public CpogFormula eval(String label) {
+					if (vertexMap.containsKey(label))
+						return vertexMap.get(label);
 
-							VisualVertex vertex = null;
+					VisualVertex vertex = null;
 
-							// TODO: Optimise!
+					// TODO: Optimise!
 
-							if (!createDuplicates)
-								for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-									if (v.getLabel().equals(label)) {
-										vertex = v;
-										break;
-									}
-
-							if (vertex == null) {
-								vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
-								vertex.setLabel(label);
-								vertexMap.put(label, vertex);
+					if (!createDuplicates)
+						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
+							if (v.getLabel().equals(label)) {
+								vertex = v;
+								break;
 							}
-							return vertex;
-						}
 
-						@Override
-						public GraphFunc<String, CpogFormula> removeGraphName(String name){
-							if (vertexMap.containsKey(name)) {
-								vertexMap.remove(name);
-							}
-							return this;
-						}
+					if (vertex == null) {
+						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+						vertex.setLabel(label);
+						vertexMap.put(label, vertex);
+					}
+					return vertex;
+				}
 
-						@Override
-						public CpogFormula eval(String label, String boolExpression) throws ParseException {
+				@Override
+				public GraphFunc<String, CpogFormula> removeGraphName(String name){
+					if (vertexMap.containsKey(name)) {
+						vertexMap.remove(name);
+					}
+					return this;
+				}
 
-							VisualVertex vertex = null;
-							BooleanFormula bf;
+				@Override
+				public CpogFormula eval(String label, String boolExpression) throws ParseException {
 
-							if (vertexMap.containsKey(label))
+					VisualVertex vertex = null;
+					BooleanFormula bf;
+
+					if (vertexMap.containsKey(label))
+					{
+						vertex = vertexMap.get(label);
+						if (boolExpression != "")
+						{
+							if (FormulaToString.toString(vertex.getCondition()) == "")
 							{
-								vertex = vertexMap.get(label);
-								if (boolExpression != "")
-								{
-									if (FormulaToString.toString(vertex.getCondition()) == "")
-									{
-										try {
-											vertex.setCondition(parsingTool.parseBool(boolExpression, visualCpog));
-										} catch (ParseException e) {
-											throw new ParseException("Boolean error in: " + boolExpression);
-										}
-									} else
-									{
-										try {
-											vertex.setCondition(parsingTool.parseBool(FormulaToString.toString(vertex.getCondition()) + "|" + boolExpression, visualCpog));
-										} catch (ParseException e) {
-											throw new ParseException("Boolean error in: " + boolExpression);
-										}
-									}
+								try {
+									vertex.setCondition(parsingTool.parseBool(boolExpression, visualCpog));
+								} catch (ParseException e) {
+									throw new ParseException("Boolean error in: " + boolExpression);
 								}
-								return vertex;
-							}
-
-							// TODO: Optimise!
-
-							if (!createDuplicates)
-								for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-									if (v.getLabel().equals(label)) {
-										vertex = v;
-										break;
-									}
-
-							if (vertex == null) {
-								vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
-								vertex.setLabel(label);
-								vertexMap.put(label, vertex);
-							}
-
-							if (boolExpression != "")
+							} else
 							{
-								if (FormulaToString.toString(vertex.getCondition()) == "")
-								{
-									try {
-										bf = parsingTool.parseBool(boolExpression, visualCpog);
-										vertex.setCondition(bf);
-									} catch (ParseException e) {
-										throw new ParseException("Boolean error in: " + boolExpression);
-									}
-								} else
-								{
-									try {
-										bf = parsingTool.parseBool(boolExpression, visualCpog);
-										vertex.setCondition(bf);
-									} catch (ParseException e) {
-										throw new ParseException("Boolean error in: " + boolExpression);
-									}
+								try {
+									vertex.setCondition(parsingTool.parseBool(FormulaToString.toString(vertex.getCondition()) + "|" + boolExpression, visualCpog));
+								} catch (ParseException e) {
+									throw new ParseException("Boolean error in: " + boolExpression);
 								}
 							}
-							return vertex;
 						}
+						return vertex;
+					}
 
-						@Override
-						public String getGraphName() {
-							return name;
-						}
+					// TODO: Optimise!
 
-						@Override
-						public void setGraphName(String graphName) {
-							this.name = graphName;
-							if ((name.contains("{")) && (name.contains("}"))){
-								ref = true;
+					if (!createDuplicates)
+						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
+							if (v.getLabel().equals(label)) {
+								vertex = v;
+								break;
 							}
 
-						}
+					if (vertex == null) {
+						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+						vertex.setLabel(label);
+						vertexMap.put(label, vertex);
+					}
 
-						@Override
-						public void setSequenceCondition(CpogFormula formula, String boolForm) {
-							arcConditionList.add(new ArcCondition(formula, boolForm));
+					if (boolExpression != "")
+					{
+						if (FormulaToString.toString(vertex.getCondition()) == "")
+						{
+							try {
+								bf = parsingTool.parseBool(boolExpression, visualCpog);
+								vertex.setCondition(bf);
+							} catch (ParseException e) {
+								throw new ParseException("Boolean error in: " + boolExpression);
 							}
-
-						@Override
-						public boolean getRef() {
-							// TODO Auto-generated method stub
-							return ref;
+						} else
+						{
+							try {
+								bf = parsingTool.parseBool(boolExpression, visualCpog);
+								vertex.setCondition(bf);
+							} catch (ParseException e) {
+								throw new ParseException("Boolean error in: " + boolExpression);
+							}
 						}
+					}
+					return vertex;
+				}
 
-					});
+				@Override
+				public String getGraphName() {
+					return name;
+				}
+
+				@Override
+				public void setGraphName(String graphName) {
+					this.name = graphName;
+					if ((name.contains("{")) && (name.contains("}"))){
+						ref = true;
+					}
+				}
+
+				@Override
+				public void setSequenceCondition(CpogFormula formula, String boolForm) {
+					arcConditionList.add(new ArcCondition(formula, boolForm));
+				}
+
+				@Override
+				public boolean getRef() {
+					// TODO Auto-generated method stub
+					return ref;
+				}
+
+			});
 		} catch (ParseException e) {
 			we.cancelMemento();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
@@ -347,35 +346,30 @@ public class CpogSelectionTool extends SelectionTool {
 		}
 
 		if (!PGF.getRef()){
-		CpogConnector cc = new CpogConnector(visualCpog);
-		f.accept(cc);
-		graphMap.put(PGF.getGraphName(), f);
+			CpogConnector cc = new CpogConnector(visualCpog);
+			f.accept(cc);
+			graphMap.put(PGF.getGraphName(), f);
 
-		parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
-
+			parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
 			HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
 			Set<Connection> arcs;
 			Iterator<Connection> it;
 			Connection connection;
 			boolean second = false;
-			for (Node node : visualCpog.getSelection())
-			{
+			for (Node node : visualCpog.getSelection()) {
 				VisualVertex v = (VisualVertex) node;
 				arcs = visualCpog.getConnections(v);
 				it = arcs.iterator();
 				//The following covers root nodes, and nodes with no connections
-				while (it.hasNext())
-				{
+				while (it.hasNext()) {
 					connection = it.next();
-					if (!connection.getFirst().equals(v))
-					{
+					if (!connection.getFirst().equals(v)) {
 						second = true;
 						break;
 					}
 				}
-				if (!second)
-				{
+				if (!second) {
 					roots.add(v);
 				}
 				second = false;
@@ -383,14 +377,12 @@ public class CpogSelectionTool extends SelectionTool {
 
 			transitives = parsingTool.findTransitives(visualCpog, roots);
 
-			if (!insertTransitives.getState())
-			{
+			if (!insertTransitives.getState()) {
 				parsingTool.removeTransitives(visualCpog);
 			}
 			transitives.clear();
 
-			if (roots.isEmpty())
-			{
+			if (roots.isEmpty()) {
 				double y = maxY + 2;
 				for (VisualVertex v : vertexMap.values()) {
 					double radius = Math.max(minRadius, expandRadius * n / Math.PI
@@ -398,43 +390,39 @@ public class CpogSelectionTool extends SelectionTool {
 					Point2D.Double pos = new Point2D.Double(maxX + radius
 							* Math.cos(2.0 * Math.PI * i / n), y + radius * Math.sin(2.0 * Math.PI * i / n));
 					v.setPosition(pos);
-					if (pos.y > highestY)
-					{
+					if (pos.y > highestY) {
 						highestY = pos.y;
 					}
 					i++;
 				}
-			} else
-			{
+			} else {
 				Iterator<VisualVertex> root = roots.iterator();
 				Queue q = new Queue();
 				//double originalX = maxX;
-				while(root.hasNext())
-				{
+				while(root.hasNext()) {
 					q.enqueue(root.next());
 					parsingTool.bfsLayout(q, visualCpog, 0);
 				}
-
 			}
 
 			maxY += 2;
 			editor.requestFocus();
-			if (PGF.getGraphName() != null)
-			{
+			if (PGF.getGraphName() != null)	{
 				visualCpog.groupSelection(PGF.getGraphName());
 			}
-		} else
-		{
+		} else {
 			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, f);
 			visualCpog.remove(visualCpog.getSelection());
 		}
 
-			// TODO: fix the bug after exception; find out if the line below is
-			// needed
-			// I think it is fixed now (by not keeping a reference to the
-			// visualModel in the activated method)
-			we.saveMemento();
-		}
+		editor.forceRedraw();
+
+		// TODO: fix the bug after exception; find out if the line below is
+		// needed
+		// I think it is fixed now (by not keeping a reference to the
+		// visualModel in the activated method)
+		we.saveMemento();
+	}
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {

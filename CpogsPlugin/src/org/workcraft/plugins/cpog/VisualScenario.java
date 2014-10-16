@@ -266,7 +266,7 @@ public class VisualScenario extends VisualGroup
 		return
 			getContentsBoundingBox().contains(p) ||
 			getLabelBB().contains(p) ||
-			encodingBB.contains(p);
+			((encodingBB != null) && encodingBB.contains(p));
 	}
 
 	private Rectangle2D getLabelBB() {
