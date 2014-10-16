@@ -200,6 +200,38 @@ public class VisualCPOG extends AbstractVisualModel
 		select(group);
 	}
 
+	public void groupSelection(String label) {
+		Collection<Node> selected = getGroupableSelection();
+		if (selected.size() < 1) return;
+
+		VisualScenario group = new VisualScenario();
+
+		group.setLabel(label);
+
+		Container currentLevel = getCurrentLevel();
+
+		currentLevel.add(group);
+
+		currentLevel.reparent(selected, group);
+
+		ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+
+		for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class))
+		{
+			if (Hierarchy.isDescendant(connection.getFirst(), group) &&
+					Hierarchy.isDescendant(connection.getSecond(), group))
+			{
+				connectionsToGroup.add(connection);
+			}
+		}
+
+		currentLevel.reparent(connectionsToGroup, group);
+
+		select(group);
+
+	}
+
+
 	// TODO: Add safe versions of these methods; see getVertices(Container root).
 	@Deprecated
 	public Collection<VisualScenario> getGroups() {
