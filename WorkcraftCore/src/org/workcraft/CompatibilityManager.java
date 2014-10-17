@@ -126,7 +126,7 @@ public class CompatibilityManager {
 	    BufferedReader br = new BufferedReader(new InputStreamReader(zis));
 		try {
 			while ((zei = zis.getNextEntry()) != null)	{
-				ZipEntry zeo = new ZipEntry(zei);
+				ZipEntry zeo = new ZipEntry(zei.getName());
 			    zos.putNextEntry(zeo);
 			    String modelName = null;
 			    String className = null;
@@ -151,7 +151,7 @@ public class CompatibilityManager {
 			zos.close();
 			out.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+		//	e.printStackTrace();
 		}
 		return new ByteArrayInputStream(out.toByteArray());
 	}

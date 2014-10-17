@@ -542,7 +542,6 @@ public class Framework {
 	private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
 		ZipInputStream zis = new ZipInputStream(zippedData);
 		ZipEntry ze;
-
 		while ((ze = zis.getNextEntry()) != null)	{
 			if (ze.getName().equals(name)) {
 				return zis;
