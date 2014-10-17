@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -19,7 +20,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new HashSet<Node>();
-	private Collection<ArrayList<Node>> cycleErrors = new HashSet<ArrayList<Node>>();
+	private Collection<Path> cycleErrors = new HashSet<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
@@ -47,7 +48,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : groups){
 
 		Collection<Node> task1, task2, task3, task4;
-		Collection<ArrayList<Node>> cycleResult, backwardCycleResult;
+		Collection<Path> cycleResult;
 
 		//group info
 			logger.info("Initialising group components...");
@@ -121,18 +122,19 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 			cycleResult = getPathAlg().cycleTask(groupComponents);
 
-			backwardCycleResult = new ArrayList<ArrayList<Node>>();
-			backwardCycleResult.addAll(getPathAlg().backwardCycleTask(groupComponents));
-
 			cycleErrors.addAll(cycleResult);
-			cycleErrors.addAll(backwardCycleResult);
 
-			if (cycleResult.isEmpty() && backwardCycleResult.isEmpty())
+			if (cycleResult.isEmpty())
 				logger.info("Acyclic structure correct");
 			else{
 				hasErr = true;
 				errNumber++;
-				logger.error("ERROR : Forward cycles = "+ cycleResult.size()+", " + "Backward cycles = "+backwardCycleResult.size()+".");
+				logger.error("ERROR : model invloves cycle paths = "+ cycleResult.size() + ".");
+				for(Path cycle : cycleResult){
+					int i = 1;
+					logger.error("Cycle " + i + ": " + cycle.toString(net));
+					i++;
+				}
 			}
 			logger.info("Cycle detection complete.\n");
 		}

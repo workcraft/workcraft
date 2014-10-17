@@ -1,10 +1,8 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
@@ -14,10 +12,8 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 
@@ -25,7 +21,7 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")
 
-public class VisualEvent extends VisualComponent implements VisualTransitionNode{
+public class VisualEvent extends VisualTransition implements VisualTransitionNode{
 	//private boolean displayName = false;
 
 	public VisualEvent(Event event) {
@@ -47,20 +43,8 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 
 	@Override
 	public void draw(DrawRequest r){
-		Graphics2D g = r.getGraphics();
-		Shape shape = new Rectangle2D.Double(
-				-size / 2 + strokeWidth / 2,
-				-size / 2 + strokeWidth / 2,
-				size - strokeWidth,
-				size - strokeWidth);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
-		g.fill(shape);
-		g.setColor(Coloriser.colorise(Coloriser.colorise(getForegroundColor(), r.getDecoration().getBackground()), r.getDecoration().getColorisation()));
-		g.setStroke(new BasicStroke((float)CommonVisualSettings.getStrokeWidth()));
-		g.draw(shape);
+		super.draw(r);
 		drawFault(r);
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
 	}
 
 	public void drawFault(DrawRequest r){
@@ -88,7 +72,7 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
 	}
 
-	public Event getMathEventNode(){
+	public Event getMathTransitionNode(){
 		return (Event)this.getReferencedComponent();
 	}
 

@@ -165,7 +165,7 @@ public class RelationAlgorithm{
 	public Collection<ChannelPlace> getRelatedChannelPlace(Collection<ONGroup> groups){
 		HashSet<ChannelPlace> result = new HashSet<ChannelPlace>();
 
-		for(ChannelPlace cPlace : net.getChannelPlace())
+		for(ChannelPlace cPlace : net.getChannelPlaces())
 			for (ONGroup group : groups){
 				for (Node node : net.getPostset(cPlace)){
 					if (group.contains(node))

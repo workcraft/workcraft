@@ -9,7 +9,8 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONPathAlg;
 import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 
@@ -21,7 +22,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private CSONPathAlg csonPathAlg;
 	private BSONAlg bsonAlg;
 	private BSONPathAlg bsonPathAlg;
-	private PathAlgorithm pathAlg;
+	private ONPathAlg onPathAlg;
 	private TSONAlg tsonAlg;
 
 	public AbstractStructuralVerification(SON net){
@@ -30,7 +31,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		csonPathAlg = new CSONPathAlg(net);
 		bsonAlg = new BSONAlg(net);
 		bsonPathAlg = new BSONPathAlg(net);
-		pathAlg = new PathAlgorithm(net);
+		onPathAlg = new ONPathAlg(net);
 		tsonAlg = new TSONAlg(net);
 
 	}
@@ -51,9 +52,9 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		return result;
 	}
 
-	public Collection<ArrayList<String>> getcycleErrorsSetReferences(Collection<ArrayList<Node>> set){
+	public Collection<ArrayList<String>> getcycleErrorsSetReferences(Collection<Path> set){
 		Collection<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-		for(ArrayList<Node> path : set){
+		for(Path path : set){
 			ArrayList<String> sPath = new ArrayList<String>();
 			for(Node node : path){
 				sPath.add(net.getNodeReference(node));
@@ -79,8 +80,8 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		return csonPathAlg;
 	}
 
-	public PathAlgorithm getPathAlg(){
-		return pathAlg;
+	public ONPathAlg getPathAlg(){
+		return onPathAlg;
 	}
 
 	public TSONAlg getTSONAlg(){

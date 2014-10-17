@@ -1,22 +1,36 @@
 package org.workcraft.plugins.son.tools;
 
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.util.HashSet;
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TestTool implements Tool{
+public class TestTool extends AbstractTool implements Tool{
 
 	private final Framework framework;
+	private String message = "";
 
 	public TestTool(Framework framework){
 
@@ -38,17 +52,42 @@ public class TestTool implements Tool{
 		return "Test";
 	}
 
+	GraphEditor editor1;
+
 	public void run(WorkspaceEntry we){
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		Graphics2D g = null;
+		GraphEditorPanel editor = null;
+		for(GraphEditorPanel ed : framework.getMainWindow().getEditors(we)){
+			editor = ed;
+			g = (Graphics2D)editor.getGraphics();
+		}
+		for(int i=0; i< 5000; i++){
+			GUI.drawEditorMessage(editor, g, Color.BLACK, "afdasfasd");
+			System.out.println(i);
+		}
+		activated(editor);
+		editor.repaint();
 
+		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
+		//syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
-		connectionTypeTest(net, vnet);
+		//connectionTypeTest(net, vnet);
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
 		//conditionOutputTest(vnet);
+	}
+
+
+	@Override
+	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
+		System.out.println("editor1111111");
+		int a =0;
+		if(a == 0)
+			GUI.drawEditorMessage(editor, g, Color.BLACK, "afdasfasd");
 	}
 
 	private void relation(SON net, VisualSON vnet){
@@ -60,6 +99,23 @@ public class TestTool implements Tool{
 
 	private void conditionOutputTest(VisualSON vnet){
 		vnet.connectToBlocks();
+	}
+
+	private void syncCycleTest(SON net){
+		SimulationAlg simuAlg = new SimulationAlg(net);
+		HashSet<Node> nodes = new HashSet<Node>();
+		nodes.addAll(net.getConditions());
+		nodes.addAll(net.getTransitionNodes());
+
+		simuAlg.getSyncCycles(nodes);
+	}
+
+	private void exceptionTest() throws InvalidConnectionException{
+		boolean a = true;
+		if(a){
+			message = "adfa";
+			throw new InvalidConnectionException(message);
+		}
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){
@@ -129,6 +185,20 @@ public class TestTool implements Tool{
 			System.out.println("con fisrt "+ con.getFirst());
 			System.out.println("con fisrt "+ con.getSecond());
 		}
+	}
+
+
+	@Override
+	public Decorator getDecorator(GraphEditor editor) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

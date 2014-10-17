@@ -22,7 +22,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Forward error tracing
-	public void setErrNum (Collection<TransitionNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setErrNum (Collection<TransitionNode> runList, Collection<Path> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
@@ -45,7 +45,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 
 			for(TransitionNode e :runList){
-				for(ArrayList<Node> cycle : syncSet){
+				for(Path cycle : syncSet){
 					if(cycle.contains(e) && !removeList.contains(e)){
 						Collection<TransitionNode> runList2 = new ArrayList<TransitionNode>();
 						Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
@@ -154,7 +154,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Backward error tracing
-	public void setReverseErrNum (Collection<TransitionNode> runList, Collection<ArrayList<Node>> syncSet, boolean isBhv){
+	public void setReverseErrNum (Collection<TransitionNode> runList, Collection<Path> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
@@ -178,7 +178,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
 
 			for(TransitionNode e :runList){
-				for(ArrayList<Node> cycle : syncSet){
+				for(Path cycle : syncSet){
 					if(cycle.contains(e)  && !removeList.contains(e)){
 						Collection<TransitionNode> runList2 = new ArrayList<TransitionNode>();
 						Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();

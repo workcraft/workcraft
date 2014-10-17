@@ -39,14 +39,14 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.util.GUI;
 
-public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
+public class SONConnectionTool extends AbstractTool implements ClipboardOwner{
 
 	protected JPanel interfacePanel;
 
 	private JRadioButton polyButton, asynButton, synButton, bhvButton;
 	private ButtonGroup buttonGroup;
 
-	private int conType = 1;
+	private int semantic = 1;
 
 	private VisualNode mouseOverObject = null;
 	private VisualNode first = null;
@@ -74,25 +74,25 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 		polyButton = new JRadioButton("Petri-Net Connection");
 		polyButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				conType = 1;
+				semantic = 1;
 		}});
 
 		asynButton = new JRadioButton("A/Syn Communication");
 		asynButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				conType = 2;
+				semantic = 2;
 		}});
 
 		synButton = new JRadioButton("Synchronous Communication");
 		synButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				conType = 3;
+				semantic = 3;
 		}});
 
 		bhvButton = new JRadioButton("Behavioural Abstraction");
 		bhvButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				conType = 4;
+				semantic = 4;
 		}});
 
 		polyButton.setSelected(true);
@@ -135,7 +135,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 				try {
 					VisualModel vNet = editor.getModel();
 					if (vNet instanceof VisualSON)
-					((VisualSON) vNet).validateConnection(first, mouseOverObject, getSONConnectionType());
+					((VisualSON) vNet).validateConnection(first, mouseOverObject, getSemantics());
 					drawConnectingLine(g, root, Color.GREEN);
 				} catch (InvalidConnectionException e) {
 					warningMessage = e.getMessage();
@@ -192,7 +192,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 				try {
 					VisualModel vNet = e.getModel();
 					if (vNet instanceof VisualSON)
-						((VisualSON) vNet).connect(first, mouseOverObject, getSONConnectionType());
+						((VisualSON) vNet).connect(first, mouseOverObject, getSemantics());
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
 						first = mouseOverObject;
 						mouseOverObject = null;
@@ -211,14 +211,14 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 		e.getEditor().repaint();
 	}
 
-	private Semantics getSONConnectionType(){
-		if(this.conType == 1)
+	private Semantics getSemantics(){
+		if(this.semantic == 1)
 			return Semantics.PNLINE;
-		if(this.conType == 2)
+		if(this.semantic == 2)
 			return Semantics.ASYNLINE;
-		if(this.conType == 3)
+		if(this.semantic == 3)
 			return Semantics.SYNCLINE;
-		if(this.conType == 4)
+		if(this.semantic == 4)
 			return Semantics.BHVLINE;
 		return null;
 	}
@@ -251,7 +251,7 @@ public class SONConnectionTool  extends AbstractTool implements ClipboardOwner{
 	@Override
 	public void deactivated(GraphEditor editor) {
 		super.deactivated(editor);
-		conType = 1;
+		semantic = 1;
 		first = null;
 		mouseOverObject = null;
 	}

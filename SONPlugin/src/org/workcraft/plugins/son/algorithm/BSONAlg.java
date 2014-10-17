@@ -2,10 +2,13 @@ package org.workcraft.plugins.son.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -57,11 +60,11 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get phase of a given (high-level) condition
 	 */
-	public Collection<Condition> getPhase(Condition c){
-		Collection<Condition> result = new HashSet<Condition>();
+	public Phase getPhase(Condition c){
+		Phase result = new Phase();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
-		Collection<ArrayList<Node>> paths = null;
-		PathAlgorithm alg = new PathAlgorithm(net);
+		Collection<Path> paths = new ArrayList<Path>();
+		ONPathAlg alg = new ONPathAlg(net);
 
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSecond()==c && con.getSemantics()==Semantics.BHVLINE)
@@ -72,10 +75,9 @@ public class BSONAlg extends RelationAlgorithm{
 		else{
 			for(Node start : connectedNodes)
 				for(Node end : connectedNodes)
-						alg.getAllPath(start, end, alg.createAdj(this.getBhvGroup(connectedNodes).getComponents()));
-			paths = alg.getPathSet();
+					paths.addAll(PathAlgorithm.getPaths(start, end, alg.createAdj(getBhvGroup(connectedNodes).getComponents())));
 
-			for(ArrayList<Node> path : paths){
+			for(Path path : paths){
 				for(Node n : path)
 					if(n instanceof Condition)
 						result.add((Condition)n);
@@ -85,11 +87,22 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get related ONGroup of a given phase
+	 * get the phases of every condition of an abstract group
 	 */
-	public ONGroup getBhvGroup(Collection<Condition> phase){
+	public Map<Condition, Phase> getPhases(ONGroup abstractGroup){
+		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
+		for(Condition c : abstractGroup.getConditions())
+			result.put(c, getPhase(c));
+
+		return result;
+	}
+
+	/**
+	 * get related ONGroup of a set of phase inputs and outputs
+	 */
+	public ONGroup getBhvGroup(Collection<Condition> conditions){
 		for(ONGroup group : net.getGroups())
-			if(group.getConditions().containsAll(phase))
+			if(group.getConditions().containsAll(conditions))
 				return group;
 		return null;
 	}
@@ -108,7 +121,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get unchecked behaviour groups.
+	 * get behaviour groups.
 	 */
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -129,7 +142,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get unchecked abstract groups.
+	 * get abstract groups.
 	 */
 	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -150,8 +163,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition> getMinimalPhase(Collection<Condition> phase){
-		Collection<Condition> result = new ArrayList<Condition>();
+	public ArrayList<Condition> getMinimalPhase(Phase phase){
+		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMinimal = true;
 			for(Condition pre : this.getPrePNCondition(c))
@@ -163,8 +176,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Collection<Condition> getMaximalPhase(Collection<Condition> phase){
-		Collection<Condition> result = new ArrayList<Condition>();
+	public ArrayList<Condition> getMaximalPhase(Phase phase){
+		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMaximal = true;
 			for(Condition pre : this.getPostPNCondition(c))
@@ -190,8 +203,8 @@ public class BSONAlg extends RelationAlgorithm{
 		for(Node node : this.getPostPNSet(e))
 			post[0] = (Condition)node;
 
-		Collection<Condition> phaseI = getPhase(pre[0]);
-		Collection<Condition> phaseI2 = getPhase(post[0]);
+		Phase phaseI = getPhase(pre[0]);
+		Phase phaseI2 = getPhase(post[0]);
 		if(phaseI.isEmpty() && phaseI2.isEmpty()){
 			//System.out.println(net.getNodeLabel(e)+"  is empty");
 			return result;

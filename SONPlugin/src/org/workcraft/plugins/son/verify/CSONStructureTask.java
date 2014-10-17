@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
 
@@ -17,7 +18,7 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
-	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
@@ -103,7 +104,12 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : global cycles = "+ cycleErrors.size() + ".");
+			logger.error("ERROR : model invloves global cycle paths = "+ cycleErrors.size() + ".");
+			for(Path cycle : cycleErrors){
+				int i = 1;
+				logger.error("Cycle " + i + ": " + cycle.toString(net));
+				i++;
+			}
 		}
 
 		logger.info("Cycle detection complete.\n");

@@ -27,7 +27,6 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
-import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
@@ -200,14 +199,6 @@ public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
 						((VisualBlock)selectedNode).setIsCollapsed(false);
 
 					return;
-				}
-
-				if (selectedNode instanceof VisualCondition) {
-					VisualCondition vc = (VisualCondition) selectedNode;
-					if (vc.isMarked() == false)
-						vc.setMarked(true);
-					else if (vc.isMarked() == true)
-						vc.setMarked(false);
 				}
 
 				if (selectedNode instanceof VisualEvent) {

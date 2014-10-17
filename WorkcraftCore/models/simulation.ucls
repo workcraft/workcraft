@@ -1,35 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" language="java" name="org.workcraft.plugins.petri.tools.PetriNetSimulationTool" project="PetriNetPlugin" 
-    file="/PetriNetPlugin/src/org/workcraft/plugins/petri/tools/PetriNetSimulationTool.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="475" y="241"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="2" language="java" name="org.workcraft.plugins.stg.tools.STGSimulationTool" project="STGPlugin" 
-    file="/STGPlugin/src/org/workcraft/plugins/stg/tools/STGSimulationTool.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="838" y="166"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="3" language="java" name="org.workcraft.gui.graph.tools.AbstractTool" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/AbstractTool.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="179" y="248"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="4" language="java" name="org.workcraft.plugins.circuit.tools.CircuitSimulationTool" project="CircuitPlugin" 
+  <class id="1" language="java" name="org.workcraft.plugins.circuit.tools.CircuitSimulationTool" project="CircuitPlugin" 
     file="/CircuitPlugin/src/org/workcraft/plugins/circuit/tools/CircuitSimulationTool.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1030" y="368"/>    
@@ -39,7 +11,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="org.workcraft.plugins.dfs.tools.SimulationTool" project="DfsPlugin" 
+  <class id="2" language="java" name="org.workcraft.plugins.dfs.tools.SimulationTool" project="DfsPlugin" 
     file="/DfsPlugin/src/org/workcraft/plugins/dfs/tools/SimulationTool.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="752" y="372"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -48,7 +20,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="org.workcraft.plugins.son.tools.SONSimulationTool" project="SONPlugin" 
+  <class id="3" language="java" name="org.workcraft.plugins.son.tools.SONSimulationTool" project="SONPlugin" 
     file="/SONPlugin/src/org/workcraft/plugins/son/tools/SONSimulationTool.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="180" y="742"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -57,7 +29,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="7" language="java" name="org.workcraft.gui.graph.tools.Decorator" project="WorkcraftCore" 
+  <interface id="4" language="java" name="org.workcraft.gui.graph.tools.Decorator" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/Decorator.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="955" y="592"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -66,7 +38,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="8" language="java" name="org.workcraft.gui.graph.tools.Decorator.Empty" project="WorkcraftCore" 
+  <class id="5" language="java" name="org.workcraft.gui.graph.tools.Decorator.Empty" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/Decorator.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="955" y="732"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -75,7 +47,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="org.workcraft.gui.graph.tools.Decoration.Empty" project="WorkcraftCore" 
+  <class id="6" language="java" name="org.workcraft.gui.graph.tools.Decoration.Empty" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/Decoration.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="440" y="757"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -84,7 +56,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="10" language="java" name="org.workcraft.gui.graph.tools.Decoration" project="WorkcraftCore" 
+  <interface id="7" language="java" name="org.workcraft.gui.graph.tools.Decoration" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/Decoration.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="440" y="609"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -93,8 +65,8 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="11" language="java" name="org.workcraft.plugins.son.tools.ConditionDecoration" project="SONPlugin" 
-    file="/SONPlugin/src/org/workcraft/plugins/son/tools/ConditionDecoration.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="8" language="java" name="org.workcraft.plugins.son.tools.PlaceNodeDecoration" project="SONPlugin" 
+    file="/SONPlugin/src/org/workcraft/plugins/son/tools/PlaceNodeDecoration.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="709" y="525"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -102,7 +74,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="12" language="java" name="org.workcraft.plugins.petri.tools.PlaceDecoration" project="PetriNetPlugin" 
+  <interface id="9" language="java" name="org.workcraft.plugins.petri.tools.PlaceDecoration" project="PetriNetPlugin" 
     file="/PetriNetPlugin/src/org/workcraft/plugins/petri/tools/PlaceDecoration.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="708" y="656"/>    
@@ -112,7 +84,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="13" language="java" name="org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration" 
+  <interface id="10" language="java" name="org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration" 
     project="DfsPlugin" file="/DfsPlugin/src/org/workcraft/plugins/dfs/decorations/BinaryRegisterDecoration.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="691" y="880"/>    
@@ -122,7 +94,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="14" language="java" name="org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration" 
+  <interface id="11" language="java" name="org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration" 
     project="DfsPlugin" file="/DfsPlugin/src/org/workcraft/plugins/dfs/decorations/CounterflowLogicDecoration.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="940" y="883"/>    
@@ -132,7 +104,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="15" language="java" name="org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration" 
+  <interface id="12" language="java" name="org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration" 
     project="DfsPlugin" file="/DfsPlugin/src/org/workcraft/plugins/dfs/decorations/CounterflowRegisterDecoration.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="935" y="1065"/>    
@@ -142,7 +114,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="16" language="java" name="org.workcraft.plugins.dfs.decorations.LogicDecoration" project="DfsPlugin" 
+  <interface id="13" language="java" name="org.workcraft.plugins.dfs.decorations.LogicDecoration" project="DfsPlugin" 
     file="/DfsPlugin/src/org/workcraft/plugins/dfs/decorations/LogicDecoration.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="471" y="993"/>    
@@ -152,7 +124,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="17" language="java" name="org.workcraft.plugins.dfs.decorations.RegisterDecoration" project="DfsPlugin" 
+  <interface id="14" language="java" name="org.workcraft.plugins.dfs.decorations.RegisterDecoration" project="DfsPlugin" 
     file="/DfsPlugin/src/org/workcraft/plugins/dfs/decorations/RegisterDecoration.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="696" y="1037"/>    
@@ -162,85 +134,65 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <realization id="18">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="10"/>  
-  </realization>  
-  <generalization id="19">    
-    <end type="SOURCE" refId="13"/>    
-    <end type="TARGET" refId="10"/>  
+  <generalization id="15">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
-  <association id="20">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="21" name="INSTANCE"/>      
-      <multiplicity id="22" minimum="0" maximum="1"/>    
+  <association id="16">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="17" name="INSTANCE"/>      
+      <multiplicity id="18" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="23">    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="10"/>  
-  </generalization>  
+  <association id="19">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="20" name="INSTANCE"/>      
+      <multiplicity id="21" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="22">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="6"/>  
+  </nesting>  
+  <nesting id="23">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="5"/>  
+  </nesting>  
   <generalization id="24">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="10"/>  
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
   <realization id="25">    
-    <end type="SOURCE" refId="8"/>    
+    <end type="SOURCE" refId="6"/>    
     <end type="TARGET" refId="7"/>  
   </realization>  
   <generalization id="26">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="1"/>  
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
-  <generalization id="27">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="3"/>  
-  </generalization>  
-  <generalization id="28">    
+  <realization id="27">    
     <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="2"/>  
+    <end type="TARGET" refId="4"/>  
+  </realization>  
+  <generalization id="28">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
   <generalization id="29">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="3"/>  
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
   <generalization id="30">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="10"/>  
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
   <generalization id="31">    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="10"/>  
-  </generalization>  
-  <generalization id="32">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="2"/>  
-  </generalization>  
-  <generalization id="33">    
-    <end type="SOURCE" refId="17"/>    
-    <end type="TARGET" refId="10"/>  
-  </generalization>  
-  <association id="34">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="35" name="INSTANCE"/>      
-      <multiplicity id="36" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <nesting id="37">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="8"/>  
-  </nesting>  
-  <nesting id="38">    
     <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="9"/>  
-  </nesting>  
-  <generalization id="39">    
-    <end type="SOURCE" refId="15"/>    
-    <end type="TARGET" refId="10"/>  
+    <end type="TARGET" refId="7"/>  
   </generalization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    

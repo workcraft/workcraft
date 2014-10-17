@@ -23,6 +23,7 @@ import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
@@ -75,7 +76,7 @@ public class SON extends AbstractMathModel {
 		ArrayList<Node> result =  new ArrayList<Node>();
 
 		for(Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class))
-			if(node instanceof Condition || node instanceof Event || node instanceof ChannelPlace)
+			if(node instanceof PlaceNode || node instanceof Event)
 				result.add(node);
 
 		//remove the nodes in isolate blocks
@@ -97,7 +98,7 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	public Collection<ChannelPlace> getChannelPlace(){
+	public Collection<ChannelPlace> getChannelPlaces(){
 		return Hierarchy.getDescendantsOfType(getRoot(), ChannelPlace.class);
 	}
 
@@ -106,6 +107,15 @@ public class SON extends AbstractMathModel {
 		for(Node node : getComponents())
 			if(node instanceof Event)
 				result.add((Event)node);
+
+		return result;
+	}
+
+	public Collection<PlaceNode> getPlaceNodes(){
+		ArrayList<PlaceNode> result =  new ArrayList<PlaceNode>();
+		for(Node node : getComponents())
+			if(node instanceof PlaceNode)
+				result.add((PlaceNode)node);
 
 		return result;
 	}
@@ -208,7 +218,6 @@ public class SON extends AbstractMathModel {
 	}
 
 	//Connection
-
 	public Collection<SONConnection> getSONConnections(){
 		return Hierarchy.getDescendantsOfType(getRoot(), SONConnection.class);
 	}
@@ -303,12 +312,12 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	//Group Methods
+	//Group based
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
 
-	public Collection<TransitionNode> getEventNodes(){
+	public Collection<TransitionNode> getTransitionNodes(){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
 			if(node instanceof Block){

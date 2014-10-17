@@ -696,7 +696,7 @@ public class VisualSON extends AbstractVisualModel{
 						connections.add(con);
 				}
 				if(connections.size() != infos.length)
-					compatibility.add(net.getNodeReference(p.getMathPlaceNode()));
+					compatibility.add(net.getNodeReference(p.getReferencedComponent()));
 
 				for(VisualSONConnection con :connections){
 					//remove visual connection

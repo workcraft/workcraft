@@ -7,8 +7,10 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -19,7 +21,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
-	private Collection<ArrayList<Node>> cycleErrors = new ArrayList<ArrayList<Node>>();
+	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
 	private boolean hasErr = false;
@@ -129,12 +131,17 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : BSON cycles = "+ cycleErrors.size() + ".");
+			logger.error("ERROR : model invloves BSCON cycle paths = "+ cycleErrors.size() + ".");
+			for(Path cycle : cycleErrors){
+				int i = 1;
+				logger.error("Cycle " + i + ": " + cycle.toString(net));
+				i++;
+			}
 		}
 
 		logger.info("Cycle detection complete.\n");
 		}else{
-			cycleErrors = new HashSet<ArrayList<Node>>();
+			cycleErrors = new HashSet<Path>();
 			logger.info("WARNING : Relation error exist, cannot run cycle detection task.\n" );
 			warningNumber++;
 		}
@@ -213,13 +220,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : abstractGroups)
 			for(Condition c : group.getConditions()){
 				if(getRelationAlg().getPrePNSet(c).isEmpty()){
-					Collection<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : min)
 						if(!getRelationAlg().isInitial(c2))
 							result.add(c);
 				}
 				if(getRelationAlg().getPostPNSet(c).isEmpty()){
-					Collection<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
 					for(Condition c2 : max)
 						if(!getRelationAlg().isFinal(c2))
 							result.add(c);
@@ -249,15 +256,15 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	}
 
 	//task3: if min/max phase is a cut
-	private String phaseTask3(Collection<Condition> phase, Condition c){
+	private String phaseTask3(Phase phase, Condition c){
 		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
 		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
-		PathAlgorithm alg = new PathAlgorithm(net);
+		ONPathAlg alg = new ONPathAlg(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
-		Collection<ArrayList<Node>> paths = alg.pathTask(bhvGroup.getComponents());
+		Collection<Path> paths = alg.pathTask(bhvGroup.getComponents());
 
-		for(ArrayList<Node> path : paths){
+		for(Path path : paths){
 			int minNodeInPath = 0;
 			int maxNodeInPath = 0;
 			boolean hasMinPhaseNode = false;
@@ -299,8 +306,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		//Joint checking
 		Collection<Condition> preConditions = getRelationAlg().getPrePNCondition(c);
 		for(Condition pre : preConditions){
-			Collection<Condition> prePhase = getBSONAlg().getPhase(pre);
-			Collection<Condition> preMaximal = getBSONAlg().getMaximalPhase(prePhase);
+			Phase prePhase = getBSONAlg().getPhase(pre);
+			ArrayList<Condition> preMaximal = getBSONAlg().getMaximalPhase(prePhase);
 			ONGroup preBhvGroup = getBSONAlg().getBhvGroup(prePhase);
 
 			if(!preMaximal.containsAll(minimal)){

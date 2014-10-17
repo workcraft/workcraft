@@ -9,7 +9,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
-public class BSONPathAlg extends PathAlgorithm{
+public class BSONPathAlg extends ONPathAlg{
 
 	private SON net;
 	private BSONAlg bsonAlg;
@@ -49,20 +49,18 @@ public class BSONPathAlg extends PathAlgorithm{
 	}
 
 	@Override
-	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
-
-		this.clearAll();
+	public Collection<Path> cycleTask (Collection<Node> nodes){
+		List<Path> result = new ArrayList<Path>();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
-				getAllPath(start, end, createAdj(nodes));
+				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
 
-
-		 return cyclePathFilter(cycleResult);
+		 return cyclePathFilter(result);
 	}
 
-	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> result){
-		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
-		for(ArrayList<Node> cycle : result){
+	private Collection<Path> cyclePathFilter(List<Path> paths){
+		List<Path> delList = new ArrayList<Path>();
+		for(Path cycle : paths){
 			int outputBhvLine = 0;
 			int inputBhvLine = 0;
 			if(!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE))
@@ -76,8 +74,8 @@ public class BSONPathAlg extends PathAlgorithm{
 				delList.add(cycle);
 			}
 		}
-		result.removeAll(delList);
-		return result;
+		paths.removeAll(delList);
+		return PathAlgorithm.merging(paths);
 	}
 
 }

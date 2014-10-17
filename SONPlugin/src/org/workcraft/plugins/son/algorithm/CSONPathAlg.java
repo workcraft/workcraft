@@ -8,7 +8,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 
-public class CSONPathAlg extends PathAlgorithm{
+public class CSONPathAlg extends ONPathAlg{
 
 	private SON net;
 
@@ -44,27 +44,26 @@ public class CSONPathAlg extends PathAlgorithm{
 	}
 
 	@Override
-	public Collection<ArrayList<Node>> cycleTask (Collection<Node> nodes){
-
-		this.clearAll();
+	public Collection<Path> cycleTask (Collection<Node> nodes){
+		List<Path> result = new ArrayList<Path>();
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes))
-				getAllPath(start, end, createAdj(nodes));
+				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
 
-		 return cyclePathFilter(cycleResult);
+		 return cyclePathFilter(result);
 	}
 
-	private Collection<ArrayList<Node>> cyclePathFilter(Collection<ArrayList<Node>> pathResult){
-		List<ArrayList<Node>> delList = new ArrayList<ArrayList<Node>>();
-		for (ArrayList<Node> path : pathResult){
+	private Collection<Path> cyclePathFilter(List<Path> paths){
+		List<Path> delList = new ArrayList<Path>();
+		for (Path path : paths){
 			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
 				delList.add(path);
 			if(!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE) && !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
 				delList.add(path);
 		}
-		pathResult.removeAll(delList);
+		paths.removeAll(delList);
 
-		return pathResult;
+		return PathAlgorithm.merging(paths);
 	}
 
 }
