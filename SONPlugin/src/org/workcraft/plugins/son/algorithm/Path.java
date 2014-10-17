@@ -15,10 +15,10 @@ public class Path extends ArrayList<Node>{
 		for (Node node : this) {
 			if (!first) {
 				result.append(' ');
-				result.append(',' + net.getName(node));
+				result.append(',' + net.getNodeReference(node));
 			}else{
 				result.append(' ');
-				result.append(net.getName(node));
+				result.append(net.getNodeReference(node));
 				first = false;
 			}
 		}

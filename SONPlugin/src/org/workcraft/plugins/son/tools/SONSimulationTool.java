@@ -241,6 +241,7 @@ public class SONSimulationTool extends PetriNetSimulationTool{
 				Map<PlaceNode, Boolean> currentMarking = readSONMarking();
 				setReverse(editor, !reverse);
 				applyMarking(currentMarking);
+				excitedContainers.clear();
 				updateState(editor);
 			}
 		});

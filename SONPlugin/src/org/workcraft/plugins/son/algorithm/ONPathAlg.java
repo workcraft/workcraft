@@ -57,7 +57,7 @@ public class ONPathAlg{
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes)){
 				result.addAll(PathAlgorithm.getCycles(start, end, createAdj(nodes)));
-				result.addAll(PathAlgorithm.getCycles(start, end, createBackwardAdj(nodes)));
+				result.addAll(PathAlgorithm.getCycles(end, start, createBackwardAdj(nodes)));
 			}
 		 return PathAlgorithm.merging(result);
 	}
@@ -67,7 +67,6 @@ public class ONPathAlg{
 		for(Node start : relationAlg.getInitial(nodes))
 			for(Node end : relationAlg.getFinal(nodes)){
 				result.addAll(PathAlgorithm.getPaths(start, end, createAdj(nodes)));
-				result.addAll(PathAlgorithm.getCycles(start, end, createBackwardAdj(nodes)));
 			}
 		 return PathAlgorithm.merging(result);
 	}
