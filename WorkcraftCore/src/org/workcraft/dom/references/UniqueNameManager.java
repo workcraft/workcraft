@@ -2,6 +2,8 @@ package org.workcraft.dom.references;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
@@ -30,6 +32,7 @@ public class UniqueNameManager implements NameManager {
 		if (nodes.containsValue(node)) {
 			return;
 		}
+
 		String prefix = getPrefix(node);
 		Integer count = getPrefixCount(prefix);
 		String name;
@@ -93,6 +96,46 @@ public class UniqueNameManager implements NameManager {
 	@Override
 	public String getPrefix(Node node) {
 		return "node";
+	}
+
+	@Override
+	public String getNameOnPaste(Node node, String name) {
+
+		Node checkNode = get(name);
+
+		if (checkNode == null) {
+			// name is not busy
+			return name;
+		} else {
+			// split name into name and number
+			Pattern pat = Pattern.compile("((.*)([^0-9]))([0-9]*)");
+			Matcher mat = pat.matcher(name);
+
+			if (!mat.find()) {
+				return null;
+			}
+
+			String prefix = mat.group(1);
+			String suffix = mat.group(4);
+			int sufint = 0;
+
+			if (!suffix.equals("")) {
+				sufint = Integer.parseInt(suffix);
+			}
+
+			String rname = "";
+
+			do	{
+				rname = prefix;
+
+				//if (sufint>0)
+				rname+=sufint;
+
+				sufint++;
+			} while (nodes.containsKey(rname));
+
+			return rname;
+		}
 	}
 
 }

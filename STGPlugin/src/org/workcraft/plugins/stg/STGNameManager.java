@@ -281,4 +281,9 @@ public class STGNameManager implements NameManager {
 		return ReferenceHelper.getDefaultPrefix(node);
 	}
 
+	@Override
+	public String getNameOnPaste(Node node, String name) {
+		return name;
+	}
+
 }

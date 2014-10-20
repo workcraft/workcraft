@@ -5,6 +5,9 @@ import org.workcraft.dom.Node;
 public interface NameManager {
 	public boolean isNamed(Node node);
 	public String getName(Node node);
+
+	public String getNameOnPaste(Node node, String name);
+
 	public void setName(Node node, String name);
 	public Node get(String name);
 	public void remove(Node node);
