@@ -112,13 +112,13 @@ public class VisualSTG extends AbstractVisualModel {
 		VisualConnection connection = null;
 		if (first instanceof VisualTransition) {
 			if (second instanceof VisualTransition) {
-				createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
+				connection = createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
 			} else if (second instanceof VisualImplicitPlaceArc) {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)second;
 				VisualPlace place = makeExplicit(con);
 				connection = connect(first, place);
 			} else if (second instanceof VisualPlace) {
-				createSimpleConnection((VisualComponent) first, (VisualComponent) second);
+				connection = createSimpleConnection((VisualComponent) first, (VisualComponent) second);
 			}
 		} else if (first instanceof VisualImplicitPlaceArc) {
 			if (second instanceof VisualTransition) {
@@ -132,7 +132,7 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	private void createImplicitPlaceConnection(VisualTransition t1,
+	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1,
 			VisualTransition t2) throws InvalidConnectionException {
 		final ConnectionResult connectResult = stg.connect(t1.getReferencedTransition(), t2.getReferencedTransition());
 
@@ -140,12 +140,12 @@ public class VisualSTG extends AbstractVisualModel {
 		MathConnection con1 = connectResult.getCon1();
 		MathConnection con2 = connectResult.getCon2();
 
-		if (implicitPlace == null || con1 == null || con2 == null)
+		if (implicitPlace == null || con1 == null || con2 == null) {
 			throw new NullPointerException();
-
-		Hierarchy.getNearestContainer(t1, t2).add(
-				new VisualImplicitPlaceArc(t1,
-						t2, con1, con2, implicitPlace));
+		}
+		VisualImplicitPlaceArc connection = new VisualImplicitPlaceArc(t1, t2, con1, con2, implicitPlace);
+		Hierarchy.getNearestContainer(t1, t2).add(connection);
+		return connection;
 	}
 
 	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent)
