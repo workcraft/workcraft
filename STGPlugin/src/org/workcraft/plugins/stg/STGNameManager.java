@@ -129,12 +129,24 @@ public class STGNameManager implements NameManager {
 		} else if (node instanceof STGPlace) {
 			STGPlace p = (STGPlace)node;
 			if (!p.isImplicit()) {
-				defaultNameManager.setDefaultNameIfUnnamed(node);
+				setUniqueDefaultNameIfUnnamed(node);
 			}
 		} else {
-			defaultNameManager.setDefaultNameIfUnnamed(node);
+			setUniqueDefaultNameIfUnnamed(node);
 		}
 	}
+
+	private void setUniqueDefaultNameIfUnnamed(Node node) {
+		String prefix = defaultNameManager.getPrefix(node);
+		Integer count = defaultNameManager.getPrefixCount(prefix);
+		String name;
+		do	{
+			name = prefix + count++;
+		} while (get(name) != null);
+		defaultNameManager.setPrefixCount(prefix, count);
+		defaultNameManager.setName(node, name);
+	}
+
 
 	private void renameSignalTransition(SignalTransition t, String signalName) {
 		signalTransitions.remove(t.getSignalName(), t);
@@ -190,7 +202,7 @@ public class STGNameManager implements NameManager {
 					throw new ArgumentException (s + " is not a valid transition label");
 				}
 				if (defaultNameManager.get(r.getFirst())!=null) {
-					throw new ArgumentException ("Dummy name "+s+" is taken.");
+					throw new ArgumentException ("Dummy name " + s + " is taken.");
 				}
 				if (r.getSecond() != null) {
 					instancedNameManager.assign(dt, r, forceInstance);
@@ -202,11 +214,11 @@ public class STGNameManager implements NameManager {
 				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
 			}
 		} else {
-			if (instancedNameManager.containsGenerator(s+"-") ||
-				instancedNameManager.containsGenerator(s+"+") ||
-				instancedNameManager.containsGenerator(s+"~") ||
+			if (instancedNameManager.containsGenerator(s + "-") ||
+				instancedNameManager.containsGenerator(s + "+") ||
+				instancedNameManager.containsGenerator(s + "~") ||
 				instancedNameManager.containsGenerator(s)) {
-				throw  new ArgumentException("The name "+s+" is already taken.");
+				throw  new ArgumentException("The name " + s + " is already taken.");
 			}
 			defaultNameManager.setName(node, s);
 		}
@@ -245,12 +257,12 @@ public class STGNameManager implements NameManager {
 	@Override
 	public boolean isNamed(Node t) {
 		Pair<String, Integer> pair = instancedNameManager.getInstance(t);
-		return defaultNameManager.isNamed(t)||pair!=null;
+		return defaultNameManager.isNamed(t) || (pair != null);
 	}
 
 
 	@Override
-	public Node get (String name) {
+	public Node get(String name) {
 		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
 		if (instancedName != null)	{
 			if (instancedName.getSecond() == null) {
@@ -267,7 +279,7 @@ public class STGNameManager implements NameManager {
 	}
 
 	@Override
-	public void remove (Node n) {
+	public void remove(Node n) {
 		if (defaultNameManager.isNamed(n)) {
 			defaultNameManager.remove(n);
 		}
@@ -279,6 +291,34 @@ public class STGNameManager implements NameManager {
 	@Override
 	public String getPrefix(Node node) {
 		return ReferenceHelper.getDefaultPrefix(node);
+	}
+
+	@Override
+	public String generateName(Node node, String candidate) {
+		String result = candidate;
+		if (!(node instanceof NamedTransition)) {
+			if (get(candidate) == null) {
+				// Name is not busy
+				result = candidate;
+			} else {
+				// Find a non-conflicting suffix
+				int code = 0;
+				do {
+					result = candidate + codeToString(code);
+					code++;
+				} while (get(result) != null);
+			}
+		}
+		return result;
+	}
+
+	private static String codeToString(int code) {
+		String result = "";
+		do {
+			result += (char)('a' + code % 26);
+			code /= 26;
+		} while (code > 0);
+		return result;
 	}
 
 }

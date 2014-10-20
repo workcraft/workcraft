@@ -30,6 +30,7 @@ public class UniqueNameManager implements NameManager {
 		if (nodes.containsValue(node)) {
 			return;
 		}
+
 		String prefix = getPrefix(node);
 		Integer count = getPrefixCount(prefix);
 		String name;
@@ -93,6 +94,32 @@ public class UniqueNameManager implements NameManager {
 	@Override
 	public String getPrefix(Node node) {
 		return "node";
+	}
+
+	@Override
+	public String generateName(Node node, String candidate) {
+		String result = null;
+		if (get(candidate) == null) {
+			// Name is not busy
+			result = candidate;
+		} else {
+			// Find a non-conflicting suffix
+			int code = 0;
+			do {
+				result = candidate + codeToString(code);
+				code++;
+			} while (get(result) != null);
+		}
+		return result;
+	}
+
+	private static String codeToString(int code) {
+		String result = "";
+		do {
+			result += (char)('a' + code % 26);
+			code /= 26;
+		} while (code > 0);
+		return result;
 	}
 
 }

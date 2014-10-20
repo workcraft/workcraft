@@ -64,15 +64,8 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 				NameManager oldMan = sourceReferenceManager.getNameManager(oldProvider);
 				NameManager newMan = getNameManager(provider);
 				oldMan.remove(node);
-				Node checkNode = newMan.get(name);
-				// We must assign some name in any case, be it an old or a new one
-				if (checkNode == null) {
-					newMan.setName(node, name);
-				} else {
-					newMan.setDefaultNameIfUnnamed(node);
-					// The node was not added yet as a child of the target container,
-					// so using setName from the reference manager is not possible yet
-				}
+				String newName = newMan.generateName(node, name);
+				newMan.setName(node, newName);
 			}
 		}
 	}

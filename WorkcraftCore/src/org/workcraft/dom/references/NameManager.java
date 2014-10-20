@@ -10,4 +10,5 @@ public interface NameManager {
 	public void remove(Node node);
 	public String getPrefix(Node node);
 	public void setDefaultNameIfUnnamed(Node node);
+	public String generateName(Node node, String candidate);
 }
