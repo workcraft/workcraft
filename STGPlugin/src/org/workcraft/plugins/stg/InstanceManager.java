@@ -26,7 +26,7 @@ public class InstanceManager {
 	}
 
 	public boolean containsGenerator(String name) {
-		return generators.get(name)!=null;
+		return (generators.get(name) != null);
 	}
 
 	public boolean contains(Node node) {

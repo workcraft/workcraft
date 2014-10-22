@@ -27,43 +27,49 @@ public class LabelParser {
 	}
 
 	public static Triple<String, SignalTransition.Direction, Integer> parseSignalTransition(String s) {
+		Triple<String, SignalTransition.Direction, Integer> result = null;
 		final Matcher matcher = signalTransitionPattern.matcher(s);
-		if (!matcher.find()) {
-			throw new ArgumentException("\"" + s + "\" is not a valid STG label.");
+		if (matcher.find() && (matcher.end() == s.length())) {
+			final String signalName = matcher.group(1);
+
+			final Direction direction;
+			String directionGroup = matcher.group(2);
+			if (directionGroup.equals("+")) {
+				direction = SignalTransition.Direction.PLUS;
+			} else if (directionGroup.equals("-")) {
+				direction = SignalTransition.Direction.MINUS;
+			} else {
+				direction = SignalTransition.Direction.TOGGLE;
+			}
+
+			final Integer instance;
+			String instanceGroup = matcher.group(4);
+			if (instanceGroup == null) {
+				instance = null;
+			} else {
+				instance =  Integer.parseInt(instanceGroup);
+			}
+			result = Triple.of(signalName, direction, instance);
 		}
-
-		if (! (matcher.end() == s.length())) {
-			throw new ArgumentException("\"" + s + "\" is not a valid STG label.");
-		}
-
-		final String instanceGroup = matcher.group(4);
-
-		final Direction second;
-
-		if (matcher.group(2).equals("+")) {
-			second = SignalTransition.Direction.PLUS;
-		} else if (matcher.group(2).equals("-")) {
-			second = SignalTransition.Direction.MINUS;
-		} else {
-			second = SignalTransition.Direction.TOGGLE;
-		}
-		return Triple.of(matcher.group(1),	second,
-				instanceGroup == null ? null : Integer.parseInt(instanceGroup));
+		return result;
 	}
 
 	public static Pair<String, Integer> parseDummyTransition(String s) {
+		Pair<String, Integer> result = null;
 		final Matcher matcher = dummyTransitionPattern.matcher(s);
+		if (matcher.find() && (matcher.end() == s.length())) {
+			final String name = matcher.group(1);
 
-		if (!matcher.find()) {
-			return null;
+			final Integer instance;
+			String instanceGroup = matcher.group(3);
+			if (instanceGroup == null) {
+				instance = null;
+			} else {
+				instance =  Integer.parseInt(instanceGroup);
+			}
+			result = Pair.of(name, instance);
 		}
-		if (! (matcher.end() == s.length())) {
-			return null;
-		}
-		final String instanceGroup = matcher.group(3);
-
-		return Pair.of(matcher.group(1),
-				instanceGroup == null? null : Integer.parseInt(instanceGroup));
+		return result;
 	}
 
 	public static Pair<String, Integer> parseInstancedTransition(String s) {

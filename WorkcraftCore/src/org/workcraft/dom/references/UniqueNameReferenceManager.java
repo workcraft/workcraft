@@ -45,7 +45,7 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 
 	@Override
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
-		return mgr.get(reference);
+		return mgr.getNode(reference);
 	}
 
 	@Override

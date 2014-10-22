@@ -64,7 +64,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 				NameManager oldMan = sourceReferenceManager.getNameManager(oldProvider);
 				NameManager newMan = getNameManager(provider);
 				oldMan.remove(node);
-				String newName = newMan.generateName(node, name);
+				String newName = newMan.getDerivedName(node, name);
 				newMan.setName(node, newName);
 			}
 		}
@@ -132,7 +132,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		String tail =  NamespaceHelper.getReferenceTail(reference);
 		NameManager man = getNameManager(provider);
 		Node node;
-		node = man.get(head);
+		node = man.getNode(head);
 		if ((node != null) && (node instanceof NamespaceProvider)) {
 			return getNodeByReference((NamespaceProvider)node, tail);
 		}
@@ -204,12 +204,6 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		NamespaceProvider provider = getNamespaceProvider(node);
 		NameManager mgr = getNameManager(provider);
 		mgr.setName(node, name);
-	}
-
-	public boolean isNamed(Node node) {
-		NamespaceProvider provider = getNamespaceProvider(node);
-		NameManager mgr = getNameManager(provider);
-		return mgr.isNamed(node);
 	}
 
 	public String getName(Node node) {
