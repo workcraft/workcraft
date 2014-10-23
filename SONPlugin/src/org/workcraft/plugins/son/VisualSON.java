@@ -38,12 +38,13 @@ import org.workcraft.util.Hierarchy;
 @DisplayName ("Structured Occurrence Nets")
 @CustomTools ( SONToolProvider.class )
 
-public class VisualSON extends AbstractVisualModel{
+public class VisualSON extends AbstractVisualModel {
 
 	private String group="Invalid Group Selection";
 	private String block="Invalid Block Selection";
 	private String blockConnection="Block Connection Error";
 	private SON net;
+	private Semantics currentConnectonSemantics;
 
 	public VisualSON(SON model){
 		this(model, null);
@@ -63,12 +64,9 @@ public class VisualSON extends AbstractVisualModel{
 		blockConnectionChecker();
 	}
 
-
+	@Override
 	public void validateConnection (Node first, Node second) throws InvalidConnectionException{
-	}
-
-	public void validateConnection (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
-		if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (semantics == Semantics.PNLINE))
+		if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (currentConnectonSemantics == Semantics.PNLINE))
 			throw new InvalidConnectionException ("Connections between conditions are not valid(PN Connection)");
 		if ((first instanceof VisualEvent) && (second instanceof VisualEvent))
 			throw new InvalidConnectionException ("Connections between events are not valid (PN Connection)");
@@ -77,7 +75,7 @@ public class VisualSON extends AbstractVisualModel{
 
 		//asyn type
 		if (!(first instanceof VisualChannelPlace) && !(second instanceof VisualChannelPlace)
-				&& ((semantics == Semantics.ASYNLINE) || (semantics == Semantics.SYNCLINE))) {
+				&& ((currentConnectonSemantics == Semantics.ASYNLINE) || (currentConnectonSemantics == Semantics.SYNCLINE))) {
 			throw new InvalidConnectionException ("Invalid connection (A/Syn Communication)");
 		}
 		//Group
@@ -92,7 +90,7 @@ public class VisualSON extends AbstractVisualModel{
 			throw new InvalidConnectionException ("Connections between channel place and condition are not valid (A/Syn Communication)");
 
 		if(isGrouped(first) && isGrouped(second) && !isInSameGroup(first, second)  &&
-				(semantics == Semantics.PNLINE || semantics == Semantics.ASYNLINE || semantics == Semantics.SYNCLINE) )
+				(currentConnectonSemantics == Semantics.PNLINE || currentConnectonSemantics == Semantics.ASYNLINE || currentConnectonSemantics == Semantics.SYNCLINE) )
 			throw new InvalidConnectionException ("Direct connections between two different groups are not valid (PN Connection, A/Syn Communication)");
 
 		if(!(first instanceof VisualChannelPlace) &&  !(second instanceof VisualChannelPlace)){
@@ -100,7 +98,7 @@ public class VisualSON extends AbstractVisualModel{
 			throw new InvalidConnectionException ("Connections between grouped node and un-grouped nodes are not valid (Group)");
 
 		//Bhv Type
-		if (semantics == Semantics.BHVLINE) {
+		if (currentConnectonSemantics == Semantics.BHVLINE) {
 			if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
 				throw new InvalidConnectionException ("Connections between non-conditions are not valid (Behavioural Abstraction)");
 			if (!isGrouped(first) || !isGrouped(second) )
@@ -160,17 +158,13 @@ public class VisualSON extends AbstractVisualModel{
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public VisualConnection connect (Node first, Node second) throws InvalidConnectionException{
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
-
-	public void connect (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
-		validateConnection(first, second, semantics);
+		validateConnection(first, second);
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
 
+		Semantics semantics = currentConnectonSemantics;
 		if ((c1 instanceof VisualChannelPlace) || (c2 instanceof VisualChannelPlace)) {
 			if (semantics != Semantics.SYNCLINE) {
 				semantics = Semantics.ASYNLINE;
@@ -179,8 +173,14 @@ public class VisualSON extends AbstractVisualModel{
 
 		SONConnection con = (SONConnection)net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
 		VisualSONConnection ret = new VisualSONConnection(con, c1, c2);
-
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
+
+		return ret;
+	}
+
+	public VisualConnection connect (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
+		forceConnectionSemantics(semantics);
+		return connect(first, second);
 	}
 
 	private Collection<Node> getGroupableSelection(){
@@ -616,7 +616,8 @@ public class VisualSON extends AbstractVisualModel{
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-								this.connect(first, vBlock, con.getReferencedSONConnection().getSemantics());
+
+								this.connect(first, vBlock);
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -646,7 +647,8 @@ public class VisualSON extends AbstractVisualModel{
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-								this.connect(vBlock, second, con.getReferencedSONConnection().getSemantics());
+								forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
+								this.connect(vBlock, second);
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -720,14 +722,15 @@ public class VisualSON extends AbstractVisualModel{
 					//c is an input
 					if(piece[0].equals("to") && e!=null){
 						try {
-							if(piece[2].equals("PNLINE"))
-								this.connect(p, e, Semantics.PNLINE);
-							else if(piece[2].equals("SYNCLINE"))
-								this.connect(p, e, Semantics.SYNCLINE);
-							else if(piece[2].equals("ASYNLINE"))
-								this.connect(p, e, Semantics.ASYNLINE);
-							else if(piece[2].equals("BHVLINE"))
-								this.connect(p, e, Semantics.BHVLINE);
+							if(piece[2].equals("PNLINE")) {
+								connect(p, e, Semantics.PNLINE);
+							} else if(piece[2].equals("SYNCLINE")) {
+								connect(p, e, Semantics.SYNCLINE);
+							} else if(piece[2].equals("ASYNLINE")) {
+								connect(p, e, Semantics.ASYNLINE);
+							} else if(piece[2].equals("BHVLINE")) {
+								connect(p, e, Semantics.BHVLINE);
+							}
 
 						} catch (InvalidConnectionException ex) {
 							// TODO Auto-generated catch block
@@ -736,14 +739,15 @@ public class VisualSON extends AbstractVisualModel{
 						//c is an output
 					}else if(piece[0].equals("from") && e!=null){
 						try {
-							if(piece[2].equals("PNLINE"))
-								this.connect(e, p, Semantics.PNLINE);
-							else if(piece[2].equals("SYNCLINE"))
-								this.connect(e, p, Semantics.SYNCLINE);
-							else if(piece[2].equals("ASYNLINE"))
-								this.connect(e, p, Semantics.ASYNLINE);
-							else if(piece[2].equals("BHVLINE"))
-								this.connect(e, p, Semantics.BHVLINE);
+							if(piece[2].equals("PNLINE")) {
+								connect(e, p, Semantics.PNLINE);
+							} else if(piece[2].equals("SYNCLINE")) {
+								connect(e, p, Semantics.SYNCLINE);
+							} else if(piece[2].equals("ASYNLINE")) {
+								connect(e, p, Semantics.ASYNLINE);
+							} else if(piece[2].equals("BHVLINE")) {
+								connect(e, p, Semantics.BHVLINE);
+							}
 						} catch (InvalidConnectionException ex) {
 							// TODO Auto-generated catch block
 							ex.printStackTrace();
@@ -758,5 +762,9 @@ public class VisualSON extends AbstractVisualModel{
 					"reconnect block components again)"+ compatibility.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
 		}
 		beforeConToBlock();
+	}
+
+	public void forceConnectionSemantics(Semantics currentSemantics) {
+		this.currentConnectonSemantics = currentSemantics;
 	}
 }

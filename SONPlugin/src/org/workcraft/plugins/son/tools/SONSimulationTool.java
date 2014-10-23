@@ -77,7 +77,7 @@ import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
-public class SONSimulationTool extends PetriNetSimulationTool{
+public class SONSimulationTool extends PetriNetSimulationTool {
 
 	private SON net;
 	protected VisualSON visualNet;

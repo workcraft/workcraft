@@ -34,6 +34,7 @@ public abstract class AbstractTool implements GraphEditorTool {
 
 	@Override
 	public void activated(final GraphEditor editor) {
+		editor.forceRedraw();
 	}
 
 	@Override
