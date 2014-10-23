@@ -35,8 +35,12 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	private void incRef (MathNode node) {
 		if (refCount.get(node) == null)
 			refCount.put(node, 1);
-		else
-			refCount.put(node, refCount.get(node)+1);
+		else {
+//			throw new RuntimeException("The element "+node.toString()+" was added before already!");
+			// TODO: why would we increase the counter more than once? which objects use that?
+			// TODO: with the counter, the reparenting in GroupImplementation still needs to be fixed not to cause double increase of the counter
+//			refCount.put(node, refCount.get(node)+1);
+		}
 	}
 
 	private void decRef (MathNode node) {
