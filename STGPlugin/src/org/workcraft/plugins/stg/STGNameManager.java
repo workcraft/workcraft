@@ -3,11 +3,8 @@ package org.workcraft.plugins.stg;
 import java.util.Collection;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Identifier;
@@ -15,27 +12,17 @@ import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
-public class STGNameManager implements NameManager {
-	private UniqueNameManager defaultNameManager;
+public class STGNameManager extends UniqueNameManager {
 	private InstanceManager instancedNameManager = new InstanceManager();
 	private ListMap<String, SignalTransition> signalTransitions = new ListMap<String, SignalTransition>();
 	private ListMap<String, DummyTransition> dummyTransitions = new ListMap<String, DummyTransition>();
 
-	public STGNameManager() {
-		defaultNameManager = new UniqueNameManager() {
-			@Override
-			public String getPrefix(Node node) {
-				return STGNameManager.this.getPrefix(node);
-			}
-		};
+	public int getInstanceNumber(Node node) {
+		return instancedNameManager.getInstance(node).getSecond();
 	}
 
-	public int getInstanceNumber (Node st) {
-		return instancedNameManager.getInstance(st).getSecond();
-	}
-
-	public void setInstanceNumber (Node st, int number) {
-		instancedNameManager.assign(st, number);
+	public void setInstanceNumber(Node node, int number) {
+		instancedNameManager.assign(node, number);
 	}
 
 	public Collection<SignalTransition> getSignalTransitions(String signalName) {
@@ -44,6 +31,137 @@ public class STGNameManager implements NameManager {
 
 	public Collection<DummyTransition> getDummyTransitions(String name) {
 		return dummyTransitions.get(name);
+	}
+
+	private void renameSignalTransition(SignalTransition t, String signalName) {
+		signalTransitions.remove(t.getSignalName(), t);
+		t.setSignalName(signalName);
+		signalTransitions.put(t.getSignalName(), t);
+	}
+
+	private void renameDummyTransition(DummyTransition t, String name) {
+		dummyTransitions.remove(t.getName(), t);
+		t.setName(name);
+		dummyTransitions.put(t.getName(), t);
+	}
+
+	private void setSignalTransitionName(SignalTransition st, String name, boolean forceInstance) {
+		String signalName = st.getSignalName();
+		Direction direction = st.getDirection();
+		Integer instance = 0;
+		final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(name);
+		if (r != null) {
+			signalName = r.getFirst();
+			direction = r.getSecond();
+			instance = r.getThird();
+		} else if (Identifier.isValid(name)) {
+			signalName = name;
+		} else {
+			throw new ArgumentException ("Name '" + name + "' is not a valid signal transition label.");
+		}
+		if (isUnusedName(signalName) || !getSignalTransitions(signalName).isEmpty()) {
+			instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
+			st.setDirection(direction);
+			renameSignalTransition(st, signalName);
+		} else {
+			throw new ArgumentException ("Name '" + name + "' is unavailable.");
+		}
+	}
+
+	private void setDummyTransitionName(DummyTransition dt, String name, boolean forceInstance) {
+		final Pair<String,Integer> r = LabelParser.parseDummyTransition(name);
+		if (r != null) {
+			String dummyName = r.getFirst();
+			if (isUnusedName(dummyName) || !getDummyTransitions(dummyName).isEmpty()) {
+				instancedNameManager.assign(dt, r, forceInstance);
+				renameDummyTransition(dt, dummyName);
+			} else {
+				throw new ArgumentException ("Name '" + name + "' is unavailable.");
+			}
+		} else {
+			throw new ArgumentException ("Name '" + name + "' is not a valid dummy label.");
+		}
+	}
+
+	public void setName(Node node, String name, boolean forceInstance) {
+		if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+			// Skip implicit places
+		} else if (node instanceof SignalTransition) {
+			setSignalTransitionName((SignalTransition)node, name, forceInstance);
+		} else if (node instanceof DummyTransition) {
+			setDummyTransitionName((DummyTransition)node, name, forceInstance);
+		} else {
+			super.setName(node, name);
+		}
+	}
+
+	@Override
+	public void setName(Node node, String s) {
+		setName(node, s, false);
+	}
+
+	@Override
+	public String getName(Node node) {
+		String result = null;
+		if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+			// Skip implicit places
+		} else if (node instanceof NamedTransition) {
+			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
+			if (instance.getSecond().equals(0)) {
+				result = instance.getFirst();
+			} else {
+				result = instance.getFirst() + "/" + instance.getSecond();
+			}
+		} else {
+			result = super.getName(node);
+		}
+		return result;
+	}
+
+	public Pair<String, Integer> getNamePair(Node node) {
+		if (node instanceof Transition) {
+			return instancedNameManager.getInstance(node);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isNamed(Node node) {
+		return (super.isNamed(node)
+				|| (instancedNameManager.getInstance(node) != null));
+	}
+
+	@Override
+	public boolean isUnusedName(String name) {
+	return (super.isUnusedName(name)
+			&& !instancedNameManager.containsGenerator(name + "-")
+			&& !instancedNameManager.containsGenerator(name + "+")
+			&& !instancedNameManager.containsGenerator(name + "~")
+			&& !instancedNameManager.containsGenerator(name));
+	}
+
+	@Override
+	public Node getNode(String name) {
+		Node result = null;
+		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
+		if (instancedName != null)	{
+			if (instancedName.getSecond() == null) {
+				instancedName = Pair.of(instancedName.getFirst(), 0);
+			}
+			result = instancedNameManager.getObject(instancedName);
+		}
+		if (result == null) {
+			result = super.getNode(name);
+		}
+		return result;
+	}
+
+	@Override
+	public void remove(Node node) {
+		super.remove(node);
+		if (instancedNameManager.getInstance(node) != null) {
+			instancedNameManager.remove(node);
+		}
 	}
 
 	private SignalTransition.Type getSignalType(String signalName) {
@@ -62,46 +180,36 @@ public class STGNameManager implements NameManager {
 	}
 
 	private boolean isGoodSignalName(String name, SignalTransition.Type type) {
-		if (type == null) {
-			return false;
-		}
-		if (defaultNameManager.get(name) != null) {
-			return false;
-		}
-		if (isDummyName(name)) {
-			return false;
-		}
-		if (isSignalName(name)) {
+		boolean result = true;
+		if (super.getNode(name) != null) {
+			result = false;
+		} else if (isDummyName(name)) {
+			result = false;
+		} else if (isSignalName(name)) {
 			SignalTransition.Type expectedType = getSignalType(name);
-			if (expectedType != null && !expectedType.equals(type)) {
-				return false;
+			if ((expectedType != null) && !expectedType.equals(type)) {
+				result = false;
 			}
 		}
-		return true;
+		return result;
 	}
 
 	private boolean isGoodDummyName(String name) {
-		if (defaultNameManager.get(name)!=null)
-			return false;
-
-		if (isSignalName(name)) {
-			return false;
+		boolean result = true;
+		if (super.getNode(name) != null) {
+			result = false;
+		} else if (isSignalName(name)) {
+			result = false;
+		} else if (isDummyName(name)) {
+			result = false;
 		}
-		if (isDummyName(name)) {
-			return false;
-		}
-		return true;
+		return result;
 	}
 
-	@Override
-	public void setDefaultNameIfUnnamed(Node node) {
-		String prefix = getPrefix(node);
-		if (node instanceof SignalTransition) {
-			final SignalTransition st = (SignalTransition)node;
-			if (instancedNameManager.contains(st)) {
-				return;
-			}
-			Integer count = defaultNameManager.getPrefixCount(prefix);
+	private void setDeaultSignalTransitionNameIfUnnamed(final SignalTransition st) {
+		if (!instancedNameManager.contains(st)) {
+			String prefix = getPrefix(st);
+			Integer count = getPrefixCount(prefix);
 			String name = prefix;
 			if (count > 0) {
 				name = prefix + count;
@@ -109,16 +217,17 @@ public class STGNameManager implements NameManager {
 			while ( !isGoodSignalName(name, st.getSignalType()) ) {
 				name = prefix + (++count);
 			}
-			defaultNameManager.setPrefixCount(prefix, count);
+			setPrefixCount(prefix, count);
 			st.setSignalName(name);
 			signalTransitions.put(name, st);
 			instancedNameManager.assign(st);
-		} else if (node instanceof DummyTransition) {
-			final DummyTransition dt = (DummyTransition)node;
-			if (instancedNameManager.contains(dt)) {
-				return;
-			}
-			Integer count = defaultNameManager.getPrefixCount(prefix);
+		}
+	}
+
+	private void setDefaultDummyTransitionNameIfUnnamed(final DummyTransition dt) {
+		if (!instancedNameManager.contains(dt)) {
+			String prefix = getPrefix(dt);
+			Integer count = getPrefixCount(prefix);
 			String name;
 			do {
 				name = prefix + (count++);
@@ -126,198 +235,28 @@ public class STGNameManager implements NameManager {
 			dt.setName(name);
 			dummyTransitions.put(name, dt);
 			instancedNameManager.assign(dt);
-		} else if (node instanceof STGPlace) {
-			STGPlace p = (STGPlace)node;
-			if (!p.isImplicit()) {
-				setUniqueDefaultNameIfUnnamed(node);
-			}
-		} else {
-			setUniqueDefaultNameIfUnnamed(node);
 		}
 	}
 
-	private void setUniqueDefaultNameIfUnnamed(Node node) {
-		String prefix = defaultNameManager.getPrefix(node);
-		Integer count = defaultNameManager.getPrefixCount(prefix);
-		String name;
-		do	{
-			name = prefix + count++;
-		} while (get(name) != null);
-		defaultNameManager.setPrefixCount(prefix, count);
-		defaultNameManager.setName(node, name);
-	}
-
-
-	private void renameSignalTransition(SignalTransition t, String signalName) {
-		signalTransitions.remove(t.getSignalName(), t);
-		t.setSignalName(signalName);
-		signalTransitions.put(t.getSignalName(), t);
-	}
-
-	private void renameDummyTransition(DummyTransition t, String name) {
-		dummyTransitions.remove(t.getName(), t);
-		t.setName(name);
-		dummyTransitions.put(t.getName(), t);
-	}
-
-	public void setName(Node node, String s, boolean forceInstance) {
-		if (node instanceof STGPlace) {
-			// do not set a name for an implicit place
-			if (((STGPlace) node).isImplicit()) return;
-		}
-
-		if (node instanceof SignalTransition) {
-			final SignalTransition st = (SignalTransition)node;
-			try {
-				final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(s);
-				if (r == null) {
-					throw new ArgumentException (s + " is not a valid signal transition label");
-				}
-				String cn = r.getFirst();
-				Object o = defaultNameManager.get(cn);
-				if (o != null) {
-					throw new ArgumentException ("Signal name "+s+" is not awailable.");
-				}
-				instancedNameManager.assign(st, Pair.of(r.getFirst() + r.getSecond(), r.getThird()), forceInstance);
-				renameSignalTransition(st, r.getFirst());
-				st.setDirection(r.getSecond());
-			} catch (DuplicateIDException e) {
-				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
-			} catch (ArgumentException e) {
-				if (Identifier.isValid(s)) {
-					if (defaultNameManager.get(s)!=null) {
-						throw new ArgumentException ("Signal name "+s+" is not available.");
-					}
-					instancedNameManager.assign(st, s + st.getDirection());
-					renameSignalTransition(st, s);
-				} else {
-					throw new ArgumentException (e.getMessage());
-				}
-			}
+	@Override
+	public void setDefaultNameIfUnnamed(Node node) {
+		if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+			// Skip implicit places
+		} else if (node instanceof SignalTransition) {
+			setDeaultSignalTransitionNameIfUnnamed((SignalTransition)node);
 		} else if (node instanceof DummyTransition) {
-			final DummyTransition dt = (DummyTransition)node;
-			try {
-				final Pair<String,Integer> r = LabelParser.parseDummyTransition(s);
-				if (r==null) {
-					throw new ArgumentException (s + " is not a valid transition label");
-				}
-				if (defaultNameManager.get(r.getFirst())!=null) {
-					throw new ArgumentException ("Dummy name " + s + " is taken.");
-				}
-				if (r.getSecond() != null) {
-					instancedNameManager.assign(dt, r, forceInstance);
-				} else {
-					instancedNameManager.assign(dt, r.getFirst());
-				}
-				renameDummyTransition(dt, r.getFirst());
-			} catch (DuplicateIDException e) {
-				throw new ArgumentException ("Instance number " + e.getId() + " is already taken.");
-			}
+			setDefaultDummyTransitionNameIfUnnamed((DummyTransition)node);
 		} else {
-			if (instancedNameManager.containsGenerator(s + "-") ||
-				instancedNameManager.containsGenerator(s + "+") ||
-				instancedNameManager.containsGenerator(s + "~") ||
-				instancedNameManager.containsGenerator(s)) {
-				throw  new ArgumentException("The name " + s + " is already taken.");
-			}
-			defaultNameManager.setName(node, s);
-		}
-	}
-
-	public Pair<String, Integer> getNamePair(Node node) {
-		if (node instanceof Transition) {
-			return instancedNameManager.getInstance(node);
-		}
-		return null;
-	}
-
-	@Override
-	public void setName(Node node, String s) {
-		setName(node, s, false);
-	}
-
-	@Override
-	public String getName (Node node) {
-		if (node instanceof Transition) {
-			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
-
-			if (instance.getSecond().equals(0)) {
-				return instance.getFirst();
-			} else {
-				return instance.getFirst() + "/" + instance.getSecond();
-			}
-		} else {
-			if (node instanceof STGPlace && ((STGPlace)node).isImplicit()) {
-				return null;
-			}
-			return defaultNameManager.getName(node);
+			super.setDefaultNameIfUnnamed(node);
 		}
 	}
 
 	@Override
-	public boolean isNamed(Node t) {
-		Pair<String, Integer> pair = instancedNameManager.getInstance(t);
-		return defaultNameManager.isNamed(t) || (pair != null);
-	}
-
-
-	@Override
-	public Node get(String name) {
-		Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
-		if (instancedName != null)	{
-			if (instancedName.getSecond() == null) {
-				instancedName = Pair.of(instancedName.getFirst(), 0);
-			}
-			Node node = instancedNameManager.getObject(instancedName);
-			if (node != null) {
-				return node;
-			}
-		}
-		Node ret = defaultNameManager.get(name);
-		return ret;
-
-	}
-
-	@Override
-	public void remove(Node n) {
-		if (defaultNameManager.isNamed(n)) {
-			defaultNameManager.remove(n);
-		}
-		if (instancedNameManager.getInstance(n) != null) {
-			instancedNameManager.remove(n);
-		}
-	}
-
-	@Override
-	public String getPrefix(Node node) {
-		return ReferenceHelper.getDefaultPrefix(node);
-	}
-
-	@Override
-	public String generateName(Node node, String candidate) {
+	public String getDerivedName(Node node, String candidate) {
 		String result = candidate;
 		if (!(node instanceof NamedTransition)) {
-			if (get(candidate) == null) {
-				// Name is not busy
-				result = candidate;
-			} else {
-				// Find a non-conflicting suffix
-				int code = 0;
-				do {
-					result = candidate + codeToString(code);
-					code++;
-				} while (get(result) != null);
-			}
+			result = super.getDerivedName(node, candidate);
 		}
-		return result;
-	}
-
-	private static String codeToString(int code) {
-		String result = "";
-		do {
-			result += (char)('a' + code % 26);
-			code /= 26;
-		} while (code > 0);
 		return result;
 	}
 

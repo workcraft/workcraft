@@ -13,6 +13,17 @@ public class UniqueNameManager implements NameManager {
 	private Map<String, Integer> prefixCount = new HashMap<String, Integer>();
 	private TwoWayMap<String, Node> nodes = new TwoWayMap<String, Node>();
 
+	@Override
+	public String getPrefix(Node node) {
+		return ReferenceHelper.getDefaultPrefix(node);
+	}
+
+	@Override
+	public void setPrefixCount(String prefix, Integer count) {
+		prefixCount.put(prefix, count);
+	}
+
+	@Override
 	public Integer getPrefixCount(String prefix) {
 		if (prefixCount.containsKey(prefix)) {
 			return prefixCount.get(prefix);
@@ -21,42 +32,27 @@ public class UniqueNameManager implements NameManager {
 		}
 	}
 
-	public Integer setPrefixCount(String prefix, Integer count) {
-		return prefixCount.put(prefix, count);
-	}
-
 	@Override
-	public void setDefaultNameIfUnnamed(Node node) {
-		if (nodes.containsValue(node)) {
-			return;
+	public void setName(Node node, String name) {
+		Node occupant = getNode(name);
+		if (node != occupant) {
+			if (isUnusedName(name)) {
+				if (Identifier.isValid(name)) {
+					nodes.removeValue(node);
+					nodes.put(name, node);
+				} else {
+					throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
+							+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
+				}
+			} else {
+				throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
+			}
 		}
-
-		String prefix = getPrefix(node);
-		Integer count = getPrefixCount(prefix);
-		String name;
-		do	{
-			name = prefix + count++;
-		} while (nodes.containsKey(name));
-		setPrefixCount(prefix, count);
-		nodes.put(name, node);
-	}
-
-	public String getNameQuiet(Node node) {
-		return nodes.getKey(node);
-	}
-
-	@Override
-	public boolean isNamed(Node node) {
-		String name = getNameQuiet(node);
-		if (name == null) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override
 	public String getName(Node node) {
-		String name = getNameQuiet(node);
+		String name = nodes.getKey(node);
 		if (name == null) {
 			throw new NotFoundException("Node \"" + node.toString() + "\" was not issued a name");
 		}
@@ -64,53 +60,39 @@ public class UniqueNameManager implements NameManager {
 	}
 
 	@Override
-	public void setName(Node node, String name) {
-		final Node occupant = nodes.getValue(name);
-		if(occupant == node) {
-			return;
-		}
-		if(occupant != null) {
-			throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
-		}
-
-		if (!Identifier.isValid(name)) {
-			throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
-					+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
-		}
-		nodes.removeValue(node);
-		nodes.put(name, node);
+	public boolean isNamed(Node node) {
+		return (nodes.getKey(node) != null);
 	}
 
 	@Override
-	public Node get(String name) {
+	public boolean isUnusedName(String name) {
+		return (getNode(name) == null);
+	}
+
+	@Override
+	public Node getNode(String name) {
 		return nodes.getValue(name);
 	}
 
 	@Override
 	public void remove(Node node) {
-		nodes.removeValue(node);
-	}
-
-	@Override
-	public String getPrefix(Node node) {
-		return "node";
-	}
-
-	@Override
-	public String generateName(Node node, String candidate) {
-		String result = null;
-		if (get(candidate) == null) {
-			// Name is not busy
-			result = candidate;
-		} else {
-			// Find a non-conflicting suffix
-			int code = 0;
-			do {
-				result = candidate + codeToString(code);
-				code++;
-			} while (get(result) != null);
+		if (nodes.getKey(node) != null) {
+			nodes.removeValue(node);
 		}
-		return result;
+	}
+
+	@Override
+	public void setDefaultNameIfUnnamed(Node node) {
+		if (!nodes.containsValue(node)) {
+			String prefix = getPrefix(node);
+			Integer count = getPrefixCount(prefix);
+			String name;
+			do	{
+				name = prefix + count++;
+			} while ( !isUnusedName(name) );
+			setPrefixCount(prefix, count);
+			nodes.put(name, node);
+		}
 	}
 
 	private static String codeToString(int code) {
@@ -119,6 +101,23 @@ public class UniqueNameManager implements NameManager {
 			result += (char)('a' + code % 26);
 			code /= 26;
 		} while (code > 0);
+		return result;
+	}
+
+	@Override
+	public String getDerivedName(Node node, String candidate) {
+		String result = null;
+		if (getNode(candidate) == null) {
+			// Name is not busy
+			result = candidate;
+		} else {
+			// Find a non-conflicting suffix
+			int code = 0;
+			do {
+				result = candidate + codeToString(code);
+				code++;
+			} while (getNode(result) != null);
+		}
 		return result;
 	}
 
