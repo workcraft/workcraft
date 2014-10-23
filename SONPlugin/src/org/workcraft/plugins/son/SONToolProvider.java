@@ -12,7 +12,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.tools.SONConnectionTool;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
-import org.workcraft.plugins.son.tools.SelectionTool;
+import org.workcraft.plugins.son.tools.SONSelectionTool;
 
 public class SONToolProvider implements CustomToolsProvider{
 
@@ -20,7 +20,7 @@ public class SONToolProvider implements CustomToolsProvider{
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 		GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
-		result.add(new SelectionTool(channelPlaceTool));
+		result.add(new SONSelectionTool(channelPlaceTool));
 		result.add(new CommentGeneratorTool());
 		result.add(new SONConnectionTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));

@@ -163,12 +163,12 @@ public class CycleAnaliserTool extends AbstractTool {
 
 	@Override
 	public void activated(final GraphEditor editor) {
-		super.activated(editor);
-		editor.getWorkspaceEntry().setCanModify(false);
 		dfs = (VisualDfs)editor.getModel();
 		cycleTable.clearSelection();
 		selectedCycle = null;
 		cycles = findCycles();
+		super.activated(editor);
+		editor.getWorkspaceEntry().setCanModify(false);
 	}
 
 	@Override

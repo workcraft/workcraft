@@ -51,6 +51,7 @@ public class VisualSONConnection extends VisualConnection {
 
 	public void setSemantics(Semantics semantics) {
 		getReferencedSONConnection().setSemantics(semantics);
+		invalidate();
 	}
 
 	@Override
@@ -93,10 +94,11 @@ public class VisualSONConnection extends VisualConnection {
 	public void setIsAsynLine(boolean isAsynLine){
 		this.isAsynLine = isAsynLine;
 		sendNotification(new PropertyChangedEvent(this, "isAsynLine"));
-		if(isAsynLine)
+		if (isAsynLine) {
 			setSemantics(Semantics.ASYNLINE);
-		else
+		} else {
 			setSemantics(Semantics.SYNCLINE);
+		}
 	}
 
 	public boolean getIsAsynLine(){

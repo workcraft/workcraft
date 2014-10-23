@@ -20,6 +20,7 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
@@ -31,13 +32,13 @@ import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
-public class SelectionTool extends org.workcraft.gui.graph.tools.SelectionTool {
+public class SONSelectionTool extends SelectionTool {
 
 	private GraphEditorTool channelPlaceTool = null;
 	private boolean asyn = true;
 	private boolean sync = true;
 
-	public SelectionTool(GraphEditorTool channelPlaceTool) {
+	public SONSelectionTool(GraphEditorTool channelPlaceTool) {
 		this.channelPlaceTool = channelPlaceTool;
 	}
 
