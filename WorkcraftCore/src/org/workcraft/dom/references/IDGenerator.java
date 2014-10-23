@@ -40,8 +40,7 @@ public class IDGenerator
 
 	TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<Pair<Integer, Integer>>(comparator);
 
-	public void reserveID(int id)
-	{
+	public void reserveID(int id) {
 		final Pair<Integer, Integer> point = emptyRange(id);
 		final Pair<Integer, Integer> floor = takenRanges.floor(point);
 		final Pair<Integer, Integer> ceiling = takenRanges.ceiling(point);
@@ -70,8 +69,7 @@ public class IDGenerator
 		takenRanges.add(Pair.of(left, right));
 	}
 
-	public void releaseID(int id)
-	{
+	public void releaseID(int id) {
 		final Pair<Integer, Integer> range = takenRanges.floor(emptyRange(id));
 
 		if(range == null || range.getSecond() <= id)
@@ -87,8 +85,7 @@ public class IDGenerator
 		tryAddRange(r2);
 	}
 
-	private Pair<Integer, Integer> emptyRange(Integer id)
-	{
+	private Pair<Integer, Integer> emptyRange(Integer id) {
 		return Pair.of(id, id);
 	}
 
@@ -100,10 +97,13 @@ public class IDGenerator
 			takenRanges.add(r2);
 	}
 
-	public int getNextID()
-	{
+	public int getNextID() {
 		final int result = (takenRanges.size() > 0 && takenRanges.first().getFirst().intValue() == 0) ? takenRanges.first().getSecond().intValue() : 0;
 		reserveID(result);
 		return result;
+	}
+
+	public boolean isEmpty() {
+		return takenRanges.isEmpty();
 	}
 }

@@ -26,7 +26,8 @@ public class InstanceManager {
 	}
 
 	public boolean containsGenerator(String name) {
-		return (generators.get(name) != null);
+		IDGenerator generator = generators.get(name);
+		return (generator != null);
 	}
 
 	public boolean contains(Node node) {
@@ -78,8 +79,9 @@ public class InstanceManager {
 					remove(node);
 				}
 			}
-			instances.put(node, Pair.of(reference.getFirst(),
-					getGenerator(reference.getFirst()).getNextID()));
+			IDGenerator generator = getGenerator(reference.getFirst());
+			Pair<String, Integer> assignment = Pair.of(reference.getFirst(), generator.getNextID());
+			instances.put(node, assignment);
 		} else {
 			// check if desired instance is already taken
 			final Node refHolder = instances.getKey(reference);
@@ -111,7 +113,13 @@ public class InstanceManager {
 		if(assignment == null) {
 			throw new NotFoundException("Instance not assigned");
 		}
-		generators.get(assignment.getFirst()).releaseID(assignment.getSecond());
+
+		IDGenerator generator = generators.get(assignment.getFirst());
+		generator.releaseID(assignment.getSecond());
+		if (generator.isEmpty()) {
+			generators.remove(assignment.getFirst());
+		}
+
 		instances.removeKey(node);
 	}
 
