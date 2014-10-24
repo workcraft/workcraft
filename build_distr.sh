@@ -19,7 +19,7 @@ core_dirs="WorkcraftCore"
 core_files="LICENSE README workcraft workcraft.bat"
 
 src_dir="."
-distr_dir="../../workcraft2"
+distr_dir="../../workcraft_3.0"
 template_dir="../../distr-template"
 
 description_msg="`basename $0`: creates a distribution for Workcraft"

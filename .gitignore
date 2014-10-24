@@ -6,9 +6,9 @@ config
 *.log
 *.dot
 *.stackdump
-desij.logfile*
 generated
 /.metadata
+.settings
 *.jar
 *.orig
 *.moved
