@@ -16,7 +16,7 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifySynthesis implements Tool {
+abstract public class PetrifySynthesis implements Tool {
 	protected final Framework framework;
 
 	public PetrifySynthesis(Framework framework) {
@@ -65,14 +65,5 @@ public class PetrifySynthesis implements Tool {
 		}
 	}
 
-	public String[] getSynthesisParameter() {
-		String[] result = new String[0];
-		return result;
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Default synthesis [Petrify]";
-	}
-
+	abstract public String[] getSynthesisParameter();
 }

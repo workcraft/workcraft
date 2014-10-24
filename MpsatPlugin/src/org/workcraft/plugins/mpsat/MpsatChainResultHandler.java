@@ -43,6 +43,9 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(task, result));
 				break;
 			case COMPLEX_GATE_IMPLEMENTATION:
+			case GENERALISED_CELEMENT_IMPLEMENTATION:
+			case STANDARD_CELEMENT_IMPLEMENTATION:
+			case TECH_MAPPING:
 				SwingUtilities.invokeLater(new MpsatSynthesisResultHandler(task, result));
 				break;
 			default:

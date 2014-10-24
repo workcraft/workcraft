@@ -2,22 +2,21 @@ package org.workcraft.plugins.petrify.tools;
 
 import org.workcraft.Framework;
 
-public class PetrifyTechnologyMappingSynthesis extends PetrifySynthesis {
+public class PetrifySynthesisComplexGate extends PetrifySynthesis {
 
-	public PetrifyTechnologyMappingSynthesis(Framework framework) {
+	public PetrifySynthesisComplexGate(Framework framework) {
 		super(framework);
 	}
 
 	@Override
 	public String[] getSynthesisParameter() {
 		String[] result = new String[1];
-		result[0] = "-tm";
+		result[0] = "-cg";
 		return result;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Technology mapping synthesis [Petrify]";
+		return "Complex gate synthesis [Petrify]";
 	}
-
 }

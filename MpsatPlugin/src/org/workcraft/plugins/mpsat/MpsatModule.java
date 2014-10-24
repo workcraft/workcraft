@@ -13,6 +13,10 @@ import org.workcraft.plugins.mpsat.tools.MpsatDeadlockChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatNormalcyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatPersistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatSynthesis;
+import org.workcraft.plugins.mpsat.tools.MpsatSynthesisComplexGate;
+import org.workcraft.plugins.mpsat.tools.MpsatSynthesisGeneralisedCelement;
+import org.workcraft.plugins.mpsat.tools.MpsatSynthesisStandardCelement;
+import org.workcraft.plugins.mpsat.tools.MpsatSynthesisTechnologyMapping;
 import org.workcraft.plugins.mpsat.tools.MpsatUscChecker;
 import org.workcraft.plugins.pcomp.PcompUtilitySettings;
 import org.workcraft.plugins.pcomp.tools.PcompTool;
@@ -24,7 +28,10 @@ public class MpsatModule implements Module {
 		PluginManager p = framework.getPluginManager();
 
 		p.registerClass(Tool.class, CscResolutionTool.class, framework);
-		p.registerClass(Tool.class, MpsatSynthesis.class, framework);
+		p.registerClass(Tool.class, MpsatSynthesisComplexGate.class, framework);
+		p.registerClass(Tool.class, MpsatSynthesisGeneralisedCelement.class, framework);
+		p.registerClass(Tool.class, MpsatSynthesisStandardCelement.class, framework);
+		p.registerClass(Tool.class, MpsatSynthesisTechnologyMapping.class, framework);
 		p.registerClass(Tool.class, MpsatDeadlockChecker.class, framework);
 		p.registerClass(Tool.class, MpsatConsistencyChecker.class, framework);
 		p.registerClass(Tool.class, MpsatPersistencyChecker.class, framework);
