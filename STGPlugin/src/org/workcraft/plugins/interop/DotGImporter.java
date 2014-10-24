@@ -29,8 +29,8 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.STGModelDescriptor;
-import org.workcraft.plugins.stg.javacc.generated.DotGParser;
-import org.workcraft.plugins.stg.javacc.generated.ParseException;
+import org.workcraft.plugins.stg.javacc.DotGParser;
+import org.workcraft.plugins.stg.javacc.ParseException;
 import org.workcraft.workspace.ModelEntry;
 
 public class DotGImporter implements Importer {

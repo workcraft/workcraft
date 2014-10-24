@@ -3,14 +3,13 @@
  */
  
 options {
-  JDK_VERSION = "1.5";
+  JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  OUTPUT_DIRECTORY = "generated";
 }
 
 PARSER_BEGIN(DotGParser)
-package org.workcraft.plugins.stg.javacc.generated;
+package org.workcraft.plugins.stg.javacc;
 
 import java.util.HashSet;
 import java.util.HashMap;

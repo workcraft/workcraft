@@ -106,17 +106,11 @@ public class UniqueNameManager implements NameManager {
 
 	@Override
 	public String getDerivedName(Node node, String candidate) {
-		String result = null;
-		if (getNode(candidate) == null) {
-			// Name is not busy
-			result = candidate;
-		} else {
-			// Find a non-conflicting suffix
-			int code = 0;
-			do {
-				result = candidate + codeToString(code);
-				code++;
-			} while (getNode(result) != null);
+		String result = candidate;
+		int code = 0;
+		while (!isUnusedName(result)) {
+			result = candidate + codeToString(code);
+			code++;
 		}
 		return result;
 	}
