@@ -14,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,11 +31,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
-import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class ParallelSimDialog  extends JDialog{
@@ -55,8 +51,6 @@ public class ParallelSimDialog  extends JDialog{
 	private JList eventList;
 
 	private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
-	private Collection<Path> sync;
-	private Collection<TransitionNode> enabledEvents;
 
 	private int run = 0;
 	private Window owner;
@@ -279,8 +273,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	public  ParallelSimDialog (Window owner, SON net,
 			List<TransitionNode> possibleFires, List<TransitionNode> minFires,
-			List<TransitionNode> maxFires, TransitionNode event, Collection<Path> sync,
-			Collection<TransitionNode> enabledEvents, boolean reverse){
+			List<TransitionNode> maxFires, TransitionNode event, boolean reverse){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		this.net = net;
@@ -289,8 +282,6 @@ public class ParallelSimDialog  extends JDialog{
 		this.minFires = minFires;
 		this.maxFires = maxFires;
 		this.clickedEvent = event;
-		this.sync = sync;
-		this.enabledEvents = enabledEvents;
 
 		setEventsColor(minFires, event);
 

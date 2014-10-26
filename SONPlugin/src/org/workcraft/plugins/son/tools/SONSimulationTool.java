@@ -655,8 +655,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	private void reset(final GraphEditor editor) {
 		applyMarking(initialMarking);
+		reverse = false;
 		mainTrace.clear();
 		branchTrace.clear();
+
 		if (timer != null) 	{
 			timer.stop();
 			timer = null;
@@ -772,12 +774,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				}
 		}
 		if(!fireList.isEmpty()){
+
 			executeEvent(editor, fireList);
+
 			Map<PlaceNode, Boolean> currentMarking = readSONMarking();
 
 			for(Map<PlaceNode, Boolean> m : history){
 				if(m.equals(currentMarking)){
-					throw new InvalidStructureException("cycle");
+					throw new InvalidStructureException("repeat markings");
 				}
 			}
 			autoSimulator(editor, readSONMarking(), history);
@@ -928,7 +932,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					ParallelSimDialog dialog = new ParallelSimDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, minFires, maxFires,
-							event, sync, enabledEvents, reverse);
+							event, reverse);
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
@@ -969,7 +973,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					ParallelSimDialog dialog = new ParallelSimDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, maxFires, minFires,
-							event, sync, enabledEvents, reverse);
+							event, reverse);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);

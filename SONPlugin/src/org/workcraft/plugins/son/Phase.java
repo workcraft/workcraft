@@ -15,10 +15,11 @@ public class Phase extends HashSet<Condition>{
 			if (!first) {
 				result.append(' ');
 				result.append(',' + net.getName(node));
+			}else{
+				result.append(' ');
+				result.append(net.getName(node));
+				first = false;
 			}
-			result.append(' ');
-			result.append(net.getName(node));
-			first = false;
 		}
 		return result.toString();
 	}

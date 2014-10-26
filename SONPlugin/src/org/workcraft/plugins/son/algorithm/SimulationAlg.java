@@ -286,6 +286,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	private boolean isBhvEnabled(TransitionNode e, Map<Condition, Phase> phases){
+		//if e is abstract event, e is enabled if the maximal phase of e's pre-condition is marked
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e))
@@ -302,11 +303,18 @@ public class SimulationAlg extends RelationAlgorithm {
 		for(ONGroup group : bhvGroups){
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
+					//if c is marked
 					if(c.isMarked())
+						//e is unenbled if
+						//1. e belong to c
+						//2. either the pre- or post condition of e not belong to c's phase
 						if((!phases.get(c).containsAll(getPrePNSet(e)) && phases.get(c).containsAll(getPostPNSet(e)))||
-								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e))))
-							return false;
+								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))){
+						return false;
+						}
+					//if c is not marked
 					if(!c.isMarked())
+						//e is un-enabled if the pre- and post-conditions of e all belong to the phase of c.
 						if(phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))
 							return false;
 					}
@@ -365,7 +373,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				Collection<Condition> preMax = new HashSet<Condition>();
 				Collection<Condition> postMin = new HashSet<Condition>();
 				for(Node pre : getPrePNSet(e))
-					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
 				for(Node post : getPostPNSet(e))
 					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 				//disjoint phases
@@ -376,7 +384,7 @@ public class SimulationAlg extends RelationAlgorithm {
 								isFinal=false;
 					if(isFinal){
 						for(Condition fin : preMax){
-							//structure such that condition fin has more than one high-level states
+							//structure that condition fin has more than one high-level states
 							int tokens = 0;
 							for(Node post : net.getPostset(fin)){
 								if((post instanceof Condition)
@@ -395,7 +403,7 @@ public class SimulationAlg extends RelationAlgorithm {
 							isIni=false;
 					if(isIni)
 						for(Condition ini : postMin){
-							//structure such that condition ini has more than one high-level states
+							//structure that condition ini has more than one high-level states
 							int tokens = 0;
 							int size = 0;
 							for(Node post : net.getPostset(ini)){
