@@ -66,7 +66,7 @@ public class VisualVariable extends VisualComponent {
 
 	static {
 		try {
-			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
+			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
 			variableFont = font.deriveFont(0.5f);
 			valueFont = font.deriveFont(0.75f);
 		} catch (FontFormatException e) {

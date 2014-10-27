@@ -9,9 +9,11 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -92,20 +94,36 @@ public class CpogSelectionTool extends SelectionTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int prevLineEnd = 0;
+				ArrayList<String> expressions = new ArrayList<String>();
 				try {
 					for (int i = 0; i < expressionText.getLineCount(); i++) {
 						String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
 
-						if (exp.contains("\n"))
-						{
-							exp = exp.replace("\n", "");
-						}
+						exp = exp.replace("\n", "");
+						exp = exp.replace("\t", " ");
+
 						if (exp.compareTo("") != 0)
 						{
-							insertExpression(editor, exp, false);
+							expressions.add(exp);
+							//insertExpression(editor, exp, false);
 						}
 
 						prevLineEnd = expressionText.getLineEndOffset(i);
+					}
+					String exp = "";
+					for (String s : expressions) {
+						if (!s.contains("=")) {
+							exp = exp + " " + s;
+						} else {
+							if (exp.compareTo("") != 0) {
+								insertExpression(editor, exp, false);
+								exp = "";
+							}
+							exp = s;
+						}
+					}
+					if (exp.compareTo("") != 0) {
+						insertExpression(editor, exp, false);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -196,7 +214,7 @@ public class CpogSelectionTool extends SelectionTool {
 		final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		we.captureMemento();
 
-		final HashMap<String, VisualVertex> vertexMap = new HashMap<String, VisualVertex>();
+		final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
 		final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
 		text = text.replace("\n", "");
 		text = parsingTool.replaceReferences(text);
@@ -367,6 +385,7 @@ public class CpogSelectionTool extends SelectionTool {
 			Connection connection;
 			boolean second = false;
 			for (Node node : visualCpog.getSelection()) {
+				VisualVertex vertex = (VisualVertex) node;
 				VisualVertex v = (VisualVertex) node;
 				arcs = visualCpog.getConnections(v);
 				it = arcs.iterator();
@@ -389,7 +408,7 @@ public class CpogSelectionTool extends SelectionTool {
 			}
 
 			if (roots.isEmpty()) {
-				double y = maxY + 2;
+				double y = maxY + 2.5;
 				for (VisualVertex v : vertexMap.values()) {
 					double radius = Math.max(minRadius, expandRadius * n / Math.PI
 							/ 2.0);
@@ -403,7 +422,7 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			} else {
 				Iterator<VisualVertex> root = roots.iterator();
-				Queue q = new Queue();
+				Queue<VisualVertex> q = new Queue<VisualVertex>();
 				//double originalX = maxX;
 				while(root.hasNext()) {
 					q.enqueue(root.next());

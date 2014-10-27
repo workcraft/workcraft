@@ -85,7 +85,7 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX)
+	 public void bfsLayout(Queue<VisualVertex> q, VisualCPOG visualCpog, double originalX)
 	 {
 		 ArrayList<ArrayList<VisualVertex>> outer = new ArrayList<ArrayList<VisualVertex>>();
 		 outer.add(new ArrayList<VisualVertex>());

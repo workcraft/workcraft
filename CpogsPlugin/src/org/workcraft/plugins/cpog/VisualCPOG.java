@@ -22,8 +22,10 @@
 package org.workcraft.plugins.cpog;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -111,7 +113,6 @@ public class VisualCPOG extends AbstractVisualModel
 	public VisualCPOG(CPOG model, VisualGroup root) {
 		super(model, root);
 		this.mathModel = model;
-
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
