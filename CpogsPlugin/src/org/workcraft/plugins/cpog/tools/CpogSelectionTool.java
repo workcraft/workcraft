@@ -94,7 +94,17 @@ public class CpogSelectionTool extends SelectionTool {
 				int prevLineEnd = 0;
 				try {
 					for (int i = 0; i < expressionText.getLineCount(); i++) {
-						insertExpression(editor, expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i)), false);
+						String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
+
+						if (exp.contains("\n"))
+						{
+							exp = exp.replace("\n", "");
+						}
+						if (exp.compareTo("") != 0)
+						{
+							insertExpression(editor, exp, false);
+						}
+
 						prevLineEnd = expressionText.getLineEndOffset(i);
 					}
 				} catch (BadLocationException e1) {

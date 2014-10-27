@@ -161,7 +161,7 @@ public class CpogParsingTool {
 			 for(VisualVertex v : inner)
 			 {
 				 v.setPosition(new Point2D.Double(x, y));
-				 y += 2;
+				 y += 2.5;
 				 if (y > maxY)
 				 {
 					 maxY = y;
@@ -169,7 +169,7 @@ public class CpogParsingTool {
 			 }
 			 if (it.hasNext())
 			 {
-				 x += 2;
+				 x += 2.5;
 				 if (x > maxX)
 				 {
 					 maxX = x;
@@ -479,7 +479,7 @@ public class CpogParsingTool {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
 			 visualCpog.remove(t);
-		 }
+			 }
 	 }
 
 	 public String replaceReferences(String text)
