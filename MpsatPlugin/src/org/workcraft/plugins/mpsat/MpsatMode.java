@@ -13,8 +13,8 @@ public enum MpsatMode {
 	RESOLVE_ENCODING_CONFLICTS ("-R", "Resolve encoding conflicts", false),
 	USC_CONFLICT_DETECTION ("-U", "USC conflict detection", false),
 	COMPLEX_GATE_IMPLEMENTATION ("-E", "Derive complex-gate implementation", false),
-	GC_IMPLEMENTATION ("-G", "Derive gC-elements implementation", false),
-	STANDART_C_IMPLEMENTATION ("-S", "Derive standard-C implementation", false),
+	GENERALISED_CELEMENT_IMPLEMENTATION ("-G", "Derive gC-elements implementation", false),
+	STANDARD_CELEMENT_IMPLEMENTATION ("-S", "Derive standard-C implementation", false),
 	TECH_MAPPING ("-T", "Logic decomposition and technology mapping (not finished yet)", false);
 
 	private String argument;
@@ -30,8 +30,8 @@ public enum MpsatMode {
 		RESOLVE_ENCODING_CONFLICTS,
 		USC_CONFLICT_DETECTION,
 		COMPLEX_GATE_IMPLEMENTATION,
-		GC_IMPLEMENTATION,
-		STANDART_C_IMPLEMENTATION,
+		GENERALISED_CELEMENT_IMPLEMENTATION,
+		STANDARD_CELEMENT_IMPLEMENTATION,
 		TECH_MAPPING
 	};
 

@@ -7,10 +7,10 @@ import org.workcraft.Tool;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tools.PetrifyCscConflictResolution;
-import org.workcraft.plugins.petrify.tools.PetrifyComplexGateSynthesis;
+import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
 import org.workcraft.plugins.petrify.tools.PetrifyDummyContraction;
-import org.workcraft.plugins.petrify.tools.PetrifyGeneralizedCelementSynthesis;
-import org.workcraft.plugins.petrify.tools.PetrifyTechnologyMappingSynthesis;
+import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
+import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
 import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
 import org.workcraft.plugins.petrify.tools.ShowSg;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
@@ -26,9 +26,9 @@ public class PetrifyModule implements Module {
 
 		p.registerClass(Tool.class, PetrifyUntoggle.class, framework);
 		p.registerClass(Tool.class, PetrifyCscConflictResolution.class, framework);
-		p.registerClass(Tool.class, PetrifyComplexGateSynthesis.class, framework);
-		p.registerClass(Tool.class, PetrifyGeneralizedCelementSynthesis.class, framework);
-		p.registerClass(Tool.class, PetrifyTechnologyMappingSynthesis.class, framework);
+		p.registerClass(Tool.class, PetrifySynthesisComplexGate.class, framework);
+		p.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class, framework);
+		p.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class, framework);
 		p.registerClass(Tool.class, PetrifyDummyContraction.class, framework);
 		p.registerClass(Tool.class, ShowSg.class, framework);
 	}

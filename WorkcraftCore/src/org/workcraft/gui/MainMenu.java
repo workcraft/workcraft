@@ -341,11 +341,20 @@ public class MainMenu extends JMenuBar {
 		mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
-		ActionMenuItem miHints = new ActionMenuItem(MainWindowActions.HELP_ACTION);
-		miHints.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-		miHints.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		ActionMenuItem miContents = new ActionMenuItem(MainWindowActions.HELP_CONTENTS_ACTION);
+		miContents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		miContents.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		mnHelp.add(miHints);
+		ActionMenuItem miTutorials = new ActionMenuItem(MainWindowActions.HELP_TUTORIALS_ACTION);
+		miTutorials.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
+		miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		mnHelp.add(miContents);
+		mnHelp.add(miTutorials);
+		mnHelp.addSeparator();
+		mnHelp.add(miAbout);
 
 		add(mnFile);
 		add(mnEdit);

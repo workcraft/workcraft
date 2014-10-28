@@ -11,12 +11,11 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatSynthesis implements Tool {
+abstract public class MpsatSynthesis implements Tool {
 
 	private final Framework framework;
 
-	public MpsatSynthesis(Framework framework)
-	{
+	public MpsatSynthesis(Framework framework) {
 		this.framework = framework;
 	}
 
@@ -32,14 +31,11 @@ public class MpsatSynthesis implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final MpsatSettings settings = new MpsatSettings("synthesis", MpsatMode.COMPLEX_GATE_IMPLEMENTATION, 0, SolutionMode.FIRST, 1, null);
+		final MpsatSettings settings = new MpsatSettings("synthesis", getSynthesisMode(), 0, SolutionMode.FIRST, 1, null);
 		final MpsatChainTask task = new MpsatChainTask(we, settings, framework);
-		framework.getTaskManager().queue(task, "Complex gate synthesis with MPSat", new MpsatChainResultHandler(task));
+		framework.getTaskManager().queue(task, "Logic synthesis with MPSat", new MpsatChainResultHandler(task));
 	}
 
-	@Override
-	public String getDisplayName() {
-		return "Complex gate synthesis [MPSat]";
-	}
+	abstract public MpsatMode getSynthesisMode();
 
 }

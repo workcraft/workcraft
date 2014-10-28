@@ -1,13 +1,10 @@
 package org.workcraft.gui;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.propertyeditor.AboutDialog;
 
 public class MainWindowActions {
 	public static final Action CREATE_WORK_ACTION = new Action() {
@@ -233,18 +230,41 @@ public class MainWindowActions {
 
 	};
 
-	public static final Action HELP_ACTION = new Action() {
+	public static final Action HELP_CONTENTS_ACTION = new Action() {
 		@Override
 		public void run(Framework f) {
-			try {
-				Desktop.getDesktop().open(new File("help/start.html"));
-			} catch(IOException e1) {
-				System.out.println(e1);
-			}
+			f.openExternally("help/start.html");
 		}
 
 		public String getText() {
-			return "Help";
+			return "Help contents";
 		};
 	};
+
+	public static final Action HELP_TUTORIALS_ACTION = new Action() {
+		@Override
+		public void run(Framework f) {
+			f.openExternally("tutorial/start.html");
+		}
+
+		public String getText() {
+			return "Tutorails";
+		};
+	};
+
+
+	public static final Action HELP_ABOUT_ACTION = new Action() {
+		@Override
+		public void run(Framework f) {
+			AboutDialog about = new AboutDialog(f.getMainWindow());
+			about.setModal(true);
+			about.setResizable(false);
+			about.setVisible(true);
+		}
+
+		public String getText() {
+			return "About Workcraft";
+		};
+	};
+
 }

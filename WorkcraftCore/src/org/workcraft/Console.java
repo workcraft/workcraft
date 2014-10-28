@@ -51,8 +51,10 @@ public class Console {
 		}
 
 		if (!silent) {
-			System.out.println ("Workcraft 2 (Metastability strikes back) dev version\n");
-			System.out.println ("Initialising framework...");
+			System.out.println(Info.getFullTitle());
+			System.out.println(Info.getCopyright());
+			System.out.println();
+			System.out.println("Initialising framework...");
 		}
 
 		File f = new File("config");

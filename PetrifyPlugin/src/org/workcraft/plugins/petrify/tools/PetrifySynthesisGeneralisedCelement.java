@@ -2,9 +2,9 @@ package org.workcraft.plugins.petrify.tools;
 
 import org.workcraft.Framework;
 
-public class PetrifyGeneralizedCelementSynthesis extends PetrifySynthesis {
+public class PetrifySynthesisGeneralisedCelement extends PetrifySynthesis {
 
-	public PetrifyGeneralizedCelementSynthesis(Framework framework) {
+	public PetrifySynthesisGeneralisedCelement(Framework framework) {
 		super(framework);
 	}
 
