@@ -85,7 +85,7 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue<VisualVertex> q, VisualCPOG visualCpog, double originalX)
+	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX)
 	 {
 		 ArrayList<ArrayList<VisualVertex>> outer = new ArrayList<ArrayList<VisualVertex>>();
 		 outer.add(new ArrayList<VisualVertex>());
@@ -588,32 +588,12 @@ public class CpogParsingTool {
 				}
 	 }
 
-	 public void addToReferenceList(String gn, VisualCPOG visualCpog, CpogFormula f)
+	 public void addToReferenceList(String gn, VisualCPOG visualCpog, String text)
 	 {
 			gn = gn.replace("{", "");
 			gn = gn.replace("}", "");
 
-			String ex = CpogFormulaToString.toString(f);
-			for (Node node : visualCpog.getSelection())
-			{
-				VisualVertex v = (VisualVertex) node;
-				if (FormulaToString.toString(v.getCondition()).compareTo("1") != 0)
-				{
-					String label = v.getLabel();
-					if (ex.contains(label + " ")) {
-						ex = ex.replace(label + " ", "[" + FormulaToString.toString(v.getCondition()) + "]" + label + " ");
-					} else if (ex.contains(label + ")")) {
-						ex = ex.replace(label + ")", "[" + FormulaToString.toString(v.getCondition()) + "]" + label + ") ");
-					} else if (ex.length() == 1) {
-						ex = ex.replace(label, "[" + FormulaToString.toString(v.getCondition()) + "]" + label);
-					} else if (ex.endsWith(label))
-					{
-						ex = ex.replace(label, "[" + FormulaToString.toString(v.getCondition()) + "]" + label);
-					}
-				}
-
-			}
-			refMap.put(gn, ex);
+			refMap.put(gn, text);
 	 }
 
 }

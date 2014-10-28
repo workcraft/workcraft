@@ -41,6 +41,7 @@ import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
 import org.workcraft.plugins.cpog.expressions.CpogFormula;
+import org.workcraft.plugins.cpog.expressions.CpogFormulaToString;
 import org.workcraft.plugins.cpog.expressions.GraphFunc;
 import org.workcraft.plugins.cpog.expressions.javacc.CpogExpressionParser;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
@@ -372,7 +373,7 @@ public class CpogSelectionTool extends SelectionTool {
 			visualCpog.addToSelection(v);
 		}
 
-		if (!PGF.getRef()){
+		if (!PGF.getRef()) {
 			CpogConnector cc = new CpogConnector(visualCpog);
 			f.accept(cc);
 			graphMap.put(PGF.getGraphName(), f);
@@ -385,7 +386,7 @@ public class CpogSelectionTool extends SelectionTool {
 			Connection connection;
 			boolean second = false;
 			for (Node node : visualCpog.getSelection()) {
-				VisualVertex vertex = (VisualVertex) node;
+				//VisualVertex vertex = (VisualVertex) node;
 				VisualVertex v = (VisualVertex) node;
 				arcs = visualCpog.getConnections(v);
 				it = arcs.iterator();
@@ -422,7 +423,7 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			} else {
 				Iterator<VisualVertex> root = roots.iterator();
-				Queue<VisualVertex> q = new Queue<VisualVertex>();
+				Queue q = new Queue();
 				//double originalX = maxX;
 				while(root.hasNext()) {
 					q.enqueue(root.next());
@@ -436,7 +437,9 @@ public class CpogSelectionTool extends SelectionTool {
 				visualCpog.groupSelection(PGF.getGraphName());
 			}
 		} else {
-			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, f);
+			int index = text.indexOf("= ");
+			text = text.substring(index + 2);
+			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, text);
 			visualCpog.remove(visualCpog.getSelection());
 		}
 
