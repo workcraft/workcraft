@@ -816,27 +816,6 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public boolean checkFile(File f) {
-		boolean result = true;
-		if (!f.exists()) {
-			JOptionPane.showMessageDialog(this,
-					"The path  \""	+ f.getPath() + "\" does not exisit.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
-			result = false;
-		} else if (!f.isFile()) {
-			JOptionPane.showMessageDialog(this,
-					"The path  \""	+ f.getPath() + "\" is not a file.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
-			result = false;
-		} else if (!f.canRead()) {
-			JOptionPane.showMessageDialog(this,
-					"The file  \""	+ f.getPath() + "\" cannot be read.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
-			result = false;
-		}
-		return result;
-	}
-
 	private JFileChooser createOpenDialog(String title, boolean multiSelection, Importer[] importers) {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
@@ -931,7 +910,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void openWork(File f) {
-		if (checkFile(f)) {
+		if (framework.checkFile(f)) {
 			try {
 				WorkspaceEntry we = framework.getWorkspace().open(f, true);
 				if (we.getModelEntry().isVisual()) {
@@ -1093,7 +1072,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void importFrom(File f, Importer[] importers) {
-		if (checkFile(f)) {
+		if (framework.checkFile(f)) {
 			for (Importer importer : importers) {
 				if (importer.accept(f)) {
 					try {
@@ -1321,6 +1300,7 @@ public class MainWindow extends JFrame {
 	public MainMenu getMainMenu() {
 		return mainMenu;
 	}
+
 }
 
 class ImporterFileFilter extends javax.swing.filechooser.FileFilter {

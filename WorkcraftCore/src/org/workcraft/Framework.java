@@ -20,6 +20,7 @@
  */
 
 package org.workcraft;
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -689,80 +691,6 @@ public class Framework {
 			return me3;
 	}
 
-//  old implementation for reference
-//	public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-//		try {
-//			// load meta data
-//			byte[] bi1 = DataAccumulator.loadStream(is1);
-//			Document metaDoc1 = loadMetaDoc(bi1);
-//			ModelDescriptor descriptor1 = loadMetaDescriptor(metaDoc1);
-//
-//			byte[] bi2 = DataAccumulator.loadStream(is2);
-//			Document metaDoc2 = loadMetaDoc(bi2);
-//			ModelDescriptor descriptor2 = loadMetaDescriptor(metaDoc2);
-//
-//			// load math models
-//			InputStream mathData1 = getMathData(bi1, metaDoc1);
-//			InputStream mathData2 = getMathData(bi2, metaDoc2);
-//			if (!descriptor1.getDisplayName().equals(descriptor2.getDisplayName()) ) {
-//				// math models cannot be merged
-//				throw new DeserialisationException("incompatible models cannot be merged");
-//			}
-//
-//			XMLDualModelDeserialiser mathDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
-//			DualDeserialisationResult mathResult = mathDeserialiser.deserialise(mathData1, mathData2, null, null, null);
-//			mathData1.close();
-//			mathData2.close();
-//
-//			// load visual models (if present)
-//			InputStream visualData1 = getVisualData(bi1, metaDoc1);
-//			InputStream visualData2 = getVisualData(bi2, metaDoc2);
-//
-//			if (visualData1 == null && visualData2 == null) {
-//				return new ModelEntry(descriptor1, mathResult.model);
-//			}
-//			if (visualData1 == null || visualData2 == null) {
-//				// visual models cannot be merged
-//				throw new DeserialisationException("incompatible models cannot be merged");
-//			}
-//			XMLDualModelDeserialiser visualDeserialiser = new XMLDualModelDeserialiser(getPluginManager());
-//			DualDeserialisationResult visualResult = visualDeserialiser.deserialise(visualData1, visualData2,
-//					mathResult.references1, mathResult.references2, mathResult.model);
-//
-//			// load current level and selection
-//			if (visualResult.model instanceof VisualModel) {
-//				VisualModel visualModel = (VisualModel)visualResult.model;
-//				loadVisualModelState(bi1, visualModel, visualResult.references1);
-//				// move the nodes of model2 into the current level of model1
-//				Collection<Node> nodes = new HashSet<Node>();
-//				for (Object obj: visualResult.references2.getObjects()) {
-//					if (obj instanceof Node) {
-//						Node node = (Node)obj;
-//						if (node.getParent() == visualModel.getRoot()) {
-//							nodes.add(node);
-//						}
-//					}
-//				}
-//				visualModel.getRoot().reparent(nodes, visualModel.getCurrentLevel());
-//				// select the nodes of model2
-//				visualModel.select(nodes);
-//			}
-//			return new ModelEntry(descriptor1, visualResult.model);
-//		} catch (IOException e) {
-//			throw new DeserialisationException(e);
-//		} catch (ParserConfigurationException e) {
-//			throw new DeserialisationException(e);
-//		} catch (SAXException e) {
-//			throw new DeserialisationException(e);
-//		} catch (InstantiationException e) {
-//			throw new DeserialisationException(e);
-//		} catch (IllegalAccessException e) {
-//			throw new DeserialisationException(e);
-//		} catch (ClassNotFoundException e) {
-//			throw new DeserialisationException(e);
-//		}
-//	}
-
 	public void save(ModelEntry model, String path) throws SerialisationException {
 		File file = new File(path);
 		try {
@@ -895,6 +823,41 @@ public class Framework {
 
 	public Config getConfig() {
 		return config;
+	}
+
+	public boolean checkFile(File f) {
+		boolean result = true;
+		if (!f.exists()) {
+			JOptionPane.showMessageDialog(null,
+					"The path  \""	+ f.getPath() + "\" does not exisit.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		} else if (!f.isFile()) {
+			JOptionPane.showMessageDialog(null,
+					"The path  \""	+ f.getPath() + "\" is not a file.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		} else if (!f.canRead()) {
+			JOptionPane.showMessageDialog(null,
+					"The file  \""	+ f.getPath() + "\" cannot be read.\n",
+					"File access error", JOptionPane.ERROR_MESSAGE);
+			result = false;
+		}
+		return result;
+	}
+
+	public void openExternally(String fileName) {
+		File file = new File(fileName);
+		if (checkFile(file)) {
+			Desktop desktop = Desktop.getDesktop();
+			if ((desktop != null) && desktop.isSupported(Desktop.Action.OPEN)) {
+				try {
+					desktop.open(file);
+				} catch(IOException e1) {
+					System.out.println(e1);
+				}
+			}
+		}
 	}
 
 }

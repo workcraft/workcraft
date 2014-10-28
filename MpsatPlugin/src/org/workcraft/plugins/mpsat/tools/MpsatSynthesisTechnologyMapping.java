@@ -16,7 +16,7 @@ public class MpsatSynthesisTechnologyMapping extends MpsatSynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Technology mapping [MPSat]";
+		return "Technology mapping synthesis [MPSat]";
 	}
 
 }
