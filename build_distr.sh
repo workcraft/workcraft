@@ -14,7 +14,7 @@ model_plugin_dirs="
     XmasPlugin"
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
-doc_dirs="help"
+doc_dirs="help tutorial"
 core_dirs="WorkcraftCore"
 core_files="LICENSE README workcraft workcraft.bat"
 
@@ -39,7 +39,7 @@ do
   case $param in
     -s) src_dir=$2; shift 2;;
     -d) distr_dir=$2; shift 2;;
-    -m) template_dir=$2; shift 2;;
+    -t) template_dir=$2; shift 2;;
     -h | --help) $echo_command $help_msg; exit 0;
   esac
 done
