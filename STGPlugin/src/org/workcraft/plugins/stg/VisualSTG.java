@@ -220,11 +220,25 @@ public class VisualSTG extends AbstractVisualModel {
 		return place;
 	}
 
+	public VisualDummyTransition createDummyTransition(String name, Container container) {
+		if (container==null) container = getRoot();
+
+		DummyTransition transition = stg.createDummyTransition(name, getMathContainer(this, container));
+		VisualDummyTransition visualTransition = new VisualDummyTransition(transition);
+
+		container.add(visualTransition);
+		return visualTransition;
+	}
+
+
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
 		if (container==null) container = getRoot();
 
-		SignalTransition transition = stg.createSignalTransition(signalName, getMathContainer(this, container));
-		stg.setName(transition, signalName + direction.toString());
+		String name = null;
+		if ((signalName != null) && (direction != null)) {
+			name = signalName + direction.toString();
+		}
+		SignalTransition transition = stg.createSignalTransition(name, getMathContainer(this, container));
 		transition.setSignalType(type);
 		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
 
@@ -242,6 +256,14 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public Collection<VisualTransition> getVisualTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
+	}
+
+	public Collection<VisualSignalTransition> getVisualSignalTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualSignalTransition.class);
+	}
+
+	public Collection<VisualDummyTransition> getVisualDummyTransitions() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualDummyTransition.class);
 	}
 
 	public VisualTransition getVisualTransition(Transition transition) {

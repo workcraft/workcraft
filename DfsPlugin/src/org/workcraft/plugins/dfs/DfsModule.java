@@ -6,13 +6,14 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.graph.tools.AbstractContractorTool;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
-import org.workcraft.plugins.dfs.tools.ContractorTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
 import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class DfsModule implements Module {
 
@@ -85,9 +86,15 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new ContractorTool(framework);
+				return new AbstractContractorTool(framework) {
+					@Override
+					public boolean isApplicableTo(WorkspaceEntry we) {
+						return we.getModelEntry().getMathModel() instanceof Dfs;
+					}
+				};
 			}
 		});
+
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override

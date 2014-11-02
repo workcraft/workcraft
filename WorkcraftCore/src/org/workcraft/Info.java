@@ -12,7 +12,7 @@ public class Info {
 
 	private static final int majorVersion = 3;
 	private static final int minorVersion = 0;
-	private static final int revisionVersion = 3;
+	private static final int revisionVersion = 1;
 
 	private static final int startYear = 2006;
 	private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);

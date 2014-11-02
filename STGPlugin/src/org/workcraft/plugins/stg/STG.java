@@ -95,12 +95,13 @@ public class STG extends AbstractMathModel implements STGModel {
 		if (container == null) {
 			container = getRoot();
 		}
-		DummyTransition newTransition = new DummyTransition();
-		container.add(newTransition);
-		if (name != null) {
-			setName(newTransition, name);
+		DummyTransition transition = new DummyTransition();
+		container.add(transition);
+		if (name == null) {
+			name = transition.getName();
 		}
-		return newTransition;
+		setName(transition, name);
+		return transition;
 	}
 
 	final public SignalTransition createSignalTransition() {
@@ -111,12 +112,13 @@ public class STG extends AbstractMathModel implements STGModel {
 		if (container == null) {
 			container = getRoot();
 		}
-		SignalTransition ret = new SignalTransition();
-		container.add(ret);
-		if (name != null) {
-			setName(ret, name);
+		SignalTransition transition = new SignalTransition();
+		container.add(transition);
+		if (name == null) {
+			name = transition.getName();
 		}
-		return ret;
+		setName(transition, name);
+		return transition;
 	}
 
 	@Override

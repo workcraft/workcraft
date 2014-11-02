@@ -543,8 +543,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		MathModel mmodel = visualModel.getMathModel();
 
 		// find the closest container that has a referenced math node
-		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
-		if (visualContainer instanceof VisualComponent) vis = (VisualComponent)visualContainer;
+		VisualComponent vis = null;
+		if (visualContainer instanceof VisualComponent) {
+			vis = (VisualComponent)visualContainer;
+		} else {
+			vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		}
 
 		// get appropriate math container, it will be the target container for the math model
 		Container mathTargetContainer;
