@@ -291,6 +291,38 @@ public class MainMenu extends JMenuBar {
 		mnView = new JMenu();
 		mnView.setText ("View");
 
+		ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
+		miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0));
+		miZoomIn.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miZoomOut = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_OUT);
+		miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0));
+		miZoomOut.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miZoomDefault = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_DEFAULT);
+		miZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+		miZoomDefault.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miZoomFit = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_FIT);
+		miZoomFit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		miZoomFit.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miPanLeft = new ActionMenuItem(MainWindowActions.VIEW_PAN_LEFT);
+		miPanLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, ActionEvent.CTRL_MASK));
+		miPanLeft.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miPanUp = new ActionMenuItem(MainWindowActions.VIEW_PAN_UP);
+		miPanUp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.CTRL_MASK));
+		miPanUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miPanRight = new ActionMenuItem(MainWindowActions.VIEW_PAN_RIGHT);
+		miPanRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, ActionEvent.CTRL_MASK));
+		miPanRight.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miPanDown = new ActionMenuItem(MainWindowActions.VIEW_PAN_DOWN);
+		miPanDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.CTRL_MASK));
+		miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		JMenu mnLAF = new JMenu();
 		mnLAF.setText("Look and Feel");
 
@@ -320,6 +352,16 @@ public class MainMenu extends JMenuBar {
 		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnView.add(miLoadLayout);*/
 
+		mnView.add(miZoomIn);
+		mnView.add(miZoomOut);
+		mnView.add(miZoomDefault);
+		mnView.add(miZoomFit);
+		mnView.addSeparator();
+		mnView.add(miPanLeft);
+		mnView.add(miPanUp);
+		mnView.add(miPanRight);
+		mnView.add(miPanDown);
+		mnView.addSeparator();
 		mnView.add(mnWindows);
 		mnView.add(mnLAF);
 

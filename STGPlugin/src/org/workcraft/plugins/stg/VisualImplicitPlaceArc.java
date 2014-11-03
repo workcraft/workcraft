@@ -184,4 +184,15 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		sendNotification(new PropertyChangedEvent(this, "token color"));
 	}
 
+	@Override
+	public void copyProperties(VisualConnection connection) {
+		super.copyProperties(connection);
+		if (connection instanceof VisualImplicitPlaceArc) {
+			VisualImplicitPlaceArc implicitPlaceArc = (VisualImplicitPlaceArc)connection;
+			implicitPlaceArc.setTokenColor(getTokenColor());
+			STGPlace place = implicitPlaceArc.getImplicitPlace();
+			place.setTokens(getImplicitPlace().getTokens());
+			place.setCapacity(getImplicitPlace().getCapacity());
+		}
+	}
 }

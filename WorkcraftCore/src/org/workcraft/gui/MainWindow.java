@@ -24,6 +24,7 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
@@ -483,6 +484,14 @@ public class MainWindow extends JFrame {
 			MainWindowActions.EDIT_COPY_ACTION.setEnabled(false);
 			MainWindowActions.EDIT_PASTE_ACTION.setEnabled(false);
 		}
+		MainWindowActions.VIEW_ZOOM_IN.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_OUT.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_DEFAULT.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_FIT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_LEFT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_UP.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_RIGHT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_DOWN.setEnabled(enable);
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
@@ -1201,6 +1210,7 @@ public class MainWindow extends JFrame {
 			// to recalculate bounding boxes of children components and correctly estimate the
 			// bounding boxes of their parents.
 			editorInFocus.forceRedraw();
+			editorInFocus.repaint();
 		}
 	}
 
@@ -1291,6 +1301,46 @@ public class MainWindow extends JFrame {
 				}
 			}
 		}
+	}
+
+	public void zoomIn() {
+		editorInFocus.getViewport().zoom(1);
+		editorInFocus.repaint();
+	}
+
+	public void zoomOut() {
+		editorInFocus.getViewport().zoom(-1);
+		editorInFocus.repaint();
+	}
+
+	public void zoomDefault() {
+		editorInFocus.getViewport().zoom(0, new Point(0, 0));
+		editorInFocus.repaint();
+	}
+
+	public void zoomFit() {
+		editorInFocus.getViewport().zoom(0, new Point(0, 0));
+		editorInFocus.repaint();
+	}
+
+	public void panLeft() {
+		editorInFocus.getViewport().pan(20, 0);
+		editorInFocus.repaint();
+	}
+
+	public void panUp() {
+		editorInFocus.getViewport().pan(0, 20);
+		editorInFocus.repaint();
+	}
+
+	public void panRight() {
+		editorInFocus.getViewport().pan(-20, 0);
+		editorInFocus.repaint();
+	}
+
+	public void panDown() {
+		editorInFocus.getViewport().pan(0, -20);
+		editorInFocus.repaint();
 	}
 
 	public WorkspaceWindow getWorkspaceView() {

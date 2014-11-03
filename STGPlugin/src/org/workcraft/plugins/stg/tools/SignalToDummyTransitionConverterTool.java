@@ -5,8 +5,9 @@ import java.util.LinkedList;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.STG;
@@ -57,16 +58,27 @@ public class SignalToDummyTransitionConverterTool implements Tool {
 	}
 
 	private VisualDummyTransition convertSignalToDummyTransition(VisualSTG stg, VisualTransition signalTransition) {
-		VisualDummyTransition dummyTransition = stg.createDummyTransition(null, null);
+		Container container = (Container)signalTransition.getParent();
+		VisualDummyTransition dummyTransition = stg.createDummyTransition(null, container);
 		dummyTransition.setPosition(signalTransition.getPosition());
 		for (Node pred: stg.getPreset(signalTransition)) {
-			for (Node succ: stg.getPostset(signalTransition)) {
-				try {
-					stg.connect(pred, dummyTransition);
-					stg.connect(dummyTransition, succ);
-				} catch (InvalidConnectionException e) {
-					e.printStackTrace();
-				}
+			try {
+				VisualConnection oldPredConnection = (VisualConnection)stg.getConnection(pred, signalTransition);
+				VisualConnection newPredConnection = stg.connect(pred, dummyTransition);
+				oldPredConnection.copyProperties(newPredConnection);
+				oldPredConnection.copyGeometry(newPredConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+		for (Node succ: stg.getPostset(signalTransition)) {
+			try {
+				VisualConnection oldSuccConnection = (VisualConnection)stg.getConnection(signalTransition, succ);
+				VisualConnection newSuccConnection = stg.connect(dummyTransition, succ);
+				oldSuccConnection.copyProperties(newSuccConnection);
+				oldSuccConnection.copyGeometry(newSuccConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
 			}
 		}
 		return dummyTransition;

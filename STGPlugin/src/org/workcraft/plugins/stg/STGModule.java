@@ -19,6 +19,7 @@ import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
 import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
+import org.workcraft.plugins.stg.tools.TransitionContractorTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -71,6 +72,13 @@ public class STGModule implements Module {
 			@Override
 			public Tool create() {
 				return new DummyToSignalTransitionConverterTool(framework);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new TransitionContractorTool(framework);
 			}
 		});
 

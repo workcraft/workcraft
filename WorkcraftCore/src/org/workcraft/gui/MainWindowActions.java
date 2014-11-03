@@ -217,6 +217,94 @@ public class MainWindowActions {
 		}
 	};
 
+	public static final Action VIEW_ZOOM_IN = new Action() {
+		@Override
+		public String getText() {
+			return "Zoom in";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomIn();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_OUT = new Action() {
+		@Override
+		public String getText() {
+			return "Zoom out";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomOut();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_DEFAULT = new Action() {
+		@Override
+		public String getText() {
+			return "Center";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomDefault();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_FIT = new Action() {
+		@Override
+		public String getText() {
+			return "Fit to screen";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomFit();
+		}
+	};
+
+	public static final Action VIEW_PAN_LEFT = new Action() {
+		@Override
+		public String getText() {
+			return "Pan left";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panLeft();
+		}
+	};
+
+	public static final Action VIEW_PAN_UP = new Action() {
+		@Override
+		public String getText() {
+			return "Pan up";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panUp();
+		}
+	};
+
+	public static final Action VIEW_PAN_RIGHT= new Action() {
+		@Override
+		public String getText() {
+			return "Pan right";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panRight();
+		}
+	};
+
+	public static final Action VIEW_PAN_DOWN = new Action() {
+		@Override
+		public String getText() {
+			return "Pan down";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panDown();
+		}
+	};
+
 	public static final Action RESET_GUI_ACTION = new Action() {
 		@Override
 		public String getText() {

@@ -107,10 +107,12 @@ public class STGNameManager extends UniqueNameManager {
 			// Skip implicit places
 		} else if (node instanceof NamedTransition) {
 			Pair<String, Integer> instance = instancedNameManager.getInstance(node);
-			if (instance.getSecond().equals(0)) {
-				result = instance.getFirst();
-			} else {
-				result = instance.getFirst() + "/" + instance.getSecond();
+			if (instance != null) {
+				if (instance.getSecond().equals(0)) {
+					result = instance.getFirst();
+				} else {
+					result = instance.getFirst() + "/" + instance.getSecond();
+				}
 			}
 		} else {
 			result = super.getName(node);

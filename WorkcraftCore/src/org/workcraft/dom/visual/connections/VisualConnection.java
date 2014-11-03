@@ -516,4 +516,37 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.scaleMode = scaleMode;
 	}
 
+	public void copyProperties(VisualConnection connection) {
+		connection.setConnectionType(getConnectionType());
+		connection.setColor(getColor());
+		connection.setLineWidth(getLineWidth());
+		connection.setArrowLength(getArrowLength());
+		connection.setArrowWidth(getArrowWidth());
+		connection.setBubbleSize(getBubbleSize());
+		connection.setScaleMode(getScaleMode());
+	}
+
+	public void copyGeometry(VisualConnection connection) {
+		ConnectionGraphic g = getGraphic();
+		if (g instanceof Polyline) {
+			for (Node node: g.getChildren()) {
+				if (node instanceof ControlPoint) {
+					ControlPoint cp = (ControlPoint)node;
+					connection.addPolylinePoint(cp.getPosition(), true);
+				}
+			}
+		} else if (g instanceof Bezier) {
+			BezierControlPoint[] p = ((Bezier)g).getControlPoints();
+
+			BezierControlPoint cp1 = new BezierControlPoint();
+			cp1.setPosition(p[0].getPosition());
+
+			BezierControlPoint cp2 = new BezierControlPoint();
+			cp2.setPosition(p[1].getPosition());
+
+			Bezier bezier = (Bezier)connection.getGraphic();
+			bezier.initControlPoints(cp1, cp2);
+		}
+	}
+
 }
