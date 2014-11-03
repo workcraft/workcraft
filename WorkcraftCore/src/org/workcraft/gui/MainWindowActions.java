@@ -242,7 +242,7 @@ public class MainWindowActions {
 	public static final Action VIEW_ZOOM_DEFAULT = new Action() {
 		@Override
 		public String getText() {
-			return "Center";
+			return "Default zoom";
 		}
 		@Override
 		public void run(Framework f) {
@@ -250,10 +250,21 @@ public class MainWindowActions {
 		}
 	};
 
+	public static final Action VIEW_PAN_CENTER = new Action() {
+		@Override
+		public String getText() {
+			return "Center selection";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panCenter();
+		}
+	};
+
 	public static final Action VIEW_ZOOM_FIT = new Action() {
 		@Override
 		public String getText() {
-			return "Fit to screen";
+			return "Fit selection to screen";
 		}
 		@Override
 		public void run(Framework f) {

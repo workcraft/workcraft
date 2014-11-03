@@ -73,6 +73,7 @@ public class MainMenu extends JMenuBar {
 			framework.getMainWindow().runTool(tool);
 		}
 	}
+
 	class ToggleWindowAction extends Action {
 		private DockableWindow window;
 		private String windowTitle;
@@ -90,6 +91,7 @@ public class MainMenu extends JMenuBar {
 			framework.getMainWindow().toggleDockableWindow(window);
 		}
 	}
+
 	class ExportAction extends Action {
 		private final Exporter exporter;
 
@@ -107,12 +109,12 @@ public class MainMenu extends JMenuBar {
 		}
 	}
 
-	private JMenu mnFile, mnEdit, mnView, mnUtility, mnHelp, mnWindows;
-	private JMenu mnExport;
-	private JMenu mnRecent;
-
-	private MainWindow mainWindow;
-	private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
+	final private MainWindow mainWindow;
+	final private JMenu mnExport = new JMenu("Export");
+	final private JMenu mnRecent = new JMenu("Open recent");
+	final private JMenu mnWindows = new JMenu("Windows");
+	final private JMenu mnTools = new JMenu("Tools");
+	final private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
 
 	private String[] lafCaptions = new String[] {
 			"Java default",
@@ -132,13 +134,19 @@ public class MainMenu extends JMenuBar {
 			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
 			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
 	};
-	private JMenu mnTools;
 
 	MainMenu(final MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-		// File
-		mnFile = new JMenu();
-		mnFile.setText("File");
+		addFileMenu(mainWindow);
+		addEditMenu(mainWindow);
+		addViewMenu(mainWindow);
+		addUtilityMenu(mainWindow);
+		add(mnTools);
+		addHelpMenu(mainWindow);
+	}
+
+	private void addFileMenu(final MainWindow mainWindow) {
+		JMenu mnFile = new JMenu("File");
 
 		ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
 		miNewModel.setMnemonic(KeyEvent.VK_N);
@@ -194,11 +202,6 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
 		miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		mnExport = new JMenu("Export");
-		mnExport.setEnabled(false);
-
-		mnRecent = new JMenu("Open recent");
-
 		mnFile.add(miNewModel);
 		mnFile.add(miOpenModel);
 		mnFile.add(mnRecent);
@@ -222,9 +225,25 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miShutdownGUI);
 		mnFile.add(miExit);
 
-		// Edit
-		mnEdit = new JMenu();
-		mnEdit.setText("Edit");
+		add(mnFile);
+	}
+
+	private void addExportSeparator(String text) {
+		mnExport.add(new JLabel(text));
+		mnExport.addSeparator();
+	}
+
+	private void addExporter(Exporter exporter) {
+		String text = exporter.getDescription();
+		ActionMenuItem miExport = new ActionMenuItem(new ExportAction(exporter), text);
+
+		miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
+		mnExport.add(miExport);
+		mnExport.setEnabled(true);
+	}
+
+	private void addEditMenu(final MainWindow mainWindow) {
+		JMenu mnEdit = new JMenu("Edit");
 
 		ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
 		miUndo.setMnemonic(KeyEvent.VK_U);
@@ -287,9 +306,11 @@ public class MainMenu extends JMenuBar {
 		mnEdit.addSeparator();
 		mnEdit.add(miProperties);
 
-		// View
-		mnView = new JMenu();
-		mnView.setText ("View");
+		add(mnEdit);
+	}
+
+	private void addViewMenu(final MainWindow mainWindow) {
+		JMenu mnView = new JMenu("View");
 
 		ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
 		miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0));
@@ -323,9 +344,11 @@ public class MainMenu extends JMenuBar {
 		miPanDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.CTRL_MASK));
 		miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		JMenu mnLAF = new JMenu();
-		mnLAF.setText("Look and Feel");
+		ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
+		miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+		miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		JMenu mnLAF = new JMenu("Look and Feel");
 		for (int i = 0; i < lafClasses.length; i++) {
 			JMenuItem miLAFItem = new JMenuItem();
 			miLAFItem.setText(lafCaptions[i]);
@@ -341,9 +364,6 @@ public class MainMenu extends JMenuBar {
 			mnLAF.add(miLAFItem);
 		}
 
-		mnWindows = new JMenu();
-		mnWindows.setText("Windows");
-
 		/*	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
 		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		mnView.add(miSaveLayout);
@@ -357,6 +377,7 @@ public class MainMenu extends JMenuBar {
 		mnView.add(miZoomDefault);
 		mnView.add(miZoomFit);
 		mnView.addSeparator();
+		mnView.add(miPanCenter);
 		mnView.add(miPanLeft);
 		mnView.add(miPanUp);
 		mnView.add(miPanRight);
@@ -365,22 +386,26 @@ public class MainMenu extends JMenuBar {
 		mnView.add(mnWindows);
 		mnView.add(mnLAF);
 
-		// Utility
-		mnUtility = new JMenu();
-		mnUtility.setText("Utility");
+		add(mnView);
+	}
+
+	private void addUtilityMenu(final MainWindow mainWindow) {
+		JMenu mnUtility = new JMenu("Utility");
 
 		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
 		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		mnUtility.add(miReconfigure);
-
 		ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
 		miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		mnUtility.add(miReconfigure);
 		mnUtility.add(miResetLayout);
 
-		// Help
-		mnHelp = new JMenu();
+		add(mnUtility);
+	}
+
+	private void addHelpMenu(final MainWindow mainWindow) {
+		JMenu mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
 		ActionMenuItem miContents = new ActionMenuItem(MainWindowActions.HELP_CONTENTS_ACTION);
@@ -398,39 +423,7 @@ public class MainMenu extends JMenuBar {
 		mnHelp.addSeparator();
 		mnHelp.add(miAbout);
 
-		add(mnFile);
-		add(mnEdit);
-		add(mnView);
-		add(mnUtility);
 		add(mnHelp);
-
-		add(new JLabel("    "));
-
-		mnTools = new JMenu();
-		mnTools.setText("Tools");
-		mnTools.setVisible(false);
-		add(mnTools);
-	}
-
-	private void addExporter (Exporter exporter) {
-		addExporter (exporter, null);
-	}
-
-	private void addExportSeparator (String text) {
-		mnExport.add(new JLabel(text));
-		mnExport.addSeparator();
-	}
-
-	private void addExporter (Exporter exporter, String additionalDescription) {
-		ActionMenuItem miExport = new ActionMenuItem(new ExportAction(exporter),
-				additionalDescription == null?
-					exporter.getDescription()
-					:
-					exporter.getDescription()+ " " + additionalDescription);
-
-		miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnExport.add(miExport);
-		mnExport.setEnabled(true);
 	}
 
 	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {

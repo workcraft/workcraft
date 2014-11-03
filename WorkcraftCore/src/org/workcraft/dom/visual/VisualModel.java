@@ -35,7 +35,7 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
 
 public interface VisualModel extends Model, ObservableState {
-	public void draw (Graphics2D g, Decorator decorator);
+	public void draw(Graphics2D g, Decorator decorator);
 
 	public void setCurrentLevel(Container group);
 	public Container getCurrentLevel();
