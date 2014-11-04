@@ -157,6 +157,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionGroup(editor);
+				editor.requestFocus();
 			}
 		});
 		groupPanel.add(groupButton);
@@ -168,6 +169,7 @@ public class SelectionTool extends AbstractTool {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					selectionPageGroup(editor);
+					editor.requestFocus();
 				}
 			});
 			groupPanel.add(groupPageButton);
@@ -179,6 +181,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionUngroup(editor);
+				editor.requestFocus();
 			}
 		});
 		groupPanel.add(ungroupButton);
@@ -191,6 +194,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeLevelUp(editor);
+				editor.requestFocus();
 			}
 		});
 		levelPanel.add(levelUpButton);
@@ -200,6 +204,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeLevelDown(editor);
+				editor.requestFocus();
 			}
 		});
 		levelPanel.add(levelDownButton);
@@ -207,20 +212,22 @@ public class SelectionTool extends AbstractTool {
 		JPanel flipPanel = new JPanel(new FlowLayout());
 		controlPanel.add(flipPanel);
 		JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (Ctrl+F)");
+				"images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
 		flipHorizontalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionFlipHorizontal(editor);
+				editor.requestFocus();
 			}
 		});
 		flipPanel.add(flipHorizontalButton);
 		JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (Ctrl+Shift+F)");
+				"images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
 		flipVerticalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionFlipVertical(editor);
+				editor.requestFocus();
 			}
 		});
 		flipPanel.add(flipVerticalButton);
@@ -228,20 +235,22 @@ public class SelectionTool extends AbstractTool {
 		JPanel rotatePanel = new JPanel(new FlowLayout());
 		controlPanel.add(rotatePanel);
 		JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (Ctrl+R)");
+				"images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
 		rotateClockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionRotateClockwise(editor);
+				editor.requestFocus();
 			}
 		});
 		rotatePanel.add(rotateClockwiseButton);
 		JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (Ctrl+Shift+R)");
+				"images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
 		rotateCounterclockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionRotateCounterclockwise(editor);
+				editor.requestFocus();
 			}
 		});
 		rotatePanel.add(rotateCounterclockwiseButton);
@@ -509,35 +518,25 @@ public class SelectionTool extends AbstractTool {
 			}
 		}
 
-		if (enablePages && e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+		if (enablePages && e.isAltDown() && !e.isCtrlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
-				selectionPageGroup(e.getEditor());
+				if (e.isShiftDown()) {
+					selectionPageUngroup(e.getEditor());
+				} else {
+					selectionPageGroup(e.getEditor());
+				}
 				break;
 			}
 		}
 
-		if (e.isCtrlDown()) {
+		if (e.isCtrlDown() && !e.isAltDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
 				if (e.isShiftDown()) {
 					selectionUngroup(e.getEditor());
 				} else {
 					selectionGroup(e.getEditor());
-				}
-				break;
-			case KeyEvent.VK_F:
-				if (e.isShiftDown()) {
-					selectionFlipVertical(e.getEditor());
-				} else {
-					selectionFlipHorizontal(e.getEditor());
-				}
-				break;
-			case KeyEvent.VK_R:
-				if (e.isShiftDown()) {
-					selectionRotateCounterclockwise(e.getEditor());
-				} else {
-					selectionRotateClockwise(e.getEditor());
 				}
 				break;
 			}
@@ -733,7 +732,7 @@ public class SelectionTool extends AbstractTool {
 
 	private void selectionOffset(final GraphEditor editor, double dx, double dy) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			// Note that no memento should be saved until the drug action is complete
 			for(Node node : model.getSelection()){
 				if(node instanceof Movable) {
@@ -746,15 +745,16 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionCancel(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getMainWindow().selectNone();
 			editor.forceRedraw();
 		}
+		editor.requestFocus();
 	}
 
 	protected void selectionGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.groupSelection();
 			editor.forceRedraw();
@@ -763,7 +763,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionUngroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupSelection();
 			editor.forceRedraw();
@@ -772,7 +772,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionPageGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.groupPageSelection();
 			editor.forceRedraw();
@@ -781,17 +781,16 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionPageUngroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			model.ungroupPageSelection();
-			editor.getMainWindow().forceRedraw();
 			editor.forceRedraw();
 		}
 	}
 
 	protected void selectionRotateClockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
 			editor.forceRedraw();
@@ -800,7 +799,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionRotateCounterclockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
 			editor.forceRedraw();
@@ -809,7 +808,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionFlipHorizontal(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, -1, 1);
 			editor.forceRedraw();
@@ -818,7 +817,7 @@ public class SelectionTool extends AbstractTool {
 
 	protected void selectionFlipVertical(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
+		if (!model.getSelection().isEmpty()) {
 			editor.getWorkspaceEntry().saveMemento();
 			VisualModelTransformer.scaleSelection(model, 1, -1);
 			editor.forceRedraw();

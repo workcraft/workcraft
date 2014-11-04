@@ -51,38 +51,39 @@ public class VisualModelTransformer {
 
 	public static void scaleSelection(VisualModel vm, double sx, double sy) {
 		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
+		if (selectionBB != null) {
+			AffineTransform t = new AffineTransform();
 
-		AffineTransform t = new AffineTransform();
+			t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
+			t.scale(sx, sy);
+			t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
 
-		t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
-		t.scale(sx, sy);
-		t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
-
-		transformNodePosition(vm.getSelection(), t);
+			transformNodePosition(vm.getSelection(), t);
+		}
 	}
 
 	public static void rotateSelection(VisualModel vm, double theta) {
 		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
+		if (selectionBB != null) {
+			AffineTransform t = new AffineTransform();
+			Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
 
-		AffineTransform t = new AffineTransform();
-		Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
+			t.translate(cp.getX(), cp.getY());
+			t.rotate(theta);
+			t.translate(-cp.getX(), -cp.getY());
 
-		t.translate(cp.getX(), cp.getY());
-		t.rotate(theta);
-		t.translate(-cp.getX(), -cp.getY());
-
-		transformNodePosition(vm.getSelection(), t);
+			transformNodePosition(vm.getSelection(), t);
+		}
 	}
 
-	private static Rectangle2D bbUnion(Rectangle2D bb1, Point2D bb2)
-	{
-		if(bb2 == null)
+	private static Rectangle2D bbUnion(Rectangle2D bb1, Point2D bb2) {
+		if (bb2 == null) {
 			return bb1;
+		}
 
 		Rectangle2D r = new Rectangle2D.Double(bb2.getX(), bb2.getY(), 0, 0);
-
 		if (bb1 == null) {
-			bb1=r;
+			bb1 = r;
 		} else Rectangle2D.union(bb1, r, bb1);
 
 		return bb1;
@@ -90,15 +91,11 @@ public class VisualModelTransformer {
 
 	public static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
 		Rectangle2D selectionBB = null;
-
-
 		for (Node vn: nodes) {
 			if (vn instanceof VisualGroup) {
 				Rectangle2D r = getNodesCoordinateBox(((VisualGroup)vn).getChildren());
 				Point2D p = ((VisualGroup)vn).getPosition();
 				r.setRect(r.getX()+p.getX(), r.getY()+p.getY(), r.getWidth(), r.getHeight());
-
-//				System.out.printf("%f %f %f %f\n", r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
 				if (selectionBB==null)
 					selectionBB = r;

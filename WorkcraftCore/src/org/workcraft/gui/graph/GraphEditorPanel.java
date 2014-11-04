@@ -318,10 +318,15 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	@Override
+	/**
+	 * Redraw one pixel to force redrawing of the whole model. This is usually necessary
+	 * to recalculate bounding boxes of children components and correctly estimate the
+	 * bounding boxes of their parents.
+	 */
 	public void forceRedraw() {
 		super.paintImmediately(0, 0, 1, 1);
+		repaint();
 	}
-
 
 	public VisualModel getModel() {
 		return workspaceEntry.getModelEntry().getVisualModel();

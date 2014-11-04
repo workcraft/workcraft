@@ -1212,55 +1212,45 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void forceRedraw() {
-		if (editorInFocus != null) {
-			// Redraw one pixel to force redrawing of the whole model. This is usually necessary
-			// to recalculate bounding boxes of children components and correctly estimate the
-			// bounding boxes of their parents.
-			editorInFocus.forceRedraw();
-			editorInFocus.repaint();
-		}
-	}
-
 	public void undo()  {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void redo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().redo();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void cut() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().cut();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void copy() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().copy();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void paste() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().paste();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void delete() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().delete();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
@@ -1330,7 +1320,7 @@ public class MainWindow extends JFrame {
 		Viewport viewport = editorInFocus.getViewport();
 		Rectangle2D viewportBox = viewport.getShape();
 		VisualModel model = editorInFocus.getModel();
-		Collection<Touchable> nodes = Hierarchy.getDescendantsOfType(model.getRoot(), Touchable.class);
+		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
 		if (!model.getSelection().isEmpty()) {
 			nodes.retainAll(model.getSelection());
 		}
@@ -1374,7 +1364,7 @@ public class MainWindow extends JFrame {
 		Viewport viewport = editorInFocus.getViewport();
 		Rectangle2D viewportBox = viewport.getShape();
 		VisualModel model = editorInFocus.getModel();
-		Collection<Touchable> nodes = Hierarchy.getDescendantsOfType(model.getRoot(), Touchable.class);
+		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
 		if (!model.getSelection().isEmpty()) {
 			nodes.retainAll(model.getSelection());
 		}

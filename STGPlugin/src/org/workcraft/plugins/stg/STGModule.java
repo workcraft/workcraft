@@ -81,7 +81,6 @@ public class STGModule implements Module {
 				return new TransitionContractorTool(framework);
 			}
 		});
-
 	}
 
 	@Override

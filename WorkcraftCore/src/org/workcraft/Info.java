@@ -12,7 +12,8 @@ public class Info {
 
 	private static final int majorVersion = 3;
 	private static final int minorVersion = 0;
-	private static final int revisionVersion = 1;
+	private static final int revisionVersion = 2;
+	private static final String statusVersion = "alpha";
 
 	private static final int startYear = 2006;
 	private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -20,7 +21,11 @@ public class Info {
 	private static final String homepage = "http://workcraft.org/";
 
 	static public String getVersion() {
-		return majorVersion + "." + minorVersion + "." + revisionVersion;
+		String version = majorVersion + "." + minorVersion + "." + revisionVersion;
+		if ((statusVersion != null) && !statusVersion.isEmpty()) {
+			version += " (" + statusVersion + ")";
+		}
+		return version;
 	}
 
 	static public String getTitle() {

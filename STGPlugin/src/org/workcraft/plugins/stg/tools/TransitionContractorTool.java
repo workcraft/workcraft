@@ -37,27 +37,27 @@ public class TransitionContractorTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
-		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(stg.getVisualTransitions());
-		if (!stg.getSelection().isEmpty()) {
-			transitions.retainAll(stg.getSelection());
+		final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
+		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
+		if (!model.getSelection().isEmpty()) {
+			transitions.retainAll(model.getSelection());
 		}
 		if (!transitions.isEmpty()) {
 			we.saveMemento();
 			for (VisualTransition transition: transitions) {
-				contractTransition(stg, transition);
+				contractTransition(model, transition);
 			}
-			stg.remove(new LinkedList<Node>(transitions));
+			model.remove(new LinkedList<Node>(transitions));
 		}
 	}
 
-	private void contractTransition(VisualSTG stg, VisualTransition transition) {
-		for (Node pred: stg.getPreset(transition)) {
-			for (Node succ: stg.getPostset(transition)) {
+	private void contractTransition(VisualSTG model, VisualTransition transition) {
+		for (Node pred: model.getPreset(transition)) {
+			for (Node succ: model.getPostset(transition)) {
 				if ((pred instanceof VisualTransition) && (succ instanceof VisualTransition)) {
 					try {
-						VisualConnection oldConnection = (VisualConnection)stg.getConnection(pred, transition);
-						VisualConnection newConnection = stg.connect(pred, succ);
+						VisualConnection oldConnection = (VisualConnection)model.getConnection(pred, transition);
+						VisualConnection newConnection = model.connect(pred, succ);
 						oldConnection.copyProperties(newConnection);
 					} catch (InvalidConnectionException e) {
 						e.printStackTrace();
